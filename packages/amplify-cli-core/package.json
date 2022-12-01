@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -21,14 +21,15 @@
     "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "^0.17.15",
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.9",
     "ajv": "^6.12.6",
     "amplify-cli-logger": "1.2.1",
-    "amplify-prompts": "2.6.0",
+    "amplify-prompts": "2.6.1",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",

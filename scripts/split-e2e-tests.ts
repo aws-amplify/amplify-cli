@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 
 const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -29,7 +30,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'notifications_pkg',
   'interactions_pkg',
   'analytics_pkg',
-  'schema-auth-7_pkg',
+  'schema-auth-7a_pkg',
+  'schema-auth-7b_pkg',
+  'schema-auth-7c_pkg',
   'schema-auth-11-a_pkg',
   'schema-auth-11-b_pkg',
   'schema-auth-11-c_pkg',
@@ -51,7 +54,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-10_pkg',
   'schema-searchable_pkg',
   'schema-auth-6_pkg',
-  'auth_8_pkg',
+  'auth_8a_pkg',
+  'auth_8b_pkg',
+  'auth_8c_pkg',
   's3-sse_pkg',
   'storage-2_pkg',
   'schema-auth-4a_pkg',
@@ -67,8 +72,10 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_1a_pkg',
   'auth_1b_pkg',
   'auth_1c_pkg',
-  'schema-auth-1_pkg',
-  'schema-auth-2_pkg',
+  'schema-auth-1a_pkg',
+  'schema-auth-1b_pkg',
+  'schema-auth-2a_pkg',
+  'schema-auth-2b_pkg',
   'container-hosting_pkg',
   'schema-auth-13_pkg',
   'init_a_pkg',
@@ -85,8 +92,23 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_5f_pkg',
 ];
 
+// some tests may require a larger executor, specify those here
+const JOBS_RUNNING_ON_LINUX_LARGE_VM: string[] = [
+  'api-migration-a_v6',
+  'auth_migration_update_v6',
+  'function-migration_pkg',
+  'geo-add-f_pkg',
+  'import_s3_2a_pkg',
+  'model-migration_pkg',
+  'notifications-migration-2_v5',
+  'schema-auth-14_pkg',
+  'schema-auth-15_pkg',
+  'schema-searchable_pkg',
+];
+
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
   'us-east-2',
   'us-west-2',
   'eu-west-2',
@@ -114,100 +136,6 @@ const USE_PARENT_ACCOUNT = [
   'storage',
 ];
 
-// This array needs to be update periodically when new tests suites get added
-// or when a test suite changes drastically
-
-const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
-  //<10m
-  'src/__tests__/plugin.test.ts',
-  'src/__tests__/init-special-case.test.ts',
-  'src/__tests__/datastore-modelgen.test.ts',
-  'src/__tests__/amplify-configure.test.ts',
-  'src/__tests__/tags.test.ts',
-  'src/__tests__/notifications.test.ts',
-  'src/__tests__/geo-headless.test.ts',
-  //<15m
-  'src/__tests__/schema-versioned.test.ts',
-  'src/__tests__/schema-data-access-patterns.test.ts',
-  'src/__tests__/interactions.test.ts',
-  'src/__tests__/schema-predictions.test.ts',
-  'src/__tests__/amplify-app.test.ts',
-  'src/__tests__/hosting.test.ts',
-  'src/__tests__/analytics.test.ts',
-  'src/__tests__/schema-iterative-update-2.test.ts',
-  'src/__tests__/containers-api.test.ts',
-  //<20m
-  'src/__tests__/predictions.test.ts',
-  'src/__tests__/hostingPROD.test.ts',
-  'src/__tests__/geo-update.test.ts',
-  'src/__tests__/geo-remove.test.ts',
-  'src/__tests__/geo-multi-env.test.ts',
-  //<25m
-  'src/__tests__/schema-key.test.ts',
-  'src/__tests__/function_3.test.ts',
-  'src/__tests__/schema-iterative-update-1.test.ts',
-  //<30m
-  'src/__tests__/schema-auth-3.test.ts',
-  'src/__tests__/function_2.test.ts',
-  'src/__tests__/auth_3.test.ts',
-  //<35m
-  'src/__tests__/migration/api.key.migration1.test.ts',
-  'src/__tests__/auth_4.test.ts',
-  'src/__tests__/auth_5e.test.ts',
-  'src/__tests__/schema-auth-7.test.ts',
-  'src/__tests__/api_3.test.ts',
-  'src/__tests__/import_auth_1.test.ts',
-  'src/__tests__/import_auth_2.test.ts',
-  'src/__tests__/import_s3_1.test.ts',
-  'src/__tests__/import_dynamodb_1.test.ts',
-  'src/__tests__/schema-iterative-rollback-1.test.ts',
-  //<40m
-  'src/__tests__/geo-import.test.ts',
-  'src/__tests__/schema-iterative-rollback-2.test.ts',
-  'src/__tests__/auth_2.test.ts',
-  'src/__tests__/migration/api.key.migration2.test.ts',
-  'src/__tests__/migration/api.key.migration3.test.ts',
-  'src/__tests__/function_1.test.ts',
-  'src/__tests__/function_4.test.ts',
-  //<45m
-  'src/__tests__/schema-function.test.ts',
-  'src/__tests__/migration/api.connection.migration.test.ts',
-  'src/__tests__/schema-connection.test.ts',
-  'src/__tests__/schema-iterative-update-3.test.ts',
-  'src/__tests__/schema-auth-1.test.ts',
-  //<50m
-  'src/__tests__/schema-auth-2.test.ts',
-  'src/__tests__/api_1.test.ts',
-  //<55m
-  'src/__tests__/storage.test.ts',
-  'src/__tests__/api_2.test.ts',
-  'src/__tests__/api_5.test.ts',
-  'src/__tests__/schema-iterative-update-4.test.ts',
-  'src/__tests__/schema-auth-10.test.ts',
-  //<2h
-  'src/__tests__/function_9.test.ts',
-  'src/__tests__/api_9.test.ts',
-  'src/__tests__/auth_6.test.ts',
-  'src/__tests__/delete.test.ts',
-  'src/__tests__/feature-flags.test.ts',
-  'src/__tests__/layer.test.ts',
-  'src/__tests__/schema-searchable.test.ts',
-  'src/__tests__/api_migration_update.test.ts',
-];
-
-/**
- * Sorts the test suite in ascending order. If the test is not included in known
- * tests it would be inserted at the begining o the array
- * @param tesSuites an array of test suites
- */
-function sortTestsBasedOnTime(tesSuites: string[]): string[] {
-  return tesSuites.sort((a, b) => {
-    const aIndx = KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME.indexOf(a);
-    const bIndx = KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME.indexOf(b);
-    return aIndx - bIndx;
-  });
-}
-
 export type WorkflowJob =
   | {
       [name: string]: {
@@ -234,7 +162,7 @@ export type CircleCIConfig = {
 const repoRoot = join(__dirname, '..');
 
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
-  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })).reverse();
+  return glob.sync(pattern, { cwd: dir });
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
@@ -330,17 +258,18 @@ function splitTests(
       Object.values(jobByRegion).forEach(regionJobs => {
         const newJobNames = Object.keys(regionJobs as object);
         const jobs = newJobNames.map((newJobName, index) => {
-          const requires = getRequiredJob(newJobNames, index, concurrency);
           if (typeof workflowJob === 'string') {
             return newJobName;
           } else {
+            // for the most up-to-date list of executors for e2e, see the config.base.yml file
+            let linuxVMSize = JOBS_RUNNING_ON_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
-                requires: [...(requires ? [requires] : workflowJob[jobName].requires || [])],
+                requires: workflowJob[jobName].requires || [],
                 matrix: {
                   parameters: {
-                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? ['l', 'w'] : ['l'],
+                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? [linuxVMSize, 'w_medium'] : [linuxVMSize],
                   },
                 },
               },
@@ -413,21 +342,6 @@ function replaceWorkflowDependency(jobs: WorkflowJob[], jobName: string, jobsToR
   });
 }
 
-/**
- * Helper function that creates requires block for jobs to limit the concurrency of jobs in circle ci
- * @param jobNames - An array of jobs
- * @param index - current index of the job
- * @param concurrency - number of parallel jobs allowed
- */
-function getRequiredJob(jobNames: string[], index: number, concurrency: number = 4): string | void {
-  const mod = index % concurrency;
-  const mult = Math.floor(index / concurrency);
-  if (mult > 0) {
-    const prevIndex = (mult - 1) * concurrency + mod;
-    return jobNames[prevIndex];
-  }
-}
-
 function loadConfig(): CircleCIConfig {
   const configFile = join(repoRoot, '.circleci', 'config.base.yml');
   return <CircleCIConfig>yaml.load(fs.readFileSync(configFile, 'utf8'));
@@ -469,26 +383,80 @@ function verifyConfig() {
   }
 }
 
+function validateArtifactStoragePaths(config: CircleCIConfig) {
+  // make sure that only valid paths are used to store artifacts/results
+  const storagePathsUsedInConfig = new Set();
+  const unregisteredPaths = new Set();
+  const invalidPaths = new Set();
+  for(let key of Object.keys(config.jobs)) {
+    const job = config.jobs[key];
+    const steps = job.steps;
+    
+    for(let i = 0; i < steps.length; i ++){
+      const resultsPath = steps[i].store_test_results;
+      const artifactsPath = steps[i].store_artifacts;
+      if(resultsPath){
+        storagePathsUsedInConfig.add(resultsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
+          unregisteredPaths.add(resultsPath.path);
+        }
+        if (!resultsPath.path.startsWith("~/")){
+          invalidPaths.add(resultsPath.path);
+        }
+      }
+      if(artifactsPath){
+        storagePathsUsedInConfig.add(artifactsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
+          unregisteredPaths.add(artifactsPath.path);
+        }
+        if (!artifactsPath.path.startsWith("~/")){
+          invalidPaths.add(artifactsPath.path);
+        }
+      }
+    }
+  }
+  if(unregisteredPaths.size > 0 || invalidPaths.size > 0){
+    console.log("There are errors in your configuration.\n");
+
+    if(invalidPaths.size > 0){
+      const errors = Array.from(invalidPaths);
+      console.log("Fix these paths. They must start with ~/",errors, "\n");
+    }
+    if(unregisteredPaths.size > 0){
+      const newList = Array.from(storagePathsUsedInConfig);
+      const unregisteredList = Array.from(unregisteredPaths);
+      console.log("You are storing artifacts in an unregistered location.");
+      console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths.");
+      console.log("Update the list to match this:", newList);
+      console.log("Doing so will register these unregistered paths:", unregisteredList);
+    }
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
+  
+  validateArtifactStoragePaths(config);
+
   const splitPkgTests = splitTests(
     config,
     'amplify_e2e_tests_pkg',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
     'graphql_e2e_tests',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
     'amplify_migration_tests_v5',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     true,
@@ -496,7 +464,7 @@ function main(): void {
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
     'amplify_migration_tests_v6',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     true,

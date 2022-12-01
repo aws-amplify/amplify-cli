@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.9.0",
+  "version": "6.9.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -21,12 +21,13 @@
     "test": "yarn jest",
     "test-ci": "yarn jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.5.4",
-    "@aws-amplify/amplify-environment-parameters": "1.2.0",
-    "@aws-amplify/cli-extensibility-helper": "2.4.4",
+    "@aws-amplify/amplify-category-custom": "2.5.5",
+    "@aws-amplify/amplify-environment-parameters": "1.2.1",
+    "@aws-amplify/cli-extensibility-helper": "2.4.5",
     "@aws-amplify/graphql-transformer-core": "^0.17.15",
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.9",
     "@aws-cdk/assert": "~1.172.0",
@@ -53,10 +54,10 @@
     "@aws-cdk/aws-sqs": "~1.172.0",
     "@aws-cdk/core": "~1.172.0",
     "@aws-cdk/region-info": "~1.172.0",
-    "amplify-cli-core": "3.3.0",
+    "amplify-cli-core": "3.4.0",
     "amplify-cli-logger": "1.2.1",
-    "amplify-codegen": "^3.3.2",
-    "amplify-prompts": "2.6.0",
+    "amplify-codegen": "^3.3.3",
+    "amplify-prompts": "2.6.1",
     "amplify-util-import": "2.3.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1233.0",

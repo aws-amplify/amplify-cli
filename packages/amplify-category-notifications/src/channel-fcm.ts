@@ -1,8 +1,7 @@
 import {
   $TSAny, $TSContext, AmplifyError, AmplifyFault,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import inquirer from 'inquirer';
+import { printer, prompter } from 'amplify-prompts';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
@@ -20,26 +19,16 @@ export const configure = async (context: $TSContext): Promise<void> => {
 
   if (isChannelEnabled) {
     printer.info(`The ${channelName} channel is currently enabled`);
-    const answer = await inquirer.prompt({
-      name: 'disableChannel',
-      type: 'confirm',
-      message: `Do you want to disable the ${channelName} channel`,
-      default: false,
-    });
-    if (answer.disableChannel) {
+    const disableChannel = await prompter.yesOrNo(`Do you want to disable the ${channelName} channel`, false);
+    if (disableChannel) {
       await disable(context);
     } else {
       const successMessage = `The ${channelName} channel has been successfully updated.`;
       await enable(context, successMessage);
     }
   } else {
-    const answer = await inquirer.prompt({
-      name: 'enableChannel',
-      type: 'confirm',
-      message: `Do you want to enable the ${channelName} channel`,
-      default: true,
-    });
-    if (answer.enableChannel) {
+    const enableChannel = await prompter.yesOrNo(`Do you want to enable the ${channelName} channel`, true);
+    if (enableChannel) {
       await enable(context, undefined);
     }
   }
@@ -59,15 +48,9 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const questions = [
-      {
-        name: 'ApiKey',
-        type: 'input',
-        message: 'ApiKey',
-        default: channelOutput.ApiKey,
-      },
-    ];
-    answers = trimAnswers(await inquirer.prompt(questions));
+    answers = {
+      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey, transform: input => input.trim() }),
+    };
   }
 
   const params = {
@@ -121,15 +104,9 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const questions = [
-      {
-        name: 'ApiKey',
-        type: 'input',
-        message: 'ApiKey',
-        default: channelOutput.ApiKey,
-      },
-    ];
-    answers = trimAnswers(await inquirer.prompt(questions));
+    answers = {
+      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey, transform: input => input.trim() }),
+    };
   }
 
   const params = {
@@ -182,14 +159,4 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny):Promise<$TS
 
     return undefined;
   }
-};
-
-const trimAnswers = (answers: Record<string, $TSAny>): Record<string, $TSAny> => {
-  for (const [key, value] of Object.entries(answers)) {
-    if (typeof answers[key] === 'string') {
-      // eslint-disable-next-line no-param-reassign
-      answers[key] = value.trim();
-    }
-  }
-  return answers;
 };

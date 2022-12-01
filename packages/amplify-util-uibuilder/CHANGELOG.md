@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.1...@aws-amplify/amplify-util-uibuilder@1.6.2) (2022-11-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0...@aws-amplify/amplify-util-uibuilder@1.6.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* generate default theme if user has no themes ([#11343](https://github.com/aws-amplify/amplify-cli/issues/11343)) ([13a02ac](https://github.com/aws-amplify/amplify-cli/commit/13a02ac32de717a518336871b1c741aa2714562b))
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.5.0...@aws-amplify/amplify-util-uibuilder@1.6.0) (2022-10-27)
 
 

@@ -14,7 +14,7 @@ import {
   Tag,
   Template,
 } from 'amplify-cli-core';
-import { AmplifySpinner, printer } from 'amplify-prompts';
+import { AmplifySpinner } from 'amplify-prompts';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
@@ -92,26 +92,39 @@ export const run = async (context: $TSContext): Promise<void> => {
       },
     };
 
+    let projectInitialized = false;
+    let overrideFilePath = '';
     try {
       const backendDir = pathManager.getBackendDirPath();
-      const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
-      const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
-      if (overrideCode) {
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
-          },
-        });
-        await sandboxNode.run(overrideCode).override(configuration);
-      }
+      overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
+      projectInitialized = true;
     } catch (e) {
-      // TODO: this always throws, and likely needs re-written
-      printer.debug(`Unable to apply auth role overrides: ${e.message}`);
+      // project not initialized
+    }
+    if (projectInitialized && fs.existsSync(overrideFilePath)) {
+      try {
+        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
+        if (overrideCode) {
+          const sandboxNode = new vm.NodeVM({
+            console: 'inherit',
+            timeout: 5000,
+            sandbox: {},
+            require: {
+              context: 'sandbox',
+              builtin: ['path'],
+              external: true,
+            },
+          });
+          await sandboxNode.run(overrideCode).override(configuration);
+        }
+      } catch (err) {
+        // absolutely want to throw if there is a compile or runtime error
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
+      }
     }
 
     const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);

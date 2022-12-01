@@ -1,13 +1,11 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable spellcheck/spell-checker */
-import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
 import fs from 'fs-extra';
 import {
   $TSAny, $TSContext, AmplifyFault,
 } from 'amplify-cli-core';
 
-import { printer } from 'amplify-prompts';
+import { byValue, printer, prompter } from 'amplify-prompts';
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
 import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';
@@ -26,26 +24,16 @@ export const configure = async (context: $TSContext): Promise<IChannelAPIRespons
   let response: IChannelAPIResponse|undefined;
   if (isChannelEnabled) {
     printer.info(`The ${channelName} channel is currently enabled`);
-    const answer = await inquirer.prompt({
-      name: 'disableChannel',
-      type: 'confirm',
-      message: `Do you want to disable the ${channelName} channel`,
-      default: false,
-    });
-    if (answer.disableChannel) {
+    const disableChannel = await prompter.yesOrNo(`Do you want to disable the ${channelName} channel`, false);
+    if (disableChannel) {
       response = await disable(context);
     } else {
       const successMessage = `The ${channelName} channel has been successfully updated.`;
       response = await enable(context, successMessage);
     }
   } else {
-    const answer = await inquirer.prompt({
-      name: 'enableChannel',
-      type: 'confirm',
-      message: `Do you want to enable the ${channelName} channel`,
-      default: true,
-    });
-    if (answer.enableChannel) {
+    const enableChannel = await prompter.yesOrNo(`Do you want to enable the ${channelName} channel`, true);
+    if (enableChannel) {
       response = await enable(context, undefined);
     }
   }
@@ -73,14 +61,14 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const question: QuestionCollection<{ [x: string]: unknown; }> = {
-      name: 'DefaultAuthenticationMethod',
-      type: 'list',
-      message: 'Choose authentication method used for APNs',
-      choices: ['Certificate', 'Key'],
-      default: channelOutput.DefaultAuthenticationMethod || 'Certificate',
+    const authMethod = await prompter.pick(
+      'Select the authentication method for the APNS channel',
+      ['Certificate', 'Key'],
+      { initial: byValue(channelOutput.DefaultAuthenticationMethod || 'Certificate') },
+    );
+    answers = {
+      DefaultAuthenticationMethod: authMethod,
     };
-    answers = await inquirer.prompt(question);
   }
 
   if (answers.DefaultAuthenticationMethod === 'Key') {

@@ -9,7 +9,7 @@ import { unifiedChangelogPath } from './constants';
  */
 const binariesDir = join(__dirname, '..', 'out');
 const binaryNamePrefix = 'amplify-pkg-';
-const platformSuffixes = ['linux', 'macos', 'win.exe'];
+const platformSuffixes = ['linux', 'linux-arm64', 'macos', 'win.exe'];
 
 const validateVersion = async (version: string) => {
   if (!valid(version)) {

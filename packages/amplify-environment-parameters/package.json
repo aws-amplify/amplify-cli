@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
@@ -22,10 +22,11 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "test": "jest --logHeapUsage"
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "3.3.0",
+    "amplify-cli-core": "3.4.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

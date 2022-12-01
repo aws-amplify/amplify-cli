@@ -21,11 +21,6 @@ function uploadPkgCli {
     export version=$(./amplify-pkg-linux-x64 --version)
 
     if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-        tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
-        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-        tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
-        tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
-
         aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz
@@ -50,7 +45,6 @@ function uploadPkgCli {
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
 
     else
-        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
     fi
 
@@ -78,23 +72,65 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-    # This will generate a file our arm64 binary
-    npx pkg --no-bytecode -t node14-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
-    # This will generate files for our x64 binaries.
-    npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
-    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
-    npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
-  else
-    # This will generate files for our x64 binaries.
-    npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
-    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
-    npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+
+  if [[ "$@" =~ 'arm' ]]; then
+    npx pkg --no-bytecode --public-packages "*" --public -t node14-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
+    tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
   fi
 
+  if [[ "$@" =~ 'linux' ]]; then
+    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
+  fi
+
+  if [[ "$@" =~ 'macos' ]]; then
+    npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
+    tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
+  fi
+
+  if [[ "$@" =~ 'win' ]]; then
+    npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+    tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
+  fi
 
   cd ..
 }
+
+function verifyPkgCli {
+    echo "Human readable sizes"
+    du -h out/*
+    echo "Sizes in bytes"
+    wc -c out/*
+
+    linux_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
+    linux_compressed_binary_size=$(wc -c out/amplify-pkg-linux-x64.tgz | awk '{print $1}')
+    if (( linux_compressed_binary_size > linux_compressed_binary_threshold_in_bytes )); then
+      echo "Linux compressed binary size has grown over $linux_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
+
+    macos_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
+    macos_compressed_binary_size=$(wc -c out/amplify-pkg-macos-x64.tgz | awk '{print $1}')
+    if (( macos_compressed_binary_size > macos_compressed_binary_threshold_in_bytes )); then
+      echo "MacOS compressed binary size has grown over $macos_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
+
+    win_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
+    win_compressed_binary_size=$(wc -c out/amplify-pkg-win-x64.tgz | awk '{print $1}')
+    if (( win_compressed_binary_size > win_compressed_binary_threshold_in_bytes )); then
+      echo "Windows compressed binary size has grown over $win_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
+
+    arm_compressed_binary_threshold_in_bytes=$((150 * 1024 * 1024))
+    arm_compressed_binary_size=$(wc -c out/amplify-pkg-linux-arm64.tgz | awk '{print $1}')
+    if (( arm_compressed_binary_size > arm_compressed_binary_threshold_in_bytes )); then
+      echo "Windows compressed binary size has grown over $arm_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
+}
+
 function unsetNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
     npm set registry "https://registry.npmjs.org/"
@@ -208,6 +244,8 @@ function setAwsAccountCredentials {
     export AWS_ACCESS_KEY_ID_ORIG=$AWS_ACCESS_KEY_ID
     export AWS_SECRET_ACCESS_KEY_ORIG=$AWS_SECRET_ACCESS_KEY
     export AWS_SESSION_TOKEN_ORIG=$AWS_SESSION_TOKEN
+    # introduce a delay of up to 5 minutes to allow for more even spread aws list-accounts calls due to throttling
+    sleep $[ ( $RANDOM % 300 )  + 1 ]s
     if [[ "$OSTYPE" == "msys" ]]; then
         # windows provided by circleci has this OSTYPE
         useChildAccountCredentials
@@ -233,8 +271,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        # adding --force-exit per https://github.com/facebook/jest/issues/9473
+        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
 }

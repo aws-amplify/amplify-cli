@@ -1,12 +1,13 @@
 {
   "name": "amplify-util-headless-input",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "test": "jest --logHeapUsage"
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",
@@ -16,7 +17,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-headless-interface": "1.15.0"
+    "amplify-headless-interface": "1.16.0"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5",

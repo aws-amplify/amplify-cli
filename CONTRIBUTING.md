@@ -102,7 +102,7 @@ and print out errors that need manual attention.
 
 Pull requests are welcome!
 
-You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
+You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort. Additionally, please be mindful of the length of the pull request - if your change requires more than 12 file changes, consider breaking the change down into smaller, non-dependent changes. This includes any changes that may be added as a result of the linter.
 
 Pull requests should be opened against **_dev_**.
 
@@ -135,7 +135,6 @@ When filing a bug, please try to be as detailed as possible. In addition to the 
 - Any modifications you've made relevant to the bug
 - Anything unusual about your environment or deployment
 
-
 Guidelines for bug reports:
 
 - Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+) already exists!
@@ -144,9 +143,7 @@ Guidelines for bug reports:
 - Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
 - If you're not using the latest version of the CLI, see if the issue still persists after upgrading - this helps to isolate regressions!
 
-
 Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
-
 
 ## Commits
 
@@ -165,6 +162,7 @@ Valid commit types are as follows:
 - `refactor`
 - `style`
 - `test`
+
 ### Git Hooks
 
 You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
@@ -173,7 +171,7 @@ You will notice the extra actions carried out when you run the `git commit` or `
 "husky": {
     "hooks": {
         "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-        "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
+        "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
         "pre-commit": "yarn verify-commit"
     }
 }
@@ -192,6 +190,7 @@ The "pre-commit" hook runs the [verify-commit](https://github.com/aws-amplify/am
 #### "pre-push" hook:
 
 The "pre-push" hook will build test files and run the  `split-e2e-tests` script to ensure the correct configuration file is generated for our CICD workflow.
+
 ## Tests
 
 Please ensure that your change still passes unit tests, and ideally integration/UI tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Wherever possible, pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.

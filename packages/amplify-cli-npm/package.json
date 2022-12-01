@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "10.4.1",
+  "version": "10.5.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
     "build": "tsc",
     "postinstall": "node ./lib/install.js || echo \"failed to install amplify binary\"",
     "prepublishOnly": "rimraf ./lib && tsc",
-    "run": "ts-node ./run.ts"
+    "run": "ts-node ./run.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -35,7 +36,7 @@
     "tar-stream": "^2.2.0"
   },
   "devDependencies": {
-    "@aws-amplify/cli-internal": "10.4.1",
+    "@aws-amplify/cli-internal": "10.5.1",
     "@types/tar": "^6.1.1",
     "rimraf": "^3.0.2"
   }

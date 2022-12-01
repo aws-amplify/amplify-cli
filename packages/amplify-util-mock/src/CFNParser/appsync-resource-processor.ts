@@ -111,7 +111,10 @@ export function processCloudFormationResults(resources, transformResult) {
       content: content as string,
     });
   });
-  configureSearchEnabledTables(transformResult, processedResources);
+
+  if (searchableModelExists(transformResult)) {
+    return configureSearchEnabledTables(transformResult, processedResources);
+  }
 
   return processedResources;
 }
@@ -154,10 +157,7 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
   return processCloudFormationResults(processedStacks.resources, transformResult);
 }
 
-export function configureSearchEnabledTables(transformResult: $TSAny, processedResources: AmplifyAppSyncSimulatorConfig): void {
-  if (!searchableModelExists(transformResult)) {
-    return;
-  }
+export function configureSearchEnabledTables(transformResult: $TSAny, processedResources: AmplifyAppSyncSimulatorConfig): AmplifyAppSyncSimulatorConfig {
   const searchableStackResources = Object.keys(transformResult?.stacks?.SearchableStack?.Resources);
   processedResources.tables = processedResources?.tables?.map( (table: $TSAny) => {
     const tableName = table?.Properties?.TableName;
@@ -167,6 +167,7 @@ export function configureSearchEnabledTables(transformResult: $TSAny, processedR
       isSearchable: searchableStackResources?.findIndex(resource => resource?.startsWith(eventSourceMappingPrefix)) !== -1
     }
   });
+  return processedResources;
 }
 
 export function searchableModelExists(transformResult: $TSAny): boolean {

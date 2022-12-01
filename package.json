@@ -46,7 +46,9 @@
     "release-rc": "./scripts/release-rc.sh",
     "promote-rc": "./scripts/promote-rc.sh",
     "finish-release": "./scripts/finish-release.sh",
-    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn"
+    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
+    "extract-api": "nx run-many --target=extract-api --all",
+    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -61,7 +63,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
+      "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
       "pre-commit": "yarn verify-commit"
     }
   },
@@ -91,6 +93,7 @@
     "@commitlint/config-lerna-scopes": "^16.2.2",
     "@commitlint/cz-commitlint": "^16.2.3",
     "@commitlint/prompt": "^16.2.3",
+    "@microsoft/api-extractor": "^7.33.5",
     "@types/glob": "^7.1.1",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
@@ -98,7 +101,7 @@
     "@typescript-eslint/parser": "^5.34.0",
     "@zkochan/cmd-shim": "^5.1.0",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
+    "babel-loader": "^8.3.0",
     "codecov": "^3.7.0",
     "copyfiles": "^2.2.0",
     "eslint": "^7.19.0",

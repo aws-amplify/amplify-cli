@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -15,17 +15,18 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",
     "aws"
   ],
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.2.0",
-    "amplify-cli-core": "3.3.0",
+    "@aws-amplify/amplify-environment-parameters": "1.2.1",
+    "amplify-cli-core": "3.4.0",
     "amplify-function-plugin-interface": "1.9.5",
-    "amplify-prompts": "2.6.0",
+    "amplify-prompts": "2.6.1",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",

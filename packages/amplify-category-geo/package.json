@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-geo",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",
@@ -26,10 +27,10 @@
     "@aws-cdk/aws-lambda": "~1.172.0",
     "@aws-cdk/core": "~1.172.0",
     "ajv": "^6.12.6",
-    "amplify-cli-core": "3.3.0",
-    "amplify-headless-interface": "1.15.0",
-    "amplify-prompts": "2.6.0",
-    "amplify-util-headless-input": "1.9.6",
+    "amplify-cli-core": "3.4.0",
+    "amplify-headless-interface": "1.16.0",
+    "amplify-prompts": "2.6.1",
+    "amplify-util-headless-input": "1.9.7",
     "aws-sdk": "^2.1233.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",

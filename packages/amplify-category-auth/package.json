@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -24,19 +24,20 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
     "test-watch": "jest --watch",
-    "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts"
+    "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.2.0",
-    "@aws-amplify/cli-extensibility-helper": "2.4.4",
+    "@aws-amplify/amplify-environment-parameters": "1.2.1",
+    "@aws-amplify/cli-extensibility-helper": "2.4.5",
     "@aws-cdk/aws-cognito": "~1.172.0",
     "@aws-cdk/aws-iam": "~1.172.0",
     "@aws-cdk/aws-lambda": "~1.172.0",
     "@aws-cdk/core": "~1.172.0",
-    "amplify-cli-core": "3.3.0",
-    "amplify-headless-interface": "1.15.0",
-    "amplify-prompts": "2.6.0",
-    "amplify-util-headless-input": "1.9.6",
+    "amplify-cli-core": "3.4.0",
+    "amplify-headless-interface": "1.16.0",
+    "amplify-prompts": "2.6.1",
+    "amplify-util-headless-input": "1.9.7",
     "amplify-util-import": "2.3.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
