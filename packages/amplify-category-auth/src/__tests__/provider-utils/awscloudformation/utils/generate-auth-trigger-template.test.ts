@@ -1,6 +1,14 @@
 import { Construct } from '@aws-cdk/core';
 import { generateNestedAuthTriggerTemplate, createCustomResourceForAuthTrigger, CustomResourceAuthStack } from '../../../../provider-utils/awscloudformation/utils/generate-auth-trigger-template';
 
+jest.mock('uuid', () => {
+  return {
+    v4: () => {
+      return '4fd798a7-86d3-46c2-81e1-40eed9df38ec';
+    }
+  };
+});
+
 describe('generateNestedAuthTriggerTemplate', () => {
   it('adds "authTriggerFn" as a dependency on "CustomAuthTriggerResource"', () => {
     const authTriggerConnections = [
