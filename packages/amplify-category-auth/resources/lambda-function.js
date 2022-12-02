@@ -2,11 +2,12 @@ const response = require('cfn-response');
 const aws = require('aws-sdk');
 
 exports.handler = async function (event, context) {
+  console.log(JSON.stringify(event));
   const physicalResourceId = `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
 
   try {
     const userPoolId = event.ResourceProperties.userpoolId;
-    const lambdaConfig = event.ResourceProperties.lambdaConfig;
+    const { lambdaConfig } = event.ResourceProperties;
     const config = {};
     const cognitoClient = new aws.CognitoIdentityServiceProvider();
     const userPoolConfig = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
@@ -35,19 +36,21 @@ exports.handler = async function (event, context) {
     // removing undefined keys
     Object.keys(updateUserPoolConfig).forEach(key => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
 
-    /*removing UnusedAccountValidityDays as deprecated
+    /* removing UnusedAccountValidityDays as deprecated
     InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
     */
     if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
       delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
     }
-
+    console.log(`before setting config`, JSON.stringify(lambdaConfig));
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
+    console.log('after setting config', JSON.stringify(config));
     if (event.RequestType === 'Delete') {
       try {
         updateUserPoolConfig.LambdaConfig = {};
+        console.log(`${event.RequestType}:`, JSON.stringify(updateUserPoolConfig));
         const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
-        console.log('delete response data ' + JSON.stringify(result));
+        console.log(`delete response data ${JSON.stringify(result)}`);
         await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
       } catch (err) {
         console.log(err.stack);
@@ -56,10 +59,10 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       updateUserPoolConfig.LambdaConfig = config;
-      console.log(`${event.RequestType}: ${updateUserPoolConfig}`);
+      console.log(`${event.RequestType}:`, JSON.stringify(updateUserPoolConfig));
       try {
         const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
-        console.log('createOrUpdate response data ' + JSON.stringify(result));
+        console.log(`createOrUpdate response data ${JSON.stringify(result)}`);
         await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
       } catch (err) {
         console.log(err.stack);

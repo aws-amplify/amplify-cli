@@ -53,15 +53,16 @@ export class CustomResourceAuthStack extends cdk.Stack {
         type: 'String',
       });
       createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
+      const roleArn = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}LambdaExecutionRole`, {
+        type: 'String',
+      });
+      config.lambdaFunctionArn = fnArn.valueAsString;
+
       if (!_.isEmpty(props.permissions)) {
-        const roleArn = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}LambdaExecutionRole`, {
-          type: 'String',
-        });
         const lambdaPermission = props.permissions!.find(permission => config.triggerType === permission.trigger);
         if (!_.isEmpty(lambdaPermission)) {
           createPermissionsForAuthTrigger(this, fnName, roleArn, lambdaPermission!, userpoolArn);
         }
-        config.lambdaFunctionArn = fnArn.valueAsString;
       }
     });
 
