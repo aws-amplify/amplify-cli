@@ -58,6 +58,6 @@ export class ApiCategoryFacade {
     context: $TSContext,
     resource: $TSAny,
   ): Promise<$TSObject> {
-    return context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'generateContainersArtifacts', [context, resource]);
   }
 }
