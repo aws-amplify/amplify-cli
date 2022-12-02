@@ -94,11 +94,19 @@ export async function installAmplifyCLI(version = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
+  
   console.log("SETTING PATH:");
-  process.env.AMPLIFY_PATH = process.platform === 'win32'
+  if(version === '10.5.1'){
+    process.env.AMPLIFY_PATH = process.platform === 'win32'
+    ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
+    : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
+  } else {
+    process.env.AMPLIFY_PATH = process.platform === 'win32'
     ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
     : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
-    console.log("PATH SET");
+  }
+  
+  console.log("PATH SET:", process.env.AMPLIFY_PATH);
 }
 
 export async function createNewProjectDir(
