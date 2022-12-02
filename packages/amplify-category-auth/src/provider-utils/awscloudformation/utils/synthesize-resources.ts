@@ -323,7 +323,7 @@ const addAdminAuth = async (
   }
 };
 
-const createAdminAuthFunction = async (
+export const createAdminAuthFunction = async (
   context: $TSContext,
   authResourceName: string,
   functionName: string,
