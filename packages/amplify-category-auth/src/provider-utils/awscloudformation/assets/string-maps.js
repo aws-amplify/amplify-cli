@@ -446,17 +446,17 @@ const authProviders = [
 
 const hostedUIProviders = [
   {
-    name: 'Facebook',
+    name: 'Facebook Login',
     value: 'Facebook',
     key: 'FACEBOOK',
   },
   {
-    name: 'Google',
+    name: 'Sign in with Google',
     value: 'Google',
     key: 'GOOGLE',
   },
   {
-    name: 'Login With Amazon',
+    name: 'Login with Amazon',
     value: 'LoginWithAmazon',
     key: 'AMAZON',
   },

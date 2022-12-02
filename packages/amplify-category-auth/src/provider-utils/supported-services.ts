@@ -167,8 +167,8 @@ const supportedServices = {
       {
         key: 'facebookAppId',
         prefix:
-          " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
-        question: 'Enter your Facebook App ID for your identity pool: ',
+          " \n You've opted to allow users to authenticate via Facebook Login.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
+        question: 'App ID: ',
         required: true,
         andConditions: [
           {
@@ -181,8 +181,8 @@ const supportedServices = {
       {
         key: 'googleClientId',
         prefix:
-          " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-        question: 'Enter your Google Web Client ID for your identity pool: ',
+          " \n You've opted to allow users to authenticate via Sign in with Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
+        question: 'Web Client ID: ',
         required: true,
         andConditions: [
           {
@@ -195,7 +195,7 @@ const supportedServices = {
       {
         key: 'googleIos',
         prefix:
-          " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
+          " \n You've opted to allow users to authenticate via Sign in with Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
         question: 'Enter your Google iOS Client ID for your identity pool: ',
         required: true,
         andConditions: [
@@ -214,7 +214,7 @@ const supportedServices = {
       {
         key: 'googleAndroid',
         prefix:
-          " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
+          " \n You've opted to allow users to authenticate via Sign in with Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
         question: 'Enter your Google Android Client ID for your identity pool: ',
         required: true,
         andConditions: [
@@ -233,8 +233,8 @@ const supportedServices = {
       {
         key: 'amazonAppId',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
-        question: 'Enter your Amazon App ID for your identity pool: ',
+          " \n You've opted to allow users to authenticate via Login with Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
+        question: 'App ID: ',
         required: true,
         andConditions: [
           {
@@ -248,7 +248,7 @@ const supportedServices = {
         key: 'appleAppId',
         prefix:
           " \n You've opted to allow users to authenticate via Sign in with Apple. If you haven't already, you'll need to go to https://developer.apple.com/account/#/welcome and configure Sign in with Apple. \n",
-        question: 'Enter your Bundle Identifier for your identity pool: ',
+        question: 'Bundle Identifier: ',
         required: true,
         andConditions: [
           {
@@ -1125,8 +1125,8 @@ const supportedServices = {
       {
         key: 'facebookAppIdUserPool',
         prefix:
-          " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
-        question: 'Enter your Facebook App ID for your OAuth flow: ',
+          " \n You've opted to allow users to authenticate via Facebook Login.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
+        question: 'App ID: ',
         required: true,
         andConditions: [
           {
@@ -1138,7 +1138,7 @@ const supportedServices = {
       },
       {
         key: 'facebookAppSecretUserPool',
-        question: 'Enter your Facebook App Secret for your OAuth flow: ',
+        question: 'App Secret: ',
         required: true,
         andConditions: [
           {
@@ -1151,8 +1151,8 @@ const supportedServices = {
       {
         key: 'googleAppIdUserPool',
         prefix:
-          " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-        question: 'Enter your Google Web Client ID for your OAuth flow: ',
+          " \n You've opted to allow users to authenticate via Sign in with Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create a Web Client ID. \n",
+        question: 'Web Client ID: ',
         required: true,
         andConditions: [
           {
@@ -1164,7 +1164,7 @@ const supportedServices = {
       },
       {
         key: 'googleAppSecretUserPool',
-        question: 'Enter your Google Web Client Secret for your OAuth flow: ',
+        question: 'Web Client Secret: ',
         required: true,
         andConditions: [
           {
@@ -1177,8 +1177,8 @@ const supportedServices = {
       {
         key: 'loginwithamazonAppIdUserPool',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
-        question: 'Enter your Amazon App ID for your OAuth flow: ',
+          " \n You've opted to allow users to authenticate via Login with Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
+        question: 'App ID: ',
         required: true,
         andConditions: [
           {
@@ -1190,7 +1190,7 @@ const supportedServices = {
       },
       {
         key: 'loginwithamazonAppSecretUserPool',
-        question: 'Enter your Amazon App Secret for your OAuth flow: ',
+        question: 'App Secret: ',
         required: true,
         andConditions: [
           {
@@ -1204,7 +1204,7 @@ const supportedServices = {
         key: 'signinwithappleClientIdUserPool',
         prefix:
           " \n You've opted to allow users to authenticate via Sign in with Apple. If you haven't already, you'll need to go to https://developer.apple.com/account/#/welcome and configure Sign in with Apple. \n",
-        question: 'Enter your Services ID for your OAuth flow: ',
+        question: 'Services ID: ',
         required: true,
         andConditions: [
           {
@@ -1216,7 +1216,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithappleTeamIdUserPool',
-        question: 'Enter your Team ID for your OAuth flow: ',
+        question: 'Team ID: ',
         required: true,
         andConditions: [
           {
@@ -1228,7 +1228,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithappleKeyIdUserPool',
-        question: 'Enter your Key ID for your OAuth flow: ',
+        question: 'Key ID: ',
         required: true,
         andConditions: [
           {
@@ -1240,7 +1240,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithapplePrivateKeyUserPool',
-        question: 'Enter your Private Key for your OAuth flow: ',
+        question: 'Private Key: ',
         required: true,
         andConditions: [
           {
