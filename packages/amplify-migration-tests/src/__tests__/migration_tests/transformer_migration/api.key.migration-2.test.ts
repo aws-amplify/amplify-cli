@@ -8,7 +8,7 @@ import {
   updateApiSchema,
   getProjectConfig,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;
@@ -24,7 +24,7 @@ describe('amplify key force push', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('api-key-cli-migration');
-    await initJSProjectWithProfile(projRoot, { name: 'gqlkeytwomigration' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'gqlkeytwomigration' });
   });
 
   afterEach(async () => {

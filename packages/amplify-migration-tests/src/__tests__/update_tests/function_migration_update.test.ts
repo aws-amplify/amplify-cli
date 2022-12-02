@@ -21,7 +21,7 @@ import {
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
@@ -37,7 +37,7 @@ describe('amplify function migration', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
-    await initJSProjectWithProfile(projRoot, { name: 'functionmigration' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'functionmigration' });
   });
 
   afterEach(async () => {
