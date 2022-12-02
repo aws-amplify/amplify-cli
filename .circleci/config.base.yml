@@ -277,6 +277,18 @@ jobs:
             changeNpmGlobalPath
             generatePkgCli linux
             unsetNpmRegistryUrl
+      - run:
+          name: Print directory sizes
+          command: |
+            du -a --max-depth=1
+            du -a --max-depth=2 pkg
+            du -a --max-depth=1 pkg/node_modules/\@aws-amplify
+      - run:
+          name: Print directory sizes human readable
+          command: |
+            du -ah --max-depth=1
+            du -ah --max-depth=2 pkg
+            du -ah --max-depth=1 pkg/node_modules/\@aws-amplify
       - save_cache:
           key: amplify-pkg-binaries-linux-{{ .Branch }}-{{ .Revision }}
           paths:
