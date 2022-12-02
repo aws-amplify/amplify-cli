@@ -476,6 +476,8 @@ jobs:
         type: executor
         default: l_large
     executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -499,13 +501,13 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_v6:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     parameters:
       os:
         type: executor
         default: l_large
     executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -529,13 +531,13 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_v10:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.amplify/bin/amplify
     parameters:
       os:
         type: executor
         default: l_large
     executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.amplify/bin/amplify
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}

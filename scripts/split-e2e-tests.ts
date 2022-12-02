@@ -215,20 +215,6 @@ function splitTests(
         ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
     };
-    const isPkg = newJobName.endsWith('_pkg');
-    if (!isPkg) {
-      (newJob.environment as any) = {
-        ...newJob.environment,
-        ...(isMigration
-          ? {
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
-            }
-          : {
-              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
-            }),
-      };
-    }
     return { ...acc, [newJobName]: newJob };
   }, {});
 
