@@ -1,4 +1,4 @@
-name: Bug report
+name: Bug Report
 description: Create a report to help us improve Amplify CLI
 labels: ["pending-triage"]
 
@@ -35,7 +35,7 @@ body:
   - type: input
     attributes:
       label: How did you install the Amplify CLI?
-      description: 'For example: npm, yarn, curl, etc.'
+      description: "For example: npm, yarn, curl, etc."
   - type: input
     attributes:
       label: If applicable, what version of Node.js are you using?
@@ -49,7 +49,7 @@ body:
   - type: input
     attributes:
       label: What operating system are you using?
-      description: 'For example: Mac, Windows, Ubuntu.'
+      description: "For example: Mac, Windows, Ubuntu."
     validations:
       required: true
   - type: textarea
