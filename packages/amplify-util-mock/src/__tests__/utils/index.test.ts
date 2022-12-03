@@ -1,5 +1,5 @@
 import { describe } from 'jest-circus';
-import { _isUnsupportedJavaVersion } from '../../utils';
+import { _isUnsupportedJavaVersion, checkJavaHome } from '../../utils';
 import { fail } from 'assert';
 import semver = require('semver/preload');
 
@@ -90,5 +90,16 @@ LibericaJDK 64-Bit Server VM (build 11.0.3-BellSoft+12, mixed mode)`,
       const actual = _isUnsupportedJavaVersion(stderr === '' ? null : stderr);
       expect(actual).toBe(java.unsupported);
     });
+  });
+});
+
+describe('Check JAVA_HOME variable', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  })
+
+  it('Should not throw when JAVA_HOME is set', () => {
+    process.env.JAVA_HOME = 'pathtojdk';
+    expect( () => { checkJavaHome() }).not.toThrow();
   });
 });
