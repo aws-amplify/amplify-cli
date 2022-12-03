@@ -110,7 +110,7 @@ export function initEnv(context: any): Promise<void>;
 export function isSMSWorkflowEnabled(context: any, resourceName: any): Promise<boolean>;
 
 // @public (undocumented)
-export function migrate(context: any): Promise<void>;
+export const migrate: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
 export function migrateAuthResource(context: any, resourceName: any): Promise<boolean>;

@@ -102,6 +102,7 @@ jobs:
     executor: l_large
     steps:
       - checkout
+      - run: yarn config set script-shell $(which bash)
       - run: yarn run production-build
       - run:
           name: Build tests
@@ -130,6 +131,7 @@ jobs:
             equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
             - checkout
+            - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
             - run:
                 name: Build tests

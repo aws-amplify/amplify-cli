@@ -20,7 +20,7 @@ export const buildOverridesEnabledResources = async (context: $TSContext, resour
       resourceName: resourceCreated.resourceName as string,
     });
   });
-  await generateDependentResourcesType(context);
+  await generateDependentResourcesType();
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
     forceCompile: true,
