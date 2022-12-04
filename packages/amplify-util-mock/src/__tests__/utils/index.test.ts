@@ -94,8 +94,9 @@ LibericaJDK 64-Bit Server VM (build 11.0.3-BellSoft+12, mixed mode)`,
 });
 
 describe('Check JAVA_HOME variable', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  const initialJavaHome = process?.env?.JAVA_HOME;
+  afterEach(() => {
+    process.env.JAVA_HOME = initialJavaHome;
   })
 
   it('Should not throw when JAVA_HOME is set', () => {
