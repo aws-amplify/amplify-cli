@@ -39,6 +39,10 @@ export class CustomResourceAuthStack extends cdk.Stack {
       type: 'String',
     });
 
+    const snsRoleArn = new cdk.CfnParameter(this, 'snsRoleArn', {
+      type: 'String',
+    });
+
     // eslint-disable-next-line no-new
     new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
@@ -66,7 +70,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       }
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn);
+    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn, snsRoleArn);
   }
 
   /**
@@ -129,6 +133,7 @@ const createCustomResource = (
   authTriggerConnections: AuthTriggerConnection[],
   userpoolId: cdk.CfnParameter,
   userpoolArn: cdk.CfnParameter,
+  snsRoleArn: cdk.CfnParameter,
 ): CustomResource => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
@@ -138,11 +143,22 @@ const createCustomResource = (
   });
 
   if (authTriggerFn.role) {
-    authTriggerFn.role.addToPolicy(
+    authTriggerFn.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['cognito-idp:DescribeUserPool', 'cognito-idp:UpdateUserPool'],
         resources: [userpoolArn.valueAsString],
+      }),
+    );
+
+    // reason to add iam::PassRole
+    // AccessDeniedException: User: <IAM User> is not authorized to perform: iam:PassRole
+    // on resource: <auth trigger role>  if (authTriggerFn.role) {
+    authTriggerFn.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['iam:PassRole'],
+        resources: [snsRoleArn.valueAsString],
       }),
     );
   }

@@ -1036,6 +1036,9 @@ export const formNestedStack = async (
     stack.Properties.Parameters.userpoolArn = {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
     };
+    stack.Properties.Parameters.snsRoleArn = {
+      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.CreatedSNSRole'],
+    };
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = cognitoResource.resource as { dependsOn: any };
