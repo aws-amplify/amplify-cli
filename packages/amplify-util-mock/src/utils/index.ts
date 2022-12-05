@@ -11,6 +11,7 @@ import * as semver from 'semver';
 import _ from 'lodash';
 import { AmplifyFault } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import fs from 'fs-extra';
 
 const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
 
@@ -56,6 +57,15 @@ export const checkJavaHome = () => {
     printer.info(resolutionMessage);
     throw new AmplifyFault('MockProcessFault', {
       message: 'JAVA_HOME variable not set',
+      resolution: resolutionMessage
+    });
+  }
+
+  if(!fs.existsSync(javaHomeValue)) {
+    const resolutionMessage = 'Set the JAVA_HOME environment variable to point to a valid JDK directory and retry';
+    printer.info(resolutionMessage);
+    throw new AmplifyFault('MockProcessFault', {
+      message: 'JAVA_HOME variable is set to invalid path',
       resolution: resolutionMessage
     });
   }
