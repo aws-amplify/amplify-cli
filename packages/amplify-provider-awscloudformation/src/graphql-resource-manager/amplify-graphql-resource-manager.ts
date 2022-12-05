@@ -24,6 +24,7 @@ import { loadConfiguration } from '../configuration-manager';
 const ROOT_LEVEL = 'root';
 const RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME = '_root';
 const CONNECTION_STACK_NAME = 'ConnectionStack';
+const SEARCHABLE_STACK_NAME = 'SearchableStack';
 
 /**
  * Type for GQLResourceManagerProps
@@ -171,7 +172,7 @@ export class GraphQLResourceManager {
       const nestedStacks = this.templateState.getKeys().filter((k) => k !== RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME);
       const tableNames = [];
       nestedStacks.forEach((stackName) => {
-        if (stackName !== CONNECTION_STACK_NAME) {
+        if (stackName !== CONNECTION_STACK_NAME && stackName !== SEARCHABLE_STACK_NAME) {
           // Connection stack is not provisioning dynamoDB table and need to be filtered
           tableNames.push(tableNameMap.get(stackName));
         }
@@ -327,17 +328,25 @@ export class GraphQLResourceManager {
     /**
      * When rebuild api, the root stack needs to change the reference to nested stack output values to temporary null placeholder value
      * as there will be no output from nested stacks.
-     * Besides, the connection stack also needs to drop the template resources and outputs when the there are relational directives defined
      */
     if (this.rebuildAllTables) {
       const rootStack = this.getStack(ROOT_LEVEL, currentState);
       const connectionStack = this.getStack(CONNECTION_STACK_NAME, currentState);
+      const searchableStack = this.getStack(SEARCHABLE_STACK_NAME, currentState);
       const allRecreatedNestedStackNames = recreatedTables.map((tableMeta) => tableMeta.stackName);
+      // Drop resources and outputs for connection stack if existed
       if (connectionStack) {
         allRecreatedNestedStackNames.push(CONNECTION_STACK_NAME);
         this.dropTemplateResources(connectionStack);
         this.templateState.add(CONNECTION_STACK_NAME, JSONUtilities.stringify(connectionStack));
       }
+      // Drop resources and outputs for searchable stack if existed
+      if (searchableStack) {
+        allRecreatedNestedStackNames.push(SEARCHABLE_STACK_NAME);
+        this.dropTemplateResources(searchableStack);
+        this.templateState.add(SEARCHABLE_STACK_NAME, JSONUtilities.stringify(searchableStack));
+      }
+      // Update nested stack params in root stack
       this.replaceRecreatedNestedStackParamsInRootStackTemplate(allRecreatedNestedStackNames, rootStack);
       this.templateState.add(RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME, JSONUtilities.stringify(rootStack));
     }
