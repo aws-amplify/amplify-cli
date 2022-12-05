@@ -9,11 +9,14 @@ import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { authTriggerAssetFilePath } from '../constants';
-import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import {
+  AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions, AttributeType,
+} from '../service-walkthrough-types/cognito-user-input-types';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
   authTriggerConnections: AuthTriggerConnection[];
+  enableSnsRole: boolean;
   permissions?: AuthTriggerPermissions[];
 }>;
 
@@ -36,10 +39,6 @@ export class CustomResourceAuthStack extends cdk.Stack {
     });
 
     const userpoolArn = new cdk.CfnParameter(this, 'userpoolArn', {
-      type: 'String',
-    });
-
-    const snsRoleArn = new cdk.CfnParameter(this, 'snsRoleArn', {
       type: 'String',
     });
 
@@ -70,7 +69,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       }
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn, snsRoleArn);
+    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn, props.enableSnsRole);
   }
 
   /**
@@ -93,10 +92,18 @@ export const generateNestedAuthTriggerTemplate = async (
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
-  const { authTriggerConnections, permissions } = request;
+  const { authTriggerConnections, permissions, useEnabledMfas } = request;
+
+  const configureSMS = (request.autoVerifiedAttributes && request.autoVerifiedAttributes.includes('phone_number'))
+  || (request.mfaConfiguration !== 'OFF' && request.mfaTypes && request.mfaTypes.includes('SMS Text Message'))
+  || (request.requiredAttributes && request.requiredAttributes.includes('phone_number'))
+  || (request.usernameAttributes && request.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+
+  const enableSnsRole: boolean | undefined = !useEnabledMfas || configureSMS;
+
   if (!_.isEmpty(authTriggerConnections)) {
     // eslint-disable-next-line spellcheck/spell-checker
-    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections!, permissions);
+    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections!, !!enableSnsRole, permissions);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers aren't defined
@@ -114,12 +121,14 @@ export const generateNestedAuthTriggerTemplate = async (
 // eslint-disable-next-line spellcheck/spell-checker
 export const createCustomResourceforAuthTrigger = async (
   authTriggerConnections: AuthTriggerConnection[],
+  enableSnsRole: boolean,
   permissions?: AuthTriggerPermissions[],
 ): Promise<$TSAny> => {
   if (Array.isArray(authTriggerConnections) && authTriggerConnections.length) {
     const stack = new CustomResourceAuthStack(undefined as $TSAny, 'Amplify', {
       description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
       authTriggerConnections,
+      enableSnsRole,
       permissions,
     });
     const cfn = stack.toCloudFormation();
@@ -133,7 +142,7 @@ const createCustomResource = (
   authTriggerConnections: AuthTriggerConnection[],
   userpoolId: cdk.CfnParameter,
   userpoolArn: cdk.CfnParameter,
-  snsRoleArn: cdk.CfnParameter,
+  enableSnsRole: boolean,
 ): CustomResource => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
@@ -154,13 +163,18 @@ const createCustomResource = (
     // reason to add iam::PassRole
     // AccessDeniedException: User: <IAM User> is not authorized to perform: iam:PassRole
     // on resource: <auth trigger role>  if (authTriggerFn.role) {
-    authTriggerFn.role.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['iam:PassRole'],
-        resources: [snsRoleArn.valueAsString],
-      }),
-    );
+    if (enableSnsRole) {
+      const snsRoleArn = new cdk.CfnParameter(stack, 'snsRoleArn', {
+        type: 'String',
+      });
+      authTriggerFn.role.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['iam:PassRole'],
+          resources: [snsRoleArn.valueAsString],
+        }),
+      );
+    }
   }
 
   // The custom resource that uses the provider to supply value

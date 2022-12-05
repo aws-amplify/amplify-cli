@@ -1029,16 +1029,10 @@ export const formNestedStack = async (
 
     const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
     const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
-
-    stack.Properties.Parameters.userpoolId = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
-    };
-    stack.Properties.Parameters.userpoolArn = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
-    };
-    stack.Properties.Parameters.snsRoleArn = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.CreatedSNSRole'],
-    };
+    const authTriggerCfnParameters: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO, 'getAuthTriggerStackCfnParameters',
+      [stack, cognitoResource.resourceName]);
+    stack.Properties.Parameters = { ...stack.Properties.Parameters, ...authTriggerCfnParameters };
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = cognitoResource.resource as { dependsOn: any };

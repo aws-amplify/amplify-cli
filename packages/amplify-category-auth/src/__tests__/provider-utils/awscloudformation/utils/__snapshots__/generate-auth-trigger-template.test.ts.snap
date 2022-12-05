@@ -27,9 +27,6 @@ Object {
     "functionrandomFnName": Object {
       "Type": "String",
     },
-    "snsRoleArn": Object {
-      "Type": "String",
-    },
     "userpoolArn": Object {
       "Type": "String",
     },
@@ -264,13 +261,6 @@ exports.handler = async function (event, context) {
                 "Ref": "userpoolArn",
               },
             },
-            Object {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Ref": "snsRoleArn",
-              },
-            },
           ],
           "Version": "2012-10-17",
         },
@@ -312,9 +302,6 @@ Object {
       "Type": "String",
     },
     "functionrandomFnName": Object {
-      "Type": "String",
-    },
-    "snsRoleArn": Object {
       "Type": "String",
     },
     "userpoolArn": Object {
@@ -502,13 +489,6 @@ exports.handler = async function (event, context) {
               "Effect": "Allow",
               "Resource": Object {
                 "Ref": "userpoolArn",
-              },
-            },
-            Object {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Ref": "snsRoleArn",
               },
             },
           ],

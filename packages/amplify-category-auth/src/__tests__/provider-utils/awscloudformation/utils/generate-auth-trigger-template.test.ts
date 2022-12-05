@@ -30,7 +30,7 @@ describe('generate Auth Trigger Template', () => {
       },
     ];
     // eslint-disable-next-line spellcheck/spell-checker
-    const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, mockAuthTriggerPermissions);
+    const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
     expect(cfn).toMatchSnapshot();
   });
 
@@ -44,7 +44,8 @@ describe('generate Auth Trigger Template', () => {
     ];
 
     const mockAuthTriggerPermissions: AuthTriggerPermissions[] = [];
-    const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, mockAuthTriggerPermissions);
+    // eslint-disable-next-line spellcheck/spell-checker
+    const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
     expect(cfn).toMatchSnapshot();
   });
 });
