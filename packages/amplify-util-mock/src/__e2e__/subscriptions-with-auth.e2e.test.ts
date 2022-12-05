@@ -221,7 +221,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test that only authorized members are allowed to view subscriptions', async () => {
+test('that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
   const observer = APPSYNC_CLIENT_2.subscribe({
     query: gql`
@@ -238,7 +238,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 
   const subscriptionPromise = new Promise((resolve, _) => {
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onCreateStudent;
       subscription.unsubscribe();
       expect(student.name).toEqual('student1');
@@ -259,7 +259,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   return subscriptionPromise;
 });
 
-test('Test a subscription on update', async () => {
+test('a subscription on update', async () => {
   // susbcribe to update students as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -275,7 +275,7 @@ test('Test a subscription on update', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onUpdateStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student3ID);
@@ -307,7 +307,7 @@ test('Test a subscription on update', async () => {
   return subscriptionPromise;
 });
 
-test('Test a subscription on delete', async () => {
+test('a subscription on delete', async () => {
   // subscribe to onDelete as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -323,7 +323,7 @@ test('Test a subscription on delete', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onDeleteStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student4ID);
@@ -351,7 +351,7 @@ test('Test a subscription on delete', async () => {
   return subscriptionPromise;
 });
 
-test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
+test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
@@ -458,7 +458,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('Test subscription onCreatePost with ownerField', async () => {
+test('subscription onCreatePost with ownerField', async () => {
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_1.subscribe({
       query: gql`
@@ -470,7 +470,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
           }
       }`,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const post = event.data.onCreatePost;
       subscription.unsubscribe();
       expect(post.title).toEqual('someTitle');

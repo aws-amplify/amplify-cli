@@ -99,7 +99,7 @@ export function getDependencyResources(node: object | any[], params: Record<stri
       const resourceName = fnArgs[0];
       result.push(resourceName);
     } else if (typeof fnArgs !== 'string') {
-      for (var i = 0; i < fnArgs.length; i++) {
+      for (let i = 0; i < fnArgs.length; i++) {
         result = [...result, ...getDependencyResources(fnArgs[i], params)];
       }
     }
@@ -116,7 +116,7 @@ export function sortResources(resources: CloudFormationResources, params: Record
     let dependsOn: string[] = [];
     // intrinsic dependency
     const intrinsicDependency = Object.values(resource.Properties)
-      .map(propValue => getDependencyResources(propValue, params))
+      .map(propValue => getDependencyResources(propValue as object, params))
       .reduce((sum, val) => [...sum, ...val], []);
 
     // Todo: enable this once e2e test invoke transformer the same way as

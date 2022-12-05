@@ -70,7 +70,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test simple echo function', async () => {
+test('simple echo function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echo(msg: "Hello") {
@@ -89,7 +89,7 @@ test('Test simple echo function', async () => {
   expect(response.data.echo.fieldName).toEqual('echo');
 });
 
-test('Test simple duplicate function', async () => {
+test('simple duplicate function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         duplicate(msg: "Hello") {
@@ -108,7 +108,7 @@ test('Test simple duplicate function', async () => {
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
 });
 
-test('Test pipeline of @function(s)', async () => {
+test('pipeline of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipeline(msg: "IGNORED")
@@ -119,7 +119,7 @@ test('Test pipeline of @function(s)', async () => {
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
-test('Test pipelineReverse of @function(s)', async () => {
+test('pipelineReverse of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipelineReverse(msg: "Hello") {

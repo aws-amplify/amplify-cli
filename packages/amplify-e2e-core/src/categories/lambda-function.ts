@@ -164,7 +164,7 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
@@ -618,7 +618,7 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
 };
 
 export function validateNodeModulesDirRemoval(projRoot) {
-  let functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
+  const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: functionDir,
     absolute: true,

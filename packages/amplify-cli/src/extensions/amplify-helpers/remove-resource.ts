@@ -69,8 +69,8 @@ export async function removeResource(
   } else {
     if (options.serviceSuffix) {
       enabledCategoryResources = enabledCategoryResources.map(resource => {
-        let service = _.get(amplifyMeta, [category, resource, 'service']);
-        let suffix = _.get(options, ['serviceSuffix', service], '');
+        const service = _.get(amplifyMeta, [category, resource, 'service']);
+        const suffix = _.get(options, ['serviceSuffix', service], '');
         return { name: `${resource} ${suffix}`, value: resource };
       });
     }

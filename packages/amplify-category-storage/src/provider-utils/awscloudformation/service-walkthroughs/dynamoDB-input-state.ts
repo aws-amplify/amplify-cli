@@ -115,11 +115,11 @@ export class DynamoDBInputState {
       return attrType;
     };
 
-    let gsi: DynamoDBCLIInputsGSIType[] = [];
+    const gsi: DynamoDBCLIInputsGSIType[] = [];
 
     if (oldCFN?.Resources?.DynamoDBTable?.Properties?.GlobalSecondaryIndexes) {
       oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: $TSAny) => {
-        let gsiValue: $TSAny = {};
+        const gsiValue: $TSAny = {};
         (gsiValue.name = cfnGSIValue.IndexName),
           cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
             if (keySchema.KeyType === 'HASH') {

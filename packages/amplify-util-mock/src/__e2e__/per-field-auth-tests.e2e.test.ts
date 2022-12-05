@@ -182,7 +182,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test that only Admins can create Employee records.', async () => {
+test('that only Admins can create Employee records.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createEmployee(input: { email: "user2@test.com", salary: 100 }) {
@@ -226,7 +226,7 @@ test('Test that only Admins can create Employee records.', async () => {
   expect(tryToCreateAsNonAdmin2.errors).toHaveLength(1);
 });
 
-test('Test that only Admins may update salary & email.', async () => {
+test('that only Admins may update salary & email.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createEmployee(input: { email: "user2@test.com", salary: 100 }) {
@@ -314,7 +314,7 @@ test('Test that only Admins may update salary & email.', async () => {
   expect(updateAsAdmin2.data.updateEmployee.salary).toEqual(99);
 });
 
-test('Test that owners may update their bio.', async () => {
+test('that owners may update their bio.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createEmployee(input: { email: "user2@test.com", salary: 100 }) {
@@ -348,7 +348,7 @@ test('Test that owners may update their bio.', async () => {
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.salary).toEqual(100);
 });
 
-test('Test that everyone may view employee bios.', async () => {
+test('that everyone may view employee bios.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createEmployee(input: { email: "user3@test.com", salary: 100, bio: "Likes long walks on the beach" }) {
@@ -407,7 +407,7 @@ test('Test that everyone may view employee bios.', async () => {
   expect(seenId).toEqual(true);
 });
 
-test('Test that only owners may "delete" i.e. update the field to null.', async () => {
+test('that only owners may "delete" i.e. update the field to null.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createEmployee(input: { email: "user3@test.com", salary: 200, notes: "note1" }) {
@@ -474,7 +474,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
   expect(deleteNotes.data.updateEmployee.notes).toBeNull();
 });
 
-test('Test with auth with subscriptions on default behavior', async () => {
+test('with auth with subscriptions on default behavior', async () => {
   /**
    * client 1 and 2 are in the same user pool though client 1 should
    * not be able to see notes if they are created by client 2
@@ -568,7 +568,7 @@ test('AND per-field dynamic auth rule test', async () => {
   expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText');
 });
 
-test('test field auth on an operation type as user in admin group', async () => {
+test('field auth on an operation type as user in admin group', async () => {
   const queryResponse = await GRAPHQL_CLIENT_1.query(`
     query SomeFunction {
       someFunction
@@ -579,7 +579,7 @@ test('test field auth on an operation type as user in admin group', async () => 
   expect(queryResponse.data.someFunction).toBeNull();
 });
 
-test('test field auth on an operation type as user not in admin group', async () => {
+test('field auth on an operation type as user not in admin group', async () => {
   const queryResponse = await GRAPHQL_CLIENT_3.query(`
     query SomeFunction {
       someFunction

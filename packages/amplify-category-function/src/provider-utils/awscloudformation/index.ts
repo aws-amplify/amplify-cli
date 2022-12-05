@@ -282,7 +282,7 @@ function printLayerSuccessMessages(context: $TSContext, parameters: LayerParamet
   if (parameters.runtimes.length !== 0) {
     print.info('Move your libraries to the following folder:');
     for (const runtime of parameters.runtimes) {
-      let runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
+      const runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
       print.info(`[${runtime.name}]: ${runtimePath}`);
     }
     print.info('');

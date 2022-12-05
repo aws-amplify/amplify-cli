@@ -43,7 +43,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   const partitionKey = await askPrimaryKeyQuestion(indexableAttributeList, attributeAnswers); // Cannot be changed once added
 
-  let cliInputs: DynamoDBCLIInputs = {
+  const cliInputs: DynamoDBCLIInputs = {
     resourceName,
     tableName,
     partitionKey,
@@ -106,7 +106,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
   const cliInputs = cliInputsState.getCliInputPayload();
 
-  let existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
+  const existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
 
   if (cliInputs.partitionKey) {
     existingAttributeDefinitions.push(cliInputs.partitionKey);
@@ -143,7 +143,7 @@ export async function updateWalkthrough(context: $TSContext) {
 }
 
 async function askTriggersQuestion(context: $TSContext, resourceName: string, existingTriggerFunctions?: string[]): Promise<string[]> {
-  let triggerFunctions: string[] = existingTriggerFunctions || [];
+  const triggerFunctions: string[] = existingTriggerFunctions || [];
 
   if (!existingTriggerFunctions || existingTriggerFunctions.length === 0) {
     if (await prompter.confirmContinue('Do you want to add a Lambda Trigger for your Table?')) {
@@ -260,7 +260,7 @@ async function askGSIQuestion(
         );
 
         /* eslint-enable */
-        let gsiItem: DynamoDBCLIInputsGSIType = {
+        const gsiItem: DynamoDBCLIInputsGSIType = {
           name: gsiName,
           partitionKey: {
             fieldName: gsiPartitionKeyName,

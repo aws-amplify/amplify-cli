@@ -45,7 +45,7 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
     }
 
     let prevResult = result;
-    for (let fnName of this.config.functions) {
+    for (const fnName of this.config.functions) {
       const fnResolver = this.simulatorContext.getFunction(fnName);
       ({ result: prevResult, stash, hadException, args } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
 

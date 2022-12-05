@@ -316,7 +316,7 @@ export function normalizePermissionsMapValue(permissionValue: Array<S3Permission
 
 //Helper functions for prompter to get default-index array from default values.
 function getIndexArray(choices: string[], selectedChoices: string[]): Array<number> {
-  let selectedIndexes: Array<number> = [];
+  const selectedIndexes: Array<number> = [];
   for (const choice of selectedChoices) {
     const index = choices.indexOf(choice);
     if (index >= 0) {
@@ -327,7 +327,7 @@ function getIndexArray(choices: string[], selectedChoices: string[]): Array<numb
 }
 
 function getIndexArrayByValue(choices: { name: string; value: $TSAny }[], selectedChoiceValues: string[]): Array<number> {
-  let selectedIndexes: Array<number> = [];
+  const selectedIndexes: Array<number> = [];
   const choiceValues = choices?.map(choice => choice.value);
   if (choiceValues) {
     for (const selectedChoiceValue of selectedChoiceValues) {

@@ -48,7 +48,7 @@ export function attachExtentions(context: Context) {
 
 function attachPrompt(context: Context) {
   context.prompt = {
-    confirm: async (message: string, defaultValue: boolean = false): Promise<boolean> => {
+    confirm: async (message: string, defaultValue = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
         name: 'yesno',
         type: 'confirm',
@@ -141,7 +141,7 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding: string = 'utf8'): any => {
+  read: (targetPath: string, encoding = 'utf8'): any => {
     const result = fs.readFileSync(targetPath, encoding);
     return result;
   },
@@ -230,7 +230,7 @@ function fancy(message?: string): void {
   console.log(message);
 }
 
-function debug(message: string, title: string = 'DEBUG'): void {
+function debug(message: string, title = 'DEBUG'): void {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 

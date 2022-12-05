@@ -381,7 +381,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.MUST]: filterClauses
       }
@@ -403,7 +403,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.SHOULD]: filterClauses,
         [ElasticsearchUtils.MINIMUM_SHOULD_MATCH]: ElasticsearchUtils.ONE
@@ -426,7 +426,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.MUST_NOT]: expression
       }

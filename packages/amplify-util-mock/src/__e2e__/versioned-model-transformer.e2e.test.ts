@@ -65,7 +65,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test createPost mutation', async () => {
+test('createPost mutation', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -85,7 +85,7 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.version).toEqual(1);
 });
 
-test('Test updatePost mutation', async () => {
+test('updatePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -119,7 +119,7 @@ test('Test updatePost mutation', async () => {
   expect(updateResponse.data.updatePost.version).toEqual(2);
 });
 
-test('Test failed updatePost mutation with wrong version', async () => {
+test('failed updatePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -154,7 +154,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test('Test deletePost mutation', async () => {
+test('deletePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
@@ -184,7 +184,7 @@ test('Test deletePost mutation', async () => {
   expect(deleteResponse.data.deletePost.version).toEqual(createResponse.data.createPost.version);
 });
 
-test('Test deletePost mutation with wrong version', async () => {
+test('deletePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {

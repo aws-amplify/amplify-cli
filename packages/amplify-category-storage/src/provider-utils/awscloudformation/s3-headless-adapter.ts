@@ -19,7 +19,7 @@ export function buildS3UserInputFromHeadlessStorageRequest(context: $TSContext, 
   const [shortId] = uuid().split('-');
   const defaultS3UserInput = getDefaultS3UserInput(context.amplify.getProjectDetails(), shortId);
 
-  let s3UserInput: S3UserInputs = {
+  const s3UserInput: S3UserInputs = {
     resourceName: headlessS3Config.resourceName ? headlessS3Config.resourceName : defaultS3UserInput.resourceName,
     bucketName: headlessS3Config.bucketName ? headlessS3Config.bucketName : defaultS3UserInput.bucketName,
     policyUUID: defaultS3UserInput.policyUUID,
@@ -44,7 +44,7 @@ export async function buildS3UserInputFromHeadlessUpdateStorageRequest( context 
     const {
         serviceModification: { permissions, resourceName, lambdaTrigger },
       } = storageRequest;
-    let s3UserInputs = await s3GetUserInput(context, resourceName)
+    const s3UserInputs = await s3GetUserInput(context, resourceName)
     //update permissions
     if( permissions ){
         s3UserInputs.authAccess = getS3PermissionFromHeadlessParams(permissions.auth);
@@ -112,7 +112,7 @@ function getStorageAccessTypeFromPermissions(guestPermissions: S3PermissionType[
 }
 
 function getGroupAccessTypeFromPermissions(headlessPermissionGroups: PermissionGroups | undefined) {
-  let groupAccessType: GroupAccessType = {};
+  const groupAccessType: GroupAccessType = {};
   if (!headlessPermissionGroups) {
     return undefined;
   } else {

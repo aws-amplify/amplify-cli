@@ -134,7 +134,7 @@ export async function updateWalkthrough(context: $TSContext) {
       return;
     }
     //load existing cliInputs
-    let cliInputsState = new S3InputState(context, storageResourceName, undefined);
+    const cliInputsState = new S3InputState(context, storageResourceName, undefined);
 
     //Check if migration is required
     const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
@@ -152,7 +152,7 @@ export async function updateWalkthrough(context: $TSContext) {
       }
     }
 
-    let previousUserInput = cliInputsState.getUserInput();
+    const previousUserInput = cliInputsState.getUserInput();
     let cliInputs: S3UserInputs = Object.assign({}, previousUserInput); //overwrite this with updated params
     //note: If userPoolGroups have been created/Updated, then they need to be updated in CLI Inputs
     //This check is not required once Auth is integrated with s3-auth-apis.
@@ -217,7 +217,7 @@ export function isMigrateStorageRequired(context: $TSContext, resourceName: stri
  * @param resourceName
  */
 export async function migrateStorageCategory(context: $TSContext, resourceName: string): Promise<string | undefined> {
-  let cliInputsState = new S3InputState(context, resourceName, undefined);
+  const cliInputsState = new S3InputState(context, resourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     await cliInputsState.migrate(context);
@@ -346,7 +346,7 @@ export async function addTrigger(
       throw new Error("Lambda Trigger is already enabled, please use 'amplify update storage'");
     case S3CLITriggerStateEvent.ADD_NEW_TRIGGER:
       // Check if functions exist and if exists, ask if Cx wants to use existing or create new
-      let existingLambdaResources = await getExistingFunctionsForTrigger(context, existingTriggerFunction, false);
+      const existingLambdaResources = await getExistingFunctionsForTrigger(context, existingTriggerFunction, false);
       if (existingLambdaResources && existingLambdaResources.length > 0) {
         triggerFunction = await interactiveAskTriggerTypeFlow(context, policyID, existingTriggerFunction, existingLambdaResources);
       } else {
@@ -509,7 +509,7 @@ async function getExistingFunctionsForTrigger(
   isInteractive: boolean,
 ): Promise<Array<string>> {
   //Build the list of functions to be excluded ( existing-trigger, adminTrigger )
-  let excludeFunctionList = excludeFunctionName ? [excludeFunctionName] : [];
+  const excludeFunctionList = excludeFunctionName ? [excludeFunctionName] : [];
   const adminTriggerFunction = await s3GetAdminTriggerFunctionName(context);
   if (adminTriggerFunction && adminTriggerFunction != 'NONE') {
     excludeFunctionList.push(adminTriggerFunction);
@@ -599,7 +599,7 @@ async function interactiveAddExistingLambdaAndUpdateCFN(
 ) {
   //Get all available lambdas - [ exclude the existing triggerFunction ]
   //note:- In an [update storage + Add trigger flow] , the existing lambda resources are already read and passed into this function.
-  let lambdaResources = existingLambdaResources
+  const lambdaResources = existingLambdaResources
     ? existingLambdaResources
     : await getExistingFunctionsForTrigger(context, existingTriggerFunction, true);
   //Select the function to add trigger
@@ -697,7 +697,7 @@ export function checkIfAuthExists() {
  * @returns IAM policy cloudformation
  */
 export function getIAMPolicies(resourceName: $TSAny, crudOptions: $TSAny) {
-  let policy = [];
+  const policy = [];
   let actions = new Set();
 
   crudOptions.forEach((crudOption: $TSAny) => {
@@ -744,7 +744,7 @@ export function getIAMPolicies(resourceName: $TSAny, crudOptions: $TSAny) {
     actions = (actions as $TSAny).filter((action: $TSAny) => action != 's3:ListBucket');
     policy.push(listBucketPolicy);
   }
-  let s3ObjectPolicy = {
+  const s3ObjectPolicy = {
     Effect: 'Allow',
     Action: actions,
     Resource: [

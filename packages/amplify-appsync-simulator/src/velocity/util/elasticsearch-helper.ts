@@ -66,14 +66,14 @@ class ElasticsearchHelper {
    * 
    */
   public getQueryDSL(filterInput: any): any {
-    let results: any[] = this.getQueryDSLRecursive(filterInput);
+    const results: any[] = this.getQueryDSLRecursive(filterInput);
 
     return this.getOrAndSubexpressions(results)
   }
 
   public getScalarQueryDSL(fieldName: string, conditions: any): any[] {
-    let results: any[] = [];
-    let keys: string[] = Object.keys(conditions);
+    const results: any[] = [];
+    const keys: string[] = Object.keys(conditions);
 
     keys.forEach((key: string) => {
       const condition: string = key;
@@ -137,8 +137,8 @@ class ElasticsearchHelper {
   }
 
   private getQueryDSLRecursive(filterInputFields: any): any[] {
-    let results: any[] = [];
-    let keys: string[] = Object.keys(filterInputFields);
+    const results: any[] = [];
+    const keys: string[] = Object.keys(filterInputFields);
 
     keys.forEach((key: string) => {
       const values: any = filterInputFields[key];
@@ -146,7 +146,7 @@ class ElasticsearchHelper {
         const subexpressions: any[] = [];
 
         values.forEach((value: any) => {
-          let siblingChildExpressions: any[] = this.getQueryDSLRecursive(value);
+          const siblingChildExpressions: any[] = this.getQueryDSLRecursive(value);
           subexpressions.push(this.getOrAndSubexpressions(siblingChildExpressions));
         });
 
@@ -158,7 +158,7 @@ class ElasticsearchHelper {
 
       } else if ("not" === (key.toLowerCase())) {
 
-        let combinedDSLQuery: any[] = this.getQueryDSLRecursive(values);
+        const combinedDSLQuery: any[] = this.getQueryDSLRecursive(values);
         results.push(ElasticsearchHelper.ES_UTILS.toNotExpression(this.getOrAndSubexpressions(combinedDSLQuery)));
 
       } else {

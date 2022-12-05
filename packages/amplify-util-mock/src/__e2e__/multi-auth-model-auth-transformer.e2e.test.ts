@@ -19,7 +19,7 @@ let GRAPHQL_ENDPOINT = undefined;
 let APIKEY_GRAPHQL_CLIENT = undefined;
 let USER_POOL_AUTH_CLIENT = undefined;
 
-let USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 
@@ -183,7 +183,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test(`Test 'public' authStrategy`, async () => {
+test(`'public' authStrategy`, async () => {
   try {
     const createMutation = `
       mutation {
@@ -231,7 +231,7 @@ test(`Test 'public' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' authStrategy`, async () => {
+test(`'private' authStrategy`, async () => {
   try {
     const createMutation = `
       mutation {
