@@ -41,5 +41,5 @@ export const migrationFromV6Tests = [
   ]
 
 export const migrationFromV10Tests = [
-    
+    "src/__tests__/migration_tests_v10/scaffold.test.ts",
 ]
