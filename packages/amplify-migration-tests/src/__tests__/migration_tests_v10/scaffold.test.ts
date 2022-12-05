@@ -6,7 +6,7 @@ import {
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 
-describe('amplify auth migration', () => {
+describe('amplify migration test scaffold v10', () => {
   let projRoot: string;
 
   beforeAll(async () => {
