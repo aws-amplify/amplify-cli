@@ -1,5 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
+import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
 import {
   $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager,
@@ -208,6 +209,8 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
  * @param resources all resources from amplify-meta.json
  */
 export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise<void> => {
+  // ensure backend config is written before copying to current-cloud-backend
+  await saveAllEnvParams();
   const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
 
@@ -265,9 +268,6 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise
 
 /**
  * Update Amplify Meta with build information ( lastBuildType and timestamp)
- * @param param0.category Category which was updated
- * @param param0.resourceName  Name of the resource which was updated
- * @param buildType PROD/DEV
  */
 export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
@@ -278,9 +278,6 @@ export const updateamplifyMetaAfterBuild = ({ category, resourceName }: Resource
 
 /**
  * Update Amplify Meta with packaging information ( lastPackageTimeStamp, distZipFilename, hash)
- * @param param0 A tuple with category and resourceName
- * @param zipFilename - Name of the distribution zip file
- * @param hash - hash value of the resource
  */
 export const updateAmplifyMetaAfterPackage = (
   { category, resourceName }: ResourceTuple,

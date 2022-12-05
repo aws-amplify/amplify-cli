@@ -91,7 +91,7 @@ export const generateNestedAuthTriggerTemplate = async (
   }
 };
 
-const createCustomResourceForAuthTrigger = (authTriggerConnections: AuthTriggerConnection[]): Record<string, unknown> => {
+export const createCustomResourceForAuthTrigger = (authTriggerConnections: AuthTriggerConnection[]): Record<string, unknown> => {
   const stack = new CustomResourceAuthStack(undefined as unknown as Construct, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
     authTriggerConnections,
@@ -122,11 +122,13 @@ const createCustomResource = (stack: cdk.Stack, authTriggerConnections: AuthTrig
   // The custom resource that uses the provider to supply value
   // Passing in a nonce parameter to ensure that the custom resource is triggered on every deployment
   // eslint-disable-next-line no-new
-  new CustomResource(stack, 'CustomAuthTriggerResource', {
+  const customResource = new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
     properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections, nonce: uuid() },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
   });
+
+  customResource.node.addDependency(authTriggerFn);
 };
 
 const createPermissionToInvokeLambda = (

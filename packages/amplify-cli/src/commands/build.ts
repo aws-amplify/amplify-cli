@@ -4,9 +4,7 @@ import { generateDependentResourcesType } from '@aws-amplify/amplify-category-cu
 /**
  * Command to transform CFN with overrides
  */
-const subcommand = 'build';
-
-export const run = async (context: $TSContext) => {
+export const run = async (context: $TSContext): Promise<void> => {
   const categoryName = context?.input?.subCommands?.[0];
   let resourceName = context?.input?.subCommands?.[1];
   if (categoryName === undefined) {
@@ -15,7 +13,7 @@ export const run = async (context: $TSContext) => {
   }
 
   try {
-    await generateDependentResourcesType(context);
+    await generateDependentResourcesType();
     const resourcesToBuild: IAmplifyResource[] = await getResources(context);
     let filteredResources: IAmplifyResource[] = resourcesToBuild;
     if (categoryName) {
@@ -43,6 +41,9 @@ export const run = async (context: $TSContext) => {
   }
 };
 
+/**
+ * Returns resources in create or update state
+ */
 export const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
   const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
