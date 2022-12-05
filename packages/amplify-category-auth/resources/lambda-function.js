@@ -3,7 +3,10 @@ const aws = require('aws-sdk');
 
 exports.handler = async function (event, context) {
   console.log(JSON.stringify(event));
-  const physicalResourceId = `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
+  let physicalResourceId = `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
+  if (event.RequestType === 'Update') {
+    physicalResourceId = event.PhysicalResourceId;
+  }
 
   try {
     const userPoolId = event.ResourceProperties.userpoolId;

@@ -1,4 +1,7 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
+} from 'amplify-cli-core';
+import * as path from 'path';
 import { categoryName } from '../constants';
 import {
   FunctionSecretsStateManager,
@@ -7,12 +10,16 @@ import {
 } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { ensureEnvironmentVariableValues } from '../provider-utils/awscloudformation/utils/environmentVariablesHelper';
 
-export const prePushHandler = async (context: $TSContext) => {
+/**
+ * prePush Handler event for function category
+ */
+export const prePushHandler = async (context: $TSContext): Promise<void> => {
   await ensureEnvironmentVariableValues(context);
   await ensureFunctionSecrets(context);
+  await ensureLambdaExecutionRoleOutputs();
 };
 
-const ensureFunctionSecrets = async (context: $TSContext) => {
+const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
   const amplifyMeta = stateManager.getMeta();
   const functionNames = Object.keys(amplifyMeta?.[categoryName]);
   for (const funcName of functionNames) {
@@ -22,4 +29,29 @@ const ensureFunctionSecrets = async (context: $TSContext) => {
     }
   }
   await storeSecretsPendingRemoval(context, functionNames);
+};
+
+/**
+ * updates function cfn stack with lambda execution role arn parameter
+ */
+const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
+  const amplifyMeta = stateManager.getMeta();
+  const functionNames = Object.keys(amplifyMeta?.[categoryName]);
+  for (const functionName of functionNames) {
+    const templateSourceFilePath = path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
+    const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
+    if (cfnTemplate?.Outputs?.LambdaExecutionRoleArn) {
+      return;
+    }
+
+    cfnTemplate.Outputs.LambdaExecutionRoleArn = {
+      Value: {
+        'Fn::GetAtt': [
+          'LambdaExecutionRole',
+          'Arn',
+        ],
+      },
+    };
+    await writeCFNTemplate(cfnTemplate, templateSourceFilePath);
+  }
 };
