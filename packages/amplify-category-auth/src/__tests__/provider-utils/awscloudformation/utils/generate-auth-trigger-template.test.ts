@@ -49,3 +49,28 @@ describe('generate Auth Trigger Template', () => {
     expect(cfn).toMatchSnapshot();
   });
 });
+
+describe('generateNestedAuthTriggerTemplate', () => {
+  it('adds "authTriggerFn" as a dependency on "CustomAuthTriggerResource"', async () => {
+    const authTriggerConnections = [
+      {
+        triggerType: 'CustomMessage',
+        lambdaFunctionName: 'authtestCustomMessage',
+      },
+      {
+        triggerType: 'PostConfirmation',
+        lambdaFunctionName: 'authtestostConfirmation',
+      },
+    ];
+
+    // eslint-disable-next-line spellcheck/spell-checker
+    const cfnTemplate = await createCustomResourceforAuthTrigger(authTriggerConnections, false);
+
+    expect(cfnTemplate).toMatchSnapshot();
+    expect(cfnTemplate.Resources.CustomAuthTriggerResource.DependsOn).toEqual(expect.arrayContaining([
+      'authTriggerFn7FCFA449',
+      'authTriggerFnServiceRoleDefaultPolicyEC9285A8',
+      'authTriggerFnServiceRole08093B67',
+    ]));
+  });
+});

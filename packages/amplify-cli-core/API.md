@@ -1124,8 +1124,6 @@ export class PathManager {
     // (undocumented)
     getBackendDirPath: (projectPath?: string | undefined) => string;
     // (undocumented)
-    getCfnTemplatePath: (projectPath: string | undefined, categoryName: string, resourceName: string) => string;
-    // (undocumented)
     getCLIJSONFilePath: (projectPath: string, env?: string | undefined) => string;
     // (undocumented)
     getCurrentAmplifyMetaFilePath: (projectPath?: string | undefined) => string;

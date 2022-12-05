@@ -323,7 +323,7 @@ const addAdminAuth = async (
   }
 };
 
-const createAdminAuthFunction = async (
+export const createAdminAuthFunction = async (
   context: $TSContext,
   authResourceName: string,
   functionName: string,
@@ -345,46 +345,46 @@ const createAdminAuthFunction = async (
     lambdaGroupVar = 'NONE';
   }
 
-  const functionProps = {
-    functionName: `${functionName}`,
-    roleName: `${functionName}LambdaRole`,
-    dependsOn,
-    authResourceName,
-    lambdaGroupVar,
-  };
-
-  const copyJobs = [
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-app.js',
-      target: path.join(targetDir, 'src/app.js'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-cognitoActions.js',
-      target: path.join(targetDir, 'src/cognitoActions.js'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-index.js',
-      target: path.join(targetDir, 'src/index.js'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-package.json',
-      target: path.join(targetDir, 'src/package.json'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-queries-function-template.json.ejs',
-      target: path.join(targetDir, `${functionName}-cloudformation-template.json`),
-    },
-  ];
-
-  // copy over the files
-  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
-
   if (operation === 'add') {
+    const functionProps = {
+      functionName: `${functionName}`,
+      roleName: `${functionName}LambdaRole`,
+      dependsOn,
+      authResourceName,
+      lambdaGroupVar,
+    };
+  
+    const copyJobs = [
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-app.js',
+        target: path.join(targetDir, 'src/app.js'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-cognitoActions.js',
+        target: path.join(targetDir, 'src/cognitoActions.js'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-index.js',
+        target: path.join(targetDir, 'src/index.js'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-package.json',
+        target: path.join(targetDir, 'src/package.json'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-queries-function-template.json.ejs',
+        target: path.join(targetDir, `${functionName}-cloudformation-template.json`),
+      },
+    ];
+  
+    // copy over the files
+    await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+
     // add amplify-meta and backend-config
     const backendConfigs = {
       service: AmplifySupportedService.LAMBDA,

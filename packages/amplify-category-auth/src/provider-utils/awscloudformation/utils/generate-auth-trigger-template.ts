@@ -143,7 +143,7 @@ const createCustomResource = (
   userpoolId: cdk.CfnParameter,
   userpoolArn: cdk.CfnParameter,
   enableSnsRole: boolean,
-): CustomResource => {
+): void => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_14_X,
@@ -179,11 +179,14 @@ const createCustomResource = (
 
   // The custom resource that uses the provider to supply value
   // Passing in a nonce parameter to ensure that the custom resource is triggered on every deployment
-  return new CustomResource(stack, 'CustomAuthTriggerResource', {
+  // eslint-disable-next-line no-new
+  const customResource = new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
     properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections, nonce: uuid() },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
   });
+
+  customResource.node.addDependency(authTriggerFn);
 };
 
 const createPermissionToInvokeLambda = (
