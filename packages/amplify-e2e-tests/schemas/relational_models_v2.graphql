@@ -1,0 +1,18 @@
+input AMPLIFY {
+  globalAuthRule: AuthRule = { allow: public }
+}
+type Todo @model {
+  id: ID!
+  name: String
+  description: String
+  tasks: [Task] @hasMany
+  assignee: Worker @hasOne
+}
+type Task @model {
+  id: ID!
+  todo: Todo @belongsTo
+}
+type Worker @model {
+  id: ID!
+  todo: Todo @belongsTo
+}
