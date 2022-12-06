@@ -65,7 +65,7 @@ const formatUnifiedChangelog = (infos: ChangelogInfo[]): string => {
       return `# ${info.packageName} ${latestChanges}`;
     });
     // only include version bump sections if the release is all version bumps to avoid an empty change log
-    if (!formattedChangelogComponents.every(component => component.includes('Version bump only for package'))) {
+    if (formattedChangelogComponents.some(component => !component.includes('Version bump only for package'))) {
       formattedChangelogComponents = formattedChangelogComponents.filter(component => !component.includes('Version bump only for package'));
     }
     const formattedChangelog = formattedChangelogComponents.join('\n\n');
