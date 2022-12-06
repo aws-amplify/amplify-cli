@@ -56,7 +56,7 @@
     "@aws-cdk/region-info": "~1.172.0",
     "amplify-cli-core": "3.5.1",
     "amplify-cli-logger": "1.2.2",
-    "amplify-codegen": "^3.3.5",
+    "amplify-codegen": "3.3.5-graphql15.0",
     "amplify-prompts": "2.6.2",
     "amplify-util-import": "2.3.1",
     "archiver": "^5.3.0",
