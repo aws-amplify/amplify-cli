@@ -39,7 +39,7 @@ body:
   - type: textarea
     attributes:
       label: Did you make any manual changes to the cloud resources managed by Amplify? Please describe the changes made.
-      description: 'For example: "Deleted DynamoDB GSIs from the AWS Console or using AWS CLI" Or "No manual changes made"'
+      description: "For example: \"Deleted DynamoDB GSIs from the AWS Console or using AWS CLI\" Or \"No manual changes made\""
     validations:
       required: true
   - type: markdown
