@@ -23,7 +23,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^4.0.9",
+    "@aws-amplify/amplify-category-api": "^4.1.0",
     "amplify-cli-core": "3.4.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",

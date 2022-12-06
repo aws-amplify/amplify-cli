@@ -1,0 +1,257 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generateNestedAuthTriggerTemplate adds "authTriggerFn" as a dependency on "CustomAuthTriggerResource" 1`] = `
+Object {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": Object {
+    "ShouldNotCreateEnvResources": Object {
+      "Fn::Equals": Array [
+        Object {
+          "Ref": "env",
+        },
+        "NONE",
+      ],
+    },
+  },
+  "Description": "Custom Resource stack for Auth Trigger created using Amplify CLI",
+  "Parameters": Object {
+    "env": Object {
+      "Type": "String",
+    },
+    "functionauthtestCustomMessageArn": Object {
+      "Type": "String",
+    },
+    "functionauthtestCustomMessageName": Object {
+      "Type": "String",
+    },
+    "functionauthtestostConfirmationArn": Object {
+      "Type": "String",
+    },
+    "functionauthtestostConfirmationName": Object {
+      "Type": "String",
+    },
+    "userpoolArn": Object {
+      "Type": "String",
+    },
+    "userpoolId": Object {
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "CustomAuthTriggerResource": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "authTriggerFn7FCFA449",
+        "authTriggerFnServiceRoleDefaultPolicyEC9285A8",
+        "authTriggerFnServiceRole08093B67",
+      ],
+      "Properties": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "authTriggerFn7FCFA449",
+            "Arn",
+          ],
+        },
+        "lambdaConfig": Array [
+          Object {
+            "lambdaFunctionArn": Object {
+              "Ref": "functionauthtestCustomMessageArn",
+            },
+            "lambdaFunctionName": "authtestCustomMessage",
+            "triggerType": "CustomMessage",
+          },
+          Object {
+            "lambdaFunctionArn": Object {
+              "Ref": "functionauthtestostConfirmationArn",
+            },
+            "lambdaFunctionName": "authtestostConfirmation",
+            "triggerType": "PostConfirmation",
+          },
+        ],
+        "nonce": "4fd798a7-86d3-46c2-81e1-40eed9df38ec",
+        "userpoolId": Object {
+          "Ref": "userpoolId",
+        },
+      },
+      "Type": "Custom::CustomAuthTriggerResourceOutputs",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "UserPoolCustomMessageLambdaInvokePermission": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Ref": "functionauthtestCustomMessageName",
+        },
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": Object {
+          "Ref": "userpoolArn",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "UserPoolPostConfirmationLambdaInvokePermission": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Ref": "functionauthtestostConfirmationName",
+        },
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": Object {
+          "Ref": "userpoolArn",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "authTriggerFn7FCFA449": Object {
+      "DependsOn": Array [
+        "authTriggerFnServiceRoleDefaultPolicyEC9285A8",
+        "authTriggerFnServiceRole08093B67",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "const response = require('cfn-response');
+const aws = require('aws-sdk');
+
+exports.handler = async function (event, context) {
+  const physicalResourceId = \`\${event.LogicalResourceId}-\${event.ResourceProperties.userpoolId}\`;
+
+  try {
+    const userPoolId = event.ResourceProperties.userpoolId;
+    const lambdaConfig = event.ResourceProperties.lambdaConfig;
+    const config = {};
+    const cognitoClient = new aws.CognitoIdentityServiceProvider();
+    const userPoolConfig = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
+    const userPoolParams = userPoolConfig.UserPool;
+    // update userPool params
+
+    const updateUserPoolConfig = {
+      UserPoolId: userPoolParams.Id,
+      Policies: userPoolParams.Policies,
+      SmsVerificationMessage: userPoolParams.SmsVerificationMessage,
+      AccountRecoverySetting: userPoolParams.AccountRecoverySetting,
+      AdminCreateUserConfig: userPoolParams.AdminCreateUserConfig,
+      AutoVerifiedAttributes: userPoolParams.AutoVerifiedAttributes,
+      EmailConfiguration: userPoolParams.EmailConfiguration,
+      EmailVerificationMessage: userPoolParams.EmailVerificationMessage,
+      EmailVerificationSubject: userPoolParams.EmailVerificationSubject,
+      VerificationMessageTemplate: userPoolParams.VerificationMessageTemplate,
+      SmsAuthenticationMessage: userPoolParams.SmsAuthenticationMessage,
+      MfaConfiguration: userPoolParams.MfaConfiguration,
+      DeviceConfiguration: userPoolParams.DeviceConfiguration,
+      SmsConfiguration: userPoolParams.SmsConfiguration,
+      UserPoolTags: userPoolParams.UserPoolTags,
+      UserPoolAddOns: userPoolParams.UserPoolAddOns,
+    };
+
+    // removing undefined keys
+    Object.keys(updateUserPoolConfig).forEach(key => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
+
+    /*removing UnusedAccountValidityDays as deprecated
+    InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
+    */
+    if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
+      delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
+    }
+
+    lambdaConfig.forEach(lambda => (config[\`\${lambda.triggerType}\`] = lambda.lambdaFunctionArn));
+    if (event.RequestType === 'Delete') {
+      try {
+        updateUserPoolConfig.LambdaConfig = {};
+        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
+        console.log('delete response data ' + JSON.stringify(result));
+        await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
+      } catch (err) {
+        console.log(err.stack);
+        await response.send(event, context, response.FAILED, { err }, physicalResourceId);
+      }
+    }
+    if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+      updateUserPoolConfig.LambdaConfig = config;
+      console.log(\`\${event.RequestType}: \${updateUserPoolConfig}\`);
+      try {
+        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
+        console.log('createOrUpdate response data ' + JSON.stringify(result));
+        await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
+      } catch (err) {
+        console.log(err.stack);
+        await response.send(event, context, response.FAILED, { err }, physicalResourceId);
+      }
+    }
+  } catch (err) {
+    console.log(err.stack);
+    await response.send(event, context, response.FAILED, { err }, physicalResourceId);
+  }
+};
+",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "authTriggerFnServiceRole08093B67",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "authTriggerFnServiceRole08093B67": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "authTriggerFnServiceRoleDefaultPolicyEC9285A8": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "cognito-idp:DescribeUserPool",
+                "cognito-idp:DescribeUserPoolClient",
+                "cognito-idp:UpdateUserPool",
+                "iam:PassRole",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "authTriggerFnServiceRoleDefaultPolicyEC9285A8",
+        "Roles": Array [
+          Object {
+            "Ref": "authTriggerFnServiceRole08093B67",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+}
+`;
