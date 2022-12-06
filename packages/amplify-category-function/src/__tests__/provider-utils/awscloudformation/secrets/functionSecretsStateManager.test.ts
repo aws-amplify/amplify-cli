@@ -1,13 +1,20 @@
 import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
 import { mocked } from 'ts-jest/utils';
 import * as path from 'path';
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { getEnvParamManager, SSMClientWrapper } from '@aws-amplify/amplify-environment-parameters';
 import { FunctionSecretsStateManager } from '../../../../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { getAppId } from '../../../../provider-utils/awscloudformation/secrets/secretName';
-import { SSMClientWrapper } from '../../../../provider-utils/awscloudformation/secrets/ssmClientWrapper';
 
 jest.mock('amplify-cli-core');
-jest.mock('../../../../provider-utils/awscloudformation/secrets/ssmClientWrapper');
+jest.mock('@aws-amplify/amplify-environment-parameters', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-environment-parameters') as {},
+  SSMClientWrapper: {
+    getInstance: jest.fn().mockResolvedValue(({
+      deleteSecret: jest.fn(),
+      setSecret: jest.fn(),
+    } as unknown) as SSMClientWrapper),
+  },
+}));
 jest.mock('../../../../provider-utils/awscloudformation/secrets/secretsCfnModifier');
 jest.mock('../../../../provider-utils/awscloudformation/secrets/secretName');
 jest.mock('../../../../provider-utils/awscloudformation/utils/updateTopLevelComment');
@@ -16,7 +23,6 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/cloudformationHelp
 const stateManagerMock = mocked(stateManager);
 const pathManagerMock = mocked(pathManager);
 const getAppIdMock = mocked(getAppId);
-const SSMClientWrapperMock = mocked(SSMClientWrapper);
 
 stateManagerMock.getLocalEnvInfo.mockReturnValue({
   envName: 'testTest',
@@ -26,11 +32,6 @@ stateManagerMock.getTeamProviderInfo.mockReturnValue({});
 pathManagerMock.getBackendDirPath.mockReturnValue(path.join('test', 'path'));
 
 getAppIdMock.mockReturnValue('testAppId');
-
-SSMClientWrapperMock.getInstance.mockResolvedValue(({
-  deleteSecret: jest.fn(),
-  setSecret: jest.fn(),
-} as unknown) as SSMClientWrapper);
 
 describe('syncSecretDeltas', () => {
   const contextStub = ({
