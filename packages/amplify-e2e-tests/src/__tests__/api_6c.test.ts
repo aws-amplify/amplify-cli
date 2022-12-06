@@ -3,15 +3,14 @@ import {
   initJSProjectWithProfile,
   addApiWithoutSchema,
   amplifyPush,
-  deleteProject,
   deleteProjectDir,
   putItemInTable,
   scanTable,
   rebuildApi,
   getProjectMeta,
   updateApiSchema,
+  amplifyDeleteWithLongerTimeout,
 } from '@aws-amplify/amplify-e2e-core';
-import { testTableAfterRebuildApi, testTableBeforeRebuildApi } from './api_6a.test';
 
 // Set longer timeout as the test involves creation and deletion of opensearch domain for twice
 jest.setTimeout(1000 * 60 * 90); // 90 minutes
@@ -23,7 +22,7 @@ beforeEach(async () => {
   projRoot = await createNewProjectDir(projName);
 });
 afterEach(async () => {
-  await deleteProject(projRoot);
+  await amplifyDeleteWithLongerTimeout(projRoot);
   deleteProjectDir(projRoot);
 });
 
@@ -38,8 +37,12 @@ describe('amplify rebuild api', () => {
     const region = projMeta?.providers?.awscloudformation?.Region;
     expect(apiId).toBeDefined();
     expect(region).toBeDefined();
-    await testTableBeforeRebuildApi(apiId, region, 'Todo');
+    const tableName = `Todo-${apiId}-integtest`;
+    await putItemInTable(tableName, region, { id: 'this is a test value' });
+    const scanResultBefore = await scanTable(tableName, region);
+    expect(scanResultBefore.Items.length).toBe(1);
     await rebuildApi(projRoot, projName);
-    await testTableAfterRebuildApi(apiId, region, 'Todo');
+    const scanResultAfter = await scanTable(tableName, region);
+    expect(scanResultAfter.Items.length).toBe(0);
   });
 });
