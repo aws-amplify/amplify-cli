@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
