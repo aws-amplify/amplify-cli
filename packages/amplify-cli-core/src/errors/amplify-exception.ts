@@ -71,7 +71,7 @@ export type AmplifyExceptionOptions = {
   resolution?: string,
   link?: string,
 
-  // Cloudformation or NodeJS error codes
+  // CloudFormation or NodeJS error codes
   code?: string,
 };
 
