@@ -1,3 +1,4 @@
+import { AttributeMap } from 'aws-sdk/clients/dynamodb';
 import { DynamoDB } from 'aws-sdk';
 import { unmarshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
@@ -26,7 +27,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     this.client = new DynamoDB({ ...ddbConfig.config, ...ddbConfig.options });
   }
 
-  async load(payload): Promise<object | null> {
+  async load(payload): Promise<object | null > {
     try {
       switch (payload.operation) {
         case 'GetItem':
@@ -41,6 +42,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
           return await this.query(payload);
         case 'Scan':
           return await this.scan(payload);
+        case 'DeleteAllItems':
+          return await this.deleteAllItems();
 
         case 'BatchGetItem':
         case 'BatchPutItem':
@@ -58,6 +61,37 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       }
       throw e;
     }
+  }
+
+  private async deleteAllItems(): Promise<object | null> {
+    try {
+      const items = await this.getAllItems();
+      for await (const item of items) {
+        await this.client
+          .deleteItem({
+            TableName: this.tableName,
+            Key: { id: item.id },
+            ReturnValues: 'ALL_OLD',
+          }).promise();
+      }
+    } catch (e) {
+      throw new Error(`Error while deleting all items from ${this.tableName}`);
+    }
+    return [this.tableName];
+  }
+
+  private async getAllItems(): Promise<Array<AttributeMap> | null> {
+    let items = [];
+    let data = await this.client.scan({ TableName: this.tableName }).promise();
+    items = [...items, ...data.Items];
+    while (typeof data.LastEvaluatedKey !== 'undefined') {
+      data = await this.client.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: data.LastEvaluatedKey,
+      }).promise();
+      items = [...items, ...data.Items];
+    }
+    return items;
   }
 
   private async getItem(payload: any): Promise<object | null> {
@@ -179,6 +213,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
     return unmarshall(deleted);
   }
+
   private async scan(payload) {
     const { filter, index, limit, consistentRead = false, nextToken, select, totalSegments, segment } = payload;
 

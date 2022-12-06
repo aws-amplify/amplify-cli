@@ -17,6 +17,7 @@ import {
   AppSyncSimulatorUnitResolverConfig,
   AmplifyAppSyncAPIConfig,
   AppSyncSimulatorMappingTemplate,
+  AppSyncSimulatorDataSourceType,
 } from './type-definition';
 import { filterSubscriptions } from './utils';
 export { AppSyncGraphQLExecutionContext, JWTToken, IAMToken } from './utils';
@@ -152,6 +153,19 @@ export class AmplifyAppSyncSimulator {
 
   getResolver(typeName, fieldName) {
     return this.resolvers.get(`${typeName}:${fieldName}`);
+  }
+
+  async clearData(): Promise<object> {
+    const it = this.dataSources.values();
+    let deletedTables = [];
+    let dataSource = it.next();
+    while (!dataSource.done) {
+      if (dataSource.value.ddbConfig?.type === AppSyncSimulatorDataSourceType.DynamoDB) {
+        deletedTables = [...deletedTables, ...await dataSource.value.load({ operation: 'DeleteAllItems' })];
+      }
+      dataSource = it.next();
+    }
+    return deletedTables;
   }
 
   get schema(): GraphQLSchema {

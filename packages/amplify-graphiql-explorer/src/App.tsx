@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 import { AuthModal, AUTH_MODE } from './AuthModal';
+import { ClearDataModal } from "./ClearDataModal";
 import { refreshToken } from './utils/jwt';
 
 const DEFAULT_COGNITO_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZDhjYTUyOC00OTMxLTQyNTQtOTI3My1lYTVlZTg1M2YyNzEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS91cy1lYXN0LTFfZmFrZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6InVzZXIxIiwiYXVkIjoiMmhpZmEwOTZiM2EyNG12bTNwaHNrdWFxaTMiLCJldmVudF9pZCI6ImIxMmEzZTJmLTdhMzYtNDkzYy04NWIzLTIwZDgxOGJkNzhhMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxOTc0MjY0NDEyLCJwaG9uZV9udW1iZXIiOiIrMTIwNjIwNjIwMTYiLCJleHAiOjE1NjQyNjgwMTIsImlhdCI6MTU2NDI2NDQxMywiZW1haWwiOiJ1c2VyQGRvbWFpbi5jb20ifQ.wHKY2KIhvWn4zpJ4TZ1vS3zRE9mGWsLY4NCV2Cof17Q`;
@@ -49,6 +50,10 @@ function getAPIInfo() {
   return fetch('/api-config').then(response => response.json());
 }
 
+function clearData() { 
+  return fetch('/clear-data', { method: 'DELETE' }).then(response => response.json());
+}
+
 function fetcher(params: Object, additionalHeaders): Promise<any> {
   const headers = {
     Accept: 'application/json',
@@ -81,6 +86,7 @@ type State = {
   query?: string;
   explorerIsOpen: boolean;
   authModalVisible: boolean;
+  clearDataModalVisible: boolean;
   jwtToken?: string;
   apiKey?: string;
   apiInfo: AmplifyAppSyncSimulatorApiInfo;
@@ -91,6 +97,7 @@ type State = {
     oidcJWTToken?: string;
     iamRole?: 'Auth' | 'UnAuth';
   };
+  clearResponse?: string;
 };
 
 class App extends Component<{}, State> {
@@ -100,6 +107,7 @@ class App extends Component<{}, State> {
     query: DEFAULT_QUERY,
     explorerIsOpen: true,
     authModalVisible: false,
+    clearDataModalVisible: false,
     apiInfo: DEFAULT_API_INFO,
     currentAuthMode: AUTH_MODE.API_KEY,
     credentials: {
@@ -135,6 +143,11 @@ class App extends Component<{}, State> {
   toggleAuthModal = () =>
     this.setState(prevState => ({
       authModalVisible: !prevState.authModalVisible,
+    }));
+
+  toggleClearDataModal = () =>
+    this.setState(prevState => ({
+      clearDataModalVisible: !prevState.clearDataModalVisible
     }));
 
   switchAuthMode = val => {
@@ -280,7 +293,7 @@ class App extends Component<{}, State> {
   }
 
   render() {
-    const { query, schema, authModalVisible, apiInfo } = this.state;
+    const { query, schema, authModalVisible, apiInfo, clearDataModalVisible, clearResponse } = this.state;
     const authModes = [
       AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType],
       ...apiInfo.additionalAuthenticationProviders.map(auth => AUTH_MODE[auth.authenticationType]),
@@ -299,9 +312,26 @@ class App extends Component<{}, State> {
         }}
       />
     ) : null;
+
+    const clearDataModal = clearDataModalVisible ? (
+      <ClearDataModal
+        onClose={() => {
+          this.setState({ clearDataModalVisible: false });
+        }}
+        onClear={async () => {
+          this.setState({ clearDataModalVisible: false });
+          this.setState({ clearResponse: JSON.stringify(await clearData(), undefined, 2) });
+          setTimeout(() => {
+            this.setState({ clearResponse: '' });
+          }
+          , 8000);
+        }}
+      />
+    ) : null;
     return (
       <>
         {authModal}
+        {clearDataModal}
         <div className='graphiql-container'>
           <GraphiQLExplorer
             schema={schema}
@@ -310,13 +340,14 @@ class App extends Component<{}, State> {
             onRunOperation={operationName => this._graphiql?.handleRunQuery(operationName)}
             explorerIsOpen={this.state.explorerIsOpen}
             onToggleExplorer={this._handleToggleExplorer}
-          />
+            />
           <GraphiQL
             ref={ref => (this._graphiql = ref as GraphiQL)}
             fetcher={this.fetch}
             schema={schema!}
             query={query}
             onEditQuery={this._handleEditQuery}
+            response={ clearResponse }
           >
             <GraphiQL.Toolbar>
               <GraphiQL.Button
@@ -327,6 +358,7 @@ class App extends Component<{}, State> {
               <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label='History' title='Show History' />
               <GraphiQL.Button onClick={this._handleToggleExplorer} label='Explorer' title='Toggle Explorer' />
               <GraphiQL.Button onClick={this.toggleAuthModal} label='Update Auth' title='Auth Setting' />
+              <GraphiQL.Button onClick={this.toggleClearDataModal} label='Clear data' title='Clear Mock Data' />
               <GraphiQL.Menu
                 label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}${
                   this.state.currentAuthMode === 'AWS_IAM' ? `(${this.state.credentials.iamRole} Role)` : ''
