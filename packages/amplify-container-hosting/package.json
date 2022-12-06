@@ -22,7 +22,7 @@
     "test": "jest --logHeapUsage --coverage --passWithNoTests"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "4.0.10-4.0.9-function-mapping-patch.0",
+    "@aws-amplify/amplify-category-api": "^4.0.9",
     "amplify-cli-core": "3.4.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
