@@ -3,12 +3,11 @@ import {
   AuthTriggerPermissions,
   TriggerType,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
-// eslint-disable-next-line spellcheck/spell-checker
-import { createCustomResourceforAuthTrigger } from '../../../../provider-utils/awscloudformation/utils/generate-auth-trigger-template';
+import { createCustomResourceForAuthTrigger } from '../../../../provider-utils/awscloudformation/utils/generate-auth-trigger-template';
 
 jest.mock('uuid');
 describe('generate Auth Trigger Template', () => {
-  it('successfully generate auth Trigger Template', async () => {
+  it('successfully generate IAM policies when permissions are defined', async () => {
     const mockAuthTriggerConnections: AuthTriggerConnection[] = [
       {
         lambdaFunctionName: 'randomFn',
@@ -29,12 +28,59 @@ describe('generate Auth Trigger Template', () => {
         },
       },
     ];
-    // eslint-disable-next-line spellcheck/spell-checker
-    const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
-    expect(cfn).toMatchSnapshot();
+    const cfn = await createCustomResourceForAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
+    expect(cfn.Resources.AmplifyfunctionrandomFnNamePostConfirmationAddToGroupCognito1120888F).toMatchInlineSnapshot(`
+      Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": Array [
+                  "cognito-idp:AdminAddUserToGroup",
+                  "cognito-idp:GetGroup",
+                  "cognito-idp:CreateGroup",
+                ],
+                "Effect": "Allow",
+                "Resource": Object {
+                  "Ref": "userpoolArn",
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "AddToGroupCognito",
+          "Roles": Array [
+            Object {
+              "Fn::Select": Array [
+                1,
+                Object {
+                  "Fn::Split": Array [
+                    "/",
+                    Object {
+                      "Fn::Select": Array [
+                        5,
+                        Object {
+                          "Fn::Split": Array [
+                            ":",
+                            Object {
+                              "Ref": "functionrandomFnLambdaExecutionRole",
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      }
+    `);
   });
 
-  it('successfully generate auth Trigger Template without permissions', async () => {
+  it('does not generate iam policies for Auth trigger when permissions are empty', async () => {
     const mockAuthTriggerConnections: AuthTriggerConnection[] = [
       {
         lambdaFunctionName: 'randomFn',
@@ -45,8 +91,8 @@ describe('generate Auth Trigger Template', () => {
 
     const mockAuthTriggerPermissions: AuthTriggerPermissions[] = [];
     // eslint-disable-next-line spellcheck/spell-checker
-    const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
-    expect(cfn).toMatchSnapshot();
+    const cfn = await createCustomResourceForAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
+    expect(cfn.Resources.AmplifyfunctionrandomFnNamePostConfirmationAddToGroupCognito1120888F).not.toBeDefined();
   });
 });
 
@@ -63,14 +109,11 @@ describe('generateNestedAuthTriggerTemplate', () => {
       },
     ];
 
-    // eslint-disable-next-line spellcheck/spell-checker
-    const cfnTemplate = await createCustomResourceforAuthTrigger(authTriggerConnections, false);
+    const cfnTemplate = await createCustomResourceForAuthTrigger(authTriggerConnections, false);
 
     expect(cfnTemplate).toMatchSnapshot();
-    expect(cfnTemplate.Resources.CustomAuthTriggerResource.DependsOn).toEqual(expect.arrayContaining([
-      'authTriggerFn7FCFA449',
-      'authTriggerFnServiceRoleDefaultPolicyEC9285A8',
-      'authTriggerFnServiceRole08093B67',
-    ]));
+    expect(cfnTemplate.Resources.CustomAuthTriggerResource.DependsOn).toEqual(
+      expect.arrayContaining(['authTriggerFn7FCFA449', 'authTriggerFnServiceRoleDefaultPolicyEC9285A8', 'authTriggerFnServiceRole08093B67']),
+    );
   });
 });

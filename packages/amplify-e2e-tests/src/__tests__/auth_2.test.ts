@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   addAuthWithDefaultSocial,
   amplifyPull,
@@ -6,9 +7,7 @@ import {
   addAuthWithGroupTrigger,
   addAuthViaAPIWithTrigger,
   addUserToUserPool,
-  // eslint-disable-next-line spellcheck/spell-checker
   addAuthWithRecaptchaTrigger,
-  // eslint-disable-next-line spellcheck/spell-checker
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
   createNewProjectDir,
   deleteProject,
@@ -121,7 +120,6 @@ describe('amplify add auth...', () => {
 
   it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    // eslint-disable-next-line spellcheck/spell-checker
     await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await updateFunction(
       projRoot,
@@ -140,7 +138,6 @@ describe('amplify add auth...', () => {
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
     const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
-    // eslint-disable-next-line spellcheck/spell-checker
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
@@ -156,11 +153,7 @@ describe('amplify add auth...', () => {
     const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
     expect(result.StatusCode).toBe(200);
     const user1Groups = await listUserPoolGroupsForUser(id, lambdaEvent.userName, region);
-    expect(user1Groups).toMatchInlineSnapshot(`
-      Array [
-        "mygroup",
-      ]
-    `);
+    expect(user1Groups).toEqual(['mygroup']);
     expect(userPool.UserPool).toBeDefined();
     expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
     expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);
@@ -170,7 +163,6 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    // eslint-disable-next-line spellcheck/spell-checker
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

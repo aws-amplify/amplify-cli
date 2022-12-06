@@ -3,10 +3,7 @@ const aws = require('aws-sdk');
 
 exports.handler = async function (event, context) {
   console.log(JSON.stringify(event));
-  let physicalResourceId = `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
-  if (event.RequestType === 'Update') {
-    physicalResourceId = event.PhysicalResourceId;
-  }
+  const physicalResourceId = event.RequestType === 'Update' ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
 
   try {
     const userPoolId = event.ResourceProperties.userpoolId;
@@ -45,7 +42,6 @@ exports.handler = async function (event, context) {
     if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
       delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
     }
-    console.log(`before setting config`, JSON.stringify(lambdaConfig));
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     console.log('after setting config', JSON.stringify(config));
     if (event.RequestType === 'Delete') {

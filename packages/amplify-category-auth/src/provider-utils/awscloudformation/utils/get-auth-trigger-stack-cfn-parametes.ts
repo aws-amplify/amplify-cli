@@ -1,6 +1,6 @@
 import { $TSContext, AmplifyFault } from 'amplify-cli-core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { configureSmsOption } from './configure-sms';
 
 /**
  *
@@ -11,14 +11,11 @@ export const getAuthTriggerStackCfnParameters = async (context: $TSContext, auth
   if (!authState.cliInputFileExists) {
     throw new AmplifyFault('AuthCategoryFault', {
       message: `${authResourceName} cli-inputs.json file not found`,
-      resolution: 'add auth resource using amplify category auth',
+      resolution: 'Add auth using `amplify add auth`',
     });
   }
   const { cognitoConfig } = authState.getCLIInputPayload();
-  const configureSMS = (cognitoConfig.autoVerifiedAttributes && cognitoConfig.autoVerifiedAttributes.includes('phone_number'))
-  || (cognitoConfig.mfaConfiguration !== 'OFF' && cognitoConfig.mfaTypes && cognitoConfig.mfaTypes.includes('SMS Text Message'))
-  || (cognitoConfig.requiredAttributes && cognitoConfig.requiredAttributes.includes('phone_number'))
-  || (cognitoConfig.usernameAttributes && cognitoConfig.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+  const configureSMS = configureSmsOption(cognitoConfig);
   const authRootStackResourceName = `auth${authResourceName}`;
 
   const authTriggerRootStackParams:AuthTriggerCfnTypes = {
@@ -42,7 +39,7 @@ export const getAuthTriggerStackCfnParameters = async (context: $TSContext, auth
  * type returned to Root Stack cfn parameter for auth trigger
  */
 export type AuthTriggerCfnTypes = {
-    userpoolId: Record<'Fn::GetAtt', string[]>,
-    userpoolArn: Record<'Fn::GetAtt', string[]>,
-    snsRoleArn?: Record<'Fn::GetAtt', string[]>
+  userpoolId: Record<'Fn::GetAtt', string[]>,
+  userpoolArn: Record<'Fn::GetAtt', string[]>,
+  snsRoleArn?: Record<'Fn::GetAtt', string[]>
 }

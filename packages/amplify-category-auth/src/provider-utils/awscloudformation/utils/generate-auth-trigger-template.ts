@@ -3,15 +3,18 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource } from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny, JSONUtilities, pathManager, AmplifyFault,
+} from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { authTriggerAssetFilePath } from '../constants';
 import {
-  AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions, AttributeType,
+  AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions,
 } from '../service-walkthrough-types/cognito-user-input-types';
+import { configureSmsOption } from './configure-sms';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
@@ -94,16 +97,13 @@ export const generateNestedAuthTriggerTemplate = async (
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections, permissions, useEnabledMfas } = request;
 
-  const configureSMS = (request.autoVerifiedAttributes && request.autoVerifiedAttributes.includes('phone_number'))
-  || (request.mfaConfiguration !== 'OFF' && request.mfaTypes && request.mfaTypes.includes('SMS Text Message'))
-  || (request.requiredAttributes && request.requiredAttributes.includes('phone_number'))
-  || (request.usernameAttributes && request.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+  const configureSMS = configureSmsOption(request);
 
   const enableSnsRole: boolean | undefined = !useEnabledMfas || configureSMS;
 
   if (!_.isEmpty(authTriggerConnections)) {
     // eslint-disable-next-line spellcheck/spell-checker
-    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections!, !!enableSnsRole, permissions);
+    const cfnObject = await createCustomResourceForAuthTrigger(authTriggerConnections!, !!enableSnsRole, permissions);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers aren't defined
@@ -119,7 +119,7 @@ export const generateNestedAuthTriggerTemplate = async (
  * creates custom resource for cognito triggers
  */
 // eslint-disable-next-line spellcheck/spell-checker
-export const createCustomResourceforAuthTrigger = async (
+export const createCustomResourceForAuthTrigger = async (
   authTriggerConnections: AuthTriggerConnection[],
   enableSnsRole: boolean,
   permissions?: AuthTriggerPermissions[],
@@ -134,7 +134,10 @@ export const createCustomResourceforAuthTrigger = async (
     const cfn = stack.toCloudFormation();
     return cfn;
   }
-  throw new Error('Auth Trigger Connections must have value when trigger are selected');
+  throw new AmplifyFault('AuthCategoryFault', {
+    message: `Auth Trigger Connections must have value when trigger are selected`,
+    resolution: 'Add triggers using `amplify update auth`',
+  });
 };
 
 const createCustomResource = (

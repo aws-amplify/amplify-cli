@@ -1,5 +1,5 @@
 import {
-  $TSContext, stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
+  $TSContext, stateManager, pathManager, readCFNTemplate, writeCFNTemplate, AmplifySupportedService,
 } from 'amplify-cli-core';
 import * as path from 'path';
 import { categoryName } from '../constants';
@@ -37,21 +37,24 @@ const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
 const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
   const amplifyMeta = stateManager.getMeta();
   const functionNames = Object.keys(amplifyMeta?.[categoryName]);
-  for (const functionName of functionNames) {
+  // filter lambda layer from lambdas in function
+  const lambdaFunctionNames = functionNames.filter(functionName => {
+    const functionObj = amplifyMeta?.[categoryName]?.[functionName];
+    return functionObj.service === AmplifySupportedService.LAMBDA;
+  });
+  for (const functionName of lambdaFunctionNames) {
     const templateSourceFilePath = path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
     const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
-    if (cfnTemplate?.Outputs?.LambdaExecutionRoleArn) {
-      return;
+    if (!cfnTemplate?.Outputs?.LambdaExecutionRoleArn) {
+      cfnTemplate.Outputs.LambdaExecutionRoleArn = {
+        Value: {
+          'Fn::GetAtt': [
+            'LambdaExecutionRole',
+            'Arn',
+          ],
+        },
+      };
+      await writeCFNTemplate(cfnTemplate, templateSourceFilePath);
     }
-
-    cfnTemplate.Outputs.LambdaExecutionRoleArn = {
-      Value: {
-        'Fn::GetAtt': [
-          'LambdaExecutionRole',
-          'Arn',
-        ],
-      },
-    };
-    await writeCFNTemplate(cfnTemplate, templateSourceFilePath);
   }
 };
