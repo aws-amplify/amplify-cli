@@ -38,7 +38,7 @@ const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inpu
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
 const { run: authRunPush } = require('./commands/auth/push');
-const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parametes');
+const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {

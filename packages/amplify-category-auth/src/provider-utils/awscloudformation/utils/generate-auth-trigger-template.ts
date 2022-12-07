@@ -102,7 +102,6 @@ export const generateNestedAuthTriggerTemplate = async (
   const enableSnsRole: boolean | undefined = !useEnabledMfas || configureSMS;
 
   if (!_.isEmpty(authTriggerConnections)) {
-    // eslint-disable-next-line spellcheck/spell-checker
     const cfnObject = await createCustomResourceForAuthTrigger(authTriggerConnections!, !!enableSnsRole, permissions);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
@@ -136,7 +135,6 @@ export const createCustomResourceForAuthTrigger = async (
   }
   throw new AmplifyFault('AuthCategoryFault', {
     message: `Auth Trigger Connections must have value when trigger are selected`,
-    resolution: 'Add triggers using `amplify update auth`',
   });
 };
 

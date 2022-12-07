@@ -1,7 +1,7 @@
 import { $TSContext } from 'amplify-cli-core';
 import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
-import { getAuthTriggerStackCfnParameters } from '../../../../provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parametes';
+import { getAuthTriggerStackCfnParameters } from '../../../../provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters';
 
 jest.mock('amplify-cli-core', () => ({
   ...jest.requireActual('amplify-cli-core'),
@@ -20,7 +20,23 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    await expect(async () => getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName)).rejects.toThrow();
+    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    expect(answers).toMatchInlineSnapshot(`
+      Object {
+        "userpoolArn": Object {
+          "Fn::GetAtt": Array [
+            "authmockResource",
+            "Outputs.UserPoolArn",
+          ],
+        },
+        "userpoolId": Object {
+          "Fn::GetAtt": Array [
+            "authmockResource",
+            "Outputs.UserPoolId",
+          ],
+        },
+      }
+    `);
   });
   it('creates sns Role Arn parameter when useEnabledMfa is false', async () => {
     const mockResourceName = 'mockResource';
