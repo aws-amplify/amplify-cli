@@ -36,6 +36,14 @@ executors:
     environment:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+  l_xlarge: &linux-e2e-executor-xlarge
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: xlarge
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 # If you update this name, make sure to update it in split-e2e-tests.ts as well
   l_large: &linux-e2e-executor-large
     docker:
@@ -98,8 +106,8 @@ jobs:
     parameters:
       os:
         type: executor
-        default: l_large
-    executor: l_large
+        default: l_xlarge
+    executor: l_xlarge
     steps:
       - checkout
       - run: yarn run production-build
@@ -178,7 +186,7 @@ jobs:
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   verify-api-extract:
-    <<: *linux-e2e-executor-medium
+    <<: *linux-e2e-executor-xlarge
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
