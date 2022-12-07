@@ -182,4 +182,5 @@ export type AmplifyFaultType =
   | 'UnknownFault'
   | 'UnknownNodeJSFault'
   | 'MockProcessFault'
+  | 'AuthCategoryFault'
   | 'ZipExtractFault';
