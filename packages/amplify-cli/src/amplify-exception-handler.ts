@@ -5,6 +5,7 @@ import {
   AmplifyFault,
   executeHooks,
   HooksMeta,
+  isWindowsPlatform,
 } from 'amplify-cli-core';
 import { getAmplifyLogger } from 'amplify-cli-logger';
 import { AmplifyPrinter, printer } from 'amplify-prompts';
@@ -164,7 +165,7 @@ const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyExcepti
 
 const nodeErrorTypeToAmplifyExceptionType = (__err: NodeJS.ErrnoException): AmplifyFaultType => 'UnknownNodeJSFault';
 const mapNodeErrorToResolution = (err: NodeJS.ErrnoException): string => {
-  if (err.code === 'EACCES' && err.message.includes('/.amplify/')) {
+  if (!isWindowsPlatform && err.code === 'EACCES' && err.message.includes('/.amplify/')) {
     return `Try running 'sudo chown -R $(whoami):$(id -gn) ~/.amplify' to fix this`;
   }
   return `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
