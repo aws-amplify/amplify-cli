@@ -176,7 +176,7 @@ jobs:
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   verify-api-extract:
-    <<: *linux-e2e-executor-medium
+    <<: *linux-e2e-executor-xlarge
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
