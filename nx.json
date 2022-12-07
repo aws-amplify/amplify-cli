@@ -12,7 +12,8 @@
           "package",
           "prepare",
           "extract-api"
-        ]
+        ],
+        "parallel": 8
       }
     }
   },
