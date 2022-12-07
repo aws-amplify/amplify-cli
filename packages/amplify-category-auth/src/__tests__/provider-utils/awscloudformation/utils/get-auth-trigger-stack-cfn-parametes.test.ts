@@ -11,7 +11,7 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 describe('test auth trigger stack Parameters', () => {
-  it('throws when cli-inputs.json does not exist', async () => {
+  it('returns correct output when cli-inputs.json does not exist', async () => {
     const mockResourceName = 'mockResource';
     jest.spyOn(AuthInputState.prototype, 'cliInputFileExists').mockImplementation(() => false);
     const mockContext = {
