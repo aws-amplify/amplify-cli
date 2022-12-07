@@ -7,15 +7,15 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-export const runtimeChoices = ['.NET Core 3.1', 'Go', 'Java', 'NodeJS', 'Python'];
+export const runtimeChoices = ['.NET 6', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
-const dotNetCore31TemplateChoices = [
+const dotNetTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
   'Hello World',
   'Serverless',
@@ -617,8 +617,8 @@ export const functionCloudInvoke = async (
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnetCore31':
-      return dotNetCore31TemplateChoices;
+    case 'dotnet6':
+      return dotNetTemplateChoices;
     case 'go':
       return goTemplateChoices;
     case 'java':
@@ -634,8 +634,8 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnetCore31':
-      return '.NET Core 3.1';
+    case 'dotnet6':
+      return '.NET 6';
     case 'go':
       return 'Go';
     case 'java':

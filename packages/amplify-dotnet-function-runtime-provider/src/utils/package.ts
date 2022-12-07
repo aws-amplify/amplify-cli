@@ -15,7 +15,7 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
   const packageHash = (await context.amplify.hashDir(distPath, [])) as string;
   const result = execa.sync(
     executableName,
-    ['lambda', 'package', '--framework', 'netcoreapp3.1', '--configuration', 'Release', '--output-package', request.dstFilename],
+    ['lambda', 'package', '--framework', 'net6.0', '--configuration', 'Release', '--output-package', request.dstFilename],
     {
       cwd: sourcePath,
     },

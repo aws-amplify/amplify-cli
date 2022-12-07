@@ -15,7 +15,7 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     fs.writeFileSync(eventFile, request.event);
     const execPromise = execa(
       executableName,
-      ['lambda-test-tool-3.1', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
+      ['lambda-test-tool-6.0', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
       {
         cwd: sourcePath,
         env: request.envVars,
