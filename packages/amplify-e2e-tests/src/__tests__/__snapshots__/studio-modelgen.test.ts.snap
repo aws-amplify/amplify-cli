@@ -49,7 +49,7 @@ exports[`upload Studio CMS assets on push of Studio enabled project uploads expe
     },
     \\"enums\\": {},
     \\"nonModels\\": {},
-    \\"codegenVersion\\": \\"3.3.3\\",
+    \\"codegenVersion\\": \\"3.3.4\\",
     \\"version\\": \\"6f85ca0ee370ac8e0674a44cc5a4f6a6\\"
 };"
 `;

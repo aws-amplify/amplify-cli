@@ -10,7 +10,7 @@ import _ from 'lodash';
 import fetch from 'node-fetch';
 
 import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory } from '../utils';
-import { checkJavaVersion } from '../utils/index';
+import { checkJavaVersion, checkJavaHome } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
@@ -396,6 +396,7 @@ export class APITest {
     try {
       const mockConfig = await getMockConfig(context);
       await this.createMockSearchableArtifacts(context);
+      checkJavaHome();
       this.opensearchEmulator = await opensearchEmulator.launch(
         getMockOpenseachDataDirectory(context), 
         {
