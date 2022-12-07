@@ -56,16 +56,19 @@ const extractChangelogInfo = async (changelogPath: string): Promise<ChangelogInf
 
 const formatUnifiedChangelog = (infos: ChangelogInfo[]): string => {
   console.log('Formatting all changes into single changelog');
-  const formattedChangelog = infos
+  var formattedChangelogComponents = infos
     .filter(info => info.latestChanges)
-    .filter(info => !info.latestChanges.includes('Version bump only for package'))
     .filter(info => info.latestChanges.includes('\n')) // if the latestChanges string doesn't contain a newline it's only a version bump
     .sort((a, b) => a.packageName.localeCompare(b.packageName))
     .map(info => {
       const latestChanges = info.latestChanges.replace(/^#+\s+/, ''); // strip off any leading markdown headers
       return `# ${info.packageName} ${latestChanges}`;
-    })
-    .join('\n\n');
+    });
+    // only include version bump sections if the release is all version bumps to avoid an empty change log
+    if (formattedChangelogComponents.some(component => !component.includes('Version bump only for package'))) {
+      formattedChangelogComponents = formattedChangelogComponents.filter(component => !component.includes('Version bump only for package'));
+    }
+    const formattedChangelog = formattedChangelogComponents.join('\n\n');
   return `# Change Log\n\n${formattedChangelog}`;
 };
 

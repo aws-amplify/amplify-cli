@@ -90,7 +90,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
 
     if (!fs.existsSync(localTscExecutablePath)) {
       throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
-        message: 'Typescript executable not found.',
+        message: 'TypeScript executable not found.',
         resolution: 'Please add it as a dev-dependency in the package.json file for this resource.',
       });
     }
