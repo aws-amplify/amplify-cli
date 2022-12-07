@@ -1,6 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
-/* eslint-disable import/no-extraneous-dependencies */
-
 import {
     addAuthWithDefault,
     amplifyPull,
