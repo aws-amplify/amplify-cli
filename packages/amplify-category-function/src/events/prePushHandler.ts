@@ -34,7 +34,7 @@ const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
 /**
  * updates function cfn stack with lambda execution role arn parameter
  */
-const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
+export const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
   const amplifyMeta = stateManager.getMeta();
   const functionNames = Object.keys(amplifyMeta?.[categoryName]);
   // filter lambda layer from lambdas in function
