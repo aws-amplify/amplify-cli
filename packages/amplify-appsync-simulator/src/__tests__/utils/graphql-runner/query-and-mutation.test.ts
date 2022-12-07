@@ -136,7 +136,7 @@ describe('runQueryAndMutation', () => {
     expect(getNameResolver).not.toHaveBeenCalled();
   });
 
-  it('should have error object populated when velocity template raises error', async () => {
+  it.skip('should have error object populated when velocity template raises error', async () => {
     const name = 'John Doe';
     const doc = parse(/* GraphQL */ `
       query getName {
