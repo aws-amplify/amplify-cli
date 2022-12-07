@@ -2,7 +2,6 @@ const response = require('cfn-response');
 const aws = require('aws-sdk');
 
 exports.handler = async function (event, context) {
-  console.log(JSON.stringify(event));
   const physicalResourceId = event.RequestType === 'Update' ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
 
   try {
@@ -43,7 +42,6 @@ exports.handler = async function (event, context) {
       delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
     }
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
-    console.log('after setting config', JSON.stringify(config));
     if (event.RequestType === 'Delete') {
       try {
         updateUserPoolConfig.LambdaConfig = {};
@@ -58,7 +56,6 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       updateUserPoolConfig.LambdaConfig = config;
-      console.log(`${event.RequestType}:`, JSON.stringify(updateUserPoolConfig));
       try {
         const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
         console.log(`createOrUpdate response data ${JSON.stringify(result)}`);
