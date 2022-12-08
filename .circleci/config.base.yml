@@ -898,14 +898,7 @@ workflows:
                 - /tagged-release-without-e2e-tests\/.*/
       - verify-versions-match:
           requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - beta
-                - release
-                - /release_rc\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
+            - publish_to_local_registry
       - test:
           requires:
             - build
