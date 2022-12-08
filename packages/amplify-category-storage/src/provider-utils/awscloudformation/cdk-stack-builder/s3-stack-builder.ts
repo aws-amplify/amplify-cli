@@ -177,6 +177,11 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       bucketName: this.s3BucketName,
       corsConfiguration: this.buildCORSRules(),
     });
+    const cfnBucketPolicy = new s3Cdk.CfnBucketPolicy(this, 'DeploymentBucketBlockHTTP', {
+      bucket: this.s3BucketName,
+      policyDocument: this.addSecureTransportPolicyDocument(),
+    });
+    cfnBucketPolicy.addDependsOn(this.s3Bucket);
 
     this.s3Bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
     // 2. Configure Notifications on the S3 bucket.
@@ -246,6 +251,31 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
     // 6. Configure Trigger Policy for trigger function and adminTriggerFunction
     this.configureTriggerPolicy();
+  }
+
+  /**
+   *  CFN policy to bucket to block HTTP traffic
+   */
+  private addSecureTransportPolicyDocument(): iamCdk.PolicyDocument {
+    const policyStatementList: Array<iamCdk.PolicyStatement> = [];
+    policyStatementList.push(
+      new iamCdk.PolicyStatement({
+        resources: [this.s3Bucket.attrArn, `${this.s3Bucket.attrArn}/*`],
+        actions: [`s3:*`],
+        effect: iamCdk.Effect.DENY,
+        conditions: {
+          Bool: {
+            'aws:SecureTransport': false,
+          },
+        },
+      }),
+    );
+    const policyDocument = new iamCdk.PolicyDocument();
+    policyStatementList.forEach(policyStatement => {
+      // Add Statement to Policy
+      policyDocument.addStatements(policyStatement);
+    });
+    return policyDocument;
   }
 
   /**

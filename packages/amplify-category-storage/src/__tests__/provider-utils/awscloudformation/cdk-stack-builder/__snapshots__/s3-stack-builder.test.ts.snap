@@ -219,6 +219,85 @@ Object {
     },
   },
   "Resources": Object {
+    "DeploymentBucketBlockHTTP": Object {
+      "DependsOn": Array [
+        "S3Bucket",
+      ],
+      "Properties": Object {
+        "Bucket": Object {
+          "Fn::If": Array [
+            "ShouldNotCreateEnvResources",
+            Object {
+              "Ref": "bucketName",
+            },
+            Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Ref": "bucketName",
+                  },
+                  Object {
+                    "Fn::Select": Array [
+                      3,
+                      Object {
+                        "Fn::Split": Array [
+                          "-",
+                          Object {
+                            "Ref": "AWS::StackName",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  "-",
+                  Object {
+                    "Ref": "env",
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": false,
+                },
+              },
+              "Effect": "Deny",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "S3Bucket",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "S3Bucket",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
     "S3AuthPrivatePolicy": Object {
       "Condition": "CreateAuthPrivate",
       "DependsOn": Array [
