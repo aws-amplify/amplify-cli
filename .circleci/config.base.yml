@@ -186,11 +186,16 @@ jobs:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
           name: verify versions match
           command: |
             source .circleci/local_publish_helpers.sh
-            verifyVersionsMatch
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            checkPackageVersionsInLocalNpmRegistry
 
   mock_e2e_tests:
     <<: *linux-e2e-executor-large
