@@ -44,7 +44,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Hello World',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
     await functionMockAssert(projRoot, {
       funcName,
@@ -60,7 +60,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Hello World',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
     const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
     await amplifyPushAuth(projRoot);
@@ -75,7 +75,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Serverless',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
     await functionMockAssert(projRoot, {
       funcName,
@@ -91,7 +91,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'CRUD function for DynamoDB (Integration with API Gateway)',
       },
-      'dotnetCore31',
+      'dotnet6',
       createNewDynamoDBForCrudTemplate,
     );
     const payload = JSON.stringify({
@@ -115,7 +115,7 @@ describe('dotnet function tests', () => {
         triggerType: 'DynamoDB',
         eventSource: 'DynamoDB',
       },
-      'dotnetCore31',
+      'dotnet6',
       addLambdaTrigger, // Adds DDB trigger by default
     );
     await functionMockAssert(projRoot, {
@@ -134,7 +134,7 @@ describe('dotnet function tests', () => {
         functionTemplate: 'Trigger (DynamoDb, Kinesis)',
         triggerType: 'Kinesis',
       },
-      'dotnetCore31',
+      'dotnet6',
       addLambdaTrigger, // Adds DDB trigger by default
     );
     await functionMockAssert(projRoot, {
