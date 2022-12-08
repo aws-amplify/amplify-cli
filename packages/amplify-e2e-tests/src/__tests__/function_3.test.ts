@@ -175,7 +175,7 @@ describe('dotnet function tests', () => {
     }); // will throw if successString is not in output
   });
 
-  it('add dotnet crud function and mock locally', async () => {
+  it('add dotnet crud function and invoke in the cloud', async () => {
     await addFunction(
       projRoot,
       {
