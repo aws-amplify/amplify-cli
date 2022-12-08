@@ -135,7 +135,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   const envSpecificParams: $TSAny = {};
   const cliInputs = { ...sharedParams };
   ENV_SPECIFIC_PARAMS.forEach(paramName => {
-    if (paramName in { ...cliInputs, ...request }) {
+    if (paramName in cliInputs) {
       envSpecificParams[paramName] = cliInputs[paramName];
       delete cliInputs[paramName];
     }
