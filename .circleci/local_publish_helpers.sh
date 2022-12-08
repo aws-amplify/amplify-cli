@@ -279,3 +279,18 @@ function runE2eTest {
         yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
 }
+
+function verifyVersionsMatch {
+  internal_cli_package_json_path="./packages/amplify-cli/package.json"
+  npm_cli_package_json_path="./packages/amplify-cli-npm/package.json"
+
+  internal_cli_version=$(jq '.version' $internal_cli_package_json_path)
+  npm_cli_version=$(jq '.version' $npm_cli_package_json_path)
+
+  if [[ $internal_cli_version != $npm_cli_version ]]; then
+    echo "Versions did not match."
+    echo "amplify-cli version: $internal_cli_version"
+    echo "amplify-cli-npm version: $npm_cli_version"
+    exit 1
+  fi
+}

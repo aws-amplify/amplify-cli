@@ -179,6 +179,19 @@ jobs:
           command: |
             yarn verify-api-extract
 
+  verify-versions-match:
+    <<: *linux-e2e-executor-medium
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: verify versions match
+          command: |
+            source .circleci/local_publish_helpers.sh
+            verifyVersionsMatch
+
   mock_e2e_tests:
     <<: *linux-e2e-executor-large
     steps:
@@ -874,6 +887,16 @@ workflows:
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - verify-api-extract:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /release_rc\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
+      - verify-versions-match:
           requires:
             - build
           filters:
