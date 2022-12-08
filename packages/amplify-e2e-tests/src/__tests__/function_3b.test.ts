@@ -1,6 +1,6 @@
 import {
   initJSProjectWithProfile, deleteProject, amplifyPushAuth,
-  addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId,
+  addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId, addSimpleDDBwithGSI,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('dotnet function tests', () => {
@@ -91,5 +91,22 @@ describe('dotnet function tests', () => {
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
     expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+  });
+
+  it('add dotnet trigger function and and mock locally', async () => {
+    await addSimpleDDBwithGSI(projRoot, {});
+    await addFunction(
+      projRoot,
+      {
+        name: funcName,
+        functionTemplate: 'Trigger (DynamoDb, Kinesis)',
+      },
+      'dotnetCore31',
+    );
+    await functionMockAssert(projRoot, {
+      funcName,
+      successString: null,
+      eventFile: 'src/event.json',
+    }); // will throw if successString is not in output
   });
 });

@@ -361,6 +361,8 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   singleSelect(chain, functionTemplate, templateChoices);
   if (functionTemplate === 'CRUD function for DynamoDB (Integration with API Gateway)') {
     configureCRUDTemplate(chain);
+  } else if (functionTemplate === 'Trigger (DynamoDb, Kinesis)') {
+    configureDDBTrigger(chain);
   }
 };
 
@@ -392,6 +394,21 @@ const configureCRUDTemplate = (chain: ExecutionContext): void => {
     .sendNo()
     .wait('Do you want to add a Lambda Trigger for your Table?')
     .sendNo();
+};
+
+const configureDDBTrigger = (chain: ExecutionContext): void => {
+  chain.wait('What event source do you want to associate with Lambda trigger?');
+  singleSelect(chain, 'Amazon DynamoDB Stream',
+    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream']);
+  chain.wait('Choose a DynamoDB event source option');
+  singleSelect(chain, 'Use storage category DynamoDB table configured in the current Amplify project',
+    [
+      'Use API category graphql @model backed DynamoDB table(s) in the current Amplify project',
+      'Use storage category DynamoDB table configured in the current Amplify project',
+      'Provide the ARN of DynamoDB stream directly',
+    ]);
+  chain.wait('Choose from one of the already configured DynamoDB tables')
+    .sendCarriageReturn();
 };
 
 export const removeFunction = (cwd: string, funcName: string) =>
@@ -590,10 +607,12 @@ export const functionMockAssert = (
     const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
       settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
-    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
-      .wait('Result:')
-      .wait(settings.successString)
-      .wait('Finished execution.')
+    let chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true });
+    chain.wait('Result:');
+    if (settings.successString) {
+      chain.wait(settings.successString);
+    }
+    chain.wait('Finished execution.')
       .sendEof()
       .run(err => (err ? reject(err) : resolve()));
   });
