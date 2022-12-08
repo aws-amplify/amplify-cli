@@ -85,6 +85,19 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
   # create release commit and release tags
   npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
 
+  internal_cli_package_json_path="../packages/amplify-cli/package.json"
+  npm_cli_package_json_path="../packages/amplify-cli-npm/package.json"
+
+  internal_cli_version=$(jq '.version' $internal_cli_package_json_path)
+  npm_cli_version=$(jq '.version' $npm_cli_package_json_path)
+
+  if [[ $internal_cli_version != $npm_cli_version ]]; then
+    echo "Versions did not match."
+    echo "amplify-cli version: $internal_cli_version"
+    echo "amplify-cli-npm version: $npm_cli_version"
+    exit 1
+  fi
+
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     # publish to verdaccio with no dist tag (default to latest)
