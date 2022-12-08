@@ -11,6 +11,7 @@ import {
   addSimpleDDBwithGSI,
   addLambdaTrigger,
   createNewDynamoDBForCrudTemplate,
+  addKinesis,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('dotnet function tests', () => {
@@ -113,6 +114,25 @@ describe('dotnet function tests', () => {
         functionTemplate: 'Trigger (DynamoDb, Kinesis)',
         triggerType: 'DynamoDB',
         eventSource: 'DynamoDB',
+      },
+      'dotnetCore31',
+      addLambdaTrigger, // Adds DDB trigger by default
+    );
+    await functionMockAssert(projRoot, {
+      funcName,
+      successString: null,
+      eventFile: 'src/event.json',
+    }); // will throw if successString is not in output
+  });
+
+  it('add dotnet kinesis trigger function and and mock locally', async () => {
+    await addKinesis(projRoot, { rightName: `kinesisintegtest${generateRandomShortId()}`, wrongName: '$' });
+    await addFunction(
+      projRoot,
+      {
+        name: funcName,
+        functionTemplate: 'Trigger (DynamoDb, Kinesis)',
+        triggerType: 'Kinesis',
       },
       'dotnetCore31',
       addLambdaTrigger, // Adds DDB trigger by default
