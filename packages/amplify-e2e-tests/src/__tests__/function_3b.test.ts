@@ -10,6 +10,7 @@ import {
   generateRandomShortId,
   addSimpleDDBwithGSI,
   addLambdaTrigger,
+  createNewDynamoDBForCrudTemplate,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('dotnet function tests', () => {
@@ -90,6 +91,7 @@ describe('dotnet function tests', () => {
         functionTemplate: 'CRUD function for DynamoDB (Integration with API Gateway)',
       },
       'dotnetCore31',
+      createNewDynamoDBForCrudTemplate,
     );
     const payload = JSON.stringify({
       body: null,

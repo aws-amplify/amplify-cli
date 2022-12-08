@@ -359,12 +359,9 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   moveUp(chain, templateChoices.indexOf('Hello World'));
 
   singleSelect(chain, functionTemplate, templateChoices);
-  if (functionTemplate === 'CRUD function for DynamoDB (Integration with API Gateway)') {
-    configureCRUDTemplate(chain);
-  }
 };
 
-const configureCRUDTemplate = (chain: ExecutionContext): void => {
+export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext, cwd: string, settings: any): void => {
   chain.wait('Choose a DynamoDB data source option');
   singleSelect(chain, 'Create a new DynamoDB table',
     ['Use DynamoDB table configured in the current Amplify project', 'Create a new DynamoDB table']);
