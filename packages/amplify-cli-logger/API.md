@@ -4,13 +4,13 @@
 
 ```ts
 
-// @public (undocumented)
-export const LocalLogDirectory: string;
-
 // Warning: (ae-forgotten-export) The symbol "IAmplifyLogger" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export const logger: IAmplifyLogger;
+export const getAmplifyLogger: () => IAmplifyLogger;
+
+// @public (undocumented)
+export const LocalLogDirectory: string;
 
 // @public (undocumented)
 export const Redactor: (arg: string | undefined) => string;
