@@ -220,9 +220,6 @@ Object {
   },
   "Resources": Object {
     "DeploymentBucketBlockHTTP": Object {
-      "DependsOn": Array [
-        "S3Bucket",
-      ],
       "Properties": Object {
         "Bucket": Object {
           "Fn::If": Array [
@@ -269,6 +266,7 @@ Object {
                 },
               },
               "Effect": "Deny",
+              "Principal": "*",
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [

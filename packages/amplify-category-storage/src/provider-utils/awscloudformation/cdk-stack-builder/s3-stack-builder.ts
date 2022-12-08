@@ -177,11 +177,11 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       bucketName: this.s3BucketName,
       corsConfiguration: this.buildCORSRules(),
     });
-    const cfnBucketPolicy = new s3Cdk.CfnBucketPolicy(this, 'DeploymentBucketBlockHTTP', {
+    // eslint-disable-next-line no-new
+    new s3Cdk.CfnBucketPolicy(this, 'DeploymentBucketBlockHTTP', {
       bucket: this.s3BucketName,
       policyDocument: this.addSecureTransportPolicyDocument(),
     });
-    cfnBucketPolicy.addDependsOn(this.s3Bucket);
 
     this.s3Bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
     // 2. Configure Notifications on the S3 bucket.
@@ -260,6 +260,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     const policyStatementList: Array<iamCdk.PolicyStatement> = [];
     policyStatementList.push(
       new iamCdk.PolicyStatement({
+        principals: [new iamCdk.StarPrincipal()],
         resources: [this.s3Bucket.attrArn, `${this.s3Bucket.attrArn}/*`],
         actions: [`s3:*`],
         effect: iamCdk.Effect.DENY,
