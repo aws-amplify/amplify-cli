@@ -1,6 +1,15 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
-  addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId, addSimpleDDBwithGSI,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  addFunction,
+  functionMockAssert,
+  functionCloudInvoke,
+  createNewProjectDir,
+  deleteProjectDir,
+  generateRandomShortId,
+  addSimpleDDBwithGSI,
+  addLambdaTrigger,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('dotnet function tests', () => {
@@ -93,15 +102,18 @@ describe('dotnet function tests', () => {
     expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
   });
 
-  it('add dotnet trigger function and and mock locally', async () => {
+  it('add dotnet ddb trigger function and and mock locally', async () => {
     await addSimpleDDBwithGSI(projRoot, {});
     await addFunction(
       projRoot,
       {
         name: funcName,
         functionTemplate: 'Trigger (DynamoDb, Kinesis)',
+        triggerType: 'DynamoDB',
+        eventSource: 'DynamoDB',
       },
       'dotnetCore31',
+      addLambdaTrigger, // Adds DDB trigger by default
     );
     await functionMockAssert(projRoot, {
       funcName,
