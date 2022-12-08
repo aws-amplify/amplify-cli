@@ -323,6 +323,9 @@ const addAdminAuth = async (
   }
 };
 
+/**
+ *
+ */
 export const createAdminAuthFunction = async (
   context: $TSContext,
   authResourceName: string,
@@ -353,7 +356,7 @@ export const createAdminAuthFunction = async (
       authResourceName,
       lambdaGroupVar,
     };
-  
+
     const copyJobs = [
       {
         dir: adminAuthAssetRoot,
@@ -381,9 +384,10 @@ export const createAdminAuthFunction = async (
         target: path.join(targetDir, `${functionName}-cloudformation-template.json`),
       },
     ];
-  
+
     // copy over the files
     await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+    console.log('hiello');
 
     // add amplify-meta and backend-config
     const backendConfigs = {
