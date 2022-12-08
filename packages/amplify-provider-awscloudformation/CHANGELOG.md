@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.2-upgrade-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@6.9.2-upgrade-graphql15.0) (2022-12-08)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [6.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.0...amplify-provider-awscloudformation@6.9.1) (2022-11-17)
 
 

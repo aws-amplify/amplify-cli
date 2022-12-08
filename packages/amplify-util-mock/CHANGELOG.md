@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.1-upgrade-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.7.1-upgrade-graphql15.0) (2022-12-08)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 # [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.1...amplify-util-mock@4.7.0) (2022-11-17)
 
 
