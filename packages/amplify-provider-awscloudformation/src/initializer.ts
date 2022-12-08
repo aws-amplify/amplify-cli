@@ -323,13 +323,13 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     const archive = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
     const s3Key = `${archive.zipFilename}`;
     const s3Instance = await S3.getInstance(context);
-    spinner.stop('Deployment bucket fetched.');
     const s3Params = {
       Body: fs.createReadStream(archive.zipFilePath),
       Key: s3Key,
     };
     logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
     await s3Instance.uploadFile(s3Params);
+    spinner.stop('Deployment state saved successfully.');
   } catch (ex) {
     spinner.stop('Deployment state save failed.', false);
     throw new AmplifyFault('DeploymentFault', {
