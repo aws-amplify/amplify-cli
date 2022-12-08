@@ -48,8 +48,9 @@ const removeDeprecatedPropsMock = removeDeprecatedProps as jest.MockedFunction<t
 removeDeprecatedPropsMock.mockImplementation(input => input);
 
 const AuthInputStateMock = AuthInputState as jest.MockedClass<typeof AuthInputState>;
+const saveCLIInputPayloadMock = jest.fn();
 AuthInputStateMock.mockImplementation(() => ({
-  saveCLIInputPayload: jest.fn(),
+  saveCLIInputPayload: saveCLIInputPayloadMock,
 } as unknown as AuthInputState));
 
 describe('getUpdateAuthHandler', () => {
@@ -65,6 +66,7 @@ describe('getUpdateAuthHandler', () => {
     } as unknown as CognitoConfiguration;
 
     await getUpdateAuthHandler(contextStub)(cognitoConfig);
-    expect(saveParamsFn.mock.calls[0][3]).toEqual(testConfig);
+    const actualCliInputsFileContent = saveCLIInputPayloadMock.mock.calls[0][0];
+    expect(Object.keys(actualCliInputsFileContent).includes('hostedUIProviderCreds')).toBe(false);
   });
 });
