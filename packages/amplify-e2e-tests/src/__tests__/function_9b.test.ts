@@ -1,15 +1,12 @@
 import {
   addApiWithoutSchema,
   addApi,
-  addDDBWithTrigger,
   addFunction,
   addSimpleDDB,
   amplifyPush,
-  amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getBackendAmplifyMeta,
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
@@ -18,12 +15,10 @@ import {
   updateFunction,
   overrideFunctionCodeNode,
   getBackendConfig,
-  addFeatureFlag,
   updateApiSchema,
   createRandomName,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
-import fs from 'fs-extra';
 import path from 'path';
 import _ from 'lodash';
 
@@ -39,106 +34,6 @@ describe('nodejs', () => {
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
-    });
-
-    it('environment vars comment should update on permission update', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      const funcName = `nodetestfn${generateRandomShortId()}`;
-      const ddbName = 'nodetestddb';
-
-      await addFunction(
-        projRoot,
-        {
-          name: funcName,
-          functionTemplate: 'Hello World',
-        },
-        'nodejs',
-      );
-      await addSimpleDDB(projRoot, { name: ddbName });
-      await updateFunction(
-        projRoot,
-        {
-          additionalPermissions: {
-            permissions: ['storage'],
-            choices: ['function', 'storage'],
-            operations: ['read'],
-            resources: [ddbName],
-          },
-        },
-        'nodejs',
-      );
-      const lambdaHandlerContents = fs.readFileSync(
-        path.join(projRoot, 'amplify', 'backend', 'function', funcName, 'src', 'index.js'),
-        'utf8',
-      );
-      expect(lambdaHandlerContents).toMatchSnapshot();
-    });
-
-    it('adding api and storage permissions should not add duplicates to CFN', async () => {
-      const appName = createRandomName();
-      await initJSProjectWithProfile(projRoot, {
-        name: appName,
-      });
-      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-      await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
-
-      const random = generateRandomShortId();
-      const fnName = `integtestfn${random}`;
-      const ddbName = `ddbTable${random}`;
-
-      await addSimpleDDB(projRoot, { name: ddbName });
-      await addFunction(
-        projRoot,
-        {
-          name: fnName,
-          functionTemplate: 'Hello World',
-          additionalPermissions: {
-            permissions: ['storage'],
-            choices: ['api', 'storage'],
-            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
-            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
-            operations: ['read'],
-          },
-        },
-        'nodejs',
-      );
-
-      const lambdaCFN = readJsonFile(
-        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
-      );
-      expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
-    });
-
-    it('update DDB trigger function to add permissions should not changed its dependsOn attributes of the trigger source', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      const ddbResourceName = 'testddbresource';
-      await addDDBWithTrigger(projRoot, { ddbResourceName });
-
-      const originalAmplifyMeta = getBackendAmplifyMeta(projRoot);
-      const functionResourceName = Object.keys(originalAmplifyMeta.function)[0];
-      const originalAttributes = originalAmplifyMeta.function[functionResourceName].dependsOn[0].attributes.sort();
-
-      await updateFunction(
-        projRoot,
-        {
-          additionalPermissions: {
-            resources: [ddbResourceName],
-            permissions: ['storage'],
-            choices: ['function', 'storage'],
-            operations: ['read', 'update'],
-          },
-        },
-        'nodejs',
-      );
-
-      const updateAmplifyMeta = getBackendAmplifyMeta(projRoot);
-      const updateAttributes = updateAmplifyMeta.function[functionResourceName].dependsOn[0].attributes.sort();
-      expect(originalAttributes).toEqual(updateAttributes);
-
-      await amplifyPushAuth(projRoot);
-      const amplifyMeta = getBackendAmplifyMeta(projRoot);
-      expect(amplifyMeta.function[functionResourceName].output).toBeDefined();
-      expect(amplifyMeta.function[functionResourceName].output.Arn).toBeDefined();
     });
 
     it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {
@@ -308,91 +203,6 @@ describe('nodejs', () => {
       expect(gqlResponse.data).toBeDefined();
       expect(gqlResponse.data.createTodo.name).toEqual('todo');
       expect(gqlResponse.data.createTodo.description).toEqual('sampleDesc');
-    });
-
-    it('should be able to make console calls with feature flag turned off', async () => {
-      const fnName = `apienvvar${generateRandomShortId()}`;
-      await initJSProjectWithProfile(projRoot, {});
-      await addApi(projRoot, {
-        IAM: {},
-        transformerVersion: 1,
-      });
-      const beforeMeta = getBackendConfig(projRoot);
-      const apiName = Object.keys(beforeMeta.api)[0];
-      addFeatureFlag(projRoot, 'appsync', 'generategraphqlpermissions', false);
-      await addFunction(
-        projRoot,
-        {
-          name: fnName,
-          functionTemplate: 'Hello World',
-          additionalPermissions: {
-            permissions: ['api'],
-            choices: ['api'],
-            resources: [apiName],
-            operations: ['read'],
-          },
-        },
-        'nodejs',
-      );
-      overrideFunctionCodeNode(projRoot, fnName, 'get-api-appsync.js');
-      await amplifyPush(projRoot);
-      const meta = getProjectMeta(projRoot);
-      const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-      const lambdaCFN = readJsonFile(
-        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
-      );
-      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIIDOUTPUT'))[0];
-      const fnResponse = await invokeFunction(functionName, JSON.stringify({ idKey }), region);
-
-      expect(fnResponse.StatusCode).toBe(200);
-      expect(fnResponse.Payload).toBeDefined();
-      const apiResponse = JSON.parse(fnResponse.Payload as string);
-      expect(apiResponse.graphqlApi).toBeDefined();
-      expect(apiResponse.graphqlApi.name).toContain(apiName);
-    });
-
-    it('allows granting of API access then revoking it', async () => {
-      const appName = createRandomName();
-
-      await initJSProjectWithProfile(projRoot, { name: appName });
-      await addApiWithoutSchema(projRoot);
-      await updateApiSchema(projRoot, appName, 'simple_model.graphql');
-
-      const fnName = `integtestfn${generateRandomShortId()}`;
-
-      await addFunction(
-        projRoot,
-        {
-          name: fnName,
-          functionTemplate: 'Hello World',
-          additionalPermissions: {
-            permissions: ['api'],
-            choices: ['api'],
-            resources: [appName],
-            operations: ['Mutation'],
-          },
-        },
-        'nodejs',
-      );
-
-      let lambdaCFN = readJsonFile(path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`));
-
-      expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(1);
-
-      await updateFunction(
-        projRoot,
-        {
-          additionalPermissions: {
-            permissions: ['api'], // unselects 'api'
-            choices: ['api'],
-          },
-        },
-        'nodejs',
-      );
-
-      lambdaCFN = readJsonFile(path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`));
-
-      expect(lambdaCFN?.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement?.length).toBeUndefined();
     });
   });
 });
