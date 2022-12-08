@@ -284,12 +284,13 @@ function checkPackageVersionsInLocalNpmRegistry {
     cli_internal_version=$(npm view @aws-amplify/cli-internal version)
     cli_version=$(npm view @aws-amplify/cli version)
 
+    echo "@aws-amplify/cli-internal version: $cli_internal_version"
+    echo "@aws-amplify/cli version: $cli_version"
+
     if [[ $cli_internal_version != $cli_version ]]; then
         echo "Versions did not match."
-        echo "@aws-amplify/cli-internal version: $cli_internal_version"
-        echo "@aws-amplify/cli version: $cli_version"
         exit 1
     else
-        echo "Versions matched ($cli_internal_version)"
+        echo "Versions matched."
     fi
 }
