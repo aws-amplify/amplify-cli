@@ -359,6 +359,39 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   moveUp(chain, templateChoices.indexOf('Hello World'));
 
   singleSelect(chain, functionTemplate, templateChoices);
+  if (functionTemplate === 'CRUD function for DynamoDB (Integration with API Gateway)') {
+    configureCRUDTemplate(chain);
+  }
+};
+
+const configureCRUDTemplate = (chain: ExecutionContext): void => {
+  chain.wait('Choose a DynamoDB data source option');
+  singleSelect(chain, 'Create a new DynamoDB table',
+    ['Use DynamoDB table configured in the current Amplify project', 'Create a new DynamoDB table']);
+  chain.wait('Provide a friendly name')
+    .sendCarriageReturn()
+    .wait('Provide table name')
+    .sendCarriageReturn()
+    .wait('What would you like to name this column')
+    .sendLine('column1')
+    .wait('Choose the data type')
+    .sendCarriageReturn()
+    .wait('Would you like to add another column?')
+    .sendYes()
+    .wait('What would you like to name this column')
+    .sendLine('column2')
+    .wait('Choose the data type')
+    .sendCarriageReturn()
+    .wait('Would you like to add another column?')
+    .sendNo()
+    .wait('Choose partition key for the table')
+    .sendCarriageReturn()
+    .wait('Do you want to add a sort key to your table?')
+    .sendYes()
+    .wait('Do you want to add global secondary indexes to your table?')
+    .sendNo()
+    .wait('Do you want to add a Lambda Trigger for your Table?')
+    .sendNo();
 };
 
 export const removeFunction = (cwd: string, funcName: string) =>

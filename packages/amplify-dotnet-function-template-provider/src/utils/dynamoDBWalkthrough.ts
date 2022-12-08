@@ -85,7 +85,7 @@ export async function getTableParameters(context: any, dynamoAnswers: any): Prom
   } // Looking for table parameters on local configuration
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
+  const parametersFilePath = path.join(resourceDirPath, 'build', 'parameters.json');
   let parameters;
   try {
     parameters = context.amplify.readJsonFile(parametersFilePath);
