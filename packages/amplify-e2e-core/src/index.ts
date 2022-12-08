@@ -11,6 +11,7 @@ import * as ini from 'ini';
 import { spawnSync, execSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from 'amplify-cli-core';
+import { gt } from 'semver';
 
 export * from './diagnose';
 export * from './configure';
@@ -92,7 +93,7 @@ export async function installAmplifyCLI(version = 'latest') {
   });
   
   console.log("SETTING PATH:");
-  if(version === '10.5.1'){
+  if(gt(version, '10.0.0')){
     process.env.AMPLIFY_PATH = process.platform === 'win32'
     ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
     : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
