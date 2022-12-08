@@ -24,7 +24,7 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules src/schemas",
     "test": "jest --logHeapUsage",
     "extract-api": "ts-node ../../scripts/extract-api.ts",
-    "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path 'src/backend-parameters.d.ts' --type 'BackendParameters' --no-type-check --out lib/schemas/BackendParameters.schema.json && cp lib/schemas/BackendParameters.schema.json src/schemas/BackendParameters.schema.json"
+    "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path src/backend-parameters.d.ts --type BackendParameters --no-type-check --out lib/schemas/BackendParameters.schema.json && copyfiles --flat lib/schemas/BackendParameters.schema.json src/schemas"
   },
   "dependencies": {
     "amplify-cli-core": "3.4.0",

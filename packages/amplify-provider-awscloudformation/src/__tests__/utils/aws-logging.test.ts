@@ -5,11 +5,11 @@ describe('test amplify logger', () => {
     const info = jest.fn();
     const error = jest.fn();
     jest.mock('amplify-cli-logger', () => ({
-      Redactor: Redactor,
-      logger: {
+      Redactor,
+      getAmplifyLogger: () => ({
         logInfo: info,
         logError: error,
-      },
+      }),
     }));
     const { fileLogger } = require('../../utils/aws-logger');
     fileLogger('aws-logging-test')('test-func', [undefined])();

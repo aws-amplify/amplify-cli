@@ -361,6 +361,36 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
+export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext, cwd: string, settings: any): void => {
+  chain.wait('Choose a DynamoDB data source option');
+  singleSelect(chain, 'Create a new DynamoDB table',
+    ['Use DynamoDB table configured in the current Amplify project', 'Create a new DynamoDB table']);
+  chain.wait('Provide a friendly name')
+    .sendCarriageReturn()
+    .wait('Provide table name')
+    .sendCarriageReturn()
+    .wait('What would you like to name this column')
+    .sendLine('column1')
+    .wait('Choose the data type')
+    .sendCarriageReturn()
+    .wait('Would you like to add another column?')
+    .sendYes()
+    .wait('What would you like to name this column')
+    .sendLine('column2')
+    .wait('Choose the data type')
+    .sendCarriageReturn()
+    .wait('Would you like to add another column?')
+    .sendNo()
+    .wait('Choose partition key for the table')
+    .sendCarriageReturn()
+    .wait('Do you want to add a sort key to your table?')
+    .sendYes()
+    .wait('Do you want to add global secondary indexes to your table?')
+    .sendNo()
+    .wait('Do you want to add a Lambda Trigger for your Table?')
+    .sendNo();
+};
+
 export const removeFunction = (cwd: string, funcName: string) =>
   new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
@@ -557,10 +587,12 @@ export const functionMockAssert = (
     const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
       settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
-    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
-      .wait('Result:')
-      .wait(settings.successString)
-      .wait('Finished execution.')
+    let chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true });
+    chain.wait('Result:');
+    if (settings.successString) {
+      chain.wait(settings.successString);
+    }
+    chain.wait('Finished execution.')
       .sendEof()
       .run(err => (err ? reject(err) : resolve()));
   });

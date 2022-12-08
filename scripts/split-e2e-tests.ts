@@ -381,7 +381,7 @@ function validateArtifactStoragePaths(config: CircleCIConfig) {
   for(let key of Object.keys(config.jobs)) {
     const job = config.jobs[key];
     const steps = job.steps;
-    
+
     for(let i = 0; i < steps.length; i ++){
       const resultsPath = steps[i].store_test_results;
       const artifactsPath = steps[i].store_artifacts;
@@ -426,7 +426,7 @@ function validateArtifactStoragePaths(config: CircleCIConfig) {
 
 function main(): void {
   const config = loadConfig();
-  
+
   validateArtifactStoragePaths(config);
 
   const splitPkgTests = splitTests(

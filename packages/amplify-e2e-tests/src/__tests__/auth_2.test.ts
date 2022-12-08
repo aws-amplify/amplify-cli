@@ -1,12 +1,14 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
-  addAuthViaAPIWithTrigger,
   addAuthWithDefaultSocial,
-  addAuthWithGroupTrigger,
-  addAuthWithRecaptchaTrigger,
-  addAuthwithUserPoolGroupsViaAPIWithTrigger,
   amplifyPull,
   amplifyPush,
   amplifyPushAuth,
+  addAuthWithGroupTrigger,
+  addAuthViaAPIWithTrigger,
+  addUserToUserPool,
+  addAuthWithRecaptchaTrigger,
+  addAuthwithUserPoolGroupsViaAPIWithTrigger,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -16,9 +18,11 @@ import {
   getUserPool,
   getUserPoolClients,
   initJSProjectWithProfile,
+  invokeFunction,
   isDeploymentSecretForEnvExists,
   removeAuthWithDefault,
   updateFunction,
+  listUserPoolGroupsForUser,
   validateNodeModulesDirRemoval,
 } from '@aws-amplify/amplify-e2e-core';
 
@@ -137,17 +141,24 @@ describe('amplify add auth...', () => {
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
-    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const region = meta.providers.awscloudformation.Region;
+    const userPool = await getUserPool(id, region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
-    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
-    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    const clients = await getUserPoolClients(id, clientIds, region);
+    await addUserToUserPool(id, region);
+    const lambdaEvent = {
+      userPoolId: id,
+      userName: 'testUser',
+    };
+    const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
+    expect(result.StatusCode).toBe(200);
+    const user1Groups = await listUserPoolGroupsForUser(id, lambdaEvent.userName, region);
+    expect(user1Groups).toEqual(['mygroup']);
     expect(userPool.UserPool).toBeDefined();
     expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
     expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
-    expect(lambdaFunction).toBeDefined();
-    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {

@@ -62,9 +62,9 @@ describe('test SIGINT with execute', () => {
       }),
     });
     jest.setMock('amplify-cli-logger', {
-      logger: {
+      getAmplifyLogger: jest.fn().mockReturnValue({
         logInfo: jest.fn(),
-      },
+      }),
       Redactor: jest.fn(),
     });
 
