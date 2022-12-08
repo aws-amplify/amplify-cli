@@ -178,6 +178,7 @@
   "uint",
   "unauth",
   "unlink",
+  "unlinksync",
   "unstaged",
   "updateamplify",
   "urls",
