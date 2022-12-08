@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.9.1",
+  "version": "6.9.2-codegen-graphql15.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",

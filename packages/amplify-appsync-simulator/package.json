@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.8.0",
+  "version": "2.8.1-codegen-graphql15.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
