@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs-extra';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -13,6 +15,7 @@ import {
   createNewDynamoDBForCrudTemplate,
   addKinesis,
 } from '@aws-amplify/amplify-e2e-core';
+import { AmplifyCategories, JSONUtilities, pathManager } from 'amplify-cli-core';
 
 describe('dotnet function tests', () => {
   const helloWorldSuccessObj = {
@@ -37,6 +40,15 @@ describe('dotnet function tests', () => {
     deleteProjectDir(projRoot);
   });
 
+  const assertDotNetVersion = (): void => {
+    const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
+    const { functionRuntime } = JSONUtilities.readJson(path.join(functionPath, 'amplify.state'));
+    expect(functionRuntime).toEqual('dotnet6');
+    const functionProjFilePath = path.join(functionPath, 'src', `${funcName}.csproj`);
+    const functionProjFileContent = fs.readFileSync(functionProjFilePath, 'utf8');
+    expect(functionProjFileContent).toContain('<TargetFramework>net6.0</TargetFramework>');
+  };
+
   it('add dotnet hello world function and mock locally', async () => {
     await addFunction(
       projRoot,
@@ -44,13 +56,15 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Hello World',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessString,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 
   it('add dotnet hello world function and invoke in the cloud', async () => {
@@ -60,12 +74,14 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Hello World',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
     const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
     expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
+
+    assertDotNetVersion();
   });
 
   it('add dotnet serverless function and mock locally', async () => {
@@ -75,13 +91,15 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Serverless',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
     await functionMockAssert(projRoot, {
       funcName,
       successString: serverlessSuccessString,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 
   it('add dotnet crud function and invoke in the cloud', async () => {
@@ -91,7 +109,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'CRUD function for DynamoDB (Integration with API Gateway)',
       },
-      'dotnetCore31',
+      'dotnet6',
       createNewDynamoDBForCrudTemplate,
     );
     const payload = JSON.stringify({
@@ -103,6 +121,8 @@ describe('dotnet function tests', () => {
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
     expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+
+    assertDotNetVersion();
   });
 
   it('add dotnet ddb trigger function and and mock locally', async () => {
@@ -115,7 +135,7 @@ describe('dotnet function tests', () => {
         triggerType: 'DynamoDB',
         eventSource: 'DynamoDB',
       },
-      'dotnetCore31',
+      'dotnet6',
       addLambdaTrigger, // Adds DDB trigger by default
     );
     await functionMockAssert(projRoot, {
@@ -123,6 +143,8 @@ describe('dotnet function tests', () => {
       successString: null,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 
   it('add dotnet kinesis trigger function and and mock locally', async () => {
@@ -134,7 +156,7 @@ describe('dotnet function tests', () => {
         functionTemplate: 'Trigger (DynamoDb, Kinesis)',
         triggerType: 'Kinesis',
       },
-      'dotnetCore31',
+      'dotnet6',
       addLambdaTrigger, // Adds DDB trigger by default
     );
     await functionMockAssert(projRoot, {
@@ -142,5 +164,7 @@ describe('dotnet function tests', () => {
       successString: null,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 });

@@ -1,7 +1,7 @@
 {
   "name": "amplify-dotnet-function-template-provider",
   "version": "2.3.5",
-  "description": ".NET Core templates supplied by the Amplify Team",
+  "description": ".NET templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
@@ -14,8 +14,7 @@
     "aws",
     "amplify",
     "lambda",
-    "dotnet",
-    "dotnetcore"
+    "dotnet"
   ],
   "scripts": {
     "build": "tsc",
