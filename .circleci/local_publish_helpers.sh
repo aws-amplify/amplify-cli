@@ -289,6 +289,7 @@ function checkPackageVersionsInLocalNpmRegistry {
 
     if [[ $cli_internal_version != $cli_version ]]; then
         echo "Versions did not match."
+        echo "Manual fix: add a commit with a 'feat' prefix that touches the cli-npm package to bump its version."
         exit 1
     else
         echo "Versions matched."
