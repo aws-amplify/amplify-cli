@@ -151,7 +151,7 @@ jobs:
                   - .cache
                   - .ssh
   test:
-    <<: *linux-e2e-executor-large
+    <<: *linux-e2e-executor-xlarge
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
