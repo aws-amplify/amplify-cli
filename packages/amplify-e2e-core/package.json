@@ -37,6 +37,7 @@
     "node-pty": "beta",
     "retimer": "2.0.0",
     "rimraf": "^3.0.0",
+    "semver": "^7.3.5",
     "strip-ansi": "^6.0.0",
     "throat": "^5.0.0",
     "uuid": "^8.3.2"

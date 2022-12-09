@@ -15,7 +15,7 @@ import {
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile,
+  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0
 } from '../../../migration-helpers';
 
 const defaultSettings = {
@@ -47,7 +47,7 @@ describe('amplify auth migration b', () => {
 
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfile(projRoot, defaultSettings);
+    await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

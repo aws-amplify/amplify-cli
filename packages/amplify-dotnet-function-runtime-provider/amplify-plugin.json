@@ -11,8 +11,8 @@
     },
     "runtimes": [
       {
-        "name": ".NET Core 3.1",
-        "value": "dotnetcore3.1"
+        "name": ".NET 6",
+        "value": "dotnet6"
       }
     ]
   }
