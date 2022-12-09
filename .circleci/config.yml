@@ -18,8 +18,7 @@ parameters:
     type: boolean
     default: false
   e2e_workflow_cleanup_workflow_id:
-    type: integer
-    default: 0
+    type: string
   setup:
     type: boolean
     default: true
