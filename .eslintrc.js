@@ -39,6 +39,18 @@ module.exports = {
       typescript: {},
     },
   },
+  rules: {
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "no-bitwise": "warn",
+  },
+  "parserOptions": {
+    "project": [
+      "tsconfig.base.json",
+      "packages/amplify-cli/tsconfig.json"
+    ]
+  },
   overrides: [
     {
       // Add files to this list that shouldn't be spellchecked
@@ -100,6 +112,7 @@ module.exports = {
     '/packages/amplify-cli/lib',
     '/packages/amplify-cli-logger/lib',
     '/packages/amplify-e2e-core/lib',
+    '/packages/amplify-e2e-tests/lib',
     '/packages/amplify-function-plugin-interface/lib',
     '/packages/amplify-graphql-schema-test-library/lib',
     '/packages/amplify-headless-interface/lib',
