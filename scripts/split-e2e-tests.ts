@@ -4,6 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
+import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 
 const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -194,12 +195,15 @@ function splitTests(
   workflowName: string,
   jobRootDir: string,
   concurrency: number = CONCURRENCY,
-  isMigration: boolean = false,
+  pickTests: ((testSuites: string[]) => string[]) | undefined,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
   const job = jobs[jobName];
-  const testSuites = getTestFiles(jobRootDir);
+  let testSuites = getTestFiles(jobRootDir);
+  if(pickTests && typeof pickTests === 'function'){
+    testSuites = pickTests(testSuites);
+  }
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
     const newJobName = generateJobName(jobName, suite);
@@ -215,20 +219,6 @@ function splitTests(
         ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
     };
-    const isPkg = newJobName.endsWith('_pkg');
-    if (!isPkg) {
-      (newJob.environment as any) = {
-        ...newJob.environment,
-        ...(isMigration
-          ? {
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
-            }
-          : {
-              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
-            }),
-      };
-    }
     return { ...acc, [newJobName]: newJob };
   }, {});
 
@@ -445,6 +435,7 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
+    undefined
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
@@ -452,6 +443,7 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
+    undefined
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
@@ -459,7 +451,9 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
-    true,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
+    }
   );
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
@@ -467,9 +461,21 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
-    true,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
+    }
   );
-  saveConfig(splitV6MigrationTests);
+  const splitV10MigrationTests = splitTests(
+    splitV6MigrationTests,
+    'amplify_migration_tests_v10',
+    'build_test_deploy_v3',
+    join(repoRoot, 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
+    }
+  );
+  saveConfig(splitV10MigrationTests);
   verifyConfig();
 }
 main();

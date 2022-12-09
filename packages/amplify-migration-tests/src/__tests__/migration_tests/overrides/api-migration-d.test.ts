@@ -19,7 +19,7 @@ import {
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('api migration update test d', () => {
   let projRoot: string;
@@ -68,7 +68,7 @@ describe('api migration update test d', () => {
     },
   };
   it('updates AppSync API in headless mode', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest, {
       allowDestructiveUpdates: false,
       testingWithLatestCodebase: false,

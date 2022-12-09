@@ -16,7 +16,7 @@ import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
 import {
-  initJSProjectWithProfile,
+  initJSProjectWithProfileV4_52_0,
   versionCheck,
   addApiWithoutSchemaOldDx,
   addApiWithSchemaAndConflictDetectionOldDx,
@@ -37,7 +37,7 @@ describe('api migration update test', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('graphql-api');
-    await initJSProjectWithProfile(projRoot, { name: 'apimigration' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'apimigration' });
   });
 
   afterEach(async () => {
