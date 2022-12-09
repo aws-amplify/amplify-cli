@@ -100,6 +100,7 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'notifications-sms_pkg',
   'notifications-sms-pull_pkg',
   'pull_pkg',
+  'scaffold_v10',
   'schema-iterative-rollback-1_pkg',
   'schema-iterative-rollback-2_pkg',
   'storage_migration_update_v5',
