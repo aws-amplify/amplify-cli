@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.1...@aws-amplify/cli-internal@10.5.2) (2022-12-09)
+
+
+### Reverts
+
+* Revert "chore: update snapshots and api category version (#11466)" (#11542) ([4aa536d](https://github.com/aws-amplify/amplify-cli/commit/4aa536d9772a28926b1279eb19fbe276ae5e5e0e)), closes [#11466](https://github.com/aws-amplify/amplify-cli/issues/11466) [#11542](https://github.com/aws-amplify/amplify-cli/issues/11542)
+
+
+
+
+
 ## [10.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.0...@aws-amplify/cli-internal@10.5.1) (2022-11-21)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
