@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs-extra';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -13,6 +15,7 @@ import {
   createNewDynamoDBForCrudTemplate,
   addKinesis,
 } from '@aws-amplify/amplify-e2e-core';
+import { AmplifyCategories, JSONUtilities, pathManager } from 'amplify-cli-core';
 
 describe('dotnet function tests', () => {
   const helloWorldSuccessObj = {
@@ -37,6 +40,15 @@ describe('dotnet function tests', () => {
     deleteProjectDir(projRoot);
   });
 
+  const assertDotNetVersion = (): void => {
+    const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
+    const { functionRuntime } = JSONUtilities.readJson(path.join(functionPath, 'amplify.state'));
+    expect(functionRuntime).toEqual('dotnet6');
+    const functionProjFilePath = path.join(functionPath, 'src', `${funcName}.csproj`);
+    const functionProjFileContent = fs.readFileSync(functionProjFilePath, 'utf8');
+    expect(functionProjFileContent).toContain('<TargetFramework>net6.0</TargetFramework>');
+  };
+
   it('add dotnet hello world function and mock locally', async () => {
     await addFunction(
       projRoot,
@@ -51,6 +63,8 @@ describe('dotnet function tests', () => {
       successString: helloWorldSuccessString,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 
   it('add dotnet hello world function and invoke in the cloud', async () => {
@@ -66,6 +80,8 @@ describe('dotnet function tests', () => {
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
     expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
+
+    assertDotNetVersion();
   });
 
   it('add dotnet serverless function and mock locally', async () => {
@@ -82,6 +98,8 @@ describe('dotnet function tests', () => {
       successString: serverlessSuccessString,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 
   it('add dotnet crud function and invoke in the cloud', async () => {
@@ -103,6 +121,8 @@ describe('dotnet function tests', () => {
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
     expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+
+    assertDotNetVersion();
   });
 
   it('add dotnet ddb trigger function and and mock locally', async () => {
@@ -123,6 +143,8 @@ describe('dotnet function tests', () => {
       successString: null,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 
   it('add dotnet kinesis trigger function and and mock locally', async () => {
@@ -142,5 +164,7 @@ describe('dotnet function tests', () => {
       successString: null,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
+
+    assertDotNetVersion();
   });
 });

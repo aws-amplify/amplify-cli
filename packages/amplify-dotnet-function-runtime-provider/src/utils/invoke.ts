@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import execa from 'execa';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { executableName } from '../constants';
+import { dotnetcore31, executableName } from '../constants';
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {
   const sourcePath = path.join(request.srcRoot, 'src');
@@ -13,9 +13,10 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     tempDir = fs.mkdtempSync(path.join(request.srcRoot, 'amplify'));
     eventFile = path.join(tempDir, 'event.json');
     fs.writeFileSync(eventFile, request.event);
+    const lambdaTestTool = request.runtime === dotnetcore31 ? 'lambda-test-tool-3.1' : 'lambda-test-tool-6.0';
     const execPromise = execa(
       executableName,
-      ['lambda-test-tool-6.0', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
+      [lambdaTestTool, '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
       {
         cwd: sourcePath,
         env: request.envVars,

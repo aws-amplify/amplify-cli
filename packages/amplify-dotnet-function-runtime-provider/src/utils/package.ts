@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import * as execa from 'execa';
 import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
-import { executableName } from '../constants';
+import { dotnetcore31, executableName } from '../constants';
 
 export const packageAssemblies = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   const distPath = path.join(request.srcRoot, 'dist');
@@ -13,9 +13,10 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
   }
 
   const packageHash = (await context.amplify.hashDir(distPath, [])) as string;
+  const framework = request.runtime === dotnetcore31 ? 'netcoreapp3.1' : 'net6.0';
   const result = execa.sync(
     executableName,
-    ['lambda', 'package', '--framework', 'net6.0', '--configuration', 'Release', '--output-package', request.dstFilename],
+    ['lambda', 'package', '--framework', framework, '--configuration', 'Release', '--output-package', request.dstFilename],
     {
       cwd: sourcePath,
     },
