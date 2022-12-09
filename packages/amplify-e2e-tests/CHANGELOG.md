@@ -26,6 +26,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * convert cli to cdk v2
 
 Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+## [3.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.0...amplify-e2e-tests@3.15.1) (2022-12-09)
+
+
+### Reverts
+
+* Revert "chore: update snapshots and api category version (#11466)" (#11542) ([4aa536d](https://github.com/aws-amplify/amplify-cli/commit/4aa536d9772a28926b1279eb19fbe276ae5e5e0e)), closes [#11466](https://github.com/aws-amplify/amplify-cli/issues/11466) [#11542](https://github.com/aws-amplify/amplify-cli/issues/11542)
 
 
 

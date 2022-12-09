@@ -23,6 +23,7 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [11.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.0.0-beta.0...@aws-amplify/cli@11.0.0-beta.1) (2022-11-19)
+## [10.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.5.1...@aws-amplify/cli@10.5.2) (2022-12-09)
 
 **Note:** Version bump only for package @aws-amplify/cli
 

@@ -68,6 +68,7 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    # Windows
    yarn setup-dev-win
+   ## Must be run in Powershell
    ```
 
 > NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _dev_ branch of amplify-cli

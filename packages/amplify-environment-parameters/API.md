@@ -6,11 +6,11 @@
 
 // @public (undocumented)
 export const ensureEnvParamManager: (envName?: string) => Promise<{
-    instance: EnvironmentParameterManager;
+    instance: IEnvironmentParameterManager;
 }>;
 
 // @public (undocumented)
-export const getEnvParamManager: (envName?: string) => EnvironmentParameterManager;
+export const getEnvParamManager: (envName?: string) => IEnvironmentParameterManager;
 
 // @public (undocumented)
 export type IEnvironmentParameterManager = {
@@ -22,12 +22,27 @@ export type IEnvironmentParameterManager = {
 };
 
 // @public (undocumented)
-export const saveAll: () => Promise<void>;
+export class ResourceParameterManager {
+    // (undocumented)
+    deleteParam(name: string): void;
+    // (undocumented)
+    getAllParams(): Readonly<Record<string, string>>;
+    // (undocumented)
+    getParam(name: string): string | undefined;
+    // (undocumented)
+    hasAnyParams(): boolean;
+    // (undocumented)
+    hasParam(name: string): boolean;
+    // (undocumented)
+    setAllParams(params: Record<string, string>): void;
+    // (undocumented)
+    setParam(name: string, value: string): void;
+    // (undocumented)
+    setParams(params: Record<string, string>): void;
+}
 
-// Warnings were encountered during analysis:
-//
-// src/environment-parameter-manager.ts:14:13 - (ae-forgotten-export) The symbol "EnvironmentParameterManager" needs to be exported by the entry point index.d.ts
-// src/environment-parameter-manager.ts:130:3 - (ae-forgotten-export) The symbol "ResourceParameterManager" needs to be exported by the entry point index.d.ts
+// @public (undocumented)
+export const saveAll: () => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 

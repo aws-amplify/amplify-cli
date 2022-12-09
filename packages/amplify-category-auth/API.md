@@ -86,6 +86,11 @@ export function externalAuthEnable(context: any, externalCategory: any, resource
 // @public (undocumented)
 export const generateAuthStackTemplate: (context: $TSContext, resourceName: string) => Promise<Template>;
 
+// Warning: (ae-forgotten-export) The symbol "AuthTriggerCfnTypes" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const getAuthTriggerStackCfnParameters: (context: $TSContext, authResourceName: string) => Promise<AuthTriggerCfnTypes>;
+
 // Warning: (ae-forgotten-export) The symbol "FrontEndConfig" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -110,7 +115,7 @@ export function initEnv(context: any): Promise<void>;
 export function isSMSWorkflowEnabled(context: any, resourceName: any): Promise<boolean>;
 
 // @public (undocumented)
-export function migrate(context: any): Promise<void>;
+export const migrate: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
 export function migrateAuthResource(context: any, resourceName: any): Promise<boolean>;

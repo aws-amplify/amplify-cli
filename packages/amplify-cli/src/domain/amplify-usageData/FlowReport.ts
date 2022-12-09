@@ -1,6 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
 import { stateManager } from 'amplify-cli-core';
-import { logger, Redactor } from 'amplify-cli-logger';
+import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import {
   ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData,
@@ -29,7 +29,7 @@ export class CLIFlowReport implements IFlowData {
 
   constructor() {
     const currentTime = Date.now();
-    this.logger = logger;
+    this.logger = getAmplifyLogger();
     this.timestamp = currentTime.toString();
     this.isHeadless = false; // set headless to true if running in headless mode : TBD: can we query this from stateManager?
     this.optionFlowData = [];

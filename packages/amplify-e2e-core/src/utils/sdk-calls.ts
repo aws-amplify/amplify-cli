@@ -180,6 +180,32 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
   return res;
 };
 
+export const addUserToUserPool = async (userPoolId: string, region: string) => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId,
+    UserAttributes: [{ Name: 'email', Value: 'username@amazon.com' }],
+    Username: 'testUser',
+    MessageAction: 'SUPPRESS',
+    TemporaryPassword: 'password',
+  };
+  await provider.adminCreateUser(params).promise();
+};
+
+/**
+ * list all userPool groups to which a user belongs to
+ */
+export const listUserPoolGroupsForUser = async (userPoolId: string, userName: string, region: string): Promise<string[]> => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId, /* required */
+    Username: userName, /* required */
+  };
+  const res = await provider.adminListGroupsForUser(params).promise();
+  const groups = res.Groups.map(group => group.GroupName);
+  return groups;
+};
+
 export const getBot = async (botName: string, region: string) => {
   const service = new LexModelBuildingService({ region });
   return await service.getBot({ name: botName, versionOrAlias: '$LATEST' }).promise();
