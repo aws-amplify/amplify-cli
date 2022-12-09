@@ -289,7 +289,7 @@ function checkPackageVersionsInLocalNpmRegistry {
 
     if [[ $cli_internal_version != $cli_version ]]; then
         echo "Versions did not match."
-        echo "Manual fix: add a commit with a 'feat' prefix that touches the cli-npm package to bump its version."
+        echo "Manual fix: add a proper conventional commit that touches the amplify-cli-npm package to correct its version bump. For example https://github.com/aws-amplify/amplify-cli/commit/6f14792d1db424aa428ec4836fed7d6dd5cccfd0"
         exit 1
     else
         echo "Versions matched."
