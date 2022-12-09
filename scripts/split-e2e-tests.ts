@@ -263,13 +263,18 @@ function splitTests(
           } else {
             // for the most up-to-date list of executors for e2e, see the config.base.yml file
             let linuxVMSize = JOBS_RUNNING_ON_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
+            let requiredJobs = workflowJob[jobName].requires || [];
+            const allowWindows = WINDOWS_TEST_ALLOWLIST.includes(newJobName);
+            if(!allowWindows) {
+              requiredJobs = requiredJobs.filter(j => j !== 'build_windows_workspace_for_e2e');
+            }
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
-                requires: workflowJob[jobName].requires || [],
+                requires: requiredJobs,
                 matrix: {
                   parameters: {
-                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? [linuxVMSize, 'w_medium'] : [linuxVMSize],
+                    os: allowWindows ? [linuxVMSize, 'w_medium'] : [linuxVMSize],
                   },
                 },
               },
