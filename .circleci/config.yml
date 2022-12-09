@@ -14,6 +14,12 @@ parameters:
   e2e_resource_cleanup:
     type: boolean
     default: false
+  e2e_workflow_cleanup:
+    type: boolean
+    default: false
+  e2e_workflow_cleanup_workflow_id:
+    type: integer
+    default: 0
   setup:
     type: boolean
     default: true
@@ -181,12 +187,25 @@ jobs:
       - restore_cache:
           key: >-
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Run cleanup script
-          command: |
-            cd packages/amplify-e2e-tests
-            yarn clean-e2e-resources
-          no_output_timeout: 90m
+      - when: 
+          condition: << pipeline.parameters.e2e_workflow_cleanup >>
+          steps:
+            - run:
+                name: Run cleanup script for specific workflow
+                command: |
+                  echo "Cleaning up for Workflow << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>"
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>
+              no_output_timeout: 90m
+      - when: 
+          condition: << pipeline.parameters.e2e_resource_cleanup >>
+          steps:
+            - run:
+                name: Run cleanup script
+                command: |
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources
+              no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
           command: |
@@ -221,7 +240,10 @@ workflows:
             - build
             - publish_to_local_registry
   e2e_resource_cleanup:
-    when: << pipeline.parameters.e2e_resource_cleanup >>
+    when: 
+      or:
+        - equal: [true, << pipeline.parameters.e2e_resource_cleanup >>]
+        - equal: [true, << pipeline.parameters.e2e_workflow_cleanup >>]
     jobs:
       - build
       - cleanup_resources:
