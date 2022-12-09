@@ -282,3 +282,19 @@ function runE2eTest {
         yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
 }
+
+function checkPackageVersionsInLocalNpmRegistry {
+    cli_internal_version=$(npm view @aws-amplify/cli-internal version)
+    cli_version=$(npm view @aws-amplify/cli version)
+
+    echo "@aws-amplify/cli-internal version: $cli_internal_version"
+    echo "@aws-amplify/cli version: $cli_version"
+
+    if [[ $cli_internal_version != $cli_version ]]; then
+        echo "Versions did not match."
+        echo "Manual fix: add a proper conventional commit that touches the amplify-cli-npm package to correct its version bump. For example https://github.com/aws-amplify/amplify-cli/commit/6f14792d1db424aa428ec4836fed7d6dd5cccfd0"
+        exit 1
+    else
+        echo "Versions matched."
+    fi
+}
