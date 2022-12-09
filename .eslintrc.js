@@ -44,6 +44,15 @@ module.exports = {
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-misused-promises": "error",
     "no-bitwise": "warn",
+    'spellcheck/spell-checker': ['error', {
+      lang: 'en_US',
+      skipWords: dictionary,
+      skipIfMatch: [
+        'http://[^s]*',
+        '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
+      ],
+      minLength: 4,
+    }],
   },
   "parserOptions": {
     "project": [
