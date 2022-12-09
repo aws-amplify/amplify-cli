@@ -196,7 +196,7 @@ jobs:
                 command: |
                   echo "Cleaning up for Workflow << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>"
                   cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>
+                  yarn clean-e2e-resources workflow << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>
                 no_output_timeout: 90m
       - when: 
           condition:
