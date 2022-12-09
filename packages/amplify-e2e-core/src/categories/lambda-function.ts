@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet6' | 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
@@ -582,12 +582,13 @@ const addCron = (chain: ExecutionContext, settings: any) => {
 export const functionMockAssert = (
   cwd: string,
   settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
+  testingWithLatestCodebase = false,
 ) => {
   return new Promise<void>((resolve, reject) => {
     const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
       settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
-    let chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true });
+    let chain = spawn(getCLIPath(testingWithLatestCodebase), cliArgs, { cwd, stripColors: true });
     chain.wait('Result:');
     if (settings.successString) {
       chain.wait(settings.successString);
@@ -617,6 +618,7 @@ export const functionCloudInvoke = async (
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
+    case 'dotnetCore31':
     case 'dotnet6':
       return dotNetTemplateChoices;
     case 'go':
@@ -634,6 +636,7 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
+    case 'dotnetCore31':
     case 'dotnet6':
       return '.NET 6';
     case 'go':
