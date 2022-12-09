@@ -198,7 +198,7 @@ function useChildAccountCredentials {
 }
 
 function retry {
-    MAX_ATTEMPTS=2
+    MAX_ATTEMPTS=1
     SLEEP_DURATION=5
     FIRST_RUN=true
     n=0
