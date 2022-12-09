@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2-rc.206e2662d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.1...@aws-amplify/amplify-migration-tests@5.2.2-rc.206e2662d.0) (2022-12-09)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** cherry-picking commit ([#11577](https://github.com/aws-amplify/amplify-cli/issues/11577)) ([206e266](https://github.com/aws-amplify/amplify-cli/commit/206e2662da67657a13aa05b7f9d803b9446a62ba))
+
+
+
+
+
 ## [5.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0...@aws-amplify/amplify-migration-tests@5.2.1) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests
