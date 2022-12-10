@@ -24,7 +24,7 @@ import {
   secretsPathAmplifyAppIdKey,
 } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
-import { SSMClientWrapper } from './ssm-client-wrapper';
+import { SSMClientWrapper } from './ssmClientWrapper';
 
 let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 
