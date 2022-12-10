@@ -6,7 +6,7 @@ import {
 } from 'amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ensureEnvParamManager, getEnvParamManager, SSMClientWrapper } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { categoryName } from '../../../constants';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
@@ -24,6 +24,7 @@ import {
   secretsPathAmplifyAppIdKey,
 } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
+import { SSMClientWrapper } from './ssm-client-wrapper';
 
 let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 

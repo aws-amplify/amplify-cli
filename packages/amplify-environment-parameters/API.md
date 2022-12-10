@@ -4,8 +4,6 @@
 
 ```ts
 
-import { $TSContext } from 'amplify-cli-core';
-
 // @public (undocumented)
 export const ensureEnvParamManager: (envName?: string) => Promise<{
     instance: IEnvironmentParameterManager;
@@ -45,25 +43,6 @@ export class ResourceParameterManager {
 
 // @public (undocumented)
 export const saveAll: () => Promise<void>;
-
-// @public (undocumented)
-export class SSMClientWrapper {
-    // (undocumented)
-    deleteSecret: (secretName: string) => Promise<void>;
-    // (undocumented)
-    deleteSecrets: (secretNames: string[]) => Promise<void>;
-    // (undocumented)
-    static getInstance: (context: $TSContext) => Promise<SSMClientWrapper>;
-    // (undocumented)
-    getSecretNamesByPath: (secretPath: string) => Promise<string[]>;
-    // (undocumented)
-    getSecrets: (secretNames: string[]) => Promise<{
-        secretName?: string;
-        secretValue?: string;
-    }[] | undefined>;
-    // (undocumented)
-    setSecret: (secretName: string, secretValue: string) => Promise<void>;
-}
 
 // (No @packageDocumentation comment for this package)
 
