@@ -1,8 +1,8 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
-export { run as analyticsPush } from './analytics/push';
-export const name = 'analytics';
+export { run as analyticsPush } from "./analytics/push";
+export const name = "analytics";
 
 /**
  * Analytics category command router. Invokes functionality for all CLI calls
@@ -17,23 +17,23 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
 
   const commands = [
     {
-      name: 'add',
+      name: "add",
       description: `Takes you through a CLI flow to add an ${name} resource to your local backend`,
     },
     {
-      name: 'update',
+      name: "update",
       description: `Takes you through steps in the CLI to update an ${name} resource`,
     },
     {
-      name: 'push',
+      name: "push",
       description: `Provisions only ${name} cloud resources with the latest local developments`,
     },
     {
-      name: 'remove',
+      name: "remove",
       description: `Removes ${name} resource from your local backend. The resource is removed from the cloud on the next push command.`,
     },
     {
-      name: 'console',
+      name: "console",
       description: `Opens the web console for the ${name} category`,
     },
   ];

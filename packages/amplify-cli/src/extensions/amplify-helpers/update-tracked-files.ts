@@ -1,19 +1,15 @@
-import * as path from 'path';
-import fs from 'fs-extra';
-import {
-  $TSAny, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
+import * as path from "path";
+import fs from "fs-extra";
+import { $TSAny, JSONUtilities, pathManager, stateManager } from "amplify-cli-core";
 
-const {
-  readJson,
-} = JSONUtilities;
+const { readJson } = JSONUtilities;
 
 /**
  * Updates Cognito files that are tracked so that the diff is detected for an `amplify push`
  */
 export const updateCognitoTrackedFiles = async (): Promise<void> => {
   if (await detectCognitoAttributesRequireVerificationBeforeUpdateDiff()) {
-    const { resourceName } = stateManager.getResourceFromMeta(stateManager.getMeta(), 'auth', 'Cognito', undefined, false)!;
+    const { resourceName } = stateManager.getResourceFromMeta(stateManager.getMeta(), "auth", "Cognito", undefined, false)!;
     await addExtraLineToCliInputsJson(pathManager.getBackendDirPath(), resourceName);
   }
 };
@@ -26,36 +22,38 @@ export const detectCognitoAttributesRequireVerificationBeforeUpdateDiff = async 
   const localBackendDir = pathManager.getBackendDirPath();
 
   const amplifyMeta = stateManager.getMeta();
-  const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito', undefined, false);
+  const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, "auth", "Cognito", undefined, false);
 
   if (!fs.existsSync(currentCloudBackendDir) || !cognitoResource) {
     return false;
   }
 
   const { resourceName } = cognitoResource;
-  if (!fs.existsSync(path.join(currentCloudBackendDir, 'auth', resourceName))) {
+  if (!fs.existsSync(path.join(currentCloudBackendDir, "auth", resourceName))) {
     return false;
   }
 
   const cloudBackendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(currentCloudBackendDir, resourceName);
   const backendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(localBackendDir, resourceName);
-  const updateNotInCloudBackend: boolean = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate
-    || cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] !== 'email';
-  const updateInLocalBackend: boolean = backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1
-    && backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === 'email';
+  const updateNotInCloudBackend: boolean =
+    !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate ||
+    cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] !== "email";
+  const updateInLocalBackend: boolean =
+    backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1 &&
+    backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === "email";
 
   return updateNotInCloudBackend && updateInLocalBackend;
 };
 
 type UserAttributeUpdateSettings = {
-  AttributesRequireVerificationBeforeUpdate: string[]
-}
+  AttributesRequireVerificationBeforeUpdate: string[];
+};
 
 const readCfnTemplateUserAttributeSettings = async (
   backendDir: string,
-  resourceName: string,
+  resourceName: string
 ): Promise<UserAttributeUpdateSettings | undefined> => {
-  const cfnTemplatePath = path.join(backendDir, 'auth', resourceName, 'build', `${resourceName}-cloudformation-template.json`);
+  const cfnTemplatePath = path.join(backendDir, "auth", resourceName, "build", `${resourceName}-cloudformation-template.json`);
   const cfnTemplate: $TSAny = readJson(cfnTemplatePath, { throwIfNotExist: false });
 
   if (!cfnTemplate) {
@@ -66,9 +64,9 @@ const readCfnTemplateUserAttributeSettings = async (
 };
 
 const addExtraLineToCliInputsJson = async (backendDir: string, resourceName: string): Promise<void> => {
-  const cliInputsFile = path.join(backendDir, 'auth', resourceName, 'cli-inputs.json');
+  const cliInputsFile = path.join(backendDir, "auth", resourceName, "cli-inputs.json");
 
   if (fs.existsSync(cliInputsFile)) {
-    fs.appendFile(cliInputsFile, ' ');
+    fs.appendFile(cliInputsFile, " ");
   }
 };

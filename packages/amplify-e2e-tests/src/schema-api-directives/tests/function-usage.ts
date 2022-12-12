@@ -1,5 +1,5 @@
 //schema
-const env = '${env}';
+const env = "${env}";
 export const schema = `
 #change: inserted "<function-name>" placeholder, the test will replace it with the actual function name
 type Query {
@@ -22,6 +22,6 @@ query Echo {
 `;
 export const expected_result_query = {
   data: {
-    echo: 'query message',
+    echo: "query message",
   },
 };

@@ -1,23 +1,23 @@
-import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from 'graphql';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorPipelineResolverConfig, AppSyncSimulatorUnitResolverConfig } from '../type-definition';
-import { scalars } from './appsync-scalars';
-import { getDirectiveTypeDefs, transformSchemaWithDirectives } from './directives';
+import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { AmplifyAppSyncSimulator } from "..";
+import { AppSyncSimulatorPipelineResolverConfig, AppSyncSimulatorUnitResolverConfig } from "../type-definition";
+import { scalars } from "./appsync-scalars";
+import { getDirectiveTypeDefs, transformSchemaWithDirectives } from "./directives";
 
 export function generateResolvers(
   schema: Source,
   resolversConfig: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[] = [],
-  simulatorContext: AmplifyAppSyncSimulator,
+  simulatorContext: AmplifyAppSyncSimulator
 ) {
   const appSyncScalars = new Source(
     Object.keys(scalars)
-      .map(scalar => `scalar ${scalar}`)
-      .join('\n'),
-    'AppSync-scalar.json',
+      .map((scalar) => `scalar ${scalar}`)
+      .join("\n"),
+    "AppSync-scalar.json"
   );
 
-  const documents = [schema, appSyncScalars, getDirectiveTypeDefs()].map(s => parse(s));
+  const documents = [schema, appSyncScalars, getDirectiveTypeDefs()].map((s) => parse(s));
   const doc = concatAST([...documents]);
 
   const resolvers = resolversConfig.reduce(
@@ -30,7 +30,7 @@ export function generateResolvers(
           const resolver = simulatorContext.getResolver(resolverConfig.typeName, resolverConfig.fieldName);
           try {
             // Mutation and Query
-            if (typeName !== 'Subscription') {
+            if (typeName !== "Subscription") {
               const res = await resolver.resolve(source, args, context, info);
               return res;
             } else if (!source) {
@@ -44,12 +44,12 @@ export function generateResolvers(
             context.appsyncErrors.push(e);
           }
         },
-        ...(typeName === 'Subscription'
+        ...(typeName === "Subscription"
           ? {
               subscribe: (source, args, context, info) => {
                 // Connect time error. Not allowing subscription
                 if (context.appsyncErrors.length) {
-                  throw new Error('Subscription failed');
+                  throw new Error("Subscription failed");
                 }
                 return simulatorContext.asyncIterator(fieldName);
               },
@@ -61,7 +61,7 @@ export function generateResolvers(
         [resolverConfig.typeName]: typeObj,
       };
     },
-    { Subscription: {} },
+    { Subscription: {} }
   );
   const defaultSubscriptions = generateDefaultSubscriptions(doc, resolversConfig, simulatorContext);
 
@@ -83,16 +83,16 @@ export function generateResolvers(
         ...scalars,
       },
     }),
-    simulatorContext,
+    simulatorContext
   );
 }
 
 function generateDefaultSubscriptions(
   doc: DocumentNode,
   configuredResolvers: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[],
-  simulatorContext: AmplifyAppSyncSimulator,
+  simulatorContext: AmplifyAppSyncSimulator
 ) {
-  const configuredSubscriptions = configuredResolvers.filter(cfg => cfg.fieldName === 'Subscription').map(cfg => cfg.typeName);
+  const configuredSubscriptions = configuredResolvers.filter((cfg) => cfg.fieldName === "Subscription").map((cfg) => cfg.typeName);
   const schema = buildASTSchema(doc);
   const subscriptionType = schema.getSubscriptionType();
   if (subscriptionType) {
@@ -100,10 +100,10 @@ function generateDefaultSubscriptions(
     if (f) {
       const fields = f.getFields();
       return Object.keys(fields)
-        .filter(sub => !configuredSubscriptions.includes(sub))
+        .filter((sub) => !configuredSubscriptions.includes(sub))
         .reduce((acc, sub) => {
           const resolver = {
-            resolve: data => data,
+            resolve: (data) => data,
             subscribe: () => simulatorContext.asyncIterator(sub),
           };
           return { ...acc, [sub]: resolver };

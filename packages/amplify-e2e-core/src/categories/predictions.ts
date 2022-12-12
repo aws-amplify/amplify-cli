@@ -1,22 +1,22 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from "..";
 
 // add convert resource
 export function addConvert(cwd: string, settings: any): Promise<void> {
-  const resourceName = 'convertTest1';
+  const resourceName = "convertTest1";
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
-      .wait('Please select from one of the categories below')
+    spawn(getCLIPath(), ["predictions", "add"], { cwd, stripColors: true })
+      .wait("Please select from one of the categories below")
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('What would you like to convert?')
+      .wait("What would you like to convert?")
       .sendCarriageReturn()
-      .wait('Provide a friendly name for your resource')
+      .wait("Provide a friendly name for your resource")
       .sendLine(`${resourceName}\r`)
-      .wait('What is the source language?')
+      .wait("What is the source language?")
       .sendCarriageReturn()
-      .wait('What is the target language?')
+      .wait("What is the target language?")
       .sendCarriageReturn()
-      .wait('Who should have access?')
+      .wait("Who should have access?")
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .sendEof()
@@ -32,31 +32,31 @@ export function addConvert(cwd: string, settings: any): Promise<void> {
 
 // add identify test
 export function addIdentifyCollection(cwd: string, settings: any): Promise<void> {
-  const resourceName = 'identifyCollectionTest1';
+  const resourceName = "identifyCollectionTest1";
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
-      .wait('Please select from one of the categories below')
+    spawn(getCLIPath(), ["predictions", "add"], { cwd, stripColors: true })
+      .wait("Please select from one of the categories below")
       .sendCarriageReturn()
-      .wait('What would you like to identify?')
+      .wait("What would you like to identify?")
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Provide a friendly name for your resource')
+      .wait("Provide a friendly name for your resource")
       .sendLine(`${resourceName}\r`)
-      .wait('Would you like use the default configuration?')
+      .wait("Would you like use the default configuration?")
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Would you like to enable celebrity detection?')
-      .sendLine('y')
-      .wait('Would you like to identify entities from a collection of images?')
-      .sendLine('y')
-      .wait('How many entities would you like to identify?')
+      .wait("Would you like to enable celebrity detection?")
+      .sendLine("y")
+      .wait("Would you like to identify entities from a collection of images?")
+      .sendLine("y")
+      .wait("How many entities would you like to identify?")
       .sendCarriageReturn()
-      .wait('Would you like to allow users to add images to this collection?')
-      .sendLine('y')
-      .wait('Who should have access?')
+      .wait("Would you like to allow users to add images to this collection?")
+      .sendLine("y")
+      .wait("Who should have access?")
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('The CLI would be provisioning an S3 bucket')
+      .wait("The CLI would be provisioning an S3 bucket")
       .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
@@ -71,20 +71,20 @@ export function addIdentifyCollection(cwd: string, settings: any): Promise<void>
 
 // add interpret resource
 export function addInterpret(cwd: string, settings: any): Promise<void> {
-  const resourceName = 'interpretTest1';
+  const resourceName = "interpretTest1";
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true })
-      .wait('Please select from one of the categories below')
+    spawn(getCLIPath(), ["add", "predictions"], { cwd, stripColors: true })
+      .wait("Please select from one of the categories below")
       .send(`${KEY_DOWN_ARROW}`)
       .send(`${KEY_DOWN_ARROW}`)
       .sendCarriageReturn()
-      .wait('What would you like to interpret?')
+      .wait("What would you like to interpret?")
       .sendCarriageReturn()
-      .wait('Provide a friendly name for your resource')
+      .wait("Provide a friendly name for your resource")
       .sendLine(`${resourceName}\r`)
-      .wait('What kind of interpretation would you like?')
-      .sendLine('k')
-      .wait('Who should have access?')
+      .wait("What kind of interpretation would you like?")
+      .sendLine("k")
+      .wait("Who should have access?")
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .run((err: Error) => {

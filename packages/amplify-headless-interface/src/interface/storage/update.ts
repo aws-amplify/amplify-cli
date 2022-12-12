@@ -1,4 +1,4 @@
-import { LambdaTriggerConfig, S3Permissions, S3ServiceConfigurationBase } from './base';
+import { LambdaTriggerConfig, S3Permissions, S3ServiceConfigurationBase } from "./base";
 
 /**
  * Service configuration for updating AWS S3 through Amplify

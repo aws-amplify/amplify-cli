@@ -6,8 +6,8 @@ import {
   amplifyModelgen,
   amplifyPush,
   addIntegAccountInConfig,
-} from '../amplify-app-helpers/amplify-app-setup';
-import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from '@aws-amplify/amplify-e2e-core';
+} from "../amplify-app-helpers/amplify-app-setup";
+import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from "@aws-amplify/amplify-e2e-core";
 import {
   validateProject,
   validateProjectConfig,
@@ -16,13 +16,13 @@ import {
   validateModelgen,
   validateAmplifyPush,
   validateFeatureFlags,
-} from '../amplify-app-helpers/amplify-app-validation';
+} from "../amplify-app-helpers/amplify-app-validation";
 
-describe('amplify-app platform tests', () => {
+describe("amplify-app platform tests", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('amplify-app');
+    projRoot = await createNewProjectDir("amplify-app");
   });
 
   afterEach(() => {
@@ -31,16 +31,16 @@ describe('amplify-app platform tests', () => {
 
   jest.setTimeout(1000 * 60 * 30); // 30 minutes is suffice as push operations are taking time
 
-  it('should set up an android project', async () => {
+  it("should set up an android project", async () => {
     await amplifyAppAndroid(projRoot);
-    validateProject(projRoot, 'android');
-    validateProjectConfig(projRoot, 'android');
+    validateProject(projRoot, "android");
+    validateProjectConfig(projRoot, "android");
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
   });
 
-  it('should setup an iOS project', async () => {
+  it("should setup an iOS project", async () => {
     // disable this test locally to prevent execution of
     // amplify-xcode in an empty folder.
     // TODO: copy a valid Xcode project before executing this test
@@ -48,26 +48,26 @@ describe('amplify-app platform tests', () => {
       return;
     }
     await amplifyAppIos(projRoot);
-    validateProject(projRoot, 'ios');
-    validateProjectConfig(projRoot, 'ios');
+    validateProject(projRoot, "ios");
+    validateProjectConfig(projRoot, "ios");
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
   });
 
-  it('should set up a angular project', async () => {
+  it("should set up a angular project", async () => {
     await amplifyAppAngular(projRoot);
-    validateProject(projRoot, 'javascript');
-    validateProjectConfig(projRoot, 'javascript', 'angular');
+    validateProject(projRoot, "javascript");
+    validateProjectConfig(projRoot, "javascript", "angular");
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
   });
 
-  it('should set up a react project and run scripts', async () => {
+  it("should set up a react project and run scripts", async () => {
     await amplifyAppReact(projRoot);
-    validateProject(projRoot, 'javascript');
-    validateProjectConfig(projRoot, 'javascript', 'react');
+    validateProject(projRoot, "javascript");
+    validateProjectConfig(projRoot, "javascript", "react");
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);

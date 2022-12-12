@@ -5,30 +5,30 @@ import {
   UnrecognizedFrontendError,
   validateExportDirectoryPath,
   PathConstants,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import chalk from 'chalk';
-import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
-import Ora from 'ora';
-import { getResources } from './build';
-import * as _ from 'lodash';
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import chalk from "chalk";
+import { getResourceOutputs } from "../extensions/amplify-helpers/get-resource-outputs";
+import Ora from "ora";
+import { getResources } from "./build";
+import * as _ from "lodash";
 
 export const run = async (context: $TSContext) => {
   const subCommands = context.input.subCommands;
-  const showHelp = getSafeInputOptionsFlag(context, 'help') || false;
-  const isPull = !!(subCommands && subCommands.includes('pull'));
-  const frontend = getSafeInputOptionsFlag(context, 'frontend');
-  const rootStackName = getSafeInputOptionsFlag(context, 'rootStackName');
+  const showHelp = getSafeInputOptionsFlag(context, "help") || false;
+  const isPull = !!(subCommands && subCommands.includes("pull"));
+  const frontend = getSafeInputOptionsFlag(context, "frontend");
+  const rootStackName = getSafeInputOptionsFlag(context, "rootStackName");
   const showPullHelp = (showHelp || !frontend || !rootStackName) && isPull;
 
   if (showHelp && !showPullHelp) {
     printer.blankLine();
     printer.info("'amplify export', exports your Amplify backend into CDK app");
     printer.blankLine();
-    printer.info(`${chalk.yellow('--cdk')}         Exports all Amplify-generated resources as CDK`);
-    printer.info(`${chalk.yellow('--out')}         Folder to export stack to`);
+    printer.info(`${chalk.yellow("--cdk")}         Exports all Amplify-generated resources as CDK`);
+    printer.info(`${chalk.yellow("--out")}         Folder to export stack to`);
     printer.blankLine();
-    printer.info(`Example: ${chalk.green('amplify export --cdk --out ~/myCDKApp')}`);
+    printer.info(`Example: ${chalk.green("amplify export --cdk --out ~/myCDKApp")}`);
     printer.blankLine();
     printer.info("'amplify export pull' To export front-end config files'");
     printer.info("'amplify export pull --help'  to learn");
@@ -42,20 +42,20 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
     printer.info("'amplify export pull', Allows you to genreate frontend config files at a desired location");
     printer.blankLine();
-    printer.info(`${chalk.yellow('--rootStackName')}         Amplify CLI deployed Root Stack name`);
-    printer.info(`${chalk.yellow('--frontend')}             Front end type ex: ${frontends.join(', ')}`);
-    printer.info(`${chalk.yellow('--out')}                  Directory to write the front-end config files`);
+    printer.info(`${chalk.yellow("--rootStackName")}         Amplify CLI deployed Root Stack name`);
+    printer.info(`${chalk.yellow("--frontend")}             Front end type ex: ${frontends.join(", ")}`);
+    printer.info(`${chalk.yellow("--out")}                  Directory to write the front-end config files`);
     printer.blankLine();
     printer.info(
       `Example: ${chalk.green(
-        'amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript',
-      )}`,
+        "amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript"
+      )}`
     );
     printer.blankLine();
     printer.blankLine();
     return;
   }
-  const exportPath = _.get(context, ['input', 'options', 'out']);
+  const exportPath = _.get(context, ["input", "options", "out"]);
   if (isPull) {
     await createFrontEndConfigFile(context, exportPath);
   } else {
@@ -77,7 +77,7 @@ async function exportBackend(context: $TSContext, exportPath: string) {
 
 async function buildAllResources(context: $TSContext) {
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
+  await context.amplify.executeProviderUtils(context, "awscloudformation", "buildOverrides", { resourcesToBuild, forceCompile: true });
 }
 
 async function createFrontEndConfigFile(context: $TSContext, exportPath: string) {
@@ -107,15 +107,15 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
       context,
       getResourceOutputs(meta),
       getResourceOutputs(cloudMeta),
-      validatedExportPath,
+      validatedExportPath
     );
-    spinner.succeed('Successfully generated frontend config files');
+    spinner.succeed("Successfully generated frontend config files");
   } catch (ex: any) {
-    spinner.fail('Failed to generate frontend config files ' + ex.message);
+    spinner.fail("Failed to generate frontend config files " + ex.message);
     throw ex;
   } finally {
     spinner.stop();
   }
 }
 
-const getSafeInputOptionsFlag = (context: $TSContext, flag: string) => _.get(context, ['input', 'options', flag]);
+const getSafeInputOptionsFlag = (context: $TSContext, flag: string) => _.get(context, ["input", "options", flag]);

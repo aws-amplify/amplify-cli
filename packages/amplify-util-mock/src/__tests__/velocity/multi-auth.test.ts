@@ -1,38 +1,38 @@
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from '../../velocity';
-import { featureFlags } from './test-helper';
+import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
+import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
+import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
+import { AppSyncAuthConfiguration } from "@aws-amplify/graphql-transformer-interfaces";
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from "@aws-amplify/amplify-appsync-simulator";
+import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from "../../velocity";
+import { featureFlags } from "./test-helper";
 
-jest.mock('amplify-prompts');
+jest.mock("amplify-prompts");
 
 // oidc needs claim values to know where to check in the token otherwise it will use cognito defaults precendence order below
 // - owner: 'username' -> 'cognito:username' -> default to null
 // - group: 'cognito:groups' -> default to null or empty list
-describe('@model + @auth with oidc provider', () => {
+describe("@model + @auth with oidc provider", () => {
   let vtlTemplate: VelocityTemplateSimulator;
   let transformer: GraphQLTransform;
   const subIdUser: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
-    jwt: getGenericToken('randomIdUser', 'random@user.com'),
+    jwt: getGenericToken("randomIdUser", "random@user.com"),
     headers: {},
   };
   const editorGroupMember: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
-    jwt: getGenericToken('editorUser', 'editor0@user.com', ['Editor']),
+    jwt: getGenericToken("editorUser", "editor0@user.com", ["Editor"]),
     headers: {},
   };
 
   beforeEach(() => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
-        authenticationType: 'OPENID_CONNECT',
+        authenticationType: "OPENID_CONNECT",
         openIDConnectConfig: {
-          name: 'myOIDCProvider',
-          issuerUrl: 'https://some-oidc-provider/auth',
-          clientId: 'my-sample-client-id',
+          name: "myOIDCProvider",
+          issuerUrl: "https://some-oidc-provider/auth",
+          clientId: "my-sample-client-id",
         },
       },
       additionalAuthenticationProviders: [],
@@ -45,7 +45,7 @@ describe('@model + @auth with oidc provider', () => {
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
-  test('oidc default', () => {
+  test("oidc default", () => {
     const validSchema = `
     # owner authorization with provider override
     type Profile @model @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "sub" }]) {
@@ -56,14 +56,14 @@ describe('@model + @auth with oidc provider', () => {
     const createProfileInput: AppSyncVTLContext = {
       arguments: {
         input: {
-          id: '001',
-          displayName: 'FooBar',
+          id: "001",
+          displayName: "FooBar",
         },
       },
     };
 
     const out = transformer.transform(validSchema);
-    const createRequestTemplate = out.resolvers['Mutation.createProfile.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers["Mutation.createProfile.auth.1.req.vtl"];
     const createRequestAsSubOwner = vtlTemplate.render(createRequestTemplate, {
       context: createProfileInput,
       requestParameters: subIdUser,
@@ -71,14 +71,14 @@ describe('@model + @auth with oidc provider', () => {
     expect(createRequestAsSubOwner.hadException).toEqual(false);
     expect(createRequestAsSubOwner.args.input).toEqual(
       expect.objectContaining({
-        id: '001',
-        displayName: 'FooBar',
+        id: "001",
+        displayName: "FooBar",
         owner: expect.any(String), // since its a uuid we just need to know the owner was added
-      }),
+      })
     );
   });
 
-  test('oidc static groups', () => {
+  test("oidc static groups", () => {
     const validSchema = `
     type Comment @model @auth(rules: [{ allow: groups, groups: ["Editor"], groupClaim: "groups", provider: oidc }]) {
       id: ID
@@ -87,19 +87,19 @@ describe('@model + @auth with oidc provider', () => {
     const createCommentInput: AppSyncVTLContext = {
       arguments: {
         input: {
-          id: '001',
-          content: 'Foobar',
+          id: "001",
+          content: "Foobar",
         },
       },
     };
     const getCommentArgs: AppSyncVTLContext = {
       arguments: {
-        id: '001',
+        id: "001",
       },
     };
     const out = transformer.transform(validSchema);
-    const createRequestTemplate = out.resolvers['Mutation.createComment.auth.1.req.vtl'];
-    const getRequestTemplate = out.resolvers['Query.getComment.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers["Mutation.createComment.auth.1.req.vtl"];
+    const getRequestTemplate = out.resolvers["Query.getComment.auth.1.req.vtl"];
     // mutations
     const createRequestAsEditor = vtlTemplate.render(createRequestTemplate, {
       context: createCommentInput,
@@ -116,29 +116,29 @@ describe('@model + @auth with oidc provider', () => {
   });
 });
 
-describe('with identity claim feature flag disabled', () => {
-  describe('@model + @auth with oidc provider', () => {
+describe("with identity claim feature flag disabled", () => {
+  describe("@model + @auth with oidc provider", () => {
     let vtlTemplate: VelocityTemplateSimulator;
     let transformer: GraphQLTransform;
     const subIdUser: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
-      jwt: getGenericToken('randomIdUser', 'random@user.com'),
+      jwt: getGenericToken("randomIdUser", "random@user.com"),
       headers: {},
     };
     const editorGroupMember: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
-      jwt: getGenericToken('editorUser', 'editor0@user.com', ['Editor']),
+      jwt: getGenericToken("editorUser", "editor0@user.com", ["Editor"]),
       headers: {},
     };
 
     beforeEach(() => {
       const authConfig: AppSyncAuthConfiguration = {
         defaultAuthentication: {
-          authenticationType: 'OPENID_CONNECT',
+          authenticationType: "OPENID_CONNECT",
           openIDConnectConfig: {
-            name: 'myOIDCProvider',
-            issuerUrl: 'https://some-oidc-provider/auth',
-            clientId: 'my-sample-client-id',
+            name: "myOIDCProvider",
+            issuerUrl: "https://some-oidc-provider/auth",
+            clientId: "my-sample-client-id",
           },
         },
         additionalAuthenticationProviders: [],
@@ -154,7 +154,7 @@ describe('with identity claim feature flag disabled', () => {
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 
-    test('oidc default', () => {
+    test("oidc default", () => {
       const validSchema = `
       # owner authorization with provider override
       type Profile @model @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "sub" }]) {
@@ -165,14 +165,14 @@ describe('with identity claim feature flag disabled', () => {
       const createProfileInput: AppSyncVTLContext = {
         arguments: {
           input: {
-            id: '001',
-            displayName: 'FooBar',
+            id: "001",
+            displayName: "FooBar",
           },
         },
       };
 
       const out = transformer.transform(validSchema);
-      const createRequestTemplate = out.resolvers['Mutation.createProfile.auth.1.req.vtl'];
+      const createRequestTemplate = out.resolvers["Mutation.createProfile.auth.1.req.vtl"];
       const createRequestAsSubOwner = vtlTemplate.render(createRequestTemplate, {
         context: createProfileInput,
         requestParameters: subIdUser,
@@ -180,14 +180,14 @@ describe('with identity claim feature flag disabled', () => {
       expect(createRequestAsSubOwner.hadException).toEqual(false);
       expect(createRequestAsSubOwner.args.input).toEqual(
         expect.objectContaining({
-          id: '001',
-          displayName: 'FooBar',
+          id: "001",
+          displayName: "FooBar",
           owner: expect.any(String), // since its a uuid we just need to know the owner was added
-        }),
+        })
       );
     });
 
-    test('oidc static groups', () => {
+    test("oidc static groups", () => {
       const validSchema = `
       type Comment @model @auth(rules: [{ allow: groups, groups: ["Editor"], groupClaim: "groups", provider: oidc }]) {
         id: ID
@@ -196,19 +196,19 @@ describe('with identity claim feature flag disabled', () => {
       const createCommentInput: AppSyncVTLContext = {
         arguments: {
           input: {
-            id: '001',
-            content: 'Foobar',
+            id: "001",
+            content: "Foobar",
           },
         },
       };
       const getCommentArgs: AppSyncVTLContext = {
         arguments: {
-          id: '001',
+          id: "001",
         },
       };
       const out = transformer.transform(validSchema);
-      const createRequestTemplate = out.resolvers['Mutation.createComment.auth.1.req.vtl'];
-      const getRequestTemplate = out.resolvers['Query.getComment.auth.1.req.vtl'];
+      const createRequestTemplate = out.resolvers["Mutation.createComment.auth.1.req.vtl"];
+      const getRequestTemplate = out.resolvers["Query.getComment.auth.1.req.vtl"];
       // mutations
       const createRequestAsEditor = vtlTemplate.render(createRequestTemplate, {
         context: createCommentInput,

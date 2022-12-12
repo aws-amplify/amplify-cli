@@ -35,9 +35,9 @@ mutation CreateTodo {
 export const expected_result_mutation1 = {
   data: {
     createTodo: {
-      id: '1',
-      owner: 'user1',
-      content: 'todo1 content',
+      id: "1",
+      owner: "user1",
+      content: "todo1 content",
     },
   },
 };
@@ -57,9 +57,9 @@ mutation UpdateTodo {
 export const expected_result_mutation2 = {
   data: {
     updateTodo: {
-      id: '1',
-      owner: 'user1',
-      content: 'todo1 content updated',
+      id: "1",
+      owner: "user1",
+      content: "todo1 content updated",
     },
   },
 };

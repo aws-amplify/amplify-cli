@@ -14,12 +14,12 @@ export type CognitoConfiguration = ServiceQuestionsBaseResult &
   Triggers;
 
 export interface ServiceQuestionsBaseResult {
-  serviceName: 'Cognito';
+  serviceName: "Cognito";
   resourceName: string;
-  useDefault: 'default' | 'defaultSocial' | 'manual';
-  updateFlow?: 'default' | 'defaultSocial' | 'manual' | 'callbacks' | 'providers' | 'updateUserPoolGroups' | 'updateAdminQueries';
+  useDefault: "default" | "defaultSocial" | "manual";
+  updateFlow?: "default" | "defaultSocial" | "manual" | "callbacks" | "providers" | "updateUserPoolGroups" | "updateAdminQueries";
   requiredAttributes?: string[];
-  authSelections: 'userPoolOnly' | 'identityPoolAndUserPool' | 'identityPoolOnly';
+  authSelections: "userPoolOnly" | "identityPoolAndUserPool" | "identityPoolOnly";
   userPoolName?: string;
   usernameAttributes?: UsernameAttributes[];
   aliasAttributes?: AliasAttributes[];
@@ -43,7 +43,7 @@ export interface OAuthResult {
   hostedUIDomainName?: string;
   hostedUIProviderMeta?: any;
   hostedUIProviderCreds?: any;
-  AllowedOAuthFlows?: 'code' | 'implicit';
+  AllowedOAuthFlows?: "code" | "implicit";
   AllowedOAuthScopes?: string[];
   newCallbackURLs?: string[];
   newLogoutURLs?: string[];
@@ -87,8 +87,8 @@ export interface PasswordRecoveryResult {
 }
 
 export interface MfaResult {
-  mfaConfiguration?: 'OPTIONAL' | 'ON' | 'OFF';
-  mfaTypes?: ('SMS Text Message' | 'TOTP')[];
+  mfaConfiguration?: "OPTIONAL" | "ON" | "OFF";
+  mfaTypes?: ("SMS Text Message" | "TOTP")[];
   smsAuthenticationMessage?: string;
 }
 
@@ -103,13 +103,13 @@ export interface PasswordPolicyResult {
 }
 
 export enum AttributeType {
-  EMAIL = 'email',
-  PHONE_NUMBER = 'phone_number',
-  PREFERRED_USERNAME = 'preferred_username',
-  EMAIL_AND_PHONE_NUMBER = 'email, phone_number',
+  EMAIL = "email",
+  PHONE_NUMBER = "phone_number",
+  PREFERRED_USERNAME = "preferred_username",
+  EMAIL_AND_PHONE_NUMBER = "email, phone_number",
 }
 
-export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requires Symbols' | 'Requires Uppercase';
+export type PasswordPolicy = "Requires Lowercase" | "Requires Numbers" | "Requires Symbols" | "Requires Uppercase";
 
 export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.EMAIL_AND_PHONE_NUMBER;
 

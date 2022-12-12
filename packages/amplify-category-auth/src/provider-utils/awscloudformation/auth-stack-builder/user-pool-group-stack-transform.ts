@@ -1,20 +1,27 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from "@aws-cdk/core";
 import {
-  $TSAny, $TSContext,
-  AmplifyCategories, AmplifyCategoryTransform, AmplifyError, AmplifyStackTemplate, AmplifySupportedService,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
+  AmplifyError,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
   JSONUtilities,
-  pathManager, Template, writeCFNTemplate,
-} from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as vm from 'vm2';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
-import { AuthStackSynthesizer } from './stack-synthesizer';
+  pathManager,
+  Template,
+  writeCFNTemplate,
+} from "amplify-cli-core";
+import { formatter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as vm from "vm2";
+import { AuthInputState } from "../auth-inputs-manager/auth-input-state";
+import { CognitoCLIInputs } from "../service-walkthrough-types/awsCognito-user-input-types";
+import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from "./index";
+import { AuthStackSynthesizer } from "./stack-synthesizer";
 
 /**
  * UserPool groups metadata
@@ -52,7 +59,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   constructor(resourceName: string) {
     super(resourceName);
     this._authResourceName = resourceName;
-    this._resourceName = 'userPoolGroups';
+    this._resourceName = "userPoolGroups";
     this._synthesizer = new AuthStackSynthesizer();
     this._synthesizerOutputs = new AuthStackSynthesizer();
     this._app = new cdk.App();
@@ -85,76 +92,76 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
    * Generates CFN Resources for Auth
    */
   private generateStackResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
-    this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this._app, 'AmplifyUserPoolGroupStack', {
+    this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this._app, "AmplifyUserPoolGroupStack", {
       synthesizer: this._synthesizer,
     });
 
-    this.__userPoolGroupTemplateObjOutputs = new AmplifyUserPoolGroupStackOutputs(this._app, 'AmplifyUserPoolGroupStackOutputs', {
+    this.__userPoolGroupTemplateObjOutputs = new AmplifyUserPoolGroupStackOutputs(this._app, "AmplifyUserPoolGroupStackOutputs", {
       synthesizer: this._synthesizerOutputs,
     });
 
     // add CFN parameters
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'env',
+      "env"
     );
 
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'AuthRoleArn',
+      "AuthRoleArn"
     );
 
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'UnauthRoleArn',
+      "UnauthRoleArn"
     );
 
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
         default: `auth${props.cognitoResourceName}UserPoolId`,
       },
-      `auth${props.cognitoResourceName}UserPoolId`,
+      `auth${props.cognitoResourceName}UserPoolId`
     );
 
     if (props.identityPoolName) {
       this._userPoolGroupTemplateObj.addCfnParameter(
         {
-          type: 'String',
+          type: "String",
           default: `auth${props.cognitoResourceName}IdentityPoolId`,
         },
-        `auth${props.cognitoResourceName}IdentityPoolId`,
+        `auth${props.cognitoResourceName}IdentityPoolId`
       );
     }
 
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
         default: `auth${props.cognitoResourceName}AppClientID`,
       },
-      `auth${props.cognitoResourceName}AppClientID`,
+      `auth${props.cognitoResourceName}AppClientID`
     );
 
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
         default: `auth${props.cognitoResourceName}AppClientIDWeb`,
       },
-      `auth${props.cognitoResourceName}AppClientIDWeb`,
+      `auth${props.cognitoResourceName}AppClientIDWeb`
     );
 
     // add CFN condition
     this._userPoolGroupTemplateObj.addCfnCondition(
       {
-        expression: cdk.Fn.conditionEquals(this._userPoolGroupTemplateObj.getCfnParameter('env'), 'NONE'),
+        expression: cdk.Fn.conditionEquals(this._userPoolGroupTemplateObj.getCfnParameter("env"), "NONE"),
       },
-      'ShouldNotCreateEnvResources',
+      "ShouldNotCreateEnvResources"
     );
 
     // generate resources
@@ -162,12 +169,12 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
 
     // generate CFN outputs again to generate same Output Names as cdk doesn't allow resource with same logical names
     if (props.identityPoolName) {
-      props.groups.forEach(group => {
+      props.groups.forEach((group) => {
         this.__userPoolGroupTemplateObjOutputs.addCfnOutput(
           {
-            value: cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn').toString(),
+            value: cdk.Fn.getAtt(`${group.groupName}GroupRole`, "Arn").toString(),
           },
-          `${group.groupName}GroupRole`,
+          `${group.groupName}GroupRole`
         );
       });
     }
@@ -178,34 +185,36 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     const overrideDir = path.join(backendDir, this._category, this._resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-        return '';
+      const overrideCode: string = await fs.readFile(path.join(overrideDir, "build", "override.js"), "utf-8").catch(() => {
+        formatter.list(["No override File Found", `To override ${this._resourceName} run amplify override auth`]);
+        return "";
       });
       const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
+        console: "inherit",
         timeout: 5000,
         sandbox: {},
       });
       try {
-        await sandboxNode
-          .run(overrideCode)
-          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
+        await sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          "InvalidOverrideError",
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: "There may be runtime errors in your overrides file. If so, fix the errors and try again.",
+          },
+          err
+        );
       }
     }
   };
 
   /**
    * Object required to generate Stack using cdk
-  */
+   */
   private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
-    const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
+    const resourceDirPath = path.join(pathManager.getBackendDirPath(), "auth", "userPoolGroups", "user-pool-group-precedence.json");
     const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true });
     const cliState = new AuthInputState(context, this._authResourceName);
     this._cliInputs = cliState.getCLIInputPayload();
@@ -223,9 +232,9 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   public synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    const cfnUserPoolGroupStack: Template = templates.get('AmplifyUserPoolGroupStack')!;
+    const cfnUserPoolGroupStack: Template = templates.get("AmplifyUserPoolGroupStack")!;
     const templatesOutput = this._synthesizerOutputs.collectStacks();
-    const cfnUserPoolGroupOutputs: Template = templatesOutput.get('AmplifyUserPoolGroupStackOutputs')!;
+    const cfnUserPoolGroupOutputs: Template = templatesOutput.get("AmplifyUserPoolGroupStackOutputs")!;
     cfnUserPoolGroupStack.Outputs = cfnUserPoolGroupOutputs.Outputs;
     return cfnUserPoolGroupStack;
   };
@@ -236,8 +245,8 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       pathManager.getBackendDirPath(),
       this._category,
       this._resourceName,
-      'build',
-      cognitoStackFileName,
+      "build",
+      cognitoStackFileName
     );
     await writeCFNTemplate(template, cognitoStackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
@@ -251,16 +260,16 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       pathManager.getBackendDirPath(),
       this._category,
       this._resourceName,
-      'build',
-      'parameters.json',
+      "build",
+      "parameters.json"
     );
 
     const roles = {
       AuthRoleArn: {
-        'Fn::GetAtt': ['AuthRole', 'Arn'],
+        "Fn::GetAtt": ["AuthRole", "Arn"],
       },
       UnauthRoleArn: {
-        'Fn::GetAtt': ['UnauthRole', 'Arn'],
+        "Fn::GetAtt": ["UnauthRole", "Arn"],
       },
     };
 

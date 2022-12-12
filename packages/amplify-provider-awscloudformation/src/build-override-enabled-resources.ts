@@ -1,5 +1,5 @@
-import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
-import { $TSContext, $TSObject, IAmplifyResource } from 'amplify-cli-core';
+import { generateDependentResourcesType } from "@aws-amplify/amplify-category-custom";
+import { $TSContext, $TSObject, IAmplifyResource } from "amplify-cli-core";
 
 /**
  * Build all the cfn files for categories  that support overrides
@@ -13,7 +13,7 @@ export const buildOverridesEnabledResources = async (context: $TSContext, resour
     const { allResources } = await context.amplify.getResourceStatus();
     allBuildResources = allResources;
   }
-  allBuildResources.forEach(resourceCreated => {
+  allBuildResources.forEach((resourceCreated) => {
     resourcesToBuild.push({
       service: resourceCreated.service as string,
       category: resourceCreated.category as string,
@@ -21,7 +21,7 @@ export const buildOverridesEnabledResources = async (context: $TSContext, resour
     });
   });
   await generateDependentResourcesType();
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
+  await context.amplify.executeProviderUtils(context, "awscloudformation", "buildOverrides", {
     resourcesToBuild,
     forceCompile: true,
   });

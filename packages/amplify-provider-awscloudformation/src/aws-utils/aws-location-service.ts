@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
-import * as AWS from 'aws-sdk';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
-import aws from './aws.js';
+import { $TSContext } from "amplify-cli-core";
+import * as AWS from "aws-sdk";
+import { AwsSecrets, loadConfiguration } from "../configuration-manager";
+import aws from "./aws.js";
 
 export class LocationService {
   private static instance: LocationService;

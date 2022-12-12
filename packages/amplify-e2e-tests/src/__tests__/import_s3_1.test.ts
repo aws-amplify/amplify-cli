@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import * as path from "path";
+import * as fs from "fs-extra";
+import { $TSObject, JSONUtilities } from "amplify-cli-core";
 import {
   addAuthWithDefault,
   addFunction,
@@ -14,8 +14,8 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
+} from "@aws-amplify/amplify-e2e-core";
+import { randomizedFunctionName } from "../schema-api-directives/functionTester";
 import {
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
@@ -32,13 +32,13 @@ import {
   expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
   getS3ResourceName,
   expectS3LocalAndOGMetaFilesOutputMatching,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('s3 import', () => {
-  const projectPrefix = 'sssimp';
-  const ogProjectPrefix = 'ogsssimp';
+describe("s3 import", () => {
+  const projectPrefix = "sssimp";
+  const ogProjectPrefix = "ogsssimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -49,7 +49,7 @@ describe('s3 import', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the s3 bucket to import by other test projects
@@ -113,7 +113,7 @@ describe('s3 import', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('status should reflect correct values for imported storage', async () => {
+  it("status should reflect correct values for imported storage", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
@@ -122,9 +122,9 @@ describe('s3 import', () => {
 
     expectStorageProjectDetailsMatch(projectDetails, ogProjectDetails);
 
-    await amplifyStatus(projectRoot, 'Import');
+    await amplifyStatus(projectRoot, "Import");
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
+    await amplifyStatus(projectRoot, "No Change");
 
     expectLocalAndCloudMetaFilesMatching(projectRoot);
 
@@ -133,7 +133,7 @@ describe('s3 import', () => {
     expectStorageProjectDetailsMatch(projectDetails, ogProjectDetails);
 
     await removeImportedS3WithDefault(projectRoot);
-    await amplifyStatus(projectRoot, 'Unlink');
+    await amplifyStatus(projectRoot, "Unlink");
 
     await amplifyPushAuth(projectRoot);
 
@@ -142,28 +142,28 @@ describe('s3 import', () => {
     expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage(projectRoot);
   });
 
-  it('imported storage with function and crud on storage should push', async () => {
+  it("imported storage with function and crud on storage should push", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
 
-    const functionName = randomizedFunctionName('s3impfunc');
+    const functionName = randomizedFunctionName("s3impfunc");
     const storageResourceName = getS3ResourceName(projectRoot);
 
     await addFunction(
       projectRoot,
       {
         name: functionName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
+          permissions: ["storage"],
+          choices: ["auth", "storage"],
           resources: [storageResourceName],
           resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
+          operations: ["create", "read", "update", "delete"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projectRoot);
@@ -171,9 +171,9 @@ describe('s3 import', () => {
     const projectDetails = getStorageProjectDetails(projectRoot);
 
     // Verify that index.js gets the userpool env var name injected
-    const amplifyBackendDirPath = path.join(projectRoot, 'amplify', 'backend');
-    const functionFilePath = path.join(amplifyBackendDirPath, 'function', functionName);
-    const amplifyFunctionIndexFilePath = path.join(functionFilePath, 'src', 'index.js');
+    const amplifyBackendDirPath = path.join(projectRoot, "amplify", "backend");
+    const functionFilePath = path.join(amplifyBackendDirPath, "function", functionName);
+    const amplifyFunctionIndexFilePath = path.join(functionFilePath, "src", "index.js");
     const s3ResourceNameUpperCase = projectDetails.storageResourceName.toUpperCase();
     const s3EnvVarName = `STORAGE_${s3ResourceNameUpperCase}_BUCKETNAME`;
 
@@ -195,11 +195,11 @@ describe('s3 import', () => {
 
     // Verify if generated policy has the userpool id as resource
     expect(
-      functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0]['Fn::Join'][1][1].Ref,
+      functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0]["Fn::Join"][1][1].Ref
     ).toEqual(bucketNameParameterName);
   });
 
-  it('imported storage, push, pull to empty directory, files should match', async () => {
+  it("imported storage, push, pull to empty directory, files should match", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -207,23 +207,23 @@ describe('s3 import', () => {
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
 
-    const functionName = randomizedFunctionName('s3impfunc');
+    const functionName = randomizedFunctionName("s3impfunc");
     const storageResourceName = getS3ResourceName(projectRoot);
 
     await addFunction(
       projectRoot,
       {
         name: functionName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
+          permissions: ["storage"],
+          choices: ["auth", "storage"],
           resources: [storageResourceName],
           resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
+          operations: ["create", "read", "update", "delete"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projectRoot);
@@ -234,7 +234,7 @@ describe('s3 import', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('s3import-pull');
+      projectRootPull = await createNewProjectDir("s3import-pull");
 
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 

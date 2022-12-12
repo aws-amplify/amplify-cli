@@ -13,17 +13,17 @@ export type Validator = (value: string) => true | string | Promise<true | string
 */
 
 export const alphanumeric =
-  (message = 'Input must be alphanumeric'): Validator =>
+  (message = "Input must be alphanumeric"): Validator =>
   (input: string) =>
     /^[a-zA-Z0-9]+$/.test(input) ? true : message;
 
 export const matchRegex =
-  (validatorRegex : RegExp, message?: string): Validator =>
+  (validatorRegex: RegExp, message?: string): Validator =>
   (input: string) =>
     validatorRegex.test(input) ? true : message || `Input does not match the regular expression ${validatorRegex}`;
 
 export const integer =
-  (message = 'Input must be a number'): Validator =>
+  (message = "Input must be a number"): Validator =>
   (input: string) =>
     /^[0-9]+$/.test(input) ? true : message;
 
@@ -40,7 +40,7 @@ export const minLength =
 export const exact =
   (expected: string, message?: string): Validator =>
   (input: string) =>
-    input === expected ? true : message ?? 'Input does not match expected value';
+    input === expected ? true : message ?? "Input does not match expected value";
 
 /**
  * Logically "and"s several validators
@@ -51,7 +51,7 @@ export const and =
   async (input: string) => {
     for (const validator of validators) {
       const result = await validator(input);
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         return message ?? result;
       }
     }
@@ -82,4 +82,4 @@ export const or =
 export const not =
   (validator: Validator, message: string): Validator =>
   async (input: string) =>
-    typeof (await validator(input)) === 'string' ? true : message;
+    typeof (await validator(input)) === "string" ? true : message;

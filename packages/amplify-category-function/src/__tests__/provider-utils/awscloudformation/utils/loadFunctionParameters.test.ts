@@ -1,7 +1,7 @@
-import { JSONUtilities } from 'amplify-cli-core';
-import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
+import { JSONUtilities } from "amplify-cli-core";
+import { loadFunctionParameters } from "../../../../provider-utils/awscloudformation/utils/loadFunctionParameters";
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),
@@ -10,11 +10,11 @@ jest.mock('amplify-cli-core', () => ({
 
 const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 
-describe('load function parameters', () => {
+describe("load function parameters", () => {
   const permissionsBase = {
     permissions: {
       api: {
-        myapiname: ['create', 'read'],
+        myapiname: ["create", "read"],
       },
     },
   };
@@ -26,20 +26,20 @@ describe('load function parameters', () => {
     mutableParametersState: {
       permissions: {
         api: {
-          myapiname: ['create', 'read', 'update'],
+          myapiname: ["create", "read", "update"],
         },
         auth: {
-          myauth: ['read'],
+          myauth: ["read"],
         },
       },
     },
   };
 
-  it('destructures mutableParametersState if it exists', () => {
+  it("destructures mutableParametersState if it exists", () => {
     JSONUtilities_mock.readJson.mockImplementationOnce(
-      jest.fn(() => ({ ...funcParamsBase, ...permissionsBase, ...mutableParametersStub })),
+      jest.fn(() => ({ ...funcParamsBase, ...permissionsBase, ...mutableParametersStub }))
     );
-    expect(loadFunctionParameters('resourcePath')).toEqual({
+    expect(loadFunctionParameters("resourcePath")).toEqual({
       ...funcParamsBase,
       ...mutableParametersStub.mutableParametersState,
     });

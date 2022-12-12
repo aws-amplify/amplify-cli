@@ -1,19 +1,17 @@
-import {
-  $TSAny, $TSContext, pathManager, stateManager,
-} from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import { isDataStoreEnabled } from 'graphql-transformer-core';
-import _ from 'lodash';
-import * as path from 'path';
-import { S3 } from './aws-utils/aws-s3';
-import { ProviderName as providerName } from './constants';
-import { isAmplifyAdminApp } from './utils/admin-helpers';
+import { $TSAny, $TSContext, pathManager, stateManager } from "amplify-cli-core";
+import * as fs from "fs-extra";
+import { isDataStoreEnabled } from "graphql-transformer-core";
+import _ from "lodash";
+import * as path from "path";
+import { S3 } from "./aws-utils/aws-s3";
+import { ProviderName as providerName } from "./constants";
+import { isAmplifyAdminApp } from "./utils/admin-helpers";
 
 /**
  * Generates DataStore Models for Admin UI CMS to consume
  */
 export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
-  const appSyncResources = resources.filter(resource => resource.service === 'AppSync');
+  const appSyncResources = resources.filter((resource) => resource.service === "AppSync");
 
   if (appSyncResources.length === 0) {
     return;
@@ -31,7 +29,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   }
 
   const { isAdminApp } = await isAmplifyAdminApp(appId);
-  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
+  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), "api", resourceName));
 
   if (!isAdminApp || !isDSEnabled) {
     return;
@@ -42,12 +40,12 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   // Calling this API introduces a circular dependency because this API in turn executes the CLI to generate codegen assets
 
   const originalProjectConfig = stateManager.getProjectConfig();
-  const relativeTempOutputDir = 'amplify-codegen-temp';
+  const relativeTempOutputDir = "amplify-codegen-temp";
   const absoluteTempOutputDir = path.join(pathManager.findProjectRoot(), relativeTempOutputDir);
   const forceJSCodegenProjectConfig = {
-    frontend: 'javascript',
+    frontend: "javascript",
     javascript: {
-      framework: 'none',
+      framework: "none",
       config: {
         SourceDir: relativeTempOutputDir,
       },
@@ -61,21 +59,21 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     // generateModels and generateModelIntrospection print confusing and duplicate output when executing these codegen paths
     // so pipe stdout to a file and then reset it at the end to suppress this output
     await fs.ensureDir(absoluteTempOutputDir);
-    const tempStdoutWrite = fs.createWriteStream(path.join(absoluteTempOutputDir, 'temp-console-log.txt'));
+    const tempStdoutWrite = fs.createWriteStream(path.join(absoluteTempOutputDir, "temp-console-log.txt"));
     process.stdout.write = tempStdoutWrite.write.bind(tempStdoutWrite);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/models.js#L60
-    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
+    await context.amplify.invokePluginMethod(context, "codegen", undefined, "generateModels", [context]);
 
     // generateModelIntrospection expects --output-dir option to be set
-    _.set(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
+    _.set(context, ["parameters", "options", "output-dir"], relativeTempOutputDir);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
-    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
+    await context.amplify.invokePluginMethod(context, "codegen", undefined, "generateModelIntrospection", [context]);
 
-    const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
-    const localSchemaJsPath = path.join(absoluteTempOutputDir, 'models', 'schema.js');
-    const localModelIntrospectionPath = path.join(absoluteTempOutputDir, 'model-introspection.json');
+    const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, "api", resourceName), "schema.graphql");
+    const localSchemaJsPath = path.join(absoluteTempOutputDir, "models", "schema.js");
+    const localModelIntrospectionPath = path.join(absoluteTempOutputDir, "model-introspection.json");
 
     // ==================== DO NOT MODIFY THIS MAP UNLESS YOU ARE 100% SURE OF THE IMPLICATIONS ====================
     // this map represents an implicit interface between the CLI and the Studio CMS frontend
@@ -105,7 +103,7 @@ const uploadCMSArtifacts = async (s3Client: S3, uploadMap: Record<LocalPath, S3K
       Body: fs.createReadStream(localPath),
       Key: s3Key,
     }))
-    .map(uploadParams => s3Client.uploadFile(uploadParams, doNotShowSpinner));
+    .map((uploadParams) => s3Client.uploadFile(uploadParams, doNotShowSpinner));
   await Promise.all(uploadPromises);
 };
 

@@ -11,19 +11,19 @@ import {
   deleteProjectDir,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from "../environment/env";
 import {
   createStorageSettings,
   expectLocalAndCloudMetaFilesMatching,
   expectS3LocalAndOGMetaFilesOutputMatching,
   getShortId,
   importS3,
-} from '../import-helpers';
+} from "../import-helpers";
 
-describe('s3 import a', () => {
-  const projectPrefix = 'sssimp';
-  const ogProjectPrefix = 'ogsssimp';
+describe("s3 import a", () => {
+  const projectPrefix = "sssimp";
+  const ogProjectPrefix = "ogsssimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -34,7 +34,7 @@ describe('s3 import a', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the s3 bucket to import by other test projects
@@ -93,15 +93,15 @@ describe('s3 import a', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('imported storage, create prod env, files should match', async () => {
+  it("imported storage, create prod env, files should match", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
 
     await amplifyPushAuth(projectRoot);
 
-    const firstEnvName = 'integtest';
-    const secondEnvName = 'prod';
+    const firstEnvName = "integtest";
+    const secondEnvName = "prod";
 
     await addEnvironmentWithImportedAuth(projectRoot, {
       envName: secondEnvName,

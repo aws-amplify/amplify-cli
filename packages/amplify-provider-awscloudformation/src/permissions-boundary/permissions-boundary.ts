@@ -1,13 +1,18 @@
 import {
-  $TSContext, stateManager, getPermissionsBoundaryArn, setPermissionsBoundaryArn, AmplifyError, AMPLIFY_DOCS_URL,
-} from 'amplify-cli-core';
-import { prompt } from 'inquirer';
-import { IAMClient } from '../aws-utils/aws-iam';
+  $TSContext,
+  stateManager,
+  getPermissionsBoundaryArn,
+  setPermissionsBoundaryArn,
+  AmplifyError,
+  AMPLIFY_DOCS_URL,
+} from "amplify-cli-core";
+import { prompt } from "inquirer";
+import { IAMClient } from "../aws-utils/aws-iam";
 
 export const configurePermissionsBoundaryForExistingEnv = async (context: $TSContext) => {
   setPermissionsBoundaryArn(await permissionsBoundarySupplier(context));
   context.print.info(
-    'Run `amplify push --force` to update IAM permissions boundary if you have no other resource changes.\nRun `amplify push` to deploy IAM permissions boundary alongside other cloud resource changes.',
+    "Run `amplify push --force` to update IAM permissions boundary if you have no other resource changes.\nRun `amplify push` to deploy IAM permissions boundary alongside other cloud resource changes."
   );
 };
 
@@ -19,7 +24,7 @@ export const configurePermissionsBoundaryForInit = async (context: $TSContext) =
     setPermissionsBoundaryArn(
       await permissionsBoundarySupplier(context, { doPrompt: false, envNameSupplier: () => envName }),
       envName,
-      context.exeInfo.teamProviderInfo,
+      context.exeInfo.teamProviderInfo
     );
   } else {
     // amplify env add
@@ -41,29 +46,29 @@ const permissionsBoundarySupplierDefaultOptions = {
  */
 const permissionsBoundarySupplier = async (
   context: $TSContext,
-  options?: Partial<typeof permissionsBoundarySupplierDefaultOptions>,
+  options?: Partial<typeof permissionsBoundarySupplierDefaultOptions>
 ): Promise<string | undefined> => {
   const { required, doPrompt, envNameSupplier } = { ...permissionsBoundarySupplierDefaultOptions, ...options };
-  const headlessPermissionsBoundary = context?.input?.options?.['permissions-boundary'];
+  const headlessPermissionsBoundary = context?.input?.options?.["permissions-boundary"];
 
   const validate = context.amplify.inputValidation({
-    operator: 'regex',
-    value: '^(|arn:aws:iam::(\\d{12}|aws):policy/.+)$',
-    onErrorMsg: 'Specify a valid IAM Policy ARN',
+    operator: "regex",
+    value: "^(|arn:aws:iam::(\\d{12}|aws):policy/.+)$",
+    onErrorMsg: "Specify a valid IAM Policy ARN",
     required: true,
   });
 
-  if (typeof headlessPermissionsBoundary === 'string') {
+  if (typeof headlessPermissionsBoundary === "string") {
     if (validate(headlessPermissionsBoundary)) {
       return headlessPermissionsBoundary;
     }
-    context.print.error('The permissions boundary ARN specified is not a valid IAM Policy ARN');
+    context.print.error("The permissions boundary ARN specified is not a valid IAM Policy ARN");
   }
 
   const isYes = context?.input?.options?.yes;
   if (required && (isYes || !doPrompt)) {
-    throw new AmplifyError('InputValidationError', {
-      message: 'A permissions boundary ARN must be specified using --permissions-boundary',
+    throw new AmplifyError("InputValidationError", {
+      message: "A permissions boundary ARN must be specified using --permissions-boundary",
       link: `${AMPLIFY_DOCS_URL}/cli/project/permissions-boundary/`,
     });
   }
@@ -74,12 +79,12 @@ const permissionsBoundarySupplier = async (
   const envName = envNameSupplier();
 
   const defaultValue = getPermissionsBoundaryArn(envName);
-  const hasDefault = typeof defaultValue === 'string' && defaultValue.length > 0;
-  const promptSuffix = hasDefault ? ' (leave blank to remove the permissions boundary configuration)' : '';
+  const hasDefault = typeof defaultValue === "string" && defaultValue.length > 0;
+  const promptSuffix = hasDefault ? " (leave blank to remove the permissions boundary configuration)" : "";
 
   const { permissionsBoundaryArn } = await prompt<{ permissionsBoundaryArn: string }>({
-    type: 'input',
-    name: 'permissionsBoundaryArn',
+    type: "input",
+    name: "permissionsBoundaryArn",
     message: `Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles in the ${envName} environment${promptSuffix}:`,
     default: defaultValue,
     validate,
@@ -96,7 +101,7 @@ const rolloverPermissionsBoundaryToNewEnvironment = async (context: $TSContext) 
   const newEnv = context.exeInfo.localEnvInfo.envName;
   const headlessPermissionsBoundary = await permissionsBoundarySupplier(context, { doPrompt: false, envNameSupplier: () => newEnv });
   // if headless policy specified, apply that and return
-  if (typeof headlessPermissionsBoundary === 'string') {
+  if (typeof headlessPermissionsBoundary === "string") {
     setPermissionsBoundaryArn(headlessPermissionsBoundary, newEnv, context.exeInfo.teamProviderInfo);
     return;
   }
@@ -107,24 +112,24 @@ const rolloverPermissionsBoundaryToNewEnvironment = async (context: $TSContext) 
     return;
   }
 
-  const currEnv = stateManager.getLocalEnvInfo()?.envName ?? 'current';
+  const currEnv = stateManager.getLocalEnvInfo()?.envName ?? "current";
 
   // if existing policy is accessible in new env, apply that one
   if (await isPolicyAccessible(context, currBoundary)) {
     setPermissionsBoundaryArn(currBoundary, newEnv, context.exeInfo.teamProviderInfo);
     context.print.info(
-      `Permissions boundary ${currBoundary} from the ${currEnv} environment has automatically been applied to the ${newEnv} environment.\nTo modify this, run \`amplify env update\`.\n`,
+      `Permissions boundary ${currBoundary} from the ${currEnv} environment has automatically been applied to the ${newEnv} environment.\nTo modify this, run \`amplify env update\`.\n`
     );
     return;
   }
   // if existing policy policy is not accessible in the new environment, prompt for a new one
   context.print.warning(
-    `Permissions boundary ${currBoundary} from the ${currEnv} environment cannot be applied to resources the ${newEnv} environment.`,
+    `Permissions boundary ${currBoundary} from the ${currEnv} environment cannot be applied to resources the ${newEnv} environment.`
   );
   setPermissionsBoundaryArn(
     await permissionsBoundarySupplier(context, { required: true, envNameSupplier: () => newEnv }),
     newEnv,
-    context.exeInfo.teamProviderInfo,
+    context.exeInfo.teamProviderInfo
   );
 };
 

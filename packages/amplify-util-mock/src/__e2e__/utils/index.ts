@@ -1,34 +1,34 @@
-import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import * as dynamoEmulator from 'amplify-dynamodb-simulator';
-import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { v4 } from 'uuid';
-import _ from 'lodash';
-import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
-import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
-import { getFunctionDetails } from './lambda-helper';
-import { DynamoDB } from 'aws-sdk';
-import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
-import { querySearchable } from '../../utils/opensearch';
-import { isWindowsPlatform } from 'amplify-cli-core';
+import { AmplifyAppSyncSimulator } from "@aws-amplify/amplify-appsync-simulator";
+import * as dynamoEmulator from "amplify-dynamodb-simulator";
+import * as openSearchEmulator from "@aws-amplify/amplify-opensearch-simulator";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { v4 } from "uuid";
+import _ from "lodash";
+import { processTransformerStacks } from "../../CFNParser/appsync-resource-processor";
+import { configureDDBDataSource, createAndUpdateTable } from "../../utils/dynamo-db";
+import { getFunctionDetails } from "./lambda-helper";
+import { DynamoDB } from "aws-sdk";
+import { functionRuntimeContributorFactory } from "amplify-nodejs-function-runtime-provider";
+import { querySearchable } from "../../utils/opensearch";
+import { isWindowsPlatform } from "amplify-cli-core";
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
-export * from './graphql-client';
+export * from "./graphql-client";
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock("amplify-cli-core", () => ({
+  ...(jest.requireActual("amplify-cli-core") as {}),
   pathManager: {
-    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
-    getAmplifyLibRoot: jest.fn().mockReturnValue('')
-  }
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue("../amplify-dynamodb-simulator"),
+    getAmplifyLibRoot: jest.fn().mockReturnValue(""),
+  },
 }));
 
 export async function launchDDBLocal() {
   let dbPath;
   while (true) {
-    dbPath = path.join('/tmp', `amplify-cli-emulator-dynamodb-${v4()}`);
+    dbPath = path.join("/tmp", `amplify-cli-emulator-dynamodb-${v4()}`);
     if (!fs.existsSync(dbPath)) break;
   }
 
@@ -42,9 +42,13 @@ export async function launchDDBLocal() {
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB, opensearchURL?: URL): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+export async function deploy(
+  transformerOutput: any,
+  client?: DynamoDB,
+  opensearchURL?: URL
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
-  config.appSync.apiKey = 'da-fake-api-key';
+  config.appSync.apiKey = "da-fake-api-key";
 
   if (client) {
     await createAndUpdateTable(client, config);
@@ -61,10 +65,10 @@ export async function deploy(transformerOutput: any, client?: DynamoDB, opensear
 export async function reDeploy(
   transformerOutput: any,
   simulator: AmplifyAppSyncSimulator,
-  client?: DynamoDB,
+  client?: DynamoDB
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
-  config.appSync.apiKey = 'da-fake-api-key';
+  config.appSync.apiKey = "da-fake-api-key";
 
   if (client) {
     await createAndUpdateTable(client, config);
@@ -77,17 +81,17 @@ export async function reDeploy(
 
 async function configureLambdaDataSource(config) {
   config.dataSources
-    .filter(d => d.type === 'AWS_LAMBDA')
-    .forEach(d => {
+    .filter((d) => d.type === "AWS_LAMBDA")
+    .forEach((d) => {
       const arn = d.LambdaFunctionArn;
-      const arnParts = arn.split(':');
+      const arnParts = arn.split(":");
       const functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
-      d.invoke = payload => {
-        logDebug('Invoking lambda with config', lambdaConfig);
+      d.invoke = (payload) => {
+        logDebug("Invoking lambda with config", lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,
-          runtime: 'nodejs',
+          runtime: "nodejs",
           handler: `${functionName}.${lambdaConfig.handler}`,
           event: JSON.stringify(payload),
         });
@@ -100,26 +104,26 @@ async function configureOpensearchDataSource(config, opensearchURL) {
   if (isWindowsPlatform) {
     return config;
   }
-  const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
-  const opensearchDataSources = config.dataSources.filter(d => d.type === opensearchDataSourceType);
+  const opensearchDataSourceType = "AMAZON_ELASTICSEARCH";
+  const opensearchDataSources = config.dataSources.filter((d) => d.type === opensearchDataSourceType);
   if (_.isEmpty(opensearchDataSources)) {
     return config;
   }
   return {
     ...config,
     dataSources: await Promise.all(
-      config.dataSources.map(async d => {
+      config.dataSources.map(async (d) => {
         if (d.type !== opensearchDataSourceType) {
           return d;
         }
         return {
           ...d,
-          invoke: async payload => {
+          invoke: async (payload) => {
             return await querySearchable(opensearchURL, payload);
           },
         };
-      }),
-    )
+      })
+    ),
   };
 }
 
@@ -129,12 +133,12 @@ export async function terminateDDB(emulator, dbPath) {
       await emulator.terminate();
     }
   } catch (e) {
-    logDebug('Failed to terminate the Local DynamoDB Server', e);
+    logDebug("Failed to terminate the Local DynamoDB Server", e);
   }
   try {
     fs.removeSync(dbPath);
   } catch (e) {
-    logDebug('Failed delete Local DynamoDB Server Folder', e);
+    logDebug("Failed delete Local DynamoDB Server Folder", e);
   }
 }
 
@@ -151,23 +155,27 @@ export function logDebug(...msgs) {
   }
 }
 
-export async function setupSearchableMockResources(pathToSearchableMockResources: string): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator}> {
-  const pathToSearchableTrigger = path.join(pathToSearchableMockResources, 'searchable-lambda-trigger');
+export async function setupSearchableMockResources(
+  pathToSearchableMockResources: string
+): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator }> {
+  const pathToSearchableTrigger = path.join(pathToSearchableMockResources, "searchable-lambda-trigger");
   fs.ensureDirSync(pathToSearchableTrigger);
 
-  const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', '..', 'resources', 'mock-searchable-lambda-trigger');
+  const searchableLambdaResourceDir = path.resolve(__dirname, "..", "..", "..", "resources", "mock-searchable-lambda-trigger");
   fs.copySync(searchableLambdaResourceDir, pathToSearchableTrigger, { overwrite: true });
 
-  const pathToOpensearchLocal = path.join(pathToSearchableMockResources, openSearchEmulator.packageName, openSearchEmulator.relativePathToOpensearchLocal);
+  const pathToOpensearchLocal = path.join(
+    pathToSearchableMockResources,
+    openSearchEmulator.packageName,
+    openSearchEmulator.relativePathToOpensearchLocal
+  );
   fs.ensureDirSync(pathToOpensearchLocal);
-  const pathToOpensearchData = path.join(pathToSearchableMockResources, 'searchable-data');
+  const pathToOpensearchData = path.join(pathToSearchableMockResources, "searchable-data");
   fs.ensureDirSync(pathToOpensearchData);
 
-  const emulator = await openSearchEmulator.launch(
-    pathToOpensearchData, {
-      port: null,
-    }
-  );
+  const emulator = await openSearchEmulator.launch(pathToOpensearchData, {
+    port: null,
+  });
 
   return { emulator };
 }

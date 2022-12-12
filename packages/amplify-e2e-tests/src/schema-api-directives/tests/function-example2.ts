@@ -1,15 +1,15 @@
 //special handling needed becasue we need to set up the function in a differnt region
-import path from 'path';
-import fs from 'fs-extra';
+import path from "path";
+import fs from "fs-extra";
 import {
   amplifyPush,
   addFunction,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   updateAuthAddUserGroups,
   addAuthWithDefault,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-import { updateFunctionNameInSchema } from '../functionTester';
+import { updateFunctionNameInSchema } from "../functionTester";
 
 import {
   configureAmplify,
@@ -18,23 +18,23 @@ import {
   setupUser,
   signInUser,
   getConfiguredAppsyncClientCognitoAuth,
-} from '../authHelper';
+} from "../authHelper";
 
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { updateSchemaInTestProject, testQueries } from "../common";
 
-import { randomizedFunctionName } from '../functionTester';
+import { randomizedFunctionName } from "../functionTester";
 
-const GROUPNAME = 'Admin';
-const USERNAME = 'user1';
-const PASSWORD = 'user1Password';
+const GROUPNAME = "Admin";
+const USERNAME = "user1";
+const PASSWORD = "user1Password";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir);
-  const functionName = await addFunctionWithAuthAccess(projectDir, testModule, 'func');
+  const functionName = await addFunctionWithAuthAccess(projectDir, testModule, "func");
   await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
-  updateFunctionNameInSchema(projectDir, '<function-name>', functionName);
+  updateFunctionNameInSchema(projectDir, "<function-name>", functionName);
 
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
   await amplifyPush(projectDir);
@@ -55,20 +55,20 @@ export async function addFunctionWithAuthAccess(projectDir: string, testModule: 
     projectDir,
     {
       name: functionName,
-      functionTemplate: 'Hello World',
+      functionTemplate: "Hello World",
       additionalPermissions: {
-        permissions: ['auth'],
-        choices: ['auth'],
+        permissions: ["auth"],
+        choices: ["auth"],
         resources: [authResourceName],
         resourceChoices: [authResourceName],
-        operations: ['create', 'read', 'update', 'delete'],
+        operations: ["create", "read", "update", "delete"],
       },
     },
-    'nodejs',
+    "nodejs"
   );
 
-  const amplifyBackendDirPath = path.join(projectDir, 'amplify', 'backend');
-  const amplifyFunctionIndexFilePath = path.join(amplifyBackendDirPath, 'function', functionName, 'src', 'index.js');
+  const amplifyBackendDirPath = path.join(projectDir, "amplify", "backend");
+  const amplifyFunctionIndexFilePath = path.join(amplifyBackendDirPath, "function", functionName, "src", "index.js");
 
   fs.writeFileSync(amplifyFunctionIndexFilePath, testModule[funcName]);
 
@@ -76,7 +76,7 @@ export async function addFunctionWithAuthAccess(projectDir: string, testModule: 
   const userPoolIDEnvVarName = `AUTH_${cognitoResourceNameUpperCase}_USERPOOLID`;
 
   let funcitonIndexFileContents = fs.readFileSync(amplifyFunctionIndexFilePath).toString();
-  const placeHolderRegex = new RegExp('AUTH_MYRESOURCENAME_USERPOOLID', 'g');
+  const placeHolderRegex = new RegExp("AUTH_MYRESOURCENAME_USERPOOLID", "g");
   funcitonIndexFileContents = funcitonIndexFileContents.replace(placeHolderRegex, userPoolIDEnvVarName);
   fs.writeFileSync(amplifyFunctionIndexFilePath, funcitonIndexFileContents);
 
@@ -150,7 +150,7 @@ exports.handler = async event => {
 };
 `;
 //schema
-const env = '${env}';
+const env = "${env}";
 export const schema = `
 #change: replaced "ResolverFunction" with the "<function-name>" placeholder, the test will replace it with the actual function name
 type Query {

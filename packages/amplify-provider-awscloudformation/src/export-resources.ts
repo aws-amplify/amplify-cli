@@ -1,16 +1,23 @@
 import {
-  $TSAny, $TSContext, AmplifyFault, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import * as path from 'path';
-import rimraf from 'rimraf';
+  $TSAny,
+  $TSContext,
+  AmplifyFault,
+  JSONUtilities,
+  PathConstants,
+  spinner,
+  stateManager,
+  validateExportDirectoryPath,
+} from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import _ from "lodash";
+import * as path from "path";
+import rimraf from "rimraf";
 // eslint-disable-next-line import/no-cycle
-import { ResourceExport } from './resource-package/resource-export';
-import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';
+import { ResourceExport } from "./resource-package/resource-export";
+import { ResourceDefinition, StackIncludeDetails, StackParameters } from "./resource-package/types";
 
-const backup = 'backup';
+const backup = "backup";
 /**
  * Walks through
  */
@@ -34,7 +41,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
   try {
     const resourceExport = new ResourceExport(context, amplifyExportFolder);
 
-    spinner.text = 'Building and packaging resources';
+    spinner.text = "Building and packaging resources";
     const packagedResources = await resourceExport.packageBuildWriteResources(resourceDefinition as any);
 
     spinner.text = `Writing resources`;
@@ -53,27 +60,31 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
     spinner.text = `Generating category stack mappings`;
     createCategoryStackMapping(transformedResources, amplifyExportFolder);
 
-    spinner.text = 'Generating export tag file';
+    spinner.text = "Generating export tag file";
     createTagsFile(amplifyExportFolder);
 
-    spinner.text = 'Setting permissions';
+    spinner.text = "Setting permissions";
     await setPermissions(amplifyExportFolder);
     spinner.succeed();
     printer.blankLine();
-    printer.success('Successfully exported');
-    printer.info('Next steps:');
-    printer.info('You can now integrate your Amplify Backend into your CDK App');
+    printer.success("Successfully exported");
+    printer.info("Next steps:");
+    printer.info("You can now integrate your Amplify Backend into your CDK App");
     printer.info(
-      'Install the "Amplify Exported Backend" CDK Construct by running "npm i @aws-amplify/cdk-exported-backend" in your CDK app',
+      'Install the "Amplify Exported Backend" CDK Construct by running "npm i @aws-amplify/cdk-exported-backend" in your CDK app'
     );
-    printer.info('For more information: https://docs.amplify.aws/cli/usage/export-to-cdk');
+    printer.info("For more information: https://docs.amplify.aws/cli/usage/export-to-cdk");
     printer.blankLine();
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw new AmplifyFault('ResourceNotReadyFault', {
-      message: ex.message,
-    }, ex);
+    throw new AmplifyFault(
+      "ResourceNotReadyFault",
+      {
+        message: ex.message,
+      },
+      ex
+    );
   } finally {
     removeBackup(amplifyExportFolder);
     spinner.stop();
@@ -96,10 +107,10 @@ const createTagsFile = (exportPath: string): void => {
 
   JSONUtilities.writeJson(
     path.join(exportPath, PathConstants.ExportTagsJsonFileName),
-    hydratedTags.map(tag => ({
+    hydratedTags.map((tag) => ({
       key: tag.Key,
       value: tag.Value,
-    })),
+    }))
   );
 };
 
@@ -111,7 +122,7 @@ const createTagsFile = (exportPath: string): void => {
 const createCategoryStackMapping = (resources: ResourceDefinition[], amplifyExportFolder: string): void => {
   JSONUtilities.writeJson(
     path.join(amplifyExportFolder, PathConstants.ExportCategoryStackMappingJsonFilename),
-    resources.map(r => _.pick(r, ['category', 'resourceName', 'service'])),
+    resources.map((r) => _.pick(r, ["category", "resourceName", "service"]))
   );
 };
 
@@ -124,7 +135,7 @@ const checkForExistingExport = async (amplifyExportFolder: string): Promise<bool
   if (fs.existsSync(amplifyExportFolder)) {
     proceed = await prompter.yesOrNo(
       `Existing files at ${amplifyExportFolder} will be deleted and new files will be generated, continue?`,
-      true,
+      true
     );
   }
   await fs.ensureDir(amplifyExportFolder);
@@ -179,7 +190,7 @@ const transformManifestParameters = (stackParameters: StackIncludeDetails, expor
     }
     Object.keys(stackParameters.nestedStacks)
       .sort()
-      .forEach(key => {
+      .forEach((key) => {
         manifest.loadNestedStacks[key] = transformManifestParameters(stackParameters.nestedStacks[key], exportPath);
       });
     return manifest;

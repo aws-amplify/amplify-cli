@@ -1,12 +1,12 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { stateManager } from 'amplify-cli-core';
-import { loadConfigurationForEnv } from './configuration-manager';
-import Cloudformation from './aws-utils/aws-cfn';
-import { S3 } from './aws-utils/aws-s3';
-import { deleteEnv } from './amplify-service-manager';
-import { S3BackendZipFileName, ProviderName } from './constants';
-import { downloadZip, extractZip } from './zip-util';
+import * as fs from "fs-extra";
+import * as path from "path";
+import { stateManager } from "amplify-cli-core";
+import { loadConfigurationForEnv } from "./configuration-manager";
+import Cloudformation from "./aws-utils/aws-cfn";
+import { S3 } from "./aws-utils/aws-s3";
+import { deleteEnv } from "./amplify-service-manager";
+import { S3BackendZipFileName, ProviderName } from "./constants";
+import { downloadZip, extractZip } from "./zip-util";
 
 /**
  * Entry point for removing an environment
@@ -23,7 +23,7 @@ export const run = async (context, envName, deleteS3): Promise<void> => {
     deploymentBucketName = stateManager.getTeamProviderInfo()?.[envName]?.[ProviderName]?.DeploymentBucketName;
     if (await s3.ifBucketExists(deploymentBucketName)) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
-      const tempDir = path.join(amplifyDir, envName, '.temp');
+      const tempDir = path.join(amplifyDir, envName, ".temp");
       storageCategoryBucketName = await getStorageCategoryBucketNameFromCloud(context, envName, s3, tempDir);
 
       fs.removeSync(tempDir);
@@ -35,7 +35,7 @@ export const run = async (context, envName, deleteS3): Promise<void> => {
       removeBucket = true;
     } else {
       context.print.info(
-        `Unable to remove env: ${envName} because deployment bucket ${deploymentBucketName} does not exist or has been deleted.`,
+        `Unable to remove env: ${envName} because deployment bucket ${deploymentBucketName} does not exist or has been deleted.`
       );
     }
   }
@@ -61,7 +61,7 @@ const getStorageCategoryBucketNameFromCloud = async (context, envName, s3, tempD
   const storage = amplifyMeta.storage || {};
 
   // filter out imported buckets as we cannot touch those.
-  const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3' && storage[r].serviceType !== 'imported');
+  const s3Storage = Object.keys(storage).filter((r) => storage[r].service === "S3" && storage[r].serviceType !== "imported");
 
   if (!s3Storage.length) {
     return undefined;

@@ -1,14 +1,14 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { S3 } from '../aws-utils/aws-s3';
-import constants from '../constants';
-import { getEnvironmentNetworkInfo } from '../network/environment-info';
-import { NetworkStack } from '../network/stack';
-import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
-import { consolidateApiGatewayPolicies } from './consolidate-apigw-policies';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { S3 } from "../aws-utils/aws-s3";
+import constants from "../constants";
+import { getEnvironmentNetworkInfo } from "../network/environment-info";
+import { NetworkStack } from "../network/stack";
+import { prePushCfnTemplateModifier } from "../pre-push-cfn-processor/pre-push-cfn-modifier";
+import { consolidateApiGatewayPolicies } from "./consolidate-apigw-policies";
 // eslint-disable-next-line import/no-cycle
-import { uploadAuthTriggerTemplate } from './upload-auth-trigger-template';
+import { uploadAuthTriggerTemplate } from "./upload-auth-trigger-template";
 
 const { ProviderName: providerName } = constants;
 
@@ -26,21 +26,24 @@ export const createEnvLevelConstructs = async (context: $TSContext): Promise<voi
     updatedMeta,
     await createNetworkResources(context, stackName, hasContainers),
     await consolidateApiGatewayPolicies(context, stackName),
-    await uploadAuthTriggerTemplate(context),
+    await uploadAuthTriggerTemplate(context)
   );
 
   context.amplify.updateProviderAmplifyMeta(providerName, updatedMeta);
 
   if (hasContainers) {
-    const containerResourcesFilenames = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
+    const containerResourcesFilenames = ["custom-resource-pipeline-awaiter.zip", "codepipeline-action-buildspec-generator-lambda.zip"];
     for (const file of containerResourcesFilenames) {
       await uploadResourceFile(context, file);
     }
   }
 };
 
-const createNetworkResources = async (context: $TSContext, stackName: string, needsVpc: boolean)
-  : Promise<{ NetworkStackS3Url: string }> => {
+const createNetworkResources = async (
+  context: $TSContext,
+  stackName: string,
+  needsVpc: boolean
+): Promise<{ NetworkStackS3Url: string }> => {
   if (!needsVpc) {
     return {
       NetworkStackS3Url: undefined,
@@ -49,7 +52,7 @@ const createNetworkResources = async (context: $TSContext, stackName: string, ne
   const cfn = await getNetworkResourceCfn(context, stackName);
   await prePushCfnTemplateModifier(cfn);
 
-  const cfnFile = 'networkingStackTemplate.json';
+  const cfnFile = "networkingStackTemplate.json";
 
   const s3 = await S3.getInstance(context);
 
@@ -70,17 +73,17 @@ const createNetworkResources = async (context: $TSContext, stackName: string, ne
  * get the network resource cfn
  */
 export const getNetworkResourceCfn = async (context: $TSContext, stackName: string): Promise<$TSAny> => {
-  const vpcName = 'Amplify/VPC-do-not-delete';
+  const vpcName = "Amplify/VPC-do-not-delete";
 
   const { vpcId, internetGatewayId, subnetCidrs } = await getEnvironmentNetworkInfo(context, {
     stackName,
     vpcName,
-    vpcCidr: '10.0.0.0/16',
+    vpcCidr: "10.0.0.0/16",
     subnetsCount: 3,
     subnetMask: 24,
   });
 
-  const stack = new NetworkStack(undefined, 'Amplify', {
+  const stack = new NetworkStack(undefined, "Amplify", {
     stackName,
     vpcName,
     vpcId,
@@ -96,9 +99,9 @@ const envHasContainers = (context: $TSContext): boolean => {
 
   if (apiObj) {
     // eslint-disable-next-line consistent-return, array-callback-return
-    const found = Object.keys(apiObj).some(key => {
+    const found = Object.keys(apiObj).some((key) => {
       const api = apiObj[key];
-      if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
+      if (api.providerPlugin === providerName && api.service === "ElasticContainer") {
         return true;
       }
     });
@@ -110,9 +113,9 @@ const envHasContainers = (context: $TSContext): boolean => {
 
   if (hostingObj) {
     // eslint-disable-next-line consistent-return, array-callback-return
-    const found = Object.keys(hostingObj).some(key => {
+    const found = Object.keys(hostingObj).some((key) => {
       const hosting = hostingObj[key];
-      if (hosting.providerPlugin === providerName && hosting.service === 'ElasticContainer') {
+      if (hosting.providerPlugin === providerName && hosting.service === "ElasticContainer") {
         return true;
       }
     });
@@ -126,7 +129,7 @@ const envHasContainers = (context: $TSContext): boolean => {
 };
 
 const uploadResourceFile = async (context: $TSContext, fileName: string): Promise<string> => {
-  const filePath = path.join(__dirname, '..', '..', 'resources', fileName);
+  const filePath = path.join(__dirname, "..", "..", "resources", fileName);
   const s3 = await S3.getInstance(context);
 
   // TODO: check if already exists

@@ -1,111 +1,111 @@
-import * as gsiUtils from '../../graphql-resource-manager/dynamodb-gsi-helpers';
+import * as gsiUtils from "../../graphql-resource-manager/dynamodb-gsi-helpers";
 
-import { makeTableWithGSI } from './gsi-test-helpers';
+import { makeTableWithGSI } from "./gsi-test-helpers";
 
-describe('DynamoDB GSI Utils', () => {
-  describe('getGSIDetails', () => {
-    describe('With hash key', () => {
+describe("DynamoDB GSI Utils", () => {
+  describe("getGSIDetails", () => {
+    describe("With hash key", () => {
       const table1 = makeTableWithGSI({
         gsis: [
           {
-            indexName: 'index1',
+            indexName: "index1",
             attributes: {
               hash: {
-                name: 'title',
-                type: 'N',
+                name: "title",
+                type: "N",
               },
             },
           },
         ],
       });
 
-      it('should get the index', () => {
-        const gsiDetils = gsiUtils.getGSIDetails('index1', table1);
+      it("should get the index", () => {
+        const gsiDetils = gsiUtils.getGSIDetails("index1", table1);
         expect(gsiDetils).toBeDefined();
         expect(gsiDetils?.gsi).toEqual(table1.Properties.GlobalSecondaryIndexes?.[0]);
       });
 
-      it('should get the attributes used in index', () => {
-        const gsiDetils = gsiUtils.getGSIDetails('index1', table1);
+      it("should get the attributes used in index", () => {
+        const gsiDetils = gsiUtils.getGSIDetails("index1", table1);
         expect(gsiDetils).toBeDefined();
         expect(gsiDetils?.attributeDefinition).toEqual([
           {
-            AttributeName: 'title',
-            AttributeType: 'N',
+            AttributeName: "title",
+            AttributeType: "N",
           },
         ]);
       });
     });
 
-    describe('with hash and sort key', () => {
+    describe("with hash and sort key", () => {
       const table1 = makeTableWithGSI({
         gsis: [
           {
-            indexName: 'index1',
+            indexName: "index1",
             attributes: {
               hash: {
-                name: 'title',
-                type: 'S',
+                name: "title",
+                type: "S",
               },
               sort: {
-                name: 'createdAt',
-                type: 'S',
+                name: "createdAt",
+                type: "S",
               },
             },
           },
         ],
       });
-      it('should get the index', () => {
-        const gsiDetils = gsiUtils.getGSIDetails('index1', table1);
+      it("should get the index", () => {
+        const gsiDetils = gsiUtils.getGSIDetails("index1", table1);
         expect(gsiDetils).toBeDefined();
         expect(gsiDetils?.gsi).toEqual(table1.Properties.GlobalSecondaryIndexes?.[0]);
       });
 
-      it('should get the attributes used in index', () => {
-        const gsiDetils = gsiUtils.getGSIDetails('index1', table1);
+      it("should get the attributes used in index", () => {
+        const gsiDetils = gsiUtils.getGSIDetails("index1", table1);
         expect(gsiDetils).toBeDefined();
         expect(gsiDetils?.attributeDefinition).toEqual([
           {
-            AttributeName: 'title',
-            AttributeType: 'S',
+            AttributeName: "title",
+            AttributeType: "S",
           },
           {
-            AttributeName: 'createdAt',
-            AttributeType: 'S',
+            AttributeName: "createdAt",
+            AttributeType: "S",
           },
         ]);
       });
     });
   });
 
-  describe('addGSI', () => {
+  describe("addGSI", () => {
     const gsiItem = {
       attributeDefinition: [
         {
-          AttributeName: 'id',
-          AttributeType: 'N',
+          AttributeName: "id",
+          AttributeType: "N",
         },
         {
-          AttributeName: 'title',
-          AttributeType: 'N',
+          AttributeName: "title",
+          AttributeType: "N",
         },
       ],
       gsi: {
-        IndexName: 'byTitileAndId',
+        IndexName: "byTitileAndId",
         KeySchema: [
           {
-            AttributeName: 'title',
-            KeyType: 'HASH',
+            AttributeName: "title",
+            KeyType: "HASH",
           },
           {
-            AttributeName: 'id',
-            KeyType: 'SORT',
+            AttributeName: "id",
+            KeyType: "SORT",
           },
         ],
         Projection: {},
       },
     };
-    it('should add GSI to a table with no GSI', () => {
+    it("should add GSI to a table with no GSI", () => {
       const tableWithNoGSI = makeTableWithGSI({
         gsis: [],
       });
@@ -114,24 +114,24 @@ describe('DynamoDB GSI Utils', () => {
       expect(updatedTable).not.toEqual(tableWithNoGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
         {
-          AttributeName: 'id',
-          AttributeType: 'S',
+          AttributeName: "id",
+          AttributeType: "S",
         },
         {
-          AttributeName: 'title',
-          AttributeType: 'N',
+          AttributeName: "title",
+          AttributeType: "N",
         },
       ]);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toEqual([gsiItem.gsi]);
     });
 
-    it('should add GSI to a table with existing GSI', () => {
+    it("should add GSI to a table with existing GSI", () => {
       const tableWithGSI = makeTableWithGSI({
         gsis: [
           {
-            indexName: 'byDescription',
+            indexName: "byDescription",
             attributes: {
-              hash: { name: 'description' },
+              hash: { name: "description" },
             },
           },
         ],
@@ -141,16 +141,16 @@ describe('DynamoDB GSI Utils', () => {
       expect(updatedTable).not.toEqual(tableWithGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
         {
-          AttributeName: 'id',
-          AttributeType: 'S',
+          AttributeName: "id",
+          AttributeType: "S",
         },
         {
-          AttributeName: 'description',
-          AttributeType: 'S',
+          AttributeName: "description",
+          AttributeType: "S",
         },
         {
-          AttributeName: 'title',
-          AttributeType: 'N',
+          AttributeName: "title",
+          AttributeType: "N",
         },
       ]);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toEqual([
@@ -159,13 +159,13 @@ describe('DynamoDB GSI Utils', () => {
       ]);
     });
 
-    it('should throw error when an index with the same name exists', () => {
+    it("should throw error when an index with the same name exists", () => {
       const tableWithGSI = makeTableWithGSI({
         gsis: [
           {
-            indexName: 'byTitileAndId',
+            indexName: "byTitileAndId",
             attributes: {
-              hash: { name: 'title' },
+              hash: { name: "title" },
             },
           },
         ],
@@ -188,23 +188,23 @@ describe('DynamoDB GSI Utils', () => {
         }, []),
       });
       expect(() => gsiUtils.addGSI(gsiItem, tableWithMaxGSI)).toThrowError(
-        `DynamoDB ${tableWithMaxGSI.Properties.TableName} can have max of ${gsiUtils.MAX_GSI_PER_TABLE} GSIs`,
+        `DynamoDB ${tableWithMaxGSI.Properties.TableName} can have max of ${gsiUtils.MAX_GSI_PER_TABLE} GSIs`
       );
     });
 
-    it('should not have duplicate AttributeDefinitions', () => {
+    it("should not have duplicate AttributeDefinitions", () => {
       const tableWithGSI = makeTableWithGSI({
         gsis: [
           {
-            indexName: 'originalTitleAndId',
+            indexName: "originalTitleAndId",
             attributes: {
               hash: {
-                name: 'title',
-                type: 'S',
+                name: "title",
+                type: "S",
               },
               sort: {
-                name: 'id',
-                type: 'S',
+                name: "id",
+                type: "S",
               },
             },
           },
@@ -215,12 +215,12 @@ describe('DynamoDB GSI Utils', () => {
       expect(updatedTable).not.toEqual(tableWithGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
         {
-          AttributeName: 'id',
-          AttributeType: 'S',
+          AttributeName: "id",
+          AttributeType: "S",
         },
         {
-          AttributeName: 'title',
-          AttributeType: 'S',
+          AttributeName: "title",
+          AttributeType: "S",
         },
       ]);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toEqual([
@@ -229,37 +229,37 @@ describe('DynamoDB GSI Utils', () => {
       ]);
     });
   });
-  describe('removeGsi', () => {
+  describe("removeGsi", () => {
     const tableDefinition = {
       gsis: [
         {
-          indexName: 'byTitle',
+          indexName: "byTitle",
           attributes: {
             hash: {
-              name: 'title',
-              type: 'S',
+              name: "title",
+              type: "S",
             },
             sort: {
-              name: 'id',
-              type: 'S',
+              name: "id",
+              type: "S",
             },
           },
         },
       ],
     };
-    it('should throw error if there are no GSIs in the table', () => {
+    it("should throw error if there are no GSIs in the table", () => {
       const tableWithNoGSI = makeTableWithGSI({ gsis: [] });
-      expect(() => gsiUtils.removeGSI('missingGsi', tableWithNoGSI)).toThrowError('No GSIs are present in the table');
+      expect(() => gsiUtils.removeGSI("missingGsi", tableWithNoGSI)).toThrowError("No GSIs are present in the table");
     });
 
-    it('should throw error when trying to remove index which does not exist', () => {
+    it("should throw error when trying to remove index which does not exist", () => {
       const tableWitGSI = makeTableWithGSI(tableDefinition);
-      expect(() => gsiUtils.removeGSI('missingGsi', tableWitGSI)).toThrowError(`Table MyTable does not contain GSI missingGsi`);
+      expect(() => gsiUtils.removeGSI("missingGsi", tableWitGSI)).toThrowError(`Table MyTable does not contain GSI missingGsi`);
     });
-    it('should remove index when the GSI is present', () => {
+    it("should remove index when the GSI is present", () => {
       const tableWitGSI = makeTableWithGSI(tableDefinition);
 
-      const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
+      const updatedTable = gsiUtils.removeGSI("byTitle", tableWitGSI);
 
       expect(updatedTable).not.toEqual(tableWitGSI);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toBeUndefined();
@@ -267,51 +267,51 @@ describe('DynamoDB GSI Utils', () => {
       expect(updatedTable.Properties.AttributeDefinitions).not.toEqual(tableWitGSI.Properties.AttributeDefinitions);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
         {
-          AttributeName: 'id',
-          AttributeType: 'S',
+          AttributeName: "id",
+          AttributeType: "S",
         },
       ]);
     });
 
-    it('should keep the attributes that are in other indices even if the same is used in removed index', () => {
+    it("should keep the attributes that are in other indices even if the same is used in removed index", () => {
       const tableWitGSI = makeTableWithGSI({
         ...tableDefinition,
         gsis: [
           ...tableDefinition.gsis,
           {
-            indexName: 'byTitleAndId',
+            indexName: "byTitleAndId",
             attributes: {
               hash: {
-                name: 'title',
-                type: 'S',
+                name: "title",
+                type: "S",
               },
               sort: {
-                name: 'updatedAt',
-                type: 'N',
+                name: "updatedAt",
+                type: "N",
               },
             },
           },
         ],
       });
-      const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
+      const updatedTable = gsiUtils.removeGSI("byTitle", tableWitGSI);
 
       expect(updatedTable).not.toEqual(tableWitGSI);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toHaveLength(1);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toEqual([
         {
-          IndexName: 'byTitleAndId',
+          IndexName: "byTitleAndId",
           KeySchema: [
             {
-              AttributeName: 'title',
-              KeyType: 'HASH',
+              AttributeName: "title",
+              KeyType: "HASH",
             },
             {
-              AttributeName: 'updatedAt',
-              KeyType: 'SORT',
+              AttributeName: "updatedAt",
+              KeyType: "SORT",
             },
           ],
           Projection: {
-            ProjectionType: 'ALL',
+            ProjectionType: "ALL",
           },
         },
       ]);
@@ -319,33 +319,33 @@ describe('DynamoDB GSI Utils', () => {
       expect(updatedTable.Properties.AttributeDefinitions).toEqual(tableWitGSI.Properties.AttributeDefinitions);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
         {
-          AttributeName: 'id',
-          AttributeType: 'S',
+          AttributeName: "id",
+          AttributeType: "S",
         },
         {
-          AttributeName: 'title',
-          AttributeType: 'S',
+          AttributeName: "title",
+          AttributeType: "S",
         },
         {
-          AttributeName: 'updatedAt',
-          AttributeType: 'N',
+          AttributeName: "updatedAt",
+          AttributeType: "N",
         },
       ]);
     });
 
-    it('should keep the attributes that are in table KeySchema even if the same is used in removed index', () => {
+    it("should keep the attributes that are in table KeySchema even if the same is used in removed index", () => {
       const tableWitGSI = makeTableWithGSI({
-        ...tableDefinition
+        ...tableDefinition,
       });
-      const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
+      const updatedTable = gsiUtils.removeGSI("byTitle", tableWitGSI);
 
       expect(updatedTable).not.toEqual(tableWitGSI);
       expect(updatedTable.Properties?.GlobalSecondaryIndexes).toBeUndefined();
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
         {
-          AttributeName: 'id',
-          AttributeType: 'S',
-        }
+          AttributeName: "id",
+          AttributeType: "S",
+        },
       ]);
     });
   });

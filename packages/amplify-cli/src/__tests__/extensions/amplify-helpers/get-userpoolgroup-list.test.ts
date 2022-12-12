@@ -1,25 +1,25 @@
-import { getUserPoolGroupList } from '../../../extensions/amplify-helpers/get-userpoolgroup-list';
+import { getUserPoolGroupList } from "../../../extensions/amplify-helpers/get-userpoolgroup-list";
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   pathManager: {
-    getBackendDirPath: jest.fn().mockImplementation(() => ''),
+    getBackendDirPath: jest.fn().mockImplementation(() => ""),
   },
   JSONUtilities: {
     readJson: jest.fn().mockImplementation(() => [
       {
-        groupName: 'Admins',
+        groupName: "Admins",
         precedence: 1,
         customPolicies: [
           {
-            PolicyName: 'admin-group-policy',
+            PolicyName: "admin-group-policy",
             PolicyDocument: {
-              Version: '2012-10-17',
+              Version: "2012-10-17",
               Statement: [
                 {
-                  Sid: 'statement1',
-                  Effect: 'Allow',
-                  Action: ['s3:CreateBucket'],
-                  Resource: ['arn:aws:s3:::*'],
+                  Sid: "statement1",
+                  Effect: "Allow",
+                  Action: ["s3:CreateBucket"],
+                  Resource: ["arn:aws:s3:::*"],
                 },
               ],
             },
@@ -27,16 +27,16 @@ jest.mock('amplify-cli-core', () => ({
         ],
       },
       {
-        groupName: 'Editors',
+        groupName: "Editors",
         precedence: 2,
       },
     ]),
   },
 }));
 
-describe('getUserPoolGroupList', () => {
-  it('should return array of groupNames', () => {
+describe("getUserPoolGroupList", () => {
+  it("should return array of groupNames", () => {
     const userPoolGroupList = getUserPoolGroupList();
-    expect(userPoolGroupList).toStrictEqual(['Admins', 'Editors']);
+    expect(userPoolGroupList).toStrictEqual(["Admins", "Editors"]);
   });
 });

@@ -24,19 +24,19 @@ mutation CreatePost(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    title: 'title1',
-    groups: 'Admin',
+    id: "1",
+    title: "title1",
+    groups: "Admin",
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      groups: 'Admin',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1",
+      groups: "Admin",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -56,19 +56,19 @@ export const mutation2 = `
 }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
-    title: 'title1-updated',
-    groups: 'Admin',
+    id: "1",
+    title: "title1-updated",
+    groups: "Admin",
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updatePost: {
-      id: '1',
-      title: 'title1-updated',
-      groups: 'Admin',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1-updated",
+      groups: "Admin",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

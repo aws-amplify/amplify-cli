@@ -12,16 +12,14 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
-import AWS from 'aws-sdk';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
+import { JSONUtilities } from "amplify-cli-core";
+import AWS from "aws-sdk";
 
 const customIAMPolicy: CustomIAMPolicy = {
-  Effect: 'Allow',
-  Action: [
-    'ssm:GetParameter',
-  ],
+  Effect: "Allow",
+  Action: ["ssm:GetParameter"],
   Resource: [],
 };
 const customIAMPolicies: CustomIAMPolicy[] = [];
@@ -29,7 +27,7 @@ const customIAMPolicies: CustomIAMPolicy[] = [];
 let projRoot: string;
 
 beforeEach(async () => {
-  projRoot = await createNewProjectDir('testCusomtPolicies');
+  projRoot = await createNewProjectDir("testCusomtPolicies");
 });
 
 afterEach(async () => {
@@ -37,7 +35,7 @@ afterEach(async () => {
   deleteProjectDir(projRoot);
 });
 
-it('should init and deploy storage DynamoDB + Lambda trigger, attach custom policies to the Lambda', async () => {
+it("should init and deploy storage DynamoDB + Lambda trigger, attach custom policies to the Lambda", async () => {
   await initJSProjectWithProfile(projRoot, {});
   const funcName = `addCustomPoliciesToFunction${generateRandomShortId()}`;
   await addSimpleDDB(projRoot, {});
@@ -46,12 +44,12 @@ it('should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
     projRoot,
     {
       name: funcName,
-      functionTemplate: 'Lambda trigger',
-      triggerType: 'DynamoDB',
-      eventSource: 'DynamoDB',
+      functionTemplate: "Lambda trigger",
+      triggerType: "DynamoDB",
+      eventSource: "DynamoDB",
     },
-    'nodejs',
-    addLambdaTrigger,
+    "nodejs",
+    addLambdaTrigger
   );
 
   const meta = getProjectMeta(projRoot);
@@ -59,38 +57,42 @@ it('should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
 
   // Put SSM parameter
   const ssmClient = new AWS.SSM({ region });
-  await ssmClient.putParameter({
-    Name: '/amplify/testCustomPolicies',
-    Value: 'testCustomPoliciesValue',
-    Type: 'String',
-    Overwrite: true,
-  }).promise();
+  await ssmClient
+    .putParameter({
+      Name: "/amplify/testCustomPolicies",
+      Value: "testCustomPoliciesValue",
+      Type: "String",
+      Overwrite: true,
+    })
+    .promise();
 
-  const getParaResponse = await ssmClient.getParameter({
-    Name: '/amplify/testCustomPolicies',
-  }).promise();
+  const getParaResponse = await ssmClient
+    .getParameter({
+      Name: "/amplify/testCustomPolicies",
+    })
+    .promise();
   const ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
-  const customPoliciesPath = getCustomPoliciesPath(projRoot, 'function', funcName);
+  const customPoliciesPath = getCustomPoliciesPath(projRoot, "function", funcName);
   customIAMPolicies.push(customIAMPolicy);
   JSONUtilities.writeJson(customPoliciesPath, customIAMPolicies);
 
-  overrideFunctionCodeNode(projRoot, funcName, 'get-ssm-parameter.js');
+  overrideFunctionCodeNode(projRoot, funcName, "get-ssm-parameter.js");
 
   await amplifyPushAuth(projRoot);
 
   const lambdaEvent = {
-    secretName: '/amplify/testCustomPolicies',
+    secretName: "/amplify/testCustomPolicies",
   };
 
   // check that the lambda response includes the secret value
   const response = await invokeFunction(`${funcName}-integtest`, JSON.stringify(lambdaEvent), region);
-  expect(JSON.parse(response.Payload.toString())?.Value).toEqual('testCustomPoliciesValue');
+  expect(JSON.parse(response.Payload.toString())?.Value).toEqual("testCustomPoliciesValue");
 });
 
 type CustomIAMPolicy = {
   Action: string[];
   Effect: string;
   Resource: string[];
-}
+};

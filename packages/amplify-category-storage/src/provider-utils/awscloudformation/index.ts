@@ -1,17 +1,15 @@
 /* eslint-disable */
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import _ from 'lodash';
-import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
-import { importedS3EnvInit, importS3 } from './import/import-s3';
+import { ensureEnvParamManager } from "@aws-amplify/amplify-environment-parameters";
+import { $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import _ from "lodash";
+import { importDynamoDB, importedDynamoDBEnvInit } from "./import/import-dynamodb";
+import { importedS3EnvInit, importS3 } from "./import/import-s3";
 
-export { importResource } from './import';
+export { importResource } from "./import";
 
 export const addResource = async (context: $TSContext, category: string, service: string, options: $TSAny) => {
-  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
+  const serviceMetadata = ((await import("../supported-services")) as $TSAny).supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = await import(serviceWalkthroughSrc);
@@ -20,26 +18,26 @@ export const addResource = async (context: $TSContext, category: string, service
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
     return resourceName;
   });
-}
+};
 
 export const updateResource = async (context: $TSContext, category: string, service: string) => {
-  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
+  const serviceMetadata = ((await import("../supported-services")) as $TSAny).supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = await import(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
-    const errMessage = 'Update functionality not available for this service';
+    const errMessage = "Update functionality not available for this service";
     printer.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
-}
+};
 
 export const migrateResource = async (context: $TSContext, projectPath: string, service: string, resourceName: string) => {
-  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
+  const serviceMetadata = ((await import("../supported-services")) as $TSAny).supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { migrate } = await import(serviceWalkthroughSrc);
@@ -50,19 +48,19 @@ export const migrateResource = async (context: $TSContext, projectPath: string, 
   }
 
   return migrate(context, projectPath, resourceName);
-}
+};
 
 export const getPermissionPolicies = async (service: string, resourceName: string, crudOptions: $TSAny) => {
-  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
+  const serviceMetadata = ((await import("../supported-services")) as $TSAny).supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = await import(serviceWalkthroughSrc);
 
   return getIAMPolicies(resourceName, crudOptions);
-}
+};
 
 export const updateConfigOnEnvInit = async (context: $TSContext, category: string, resourceName: string, service: string) => {
-  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
+  const serviceMetadata = ((await import("../supported-services")) as $TSAny).supportedServices[service];
   const { provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
@@ -73,15 +71,15 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
   // ask only env specific questions
   const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, resourceName);
 
-  const resource = _.get(context.exeInfo, ['amplifyMeta', category, resourceName]);
+  const resource = _.get(context.exeInfo, ["amplifyMeta", category, resourceName]);
 
   // Imported auth resource behavior is different from Amplify managed resources, as
   // they are immutable and all parameters and values are derived from the currently
   // cloud deployed values.
-  if (resource && resource.serviceType === 'imported') {
+  if (resource && resource.serviceType === "imported") {
     let envSpecificParametersResult;
 
-    const envInitFunction = service === 'S3' ? importedS3EnvInit : importedDynamoDBEnvInit;
+    const envInitFunction = service === "S3" ? importedS3EnvInit : importedDynamoDBEnvInit;
 
     const { doServiceWalkthrough, succeeded, envSpecificParameters } = await envInitFunction(
       context,
@@ -92,12 +90,12 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
       providerPlugin,
       currentEnvSpecificValues,
       isInHeadlessMode(context),
-      isInHeadlessMode(context) ? getHeadlessParams(context) : {},
+      isInHeadlessMode(context) ? getHeadlessParams(context) : {}
     );
 
     // No need for headless check as this will never be true for headless
     if (doServiceWalkthrough === true) {
-      const importFunction = service === 'S3' ? importS3 : importDynamoDB;
+      const importFunction = service === "S3" ? importS3 : importDynamoDB;
       const importResult = await importFunction(
         context,
         {
@@ -107,19 +105,19 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
         } as $TSAny,
         resourceParams,
         providerPlugin,
-        false,
+        false
       );
 
       if (importResult) {
         envSpecificParametersResult = importResult.envSpecificParameters;
       } else {
-        throw new Error('There was an error importing the previously configured storage configuration to the new environment.');
+        throw new Error("There was an error importing the previously configured storage configuration to the new environment.");
       }
     } else if (succeeded) {
       envSpecificParametersResult = envSpecificParameters;
     } else {
       // succeeded === false | undefined
-      throw new Error('There was an error importing the previously configured storage configuration to the new environment.');
+      throw new Error("There was an error importing the previously configured storage configuration to the new environment.");
     }
 
     // If the imported resource was synced up to the cloud before, copy over the timestamp since frontend generation
@@ -134,7 +132,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
         throwIfNotExist: false,
       });
 
-      const cloudTimestamp = _.get(currentMeta, [category, resourceName, 'lastPushTimeStamp'], undefined);
+      const cloudTimestamp = _.get(currentMeta, [category, resourceName, "lastPushTimeStamp"], undefined);
 
       if (cloudTimestamp) {
         resource.lastPushTimeStamp = cloudTimestamp;
@@ -142,25 +140,25 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
         resource.lastPushTimeStamp = new Date();
       }
 
-      _.set(meta, [category, resourceName, 'lastPushTimeStamp'], cloudTimestamp);
+      _.set(meta, [category, resourceName, "lastPushTimeStamp"], cloudTimestamp);
       stateManager.setMeta(undefined, meta);
     }
 
     return envSpecificParametersResult;
   }
-}
+};
 
 const isInHeadlessMode = (context: $TSContext) => {
   return context.exeInfo.inputParams.yes;
-}
+};
 
 const getHeadlessParams = (context: $TSContext) => {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSONUtilities.parse(inputParams) : inputParams;
+    const { categories = {} } = typeof inputParams === "string" ? JSONUtilities.parse(inputParams) : inputParams;
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);
   }
-}
+};

@@ -1,28 +1,28 @@
-import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
-import crypto from 'crypto';
-import { hashElement, HashElementOptions } from 'folder-hash';
-import * as fs from 'fs-extra';
-import globby from 'globby';
-import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
-import _ from 'lodash';
-import * as path from 'path';
-import { v4 as uuid } from 'uuid';
-import { categoryName } from '../../../constants';
-import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from './constants';
-import { getLayerConfiguration, LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
-import { LayerParameters, LayerPermission, LayerRuntime, LayerVersionMetadata, PermissionEnum } from './layerParams';
-import { updateLayerArtifacts } from './storeResources';
+import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from "amplify-cli-core";
+import crypto from "crypto";
+import { hashElement, HashElementOptions } from "folder-hash";
+import * as fs from "fs-extra";
+import globby from "globby";
+import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from "inquirer";
+import _ from "lodash";
+import * as path from "path";
+import { v4 as uuid } from "uuid";
+import { categoryName } from "../../../constants";
+import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from "./constants";
+import { getLayerConfiguration, LayerConfiguration, loadLayerConfigurationFile } from "./layerConfiguration";
+import { LayerParameters, LayerPermission, LayerRuntime, LayerVersionMetadata, PermissionEnum } from "./layerParams";
+import { updateLayerArtifacts } from "./storeResources";
 
 // These glob patterns cover the resource files Amplify stores in the layer resource's directory,
 // layer-parameters.json must NOT be there.
 const layerResourceGlobs = [parametersFileName, `*${cfnTemplateSuffix}`];
 
 // File path literals
-const libPathName = 'lib';
-const optPathName = 'opt';
-const packageJson = 'package.json';
-const pipfile = 'Pipfile';
-const pipfileLock = 'Pipfile.lock';
+const libPathName = "lib";
+const optPathName = "opt";
+const packageJson = "package.json";
+const pipfile = "Pipfile";
+const pipfileLock = "Pipfile.lock";
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -31,13 +31,13 @@ export interface LayerInputParams {
 }
 
 export function mapVersionNumberToChoice(layerVersion: LayerVersionMetadata): string {
-  return `${layerVersion.Version}: ${layerVersion.Description || '(no description)'}`;
+  return `${layerVersion.Version}: ${layerVersion.Description || "(no description)"}`;
 }
 
 export function layerVersionQuestion(versions: string[], message: string, defaultOption?: string): ListQuestion {
   return {
-    type: 'list',
-    name: 'versionSelection',
+    type: "list",
+    name: "versionSelection",
     message,
     choices: versions,
     default: defaultOption || 0,
@@ -46,43 +46,43 @@ export function layerVersionQuestion(versions: string[], message: string, defaul
 
 export function layerNameQuestion(projectName: string): InputQuestion {
   return {
-    type: 'input',
-    name: 'layerName',
-    message: 'Provide a name for your Lambda layer:',
+    type: "input",
+    name: "layerName",
+    message: "Provide a name for your Lambda layer:",
     validate: (input: string) => {
       input = input.trim();
       const meta = stateManager.getMeta();
       if (!/^[a-zA-Z0-9]{1,87}$/.test(input)) {
-        return 'Lambda layer names must be 1-87 alphanumeric characters long.';
+        return "Lambda layer names must be 1-87 alphanumeric characters long.";
       } else if (meta?.function?.input || meta?.function?.[`${projectName}${input}`]) {
         return `A Lambda layer with the name ${input} already exists in this project.`;
       }
       return true;
     },
-    default: `layer${uuid().split('-')[0]}`,
+    default: `layer${uuid().split("-")[0]}`,
   };
 }
 
 export function layerPermissionsQuestion(params?: PermissionEnum[]): CheckboxQuestion {
   return {
-    type: 'checkbox',
-    name: 'layerPermissions',
+    type: "checkbox",
+    name: "layerPermissions",
     message:
-      'The current AWS account will always have access to this layer.\nOptionally, configure who else can access this layer. (Hit <Enter> to skip)',
+      "The current AWS account will always have access to this layer.\nOptionally, configure who else can access this layer. (Hit <Enter> to skip)",
     choices: [
       {
-        name: 'Specific AWS accounts',
+        name: "Specific AWS accounts",
         value: PermissionEnum.AwsAccounts,
         checked: _.includes(params, PermissionEnum.AwsAccounts),
       },
       {
-        name: 'Specific AWS organization',
+        name: "Specific AWS organization",
         value: PermissionEnum.AwsOrg,
         checked: _.includes(params, PermissionEnum.AwsOrg),
       },
       {
-        name: 'Public (Anyone on AWS can use this layer)',
-        short: 'Public',
+        name: "Public (Anyone on AWS can use this layer)",
+        short: "Public",
         value: PermissionEnum.Public,
         checked: _.includes(params, PermissionEnum.Public),
       },
@@ -94,11 +94,11 @@ export function layerPermissionsQuestion(params?: PermissionEnum[]): CheckboxQue
 export async function layerAccountAccessPrompt(defaultAccountIds?: string[]): Promise<string[]> {
   const hasDefaults = defaultAccountIds && defaultAccountIds.length > 0;
   const answer = await prompt({
-    type: 'input',
-    name: 'authorizedAccountIds',
-    message: 'Provide a list of comma-separated AWS account IDs:',
+    type: "input",
+    name: "authorizedAccountIds",
+    message: "Provide a list of comma-separated AWS account IDs:",
     validate: (input: string) => {
-      const accounts = input.split(',');
+      const accounts = input.split(",");
       for (const accountId of accounts) {
         if (!/^[0-9]{12}$/.test(accountId.trim())) {
           return `AWS account IDs must be 12 digits long. ${accountId} did not match the criteria.`;
@@ -106,19 +106,19 @@ export async function layerAccountAccessPrompt(defaultAccountIds?: string[]): Pr
       }
       return true;
     },
-    default: hasDefaults ? defaultAccountIds.join(',') : undefined,
+    default: hasDefaults ? defaultAccountIds.join(",") : undefined,
   });
-  return _.uniq(answer.authorizedAccountIds.split(',').map((accountId: string) => accountId.trim()));
+  return _.uniq(answer.authorizedAccountIds.split(",").map((accountId: string) => accountId.trim()));
 }
 
 export async function layerOrgAccessPrompt(defaultOrgs?: string[]): Promise<string[]> {
   const hasDefaults = defaultOrgs && defaultOrgs.length > 0;
   const answer = await prompt({
-    type: 'input',
-    name: 'authorizedOrgIds',
-    message: 'Provide a list of comma-separated AWS organization IDs:',
+    type: "input",
+    name: "authorizedOrgIds",
+    message: "Provide a list of comma-separated AWS organization IDs:",
     validate: (input: string) => {
-      const orgIds = input.split(',');
+      const orgIds = input.split(",");
       for (const orgId of orgIds) {
         if (!/^o-[a-zA-Z0-9]{10,32}$/.test(orgId.trim())) {
           return 'The organization ID starts with "o-" followed by a 10-32 character-long alphanumeric string.';
@@ -126,25 +126,25 @@ export async function layerOrgAccessPrompt(defaultOrgs?: string[]): Promise<stri
       }
       return true;
     },
-    default: hasDefaults ? defaultOrgs.join(',') : undefined,
+    default: hasDefaults ? defaultOrgs.join(",") : undefined,
   });
-  return _.uniq(answer.authorizedOrgIds.split(',').map((orgId: string) => orgId.trim()));
+  return _.uniq(answer.authorizedOrgIds.split(",").map((orgId: string) => orgId.trim()));
 }
 
 export function previousPermissionsQuestion(): ListQuestion {
   return {
-    type: 'list',
-    name: 'usePreviousPermissions',
-    message: 'What permissions do you want to grant to this new layer version?',
+    type: "list",
+    name: "usePreviousPermissions",
+    message: "What permissions do you want to grant to this new layer version?",
     choices: [
       {
-        name: 'The same permission as the latest layer version',
-        short: 'Previous version permissions',
+        name: "The same permission as the latest layer version",
+        short: "Previous version permissions",
         value: true,
       },
       {
-        name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
-        short: 'Private',
+        name: "Only accessible by the current account. You can always edit this later with: amplify update function",
+        short: "Private",
         value: false,
       },
     ],
@@ -155,7 +155,7 @@ export function previousPermissionsQuestion(): ListQuestion {
 export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
   const { layerPermissions = [] } = parameters;
 
-  if (layerPermissions.filter(p => p === PermissionEnum.Public).length > 0) {
+  if (layerPermissions.filter((p) => p === PermissionEnum.Public).length > 0) {
     return [
       {
         type: PermissionEnum.Public,
@@ -165,7 +165,7 @@ export function layerInputParamsToLayerPermissionArray(parameters: LayerInputPar
 
   const permissionObj: Array<LayerPermission> = [];
 
-  layerPermissions.forEach(val => {
+  layerPermissions.forEach((val) => {
     let obj: LayerPermission;
     if (val === PermissionEnum.Public) {
       obj = {
@@ -220,7 +220,7 @@ export async function isNewVersion(layerName: string) {
 export function isMultiEnvLayer(layerName: string) {
   const layerParametersPath = path.join(
     pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
-    LegacyFilename.layerParameters,
+    LegacyFilename.layerParameters
   );
 
   if (fs.existsSync(layerParametersPath)) {
@@ -245,7 +245,7 @@ export function getLambdaFunctionsDependentOnLayerFromMeta(layerName: string, me
   return Object.entries(meta[categoryName]).filter(
     ([_, lambdaFunction]: [string, $TSObject]) =>
       lambdaFunction.service === ServiceName.LambdaFunction &&
-      lambdaFunction?.dependsOn?.filter(dependency => dependency.resourceName === layerName).length > 0,
+      lambdaFunction?.dependsOn?.filter((dependency) => dependency.resourceName === layerName).length > 0
   );
 }
 
@@ -299,7 +299,7 @@ const getLayerGlobs = async (
   resourcePath: string,
   resourceName: string,
   runtimes: LayerRuntime[],
-  includeResourceFiles: boolean,
+  includeResourceFiles: boolean
 ): Promise<string[]> => {
   const result: string[] = [];
 
@@ -319,7 +319,7 @@ const getLayerGlobs = async (
     }
 
     //TODO let function runtimes export globs later instead of hardcoding in here
-    if (runtimeId === 'nodejs') {
+    if (runtimeId === "nodejs") {
       const packageManager = getPackageManager(layerCodePath);
 
       // If no packagemanager was detected it means no package.json present at the resource path,
@@ -338,15 +338,15 @@ const getLayerGlobs = async (
 
       // Add layer direct content from lib/nodejs and exclude well known files from list.
       // files must be relative to resource folder as that will be used as a base path for hashing.
-      const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
+      const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, "**", "*")], {
         cwd: resourcePath,
-        ignore: ['node_modules', packageJson, 'yarn.lock', 'package-lock.json'].map(name =>
-          path.join(libPathName, layerExecutablePath, name),
+        ignore: ["node_modules", packageJson, "yarn.lock", "package-lock.json"].map((name) =>
+          path.join(libPathName, layerExecutablePath, name)
         ),
       });
 
       result.push(...contentFilePaths);
-    } else if (runtimeId === 'python') {
+    } else if (runtimeId === "python") {
       // Add to hashable files/folders
       const pipfileFilePath = path.join(layerCodePath, pipfile);
 
@@ -363,9 +363,9 @@ const getLayerGlobs = async (
 
       // Add layer direct content from lib/python and exclude well known files from list.
       // files must be relative to resource folder as that will be used as a base path for hashing.
-      const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
+      const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, "**", "*")], {
         cwd: resourcePath,
-        ignore: ['lib', pipfile, pipfileLock].map(name => path.join(libPathName, layerExecutablePath, name)),
+        ignore: ["lib", pipfile, pipfileLock].map((name) => path.join(libPathName, layerExecutablePath, name)),
       });
 
       result.push(...contentFilePaths);
@@ -395,9 +395,9 @@ const hashLayerVersion = async (layerPath: string, layerName: string, includeRes
     filePaths.sort();
 
     return filePaths
-      .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'binary'))
-      .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
-      .digest('hex');
+      .map((filePath) => fs.readFileSync(path.join(layerPath, filePath), "binary"))
+      .reduce((acc, it) => acc.update(it), crypto.createHash("sha256"))
+      .digest("hex");
   } else {
     // Do legacy hashing
     return includeResourceFiles ? await legacyResourceHashing(layerPath) : await legacyContentHashing(layerPath);
@@ -417,31 +417,31 @@ const legacyContentHashing = async (layerPath: string): Promise<string> => {
       ).hash;
     }
 
-    return '';
+    return "";
   };
 
-  const nodePath = path.join(layerPath, libPathName, 'nodejs');
+  const nodePath = path.join(layerPath, libPathName, "nodejs");
   const nodeHashOptions = {
     files: {
       include: [packageJson],
     },
   };
-  const pyPath = path.join(layerPath, libPathName, 'python');
+  const pyPath = path.join(layerPath, libPathName, "python");
   const optPath = path.join(layerPath, optPathName);
 
   const joinedHashes = (await Promise.all([safeHash(nodePath, nodeHashOptions), safeHash(pyPath), safeHash(optPath)])).join();
 
-  return crypto.createHash('sha256').update(joinedHashes).digest('base64');
+  return crypto.createHash("sha256").update(joinedHashes).digest("base64");
 };
 
 const legacyResourceHashing = async (layerPath: string): Promise<string> => {
   const files = await globby(layerResourceGlobs, { cwd: layerPath });
 
   const hash = files
-    .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
-    .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
+    .map((filePath) => fs.readFileSync(path.join(layerPath, filePath), "utf8"))
+    .reduce((acc, it) => acc.update(it), crypto.createHash("sha256"))
     .update(await legacyContentHashing(layerPath))
-    .digest('base64');
+    .digest("base64");
 
   return hash;
 };

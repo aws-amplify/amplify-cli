@@ -1,4 +1,4 @@
-import { AmplifyAppSyncSimulatorDataLoader } from '..';
+import { AmplifyAppSyncSimulatorDataLoader } from "..";
 
 export class NoneDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   load(request): any {

@@ -10,19 +10,12 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  addEnvironment,
-  checkoutEnvironment,
-  listEnvironment,
-  pullEnvironment,
-} from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { addEnvironment, checkoutEnvironment, listEnvironment, pullEnvironment } from "../environment/env";
 
-const validate = async (meta: any) : Promise<void> => {
+const validate = async (meta: any): Promise<void> => {
   expect(meta.providers.awscloudformation).toBeDefined();
-  const {
-    AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId,
-  } = meta.providers.awscloudformation;
+  const { AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId } = meta.providers.awscloudformation;
 
   expect(authRoleArn).toBeDefined();
   expect(region).toBeDefined();
@@ -31,11 +24,11 @@ const validate = async (meta: any) : Promise<void> => {
   expect(bucketExists).toMatchObject({});
 };
 
-describe('environment commands with Cognito Triggers', () => {
+describe("environment commands with Cognito Triggers", () => {
   let projRoot: string;
   beforeAll(async () => {
-    projRoot = await createNewProjectDir('env-test');
-    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    projRoot = await createNewProjectDir("env-test");
+    await initJSProjectWithProfile(projRoot, { envName: "enva" });
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
   });
@@ -45,15 +38,15 @@ describe('environment commands with Cognito Triggers', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project, add and checkout environment', async () => {
-    await addEnvironment(projRoot, { envName: 'envb' });
+  it("init a project, add and checkout environment", async () => {
+    await addEnvironment(projRoot, { envName: "envb" });
     await listEnvironment(projRoot, { numEnv: 2 });
-    await checkoutEnvironment(projRoot, { envName: 'enva' });
+    await checkoutEnvironment(projRoot, { envName: "enva" });
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
 
-  it('init a project, pull environment', async () => {
+  it("init a project, pull environment", async () => {
     await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);

@@ -1,12 +1,10 @@
-import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
-import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-import type {
-  CreateComponentData, Component, Theme, Form,
-} from 'aws-sdk/clients/amplifyuibuilder';
-import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
-import { printer } from 'amplify-prompts';
-import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
-import { getTransformerVersion } from '../commands/utils/featureFlags';
+import { $TSContext, CloudformationProviderFacade } from "amplify-cli-core";
+import type { ServiceConfigurationOptions } from "aws-sdk/lib/service";
+import type { CreateComponentData, Component, Theme, Form } from "aws-sdk/clients/amplifyuibuilder";
+import { AmplifyUIBuilder, AmplifyBackend } from "aws-sdk";
+import { printer } from "amplify-prompts";
+import { getAppId, getEnvName } from "../commands/utils/environmentHelpers";
+import { getTransformerVersion } from "../commands/utils/featureFlags";
 
 /**
  * studio client metadata
@@ -72,7 +70,7 @@ export default class AmplifyStudioClient {
       printer.debug(`Failed admin app check: ${err.message}`);
       return false;
     }
-  }
+  };
 
   /**
    * Used to configure the AWS Amplify clients.
@@ -80,7 +78,7 @@ export default class AmplifyStudioClient {
   static async setClientInfo(context: $TSContext, envName?: string, appId?: string): Promise<AmplifyStudioClient> {
     const resolvedEnvName = getEnvName(context, envName);
     const resolvedAppId = getAppId(context, appId);
-    const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+    const awsConfigInfo = (await context.amplify.invokePluginMethod(context, "awscloudformation", undefined, "loadConfigurationForEnv", [
       context,
       resolvedEnvName,
       resolvedAppId,
@@ -126,8 +124,8 @@ export default class AmplifyStudioClient {
         })
         .promise();
       this.metadata = {
-        autoGenerateForms: response.features?.autoGenerateForms === 'true',
-        autoGenerateViews: response.features?.autoGenerateViews === 'true',
+        autoGenerateForms: response.features?.autoGenerateForms === "true",
+        autoGenerateViews: response.features?.autoGenerateViews === "true",
       };
     } catch (err) {
       throw new Error(`Failed to load metadata: ${err.message}`);

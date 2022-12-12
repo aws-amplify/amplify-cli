@@ -1,10 +1,10 @@
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { buildCustomResources } from '../utils/build-custom-resources';
-import { customResourceNameQuestion } from '../utils/common-questions';
-import { categoryName, cdkFileName, CDK_SERVICE_NAME, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
+import { $TSContext, JSONUtilities, pathManager } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { buildCustomResources } from "../utils/build-custom-resources";
+import { customResourceNameQuestion } from "../utils/common-questions";
+import { categoryName, cdkFileName, CDK_SERVICE_NAME, DEPLOYMENT_PROVIDER_NAME } from "../utils/constants";
 
 export async function addCDKWalkthrough(context: $TSContext) {
   const resourceName = await customResourceNameQuestion();
@@ -20,7 +20,7 @@ export async function addCDKWalkthrough(context: $TSContext) {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const cdkFilepath = path.join(resourceDirPath, cdkFileName);
 
-  if (await prompter.yesOrNo('Do you want to edit the CDK stack now?', true)) {
+  if (await prompter.yesOrNo("Do you want to edit the CDK stack now?", true)) {
     await context.amplify.openEditor(context, cdkFilepath);
   }
 }
@@ -42,19 +42,19 @@ async function generateSkeletonDir(resourceName: string) {
   }
   fs.ensureDirSync(targetDir);
 
-  const packageJSONFilePath = path.join(targetDir, 'package.json');
-  const srcResourceDirPath = path.normalize(path.join(__dirname, '../../resources'));
+  const packageJSONFilePath = path.join(targetDir, "package.json");
+  const srcResourceDirPath = path.normalize(path.join(__dirname, "../../resources"));
 
   if (!fs.existsSync(packageJSONFilePath)) {
-    JSONUtilities.writeJson(packageJSONFilePath, JSONUtilities.readJson(path.join(srcResourceDirPath, 'package.json')));
+    JSONUtilities.writeJson(packageJSONFilePath, JSONUtilities.readJson(path.join(srcResourceDirPath, "package.json")));
   }
 
-  const tsConfigFilePath = path.join(targetDir, 'tsconfig.json');
+  const tsConfigFilePath = path.join(targetDir, "tsconfig.json");
 
   if (!fs.existsSync(tsConfigFilePath)) {
-    JSONUtilities.writeJson(tsConfigFilePath, JSONUtilities.readJson(path.join(srcResourceDirPath, 'tsconfig.json')));
+    JSONUtilities.writeJson(tsConfigFilePath, JSONUtilities.readJson(path.join(srcResourceDirPath, "tsconfig.json")));
   }
 
-  const cdkFilepath = path.join(targetDir, 'cdk-stack.ts');
-  fs.writeFileSync(cdkFilepath, fs.readFileSync(path.join(srcResourceDirPath, 'cdk-stack.ts.sample')));
+  const cdkFilepath = path.join(targetDir, "cdk-stack.ts");
+  fs.writeFileSync(cdkFilepath, fs.readFileSync(path.join(srcResourceDirPath, "cdk-stack.ts.sample")));
 }

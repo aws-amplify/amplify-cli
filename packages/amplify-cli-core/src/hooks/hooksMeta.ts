@@ -1,7 +1,7 @@
-import { HookEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from './hooksTypes';
-import { supportedEvents, supportedEnvEvents } from './hooksConstants';
-import { stateManager } from '../state-manager';
-import _ from 'lodash';
+import { HookEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from "./hooksTypes";
+import { supportedEvents, supportedEnvEvents } from "./hooksConstants";
+import { stateManager } from "../state-manager";
+import _ from "lodash";
 
 export class HooksMeta {
   private static instance?: HooksMeta;
@@ -18,7 +18,7 @@ export class HooksMeta {
       argv?: string[];
     },
     eventPrefix?: EventPrefix,
-    errorParameter?: ErrorParameter,
+    errorParameter?: ErrorParameter
   ): HooksMeta => {
     if (!HooksMeta.instance) {
       HooksMeta.instance = new HooksMeta();
@@ -100,33 +100,33 @@ export class HooksMeta {
       return;
     }
 
-    let command: string = input.command ?? '';
-    let subCommand: string = input.plugin ?? '';
+    let command: string = input.command ?? "";
+    let subCommand: string = input.plugin ?? "";
 
     switch (command) {
-      case 'env':
-        subCommand = 'env';
+      case "env":
+        subCommand = "env";
         if (!input.subCommands || input.subCommands.length < 0 || !supportedEnvEvents.includes(input.subCommands[0] as HooksVerb)) {
           return;
         }
         command = input.subCommands[0];
         break;
-      case 'configure':
-        if (input.plugin === 'notifications' || input.plugin === 'hosting') {
-          command = 'update';
+      case "configure":
+        if (input.plugin === "notifications" || input.plugin === "hosting") {
+          command = "update";
         }
         break;
-      case 'gql-compile':
-        command = 'gqlcompile';
+      case "gql-compile":
+        command = "gqlcompile";
         break;
-      case 'add-graphql-datasource':
-        command = 'addgraphqldatasource';
+      case "add-graphql-datasource":
+        command = "addgraphqldatasource";
         break;
     }
 
-    if (subCommand === 'mock') {
+    if (subCommand === "mock") {
       subCommand = command;
-      command = 'mock';
+      command = "mock";
     }
 
     if (supportedEvents.hasOwnProperty(command)) {
@@ -135,7 +135,7 @@ export class HooksMeta {
         this.hookEvent.subCommand = subCommand;
       }
     }
-    this.hookEvent.forcePush = (input?.options?.forcePush && this.hookEvent.command !== 'push') ?? false;
+    this.hookEvent.forcePush = (input?.options?.forcePush && this.hookEvent.command !== "push") ?? false;
     this.hookEvent.argv = input.argv;
   }
 

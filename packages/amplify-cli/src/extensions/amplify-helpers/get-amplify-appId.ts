@@ -1,4 +1,4 @@
-import { getProjectMeta } from './get-project-meta';
+import { getProjectMeta } from "./get-project-meta";
 
 /**
  * Get the Amplify App ID from `amplify-meta.json`

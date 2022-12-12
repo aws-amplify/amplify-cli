@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from "amplify-cli-core";
 
 export async function onSuccess(context) {
   const { projectPath } = context.exeInfo;
@@ -12,7 +12,7 @@ export async function onSuccess(context) {
 }
 
 function printWelcomeMessage(context) {
-  context.print.info('');
-  context.print.success('Successfully made configuration changes to your project.');
-  context.print.info('');
+  context.print.info("");
+  context.print.success("Successfully made configuration changes to your project.");
+  context.print.info("");
 }

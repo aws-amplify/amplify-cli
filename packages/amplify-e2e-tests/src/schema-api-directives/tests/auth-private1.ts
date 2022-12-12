@@ -22,17 +22,17 @@ mutation CreatePost(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    title: 'title1',
+    id: "1",
+    title: "title1",
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -51,17 +51,17 @@ mutation UpdatePost(
 }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
-    title: 'title1-updated',
+    id: "1",
+    title: "title1-updated",
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updatePost: {
-      id: '1',
-      title: 'title1-updated',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1-updated",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

@@ -1,17 +1,15 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable max-len */
 /* eslint-disable import/no-cycle */
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import _ from 'lodash';
-import { PathConstants, pathManager } from './pathManager';
-import {
-  $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject,
-} from '..';
-import { JSONUtilities } from '../jsonUtilities';
-import { SecretFileMode } from '../cliConstants';
-import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicies } from '../customPoliciesUtils';
+import * as fs from "fs-extra";
+import * as path from "path";
+import _ from "lodash";
+import { PathConstants, pathManager } from "./pathManager";
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from "..";
+import { JSONUtilities } from "../jsonUtilities";
+import { SecretFileMode } from "../cliConstants";
+import { HydrateTags, ReadTags, Tag } from "../tags";
+import { CustomIAMPolicies } from "../customPoliciesUtils";
 
 /**
  * Options available in config files
@@ -65,11 +63,10 @@ export class StateManager {
     return data;
   };
 
-  getDeploymentSecrets = (): DeploymentSecrets => (
+  getDeploymentSecrets = (): DeploymentSecrets =>
     JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
       throwIfNotExist: false,
-    }) || { appSecrets: [] }
-  );
+    }) || { appSecrets: [] };
 
   getProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getTagFilePath(projectPath));
 
@@ -102,7 +99,7 @@ export class StateManager {
     return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
   };
 
-  getCurrentRegion = (projectPath?: string):string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
+  getCurrentRegion = (projectPath?: string): string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
 
   getCurrentEnvName = (projectPath?: string): string | undefined => this.getLocalEnvInfo(projectPath, { throwIfNotExist: false })?.envName;
 
@@ -162,7 +159,7 @@ export class StateManager {
       return data;
     }
     // omit parameters
-    return _.omit(data, 'parameters');
+    return _.omit(data, "parameters");
   };
 
   getCurrentBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
@@ -177,22 +174,22 @@ export class StateManager {
   getProjectName = (): string => {
     const { projectName } = this.getProjectConfig();
     return projectName;
-  }
+  };
 
-  getAppID = () : string => {
+  getAppID = (): string => {
     const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
     const appId = meta?.providers?.awscloudformation?.AmplifyAppId;
     if (!appId) {
-      throw new Error('Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.');
+      throw new Error("Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.");
     }
     return appId;
-  }
+  };
 
   getResourceParametersJson = (
     projectPath: string | undefined,
     category: string,
     resourceName: string,
-    options?: GetOptions<$TSAny>,
+    options?: GetOptions<$TSAny>
   ): $TSAny => {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
     const mergedOptions = {
@@ -207,7 +204,7 @@ export class StateManager {
     projectPath: string | undefined,
     category: string,
     resourceName: string,
-    options?: GetOptions<$TSAny>,
+    options?: GetOptions<$TSAny>
   ): $TSAny => {
     const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
     const mergedOptions = {
@@ -222,7 +219,7 @@ export class StateManager {
     projectPath: string | undefined,
     category: string,
     resourceName: string,
-    options?: GetOptions<$TSAny>,
+    options?: GetOptions<$TSAny>
   ): $TSAny => {
     const filePath = pathManager.getCurrentResourceParametersJsonPath(projectPath, category, resourceName);
     const mergedOptions = {
@@ -239,7 +236,8 @@ export class StateManager {
       default: {},
       ...options,
     };
-    const adminConfig = JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
+    const adminConfig =
+      JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
 
     return adminConfig[appId];
   };
@@ -321,7 +319,8 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath?: string): HooksConfig => this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
+  getHooksConfigJson = (projectPath?: string): HooksConfig =>
+    this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
 
   setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
     const targetDirPath = pathManager.getHooksDirPath(projectPath);
@@ -330,11 +329,11 @@ export class StateManager {
       fs.ensureDirSync(targetDirPath);
       fs.copySync(
         path.join(sourceDirPath, PathConstants.HooksShellSampleFileName),
-        path.join(targetDirPath, PathConstants.HooksShellSampleFileName),
+        path.join(targetDirPath, PathConstants.HooksShellSampleFileName)
       );
       fs.copySync(
         path.join(sourceDirPath, PathConstants.HooksJsSampleFileName),
-        path.join(targetDirPath, PathConstants.HooksJsSampleFileName),
+        path.join(targetDirPath, PathConstants.HooksJsSampleFileName)
       );
       fs.copySync(path.join(sourceDirPath, PathConstants.HooksReadmeFileName), path.join(targetDirPath, PathConstants.ReadMeFileName));
     }
@@ -389,12 +388,12 @@ export class StateManager {
     categoryName: string,
     serviceName: string,
     resourceName?: string | undefined,
-    throwIfNotExist = true,
+    throwIfNotExist = true
   ): ResourceEntry | null => {
     const resources = this.filterResourcesFromMeta(amplifyMeta, categoryName, serviceName, resourceName);
 
     if (resources.length === 0) {
-      const withNamePart = resourceName ? `with name: ${resourceName} ` : '';
+      const withNamePart = resourceName ? `with name: ${resourceName} ` : "";
 
       if (throwIfNotExist) {
         throw new Error(`Resource for ${serviceName} service in ${categoryName} category, ${withNamePart}was not found.`);
@@ -403,7 +402,7 @@ export class StateManager {
       }
     } else if (resources.length > 1) {
       throw new Error(
-        `${resources.length} resources were found for ${serviceName} service in ${categoryName} category, but expected only 1.`,
+        `${resources.length} resources were found for ${serviceName} service in ${categoryName} category, but expected only 1.`
       );
     }
 
@@ -414,7 +413,7 @@ export class StateManager {
     amplifyMeta: Record<string, $TSAny>,
     categoryName: string,
     serviceName: string,
-    resourceName?: string,
+    resourceName?: string
   ): ResourceEntry[] => {
     const categoryResources = _.get(amplifyMeta, [categoryName]);
 

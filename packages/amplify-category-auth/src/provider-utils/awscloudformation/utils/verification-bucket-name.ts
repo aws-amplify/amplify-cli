@@ -4,16 +4,16 @@
  * @param previous Previous results (if any)
  */
 export const verificationBucketName = async (current: any, previous?: any) => {
-  if (current.triggers && current.triggers.CustomMessage && current.triggers.CustomMessage.includes('verification-link')) {
+  if (current.triggers && current.triggers.CustomMessage && current.triggers.CustomMessage.includes("verification-link")) {
     const name = previous ? previous.resourceName : current.resourceName;
     current.verificationBucketName = `${name.toLowerCase()}verificationbucket`;
   } else if (
     previous &&
     previous.triggers &&
     previous.triggers.CustomMessage &&
-    previous.triggers.CustomMessage.includes('verification-link') &&
+    previous.triggers.CustomMessage.includes("verification-link") &&
     previous.verificationBucketName &&
-    (!current.triggers || !current.triggers.CustomMessage || !current.triggers.CustomMessage.includes('verification-link'))
+    (!current.triggers || !current.triggers.CustomMessage || !current.triggers.CustomMessage.includes("verification-link"))
   ) {
     delete previous.verificationBucketName;
   }

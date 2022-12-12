@@ -1,12 +1,10 @@
-import {
-  $TSContext, $TSMeta, AmplifyCategories, AmplifyError, AmplifySupportedService, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
+import { $TSContext, $TSMeta, AmplifyCategories, AmplifyError, AmplifySupportedService, stateManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { messages } from "../../provider-utils/awscloudformation/assets/string-maps";
+import { AuthInputState } from "../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state";
 
-export const name = 'remove';
-const category = 'auth';
+export const name = "remove";
+const category = "auth";
 
 /**
  * Entry point for remove auth
@@ -18,13 +16,16 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   throwErrorIfProjectHasAnalytics(meta);
 
-  const hasPossiblyDependentResources = Object.keys(meta)
-    .some(categoryName => ['api', 'storage', 'function'].includes(categoryName) && Object.keys(meta[categoryName]).length > 0);
+  const hasPossiblyDependentResources = Object.keys(meta).some(
+    (categoryName) => ["api", "storage", "function"].includes(categoryName) && Object.keys(meta[categoryName]).length > 0
+  );
   if (hasPossiblyDependentResources) {
     printer.warn(messages.dependenciesExists);
   }
 
-  const authResourceName = Object.keys(meta.auth).filter(resourceKey => meta.auth[resourceKey].service === AmplifySupportedService.COGNITO);
+  const authResourceName = Object.keys(meta.auth).filter(
+    (resourceKey) => meta.auth[resourceKey].service === AmplifySupportedService.COGNITO
+  );
 
   try {
     const resource = await amplify.removeResource(context, category, resourceName);
@@ -37,7 +38,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     }
   } catch (err) {
     printer.info(err.stack);
-    printer.error('There was an error removing the auth resource');
+    printer.error("There was an error removing the auth resource");
     context.usageData.emitError(err);
     process.exitCode = 1;
   }
@@ -48,8 +49,8 @@ const throwErrorIfProjectHasAnalytics = (meta: $TSMeta): void => {
   if (!analyticsCategoryMeta) return;
   const analyticsResourceNames = Object.keys(analyticsCategoryMeta);
   if (analyticsResourceNames.length === 0) return;
-  throw new AmplifyError('ResourceInUseError', {
-    message: 'Auth cannot be removed because the analytics category depends on it',
-    resolution: 'Run `amplify remove analytics` first, then retry removing auth',
+  throw new AmplifyError("ResourceInUseError", {
+    message: "Auth cannot be removed because the analytics category depends on it",
+    resolution: "Run `amplify remove analytics` first, then retry removing auth",
   });
 };

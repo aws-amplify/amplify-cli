@@ -1,2 +1,2 @@
-export * from './iamMatcher';
-export * from './s3matcher';
+export * from "./iamMatcher";
+export * from "./s3matcher";

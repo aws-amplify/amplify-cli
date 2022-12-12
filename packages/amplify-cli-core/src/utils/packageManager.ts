@@ -1,10 +1,10 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as which from 'which';
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as which from "which";
 
-export type PackageManagerType = 'yarn' | 'npm';
+export type PackageManagerType = "yarn" | "npm";
 
-const packageJson = 'package.json';
+const packageJson = "package.json";
 
 export type PackageManager = {
   packageManager: PackageManagerType;
@@ -12,18 +12,18 @@ export type PackageManager = {
   executable: string;
 };
 
-const isWindows = process.platform === 'win32';
+const isWindows = process.platform === "win32";
 
 const packageManagers: Record<string, PackageManager> = {
   npm: {
-    packageManager: 'npm',
-    lockFile: 'package-lock.json',
-    executable: isWindows ? 'npm.cmd' : 'npm',
+    packageManager: "npm",
+    lockFile: "package-lock.json",
+    executable: isWindows ? "npm.cmd" : "npm",
   },
   yarn: {
-    packageManager: 'yarn',
-    lockFile: 'yarn.lock',
-    executable: isWindows ? 'yarn.cmd' : 'yarn',
+    packageManager: "yarn",
+    lockFile: "yarn.lock",
+    executable: isWindows ? "yarn.cmd" : "yarn",
   },
 };
 

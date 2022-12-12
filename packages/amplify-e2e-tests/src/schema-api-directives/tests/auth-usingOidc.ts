@@ -1,4 +1,4 @@
-import { addAuthWithDefault, amplifyPushWithoutCodegen, addApi, updateAuthAddUserGroups, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addAuthWithDefault, amplifyPushWithoutCodegen, addApi, updateAuthAddUserGroups, amplifyPush } from "@aws-amplify/amplify-e2e-core";
 
 import {
   getAppClientIDWeb,
@@ -9,13 +9,13 @@ import {
   signInUser,
   getConfiguredAppsyncClientIAMAuth,
   getConfiguredAppsyncClientOIDCAuth,
-} from '../authHelper';
+} from "../authHelper";
 
-import { updateSchemaInTestProject, testMutation } from '../common';
+import { updateSchemaInTestProject, testMutation } from "../common";
 
-const GROUPNAME = 'Admin';
-const USERNAME = 'user1';
-const PASSWORD = 'user1Password';
+const GROUPNAME = "Admin";
+const USERNAME = "user1";
+const PASSWORD = "user1Password";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir); //will use the cognito user pool as oidc provider
@@ -23,12 +23,12 @@ export async function runTest(projectDir: string, testModule: any) {
   await amplifyPushWithoutCodegen(projectDir);
 
   await addApi(projectDir, {
-    'OpenID Connect': {
-      oidcProviderName: 'awscognitouserpool',
+    "OpenID Connect": {
+      oidcProviderName: "awscognitouserpool",
       oidcProviderDomain: getUserPoolIssUrl(projectDir),
       oidcClientId: getAppClientIDWeb(projectDir),
-      ttlaIssueInMillisecond: '3600000',
-      ttlaAuthInMillisecond: '3600000',
+      ttlaIssueInMillisecond: "3600000",
+      ttlaAuthInMillisecond: "3600000",
     },
     IAM: {},
     transformerVersion: 1,
@@ -88,10 +88,10 @@ mutation CreatePost {
 const expected_result_createPostMutation = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -114,11 +114,11 @@ mutation CreateProfile{
 const expected_result_createProfileMutation = {
   data: {
     createProfile: {
-      id: '1',
-      displayNAme: 'displayName1',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
-      owner: '<check-defined>',
+      id: "1",
+      displayNAme: "displayName1",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
+      owner: "<check-defined>",
     },
   },
 };

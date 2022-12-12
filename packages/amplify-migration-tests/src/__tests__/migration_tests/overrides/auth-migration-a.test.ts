@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jest/no-standalone-expect */
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from "amplify-cli-core";
 import {
   addAuthWithCustomTrigger,
   amplifyPushAuth,
@@ -14,22 +14,20 @@ import {
   getUserPool,
   getUserPoolClients,
   updateAuthWithoutCustomTrigger,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import {
-  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile,
-} from '../../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from "../../../migration-helpers";
 
 const defaultSettings = {
-  name: 'authMigration',
+  name: "authMigration",
 };
-describe('amplify auth migration a', () => {
+describe("amplify auth migration a", () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: 'unintialized' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: "unintialized" };
+    const migrateToVersion = { v: "unintialized" };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
@@ -37,17 +35,17 @@ describe('amplify auth migration a', () => {
   });
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth_migration');
+    projRoot = await createNewProjectDir("auth_migration");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot, undefined, true);
     }
     deleteProjectDir(projRoot);
   });
-  it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
+  it("...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js", async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithCustomTrigger(projRoot, {});
@@ -56,7 +54,7 @@ describe('amplify auth migration a', () => {
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
@@ -64,26 +62,26 @@ describe('amplify auth migration a', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
-    expect(dirContents.includes('custom.js')).toBeTruthy();
+    expect(dirContents.includes("custom.js")).toBeTruthy();
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
-    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
+    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual("email-filter-denylist,custom");
 
     // update and push with codebase
-    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(meta.auth).filter((resourceName) => meta.auth[resourceName].service === "Cognito")[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,
-      category: 'auth',
-      service: 'cognito',
+      category: "auth",
+      service: "cognito",
     };
     await updateAuthWithoutCustomTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
     await amplifyPushAuth(projRoot, true);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
-    expect(updatedDirContents.includes('custom.js')).toBeFalsy();
-    expect(updatedDirContents.includes('email-filter-denylist.js')).toBeTruthy();
-    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist');
+    expect(updatedDirContents.includes("custom.js")).toBeFalsy();
+    expect(updatedDirContents.includes("email-filter-denylist.js")).toBeTruthy();
+    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual("email-filter-denylist");
   });
 });

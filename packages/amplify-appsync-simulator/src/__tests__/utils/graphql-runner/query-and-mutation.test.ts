@@ -1,11 +1,11 @@
-import { GraphQLError, GraphQLSchema, parse } from 'graphql';
+import { GraphQLError, GraphQLSchema, parse } from "graphql";
 
-import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
-import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';
+import { AmplifyAppSyncSimulatorAuthenticationType } from "../../../type-definition";
+import { AppSyncGraphQLExecutionContext } from "../../../utils/graphql-runner";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { runQueryOrMutation } from "../../../utils/graphql-runner/query-and-mutation";
 
-describe('runQueryAndMutation', () => {
+describe("runQueryAndMutation", () => {
   const schemaDoc = parse(/* GraphQL */ `
     type Query {
       getName: String
@@ -41,29 +41,29 @@ describe('runQueryAndMutation', () => {
     };
     schema = makeExecutableSchema({ typeDefs: schemaDoc, resolvers });
     executionContext = {
-      headers: { 'x-api-key': 'da-fake-key' },
+      headers: { "x-api-key": "da-fake-key" },
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
       appsyncErrors: [],
     };
   });
 
-  it('should run query resolver', async () => {
-    const name = 'John Doe';
+  it("should run query resolver", async () => {
+    const name = "John Doe";
     const doc = parse(/* GraphQL */ `
       query getName {
         getName
       }
     `);
 
-    const variables = { var1: 'val1' };
+    const variables = { var1: "val1" };
     getNameResolver.mockReturnValue(name);
     await expect(runQueryOrMutation(schema, doc, variables, undefined, executionContext)).resolves.toEqual({ data: { getName: name } });
     expect(getNameResolver).toHaveBeenCalled();
     expect(getNameResolver.mock.calls[0][2]).toEqual(executionContext);
   });
 
-  it('should run mutation resolver', async () => {
-    const name = 'John Doe';
+  it("should run mutation resolver", async () => {
+    const name = "John Doe";
     setNameResolver.mockReturnValue(name);
     const doc = parse(/* GraphQL */ `
       mutation setName($name: String!) {
@@ -80,8 +80,8 @@ describe('runQueryAndMutation', () => {
     expect(setNameResolver.mock.calls[0][2]).toEqual(executionContext);
   });
 
-  it('should run subscription resolver to ensure auth checks', async () => {
-    const name = 'John Doe';
+  it("should run subscription resolver to ensure auth checks", async () => {
+    const name = "John Doe";
     const doc = parse(/* GraphQL */ `
       subscription onSetName {
         onSetName
@@ -101,8 +101,8 @@ describe('runQueryAndMutation', () => {
     expect(onSetNameResolver.mock.calls[0][2]).toEqual(executionContext);
   });
 
-  it('should use operationName when passed to select the query', async () => {
-    const name = 'John Doe';
+  it("should use operationName when passed to select the query", async () => {
+    const name = "John Doe";
     const doc = parse(/* GraphQL */ `
       query getName {
         getName
@@ -112,51 +112,51 @@ describe('runQueryAndMutation', () => {
       }
     `);
 
-    const variables = { var1: 'val1' };
+    const variables = { var1: "val1" };
     getNameResolver.mockReturnValue(name);
-    await expect(runQueryOrMutation(schema, doc, variables, 'getName', executionContext)).resolves.toEqual({ data: { getName: name } });
+    await expect(runQueryOrMutation(schema, doc, variables, "getName", executionContext)).resolves.toEqual({ data: { getName: name } });
     expect(getNameResolver).toHaveBeenCalled();
     expect(getNameResolver.mock.calls[0][2]).toEqual(executionContext);
   });
 
-  it('should have error object populated when the operation does not exist', async () => {
-    const name = 'John Doe';
+  it("should have error object populated when the operation does not exist", async () => {
+    const name = "John Doe";
     const doc = parse(/* GraphQL */ `
       query getName {
         getNonExistentQuery
       }
     `);
 
-    const variables = { var1: 'val1' };
+    const variables = { var1: "val1" };
     getNameResolver.mockReturnValue(name);
-    await expect(runQueryOrMutation(schema, doc, variables, 'getName', executionContext)).resolves.toEqual({
+    await expect(runQueryOrMutation(schema, doc, variables, "getName", executionContext)).resolves.toEqual({
       data: null,
       errors: [new Error(`Cannot query field "getNonExistentQuery" on type "Query".`)],
     });
     expect(getNameResolver).not.toHaveBeenCalled();
   });
 
-  it('should have error object populated when velocity template raises error', async () => {
-    const name = 'John Doe';
+  it("should have error object populated when velocity template raises error", async () => {
+    const name = "John Doe";
     const doc = parse(/* GraphQL */ `
       query getName {
         getName
       }
     `);
 
-    const error = new GraphQLError('An error from template');
+    const error = new GraphQLError("An error from template");
     executionContext.appsyncErrors = [error];
-    const variables = { var1: 'val1' };
+    const variables = { var1: "val1" };
     getNameResolver.mockReturnValue(name);
 
-    await expect(runQueryOrMutation(schema, doc, variables, 'getName', executionContext)).resolves.toEqual({
+    await expect(runQueryOrMutation(schema, doc, variables, "getName", executionContext)).resolves.toEqual({
       data: { getName: name },
       errors: [error],
     });
   });
 
-  it('should have error object populated when error occurs in the resolver (e.g. Lambda DataSource)', async () => {
-    const name = 'John Doe';
+  it("should have error object populated when error occurs in the resolver (e.g. Lambda DataSource)", async () => {
+    const name = "John Doe";
     const doc = parse(/* GraphQL */ `
       query getName {
         getName
@@ -164,15 +164,15 @@ describe('runQueryAndMutation', () => {
     `);
 
     const error = {
-      name: 'Lambda Error',
-      type: 'Lambda:Unhandled',
-      message: 'An error from the resolver',
+      name: "Lambda Error",
+      type: "Lambda:Unhandled",
+      message: "An error from the resolver",
     };
     executionContext.appsyncErrors = [error];
-    const variables = { var1: 'val1' };
+    const variables = { var1: "val1" };
     getNameResolver.mockReturnValue(null);
 
-    await expect(runQueryOrMutation(schema, doc, variables, 'getName', executionContext)).resolves.toEqual({
+    await expect(runQueryOrMutation(schema, doc, variables, "getName", executionContext)).resolves.toEqual({
       data: { getName: null },
       errors: [error],
     });

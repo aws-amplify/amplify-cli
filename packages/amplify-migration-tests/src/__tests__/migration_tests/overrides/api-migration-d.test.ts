@@ -15,20 +15,20 @@ import {
   getSchemaPath,
   getTransformConfig,
   updateHeadlessApi,
-} from '@aws-amplify/amplify-e2e-core';
-import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
-import * as fs from 'fs-extra';
-import { join } from 'path';
-import { initJSProjectWithProfile } from '../../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { AddApiRequest, UpdateApiRequest } from "amplify-headless-interface";
+import * as fs from "fs-extra";
+import { join } from "path";
+import { initJSProjectWithProfile } from "../../../migration-helpers";
 
-describe('api migration update test d', () => {
+describe("api migration update test d", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('graphql-api');
+    projRoot = await createNewProjectDir("graphql-api");
   });
 
   afterEach(async () => {
-    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot, undefined, true);
     }
@@ -38,11 +38,11 @@ describe('api migration update test d', () => {
   const addApiRequest: AddApiRequest = {
     version: 1,
     serviceConfiguration: {
-      serviceName: 'AppSync',
-      apiName: 'myApiName',
-      transformSchema: fs.readFileSync(getSchemaPath('simple_model.graphql'), 'utf8'),
+      serviceName: "AppSync",
+      apiName: "myApiName",
+      transformSchema: fs.readFileSync(getSchemaPath("simple_model.graphql"), "utf8"),
       defaultAuthType: {
-        mode: 'API_KEY',
+        mode: "API_KEY",
       },
     },
   };
@@ -50,24 +50,24 @@ describe('api migration update test d', () => {
   const updateApiRequest: UpdateApiRequest = {
     version: 1,
     serviceModification: {
-      serviceName: 'AppSync',
-      transformSchema: fs.readFileSync(getSchemaPath('simple_model_override.graphql'), 'utf8'),
+      serviceName: "AppSync",
+      transformSchema: fs.readFileSync(getSchemaPath("simple_model_override.graphql"), "utf8"),
       defaultAuthType: {
-        mode: 'AWS_IAM',
+        mode: "AWS_IAM",
       },
       additionalAuthTypes: [
         {
-          mode: 'API_KEY',
+          mode: "API_KEY",
         },
       ],
       conflictResolution: {
         defaultResolutionStrategy: {
-          type: 'OPTIMISTIC_CONCURRENCY',
+          type: "OPTIMISTIC_CONCURRENCY",
         },
       },
     },
   };
-  it('updates AppSync API in headless mode', async () => {
+  it("updates AppSync API in headless mode", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest, {
       allowDestructiveUpdates: false,
@@ -75,7 +75,7 @@ describe('api migration update test d', () => {
     });
     await amplifyPush(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true, { testingWithLatestCodebase: true });
-    expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
+    expect(getCLIInputs(projRoot, "api", "myApiName")).toBeDefined();
     await amplifyPushUpdate(projRoot, undefined, undefined, true);
 
     // verify
@@ -91,8 +91,8 @@ describe('api migration update test d', () => {
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
 
-    expect(getTransformConfig(projRoot, 'myApiName')).toMatchSnapshot();
+    expect(getTransformConfig(projRoot, "myApiName")).toMatchSnapshot();
     expect(output.authConfig).toMatchSnapshot();
-    expect(getProjectSchema(projRoot, 'myApiName')).toMatchSnapshot();
+    expect(getProjectSchema(projRoot, "myApiName")).toMatchSnapshot();
   });
 });

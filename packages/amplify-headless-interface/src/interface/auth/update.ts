@@ -1,4 +1,4 @@
-import { CognitoUserPoolConfiguration, CognitoIdentityPoolConfiguration, NoCognitoIdentityPool, CognitoOAuthConfiguration } from './add';
+import { CognitoUserPoolConfiguration, CognitoIdentityPoolConfiguration, NoCognitoIdentityPool, CognitoOAuthConfiguration } from "./add";
 
 /**
  * Defines the payload expected by `amplify update auth --headless`
@@ -11,7 +11,7 @@ export interface UpdateAuthRequest {
 export type CognitoServiceModification = BaseCognitoServiceModification & (NoCognitoIdentityPool | ModifyCognitoIdentityPool);
 
 export interface BaseCognitoServiceModification {
-  serviceName: 'Cognito';
+  serviceName: "Cognito";
   userPoolModification: CognitoUserPoolModification;
 }
 
@@ -54,13 +54,13 @@ export interface ModifyCognitoIdentityPool {
  */
 export type CognitoUserPoolModification = Pick<
   CognitoUserPoolConfiguration,
-  | 'userPoolGroups'
-  | 'adminQueries'
-  | 'mfa'
-  | 'passwordPolicy'
-  | 'refreshTokenPeriod'
-  | 'readAttributes'
-  | 'writeAttributes'
-  | 'autoVerifiedAttributes'
+  | "userPoolGroups"
+  | "adminQueries"
+  | "mfa"
+  | "passwordPolicy"
+  | "refreshTokenPeriod"
+  | "readAttributes"
+  | "writeAttributes"
+  | "autoVerifiedAttributes"
 > & { oAuth?: Partial<CognitoOAuthConfiguration> };
-export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, 'unauthenticatedLogin' | 'identitySocialFederation'>;
+export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, "unauthenticatedLogin" | "identitySocialFederation">;

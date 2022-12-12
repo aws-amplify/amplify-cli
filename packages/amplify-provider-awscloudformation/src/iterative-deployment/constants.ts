@@ -1,1 +1,1 @@
-export const DEPLOYMENT_META = 'deployment-meta.json';
+export const DEPLOYMENT_META = "deployment-meta.json";

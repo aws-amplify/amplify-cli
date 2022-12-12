@@ -1,2 +1,2 @@
-export * from './pathManager';
-export * from './stateManager';
+export * from "./pathManager";
+export * from "./stateManager";

@@ -1,13 +1,13 @@
-import { $TSContext } from 'amplify-cli-core';
-import { AmplifyUserPoolGroupTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
+import { $TSContext } from "amplify-cli-core";
+import { AmplifyUserPoolGroupTransform } from "../../../../provider-utils/awscloudformation/auth-stack-builder";
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock("amplify-cli-core", () => ({
+  ...(jest.requireActual("amplify-cli-core") as Record<string, unknown>),
   stateManager: {
-    getLocalEnvInfo: jest.fn().mockReturnValue('testEnv'),
+    getLocalEnvInfo: jest.fn().mockReturnValue("testEnv"),
   },
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('..'),
+    getBackendDirPath: jest.fn().mockReturnValue(".."),
   },
   JSONUtilities: {
     writeJson: jest.fn(),
@@ -15,28 +15,24 @@ jest.mock('amplify-cli-core', () => ({
       .fn()
       .mockReturnValueOnce([
         {
-          groupName: 'admin',
+          groupName: "admin",
           precedence: 1,
         },
       ])
       .mockReturnValueOnce([
         {
-          groupName: 'adminMock',
+          groupName: "adminMock",
           precedence: 2,
           customPolicies: [
             {
-              PolicyName: 'analytics-pinpoint-policy',
+              PolicyName: "analytics-pinpoint-policy",
               PolicyDocument: {
-                Version: '2012-10-17',
+                Version: "2012-10-17",
                 Statement: [
                   {
-                    Effect: 'Allow',
-                    Action: [
-                      'mockActions',
-                    ],
-                    Resource: [
-                      'mockArn',
-                    ],
+                    Effect: "Allow",
+                    Action: ["mockActions"],
+                    Resource: ["mockArn"],
                   },
                 ],
               },
@@ -53,14 +49,14 @@ jest.mock('amplify-cli-core', () => ({
 
 const getCLIInputPayloadMock = jest.fn().mockReturnValue({
   cognitoConfig: {
-    identityPoolName: 'testIdentityPoolName',
-    resourceName: 'testAuthResourceName',
+    identityPoolName: "testIdentityPoolName",
+    resourceName: "testAuthResourceName",
   },
 });
 
-const isCLIInputsValidMock = jest.fn().mockReturnValue('true');
+const isCLIInputsValidMock = jest.fn().mockReturnValue("true");
 
-jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => ({
+jest.mock("../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts", () => ({
   AuthInputState: jest.fn().mockImplementation(() => ({
     getCLIInputPayload: getCLIInputPayloadMock,
     isCLIInputsValid: isCLIInputsValidMock,
@@ -70,20 +66,20 @@ jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth
 const contextStub = {};
 
 const contextStubTyped = contextStub as unknown as $TSContext;
-describe('Check UserPool Group Template', () => {
-  it('Generated userpool group stack template during Push one group', async () => {
+describe("Check UserPool Group Template", () => {
+  it("Generated userpool group stack template during Push one group", async () => {
     // CFN transform for UserPool Group stack
 
-    const resourceName = 'mockResource';
+    const resourceName = "mockResource";
     const userPoolTransform = new AmplifyUserPoolGroupTransform(resourceName);
     const mockTemplate = await userPoolTransform.transform(contextStubTyped);
     expect(mockTemplate).toMatchSnapshot();
   });
 
-  it('Generated userpool group stack template during Push with two groups', async () => {
+  it("Generated userpool group stack template during Push with two groups", async () => {
     // CFN transform for UserPool Group stack
 
-    const resourceName = 'mockResource';
+    const resourceName = "mockResource";
     const userPoolTransform = new AmplifyUserPoolGroupTransform(resourceName);
     const mockTemplate = await userPoolTransform.transform(contextStubTyped);
     expect(mockTemplate).toMatchSnapshot();

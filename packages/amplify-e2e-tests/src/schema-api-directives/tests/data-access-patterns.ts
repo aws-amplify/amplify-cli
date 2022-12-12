@@ -191,16 +191,16 @@ query getEmployee($id: ID!) {
   }
 }`;
 export const input_query1 = {
-  id: 'amanda',
+  id: "amanda",
 };
 export const expected_result_query1 = {
   data: {
     getEmployee: {
-      id: 'amanda',
-      name: 'Amanda',
-      phoneNumber: '6015555555',
-      startDate: '2018-05-22',
-      jobTitle: 'Manager',
+      id: "amanda",
+      name: "Amanda",
+      phoneNumber: "6015555555",
+      startDate: "2018-05-22",
+      jobTitle: "Manager",
     },
   },
 };
@@ -221,18 +221,18 @@ query employeeByName($name: String!) {
   }
 }`;
 export const input_query2 = {
-  name: 'Amanda',
+  name: "Amanda",
 };
 export const expected_result_query2 = {
   data: {
     employeeByName: {
       items: [
         {
-          id: 'amanda',
-          name: 'Amanda',
-          phoneNumber: '6015555555',
-          startDate: '2018-05-22',
-          jobTitle: 'Manager',
+          id: "amanda",
+          name: "Amanda",
+          phoneNumber: "6015555555",
+          startDate: "2018-05-22",
+          jobTitle: "Manager",
         },
       ],
     },
@@ -251,14 +251,14 @@ query employeeByName($name: String!) {
   }
 }`;
 export const input_query3 = {
-  name: 'Amanda',
+  name: "Amanda",
 };
 export const expected_result_query3 = {
   data: {
     employeeByName: {
       items: [
         {
-          phoneNumber: '6015555555',
+          phoneNumber: "6015555555",
         },
       ],
     },
@@ -275,12 +275,12 @@ query getCustomer($customerID: ID!) {
   }
 }`;
 export const input_query4 = {
-  customerID: 'jennifer_thomas',
+  customerID: "jennifer_thomas",
 };
 export const expected_result_query4 = {
   data: {
     getCustomer: {
-      phoneNumber: '+16015555555',
+      phoneNumber: "+16015555555",
     },
   },
 };
@@ -309,7 +309,7 @@ query getCustomerWithOrdersByDate($customerID: ID!) {
   }
 }`;
 export const input_query5 = {
-  customerID: 'jennifer_thomas',
+  customerID: "jennifer_thomas",
 };
 export const expected_result_query5 = {
   data: {
@@ -318,7 +318,7 @@ export const expected_result_query5 = {
         items: [
           {
             amount: 300,
-            productID: 'yeezyboost',
+            productID: "yeezyboost",
           },
         ],
       },
@@ -349,7 +349,7 @@ query getCustomerWithOrdersByStatusDate($customerID: ID!) {
   }
 }`;
 export const input_query6 = {
-  customerID: 'jennifer_thomas',
+  customerID: "jennifer_thomas",
 };
 export const expected_result_query6 = {
   data: {
@@ -358,7 +358,7 @@ export const expected_result_query6 = {
         items: [
           {
             amount: 300,
-            date: '2018-07-12',
+            date: "2018-07-12",
           },
         ],
       },
@@ -386,11 +386,11 @@ export const expected_result_query7 = {
     employeesNewHire: {
       items: [
         {
-          id: 'amanda',
-          name: 'Amanda',
-          phoneNumber: '6015555555',
-          startDate: '2018-05-22',
-          jobTitle: 'Manager',
+          id: "amanda",
+          name: "Amanda",
+          phoneNumber: "6015555555",
+          startDate: "2018-05-22",
+          jobTitle: "Manager",
         },
       ],
     },
@@ -416,20 +416,20 @@ query getWarehouse($warehouseID: ID!) {
   }
 }`;
 export const input_query8 = {
-  warehouseID: '1',
+  warehouseID: "1",
 };
 export const expected_result_query8 = {
   data: {
     getWarehouse: {
-      id: '1',
+      id: "1",
       employees: {
         items: [
           {
-            id: 'amanda',
-            name: 'Amanda',
-            startDate: '2018-05-22',
-            phoneNumber: '6015555555',
-            jobTitle: 'Manager',
+            id: "amanda",
+            name: "Amanda",
+            startDate: "2018-05-22",
+            phoneNumber: "6015555555",
+            jobTitle: "Manager",
           },
         ],
       },
@@ -455,18 +455,18 @@ query getProductOrders($productID: ID!) {
   }
 }`;
 export const input_query9 = {
-  productID: 'yeezyboost',
+  productID: "yeezyboost",
 };
 export const expected_result_query9 = {
   data: {
     getProduct: {
-      id: 'yeezyboost',
+      id: "yeezyboost",
       orders: {
         items: [
           {
-            status: 'pending',
+            status: "pending",
             amount: 300,
-            date: '2018-07-12',
+            date: "2018-07-12",
           },
         ],
       },
@@ -491,16 +491,16 @@ query getProductInventoryInfo($productID: ID!) {
   }
 }`;
 export const input_query10 = {
-  productID: 'yeezyboost',
+  productID: "yeezyboost",
 };
 export const expected_result_query10 = {
   data: {
     getProduct: {
-      id: 'yeezyboost',
+      id: "yeezyboost",
       inventories: {
         items: [
           {
-            warehouseID: '1',
+            warehouseID: "1",
             inventoryAmount: 300,
           },
         ],
@@ -527,7 +527,7 @@ query getCustomersForAccountRepresentative($representativeId: ID!) {
   }
 }`;
 export const input_query11 = {
-  representativeId: 'dabit',
+  representativeId: "dabit",
 };
 export const expected_result_query11 = {
   data: {
@@ -535,9 +535,9 @@ export const expected_result_query11 = {
       customers: {
         items: [
           {
-            id: 'jennifer_thomas',
-            name: 'Jennifer Thomas',
-            phoneNumber: '+16015555555',
+            id: "jennifer_thomas",
+            name: "Jennifer Thomas",
+            phoneNumber: "+16015555555",
           },
         ],
       },
@@ -568,18 +568,18 @@ query getOrdersForAccountRepresentative($representativeId: ID!) {
   }
 }`;
 export const input_query12 = {
-  representativeId: 'dabit',
+  representativeId: "dabit",
 };
 export const expected_result_query12 = {
   data: {
     getAccountRepresentative: {
-      id: 'dabit',
+      id: "dabit",
       orders: {
         items: [
           {
-            status: 'pending',
+            status: "pending",
             amount: 300,
-            date: '2018-07-12',
+            date: "2018-07-12",
           },
         ],
       },
@@ -606,18 +606,18 @@ query getProductOrders($productID: ID!) {
 }
 `;
 export const input_query13 = {
-  productID: 'yeezyboost',
+  productID: "yeezyboost",
 };
 export const expected_result_query13 = {
   data: {
     getProduct: {
-      id: 'yeezyboost',
+      id: "yeezyboost",
       orders: {
         items: [
           {
-            status: 'pending',
+            status: "pending",
             amount: 300,
-            date: '2018-07-12',
+            date: "2018-07-12",
           },
         ],
       },
@@ -644,10 +644,10 @@ export const expected_result_query14 = {
     employeesByJobTitle: {
       items: [
         {
-          id: 'amanda',
-          name: 'Amanda',
-          phoneNumber: '6015555555',
-          jobTitle: 'Manager',
+          id: "amanda",
+          name: "Amanda",
+          phoneNumber: "6015555555",
+          jobTitle: "Manager",
         },
       ],
     },
@@ -668,14 +668,14 @@ query inventoryByProductAndWarehouse($productID: ID!, $warehouseID: ID!) {
   }
 }`;
 export const input_query15 = {
-  productID: 'yeezyboost',
-  warehouseID: '1',
+  productID: "yeezyboost",
+  warehouseID: "1",
 };
 export const expected_result_query15 = {
   data: {
     getInventory: {
-      productID: 'yeezyboost',
-      warehouseID: '1',
+      productID: "yeezyboost",
+      warehouseID: "1",
       inventoryAmount: 300,
     },
   },
@@ -699,8 +699,8 @@ export const expected_result_query16 = {
     listInventorys: {
       items: [
         {
-          productID: 'yeezyboost',
-          warehouseID: '1',
+          productID: "yeezyboost",
+          warehouseID: "1",
           inventoryAmount: 300,
         },
       ],
@@ -730,7 +730,7 @@ export const expected_result_query17 = {
     repsByPeriodAndTotal: {
       items: [
         {
-          id: 'dabit',
+          id: "dabit",
           orderTotal: 400000,
         },
       ],
@@ -758,11 +758,11 @@ export const expected_result_query71 = {
     employeesNewHireByStartDate: {
       items: [
         {
-          id: 'amanda',
-          name: 'Amanda',
-          phoneNumber: '6015555555',
-          startDate: '2018-05-22',
-          jobTitle: 'Manager',
+          id: "amanda",
+          name: "Amanda",
+          phoneNumber: "6015555555",
+          startDate: "2018-05-22",
+          jobTitle: "Manager",
         },
       ],
     },
@@ -781,7 +781,7 @@ query byWarehouseId($warehouseID: ID!) {
   }
 }`;
 export const input_query151 = {
-  warehouseID: '1',
+  warehouseID: "1",
 };
 export const expected_result_query151 = {
   data: {
@@ -789,7 +789,7 @@ export const expected_result_query151 = {
       items: [
         {
           inventoryAmount: 300,
-          productID: 'yeezyboost',
+          productID: "yeezyboost",
         },
       ],
     },

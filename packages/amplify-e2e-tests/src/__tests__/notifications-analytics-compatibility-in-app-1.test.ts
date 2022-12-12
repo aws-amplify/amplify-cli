@@ -15,17 +15,17 @@ import {
   amplifyStatus,
   getTeamProviderInfo,
   removeAllNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   expectLocalAndPulledAwsExportsMatching,
   expectLocalAndPulledBackendAmplifyMetaMatching,
   expectLocalAndPulledBackendConfigMatching,
   getShortId,
-} from '../import-helpers';
+} from "../import-helpers";
 
-describe('notification category compatibility test', () => {
-  const testChannelSelection = 'In-App Messaging';
-  const envName = 'test';
+describe("notification category compatibility test", () => {
+  const testChannelSelection = "In-App Messaging";
+  const envName = "test";
   const projectPrefix = `notificationCompatibility`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -99,7 +99,7 @@ describe('notification category compatibility test', () => {
     expect(updatedInAppMsgMeta.Enabled).toBe(false);
 
     // amplify status should detect that we haven't pushed yet & show Update status
-    await amplifyStatus(projectRoot, 'Update');
+    await amplifyStatus(projectRoot, "Update");
     // cloud backend should show that InAppMessaging is still enabled because we haven't pushed
     const cloudBackendMeta = await getProjectMeta(projectRoot);
     const cloudBackendInAppMsgMeta = cloudBackendMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
@@ -116,16 +116,16 @@ describe('notification category compatibility test', () => {
     expect(updatedCloudBackendInAppMsgMeta.Enabled).toBe(false);
 
     // make sure Notifications/Analytics/Auth still show up in status
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // this will remove notifications inline, so both local/cloud will be updated
     await removeAllNotificationChannel(projectRoot);
 
     // analytics/auth should still exist
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // notifications should not exist locally (check the amplify-meta.json file)
     const finalLocalMeta = getBackendAmplifyMeta(projectRoot);

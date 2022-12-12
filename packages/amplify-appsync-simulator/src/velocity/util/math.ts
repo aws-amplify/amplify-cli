@@ -1,4 +1,4 @@
-import { random } from 'lodash';
+import { random } from "lodash";
 
 export const math = {
   roundNum: Math.round,

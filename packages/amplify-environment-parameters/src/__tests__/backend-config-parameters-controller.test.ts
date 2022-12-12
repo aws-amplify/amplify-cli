@@ -1,7 +1,7 @@
-import { stateManager, AmplifyError } from 'amplify-cli-core';
-import { IBackendParametersController } from '../backend-config-parameters-controller';
+import { stateManager, AmplifyError } from "amplify-cli-core";
+import { IBackendParametersController } from "../backend-config-parameters-controller";
 
-jest.mock('amplify-cli-core');
+jest.mock("amplify-cli-core");
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
 
@@ -9,8 +9,8 @@ const testParams = {
   testParam: {
     usedBy: [
       {
-        category: 'function',
-        resourceName: 'other',
+        category: "function",
+        resourceName: "other",
       },
     ],
   },
@@ -19,33 +19,33 @@ const testParams = {
 stateManagerMock.backendConfigFileExists.mockReturnValue(true);
 stateManagerMock.getBackendConfig.mockReturnValue({
   someCategory: {
-    other: 'stuff',
+    other: "stuff",
   },
   parameters: testParams,
 });
 
-describe('BackendConfigParameterMapController', () => {
+describe("BackendConfigParameterMapController", () => {
   let backendParamsController: IBackendParametersController;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.isolateModules(async () => {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-      const { getParametersControllerInstance } = require('../backend-config-parameters-controller');
+      const { getParametersControllerInstance } = require("../backend-config-parameters-controller");
       backendParamsController = getParametersControllerInstance();
     });
     backendParamsController.removeAllParameters();
     backendParamsController.addAllParameters(testParams);
   });
 
-  it('returns initial parameters', () => {
+  it("returns initial parameters", () => {
     const actualParams = backendParamsController.getParameters();
     expect(actualParams).toEqual(testParams);
   });
 
-  describe('addParameter', () => {
-    it('adds single parameter', () => {
-      backendParamsController.addParameter('anotherParam', [{ category: 'something', resourceName: 'else' }]);
+  describe("addParameter", () => {
+    it("adds single parameter", () => {
+      backendParamsController.addParameter("anotherParam", [{ category: "something", resourceName: "else" }]);
       expect(backendParamsController.getParameters()).toMatchInlineSnapshot(`
         Object {
           "anotherParam": Object {
@@ -69,22 +69,22 @@ describe('BackendConfigParameterMapController', () => {
     });
   });
 
-  describe('addAllParameters', () => {
-    it('adds all parameters', () => {
+  describe("addAllParameters", () => {
+    it("adds all parameters", () => {
       backendParamsController.addAllParameters({
         anotherParam: {
           usedBy: [
             {
-              category: 'something',
-              resourceName: 'else',
+              category: "something",
+              resourceName: "else",
             },
           ],
         },
         lastParam: {
           usedBy: [
             {
-              category: 'aCategory',
-              resourceName: 'aResource',
+              category: "aCategory",
+              resourceName: "aResource",
             },
           ],
         },
@@ -120,22 +120,22 @@ describe('BackendConfigParameterMapController', () => {
     });
   });
 
-  describe('removeParameter', () => {
-    it('removes single parameter', () => {
-      backendParamsController.removeParameter('testParam');
+  describe("removeParameter", () => {
+    it("removes single parameter", () => {
+      backendParamsController.removeParameter("testParam");
       expect(backendParamsController.getParameters()).toEqual({});
     });
   });
 
-  describe('removeAllParameters', () => {
-    it('removes all parameters', () => {
+  describe("removeAllParameters", () => {
+    it("removes all parameters", () => {
       backendParamsController.removeAllParameters();
       expect(backendParamsController.getParameters()).toEqual({});
     });
   });
 
-  describe('save', () => {
-    it('writes current parameter state to backend config', async () => {
+  describe("save", () => {
+    it("writes current parameter state to backend config", async () => {
       backendParamsController.save();
       expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
         Object {
@@ -158,12 +158,12 @@ describe('BackendConfigParameterMapController', () => {
   });
 });
 
-describe('getParametersControllerInstance', () => {
-  it('throws on invalid backend config', () => {
+describe("getParametersControllerInstance", () => {
+  it("throws on invalid backend config", () => {
     stateManagerMock.getBackendConfig.mockReturnValue({
-      parameters: 'this is not right',
+      parameters: "this is not right",
     });
-    const { getParametersControllerInstance } = jest.requireActual('../backend-config-parameters-controller');
+    const { getParametersControllerInstance } = jest.requireActual("../backend-config-parameters-controller");
     expect(() => getParametersControllerInstance()).toThrow();
     expect(AmplifyErrorMock.mock.calls[0]).toMatchInlineSnapshot(`
       Array [

@@ -1,27 +1,27 @@
-const https = require('https');
-import fetch from 'node-fetch';
+const https = require("https");
+import fetch from "node-fetch";
 
 export function post({ body, ...options }) {
   return new Promise((resolve, reject) => {
     const req = https.request(
       {
-        method: 'POST',
+        method: "POST",
         ...options,
       },
-      res => {
+      (res) => {
         const chunks = [];
-        res.on('data', data => chunks.push(data));
-        res.on('end', () => {
+        res.on("data", (data) => chunks.push(data));
+        res.on("end", () => {
           let body = Buffer.concat(chunks);
-          if (res.headers['content-type'].startsWith('application/json')) {
+          if (res.headers["content-type"].startsWith("application/json")) {
             body = JSON.parse(body.toString());
           }
           resolve(body);
         });
-      },
+      }
     );
 
-    req.on('error', reject);
+    req.on("error", reject);
     if (body) {
       req.write(body);
     }

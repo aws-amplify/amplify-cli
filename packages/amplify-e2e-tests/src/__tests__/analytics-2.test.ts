@@ -6,13 +6,13 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify add analytics', () => {
+describe("amplify add analytics", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('analytics');
+    projRoot = await createNewProjectDir("analytics");
   });
 
   afterEach(async () => {
@@ -20,22 +20,22 @@ describe('amplify add analytics', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add analytics and function', async () => {
+  it("add analytics and function", async () => {
     await initJSProjectWithProfile(projRoot, {});
-    const rightName = 'pinpointTestApp';
-    await addPinpoint(projRoot, { rightName, wrongName: '$' });
+    const rightName = "pinpointTestApp";
+    await addPinpoint(projRoot, { rightName, wrongName: "$" });
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['analytics'],
+          permissions: ["analytics"],
           resources: [rightName],
-          choices: ['auth', 'analytics'],
-          operations: ['create', 'read'],
+          choices: ["auth", "analytics"],
+          operations: ["create", "read"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
     await amplifyPushUpdate(projRoot);
   });

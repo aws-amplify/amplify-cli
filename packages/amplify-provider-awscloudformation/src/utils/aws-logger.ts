@@ -1,6 +1,6 @@
-import { Redactor, logger } from 'amplify-cli-logger';
+import { Redactor, logger } from "amplify-cli-logger";
 
-const mainModule = 'amplify-provider-awscloudformation';
+const mainModule = "amplify-provider-awscloudformation";
 
 export type Logger = (crumb: string, args: any[]) => (error?: Error) => void;
 

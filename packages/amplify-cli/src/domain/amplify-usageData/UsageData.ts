@@ -1,17 +1,17 @@
 /* eslint-disable class-methods-use-this */
-import { JSONUtilities } from 'amplify-cli-core';
-import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
-import { prompter } from 'amplify-prompts';
-import https from 'https';
-import { pick } from 'lodash';
-import { UrlWithStringQuery } from 'url';
-import { v4 as uuid } from 'uuid';
-import { Input } from '../input';
-import { CLIFlowReport } from './FlowReport';
-import { getUrl } from './getUsageDataUrl';
-import redactInput from './identifiable-input-regex';
-import { Timer } from './Timer';
-import { UsageDataPayload } from './UsageDataPayload';
+import { JSONUtilities } from "amplify-cli-core";
+import { ICommandInput, IFlowReport } from "amplify-cli-shared-interfaces";
+import { prompter } from "amplify-prompts";
+import https from "https";
+import { pick } from "lodash";
+import { UrlWithStringQuery } from "url";
+import { v4 as uuid } from "uuid";
+import { Input } from "../input";
+import { CLIFlowReport } from "./FlowReport";
+import { getUrl } from "./getUsageDataUrl";
+import redactInput from "./identifiable-input-regex";
+import { Timer } from "./Timer";
+import { UsageDataPayload } from "./UsageDataPayload";
 import {
   FromStartupTimedCodePaths,
   InputOptions,
@@ -21,16 +21,16 @@ import {
   StartableTimedCodePath,
   StoppableTimedCodePath,
   TimedCodePath,
-} from './UsageDataTypes';
+} from "./UsageDataTypes";
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
  */
 export class UsageData implements IUsageData {
   sessionUuid: string;
-  accountId = '';
-  installationUuid = '';
-  version = '';
+  accountId = "";
+  installationUuid = "";
+  version = "";
   input: Input;
   projectSettings: ProjectSettings;
   url: UrlWithStringQuery;
@@ -59,13 +59,13 @@ export class UsageData implements IUsageData {
     input: Input,
     accountId: string,
     projectSettings: ProjectSettings,
-    processStartTimeStamp: number,
+    processStartTimeStamp: number
   ): void {
     this.installationUuid = installationUuid;
     this.accountId = accountId;
     this.projectSettings = projectSettings;
     this.version = version;
-    this.inputOptions = input.options ? pick(input.options as InputOptions, ['sandboxId']) : {};
+    this.inputOptions = input.options ? pick(input.options as InputOptions, ["sandboxId"]) : {};
     this.input = redactInput(input, true);
     this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
     this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
@@ -137,10 +137,10 @@ export class UsageData implements IUsageData {
   }
 
   /**
-    * Append record to non-interactive Flow data
-    * @param headlessParameterString - Stringified headless parameter string
-    * @param input  - CLI input entered by Cx
-    */
+   * Append record to non-interactive Flow data
+   * @param headlessParameterString - Stringified headless parameter string
+   * @param input  - CLI input entered by Cx
+   */
   pushHeadlessFlow(headlessParameterString: string, input: ICommandInput): void {
     this.flow.pushHeadlessFlow(headlessParameterString, input);
   }
@@ -172,13 +172,14 @@ export class UsageData implements IUsageData {
    * Calculates all the leaves that were updated
    * @param events CloudFormation Stack Events
    */
-  calculatePushNormalizationFactor(events: { StackId: string, PhysicalResourceId: string } [], StackId: string) : void {
+  calculatePushNormalizationFactor(events: { StackId: string; PhysicalResourceId: string }[], StackId: string): void {
     const cfnStackStack = [StackId];
     let count = 0;
     while (cfnStackStack.length !== 0) {
       const head = cfnStackStack.pop();
-      const children = events.filter(r => r.StackId === head && r.PhysicalResourceId !== head)
-        .map(r => r.PhysicalResourceId)
+      const children = events
+        .filter((r) => r.StackId === head && r.PhysicalResourceId !== head)
+        .map((r) => r.PhysicalResourceId)
         .reduce((set, val) => set.add(val), new Set<string>());
       if (children.size > 0) {
         cfnStackStack.push(...children.values());
@@ -196,7 +197,7 @@ export class UsageData implements IUsageData {
     }
     this.codePathDurations.set(codePath, timer.stop());
     this.codePathTimers.delete(codePath);
-  }
+  };
 
   private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
     // initialize the unique project identifier if work space is initialized
@@ -219,7 +220,7 @@ export class UsageData implements IUsageData {
       this.projectSettings,
       this.inputOptions,
       Object.fromEntries(this.codePathDurations),
-      this.flow.getFlowReport() as IFlowReport,
+      this.flow.getFlowReport() as IFlowReport
     );
     payload.pushNormalizationFactor = this.pushNormalizationFactor;
     await this.send(payload);
@@ -228,8 +229,8 @@ export class UsageData implements IUsageData {
   }
 
   /**
-  * get usage data partial payload to use in reporter
-  */
+   * get usage data partial payload to use in reporter
+   */
   getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
     return new UsageDataPayload(
       this.sessionUuid,
@@ -242,12 +243,12 @@ export class UsageData implements IUsageData {
       this.projectSettings,
       this.inputOptions,
       Object.fromEntries(this.codePathDurations),
-      this.flow.getFlowReport() as IFlowReport,
+      this.flow.getFlowReport() as IFlowReport
     );
   }
 
   private async send(payload: UsageDataPayload): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       const data: string = JSONUtilities.stringify(payload, {
         minify: true,
       })!;
@@ -255,13 +256,15 @@ export class UsageData implements IUsageData {
         hostname: this.url.hostname,
         port: this.url.port,
         path: this.url.path,
-        method: 'POST',
+        method: "POST",
         headers: {
-          'content-type': 'application/json',
-          'content-length': data.length,
+          "content-type": "application/json",
+          "content-length": data.length,
         },
       });
-      req.on('error', () => { /* noop */ });
+      req.on("error", () => {
+        /* noop */
+      });
       req.setTimeout(this.requestTimeout, () => {
         resolve();
       });
@@ -274,7 +277,7 @@ export class UsageData implements IUsageData {
 }
 
 enum WorkflowState {
-  ABORTED = 'ABORTED',
-  FAILED = 'FAILED',
-  SUCCESSFUL = 'SUCCEEDED',
+  ABORTED = "ABORTED",
+  FAILED = "FAILED",
+  SUCCESSFUL = "SUCCEEDED",
 }

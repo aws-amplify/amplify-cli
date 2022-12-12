@@ -1,4 +1,4 @@
-import { PluginManifest } from './plugin-manifest';
+import { PluginManifest } from "./plugin-manifest";
 
 export class PluginVerificationResult {
   constructor(
@@ -11,10 +11,10 @@ export class PluginVerificationResult {
 }
 
 export enum PluginVerificationError {
-  PluginDirPathNotExist = 'PluginDirPathNotExist',
-  InvalidNodePackage = 'InvalidNodePackage',
-  MissingManifest = 'MissingManifest',
-  InvalidManifest = 'InvalidManifest',
-  MissingExecuteAmplifyCommandMethod = 'MissingExecuteAmplifyCommandMethod',
-  MissingHandleAmplifyEventMethod = 'MissingHandleAmplifyEventMethod',
+  PluginDirPathNotExist = "PluginDirPathNotExist",
+  InvalidNodePackage = "InvalidNodePackage",
+  MissingManifest = "MissingManifest",
+  InvalidManifest = "InvalidManifest",
+  MissingExecuteAmplifyCommandMethod = "MissingExecuteAmplifyCommandMethod",
+  MissingHandleAmplifyEventMethod = "MissingHandleAmplifyEventMethod",
 }

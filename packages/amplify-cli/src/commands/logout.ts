@@ -1,7 +1,7 @@
-import { stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import { Context } from '../domain/context';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { stateManager } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import { Context } from "../domain/context";
+import { CognitoIdentityServiceProvider } from "aws-sdk";
 
 export const run = async (context: Context) => {
   const { appId } = context.parameters.options;
@@ -17,13 +17,13 @@ export const run = async (context: Context) => {
     return;
   }
 
-  const useGlobalSignOut = await prompter.yesOrNo('Do you want to logout from all sessions?');
+  const useGlobalSignOut = await prompter.yesOrNo("Do you want to logout from all sessions?");
 
   if (useGlobalSignOut) {
     const cognitoISP = new CognitoIdentityServiceProvider({ region: amplifyAdminConfig.region });
     try {
       await cognitoISP.globalSignOut(amplifyAdminConfig.accessToken.jwtToken);
-      printer.info('Logged out globally.');
+      printer.info("Logged out globally.");
     } catch (e) {
       printer.error(`An error occurred during logout: ${e.message}`);
       return;

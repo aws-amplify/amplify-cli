@@ -1,25 +1,23 @@
-import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifyError,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import ora from 'ora';
-import os from 'os';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import ora from "ora";
+import os from "os";
 
-const providerName = 'awscloudformation';
-const policyNamePrefix = 'pinpoint_amplify-';
-const spinner = ora('');
+const providerName = "awscloudformation";
+const policyNamePrefix = "pinpoint_amplify-";
+const spinner = ora("");
 
 /**
  * Ensure Auth policies are created for Notifications resource
  */
-export const ensureAuth = async (context: $TSContext, resourceName: string) : Promise<void> => {
+export const ensureAuth = async (context: $TSContext, resourceName: string): Promise<void> => {
   try {
-    spinner.start('Creating and attaching IAM policy.');
+    spinner.start("Creating and attaching IAM policy.");
     const policy = await createPolicy(context);
     await attachPolicy(context, policy);
-    spinner.succeed('Successfully set the IAM policy');
+    spinner.succeed("Successfully set the IAM policy");
   } catch (e) {
-    spinner.fail('Error occurred during IAM policy setup.');
+    spinner.fail("Error occurred during IAM policy setup.");
     throw e;
   }
   await checkAuth(context, resourceName);
@@ -42,7 +40,7 @@ const createPolicy = async (context: $TSContext): Promise<$TSAny> => {
   });
 };
 
-const attachPolicy = async (context: $TSContext, policy: $TSAny):Promise<void> => {
+const attachPolicy = async (context: $TSContext, policy: $TSAny): Promise<void> => {
   const { amplifyMeta } = context.exeInfo;
   const authRoleName = amplifyMeta.providers[providerName].AuthRoleName;
   const unAuthRoleName = amplifyMeta.providers[providerName].UnauthRoleName;
@@ -50,12 +48,12 @@ const attachPolicy = async (context: $TSContext, policy: $TSAny):Promise<void> =
   await attachPolicyToRole(context, policy, unAuthRoleName);
 };
 
-const attachPolicyToRole = async (context: $TSContext, policy: $TSAny, roleName: string) : Promise<$TSAny> => {
+const attachPolicyToRole = async (context: $TSContext, policy: $TSAny, roleName: string): Promise<$TSAny> => {
   const params = {
     RoleName: roleName,
     PolicyArn: policy.Arn,
   };
-  const iamClient = await getIamClient(context, 'update');
+  const iamClient = await getIamClient(context, "update");
   return new Promise((resolve, reject) => {
     iamClient.attachRolePolicy(params, (err: $TSAny, data: $TSAny) => {
       if (err) {
@@ -75,7 +73,7 @@ const deletePolicy = async (context: $TSContext, policyArn: string): Promise<$TS
   return iamClient.deletePolicy(params).promise();
 };
 
-const detachPolicyFromRole = async (context:$TSContext, policyArn: string, roleName: string):Promise<$TSAny> => {
+const detachPolicyFromRole = async (context: $TSContext, policyArn: string, roleName: string): Promise<$TSAny> => {
   const params = {
     PolicyArn: policyArn,
     RoleName: roleName,
@@ -84,7 +82,7 @@ const detachPolicyFromRole = async (context:$TSContext, policyArn: string, roleN
   return iamClient.detachRolePolicy(params).promise();
 };
 
-const listAttachedRolePolicies = async (context:$TSContext, roleName: string) : Promise<$TSAny> => {
+const listAttachedRolePolicies = async (context: $TSContext, roleName: string): Promise<$TSAny> => {
   const params = { RoleName: roleName };
   const iamClient = await getIamClient(context, undefined);
   return iamClient.listAttachedRolePolicies(params).promise();
@@ -93,14 +91,14 @@ const listAttachedRolePolicies = async (context:$TSContext, roleName: string) : 
 /**
  * Delete All the IAM Policies added by Notifications from the Auth/UnAuthRoles
  */
-export const deleteRolePolicy = async (context:$TSContext):Promise<void> => {
+export const deleteRolePolicy = async (context: $TSContext): Promise<void> => {
   const amplifyMeta = context.amplify.getProjectMeta();
   const authRoleName = amplifyMeta.providers[providerName].AuthRoleName;
   const unAuthRoleName = amplifyMeta.providers[providerName].UnauthRoleName;
   const rolePolicies = await listAttachedRolePolicies(context, authRoleName);
 
   if (rolePolicies && Array.isArray(rolePolicies.AttachedPolicies)) {
-    const policy = rolePolicies.AttachedPolicies.find((attachedPolicy : $TSAny) => attachedPolicy.PolicyName.startsWith(policyNamePrefix));
+    const policy = rolePolicies.AttachedPolicies.find((attachedPolicy: $TSAny) => attachedPolicy.PolicyName.startsWith(policyNamePrefix));
 
     if (policy) {
       await detachPolicyFromRole(context, policy.PolicyArn, authRoleName);
@@ -110,9 +108,9 @@ export const deleteRolePolicy = async (context:$TSContext):Promise<void> => {
   }
 };
 
-const checkAuth = async (context : $TSContext, resourceName : string) : Promise<void> => {
-  const apiRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
-  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+const checkAuth = async (context: $TSContext, resourceName: string): Promise<void> => {
+  const apiRequirements = { authSelections: "identityPoolOnly", allowUnauthenticatedIdentities: true };
+  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, "auth", undefined, "checkRequirements", [
     apiRequirements,
     context,
     AmplifyCategories.NOTIFICATIONS,
@@ -122,7 +120,7 @@ const checkAuth = async (context : $TSContext, resourceName : string) : Promise<
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError("ConfigurationError", {
       message: checkResult.errors.join(os.EOL),
     });
   }
@@ -135,7 +133,7 @@ const checkAuth = async (context : $TSContext, resourceName : string) : Promise<
   if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     printer.warn(`Adding ${AmplifyCategories.NOTIFICATIONS} would also add the Auth category to the project if not already added.`);
 
-    await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+    await context.amplify.invokePluginMethod(context, "auth", undefined, "externalAuthEnable", [
       context,
       AmplifyCategories.NOTIFICATIONS,
       resourceName,
@@ -146,7 +144,7 @@ const checkAuth = async (context : $TSContext, resourceName : string) : Promise<
   }
 };
 
-const getIamClient = async (context:$TSContext, action:string|undefined): Promise<$TSAny> => {
+const getIamClient = async (context: $TSContext, action: string | undefined): Promise<$TSAny> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
   const provider = require(providerPlugins[providerName]);
@@ -154,17 +152,17 @@ const getIamClient = async (context:$TSContext, action:string|undefined): Promis
   return new aws.IAM();
 };
 
-const getPolicyDoc = (context : $TSContext) : string => {
+const getPolicyDoc = (context: $TSContext): string => {
   const { amplifyMeta, pinpointApp } = context.exeInfo;
   const authRoleArn = amplifyMeta.providers[providerName].AuthRoleArn;
-  const accountNumber = authRoleArn.split(':')[4];
+  const accountNumber = authRoleArn.split(":")[4];
   const pinpointAppId = pinpointApp.Id;
   const policy = {
-    Version: '2012-10-17',
+    Version: "2012-10-17",
     Statement: [
       {
-        Effect: 'Allow',
-        Action: ['mobiletargeting:PutEvents', 'mobiletargeting:UpdateEndpoint'],
+        Effect: "Allow",
+        Action: ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
         Resource: [`arn:aws:mobiletargeting:*:${accountNumber}:apps/${pinpointAppId}*`],
       },
     ],
@@ -172,4 +170,4 @@ const getPolicyDoc = (context : $TSContext) : string => {
   return JSON.stringify(policy);
 };
 
-const getPolicyName = (context : $TSContext) : string => `${policyNamePrefix}${context.amplify.makeId(8)}`;
+const getPolicyName = (context: $TSContext): string => `${policyNamePrefix}${context.amplify.makeId(8)}`;

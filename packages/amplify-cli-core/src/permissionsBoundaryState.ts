@@ -1,8 +1,8 @@
-import _ from 'lodash';
+import _ from "lodash";
 // eslint-disable-next-line import/no-cycle
-import { stateManager } from './state-manager';
+import { stateManager } from "./state-manager";
 // eslint-disable-next-line import/no-cycle
-import { $TSAny, $TSObject, $TSTeamProviderInfo } from '.';
+import { $TSAny, $TSObject, $TSTeamProviderInfo } from ".";
 
 let preInitTeamProviderInfo: $TSTeamProviderInfo;
 
@@ -57,6 +57,6 @@ export const setPermissionsBoundaryArn = (arn?: string, env?: string, teamProvid
 
 const teamProviderInfoObjectPath = (env?: string): string[] => [
   env || (stateManager.getLocalEnvInfo().envName as string),
-  'awscloudformation',
-  'PermissionsBoundaryPolicyArn',
+  "awscloudformation",
+  "PermissionsBoundaryPolicyArn",
 ];

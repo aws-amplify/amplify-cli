@@ -1,13 +1,9 @@
-import {
-  $TSAny, $TSContext, AmplifyFault, AmplifyError,
-} from 'amplify-cli-core';
-import { IIdentityPoolService } from 'amplify-util-import';
-import { CognitoIdentity } from 'aws-sdk';
-import {
-  PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse,
-} from 'aws-sdk/clients/cognitoidentity';
-import { loadConfiguration } from '../configuration-manager';
-import { pagedAWSCall } from './paged-call';
+import { $TSAny, $TSContext, AmplifyFault, AmplifyError } from "amplify-cli-core";
+import { IIdentityPoolService } from "amplify-util-import";
+import { CognitoIdentity } from "aws-sdk";
+import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from "aws-sdk/clients/cognitoidentity";
+import { loadConfiguration } from "../configuration-manager";
+import { pagedAWSCall } from "./paged-call";
 
 export const createIdentityPoolService = async (context: $TSContext, options: $TSAny): Promise<IdentityPoolService> => {
   let credentials = {};
@@ -32,17 +28,18 @@ export class IdentityPoolService implements IIdentityPoolService {
   public async listIdentityPools(): Promise<IdentityPoolShortDescription[]> {
     if (this.cachedIdentityPoolIds.length === 0) {
       const result = await pagedAWSCall<ListIdentityPoolsResponse, IdentityPoolShortDescription, PaginationKey>(
-        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) => await this.cognitoIdentity
-          .listIdentityPools({
-            ...params,
-            NextToken: nextToken,
-          })
-          .promise(),
+        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) =>
+          await this.cognitoIdentity
+            .listIdentityPools({
+              ...params,
+              NextToken: nextToken,
+            })
+            .promise(),
         {
           MaxResults: 60,
         },
-        response => response?.IdentityPools,
-        async response => response?.NextToken,
+        (response) => response?.IdentityPools,
+        async (response) => response?.NextToken
       );
 
       this.cachedIdentityPoolIds.push(...result);
@@ -58,11 +55,13 @@ export class IdentityPoolService implements IIdentityPoolService {
       const identityPoolDetails = [];
 
       if (identityPools.length > 0) {
-        const describeIdentityPoolPromises = identityPools.map(idp => this.cognitoIdentity
-          .describeIdentityPool({
-            IdentityPoolId: idp.IdentityPoolId,
-          })
-          .promise());
+        const describeIdentityPoolPromises = identityPools.map((idp) =>
+          this.cognitoIdentity
+            .describeIdentityPool({
+              IdentityPoolId: idp.IdentityPoolId,
+            })
+            .promise()
+        );
 
         const identityPoolDetailResults = await Promise.all(describeIdentityPoolPromises);
 
@@ -76,7 +75,7 @@ export class IdentityPoolService implements IIdentityPoolService {
   }
 
   public async getIdentityPoolRoles(
-    identityPoolId: string,
+    identityPoolId: string
   ): Promise<{ authRoleArn: string; authRoleName: string; unauthRoleArn: string; unauthRoleName: string }> {
     const response = await this.cognitoIdentity
       .getIdentityPoolRoles({
@@ -85,7 +84,7 @@ export class IdentityPoolService implements IIdentityPoolService {
       .promise();
 
     if (!response.Roles || !response.Roles.authenticated || !response.Roles.unauthenticated) {
-      throw new AmplifyError('AuthImportError', {
+      throw new AmplifyError("AuthImportError", {
         message: `Cannot import Identity Pool without 'authenticated' and 'unauthenticated' roles.`,
       });
     }
@@ -102,7 +101,7 @@ export class IdentityPoolService implements IIdentityPoolService {
     let resourceName;
 
     if (arn) {
-      const parts = arn.split('/');
+      const parts = arn.split("/");
 
       if (parts.length === 2) {
         resourceName = parts[1];
@@ -111,7 +110,7 @@ export class IdentityPoolService implements IIdentityPoolService {
 
     // Should not happen anytime
     if (!resourceName) {
-      throw new AmplifyFault('UnknownFault', {
+      throw new AmplifyFault("UnknownFault", {
         message: `Cannot parse arn: '${arn}'.`,
       });
     }

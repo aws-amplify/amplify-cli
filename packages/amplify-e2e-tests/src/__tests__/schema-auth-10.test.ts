@@ -1,13 +1,11 @@
-import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api directives @auth batch 8', () => {
+describe("api directives @auth batch 8", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth8');
+    projectDir = await createNewProjectDir("auth8");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -16,13 +14,13 @@ describe('api directives @auth batch 8', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth generatesStaticGroup', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'generatesStaticGroup');
+  it("auth generatesStaticGroup", async () => {
+    const testresult = await testSchema(projectDir, "auth", "generatesStaticGroup");
     expect(testresult).toBeTruthy();
   });
 
-  it('auth generatesDynamicGroup', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'generatesDynamicGroup');
+  it("auth generatesDynamicGroup", async () => {
+    const testresult = await testSchema(projectDir, "auth", "generatesDynamicGroup");
     expect(testresult).toBeTruthy();
   });
 });

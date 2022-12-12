@@ -1,30 +1,30 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { pathManager } from '../state-manager';
+import * as path from "path";
+import * as fs from "fs-extra";
+import { pathManager } from "../state-manager";
 
-jest.mock('fs-extra');
+jest.mock("fs-extra");
 
-describe('test getAmplifyPackageLibDirPath', () => {
-  const scopedPackageName = '@aws-amplify/amplify-opensearch-simulator';
-  const nonScopedPackageName = 'amplify-opensearch-simulator';
-  const expectedDescopedName = 'aws-amplify-amplify-opensearch-simulator';
+describe("test getAmplifyPackageLibDirPath", () => {
+  const scopedPackageName = "@aws-amplify/amplify-opensearch-simulator";
+  const nonScopedPackageName = "amplify-opensearch-simulator";
+  const expectedDescopedName = "aws-amplify-amplify-opensearch-simulator";
 
-  it('should return descoped path for scoped packages', () => {
-    jest.spyOn(fs, 'pathExistsSync').mockReturnValueOnce(true);
+  it("should return descoped path for scoped packages", () => {
+    jest.spyOn(fs, "pathExistsSync").mockReturnValueOnce(true);
 
     const expectedPath = path.join(pathManager.getAmplifyLibRoot(), expectedDescopedName);
     expect(pathManager.getAmplifyPackageLibDirPath(scopedPackageName)).toEqual(expectedPath);
   });
 
-  it('should return correct path for non-scoped packages', () => {
-    jest.spyOn(fs, 'pathExistsSync').mockReturnValueOnce(true);
-    
+  it("should return correct path for non-scoped packages", () => {
+    jest.spyOn(fs, "pathExistsSync").mockReturnValueOnce(true);
+
     const expectedPath = path.join(pathManager.getAmplifyLibRoot(), nonScopedPackageName);
     expect(pathManager.getAmplifyPackageLibDirPath(nonScopedPackageName)).toEqual(expectedPath);
   });
 
-  it('throws error if path does not exist for scoped packages', () => {
-    jest.spyOn(fs, 'pathExistsSync').mockReturnValueOnce(false);
+  it("throws error if path does not exist for scoped packages", () => {
+    jest.spyOn(fs, "pathExistsSync").mockReturnValueOnce(false);
 
     const expectedPath = path.join(pathManager.getAmplifyLibRoot(), expectedDescopedName);
     try {
@@ -34,8 +34,8 @@ describe('test getAmplifyPackageLibDirPath', () => {
     }
   });
 
-  it('throws error if path does not exist for scoped packages', () => {
-    jest.spyOn(fs, 'pathExistsSync').mockReturnValueOnce(false);
+  it("throws error if path does not exist for scoped packages", () => {
+    jest.spyOn(fs, "pathExistsSync").mockReturnValueOnce(false);
 
     const expectedPath = path.join(pathManager.getAmplifyLibRoot(), nonScopedPackageName);
     try {

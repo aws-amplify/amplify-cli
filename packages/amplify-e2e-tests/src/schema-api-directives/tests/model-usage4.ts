@@ -25,21 +25,21 @@ mutation CreatePost(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    title: 'title1',
-    tags: ['tag1'],
-    createdAt: '2020-05-27T01:05:49.129Z',
-    updatedAt: '2020-05-28T01:05:49.129Z',
+    id: "1",
+    title: "title1",
+    tags: ["tag1"],
+    createdAt: "2020-05-27T01:05:49.129Z",
+    updatedAt: "2020-05-28T01:05:49.129Z",
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      tags: ['tag1'],
-      createdAt: '2020-05-27T01:05:49.129Z',
-      updatedAt: '2020-05-28T01:05:49.129Z',
+      id: "1",
+      title: "title1",
+      tags: ["tag1"],
+      createdAt: "2020-05-27T01:05:49.129Z",
+      updatedAt: "2020-05-28T01:05:49.129Z",
     },
   },
 };
@@ -59,21 +59,21 @@ mutation UpdatePost(
 }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
-    title: 'title1-updated',
-    tags: ['tag1-updated'],
-    createdAt: '2020-05-27T01:05:49.129Z',
-    updatedAt: '2020-05-29T01:05:49.129Z',
+    id: "1",
+    title: "title1-updated",
+    tags: ["tag1-updated"],
+    createdAt: "2020-05-27T01:05:49.129Z",
+    updatedAt: "2020-05-29T01:05:49.129Z",
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updatePost: {
-      id: '1',
-      title: 'title1-updated',
-      tags: ['tag1-updated'],
-      createdAt: '2020-05-27T01:05:49.129Z',
-      updatedAt: '2020-05-29T01:05:49.129Z',
+      id: "1",
+      title: "title1-updated",
+      tags: ["tag1-updated"],
+      createdAt: "2020-05-27T01:05:49.129Z",
+      updatedAt: "2020-05-29T01:05:49.129Z",
     },
   },
 };
@@ -92,11 +92,11 @@ export const query = `
 export const expected_result_query = {
   data: {
     getPost: {
-      id: '1',
-      title: 'title1-updated',
-      tags: ['tag1-updated'],
-      createdAt: '2020-05-27T01:05:49.129Z',
-      updatedAt: '2020-05-29T01:05:49.129Z',
+      id: "1",
+      title: "title1-updated",
+      tags: ["tag1-updated"],
+      createdAt: "2020-05-27T01:05:49.129Z",
+      updatedAt: "2020-05-29T01:05:49.129Z",
     },
   },
 };

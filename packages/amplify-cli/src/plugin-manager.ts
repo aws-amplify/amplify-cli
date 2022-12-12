@@ -1,21 +1,21 @@
-import * as inquirer from 'inquirer';
-import { PluginPlatform } from './domain/plugin-platform';
-import { PluginInfo } from './domain/plugin-info';
-import { readPluginsJsonFile, writePluginsJsonFile } from './plugin-helpers/access-plugins-file';
+import * as inquirer from "inquirer";
+import { PluginPlatform } from "./domain/plugin-platform";
+import { PluginInfo } from "./domain/plugin-info";
+import { readPluginsJsonFile, writePluginsJsonFile } from "./plugin-helpers/access-plugins-file";
 import {
   scanPluginPlatform,
   getCorePluginDirPath,
   getCorePluginVersion,
   isUnderScanCoverageSync,
-} from './plugin-helpers/scan-plugin-platform';
-import { verifyPlugin } from './plugin-helpers/verify-plugin';
-import createNewPlugin from './plugin-helpers/create-new-plugin';
-import { AddPluginResult, AddPluginError } from './domain/add-plugin-result';
-import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
-import { AmplifyEvent } from './domain/amplify-event';
-import { constants } from './domain/constants';
-import { print } from './context-extensions';
-import { postInstallInitialization } from './utils/post-install-initialization';
+} from "./plugin-helpers/scan-plugin-platform";
+import { verifyPlugin } from "./plugin-helpers/verify-plugin";
+import createNewPlugin from "./plugin-helpers/create-new-plugin";
+import { AddPluginResult, AddPluginError } from "./domain/add-plugin-result";
+import { twoPluginsAreTheSame } from "./plugin-helpers/compare-plugins";
+import { AmplifyEvent } from "./domain/amplify-event";
+import { constants } from "./domain/constants";
+import { print } from "./context-extensions";
+import { postInstallInitialization } from "./utils/post-install-initialization";
 
 export async function getPluginPlatform(): Promise<PluginPlatform> {
   // This function is called at the beginning of each command execution
@@ -65,11 +65,11 @@ function isCoreMatching(pluginPlatform: PluginPlatform): boolean {
 export function getPluginsWithName(pluginPlatform: PluginPlatform, nameOrAlias: string): Array<PluginInfo> {
   let result = new Array<PluginInfo>();
 
-  Object.keys(pluginPlatform.plugins).forEach(pluginName => {
+  Object.keys(pluginPlatform.plugins).forEach((pluginName) => {
     if (pluginName === nameOrAlias) {
       result = result.concat(pluginPlatform.plugins[pluginName]);
     } else {
-      pluginPlatform.plugins[pluginName].forEach(pluginInfo => {
+      pluginPlatform.plugins[pluginName].forEach((pluginInfo) => {
         if (pluginInfo.manifest.aliases && pluginInfo.manifest.aliases!.includes(nameOrAlias)) {
           result.push(pluginInfo);
         }
@@ -83,8 +83,8 @@ export function getPluginsWithName(pluginPlatform: PluginPlatform, nameOrAlias: 
 export function getPluginsWithNameAndCommand(pluginPlatform: PluginPlatform, nameOrAlias: string, command: string): Array<PluginInfo> {
   const result = new Array<PluginInfo>();
 
-  Object.keys(pluginPlatform.plugins).forEach(pluginName => {
-    pluginPlatform.plugins[pluginName].forEach(pluginInfo => {
+  Object.keys(pluginPlatform.plugins).forEach((pluginName) => {
+    pluginPlatform.plugins[pluginName].forEach((pluginInfo) => {
       const { name, aliases, commands, commandAliases } = pluginInfo.manifest;
       const nameOrAliasMatching = name === nameOrAlias || (aliases && aliases!.includes(nameOrAlias));
 
@@ -102,8 +102,8 @@ export function getPluginsWithNameAndCommand(pluginPlatform: PluginPlatform, nam
 export function getPluginsWithEventHandler(pluginPlatform: PluginPlatform, event: AmplifyEvent): Array<PluginInfo> {
   const result = new Array<PluginInfo>();
 
-  Object.keys(pluginPlatform.plugins).forEach(pluginName => {
-    pluginPlatform.plugins[pluginName].forEach(pluginInfo => {
+  Object.keys(pluginPlatform.plugins).forEach((pluginName) => {
+    pluginPlatform.plugins[pluginName].forEach((pluginInfo) => {
       const { eventHandlers } = pluginInfo.manifest;
       if (eventHandlers && eventHandlers.length > 0 && eventHandlers.includes(event)) {
         result.push(pluginInfo);
@@ -117,12 +117,12 @@ export function getPluginsWithEventHandler(pluginPlatform: PluginPlatform, event
 export function getAllPluginNames(pluginPlatform: PluginPlatform): Set<string> {
   const result = new Set<string>();
 
-  Object.keys(pluginPlatform.plugins).forEach(pluginName => {
+  Object.keys(pluginPlatform.plugins).forEach((pluginName) => {
     result.add(pluginName);
 
-    pluginPlatform.plugins[pluginName].forEach(pluginInfo => {
+    pluginPlatform.plugins[pluginName].forEach((pluginInfo) => {
       if (pluginInfo.manifest.aliases && pluginInfo.manifest.aliases.length > 0) {
-        pluginInfo.manifest.aliases.forEach(alias => {
+        pluginInfo.manifest.aliases.forEach((alias) => {
           result.add(alias);
         });
       }
@@ -137,9 +137,9 @@ export async function scan(pluginPlatform?: PluginPlatform): Promise<PluginPlatf
     const result = await scanPluginPlatform(pluginPlatform);
     return result;
   } catch (e) {
-    print.error('Plugin scan failed.');
+    print.error("Plugin scan failed.");
     print.info(e);
-    throw new Error('Plugin scan failed.');
+    throw new Error("Plugin scan failed.");
   }
 }
 
@@ -149,9 +149,9 @@ export { createNewPlugin };
 
 export async function confirmAndScan(pluginPlatform: PluginPlatform) {
   const { confirmed } = await inquirer.prompt({
-    type: 'confirm',
-    name: 'confirmed',
-    message: 'Run a fresh scan for plugins on the Amplify CLI pluggable platform',
+    type: "confirm",
+    name: "confirmed",
+    message: "Run a fresh scan for plugins on the Amplify CLI pluggable platform",
     default: false,
   });
   if (confirmed) {
@@ -178,7 +178,7 @@ export const addPluginPackage = async (pluginPlatform: PluginPlatform, pluginDir
     // take the package out of the excluded
     if (pluginPlatform.excluded[pluginInfo.manifest.name] && pluginPlatform.excluded[pluginInfo.manifest.name].length > 0) {
       const updatedExcluded = new Array<PluginInfo>();
-      pluginPlatform.excluded[pluginInfo.manifest.name].forEach(pluginInfoItem => {
+      pluginPlatform.excluded[pluginInfo.manifest.name].forEach((pluginInfoItem) => {
         if (!twoPluginsAreTheSame(pluginInfoItem, pluginInfo)) {
           updatedExcluded.push(pluginInfoItem);
         }
@@ -193,7 +193,7 @@ export const addPluginPackage = async (pluginPlatform: PluginPlatform, pluginDir
     // insert into the plugins
     const updatedPlugins = new Array<PluginInfo>();
     if (pluginPlatform.plugins[pluginInfo.manifest.name] && pluginPlatform.plugins[pluginInfo.manifest.name].length > 0) {
-      pluginPlatform.plugins[pluginInfo.manifest.name].forEach(pluginInfoItem => {
+      pluginPlatform.plugins[pluginInfo.manifest.name].forEach((pluginInfoItem) => {
         if (!twoPluginsAreTheSame(pluginInfoItem, pluginInfo)) {
           updatedPlugins.push(pluginInfoItem);
         }
@@ -224,7 +224,7 @@ export function removePluginPackage(pluginPlatform: PluginPlatform, pluginInfo: 
   // remove from the plugins
   if (pluginPlatform.plugins[pluginInfo.manifest.name] && pluginPlatform.plugins[pluginInfo.manifest.name].length > 0) {
     const updatedPlugins = new Array<PluginInfo>();
-    pluginPlatform.plugins[pluginInfo.manifest.name].forEach(pluginInfoItem => {
+    pluginPlatform.plugins[pluginInfo.manifest.name].forEach((pluginInfoItem) => {
       if (!twoPluginsAreTheSame(pluginInfoItem, pluginInfo)) {
         updatedPlugins.push(pluginInfoItem);
       }
@@ -239,7 +239,7 @@ export function removePluginPackage(pluginPlatform: PluginPlatform, pluginInfo: 
   // remove from the userAddedLocations
   if (pluginPlatform.userAddedLocations.includes(pluginInfo.packageLocation)) {
     const updatedUserAddedLocations = new Array<string>();
-    pluginPlatform.userAddedLocations.forEach(packageLocation => {
+    pluginPlatform.userAddedLocations.forEach((packageLocation) => {
       if (packageLocation !== pluginInfo.packageLocation) {
         updatedUserAddedLocations.push(packageLocation);
       }

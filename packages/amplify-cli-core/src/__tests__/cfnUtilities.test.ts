@@ -1,29 +1,29 @@
-import * as fs from 'fs-extra';
-import { CFNTemplateFormat, JSONUtilities, readCFNTemplate, writeCFNTemplate } from '../..';
+import * as fs from "fs-extra";
+import { CFNTemplateFormat, JSONUtilities, readCFNTemplate, writeCFNTemplate } from "../..";
 
-jest.mock('fs-extra');
+jest.mock("fs-extra");
 
 const fs_mock = fs as jest.Mocked<typeof fs>;
 
 fs_mock.existsSync.mockReturnValue(true);
 fs_mock.statSync.mockReturnValue({ isFile: true } as unknown as fs.Stats);
 
-const testPath = '/this/is/a/test/path.json';
+const testPath = "/this/is/a/test/path.json";
 
 const testTemplate = {
-  test: 'content',
+  test: "content",
 };
 
 const jsonContent = JSONUtilities.stringify(testTemplate) as string;
 
-const yamlContent = 'test: content\n';
+const yamlContent = "test: content\n";
 
 type TwoArgReadFile = (p: string, e: string) => Promise<string>;
 
-describe('readCFNTemplate', () => {
+describe("readCFNTemplate", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('throws if specified file does not exist', async () => {
+  it("throws if specified file does not exist", async () => {
     fs_mock.existsSync.mockReturnValueOnce(false);
     fs_mock.readFileSync.mockReturnValue(jsonContent);
 
@@ -39,7 +39,7 @@ describe('readCFNTemplate', () => {
     }).toThrow(`No CloudFormation template found at /this/is/a/test/path.json`);
   });
 
-  it('returns template with json format', async () => {
+  it("returns template with json format", async () => {
     fs_mock.readFileSync.mockReturnValueOnce(jsonContent);
 
     const result = readCFNTemplate(testPath);
@@ -48,7 +48,7 @@ describe('readCFNTemplate', () => {
     expect(result.cfnTemplate).toEqual(testTemplate);
   });
 
-  it('returns template with yaml format', async () => {
+  it("returns template with yaml format", async () => {
     fs_mock.readFileSync.mockReturnValueOnce(yamlContent);
 
     const result = readCFNTemplate(testPath);
@@ -57,7 +57,7 @@ describe('readCFNTemplate', () => {
     expect(result.cfnTemplate).toEqual(testTemplate);
   });
 
-  it('reads yaml template with nested GetAtt refs', async () => {
+  it("reads yaml template with nested GetAtt refs", async () => {
     const yamlContent = `
       !GetAtt myResource.output.someProp
     `;
@@ -76,7 +76,7 @@ describe('readCFNTemplate', () => {
     `);
   });
 
-  it('casts yaml boolean values to corresponding JavaScript boolean', async () => {
+  it("casts yaml boolean values to corresponding JavaScript boolean", async () => {
     const yamlContent = `
       someKey: true
       someOtherKey: false
@@ -90,11 +90,11 @@ describe('readCFNTemplate', () => {
     expect(result.cfnTemplate).toEqual({
       someKey: true,
       someOtherKey: false,
-      someStringKey: 'true',
+      someStringKey: "true",
     });
   });
 
-  it('casts yaml integer and float values to corresponding JavaScript number', async () => {
+  it("casts yaml integer and float values to corresponding JavaScript number", async () => {
     const yamlContent = `
       someKey: 1
       someOtherKey: 1.234
@@ -108,28 +108,28 @@ describe('readCFNTemplate', () => {
     expect(result.cfnTemplate).toEqual({
       someKey: 1,
       someOtherKey: 1.234,
-      someStringKey: '1.234',
+      someStringKey: "1.234",
     });
   });
 });
 
-describe('writeCFNTemplate', () => {
+describe("writeCFNTemplate", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('creates destination if it does not exist', async () => {
+  it("creates destination if it does not exist", async () => {
     await writeCFNTemplate(testTemplate, testPath);
 
-    expect(fs_mock.ensureDir.mock.calls[0][0]).toEqual('/this/is/a/test');
+    expect(fs_mock.ensureDir.mock.calls[0][0]).toEqual("/this/is/a/test");
   });
 
-  it('writes json templates by default', async () => {
+  it("writes json templates by default", async () => {
     await writeCFNTemplate(testTemplate, testPath);
 
     expect(fs_mock.writeFileSync.mock.calls[0][0]).toEqual(testPath);
     expect(fs_mock.writeFileSync.mock.calls[0][1]).toEqual(jsonContent);
   });
 
-  it('writes yaml templates if specified', async () => {
+  it("writes yaml templates if specified", async () => {
     await writeCFNTemplate(testTemplate, testPath, { templateFormat: CFNTemplateFormat.YAML });
 
     expect(fs_mock.writeFileSync.mock.calls[0][0]).toEqual(testPath);
@@ -137,10 +137,10 @@ describe('writeCFNTemplate', () => {
   });
 });
 
-describe('roundtrip CFN Templates to object and back', () => {
+describe("roundtrip CFN Templates to object and back", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('roundtripped yml input should result in same object', async () => {
+  it("roundtripped yml input should result in same object", async () => {
     const yamlContent = `
       Properties:
         B64: !Base64 AWS CloudFormation

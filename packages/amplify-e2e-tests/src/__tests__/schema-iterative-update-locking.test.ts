@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from "path";
 import {
   createNewProjectDir,
   initJSProjectWithProfile,
@@ -13,22 +13,22 @@ import {
   amplifyPull,
   getProjectMeta,
   sleep,
-} from '@aws-amplify/amplify-e2e-core';
-import S3 from 'aws-sdk/clients/s3';
-import { DeploymentState, DeploymentStatus, JSONUtilities } from 'amplify-cli-core';
+} from "@aws-amplify/amplify-e2e-core";
+import S3 from "aws-sdk/clients/s3";
+import { DeploymentState, DeploymentStatus, JSONUtilities } from "amplify-cli-core";
 
-describe('Schema iterative update - locking', () => {
+describe("Schema iterative update - locking", () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await createNewProjectDir('schemaIterativeLock');
+    projectRoot = await createNewProjectDir("schemaIterativeLock");
 
     await initJSProjectWithProfile(projectRoot, {
-      name: 'iterlock',
+      name: "iterlock",
       disableAmplifyAppCreation: false,
     });
 
-    addFeatureFlag(projectRoot, 'graphqltransformer', 'enableiterativegsiupdates', true);
+    addFeatureFlag(projectRoot, "graphqltransformer", "enableiterativegsiupdates", true);
   });
 
   afterAll(async () => {
@@ -36,17 +36,17 @@ describe('Schema iterative update - locking', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('other push should fail due to locking', async () => {
-    const apiName = 'iterlock';
+  it("other push should fail due to locking", async () => {
+    const apiName = "iterlock";
 
     // Create and push project with API
-    const initialSchema = path.join('iterative-push', 'change-model-name', 'initial-schema.graphql');
+    const initialSchema = path.join("iterative-push", "change-model-name", "initial-schema.graphql");
     await addApiWithoutSchema(projectRoot, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectRoot, apiName, initialSchema);
     await amplifyPush(projectRoot);
 
     // Apply updates to first project
-    const finalSchema = path.join('iterative-push', 'change-model-name', 'final-schema.graphql');
+    const finalSchema = path.join("iterative-push", "change-model-name", "final-schema.graphql");
     updateApiSchema(projectRoot, apiName, finalSchema);
 
     const appId = getAppId(projectRoot);
@@ -54,7 +54,7 @@ describe('Schema iterative update - locking', () => {
 
     let projectRootPull;
 
-    projectRootPull = await createNewProjectDir('iterlock-pull');
+    projectRootPull = await createNewProjectDir("iterlock-pull");
 
     await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
@@ -77,7 +77,7 @@ describe('Schema iterative update - locking', () => {
     let retry = 0;
     const maxRetries = 3;
     const retryDelay = 3000;
-    const stateFileName = 'deployment-state.json';
+    const stateFileName = "deployment-state.json";
 
     while (retry < maxRetries || !lockFileExists) {
       try {

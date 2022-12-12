@@ -1,11 +1,11 @@
-import * as which from 'which';
-import * as execa from 'execa';
-import * as semver from 'semver';
-import { minJavaVersion, minGradleVersion } from './constants';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
+import * as which from "which";
+import * as execa from "execa";
+import * as semver from "semver";
+import { minJavaVersion, minGradleVersion } from "./constants";
+import { CheckDependenciesResult } from "amplify-function-plugin-interface";
 
 export const checkJava = async (): Promise<CheckDependenciesResult> => {
-  const executablePath = which.sync('java', {
+  const executablePath = which.sync("java", {
     nothrow: true,
   });
 
@@ -16,7 +16,7 @@ export const checkJava = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const result = execa.sync('java', ['-version']);
+  const result = execa.sync("java", ["-version"]);
 
   if (result.exitCode !== 0) {
     throw new Error(`java failed, exit code was ${result.exitCode}`);
@@ -24,7 +24,7 @@ export const checkJava = async (): Promise<CheckDependenciesResult> => {
 
   const regex = /(\d+\.)(\d+\.)(\d)/g;
   // Java prints version to stderr
-  const versionString: string = result.stderr ? result.stderr.split(/\r?\n/)[0] : '';
+  const versionString: string = result.stderr ? result.stderr.split(/\r?\n/)[0] : "";
   const version = versionString.match(regex);
 
   if (version !== null && semver.satisfies(version[0], minJavaVersion)) {
@@ -40,7 +40,7 @@ export const checkJava = async (): Promise<CheckDependenciesResult> => {
 };
 
 export const checkGradle = async (): Promise<CheckDependenciesResult> => {
-  const executablePath = which.sync('gradle', {
+  const executablePath = which.sync("gradle", {
     nothrow: true,
   });
 
@@ -51,7 +51,7 @@ export const checkGradle = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const result = execa.sync('gradle', ['-v']);
+  const result = execa.sync("gradle", ["-v"]);
 
   if (result.exitCode !== 0) {
     throw new Error(`gradle failed, exit code was ${result.exitCode}`);
@@ -59,11 +59,11 @@ export const checkGradle = async (): Promise<CheckDependenciesResult> => {
 
   const regex = /(\d+\.)(\d+)/g;
   const versionLines = result.stdout ? result.stdout.split(/\r?\n/) : [];
-  const versionString: string = versionLines.length >= 3 ? versionLines[2] : '';
+  const versionString: string = versionLines.length >= 3 ? versionLines[2] : "";
   const version = versionString.match(regex);
 
   // SemVer requires 3 elements for matching
-  if (version !== null && semver.satisfies(version[0] + '.0', minGradleVersion)) {
+  if (version !== null && semver.satisfies(version[0] + ".0", minGradleVersion)) {
     return {
       hasRequiredDependencies: true,
     };
@@ -76,7 +76,7 @@ export const checkGradle = async (): Promise<CheckDependenciesResult> => {
 };
 
 export const checkJavaCompiler = async () => {
-  const executablePath = which.sync('javac', {
+  const executablePath = which.sync("javac", {
     nothrow: true,
   });
 
@@ -87,7 +87,7 @@ export const checkJavaCompiler = async () => {
     };
   }
 
-  const result = execa.sync('javac', ['-version']);
+  const result = execa.sync("javac", ["-version"]);
 
   if (result.exitCode !== 0) {
     throw new Error(`java failed, exit code was ${result.exitCode}`);
@@ -95,7 +95,7 @@ export const checkJavaCompiler = async () => {
 
   const regex = /(\d+\.)(\d+\.)(\d)/g;
   // Java compiler prints version to stdout
-  const versionString: string = result.stdout ? result.stdout.split(/\r?\n/)[0] : '';
+  const versionString: string = result.stdout ? result.stdout.split(/\r?\n/)[0] : "";
   const version = versionString.match(regex);
 
   if (version !== null && semver.satisfies(version[0], minJavaVersion)) {

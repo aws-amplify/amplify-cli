@@ -1,19 +1,19 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
-import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
-import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
-import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDb-walkthrough';
+import { $TSContext, stateManager } from "amplify-cli-core";
+import { prompter } from "amplify-prompts";
+import { DynamoDBInputState } from "../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state";
+import { DDBStackTransform } from "../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform";
+import { addWalkthrough, updateWalkthrough } from "../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDb-walkthrough";
 import {
   DynamoDBCLIInputs,
   FieldType,
-} from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
+} from "../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types";
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
-jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
-jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform');
+jest.mock("amplify-cli-core");
+jest.mock("amplify-prompts");
+jest.mock("../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state");
+jest.mock("../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform");
 
-describe('add ddb walkthrough tests', () => {
+describe("add ddb walkthrough tests", () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('add ddb walkthrough tests', () => {
         getProjectDetails: () => {
           return {
             projectConfig: {
-              projectName: 'mockProject',
+              projectName: "mockProject",
             },
           };
         },
@@ -37,37 +37,37 @@ describe('add ddb walkthrough tests', () => {
     jest.clearAllMocks();
   });
 
-  it('addWalkthrough() test', async () => {
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
-    jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
+  it("addWalkthrough() test", async () => {
+    jest.spyOn(DynamoDBInputState.prototype, "saveCliInputPayload").mockImplementation(() => true);
+    jest.spyOn(DDBStackTransform.prototype, "transform").mockImplementation(() => Promise.resolve());
 
     const expectedCLIInputsJSON: DynamoDBCLIInputs = {
-      resourceName: 'mockresourcename',
-      tableName: 'mocktablename',
+      resourceName: "mockresourcename",
+      tableName: "mocktablename",
       partitionKey: {
-        fieldName: 'id',
+        fieldName: "id",
         fieldType: FieldType.string,
       },
       sortKey: {
-        fieldName: 'name',
+        fieldName: "name",
         fieldType: FieldType.number,
       },
       gsi: [
         {
-          name: 'gsiname',
+          name: "gsiname",
           partitionKey: {
-            fieldName: 'name',
+            fieldName: "name",
             fieldType: FieldType.number,
           },
         },
         {
-          name: 'secondgsiname',
+          name: "secondgsiname",
           partitionKey: {
-            fieldName: 'id',
+            fieldName: "id",
             fieldType: FieldType.string,
           },
           sortKey: {
-            fieldName: 'name',
+            fieldName: "name",
             fieldType: FieldType.number,
           },
         },
@@ -77,22 +77,22 @@ describe('add ddb walkthrough tests', () => {
 
     prompter.input = jest
       .fn()
-      .mockReturnValueOnce('mockresourcename') // Provide a friendly name
-      .mockResolvedValueOnce('mocktablename') // Provide table name
-      .mockResolvedValueOnce('id') // What would you like to name this column
-      .mockResolvedValueOnce('name') // What would you like to name this column
-      .mockResolvedValueOnce('gsiname') // Provide the GSI name
-      .mockResolvedValueOnce('secondgsiname'); // Provide the GSI name
+      .mockReturnValueOnce("mockresourcename") // Provide a friendly name
+      .mockResolvedValueOnce("mocktablename") // Provide table name
+      .mockResolvedValueOnce("id") // What would you like to name this column
+      .mockResolvedValueOnce("name") // What would you like to name this column
+      .mockResolvedValueOnce("gsiname") // Provide the GSI name
+      .mockResolvedValueOnce("secondgsiname"); // Provide the GSI name
 
     prompter.pick = jest
       .fn()
-      .mockReturnValueOnce('string') // Choose the data type
-      .mockReturnValueOnce('number') // Choose the data type
-      .mockReturnValueOnce('id') // Choose partition key for the table
-      .mockReturnValueOnce('name') // Choose sort key for the table
-      .mockReturnValueOnce('name') // Choose partition key for the GSI
-      .mockReturnValueOnce('id') // Choose partition key for the GSI
-      .mockReturnValueOnce('name'); // Choose sort key for the GSI
+      .mockReturnValueOnce("string") // Choose the data type
+      .mockReturnValueOnce("number") // Choose the data type
+      .mockReturnValueOnce("id") // Choose partition key for the table
+      .mockReturnValueOnce("name") // Choose sort key for the table
+      .mockReturnValueOnce("name") // Choose partition key for the GSI
+      .mockReturnValueOnce("id") // Choose partition key for the GSI
+      .mockReturnValueOnce("name"); // Choose sort key for the GSI
 
     prompter.yesOrNo = jest
       .fn()
@@ -107,24 +107,24 @@ describe('add ddb walkthrough tests', () => {
 
     prompter.confirmContinue = jest.fn().mockReturnValueOnce(false); // Do you want to add a Lambda Trigger for your Table?
 
-    const returnedResourcename = await addWalkthrough(mockContext, 'dynamoDb-defaults');
+    const returnedResourcename = await addWalkthrough(mockContext, "dynamoDb-defaults");
 
-    expect(returnedResourcename).toEqual('mockresourcename');
+    expect(returnedResourcename).toEqual("mockresourcename");
     expect(DynamoDBInputState.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
   });
 });
 
-describe('update ddb walkthrough tests', () => {
+describe("update ddb walkthrough tests", () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
-    jest.mock('amplify-prompts');
+    jest.mock("amplify-prompts");
     mockContext = {
       amplify: {
         getProjectDetails: () => {
           return {
             projectConfig: {
-              projectName: 'mockProject',
+              projectName: "mockProject",
             },
           };
         },
@@ -139,16 +139,16 @@ describe('update ddb walkthrough tests', () => {
     jest.clearAllMocks();
   });
 
-  it('updateWalkthrough() test to add gsi', async () => {
+  it("updateWalkthrough() test to add gsi", async () => {
     let mockAmplifyMeta = {
       storage: {
         mockresourcename: {
-          service: 'DynamoDB',
-          providerPlugin: 'awscloudformation',
+          service: "DynamoDB",
+          providerPlugin: "awscloudformation",
         },
         dynamoefb50875: {
-          service: 'DynamoDB',
-          providerPlugin: 'awscloudformation',
+          service: "DynamoDB",
+          providerPlugin: "awscloudformation",
         },
       },
     };
@@ -156,21 +156,21 @@ describe('update ddb walkthrough tests', () => {
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     const currentCLIInputsJSON: DynamoDBCLIInputs = {
-      resourceName: 'mockresourcename',
-      tableName: 'mocktablename',
+      resourceName: "mockresourcename",
+      tableName: "mocktablename",
       partitionKey: {
-        fieldName: 'id',
+        fieldName: "id",
         fieldType: FieldType.string,
       },
       sortKey: {
-        fieldName: 'name',
+        fieldName: "name",
         fieldType: FieldType.number,
       },
       gsi: [
         {
-          name: 'gsiname',
+          name: "gsiname",
           partitionKey: {
-            fieldName: 'name',
+            fieldName: "name",
             fieldType: FieldType.number,
           },
         },
@@ -178,23 +178,23 @@ describe('update ddb walkthrough tests', () => {
       triggerFunctions: [],
     };
 
-    jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => currentCLIInputsJSON);
+    jest.spyOn(DynamoDBInputState.prototype, "getCliInputPayload").mockImplementation(() => currentCLIInputsJSON);
 
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
-    jest.spyOn(DynamoDBInputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
-    jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
+    jest.spyOn(DynamoDBInputState.prototype, "saveCliInputPayload").mockImplementation(() => true);
+    jest.spyOn(DynamoDBInputState.prototype, "cliInputFileExists").mockImplementation(() => true);
+    jest.spyOn(DDBStackTransform.prototype, "transform").mockImplementation(() => Promise.resolve());
 
     prompter.input = jest
       .fn()
-      .mockResolvedValueOnce('col') // What would you like to name this column
-      .mockResolvedValueOnce('updategsiname'); // Provide the GSI name
+      .mockResolvedValueOnce("col") // What would you like to name this column
+      .mockResolvedValueOnce("updategsiname"); // Provide the GSI name
 
     prompter.pick = jest
       .fn()
-      .mockReturnValueOnce('mockresourcename') // Specify the resource that you would want to update
-      .mockReturnValueOnce('string') // Choose the data type
-      .mockReturnValueOnce('col') // Choose partition key for the GSI
-      .mockReturnValueOnce('name'); // Choose sort key for the GSI
+      .mockReturnValueOnce("mockresourcename") // Specify the resource that you would want to update
+      .mockReturnValueOnce("string") // Choose the data type
+      .mockReturnValueOnce("col") // Choose partition key for the GSI
+      .mockReturnValueOnce("name"); // Choose sort key for the GSI
 
     prompter.yesOrNo = jest
       .fn()
@@ -210,28 +210,28 @@ describe('update ddb walkthrough tests', () => {
     const returnedCLIInputs = await updateWalkthrough(mockContext);
 
     const expectedCLIInputsJSON: DynamoDBCLIInputs = {
-      resourceName: 'mockresourcename',
-      tableName: 'mocktablename',
+      resourceName: "mockresourcename",
+      tableName: "mocktablename",
       partitionKey: {
-        fieldName: 'id',
+        fieldName: "id",
         fieldType: FieldType.string,
       },
       sortKey: {
-        fieldName: 'name',
+        fieldName: "name",
         fieldType: FieldType.number,
       },
       gsi: [
         {
-          name: 'gsiname',
+          name: "gsiname",
           partitionKey: {
-            fieldName: 'name',
+            fieldName: "name",
             fieldType: FieldType.number,
           },
         },
         {
-          name: 'updategsiname',
+          name: "updategsiname",
           partitionKey: {
-            fieldName: 'col',
+            fieldName: "col",
             fieldType: FieldType.string,
           },
         },

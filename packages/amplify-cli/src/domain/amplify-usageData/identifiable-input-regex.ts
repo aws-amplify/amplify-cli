@@ -1,14 +1,14 @@
-import { JSONUtilities } from 'amplify-cli-core';
-import { Input } from '../input';
+import { JSONUtilities } from "amplify-cli-core";
+import { Input } from "../input";
 
-const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
+const containsToRedact = ["key", "id", "password", "name", "arn", "address", "app"];
 const quotes = '\\\\?"';
-const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
+const keyMatcher = `\\w*?(${containsToRedact.join("|")})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
 //matches any string with contiansToRedact in it
-const keyregex = new RegExp(keyMatcher, 'gmi');
+const keyregex = new RegExp(keyMatcher, "gmi");
 // matches any json and gives values in json
-const jsonregex = new RegExp(completeMatch, 'gmi');
+const jsonregex = new RegExp(completeMatch, "gmi");
 function testReplaceJsonValues(json: string, redactedInput: string): string {
   if (!json) return json;
   let s: string = json.toString();
@@ -26,7 +26,7 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
     } while (m !== null);
 
     //replace them
-    valuesToRedact.forEach(val => {
+    valuesToRedact.forEach((val) => {
       s = s.replace(val, redactedInput);
     });
   } else {
@@ -35,7 +35,7 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
   return s;
 }
 
-export default function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString = '************'): Input {
+export default function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString = "************"): Input {
   const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
   const argv = input.argv;
   const length = argv.length;
@@ -58,11 +58,11 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: bo
     }
   }
   if (input.options) {
-    Object.keys(input.options).forEach(key => {
-      if (key && input.options && input.options[key] && typeof input.options[key] === 'string') {
+    Object.keys(input.options).forEach((key) => {
+      if (key && input.options && input.options[key] && typeof input.options[key] === "string") {
         if (keyregex.test(key) && !isJson(input.options[key].toString())) {
           input.options[key] = replacementString;
-        } else if (typeof input.options[key] === 'string') {
+        } else if (typeof input.options[key] === "string") {
           input.options[key] = testReplaceJsonValues(input.options[key].toString(), replacementString);
         }
       }

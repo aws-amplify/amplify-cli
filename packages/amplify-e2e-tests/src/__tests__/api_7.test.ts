@@ -11,36 +11,36 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import path from "path";
 
-describe('amplify add api (GraphQL)', () => {
+describe("amplify add api (GraphQL)", () => {
   let projRoot: string;
   let projFolderName: string;
   beforeEach(async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    projFolderName = 'graphqlapi';
+    projFolderName = "graphqlapi";
     projRoot = await createNewProjectDir(projFolderName);
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add the simple_model api with transformer version 1', async () => {
+  it("init a project and add the simple_model api with transformer version 1", async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const envName = 'devtest';
+    const envName = "devtest";
     // eslint-disable-next-line spellcheck/spell-checker
-    const projName = 'simplemodel';
-    const cliInputsFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'cli-inputs.json');
+    const projName = "simplemodel";
+    const cliInputsFilePath = path.join(projRoot, "amplify", "backend", "api", `${projName}`, "cli-inputs.json");
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await updateApiSchema(projRoot, projName, "simple_model.graphql");
     expect(fs.existsSync(cliInputsFilePath)).toBe(true);
 
     await amplifyPush(projRoot);
@@ -70,8 +70,8 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
 
     await amplifyOverrideApi(projRoot);
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
-    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'override.ts');
+    const srcOverrideFilePath = path.join(__dirname, "..", "..", "overrides", "override-api-gql.ts");
+    const destOverrideFilePath = path.join(projRoot, "amplify", "backend", "api", `${projName}`, "override.ts");
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
     // check overridden config

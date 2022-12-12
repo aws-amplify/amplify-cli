@@ -7,11 +7,11 @@ import {
   CLIInputSchemaValidator,
   JSONUtilities,
   pathManager,
-} from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { getFieldType } from '../cfn-template-utils';
-import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
+} from "amplify-cli-core";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { getFieldType } from "../cfn-template-utils";
+import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from "../service-walkthrough-types/dynamoDB-user-input-types";
 
 /* Need to move this logic to a base class */
 
@@ -28,8 +28,8 @@ export class DynamoDBInputState {
     this._resourceName = resourceName;
 
     const projectBackendDirPath = pathManager.getBackendDirPath();
-    this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
-    this.buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'build'));
+    this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, "cli-inputs.json"));
+    this.buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, "build"));
   }
 
   public getCliInputPayload(): DynamoDBCLIInputs {
@@ -39,7 +39,7 @@ export class DynamoDBInputState {
     try {
       cliInputs = JSONUtilities.readJson<DynamoDBCLIInputs>(this._cliInputsFilePath)!;
     } catch (e) {
-      throw new Error('cli-inputs.json file missing from the resource directory');
+      throw new Error("cli-inputs.json file missing from the resource directory");
     }
 
     return cliInputs;
@@ -54,7 +54,7 @@ export class DynamoDBInputState {
       cliInputs = this.getCliInputPayload();
     }
 
-    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'DynamoDBCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, "DynamoDBCLIInputs");
     schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
@@ -75,9 +75,9 @@ export class DynamoDBInputState {
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
     const backendDir = pathManager.getBackendDirPath();
-    const oldParametersFilepath = path.join(backendDir, 'storage', this._resourceName, 'parameters.json');
-    const oldCFNFilepath = path.join(backendDir, 'storage', this._resourceName, `${this._resourceName}-cloudformation-template.json`);
-    const oldStorageParamsFilepath = path.join(backendDir, 'storage', this._resourceName, `storage-params.json`);
+    const oldParametersFilepath = path.join(backendDir, "storage", this._resourceName, "parameters.json");
+    const oldCFNFilepath = path.join(backendDir, "storage", this._resourceName, `${this._resourceName}-cloudformation-template.json`);
+    const oldStorageParamsFilepath = path.join(backendDir, "storage", this._resourceName, `storage-params.json`);
 
     const oldParameters = JSONUtilities.readJson<$TSAny>(oldParametersFilepath, { throwIfNotExist: true });
     const oldCFN = JSONUtilities.readJson<$TSAny>(oldCFNFilepath, { throwIfNotExist: true });
@@ -122,7 +122,7 @@ export class DynamoDBInputState {
         const gsiValue: $TSAny = {};
         (gsiValue.name = cfnGSIValue.IndexName),
           cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
-            if (keySchema.KeyType === 'HASH') {
+            if (keySchema.KeyType === "HASH") {
               gsiValue.partitionKey = {
                 fieldName: keySchema.AttributeName,
                 fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),

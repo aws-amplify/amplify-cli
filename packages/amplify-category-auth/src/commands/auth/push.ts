@@ -1,8 +1,8 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { uploadFiles } from '../../provider-utils/awscloudformation/utils/trigger-file-uploader';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { uploadFiles } from "../../provider-utils/awscloudformation/utils/trigger-file-uploader";
 
-export const name = 'push';
-const category = 'auth';
+export const name = "push";
+const category = "auth";
 
 /**
  * entry point for the auth push

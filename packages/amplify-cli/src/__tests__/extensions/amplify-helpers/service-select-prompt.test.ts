@@ -1,39 +1,39 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from "amplify-cli-core";
 
 let context = {};
 let errorMessages: string[] = [];
 let infoMessages: string[] = [];
 
-describe('serviceSelectPrompt', () => {
+describe("serviceSelectPrompt", () => {
   const mockExit = jest.fn();
   const promptMock = jest.fn();
 
-  jest.mock('amplify-cli-core', () => ({
-    ...(jest.requireActual('amplify-cli-core') as {}),
+  jest.mock("amplify-cli-core", () => ({
+    ...(jest.requireActual("amplify-cli-core") as {}),
     exitOnNextTick: mockExit,
   }));
 
-  jest.mock('inquirer', () => ({
-    ...(jest.requireActual('inquirer') as {}),
+  jest.mock("inquirer", () => ({
+    ...(jest.requireActual("inquirer") as {}),
     prompt: promptMock,
   }));
 
-  const { serviceSelectionPrompt } = require('../../../extensions/amplify-helpers/service-select-prompt');
+  const { serviceSelectionPrompt } = require("../../../extensions/amplify-helpers/service-select-prompt");
 
   const mockProjectConfig = {
-    projectName: 'mockProjectName',
-    version: '2.0',
-    frontend: 'javascript',
+    projectName: "mockProjectName",
+    version: "2.0",
+    frontend: "javascript",
     javascript: {
-      framework: 'none',
+      framework: "none",
       config: {
-        SourceDir: 'src',
-        DistributionDir: 'dist',
-        BuildCommand: 'npm run-script build',
-        StartCommand: 'npm run-script start',
+        SourceDir: "src",
+        DistributionDir: "dist",
+        BuildCommand: "npm run-script build",
+        StartCommand: "npm run-script start",
       },
     },
-    providers: ['awscloudformation'],
+    providers: ["awscloudformation"],
   };
 
   beforeEach(() => {
@@ -44,8 +44,8 @@ describe('serviceSelectPrompt', () => {
       runtime: {
         plugins: [
           {
-            name: 'category-category-category',
-            directory: './',
+            name: "category-category-category",
+            directory: "./",
           },
         ],
       },
@@ -59,7 +59,7 @@ describe('serviceSelectPrompt', () => {
       },
       amplify: {
         readJsonFile: jest.fn().mockReturnValue({ Lambda: {} }),
-        getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: './' }),
+        getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: "./" }),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
         pathManager: {
           getBackendDirPath: jest.fn(),
@@ -75,38 +75,38 @@ describe('serviceSelectPrompt', () => {
       },
     };
 
-    jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue(mockProjectConfig);
+    jest.spyOn(stateManager, "getProjectConfig").mockReturnValue(mockProjectConfig);
   });
 
   const mockAmplifyMeta = {
     providers: {
       awscloudformation: {
-        AuthRoleName: 'checkhosting-20190226163640-authRole',
-        UnauthRoleArn: 'arn:aws:iam::mockAccountId:role/checkhosting-20190226163640-unauthRole',
-        AuthRoleArn: 'arn:aws:iam::mockAccountId:role/checkhosting-20190226163640-authRole',
-        Region: 'us-west-2',
-        DeploymentBucketName: 'checkhosting-20190226163640-deployment',
-        UnauthRoleName: 'checkhosting-20190226163640-unauthRole',
-        StackName: 'checkhosting-20190226163640',
-        StackId: 'arn:aws:cloudformation:us-west-2:mockAccountId:stack/checkhosting-20190226163640/2c061610-3a28-11e9-acf3-02ee71065ed8',
+        AuthRoleName: "checkhosting-20190226163640-authRole",
+        UnauthRoleArn: "arn:aws:iam::mockAccountId:role/checkhosting-20190226163640-unauthRole",
+        AuthRoleArn: "arn:aws:iam::mockAccountId:role/checkhosting-20190226163640-authRole",
+        Region: "us-west-2",
+        DeploymentBucketName: "checkhosting-20190226163640-deployment",
+        UnauthRoleName: "checkhosting-20190226163640-unauthRole",
+        StackName: "checkhosting-20190226163640",
+        StackId: "arn:aws:cloudformation:us-west-2:mockAccountId:stack/checkhosting-20190226163640/2c061610-3a28-11e9-acf3-02ee71065ed8",
       },
     },
     api: {
       mockProjectName: {
-        service: 'AppSync',
-        providerPlugin: 'awscloudformation',
+        service: "AppSync",
+        providerPlugin: "awscloudformation",
         output: {
           authConfig: {
             defaultAuthentication: {
-              authenticationType: 'API_KEY',
+              authenticationType: "API_KEY",
               apiKeyConfig: {
                 apiKeyExpirationDays: 30,
-                description: 'This is an api key',
+                description: "This is an api key",
               },
             },
             additionalAuthenticationProviders: [
               {
-                authenticationType: 'AWS_IAM',
+                authenticationType: "AWS_IAM",
               },
             ],
           },
@@ -115,7 +115,7 @@ describe('serviceSelectPrompt', () => {
     },
   };
 
-  it('should gracefully handle null supportedServices', async () => {
+  it("should gracefully handle null supportedServices", async () => {
     const promptResponse = {
       name: undefined,
       service: undefined,
@@ -123,13 +123,13 @@ describe('serviceSelectPrompt', () => {
 
     promptMock.mockImplementation(() => Promise.resolve(promptResponse));
 
-    await serviceSelectionPrompt(context, '', undefined);
+    await serviceSelectionPrompt(context, "", undefined);
 
     expect(errorMessages.length).toEqual(1);
     expect(mockExit).toBeCalledWith(1);
   });
 
-  it('should gracefully handle null providers', async () => {
+  it("should gracefully handle null providers", async () => {
     (mockAmplifyMeta.providers as any) = undefined;
 
     const promptResponse = {
@@ -139,59 +139,59 @@ describe('serviceSelectPrompt', () => {
 
     promptMock.mockImplementation(() => Promise.resolve(promptResponse));
 
-    await serviceSelectionPrompt(context, '', undefined);
+    await serviceSelectionPrompt(context, "", undefined);
 
     expect(errorMessages.length).toEqual(1);
     expect(mockExit).toBeCalledWith(1);
   });
 
-  it('should return a service immediately if only one exists', async () => {
+  it("should return a service immediately if only one exists", async () => {
     const supportedServices = {
       awscloudformation: {
-        alias: 'awscloudformation',
-        provider: 'awscloudformation',
+        alias: "awscloudformation",
+        provider: "awscloudformation",
       },
     };
 
-    const selectedProvider = await serviceSelectionPrompt(context, '', supportedServices);
+    const selectedProvider = await serviceSelectionPrompt(context, "", supportedServices);
 
     const expectedResult = {
       provider: undefined,
-      providerName: 'awscloudformation',
-      service: 'awscloudformation',
+      providerName: "awscloudformation",
+      service: "awscloudformation",
     };
     expect(selectedProvider).toEqual(expectedResult);
     expect(infoMessages.length).toEqual(1);
   });
 
-  it('should prompt if more than one provider is available', async () => {
+  it("should prompt if more than one provider is available", async () => {
     const supportedServices = {
       awscloudformation: {
-        alias: 'awscloudformation',
-        provider: 'awscloudformation',
+        alias: "awscloudformation",
+        provider: "awscloudformation",
       },
       testService: {
-        alias: 'testService',
-        provider: 'testService',
+        alias: "testService",
+        provider: "testService",
       },
     };
 
-    mockProjectConfig.providers.push('testService');
+    mockProjectConfig.providers.push("testService");
 
     const expectedResult = {
       provider: undefined,
-      providerName: 'awscloudformation',
-      service: 'awscloudformation',
+      providerName: "awscloudformation",
+      service: "awscloudformation",
     };
 
     const promptResponse = {
-      name: 'awscloudformation',
+      name: "awscloudformation",
       service: expectedResult,
     };
 
     promptMock.mockImplementation(() => Promise.resolve(promptResponse));
 
-    const selectedProvider = await serviceSelectionPrompt(context, 'Test', supportedServices);
+    const selectedProvider = await serviceSelectionPrompt(context, "Test", supportedServices);
 
     expect(selectedProvider).toEqual(expectedResult);
   });

@@ -5,31 +5,28 @@ import {
   INotificationsResourceMeta,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
-} from 'amplify-cli-core';
-import ora from 'ora';
+} from "amplify-cli-core";
+import ora from "ora";
 
-import { prompter } from 'amplify-prompts';
-import * as channel from '../channel-in-app-msg';
-import * as ChannelCfg from '../notifications-backend-cfg-channel-api';
-import * as Meta from '../notifications-amplify-meta-api';
-import * as Cfg from '../notifications-backend-cfg-api';
-import { ChannelAction, ChannelConfigDeploymentType } from '../channel-types';
-import { INotificationsResourceBackendConfig } from '../notifications-backend-cfg-types';
-import {
-  buildPinpointChannelResponseSuccess,
-  getPinpointAppStatusFromMeta,
-} from '../pinpoint-helper';
-import * as analyticsClient from '../plugin-client-api-analytics';
+import { prompter } from "amplify-prompts";
+import * as channel from "../channel-in-app-msg";
+import * as ChannelCfg from "../notifications-backend-cfg-channel-api";
+import * as Meta from "../notifications-amplify-meta-api";
+import * as Cfg from "../notifications-backend-cfg-api";
+import { ChannelAction, ChannelConfigDeploymentType } from "../channel-types";
+import { INotificationsResourceBackendConfig } from "../notifications-backend-cfg-types";
+import { buildPinpointChannelResponseSuccess, getPinpointAppStatusFromMeta } from "../pinpoint-helper";
+import * as analyticsClient from "../plugin-client-api-analytics";
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock("amplify-cli-core", () => ({
+  ...jest.requireActual("amplify-cli-core"),
   stateManager: {
     getCurrentBackendConfig: jest.fn(),
     getCurrentEnvName: jest.fn(),
     getCurrentMeta: jest.fn(),
   },
 }));
-jest.mock('ora', () => {
+jest.mock("ora", () => {
   const mockSpinnerInstance = {
     fail: jest.fn(),
     start: jest.fn(),
@@ -38,17 +35,17 @@ jest.mock('ora', () => {
   };
   return jest.fn(() => mockSpinnerInstance);
 });
-jest.mock('../notifications-api');
-jest.mock('../pinpoint-helper');
-jest.mock('../plugin-client-api-analytics');
+jest.mock("../notifications-api");
+jest.mock("../pinpoint-helper");
+jest.mock("../plugin-client-api-analytics");
 
-const channelName = 'InAppMessaging';
+const channelName = "InAppMessaging";
 
-const getAppConfigSpy = jest.spyOn(Cfg, 'getNotificationsAppConfig');
-const getAppMetaSpy = jest.spyOn(Meta, 'getNotificationsAppMeta');
-const isChannelEnabledSpy = jest.spyOn(ChannelCfg, 'isChannelEnabledNotificationsBackendConfig');
-const prompterYesOrNoSpy = jest.spyOn(prompter, 'yesOrNo');
-const invokeAnalyticsPinpointHasInAppMessagingPolicySpy = jest.spyOn(analyticsClient, 'invokeAnalyticsPinpointHasInAppMessagingPolicy');
+const getAppConfigSpy = jest.spyOn(Cfg, "getNotificationsAppConfig");
+const getAppMetaSpy = jest.spyOn(Meta, "getNotificationsAppMeta");
+const isChannelEnabledSpy = jest.spyOn(ChannelCfg, "isChannelEnabledNotificationsBackendConfig");
+const prompterYesOrNoSpy = jest.spyOn(prompter, "yesOrNo");
+const invokeAnalyticsPinpointHasInAppMessagingPolicySpy = jest.spyOn(analyticsClient, "invokeAnalyticsPinpointHasInAppMessagingPolicy");
 
 const mockContext = {
   print: { info: jest.fn(), error: jest.fn() },
@@ -57,7 +54,7 @@ const mockContext = {
 const mockBuildPinpointChannelResponseSuccess = buildPinpointChannelResponseSuccess as jest.Mock;
 const mockGetPinpointAppStatusFromMeta = getPinpointAppStatusFromMeta as jest.Mock;
 const mockInvokeAnalyticsResourceToggleNotificationChannel = analyticsClient.invokeAnalyticsResourceToggleNotificationChannel as jest.Mock;
-const mockPinpointApp: any = { Id: 'app-id', Name: 'app-name' };
+const mockPinpointApp: any = { Id: "app-id", Name: "app-name" };
 const mockSpinner = ora();
 
 const getMockAnalyticsAPIResponse = ({ status }: { status: boolean }): IPluginCapabilityAPIResponse => ({
@@ -68,69 +65,67 @@ const getMockAnalyticsAPIResponse = ({ status }: { status: boolean }): IPluginCa
   status,
 });
 
-describe('channel-InAppMessaging', () => {
+describe("channel-InAppMessaging", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  describe('configure', () => {
+  describe("configure", () => {
     beforeEach(() => {
-      mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(
-        getMockAnalyticsAPIResponse({ status: true }),
-      );
+      mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(getMockAnalyticsAPIResponse({ status: true }));
     });
 
-    describe('enabled channel', () => {
+    describe("enabled channel", () => {
       beforeEach(() => {
         isChannelEnabledSpy.mockResolvedValue(true);
         invokeAnalyticsPinpointHasInAppMessagingPolicySpy.mockResolvedValue(true);
       });
 
-      test('user choosing to disable the channel', async () => {
+      test("user choosing to disable the channel", async () => {
         prompterYesOrNoSpy.mockResolvedValue(true);
         await channel.configure(mockContext);
-        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to disable the In-App Messaging channel', false);
+        expect(prompterYesOrNoSpy).toBeCalledWith("Do you want to disable the In-App Messaging channel", false);
         expect(mockSpinner.succeed).toBeCalled();
       });
 
-      test('user choosing not to disable the channel', async () => {
+      test("user choosing not to disable the channel", async () => {
         prompterYesOrNoSpy.mockResolvedValue(false);
         await channel.configure(mockContext);
-        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to disable the In-App Messaging channel', false);
+        expect(prompterYesOrNoSpy).toBeCalledWith("Do you want to disable the In-App Messaging channel", false);
         expect(mockSpinner.start).not.toBeCalled();
       });
     });
 
-    describe('disabled channel', () => {
+    describe("disabled channel", () => {
       beforeEach(() => {
         isChannelEnabledSpy.mockResolvedValue(false);
         invokeAnalyticsPinpointHasInAppMessagingPolicySpy.mockResolvedValue(true);
       });
 
-      test('user choosing to enable the channel', async () => {
+      test("user choosing to enable the channel", async () => {
         mockGetPinpointAppStatusFromMeta.mockResolvedValue({});
         prompterYesOrNoSpy.mockResolvedValue(true);
         await channel.configure(mockContext);
-        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to enable the In-App Messaging channel', true);
+        expect(prompterYesOrNoSpy).toBeCalledWith("Do you want to enable the In-App Messaging channel", true);
         expect(mockSpinner.succeed).toBeCalled();
       });
 
-      test('user choosing not to enable the channel', async () => {
+      test("user choosing not to enable the channel", async () => {
         prompterYesOrNoSpy.mockResolvedValue(false);
         await channel.configure(mockContext);
-        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to enable the In-App Messaging channel', true);
+        expect(prompterYesOrNoSpy).toBeCalledWith("Do you want to enable the In-App Messaging channel", true);
         expect(mockSpinner.start).not.toBeCalled();
       });
     });
   });
 
-  describe('enable', () => {
+  describe("enable", () => {
     beforeEach(() => {
       mockGetPinpointAppStatusFromMeta.mockResolvedValue({});
       invokeAnalyticsPinpointHasInAppMessagingPolicySpy.mockResolvedValue(true);
     });
 
-    test('returns successful API response', async () => {
+    test("returns successful API response", async () => {
       const mockAPIResponse = getMockAnalyticsAPIResponse({ status: true });
       mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(mockAPIResponse);
       const response = await channel.enable(mockContext);
@@ -143,7 +138,7 @@ describe('channel-InAppMessaging', () => {
       });
     });
 
-    test('returns unsuccessful API response', async () => {
+    test("returns unsuccessful API response", async () => {
       const mockAPIResponse = getMockAnalyticsAPIResponse({ status: false });
       mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(mockAPIResponse);
       const response = await channel.enable(mockContext);
@@ -157,8 +152,8 @@ describe('channel-InAppMessaging', () => {
     });
   });
 
-  describe('disable', () => {
-    test('returns successful API response', async () => {
+  describe("disable", () => {
+    test("returns successful API response", async () => {
       const mockAPIResponse = getMockAnalyticsAPIResponse({ status: true });
       mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(mockAPIResponse);
       const response = await channel.disable(mockContext);
@@ -171,7 +166,7 @@ describe('channel-InAppMessaging', () => {
       });
     });
 
-    test('returns unsuccessful API response', async () => {
+    test("returns unsuccessful API response", async () => {
       const mockAPIResponse = getMockAnalyticsAPIResponse({ status: false });
       mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(mockAPIResponse);
       const response = await channel.disable(mockContext);
@@ -185,9 +180,9 @@ describe('channel-InAppMessaging', () => {
     });
   });
 
-  describe('pull', () => {
-    test('succeeds when channel metadata is available', async () => {
-      const mockChannelMeta = { foo: 'bar' };
+  describe("pull", () => {
+    test("succeeds when channel metadata is available", async () => {
+      const mockChannelMeta = { foo: "bar" };
       getAppMetaSpy.mockResolvedValue({
         output: { channels: { [channelName]: mockChannelMeta } },
       } as unknown as INotificationsResourceMeta);
@@ -198,11 +193,11 @@ describe('channel-InAppMessaging', () => {
         ChannelAction.PULL,
         ChannelConfigDeploymentType.DEFERRED,
         channelName,
-        mockChannelMeta,
+        mockChannelMeta
       );
     });
 
-    test('succeeds when channel metadata is unavailable but backend config is', async () => {
+    test("succeeds when channel metadata is unavailable but backend config is", async () => {
       const expectedMeta = {
         Enabled: true,
         ApplicationId: mockPinpointApp.Id,
@@ -217,11 +212,11 @@ describe('channel-InAppMessaging', () => {
         ChannelAction.PULL,
         ChannelConfigDeploymentType.DEFERRED,
         channelName,
-        expectedMeta,
+        expectedMeta
       );
     });
 
-    test('should not fail when channel metadata and backend config are both unavailable but return undefined', async () => {
+    test("should not fail when channel metadata and backend config are both unavailable but return undefined", async () => {
       getAppMetaSpy.mockResolvedValue({} as unknown as INotificationsResourceMeta);
       getAppConfigSpy.mockResolvedValue({} as INotificationsResourceBackendConfig);
       await channel.pull(mockContext, mockPinpointApp);

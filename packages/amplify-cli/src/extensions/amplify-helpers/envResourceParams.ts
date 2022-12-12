@@ -1,12 +1,10 @@
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny,
-} from 'amplify-cli-core';
+import { getEnvParamManager } from "@aws-amplify/amplify-environment-parameters";
+import { $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny } from "amplify-cli-core";
 
-import _ from 'lodash';
-import { getRootStackId } from './get-root-stack-id';
+import _ from "lodash";
+import { getRootStackId } from "./get-root-stack-id";
 
-const hostedUIProviderCredsField = 'hostedUIProviderCreds';
+const hostedUIProviderCredsField = "hostedUIProviderCreds";
 
 /**
  * Save environment-specific resource params
@@ -33,7 +31,7 @@ export const saveEnvResourceParameters = (__: $TSContext | undefined, category: 
         keyName: hostedUIProviderCredsField,
         value: hostedUIProviderCreds,
         resource,
-      }),
+      })
     );
   } else {
     stateManager.setDeploymentSecrets(
@@ -44,7 +42,7 @@ export const saveEnvResourceParameters = (__: $TSContext | undefined, category: 
         resource,
         envName: currentEnv,
         keyName: hostedUIProviderCredsField,
-      }),
+      })
     );
   }
 };
@@ -67,14 +65,14 @@ const loadEnvResourceParametersFromDeploymentSecrets = (category: string, resour
     const currentEnv = stateManager.getLocalEnvInfo().envName;
     const deploymentSecrets = stateManager.getDeploymentSecrets();
     const rootStackId = getRootStackId();
-    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
     }
     const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
     // set empty default if no hostedUIProviderCreds found
     if (parameters && parameters.hostedUI) {
-      return _.set({}, hostedUIProviderCredsField, '[]');
+      return _.set({}, hostedUIProviderCredsField, "[]");
     }
   } catch (e) {
     // swallow error
@@ -107,6 +105,6 @@ export const removeDeploymentSecrets = (__: $TSContext | undefined, category: st
       category,
       resource,
       keyName: hostedUIProviderCredsField,
-    }),
+    })
   );
 };

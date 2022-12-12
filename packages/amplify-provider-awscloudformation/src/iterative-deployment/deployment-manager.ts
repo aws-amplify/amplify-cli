@@ -1,14 +1,12 @@
-import {
-  $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager,
-} from 'amplify-cli-core';
-import { AmplifySpinner, printer as promptsPrinter } from 'amplify-prompts';
-import assert from 'assert';
-import * as aws from 'aws-sdk';
-import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
-import throttle from 'lodash.throttle';
-import { interpret } from 'xstate';
-import { getBucketKey, getHttpUrl } from './helpers';
-import { IStackProgressPrinter, StackEventMonitor } from './stack-event-monitor';
+import { $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager } from "amplify-cli-core";
+import { AmplifySpinner, printer as promptsPrinter } from "amplify-prompts";
+import assert from "assert";
+import * as aws from "aws-sdk";
+import { ConfigurationOptions } from "aws-sdk/lib/config-base";
+import throttle from "lodash.throttle";
+import { interpret } from "xstate";
+import { getBucketKey, getHttpUrl } from "./helpers";
+import { IStackProgressPrinter, StackEventMonitor } from "./stack-event-monitor";
 import {
   createDeploymentMachine,
   createRollbackDeploymentMachine,
@@ -17,11 +15,11 @@ import {
   DeploymentMachineStep,
   StateMachineError,
   StateMachineHelperFunctions,
-} from './state-machine';
-import { loadConfiguration } from '../configuration-manager';
-import { fileLogger, Logger } from '../utils/aws-logger';
-import { EventMap } from '../utils/progress-bar-helpers';
-import { StackProgressPrinter } from './stack-progress-printer';
+} from "./state-machine";
+import { loadConfiguration } from "../configuration-manager";
+import { fileLogger, Logger } from "../utils/aws-logger";
+import { EventMap } from "../utils/progress-bar-helpers";
+import { StackProgressPrinter } from "./stack-progress-printer";
 
 interface DeploymentManagerOptions {
   throttleDelay?: number;
@@ -34,14 +32,14 @@ type SpinnerMessageByState = {
 };
 
 const deploySpinnerMessages: SpinnerMessageByState = {
-  idle: { machine: 'deploy', message: `Starting deployment.` },
-  'deploy.waitForTablesToBeReady': { machine: 'deploy', message: `Waiting for DynamoDB indices to be ready.` },
+  idle: { machine: "deploy", message: `Starting deployment.` },
+  "deploy.waitForTablesToBeReady": { machine: "deploy", message: `Waiting for DynamoDB indices to be ready.` },
 };
 
 const rollbackSpinnerMessages: SpinnerMessageByState = {
-  idle: { machine: 'rollback', message: `Starting rollback.` },
-  preRollback: { machine: 'rollback', message: `Waiting for previous deployment to finish.` },
-  'rollback.waitForTablesToBeReady': { machine: 'rollback', message: `Waiting for DynamoDB indices to be ready.` },
+  idle: { machine: "rollback", message: `Starting rollback.` },
+  preRollback: { machine: "rollback", message: `Waiting for previous deployment to finish.` },
+  "rollback.waitForTablesToBeReady": { machine: "rollback", message: `Waiting for DynamoDB indices to be ready.` },
 };
 
 /**
@@ -50,7 +48,7 @@ const rollbackSpinnerMessages: SpinnerMessageByState = {
  */
 export class DeploymentError extends Error {
   constructor(errors: StateMachineError[]) {
-    super('There was an error while deploying changes.');
+    super("There was an error while deploying changes.");
     this.name = `DeploymentError`;
     const stackTrace = [];
     for (const err of errors) {
@@ -63,7 +61,7 @@ export class DeploymentError extends Error {
 /**
  * Deployment operation type
  */
-export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePath' | 'stackTemplateUrl'> & {
+export type DeploymentOp = Omit<DeploymentMachineOp, "region" | "stackTemplatePath" | "stackTemplateUrl"> & {
   stackTemplatePathOrUrl: string;
 };
 
@@ -86,16 +84,20 @@ export class DeploymentManager {
     context: $TSContext,
     deploymentBucket: string,
     eventMap: EventMap,
-    options?: DeploymentManagerOptions,
+    options?: DeploymentManagerOptions
   ): Promise<DeploymentManager> => {
     try {
       const cred = await loadConfiguration(context);
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, eventMap, options);
     } catch (e) {
-      throw new AmplifyError('DeploymentError', {
-        message: 'Could not load configuration',
-      }, e);
+      throw new AmplifyError(
+        "DeploymentError",
+        {
+          message: "Could not load configuration",
+        },
+        e
+      );
     }
   };
 
@@ -114,7 +116,7 @@ export class DeploymentManager {
     private region: string,
     private deploymentBucket: string,
     private eventMap: EventMap,
-    options: DeploymentManagerOptions = {},
+    options: DeploymentManagerOptions = {}
   ) {
     this.options = {
       throttleDelay: 1_000,
@@ -126,7 +128,7 @@ export class DeploymentManager {
     this.s3Client = new aws.S3(creds);
     this.cfnClient = new aws.CloudFormation({ ...creds, maxRetries: 10, customUserAgent: this.options.userAgent });
     this.ddbClient = new aws.DynamoDB({ ...creds, region, maxRetries: 10 });
-    this.logger = fileLogger('deployment-manager');
+    this.logger = fileLogger("deployment-manager");
     this.printer = new StackProgressPrinter(eventMap);
     this.spinner = new AmplifySpinner();
   }
@@ -140,7 +142,7 @@ export class DeploymentManager {
       acc.add(step.rollback.stackTemplatePath);
       return acc;
     }, new Set());
-    await Promise.all(Array.from(deploymentTemplates.values()).map(path => this.ensureTemplateExists(path)));
+    await Promise.all(Array.from(deploymentTemplates.values()).map((path) => this.ensureTemplateExists(path)));
 
     const fns: StateMachineHelperFunctions = {
       deployFn: this.doDeploy,
@@ -159,54 +161,55 @@ export class DeploymentManager {
         region: this.region,
         stacks: this.deployment,
       },
-      fns,
+      fns
     );
 
     let maxDeployed = 0;
 
     return new Promise(async (resolve, reject) => {
       const service = interpret(machine)
-        .onTransition(async state => {
+        .onTransition(async (state) => {
           if (state.changed) {
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
 
-            const deploySpinnerState = Object.keys(deploySpinnerMessages).find(key => state.matches(key));
+            const deploySpinnerState = Object.keys(deploySpinnerMessages).find((key) => state.matches(key));
             if (deploySpinnerState) {
               const deploySpinnerMessage = deploySpinnerMessages[deploySpinnerState];
               this.logger(deploySpinnerMessage.machine, [{ spinner: deploySpinnerMessage.message }])();
               if (!this.printer || (this.printer && !this.printer.isRunning())) {
                 this.spinner.start(deploySpinnerMessage.message);
               }
-            } else if (state.matches('deployed')) {
+            } else if (state.matches("deployed")) {
               this.updateTerminalOnEventCompletion(`Deployed (${maxDeployed - 1} of ${state.context.stacks.length})`);
-              this.logger('DeploymentManager', [{ spinner: 'Deployed' }]);
+              this.logger("DeploymentManager", [{ spinner: "Deployed" }]);
               this.resetPrinter();
-            } else if (state.matches('deploy') || state.matches('rollback')) {
+            } else if (state.matches("deploy") || state.matches("rollback")) {
               this.spinner.stop();
               const { currentIndex } = state.context;
-              const message = state.matches('deploy') ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
+              const message = state.matches("deploy")
+                ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
                 : `Rolling back (${maxDeployed - currentIndex} of ${maxDeployed})`;
-              this.logger('deploy', [{ spinner: message }])();
+              this.logger("deploy", [{ spinner: message }])();
               this.printer.updateIndexInHeader(maxDeployed, state.context.stacks.length);
             }
           }
 
           switch (state.value) {
-            case 'deployed':
+            case "deployed":
               return resolve();
-            case 'rolledBack':
-            case 'failed':
+            case "rolledBack":
+            case "failed":
               this.printer.stopBars();
               promptsPrinter.info(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
               const deploymentErrors = new DeploymentError(state.context.errors);
-              this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
+              this.logger("DeploymentManager", [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
             default:
             // intentionally left blank as we don't care about intermediate states
           }
         })
         .start();
-      service.send({ type: 'DEPLOY' });
+      service.send({ type: "DEPLOY" });
     });
   };
 
@@ -219,7 +222,7 @@ export class DeploymentManager {
       acc.add(step.rollback.stackTemplatePath);
       return acc;
     }, new Set());
-    await Promise.all(Array.from(deploymentTemplates.values()).map(path => this.ensureTemplateExists(path)));
+    await Promise.all(Array.from(deploymentTemplates.values()).map((path) => this.ensureTemplateExists(path)));
     const fns: StateMachineHelperFunctions = {
       preRollbackTableCheck: this.preRollbackTableCheck,
       rollbackFn: this.rollBackStack,
@@ -236,42 +239,42 @@ export class DeploymentManager {
         region: this.region,
         stacks: this.deployment,
       },
-      fns,
+      fns
     );
 
     return new Promise(async (resolve, reject) => {
       const service = interpret(machine)
-        .onTransition(async state => {
+        .onTransition(async (state) => {
           if (state.changed) {
-            const rollbackSpinnerState = Object.keys(rollbackSpinnerMessages).find(key => state.matches(key));
+            const rollbackSpinnerState = Object.keys(rollbackSpinnerMessages).find((key) => state.matches(key));
             if (rollbackSpinnerState) {
               const rollbackSpinnerMessage = rollbackSpinnerMessages[rollbackSpinnerState];
               this.logger(rollbackSpinnerMessage.machine, [{ spinner: rollbackSpinnerMessage.message }])();
               this.spinner.start(rollbackSpinnerMessage.message);
-            } else if (state.matches('rolledBack')) {
+            } else if (state.matches("rolledBack")) {
               this.updateTerminalOnEventCompletion(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
-              this.logger('rollback', [{ spinner: 'Rolled back successfully' }]);
-            } else if (state.matches('rollback')) {
+              this.logger("rollback", [{ spinner: "Rolled back successfully" }]);
+            } else if (state.matches("rollback")) {
               this.spinner.stop();
               const message = `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`;
-              this.logger('rollback', [{ spinner: message }])();
+              this.logger("rollback", [{ spinner: message }])();
             }
           }
 
           switch (state.value) {
-            case 'rolledBack':
+            case "rolledBack":
               return resolve();
-            case 'failed':
+            case "failed":
               this.printer.stopBars();
               const deploymentErrors = new DeploymentError(state.context.errors);
-              this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
+              this.logger("DeploymentManager", [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
             default:
             // intentionally left blank as we don't care about intermediate states
           }
         })
         .start();
-      service.send({ type: 'ROLLBACK' });
+      service.send({ type: "ROLLBACK" });
     });
   };
 
@@ -341,7 +344,7 @@ export class DeploymentManager {
       await this.deploymentStateManager?.startCurrentStep();
     } catch (err) {
       // log err but rollback should not fail because updating the deployment status fails
-      this.logger('startRollbackFn', [{ index: deployMachineContext.currentIndex }])(err);
+      this.logger("startRollbackFn", [{ index: deployMachineContext.currentIndex }])(err);
     }
   };
 
@@ -351,7 +354,7 @@ export class DeploymentManager {
    */
   private ensureStack = async (stackName: string): Promise<boolean> => {
     const result = await this.cfnClient.describeStacks({ StackName: stackName }).promise();
-    return result.Stacks[0].StackStatus.endsWith('_COMPLETE');
+    return result.Stacks[0].StackStatus.endsWith("_COMPLETE");
   };
 
   /**
@@ -364,53 +367,65 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      throw new AmplifyError('DeploymentError', {
-        message: e.code === 'NotFound'
-          ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
-          : e.message,
-        details: e.message,
-      }, e);
+      throw new AmplifyError(
+        "DeploymentError",
+        {
+          message:
+            e.code === "NotFound"
+              ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
+              : e.message,
+          details: e.message,
+        },
+        e
+      );
     }
   };
 
   private getTableStatus = async (tableName: string): Promise<boolean> => {
-    assert(tableName, 'table name should be passed');
+    assert(tableName, "table name should be passed");
 
     try {
       const response = await this.ddbClient.describeTable({ TableName: tableName }).promise();
-      if (response.Table?.TableStatus === 'DELETING') {
+      if (response.Table?.TableStatus === "DELETING") {
         return false;
       }
       const globalSecondaryIndexes = response.Table?.GlobalSecondaryIndexes;
-      return globalSecondaryIndexes ? globalSecondaryIndexes.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+      return globalSecondaryIndexes ? globalSecondaryIndexes.every((idx) => idx.IndexStatus === "ACTIVE") : true;
     } catch (err) {
-      if (err?.code === 'ResourceNotFoundException') {
+      if (err?.code === "ResourceNotFoundException") {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      throw new AmplifyFault('ServiceCallFault', {
-        message: err.message,
-      }, err);
+      throw new AmplifyFault(
+        "ServiceCallFault",
+        {
+          message: err.message,
+        },
+        err
+      );
     }
   };
 
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
-    const waiters = tables.map(name => new Promise(resolve => {
-      const interval = setInterval(async () => {
-        const areIndexesReady = await throttledGetTableStatus(name);
-        if (areIndexesReady) {
-          clearInterval(interval);
-          resolve(undefined);
-        }
-      }, this.options.throttleDelay);
-    }));
+    const waiters = tables.map(
+      (name) =>
+        new Promise((resolve) => {
+          const interval = setInterval(async () => {
+            const areIndexesReady = await throttledGetTableStatus(name);
+            if (areIndexesReady) {
+              clearInterval(interval);
+              resolve(undefined);
+            }
+          }, this.options.throttleDelay);
+        })
+    );
     await Promise.all(waiters);
   };
 
   private waitForIndices = async (stackParams: DeploymentMachineOp): Promise<void> => {
     if (stackParams.tableNames.length) {
       // cfn is async to ddb gsi creation the api can return true before the gsi creation starts
-      await new Promise(res => setTimeout(res, 2000));
+      await new Promise((res) => setTimeout(res, 2000));
     }
     await this.waitForActiveTables(stackParams.tableNames);
     try {
@@ -426,7 +441,7 @@ export class DeploymentManager {
   };
 
   private stackPollFn = (deploymentStep: DeploymentMachineOp): (() => void) => {
-    assert(deploymentStep.stackName, 'stack name should be passed to stackPollFn');
+    assert(deploymentStep.stackName, "stack name should be passed to stackPollFn");
     const monitor = new StackEventMonitor(this.cfnClient, deploymentStep.stackName, this.printer.print, this.printer.addActivity);
     monitor.start();
     return () => {
@@ -444,8 +459,8 @@ export class DeploymentManager {
     }
     const cfn = this.cfnClient;
 
-    assert(currentStack.stackName, 'stack name should be passed to doDeploy');
-    assert(currentStack.stackTemplateUrl, 'stackTemplateUrl must be passed to doDeploy');
+    assert(currentStack.stackName, "stack name should be passed to doDeploy");
+    assert(currentStack.stackTemplateUrl, "stackTemplateUrl must be passed to doDeploy");
 
     await this.ensureStack(currentStack.stackName);
 
@@ -467,10 +482,10 @@ export class DeploymentManager {
 
   private waitForDeployment = async (stackParams: DeploymentMachineOp): Promise<void> => {
     const { cfnClient } = this;
-    assert(stackParams.stackName, 'stackName should be passed to waitForDeployment');
+    assert(stackParams.stackName, "stackName should be passed to waitForDeployment");
 
     await cfnClient
-      .waitFor('stackUpdateComplete', {
+      .waitFor("stackUpdateComplete", {
         StackName: stackParams.stackName,
       })
       .promise();

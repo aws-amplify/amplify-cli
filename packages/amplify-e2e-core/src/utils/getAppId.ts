@@ -1,4 +1,4 @@
-import { getBackendAmplifyMeta } from './projectMeta';
+import { getBackendAmplifyMeta } from "./projectMeta";
 
 /**
  * fetches appId from amplify meta

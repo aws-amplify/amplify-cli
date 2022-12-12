@@ -2,12 +2,12 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import * as path from 'path';
-import chalk from 'chalk';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
-import { satisfies } from 'semver';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginPlatform } from '../domain/plugin-platform';
+import * as path from "path";
+import chalk from "chalk";
+import { JSONUtilities, $TSAny } from "amplify-cli-core";
+import { satisfies } from "semver";
+import { PluginInfo } from "../domain/plugin-info";
+import { PluginPlatform } from "../domain/plugin-platform";
 
 /**
  *
@@ -19,7 +19,7 @@ export type PluginDescription = {
   packageVersion?: string;
 };
 
-const indent = '    ';
+const indent = "    ";
 
 /**
  *
@@ -67,24 +67,20 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   });
 
   if (missingOfficialPlugins.length > 0) {
-    console.log(chalk.yellow('The following official plugins are missing or inactive:'));
+    console.log(chalk.yellow("The following official plugins are missing or inactive:"));
     missingOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const {
-        name, type, packageName, packageVersion,
-      } = pluginDescription;
+      const { name, type, packageName, packageVersion } = pluginDescription;
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
     });
   }
 
   if (mismatchedOfficialPlugins.length > 0) {
-    console.log(chalk.yellow('The following official plugins have mismatched packages:'));
+    console.log(chalk.yellow("The following official plugins have mismatched packages:"));
     mismatchedOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const {
-        name, type, packageName, packageVersion,
-      } = pluginDescription;
-      console.log('Expected:');
+      const { name, type, packageName, packageVersion } = pluginDescription;
+      console.log("Expected:");
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
-      console.log('Found:');
+      console.log("Found:");
       activePlugins[name].every((pluginInfo: PluginInfo) => {
         const { manifest } = pluginInfo;
         console.log(`${indent}${manifest.name}: ${manifest.type} | ${pluginInfo.packageName}@${pluginInfo.packageVersion}`);
@@ -109,7 +105,7 @@ function isMatching(pluginDescription: PluginDescription, pluginInfo: PluginInfo
  *
  */
 export function getOfficialPlugins(): { [key: string]: PluginDescription | Array<PluginDescription> } {
-  const packageJsonFilePath = path.normalize(path.join(__dirname, '..', '..', 'package.json'));
+  const packageJsonFilePath = path.normalize(path.join(__dirname, "..", "..", "package.json"));
   const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   const { officialPlugins } = packageJson.amplify;
 
@@ -117,7 +113,7 @@ export function getOfficialPlugins(): { [key: string]: PluginDescription | Array
 
   Object.keys(officialPlugins).forEach((plugin: string) => {
     const plugins = Array.isArray(officialPlugins[plugin]) ? officialPlugins[plugin] : [officialPlugins[plugin]];
-    plugins.forEach(officialPlugin => {
+    plugins.forEach((officialPlugin) => {
       const { packageName } = officialPlugin;
       if (dependencies[packageName]) {
         const version = dependencies[packageName];

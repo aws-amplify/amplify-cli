@@ -4,9 +4,9 @@ import {
   OAuthFlowsType,
   ScopeListType,
   SupportedIdentityProvidersListType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
 
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from "amplify-cli-core";
 
 export type AuthProjectDetails = {
   authResourceName?: string;

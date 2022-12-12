@@ -1,8 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { categoryName } from '../../constants';
+import { $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { categoryName } from "../../constants";
 
-export const name = 'push'; // subcommand
+export const name = "push"; // subcommand
 
 export async function run(context: $TSContext) {
   const { amplify, parameters } = context;

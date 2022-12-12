@@ -34,8 +34,8 @@ mutation CreateUser {
 export const expected_result_mutation1 = {
   data: {
     createUser: {
-      id: '1',
-      username: 'user1',
+      id: "1",
+      username: "user1",
     },
   },
 };
@@ -60,13 +60,13 @@ export const mutation2 = `
 export const expected_result_mutation2 = {
   data: {
     createPost: {
-      id: '1',
+      id: "1",
       owner: {
-        id: '1',
-        username: 'user1',
+        id: "1",
+        username: "user1",
       },
-      postname: 'post1',
-      content: 'post1 content',
+      postname: "post1",
+      content: "post1 content",
     },
   },
 };
@@ -88,13 +88,13 @@ export const query = `
 export const expected_result_query = {
   data: {
     getUser: {
-      id: '1',
-      username: 'user1',
+      id: "1",
+      username: "user1",
       posts: {
         items: [
           {
-            id: '1',
-            postname: 'post1',
+            id: "1",
+            postname: "post1",
           },
         ],
       },

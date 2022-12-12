@@ -10,153 +10,153 @@ import {
   processCloudFormationStack,
   CFN_PSEUDO_PARAMS,
   getDependencyResources,
-} from '../../../CFNParser/stack';
+} from "../../../CFNParser/stack";
 import {
   CloudFormationResources,
   CloudFormationOutputs,
   CloudFormationTemplate,
   CloudFormationResource,
   CloudFormationTemplateFetcher,
-} from '../../../CFNParser/stack/types';
+} from "../../../CFNParser/stack/types";
 
-import { getResourceProcessorFor } from '../../../CFNParser/resource-processors';
+import { getResourceProcessorFor } from "../../../CFNParser/resource-processors";
 
-jest.mock('../../../CFNParser/resource-processors');
+jest.mock("../../../CFNParser/resource-processors");
 
-describe('CloudFormation stack', () => {
-  describe('mergeParameters', () => {
-    it('should use the value from inputParameter when passed', () => {
+describe("CloudFormation stack", () => {
+  describe("mergeParameters", () => {
+    it("should use the value from inputParameter when passed", () => {
       expect(
         mergeParameters(
           {
             test: {
-              Default: 'default test value',
-              Type: 'String',
-              Description: 'test description',
+              Default: "default test value",
+              Type: "String",
+              Description: "test description",
             },
           },
           {
-            test: 'input from param',
-          },
-        ),
-      ).toEqual({ ...CFN_PSEUDO_PARAMS, test: 'input from param' });
+            test: "input from param",
+          }
+        )
+      ).toEqual({ ...CFN_PSEUDO_PARAMS, test: "input from param" });
     });
 
-    it('should return the default value when the inputParameter is missing the param', () => {
+    it("should return the default value when the inputParameter is missing the param", () => {
       expect(
         mergeParameters(
           {
             test: {
-              Default: 'default test value',
-              Type: 'String',
-              Description: 'test description 1',
+              Default: "default test value",
+              Type: "String",
+              Description: "test description 1",
             },
           },
-          {},
-        ),
-      ).toEqual({ ...CFN_PSEUDO_PARAMS, test: 'default test value' }); // ?
+          {}
+        )
+      ).toEqual({ ...CFN_PSEUDO_PARAMS, test: "default test value" }); // ?
     });
-    it('should throw an error when the input is missing default value', () => {
-      expect(
-        () => mergeParameters(
+    it("should throw an error when the input is missing default value", () => {
+      expect(() =>
+        mergeParameters(
           {
             test: {
-              Type: 'String',
-              Description: 'test description',
+              Type: "String",
+              Description: "test description",
             },
           },
-          {},
-        ),
-      ).toThrowError('missing default value');
+          {}
+        )
+      ).toThrowError("missing default value");
     });
   });
 
-  describe('processConditions', () => {
-    it('should process the condition', () => {
+  describe("processConditions", () => {
+    it("should process the condition", () => {
       expect(
         processConditions(
           {
-            CreateProdResources: { 'Fn::Equals': [{ Ref: 'EnvType' }, 'prod'] },
-            VerboseLogs: { 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'EnvType' }, 'prod'] }] },
+            CreateProdResources: { "Fn::Equals": [{ Ref: "EnvType" }, "prod"] },
+            VerboseLogs: { "Fn::Not": [{ "Fn::Equals": [{ Ref: "EnvType" }, "prod"] }] },
           },
-          { EnvType: 'prod' },
-        ),
+          { EnvType: "prod" }
+        )
       ).toEqual({ CreateProdResources: true, VerboseLogs: false });
     });
 
-    it('should use ref key when no value found', () => {
+    it("should use ref key when no value found", () => {
       expect(
         processConditions(
           {
-            CreateProdResources: { 'Fn::Equals': [{ Ref: 'EnvType' }, 'EnvType'] },
+            CreateProdResources: { "Fn::Equals": [{ Ref: "EnvType" }, "EnvType"] },
           },
-          {},
-        ),
+          {}
+        )
       ).toEqual({ CreateProdResources: true });
     });
   });
 
-  describe('sortResources', () => {
-    it('should sort resources on topological order', () => {
+  describe("sortResources", () => {
+    it("should sort resources on topological order", () => {
       const resources: CloudFormationResources = {
         resource1: {
           Properties: {},
-          DependsOn: ['resource2', 'resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource2", "resource3"],
+          Type: "DummyResource",
         },
         resource3: {
           Properties: {},
-          Type: 'DummyResource',
+          Type: "DummyResource",
         },
         resource2: {
           Properties: {},
-          DependsOn: ['resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource3"],
+          Type: "DummyResource",
         },
       };
-      expect(sortResources(resources, {})).toEqual(['resource3', 'resource2', 'resource1']);
+      expect(sortResources(resources, {})).toEqual(["resource3", "resource2", "resource1"]);
     });
 
-    it('should add Ref resource as dependency', () => {
+    it("should add Ref resource as dependency", () => {
       const resources: CloudFormationResources = {
         resource1: {
           Properties: {},
-          DependsOn: ['resource2', 'resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource2", "resource3"],
+          Type: "DummyResource",
         },
         resource3: {
           Properties: {
-            Prop1: { Ref: 'resource2' },
+            Prop1: { Ref: "resource2" },
           },
-          Type: 'DummyResource',
+          Type: "DummyResource",
         },
         resource2: {
           Properties: {},
-          Type: 'DummyResource',
+          Type: "DummyResource",
         },
       };
-      expect(sortResources(resources, {})).toEqual(['resource2', 'resource3', 'resource1']);
+      expect(sortResources(resources, {})).toEqual(["resource2", "resource3", "resource1"]);
     });
 
-    it('should add Fn::GetAtt resource as dependency', () => {
+    it("should add Fn::GetAtt resource as dependency", () => {
       const resources: CloudFormationResources = {
         resource1: {
           Properties: {},
-          DependsOn: ['resource2', 'resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource2", "resource3"],
+          Type: "DummyResource",
         },
         resource3: {
           Properties: {
-            Prop1: { 'Fn::GetAtt': ['resource2', 'prop1'] },
+            Prop1: { "Fn::GetAtt": ["resource2", "prop1"] },
           },
-          Type: 'DummyResource',
+          Type: "DummyResource",
         },
         resource2: {
           Properties: {},
-          Type: 'DummyResource',
+          Type: "DummyResource",
         },
       };
-      expect(sortResources(resources, {})).toEqual(['resource2', 'resource3', 'resource1']);
+      expect(sortResources(resources, {})).toEqual(["resource2", "resource3", "resource1"]);
     });
 
     // it('should should throw error when intrinsic dependency has missing resource', () => {
@@ -172,79 +172,81 @@ describe('CloudFormation stack', () => {
     //   expect(() => sortResources(resources, {})).toThrowError('Resource resource3 has missing intrinsic dependency resource resource10');
     // });
 
-    it('should throw error when resource depends on non-existent resource', () => {
+    it("should throw error when resource depends on non-existent resource", () => {
       const resources: CloudFormationResources = {
         resource1: {
           Properties: {},
-          DependsOn: ['resource2', 'resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource2", "resource3"],
+          Type: "DummyResource",
         },
         resource2: {
           Properties: {},
-          DependsOn: ['resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource3"],
+          Type: "DummyResource",
         },
       };
-      expect(() => sortResources(resources, {})).toThrowError('DependsOn a non-existent resource');
+      expect(() => sortResources(resources, {})).toThrowError("DependsOn a non-existent resource");
     });
 
-    it('should throw error when resource Depends on itself', () => {
+    it("should throw error when resource Depends on itself", () => {
       const resources: CloudFormationResources = {
         resource1: {
           Properties: {},
-          DependsOn: ['resource2', 'resource1'],
-          Type: 'DummyResource',
+          DependsOn: ["resource2", "resource1"],
+          Type: "DummyResource",
         },
         resource2: {
           Properties: {},
-          DependsOn: ['resource3'],
-          Type: 'DummyResource',
+          DependsOn: ["resource3"],
+          Type: "DummyResource",
         },
       };
-      expect(() => sortResources(resources, {})).toThrowError('Resource resource1 can not depend on itself');
+      expect(() => sortResources(resources, {})).toThrowError("Resource resource1 can not depend on itself");
     });
   });
-  describe('filterResourcesBasedOnConditions', () => {
+  describe("filterResourcesBasedOnConditions", () => {
     it("should remove resources that don't have condition set to true", () => {
       const filteredResources = filterResourcesBasedOnConditions(
         {
           resource1: {
             Properties: {},
-            Condition: 'condition1',
-            Type: 'resource1type',
+            Condition: "condition1",
+            Type: "resource1type",
           },
           resource2: {
             Properties: {},
-            Condition: 'condition2',
-            Type: 'resource1type',
+            Condition: "condition2",
+            Type: "resource1type",
           },
         },
-        { condition1: true, condition2: false },
+        { condition1: true, condition2: false }
       );
-      expect(Object.keys(filteredResources)).toContain('resource1');
-      expect(Object.keys(filteredResources)).not.toContain('resource2');
+      expect(Object.keys(filteredResources)).toContain("resource1");
+      expect(Object.keys(filteredResources)).not.toContain("resource2");
     });
 
-    it('should throw an error when condition is non-existent condition', () => {
-      expect(() => filterResourcesBasedOnConditions(
-        {
-          resource1: {
-            Properties: {},
-            Condition: 'non-existent-condition',
-            Type: 'resource1type',
+    it("should throw an error when condition is non-existent condition", () => {
+      expect(() =>
+        filterResourcesBasedOnConditions(
+          {
+            resource1: {
+              Properties: {},
+              Condition: "non-existent-condition",
+              Type: "resource1type",
+            },
           },
-        },
-        {},
-      )).toThrowError('not defined in Condition block');
+          {}
+        )
+      ).toThrowError("not defined in Condition block");
     });
   });
 
-  describe('processResources', () => {
+  describe("processResources", () => {
     const getResourceProcessorForMock = getResourceProcessorFor as jest.Mock;
     const cfnResourceFetcher: CloudFormationTemplateFetcher = {
       getCloudFormationStackTemplate: jest.fn(),
     };
-    const processedResource = { value: 'processed resource' };
+    const processedResource = { value: "processed resource" };
     const processResourceMock = jest.fn();
     beforeEach(() => {
       jest.resetAllMocks();
@@ -253,10 +255,10 @@ describe('CloudFormation stack', () => {
       processResourceMock.mockImplementation(() => ({ ...processedResource }));
     });
 
-    it('should process individual resources', () => {
+    it("should process individual resources", () => {
       const resources = {
         dummyResource: {
-          Type: 'StackTest::DummyResource',
+          Type: "StackTest::DummyResource",
           Properties: {},
         },
       };
@@ -264,7 +266,7 @@ describe('CloudFormation stack', () => {
         resources: {
           dummyResource: {
             result: processedResource,
-            Type: 'StackTest::DummyResource',
+            Type: "StackTest::DummyResource",
           },
         },
         stackExports: {},
@@ -272,27 +274,27 @@ describe('CloudFormation stack', () => {
       expect(getResourceProcessorForMock).toHaveBeenCalledTimes(1);
     });
 
-    it('should not process resources when condition is not met', () => {
+    it("should not process resources when condition is not met", () => {
       const resources = {
         dummyResource2: {
-          Type: 'StackTest::DummyResource',
+          Type: "StackTest::DummyResource",
           Properties: {},
-          Condition: 'alwaysFalse',
+          Condition: "alwaysFalse",
         },
       };
       expect(processResources({}, { alwaysFalse: false }, resources, {}, cfnResourceFetcher)).toEqual({ resources: {}, stackExports: {} });
       expect(getResourceProcessorForMock).not.toHaveBeenCalled();
     });
 
-    it('should topographically sort resources', () => {
+    it("should topographically sort resources", () => {
       const resources = {
         dummyResource1: {
-          Type: 'StackTest::DummyResource',
+          Type: "StackTest::DummyResource",
           Properties: {},
-          DependsOn: ['dummyResource2'],
+          DependsOn: ["dummyResource2"],
         },
         dummyResource2: {
-          Type: 'StackTest::DummyResourceType2',
+          Type: "StackTest::DummyResourceType2",
           Properties: {},
         },
       };
@@ -300,11 +302,11 @@ describe('CloudFormation stack', () => {
         resources: {
           dummyResource1: {
             result: processedResource,
-            Type: 'StackTest::DummyResource',
+            Type: "StackTest::DummyResource",
           },
           dummyResource2: {
             result: processedResource,
-            Type: 'StackTest::DummyResourceType2',
+            Type: "StackTest::DummyResourceType2",
           },
         },
         stackExports: {},
@@ -312,22 +314,22 @@ describe('CloudFormation stack', () => {
       expect(getResourceProcessorForMock).toHaveBeenCalledTimes(2);
 
       expect(getResourceProcessorForMock.mock.calls[0][0]).toEqual(resources.dummyResource2.Type);
-      expect(processResourceMock.mock.calls[0][0]).toEqual('dummyResource2');
+      expect(processResourceMock.mock.calls[0][0]).toEqual("dummyResource2");
       expect(processResourceMock.mock.calls[0][1]).toEqual(resources.dummyResource2);
 
       expect(getResourceProcessorForMock.mock.calls[1][0]).toEqual(resources.dummyResource1.Type);
-      expect(processResourceMock.mock.calls[1][0]).toEqual('dummyResource1');
+      expect(processResourceMock.mock.calls[1][0]).toEqual("dummyResource1");
       expect(processResourceMock.mock.calls[1][1]).toEqual(resources.dummyResource1);
     });
 
-    it('should update the cfnContext to include previously processed resources', () => {
+    it("should update the cfnContext to include previously processed resources", () => {
       const resources = {
         dummyResource1: {
-          Type: 'StackTest::DummyResource',
+          Type: "StackTest::DummyResource",
           Properties: {},
         },
         dummyResource2: {
-          Type: 'StackTest::DummyResourceType2',
+          Type: "StackTest::DummyResourceType2",
           Properties: {},
         },
       };
@@ -335,11 +337,11 @@ describe('CloudFormation stack', () => {
         resources: {
           dummyResource1: {
             result: processedResource,
-            Type: 'StackTest::DummyResource',
+            Type: "StackTest::DummyResource",
           },
           dummyResource2: {
             result: processedResource,
-            Type: 'StackTest::DummyResourceType2',
+            Type: "StackTest::DummyResourceType2",
           },
         },
         stackExports: {},
@@ -354,189 +356,189 @@ describe('CloudFormation stack', () => {
       });
     });
 
-    it('should support processing nested stack and collect exported value from nested stacks', () => {
+    it("should support processing nested stack and collect exported value from nested stacks", () => {
       const resources: CloudFormationResources = {
         nestedStack1: {
-          Type: 'AWS::CloudFormation::Stack',
+          Type: "AWS::CloudFormation::Stack",
           Properties: {
             Parameters: {
-              Foo: 'Foo Value',
+              Foo: "Foo Value",
             },
-            TemplateURL: 'https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/nested1.stack.cloudformation.json',
+            TemplateURL: "https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/nested1.stack.cloudformation.json",
           },
         },
         nestedStack2: {
-          Type: 'AWS::CloudFormation::Stack',
+          Type: "AWS::CloudFormation::Stack",
           Properties: {
             Parameters: {
-              Bar: 'Bar value',
+              Bar: "Bar value",
             },
-            TemplateURL: 'https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/nested2.stack.cloudformation.json',
+            TemplateURL: "https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/nested2.stack.cloudformation.json",
           },
         },
       };
 
       const transformerOutput = {
         stacks: {
-          'nested1.stack.cloudformation.json': {
+          "nested1.stack.cloudformation.json": {
             Parameters: {
               Foo: {
-                Type: 'String',
-                Default: 'Foo default value',
+                Type: "String",
+                Default: "Foo default value",
               },
               Bar: {
-                Type: 'Number',
+                Type: "Number",
                 Default: 10,
               },
             },
             Resources: {
               Nested1: {
-                Type: 'Foo:DummyResource',
+                Type: "Foo:DummyResource",
                 Properties: {},
               },
             },
             Outputs: {
               nested1StackOutput: {
                 Value: {
-                  Ref: 'Bar',
+                  Ref: "Bar",
                 },
                 Export: {
-                  Name: 'BarValueFromNestedStack1',
+                  Name: "BarValueFromNestedStack1",
                 },
               },
             },
           },
-          'nested2.stack.cloudformation.json': {
+          "nested2.stack.cloudformation.json": {
             Parameters: {
               Bar: {
-                Type: 'String',
-                Default: 'Foo default value',
+                Type: "String",
+                Default: "Foo default value",
               },
             },
             Resources: {
               Nested1: {
-                Type: 'Foo:DummyResource',
+                Type: "Foo:DummyResource",
                 Properties: {},
               },
             },
             Outputs: {
               nested2StackOutput: {
                 Value: {
-                  Ref: 'Bar',
+                  Ref: "Bar",
                 },
                 Export: {
-                  Name: 'BarValueFromNestedStack2',
+                  Name: "BarValueFromNestedStack2",
                 },
               },
             },
           },
         },
       };
-      cfnResourceFetcher.getCloudFormationStackTemplate = jest.fn().mockImplementation(templateName => {
-        const template = templateName.replace('https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/', '');
+      cfnResourceFetcher.getCloudFormationStackTemplate = jest.fn().mockImplementation((templateName) => {
+        const template = templateName.replace("https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/", "");
         return transformerOutput.stacks[template] as CloudFormationTemplate;
       });
 
       const processedResources = processResources({}, {}, resources, {}, cfnResourceFetcher);
       expect(processedResources.stackExports).toEqual({
         BarValueFromNestedStack1: 10,
-        BarValueFromNestedStack2: 'Bar value',
+        BarValueFromNestedStack2: "Bar value",
       });
     });
   });
 
-  describe('processOutputs', () => {
+  describe("processOutputs", () => {
     const outputSection: CloudFormationOutputs = {
       GraphQLAPIIdOutput: {
-        Description: 'Your GraphQL API ID with export.',
+        Description: "Your GraphQL API ID with export.",
         Value: {
-          'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
+          "Fn::GetAtt": ["GraphQLAPI", "ApiId"],
         },
       },
     };
     const resources = {
       GraphQLAPI: {
         result: {
-          cfnExposedAttributes: { ApiId: 'ApiId' },
-          ApiId: 'fakeApiId',
+          cfnExposedAttributes: { ApiId: "ApiId" },
+          ApiId: "fakeApiId",
         },
       },
     };
-    it('should process outputs', () => {
+    it("should process outputs", () => {
       expect(processOutputs(outputSection, {}, {}, resources, {})).toEqual({
-        GraphQLAPIIdOutput: 'fakeApiId',
+        GraphQLAPIIdOutput: "fakeApiId",
       });
     });
   });
 
-  describe('processExports', () => {
+  describe("processExports", () => {
     const outputSection: CloudFormationOutputs = {
       GraphQLAPIIdOutput: {
-        Description: 'Your GraphQL API ID with export.',
+        Description: "Your GraphQL API ID with export.",
         Value: {
-          'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
+          "Fn::GetAtt": ["GraphQLAPI", "ApiId"],
         },
         Export: {
           Name: {
-            'Fn::Join': [
-              ':',
+            "Fn::Join": [
+              ":",
               [
                 {
-                  Ref: 'AWS::StackName',
+                  Ref: "AWS::StackName",
                 },
-                'GraphQLApiId',
+                "GraphQLApiId",
               ],
             ],
           },
         },
       },
       GraphQLAPIIdOutputNoExport: {
-        Description: 'Your GraphQL API ID with export.',
+        Description: "Your GraphQL API ID with export.",
         Value: {
-          'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
+          "Fn::GetAtt": ["GraphQLAPI", "ApiId"],
         },
       },
     };
     const parameters = {
-      'AWS::StackName': 'myStack',
+      "AWS::StackName": "myStack",
     };
     const resources = {
       GraphQLAPI: {
         result: {
-          cfnExposedAttributes: { ApiId: 'ApiId' },
-          ApiId: 'fakeApiId',
+          cfnExposedAttributes: { ApiId: "ApiId" },
+          ApiId: "fakeApiId",
         },
       },
     };
-    it('should generate exports when output has exports', () => {
+    it("should generate exports when output has exports", () => {
       expect(processExports(outputSection, parameters, {}, resources, {})).toEqual({
-        'myStack:GraphQLApiId': 'fakeApiId',
+        "myStack:GraphQLApiId": "fakeApiId",
       });
     });
   });
 
-  describe('nestedStackHandler', () => {
+  describe("nestedStackHandler", () => {
     const nestedTemplate: CloudFormationTemplate = {
       Parameters: {
         Foo: {
-          Type: 'String',
-          Default: 'Foo value',
+          Type: "String",
+          Default: "Foo value",
         },
       },
       Resources: {
         fooResource: {
-          Type: 'Dummy Resource',
+          Type: "Dummy Resource",
           Properties: {},
         },
       },
       Outputs: {
         NestedStackExport: {
-          Description: 'Export test',
+          Description: "Export test",
           Value: {
-            Ref: 'Foo',
+            Ref: "Foo",
           },
           Export: {
-            Name: 'NestedStack:FooValue',
+            Name: "NestedStack:FooValue",
           },
         },
       },
@@ -545,7 +547,7 @@ describe('CloudFormation stack', () => {
     let cfnResourceFetcher: CloudFormationTemplateFetcher;
 
     const getResourceProcessorForMock = getResourceProcessorFor as jest.Mock;
-    const processedResource = { value: 'processed resource' };
+    const processedResource = { value: "processed resource" };
     const processResourceMock = jest.fn();
     beforeEach(() => {
       jest.resetAllMocks();
@@ -557,62 +559,80 @@ describe('CloudFormation stack', () => {
       };
     });
 
-    it('should support nested stack', () => {
+    it("should support nested stack", () => {
       const resource: CloudFormationResource = {
-        Type: 'AWS::CloudFormation::Stack',
+        Type: "AWS::CloudFormation::Stack",
         Properties: {
           Parameters: {
-            Foo: 'FOO OVERRIDE',
+            Foo: "FOO OVERRIDE",
           },
-          TemplateURL: 'https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/stack1',
+          TemplateURL: "https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/stack1",
         },
       };
       const processedStack = nestedStackHandler(
-        'nestedStack',
+        "nestedStack",
         resource,
         {
-          conditions: {}, exports: {}, params: {}, resources: {},
+          conditions: {},
+          exports: {},
+          params: {},
+          resources: {},
         },
-        cfnResourceFetcher,
+        cfnResourceFetcher
       );
-      expect(processedStack.stackExports).toEqual({ 'NestedStack:FooValue': 'FOO OVERRIDE' });
+      expect(processedStack.stackExports).toEqual({ "NestedStack:FooValue": "FOO OVERRIDE" });
       expect(cfnResourceFetcher.getCloudFormationStackTemplate).toHaveBeenCalledWith(resource.Properties.TemplateURL);
     });
 
-    it('should throw error if the exported value already exists', () => {
+    it("should throw error if the exported value already exists", () => {
       const resource: CloudFormationResource = {
-        Type: 'AWS::CloudFormation::Stack',
+        Type: "AWS::CloudFormation::Stack",
         Properties: {
           Parameters: {
-            Foo: 'FOO OVERRIDE',
+            Foo: "FOO OVERRIDE",
           },
-          TemplateURL: 'https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/stack1',
+          TemplateURL: "https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/stack1",
         },
       };
-      expect(() => nestedStackHandler(
-        'nestedStack',
-        resource,
-        {
-          conditions: {}, exports: { 'NestedStack:FooValue': 'Existing value' }, params: {}, resources: {},
-        },
-        cfnResourceFetcher,
-      )).toThrowError('is already exported in a different stack');
+      expect(() =>
+        nestedStackHandler(
+          "nestedStack",
+          resource,
+          {
+            conditions: {},
+            exports: { "NestedStack:FooValue": "Existing value" },
+            params: {},
+            resources: {},
+          },
+          cfnResourceFetcher
+        )
+      ).toThrowError("is already exported in a different stack");
     });
 
-    it('should throw error if the nested stack resource does not have TemplateURL', () => {
+    it("should throw error if the nested stack resource does not have TemplateURL", () => {
       const resource: CloudFormationResource = {
-        Type: 'AWS::CloudFormation::Stack',
+        Type: "AWS::CloudFormation::Stack",
         Properties: {},
       };
-      expect(() => nestedStackHandler('nestedStack', resource, {
-        conditions: {}, exports: {}, params: {}, resources: {},
-      }, cfnResourceFetcher)).toThrowError('Stack is missing required property TemplateURL');
+      expect(() =>
+        nestedStackHandler(
+          "nestedStack",
+          resource,
+          {
+            conditions: {},
+            exports: {},
+            params: {},
+            resources: {},
+          },
+          cfnResourceFetcher
+        )
+      ).toThrowError("Stack is missing required property TemplateURL");
     });
   });
 
-  describe('processCloudFormationStack', () => {
+  describe("processCloudFormationStack", () => {
     const getResourceProcessorForMock = getResourceProcessorFor as jest.Mock;
-    const processedResource = { value: 'processed resource' };
+    const processedResource = { value: "processed resource" };
     const processResourceMock = jest.fn();
     beforeEach(() => {
       jest.resetAllMocks();
@@ -621,81 +641,81 @@ describe('CloudFormation stack', () => {
       processResourceMock.mockImplementation(() => ({ ...processedResource }));
     });
 
-    it('should take a template and generate resources and exports', () => {
+    it("should take a template and generate resources and exports", () => {
       const template: CloudFormationTemplate = {
         Parameters: {
           Foo: {
-            Type: 'String',
-            Default: 'Foo Default value',
+            Type: "String",
+            Default: "Foo Default value",
           },
         },
         Conditions: {
           AlwaysFalse: {
-            'Fn::Equals': ['false', 'true'],
+            "Fn::Equals": ["false", "true"],
           },
         },
         Resources: {
           DummyResource: {
-            Type: 'Resource::Dummy',
+            Type: "Resource::Dummy",
             Properties: {},
           },
           ShouldNotExistInProcessedResource: {
-            Type: 'Resource::Dummy',
+            Type: "Resource::Dummy",
             Properties: {},
-            Condition: 'AlwaysFalse',
+            Condition: "AlwaysFalse",
           },
         },
         Outputs: {
           Output1: {
-            Value: { Ref: 'Foo' },
-            Description: 'Some description',
+            Value: { Ref: "Foo" },
+            Description: "Some description",
             Export: {
-              Name: 'ExportedValue',
+              Name: "ExportedValue",
             },
           },
         },
       };
       const processedTemplate = processCloudFormationStack(template, {}, {}, { getCloudFormationStackTemplate: jest.fn() });
       expect(processedTemplate.resources).toBeDefined();
-      expect(processedTemplate.resources.DummyResource).toEqual({ result: processedResource, Type: 'Resource::Dummy' });
+      expect(processedTemplate.resources.DummyResource).toEqual({ result: processedResource, Type: "Resource::Dummy" });
       expect(processedTemplate.resources.ShouldNotExistInProcessedResource).not.toBeDefined();
       expect(processedTemplate.stackExports).toBeDefined();
-      expect(processedTemplate.stackExports.ExportedValue).toEqual('Foo Default value');
+      expect(processedTemplate.stackExports.ExportedValue).toEqual("Foo Default value");
     });
   });
 
-  describe('getDependencyResources', () => {
-    it('should get Ref name as a dependency', () => {
+  describe("getDependencyResources", () => {
+    it("should get Ref name as a dependency", () => {
       const propValue = {
-        Ref: 'Foo',
+        Ref: "Foo",
       };
-      expect(getDependencyResources(propValue, {})).toEqual(['Foo']);
+      expect(getDependencyResources(propValue, {})).toEqual(["Foo"]);
     });
 
-    it('should not include Ref if the Ref name is included in the Parameters', () => {
+    it("should not include Ref if the Ref name is included in the Parameters", () => {
       const propValue = {
-        Ref: 'Foo',
+        Ref: "Foo",
       };
-      expect(getDependencyResources(propValue, { Foo: 'FooValue' })).toEqual([]);
+      expect(getDependencyResources(propValue, { Foo: "FooValue" })).toEqual([]);
     });
-    it('should get Fn::GetAtt resource name as a dependency', () => {
+    it("should get Fn::GetAtt resource name as a dependency", () => {
       const propValue = {
-        'Fn::GetAtt': ['FooBar', 'AttName'],
+        "Fn::GetAtt": ["FooBar", "AttName"],
       };
-      expect(getDependencyResources(propValue, {})).toEqual(['FooBar']);
+      expect(getDependencyResources(propValue, {})).toEqual(["FooBar"]);
     });
-    it('should support getting dependency from nested props', () => {
+    it("should support getting dependency from nested props", () => {
       const propValue = {
         Functions: [
           {
-            'Fn::GetAtt': ['Fn1', 'FunctionId'],
+            "Fn::GetAtt": ["Fn1", "FunctionId"],
           },
           {
-            'Fn::GetAtt': ['Fn2', 'FunctionId'],
+            "Fn::GetAtt": ["Fn2", "FunctionId"],
           },
         ],
       };
-      expect(getDependencyResources(propValue, {})).toEqual(['Fn1', 'Fn2']);
+      expect(getDependencyResources(propValue, {})).toEqual(["Fn1", "Fn2"]);
     });
   });
 });

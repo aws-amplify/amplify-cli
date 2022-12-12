@@ -1,15 +1,15 @@
-import { $TSObject, getPackageManager, JSONUtilities } from 'amplify-cli-core';
-import { BuildRequest, BuildResult, BuildType } from 'amplify-function-plugin-interface';
-import execa from 'execa';
-import * as fs from 'fs-extra';
-import glob from 'glob';
-import * as path from 'path';
+import { $TSObject, getPackageManager, JSONUtilities } from "amplify-cli-core";
+import { BuildRequest, BuildResult, BuildType } from "amplify-function-plugin-interface";
+import execa from "execa";
+import * as fs from "fs-extra";
+import glob from "glob";
+import * as path from "path";
 
 /**
  * copied from the former build-resources.js file in amplify-cli with changes for new interface
  */
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
-  const resourceDir = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
+  const resourceDir = request.service ? request.srcRoot : path.join(request.srcRoot, "src");
 
   if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp, request.buildType, request.lastBuildType)) {
     installDependencies(resourceDir, request.buildType);
@@ -29,7 +29,7 @@ const runBuildScriptHook = (resourceName: string, projectRoot: string): void => 
 };
 
 const scriptExists = (projectRoot: string, scriptName: string): boolean => {
-  const packageJsonPath = path.normalize(path.join(projectRoot, 'package.json'));
+  const packageJsonPath = path.normalize(path.join(projectRoot, "package.json"));
   const rootPackageJsonContents = JSONUtilities.readJson<$TSObject>(packageJsonPath, { throwIfNotExist: false });
 
   return !!rootPackageJsonContents?.scripts?.[scriptName];
@@ -48,19 +48,19 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
     return;
   }
 
-  const useYarn = packageManager.packageManager === 'yarn';
+  const useYarn = packageManager.packageManager === "yarn";
   const args = toPackageManagerArgs(useYarn, buildType, scriptName);
   try {
     execa.sync(packageManager.executable, args, {
       cwd,
-      stdio: 'pipe',
-      encoding: 'utf-8',
+      stdio: "pipe",
+      encoding: "utf-8",
     });
   } catch (error) {
-    if (error.code === 'ENOENT') {
+    if (error.code === "ENOENT") {
       throw new Error(`Packaging lambda function failed. Could not find ${packageManager} executable in the PATH.`);
-    } else if (error.stdout?.includes('YN0050: The --production option is deprecated')) {
-      throw new Error('Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.');
+    } else if (error.stdout?.includes("YN0050: The --production option is deprecated")) {
+      throw new Error("Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.");
     } else {
       throw new Error(`Packaging lambda function failed with the error \n${error.message}`);
     }
@@ -69,13 +69,13 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
 
 const toPackageManagerArgs = (useYarn: boolean, buildType?: BuildType, scriptName?: string): string[] => {
   if (scriptName) {
-    return useYarn ? [scriptName] : ['run-script', scriptName];
+    return useYarn ? [scriptName] : ["run-script", scriptName];
   }
 
-  const args = useYarn ? ['--no-bin-links'] : ['install', '--no-bin-links'];
+  const args = useYarn ? ["--no-bin-links"] : ["install", "--no-bin-links"];
 
   if (buildType === BuildType.PROD) {
-    args.push('--production');
+    args.push("--production");
   }
 
   return args;
@@ -91,8 +91,8 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, buildType: 
   }
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/**`)
-    .filter(p => !p.includes('dist'))
-    .filter(p => !p.includes('node_modules'))
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .filter((p) => !p.includes("dist"))
+    .filter((p) => !p.includes("node_modules"))
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
   return !!fileUpdatedAfterLastBuild;
 };

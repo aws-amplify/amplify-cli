@@ -5,10 +5,10 @@ import {
   DeploymentMachineOp,
   StateMachineHelperFunctions,
   StateMachineRollbackHelperFunctions,
-} from '../../iterative-deployment/state-machine';
-import { interpret } from 'xstate';
+} from "../../iterative-deployment/state-machine";
+import { interpret } from "xstate";
 
-describe('deployment state machine', () => {
+describe("deployment state machine", () => {
   const fns: StateMachineHelperFunctions = {
     deployFn: jest.fn().mockResolvedValue(undefined),
     deploymentWaitFn: jest.fn().mockResolvedValue(undefined),
@@ -21,56 +21,56 @@ describe('deployment state machine', () => {
     }),
   };
 
-  const baseDeploymentStep: Omit<DeploymentMachineOp, 'stackTemplateUrl'> = {
+  const baseDeploymentStep: Omit<DeploymentMachineOp, "stackTemplateUrl"> = {
     parameters: {},
-    stackName: 'amplify-multideploytest-dev-162313-apimultideploytest-1E3B7HVOV09VD',
-    stackTemplatePath: 'stack1/cfn.json',
-    tableNames: ['table1'],
-    region: 'us-east-2',
+    stackName: "amplify-multideploytest-dev-162313-apimultideploytest-1E3B7HVOV09VD",
+    stackTemplatePath: "stack1/cfn.json",
+    tableNames: ["table1"],
+    region: "us-east-2",
     capabilities: [],
   };
   const initialContext: DeployMachineContext = {
     currentIndex: -1,
-    region: 'us-east-2',
-    deploymentBucket: 'https://s3.amazonaws.com/amplify-multideploytest-dev-162313-deployment',
+    region: "us-east-2",
+    deploymentBucket: "https://s3.amazonaws.com/amplify-multideploytest-dev-162313-deployment",
     stacks: [
       {
         deployment: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'step1.json',
-          tableNames: ['table1'],
+          stackTemplateUrl: "step1.json",
+          tableNames: ["table1"],
         },
         rollback: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'rollback1.json',
-          parameters: { rollback: 'true' },
-          tableNames: ['table1'],
+          stackTemplateUrl: "rollback1.json",
+          parameters: { rollback: "true" },
+          tableNames: ["table1"],
         },
       },
       {
         deployment: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'step2.json',
-          tableNames: ['table1', 'table2'],
+          stackTemplateUrl: "step2.json",
+          tableNames: ["table1", "table2"],
         },
         rollback: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'rollback2.json',
-          parameters: { rollback: 'true' },
-          tableNames: ['table1', 'table2'],
+          stackTemplateUrl: "rollback2.json",
+          parameters: { rollback: "true" },
+          tableNames: ["table1", "table2"],
         },
       },
       {
         deployment: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'step3.json',
-          tableNames: ['table1', 'table3'],
+          stackTemplateUrl: "step3.json",
+          tableNames: ["table1", "table3"],
         },
         rollback: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'rollback3.json',
-          parameters: { rollback: 'true' },
-          tableNames: ['table1', 'table3'],
+          stackTemplateUrl: "rollback3.json",
+          parameters: { rollback: "true" },
+          tableNames: ["table1", "table3"],
         },
       },
     ],
@@ -85,11 +85,11 @@ describe('deployment state machine', () => {
     (fns.tableReadyWaitFn as jest.Mock).mockResolvedValue(undefined);
   });
 
-  it('should call deployment function multiple times when there are multiple stacks to be deployed', done => {
+  it("should call deployment function multiple times when there are multiple stacks to be deployed", (done) => {
     const machine = createDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
-        if (state.value === 'deployed') {
+      .onTransition((state) => {
+        if (state.value === "deployed") {
           expect(fns.deployFn).toHaveBeenCalledTimes(3);
           expect(fns.deploymentWaitFn).toHaveBeenCalledTimes(3);
           expect(fns.tableReadyWaitFn).toHaveBeenCalledTimes(3);
@@ -119,12 +119,12 @@ describe('deployment state machine', () => {
         }
       })
       .start()
-      .send('DEPLOY');
+      .send("DEPLOY");
   });
 
-  it('should rollback when one of the deployment fails in reverse order of deployment', done => {
+  it("should rollback when one of the deployment fails in reverse order of deployment", (done) => {
     //  mock deployment fn to fail for second deployment
-    (fns.deployFn as jest.Mock).mockImplementation(stack => {
+    (fns.deployFn as jest.Mock).mockImplementation((stack) => {
       if (stack.stackTemplateUrl === initialContext.stacks[2].deployment.stackTemplateUrl) {
         return Promise.reject();
       }
@@ -141,8 +141,8 @@ describe('deployment state machine', () => {
 
     const machine = createDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
-        if (state.value === 'rolledBack') {
+      .onTransition((state) => {
+        if (state.value === "rolledBack") {
           const rollbackMock = fns.rollbackFn as jest.Mock;
           const deployMock = fns.deployFn as jest.Mock;
           const deployWaitMock = fns.deploymentWaitFn as jest.Mock;
@@ -184,12 +184,12 @@ describe('deployment state machine', () => {
         }
       })
       .start()
-      .send('DEPLOY');
+      .send("DEPLOY");
   });
 
-  it('should go to failed state when rollback fails', done => {
+  it("should go to failed state when rollback fails", (done) => {
     const deployFn = fns.deployFn as jest.Mock;
-    deployFn.mockImplementation(stack => {
+    deployFn.mockImplementation((stack) => {
       if (stack.stackTemplateUrl === initialContext.stacks[2].deployment.stackTemplateUrl) {
         return Promise.reject();
       }
@@ -200,19 +200,19 @@ describe('deployment state machine', () => {
 
     const machine = createDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
-        if (state.value === 'failed') {
+      .onTransition((state) => {
+        if (state.value === "failed") {
           expect(deployFn).toHaveBeenCalledTimes(3);
           expect(rollBackFn).toHaveBeenCalledTimes(1);
           done();
         }
       })
       .start()
-      .send('DEPLOY');
+      .send("DEPLOY");
   });
 });
 
-describe('rollback state machine', () => {
+describe("rollback state machine", () => {
   const fns: StateMachineRollbackHelperFunctions = {
     preRollbackTableCheck: jest.fn().mockResolvedValue(undefined),
     rollbackFn: jest.fn().mockResolvedValue(undefined),
@@ -224,46 +224,46 @@ describe('rollback state machine', () => {
     }),
   };
 
-  const baseDeploymentStep: Omit<DeploymentMachineOp, 'stackTemplateUrl'> = {
+  const baseDeploymentStep: Omit<DeploymentMachineOp, "stackTemplateUrl"> = {
     parameters: {},
-    stackName: 'amplify-multideploytest-dev-162313-apimultideploytest-1E3B7HVOV09VD',
-    stackTemplatePath: 'stack1/cfn.json',
-    tableNames: ['table1'],
-    region: 'us-east-2',
+    stackName: "amplify-multideploytest-dev-162313-apimultideploytest-1E3B7HVOV09VD",
+    stackTemplatePath: "stack1/cfn.json",
+    tableNames: ["table1"],
+    region: "us-east-2",
     capabilities: [],
   };
 
   const initialContext: DeployMachineContext = {
     previousDeploymentIndex: 2,
     currentIndex: 3,
-    region: 'us-east-2',
-    deploymentBucket: 'https://s3.amazonaws.com/amplify-multideploytest-dev-162313-deployment',
+    region: "us-east-2",
+    deploymentBucket: "https://s3.amazonaws.com/amplify-multideploytest-dev-162313-deployment",
     stacks: [
       {
         deployment: null,
         rollback: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'rollback1.json',
-          parameters: { rollback: 'true' },
-          tableNames: ['table1'],
+          stackTemplateUrl: "rollback1.json",
+          parameters: { rollback: "true" },
+          tableNames: ["table1"],
         },
       },
       {
         deployment: null,
         rollback: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'rollback2.json',
-          parameters: { rollback: 'true' },
-          tableNames: ['table1', 'table2'],
+          stackTemplateUrl: "rollback2.json",
+          parameters: { rollback: "true" },
+          tableNames: ["table1", "table2"],
         },
       },
       {
         deployment: null,
         rollback: {
           ...baseDeploymentStep,
-          stackTemplateUrl: 'rollback3.json',
-          parameters: { rollback: 'true' },
-          tableNames: ['table1', 'table3'],
+          stackTemplateUrl: "rollback3.json",
+          parameters: { rollback: "true" },
+          tableNames: ["table1", "table3"],
         },
       },
     ],
@@ -276,11 +276,11 @@ describe('rollback state machine', () => {
     (fns.tableReadyWaitFn as jest.Mock).mockResolvedValue(undefined);
   });
 
-  it('should call deployment function multiple times when there are multiple stacks to be deployed', done => {
+  it("should call deployment function multiple times when there are multiple stacks to be deployed", (done) => {
     const machine = createRollbackDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
-        if (state.value === 'rolledBack') {
+      .onTransition((state) => {
+        if (state.value === "rolledBack") {
           // pre deployment functions only called once
           expect(fns.preRollbackTableCheck).toHaveBeenCalledTimes(1);
           expect(fns.rollbackWaitFn).toHaveBeenCalledTimes(4);
@@ -312,12 +312,12 @@ describe('rollback state machine', () => {
         }
       })
       .start()
-      .send('ROLLBACK');
+      .send("ROLLBACK");
   });
 
-  it('should go to failed state when rollback deployment fails', done => {
+  it("should go to failed state when rollback deployment fails", (done) => {
     const rollbackFn = fns.rollbackFn as jest.Mock;
-    rollbackFn.mockImplementation(stack => {
+    rollbackFn.mockImplementation((stack) => {
       if (stack.stackTemplateUrl === initialContext.stacks[1].rollback.stackTemplateUrl) {
         return Promise.reject();
       }
@@ -326,8 +326,8 @@ describe('rollback state machine', () => {
 
     const machine = createRollbackDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
-        if (state.value === 'failed') {
+      .onTransition((state) => {
+        if (state.value === "failed") {
           // pre deployment functions only called once
           expect(fns.preRollbackTableCheck).toHaveBeenCalledTimes(1);
           expect(fns.tableReadyWaitFn).toHaveBeenCalledTimes(1);
@@ -336,6 +336,6 @@ describe('rollback state machine', () => {
         }
       })
       .start()
-      .send('ROLLBACK');
+      .send("ROLLBACK");
   });
 });

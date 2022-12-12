@@ -1,10 +1,10 @@
-import { inspect } from 'util';
+import { inspect } from "util";
 
 const log = console;
 
 export function filterSubscriptions(payload: object | null, variables: object) {
   if (payload == null) {
-    log.warn('Subscription payload is null; Publishing will be skipped');
+    log.warn("Subscription payload is null; Publishing will be skipped");
     return false;
   }
 
@@ -18,10 +18,10 @@ export function filterSubscriptions(payload: object | null, variables: object) {
   const variableResult = variableEntries.every(([variableKey, variableValue]) => payload[variableKey] === variableValue);
 
   if (!variableResult) {
-    log.warn('Subscription payload did not match variables');
-    log.warn('Payload:');
+    log.warn("Subscription payload did not match variables");
+    log.warn("Payload:");
     log.warn(inspect(payload));
-    log.warn('Variables:');
+    log.warn("Variables:");
     log.warn(inspect(variables));
     return false;
   }

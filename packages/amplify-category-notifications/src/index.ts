@@ -1,17 +1,17 @@
-import path from 'path';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as pinpointHelper from './pinpoint-helper';
-import * as multiEnvManager from './multi-env-manager';
-import { migrationCheck } from './migrations';
+import path from "path";
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as pinpointHelper from "./pinpoint-helper";
+import * as multiEnvManager from "./multi-env-manager";
+import { migrationCheck } from "./migrations";
 
 export {
   notificationsPluginAPIGetResource,
   notificationsPluginAPIRemoveApp,
   notificationsAPIGetAvailableChannelNames,
-} from './plugin-provider-api-notifications';
+} from "./plugin-provider-api-notifications";
 
-const category = 'notifications';
+const category = "notifications";
 
 /**
  * Open the AWS console in the browser for the given service.
@@ -50,8 +50,9 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   context.exeInfo = context.amplify.getProjectDetails();
   await migrationCheck(context);
 
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  commandPath = context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  commandPath =
+    context.input.command === "help" ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
   const commandModule = await import(commandPath);
   await commandModule.run(context);
 };
@@ -59,7 +60,7 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
 /**
  * Placeholder to handle notifications from other parts of the Amplify CLI.
  */
-export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny) : void => {
+export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny): void => {
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };

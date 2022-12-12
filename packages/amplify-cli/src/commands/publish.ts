@@ -1,25 +1,25 @@
-import { printer } from 'amplify-prompts';
-import { run as push } from './push';
+import { printer } from "amplify-prompts";
+import { run as push } from "./push";
 
 /**
  * Entry point to amplify publish
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const run = async context => {
+export const run = async (context) => {
   context.amplify.constructExeInfo(context);
   const { amplifyMeta } = context.exeInfo;
   const isHostingAdded = amplifyMeta.hosting && Object.keys(amplifyMeta.hosting).length > 0;
 
   if (!isHostingAdded) {
     printer.blankLine();
-    printer.error('Add hosting to your project before publishing your project');
-    printer.info('Command: amplify hosting add');
+    printer.error("Add hosting to your project before publishing your project");
+    printer.info("Command: amplify hosting add");
     printer.blankLine();
     return;
   }
 
   let isHostingAlreadyPushed = false;
-  Object.keys(amplifyMeta.hosting).every(hostingService => {
+  Object.keys(amplifyMeta.hosting).every((hostingService) => {
     let continueToCheckNext = true;
     if (amplifyMeta.hosting[hostingService].lastPushTimeStamp) {
       const lastPushTime = new Date(amplifyMeta.hosting[hostingService].lastPushTimeStamp).getTime();
@@ -37,8 +37,8 @@ export const run = async context => {
 
   let continueToPublish = didPush || !!context?.exeInfo?.inputParams?.yes;
   if (!continueToPublish && isHostingAlreadyPushed) {
-    printer.info('');
-    continueToPublish = await context.amplify.confirmPrompt('Do you still want to publish the frontend?');
+    printer.info("");
+    continueToPublish = await context.amplify.confirmPrompt("Do you still want to publish the frontend?");
   }
 
   if (continueToPublish) {

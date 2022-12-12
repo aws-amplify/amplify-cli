@@ -1,13 +1,13 @@
-import { FunctionTemplateContributorFactory, FunctionTemplateParameters } from 'amplify-function-plugin-interface';
-import fs from 'fs-extra';
+import { FunctionTemplateContributorFactory, FunctionTemplateParameters } from "amplify-function-plugin-interface";
+import fs from "fs-extra";
 
 const pathToTemplateFiles = `${__dirname}/../resources/hello-world`;
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       const selection = request.selection;
-      if (selection !== 'hello-world') {
+      if (selection !== "hello-world") {
         throw new Error(`Unknown python template selection ${selection}`);
       }
       return helloWorld();
@@ -22,11 +22,11 @@ export function helloWorld(): Promise<FunctionTemplateParameters> {
       sourceRoot: pathToTemplateFiles,
       sourceFiles: files,
       destMap: {
-        'index.py': 'src/index.py',
-        'event.json': 'src/event.json',
-        'setup.py': 'src/setup.py',
+        "index.py": "src/index.py",
+        "event.json": "src/event.json",
+        "setup.py": "src/setup.py",
       },
-      defaultEditorFile: 'src/index.py',
+      defaultEditorFile: "src/index.py",
     },
   });
 }

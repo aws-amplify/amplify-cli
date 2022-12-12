@@ -1,22 +1,15 @@
-import {
-  $TSContext,
-  AmplifyError,
-  AmplifyFault,
-  FeatureFlags,
-  pathManager,
-  stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { postPullCodegen } from './amplify-service-helper';
-import { queryProvider } from './attach-backend-steps/a10-queryProvider';
-import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
-import { initFrontend } from './attach-backend-steps/a30-initFrontend';
-import { generateFiles } from './attach-backend-steps/a40-generateFiles';
-import { initializeEnv } from './initialize-env';
+import { $TSContext, AmplifyError, AmplifyFault, FeatureFlags, pathManager, stateManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { postPullCodegen } from "./amplify-service-helper";
+import { queryProvider } from "./attach-backend-steps/a10-queryProvider";
+import { analyzeProject } from "./attach-backend-steps/a20-analyzeProject";
+import { initFrontend } from "./attach-backend-steps/a30-initFrontend";
+import { generateFiles } from "./attach-backend-steps/a40-generateFiles";
+import { initializeEnv } from "./initialize-env";
 
-const backupAmplifyDirName = 'amplify-backup';
+const backupAmplifyDirName = "amplify-backup";
 
 /**
  * Attach backend to project
@@ -44,9 +37,13 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
     removeAmplifyFolderStructure();
     restoreOriginalAmplifyFolder();
 
-    throw new AmplifyFault('PullBackendFault', {
-      message: 'Failed to pull the backend.',
-    }, e);
+    throw new AmplifyFault(
+      "PullBackendFault",
+      {
+        message: "Failed to pull the backend.",
+      },
+      e
+    );
   }
 };
 
@@ -72,7 +69,7 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
   if (!inputParams.yes) {
     const shouldKeepAmplifyDir = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
       ? !context.exeInfo.existingLocalEnvInfo.noUpdateBackend
-      : await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
+      : await context.amplify.confirmPrompt("Do you plan on modifying this backend?", true);
 
     if (shouldKeepAmplifyDir) {
       if (stateManager.currentMetaFileExists()) {
@@ -81,25 +78,25 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
 
       const { envName } = context.exeInfo.localEnvInfo;
 
-      printer.info('');
+      printer.info("");
       printer.success(`Successfully pulled backend environment ${envName} from the cloud.`);
-      printer.info('Run \'amplify pull\' to sync future upstream changes.');
-      printer.info('');
+      printer.info("Run 'amplify pull' to sync future upstream changes.");
+      printer.info("");
     } else {
       stateManager.setLocalEnvInfo(process.cwd(), { ...context.exeInfo.localEnvInfo, noUpdateBackend: true });
       removeAmplifyFolderStructure(true);
 
-      printer.info('');
-      printer.success('Added backend environment config object to your project.');
-      printer.info('Run \'amplify pull\' to sync future upstream changes.');
-      printer.info('');
+      printer.info("");
+      printer.success("Added backend environment config object to your project.");
+      printer.info("Run 'amplify pull' to sync future upstream changes.");
+      printer.info("");
     }
   } else if (stateManager.currentMetaFileExists()) {
     await initializeEnv(context, stateManager.getCurrentMeta());
   }
   // move Hooks folder from backup to original amplify folder
   const hooksDirPath = pathManager.getHooksDirPath(projectPath);
-  const hooksBackupDirPath = path.join(backupAmplifyDirPath, 'hooks');
+  const hooksBackupDirPath = path.join(backupAmplifyDirPath, "hooks");
   // hooks folder shouldnt be present , if it is then we overrite with the given Customer folder from amplify backup
   if (fs.existsSync(hooksBackupDirPath)) {
     fs.moveSync(hooksBackupDirPath, hooksDirPath, { overwrite: true });
@@ -115,22 +112,30 @@ const backupAmplifyFolder = (): void => {
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
     if (fs.existsSync(backupAmplifyDirPath)) {
-      throw new AmplifyError('DirectoryAlreadyExistsError', {
+      throw new AmplifyError("DirectoryAlreadyExistsError", {
         message: `Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`,
       });
     }
     try {
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
-      if (e.code === 'EPERM') {
-        throw new AmplifyError('DirectoryError', {
-          message: `Could not attach the backend to the project.`,
-          resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
-        }, e);
+      if (e.code === "EPERM") {
+        throw new AmplifyError(
+          "DirectoryError",
+          {
+            message: `Could not attach the backend to the project.`,
+            resolution: "Ensure that there are no applications locking the `amplify` folder and try again.",
+          },
+          e
+        );
       }
-      throw new AmplifyFault('AmplifyBackupFault', {
-        message: `Could not attach the backend to the project.`,
-      }, e);
+      throw new AmplifyFault(
+        "AmplifyBackupFault",
+        {
+          message: `Could not attach the backend to the project.`,
+        },
+        e
+      );
     }
   }
 };
@@ -217,17 +222,18 @@ const updateContextForNoUpdateBackendProjects = (context: $TSContext): void => {
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.amplify = context.exeInfo.inputParams.amplify || {};
 
-    context.exeInfo.inputParams.amplify.defaultEditor = context.exeInfo.inputParams.amplify.defaultEditor
-    || context.exeInfo.existingLocalEnvInfo.defaultEditor;
-    context.exeInfo.inputParams.amplify.projectName = context.exeInfo.inputParams.amplify.projectName
-    || context.exeInfo.existingProjectConfig.projectName;
+    context.exeInfo.inputParams.amplify.defaultEditor =
+      context.exeInfo.inputParams.amplify.defaultEditor || context.exeInfo.existingLocalEnvInfo.defaultEditor;
+    context.exeInfo.inputParams.amplify.projectName =
+      context.exeInfo.inputParams.amplify.projectName || context.exeInfo.existingProjectConfig.projectName;
     context.exeInfo.inputParams.amplify.envName = context.exeInfo.inputParams.amplify.envName || envName;
-    context.exeInfo.inputParams.amplify.frontend = context.exeInfo.inputParams.amplify.frontend
-    || context.exeInfo.existingProjectConfig.frontend;
-    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId
-      || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
+    context.exeInfo.inputParams.amplify.frontend =
+      context.exeInfo.inputParams.amplify.frontend || context.exeInfo.existingProjectConfig.frontend;
+    context.exeInfo.inputParams.amplify.appId =
+      context.exeInfo.inputParams.amplify.appId || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
     // eslint-disable-next-line max-len
-    context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] = context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend]
-      || context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];
+    context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] =
+      context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] ||
+      context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];
   }
 };

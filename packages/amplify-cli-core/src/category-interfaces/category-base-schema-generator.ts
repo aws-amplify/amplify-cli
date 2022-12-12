@@ -3,12 +3,12 @@
  * Generates JSON-schema from Typescript structures.The generated schemas
  * can be used for run-time validation of Walkthrough/Headless structures.
  */
-import { getProgramFromFiles, buildGenerator, PartialArgs } from 'typescript-json-schema';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import Ajv from 'ajv';
-import { printer } from 'amplify-prompts';
-import { $TSAny, $TSContext, JSONUtilities } from '..';
+import { getProgramFromFiles, buildGenerator, PartialArgs } from "typescript-json-schema";
+import * as fs from "fs-extra";
+import * as path from "path";
+import Ajv from "ajv";
+import { printer } from "amplify-prompts";
+import { $TSAny, $TSContext, JSONUtilities } from "..";
 
 // Interface types are expected to be exported as "typeName" in the file
 export type TypeDef = {
@@ -23,15 +23,15 @@ export type TypeDef = {
  * @returns normalizedSvcName
  */
 function normalizeServiceToFilePrefix(serviceName: string): string {
-  serviceName = serviceName.replace(' ', '');
+  serviceName = serviceName.replace(" ", "");
   return `${serviceName[0].toLowerCase()}${serviceName.slice(1)}`;
 }
 
 export class CLIInputSchemaGenerator {
   // Paths are relative to the package root
-  TYPES_SRC_ROOT = path.join('.', 'src', 'provider-utils', 'awscloudformation', 'service-walkthrough-types');
-  SCHEMA_FILES_ROOT = path.join('.', 'resources', 'schemas');
-  OVERWRITE_SCHEMA_FLAG = '--overwrite';
+  TYPES_SRC_ROOT = path.join(".", "src", "provider-utils", "awscloudformation", "service-walkthrough-types");
+  SCHEMA_FILES_ROOT = path.join(".", "resources", "schemas");
+  OVERWRITE_SCHEMA_FLAG = "--overwrite";
 
   private serviceTypeDefs: TypeDef[];
 
@@ -48,9 +48,9 @@ export class CLIInputSchemaGenerator {
   }
 
   private printWarningSchemaFileExists() {
-    printer.info('The interface version must be bumped after any changes.');
+    printer.info("The interface version must be bumped after any changes.");
     printer.info(`Use the ${this.OVERWRITE_SCHEMA_FLAG} flag to overwrite existing versions`);
-    printer.info('Skipping this schema');
+    printer.info("Skipping this schema");
   }
 
   private printSuccessSchemaFileWritten(schemaFilePath: string, typeName: string) {
@@ -87,7 +87,7 @@ export class CLIInputSchemaGenerator {
       const typeSchema = schemaGenerator?.getSchemaForSymbol(typeDef.typeName);
       //save json-schema file for the input-types. (used to validate cli-inputs.json)
       const outputSchemaFilePath = path.resolve(
-        path.join(this.SCHEMA_FILES_ROOT, normalizedServiceName, this.getSchemaFileNameForType(typeDef.typeName)),
+        path.join(this.SCHEMA_FILES_ROOT, normalizedServiceName, this.getSchemaFileNameForType(typeDef.typeName))
       );
       if (!force && fs.existsSync(outputSchemaFilePath)) {
         this.printWarningSchemaFileExists();
@@ -124,7 +124,7 @@ export class CLIInputSchemaValidator {
       return await import(generateSchemaPath(this._context, this._category, this._service, this._schemaFileName));
     } catch {
       throw new Error(
-        `Schema definition doesn't exist: ${generateSchemaPath(this._context, this._category, this._service, this._schemaFileName)}`,
+        `Schema definition doesn't exist: ${generateSchemaPath(this._context, this._category, this._service, this._schemaFileName)}`
       );
     }
   }
@@ -138,7 +138,7 @@ export class CLIInputSchemaValidator {
     const input = JSONUtilities.parse(userInput);
     if (!validate(input) as boolean) {
       throw new Error(
-        `Data did not validate against the supplied schema. Underlying errors were ${JSONUtilities.stringify(validate.errors)}`,
+        `Data did not validate against the supplied schema. Underlying errors were ${JSONUtilities.stringify(validate.errors)}`
       );
     }
     return true;
@@ -147,5 +147,5 @@ export class CLIInputSchemaValidator {
 
 const generateSchemaPath = (context: $TSContext, category: string, service: string, schemaFileName: string): string => {
   const pluginInfo = context.amplify.getCategoryPluginInfo(context, category);
-  return path.join(pluginInfo.packageLocation, 'resources', 'schemas', `${service}`, `${schemaFileName}.schema.json`);
+  return path.join(pluginInfo.packageLocation, "resources", "schemas", `${service}`, `${schemaFileName}.schema.json`);
 };

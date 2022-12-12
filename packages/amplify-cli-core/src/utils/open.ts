@@ -1,6 +1,6 @@
-import opn from 'open';
-import { ChildProcess } from 'child_process';
-import { isCI } from '..';
+import opn from "open";
+import { ChildProcess } from "child_process";
+import { isCI } from "..";
 
 /**
  * Helper function to Open stuff like URLs, files, executables. Cross-platform and opens only if its run in non-ci environmets

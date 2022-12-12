@@ -9,16 +9,16 @@ import {
   JSONUtilities,
   stateManager,
   AmplifyError,
-} from 'amplify-cli-core';
-import { S3 } from '../aws-utils/aws-s3';
-import { ProviderName } from '../constants';
+} from "amplify-cli-core";
+import { S3 } from "../aws-utils/aws-s3";
+import { ProviderName } from "../constants";
 
 /**
  * Deployment state machine implementation
  *
  */
 export class DeploymentStateManager implements IDeploymentStateManager {
-  private static stateFileName = 'deployment-state.json';
+  private static stateFileName = "deployment-state.json";
 
   // The direction of advance step, in case of rollback it is reversed.
   private direction = 1;
@@ -67,7 +67,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     this.currentState.currentStepIndex = 0;
     this.currentState.status = DeploymentStatus.DEPLOYING;
     this.currentState.steps = steps;
-    this.currentState.steps.forEach(s => {
+    this.currentState.steps.forEach((s) => {
       // eslint-disable-next-line no-param-reassign
       s.status = DeploymentStepStatus.WAITING_FOR_DEPLOYMENT;
     });
@@ -98,7 +98,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   public startCurrentStep = async (params?: StepStatusParameters): Promise<void> => {
     if (this.direction === 1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
-        throw new AmplifyError('DeploymentError', {
+        throw new AmplifyError("DeploymentError", {
           message: `Cannot start step when the current step is in ${this.getCurrentStep().status} status.`,
         });
       }
@@ -107,7 +107,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       if (params?.previousMetaKey) currentStep.previousMetaKey = params.previousMetaKey;
     } else if (this.direction === -1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
-        throw new AmplifyError('DeploymentError', {
+        throw new AmplifyError("DeploymentError", {
           message: `Cannot start step when the current step is in ${this.getCurrentStep().status} status.`,
         });
       }
@@ -119,17 +119,17 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public advanceStep = async (): Promise<void> => {
     if (!this.isDeploymentInProgress()) {
-      throw new AmplifyError('DeploymentError', {
+      throw new AmplifyError("DeploymentError", {
         message: `Cannot advance a deployment when it was not started.`,
       });
     }
 
     if (this.direction === 1 && this.getCurrentStep().status !== DeploymentStepStatus.DEPLOYING) {
-      throw new AmplifyError('DeploymentError', {
+      throw new AmplifyError("DeploymentError", {
         message: `Cannot advance step when the current step is in ${this.getCurrentStep().status} status.`,
       });
     } else if (this.direction === -1 && this.getCurrentStep().status !== DeploymentStepStatus.ROLLING_BACK) {
-      throw new AmplifyError('DeploymentError', {
+      throw new AmplifyError("DeploymentError", {
         message: `Cannot advance step when the current step is in ${this.getCurrentStep().status} status.`,
       });
     }
@@ -170,8 +170,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public startRollback = async (): Promise<void> => {
     if (!this.isDeploymentInProgress() || this.direction !== 1) {
-      throw new AmplifyError('DeploymentError', {
-        message: 'To rollback a deployment, the deployment must be in progress and not already rolling back.',
+      throw new AmplifyError("DeploymentError", {
+        message: "To rollback a deployment, the deployment must be in progress and not already rolling back.",
       });
     }
 
@@ -186,8 +186,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     await this.saveState();
   };
 
-  public isDeploymentInProgress = (): boolean => this.currentState.status === DeploymentStatus.DEPLOYING
-                                                 || this.currentState.status === DeploymentStatus.ROLLING_BACK;
+  public isDeploymentInProgress = (): boolean =>
+    this.currentState.status === DeploymentStatus.DEPLOYING || this.currentState.status === DeploymentStatus.ROLLING_BACK;
 
   public isDeploymentFinished = (): boolean => this.currentState.finishedAt !== undefined;
 
@@ -200,8 +200,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       this.currentState = persistedState;
     } else {
       this.currentState = {
-        version: '1',
-        startedAt: '',
+        version: "1",
+        startedAt: "",
         finishedAt: undefined,
         status: DeploymentStatus.IDLE,
         currentStepIndex: 0,
@@ -225,13 +225,13 @@ export class DeploymentStateManager implements IDeploymentStateManager {
         Key: DeploymentStateManager.stateFileName,
         Body: JSONUtilities.stringify(this.currentState),
       },
-      false,
+      false
     );
   };
 
   /**
- * Delete the deployment state file if it exists
- */
+   * Delete the deployment state file if it exists
+   */
   public deleteDeploymentStateFile = async (): Promise<void> => {
     await this.s3.deleteObject(this.deploymentBucketName, DeploymentStateManager.stateFileName);
   };

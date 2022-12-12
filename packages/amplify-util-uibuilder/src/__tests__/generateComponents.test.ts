@@ -1,19 +1,19 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import * as utils from '../commands/utils';
-import { run } from '../commands/generateComponents';
+import aws from "aws-sdk"; // eslint-disable-line import/no-extraneous-dependencies
+import * as utils from "../commands/utils";
+import { run } from "../commands/generateComponents";
 
-jest.mock('../commands/utils');
-jest.mock('amplify-cli-core');
+jest.mock("../commands/utils");
+jest.mock("amplify-cli-core");
 const awsMock = aws as any;
 const utilsMock = utils as any;
 
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
-jest.mock('../commands/utils/featureFlags', () => ({
+jest.mock("../commands/utils/featureFlags", () => ({
   getTransformerVersion: jest.fn().mockImplementation(() => 2),
 }));
 
-describe('can generate components', () => {
+describe("can generate components", () => {
   let context: any;
   let schemas: any;
   let mockedExport: jest.Mock<any, any>;
@@ -24,18 +24,18 @@ describe('can generate components', () => {
       },
       input: {
         options: {
-          appId: 'testAppId',
-          envName: 'testEnvName',
+          appId: "testAppId",
+          envName: "testEnvName",
         },
       },
     };
     schemas = {
       entities: [
         {
-          resultType: 'SUCCESS',
-          schemaName: 'testSchema',
-          name: 'testSchema',
-          schemaVersion: '1.0',
+          resultType: "SUCCESS",
+          schemaName: "testSchema",
+          name: "testSchema",
+          schemaVersion: "1.0",
         },
       ],
     };
@@ -58,8 +58,8 @@ describe('can generate components', () => {
       getMetadata: jest.fn().mockReturnValue({
         promise: jest.fn().mockReturnValue({
           features: {
-            autoGenerateForms: 'true',
-            autoGenerateViews: 'true',
+            autoGenerateForms: "true",
+            autoGenerateViews: "true",
           },
         }),
       }),
@@ -72,7 +72,7 @@ describe('can generate components', () => {
     utilsMock.generateAmplifyUiBuilderUtilFile = jest.fn().mockReturnValue(true);
   });
 
-  it('runs generateComponents', async () => {
+  it("runs generateComponents", async () => {
     await run(context);
     expect(mockedExport).toBeCalledTimes(3);
     expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(1);
@@ -80,7 +80,7 @@ describe('can generate components', () => {
     expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
   });
 
-  it('does not run generateComponents if not Amplify Admin app', async () => {
+  it("does not run generateComponents if not Amplify Admin app", async () => {
     utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(false);
     await run(context);
     expect(mockedExport).toBeCalledTimes(0);

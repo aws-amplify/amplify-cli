@@ -1,6 +1,6 @@
-import * as path from 'path';
-import { constants } from './constants';
-import * as os from 'os';
+import * as path from "path";
+import { constants } from "./constants";
+import * as os from "os";
 
 function getFolder() {
   let folder = constants.LOG_DIRECTORY;
@@ -8,8 +8,8 @@ function getFolder() {
   if (process.argv.length > 1) {
     const executable = process.argv[1];
 
-    if (executable && executable.includes('dev')) {
-      folder += '-dev';
+    if (executable && executable.includes("dev")) {
+      folder += "-dev";
     }
   }
   return folder;

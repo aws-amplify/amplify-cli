@@ -1,16 +1,16 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { categoryName } from '../../../constants';
+import { $TSContext, pathManager } from "amplify-cli-core";
+import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from "amplify-function-plugin-interface";
+import { categoryName } from "../../../constants";
 
 export const buildFunction = async (
   context: $TSContext,
-  { resourceName, lastBuildTimestamp, lastBuildType, buildType = BuildType.PROD }: BuildRequestMeta,
+  { resourceName, lastBuildTimestamp, lastBuildType, buildType = BuildType.PROD }: BuildRequestMeta
 ) => {
   const breadcrumbs = context.amplify.readBreadcrumbs(categoryName, resourceName);
 
   const runtimePlugin: FunctionRuntimeLifecycleManager = (await context.amplify.loadRuntimePlugin(
     context,
-    breadcrumbs.pluginId,
+    breadcrumbs.pluginId
   )) as FunctionRuntimeLifecycleManager;
 
   const depCheck = await runtimePlugin.checkDependencies(breadcrumbs.functionRuntime);
@@ -25,7 +25,7 @@ export const buildFunction = async (
   let rebuilt = false;
   if (breadcrumbs.scripts && breadcrumbs.scripts.build) {
     // TODO
-    throw new Error('Executing custom build scripts is not yet implemented');
+    throw new Error("Executing custom build scripts is not yet implemented");
   } else {
     const buildRequest: BuildRequest = {
       buildType,
@@ -56,6 +56,6 @@ export interface BuildRequestMeta {
 }
 
 export const buildTypeKeyMap: Record<BuildType, string> = {
-  [BuildType.PROD]: 'lastBuildTimeStamp',
-  [BuildType.DEV]: 'lastDevBuildTimeStamp',
+  [BuildType.PROD]: "lastBuildTimeStamp",
+  [BuildType.DEV]: "lastDevBuildTimeStamp",
 };

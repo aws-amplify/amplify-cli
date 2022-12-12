@@ -5,14 +5,18 @@ import {
   createRandomName,
   addS3AndAuthWithAuthOnlyAccess,
   amplifyPushForce,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+import gql from "graphql-tag";
 
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 
-describe('transformer predictions migration test', () => {
+describe("transformer predictions migration test", () => {
   let projRoot: string;
   let projectName: string;
 
@@ -28,8 +32,8 @@ describe('transformer predictions migration test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('migration of predictions directives', async () => {
-    const predictionsSchema = 'transformer_migration/predictions.graphql';
+  it("migration of predictions directives", async () => {
+    const predictionsSchema = "transformer_migration/predictions.graphql";
 
     await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, predictionsSchema);
@@ -45,13 +49,13 @@ describe('transformer predictions migration test', () => {
 
     let translateResult = await appSyncClient.query({
       query: gql(translateQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(translateResult.errors).toBeUndefined();
     expect(translateResult.data).toBeDefined();
     expect((translateResult.data as any).translateThis).toMatch(
-      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i,
+      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i
     );
 
     const speakQuery = /* GraphQL */ `
@@ -67,13 +71,13 @@ describe('transformer predictions migration test', () => {
 
     let speakResult = await appSyncClient.query({
       query: gql(speakQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(speakResult.errors).toBeUndefined();
     expect(speakResult.data).toBeDefined();
     expect((speakResult.data as any).speakTranslatedText).toMatch(
-      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
+      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
     );
 
     await updateApiSchema(projRoot, projectName, predictionsSchema);
@@ -83,24 +87,24 @@ describe('transformer predictions migration test', () => {
 
     translateResult = await appSyncClient.query({
       query: gql(translateQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(translateResult.errors).toBeUndefined();
     expect(translateResult.data).toBeDefined();
     expect((translateResult.data as any).translateThis).toMatch(
-      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i,
+      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i
     );
 
     speakResult = await appSyncClient.query({
       query: gql(speakQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(speakResult.errors).toBeUndefined();
     expect(speakResult.data).toBeDefined();
     expect((speakResult.data as any).speakTranslatedText).toMatch(
-      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
+      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
     );
   });
 

@@ -4,7 +4,7 @@ import {
   AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
   AddStorageSettings,
   AddDynamoDBSettings,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
 export const createNoOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyNoOAuthSettings => {
   return {
@@ -18,27 +18,27 @@ export const createUserPoolOnlyWithOAuthSettings = (projectPrefix: string, short
     resourceName: `${projectPrefix}oares${shortId}`,
     userPoolName: `${projectPrefix}oaup${shortId}`,
     domainPrefix: `${projectPrefix}oadom${shortId}`,
-    signInUrl1: 'https://sin1/',
-    signInUrl2: 'https://sin2/',
-    signOutUrl1: 'https://sout1/',
-    signOutUrl2: 'https://sout2/',
-    facebookAppId: 'facebookAppId',
-    facebookAppSecret: 'facebookAppSecret',
-    googleAppId: 'googleAppId',
-    googleAppSecret: 'googleAppSecret',
-    amazonAppId: 'amazonAppId',
-    amazonAppSecret: 'amazonAppSecret',
-    appleAppClientId: 'com.fake.app',
-    appleAppTeamId: '2QLEWNDK6K',
-    appleAppKeyID: '2QLZXKYJ8J',
+    signInUrl1: "https://sin1/",
+    signInUrl2: "https://sin2/",
+    signOutUrl1: "https://sout1/",
+    signOutUrl2: "https://sout2/",
+    facebookAppId: "facebookAppId",
+    facebookAppSecret: "facebookAppSecret",
+    googleAppId: "googleAppId",
+    googleAppSecret: "googleAppSecret",
+    amazonAppId: "amazonAppId",
+    amazonAppSecret: "amazonAppSecret",
+    appleAppClientId: "com.fake.app",
+    appleAppTeamId: "2QLEWNDK6K",
+    appleAppKeyID: "2QLZXKYJ8J",
     appleAppPrivateKey:
-      'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw',
+      "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw",
   };
 };
 
 export const createIDPAndUserPoolWithOAuthSettings = (
   projectPrefix: string,
-  shortId: string,
+  shortId: string
 ): AddAuthIdentityPoolAndUserPoolWithOAuthSettings => {
   const settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
 
@@ -46,10 +46,10 @@ export const createIDPAndUserPoolWithOAuthSettings = (
     ...settings,
     allowUnauthenticatedIdentities: true,
     identityPoolName: `${projectPrefix}oaidp${shortId}`,
-    idpFacebookAppId: 'idpFacebookAppId',
-    idpGoogleAppId: 'idpGoogleAppId',
-    idpAmazonAppId: 'idpAmazonAppId',
-    idpAppleAppId: 'idpAppleId',
+    idpFacebookAppId: "idpFacebookAppId",
+    idpGoogleAppId: "idpGoogleAppId",
+    idpAmazonAppId: "idpAmazonAppId",
+    idpAppleAppId: "idpAppleId",
   } as AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
 };
 

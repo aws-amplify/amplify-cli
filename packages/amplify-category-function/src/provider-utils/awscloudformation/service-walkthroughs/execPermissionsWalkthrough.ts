@@ -1,10 +1,10 @@
-import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
-import { printer } from 'amplify-prompts';
-import * as TransformPackage from 'graphql-transformer-core';
-import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
-import _ from 'lodash';
-import path from 'path';
+import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from "amplify-cli-core";
+import { FunctionDependency, FunctionParameters } from "amplify-function-plugin-interface";
+import { printer } from "amplify-prompts";
+import * as TransformPackage from "graphql-transformer-core";
+import inquirer, { CheckboxQuestion, DistinctChoice } from "inquirer";
+import _ from "lodash";
+import path from "path";
 import {
   categoryName,
   CRUDOperation,
@@ -12,15 +12,15 @@ import {
   GraphQLOperation,
   topLevelCommentPrefix,
   topLevelCommentSuffix,
-} from '../../../constants';
-import { getAppSyncResourceName } from '../utils/appSyncHelper';
-import { constructCFModelTableArnComponent, constructCFModelTableNameComponent } from '../utils/cloudformationHelpers';
-import { appsyncTableSuffix, ServiceName } from '../utils/constants';
+} from "../../../constants";
+import { getAppSyncResourceName } from "../utils/appSyncHelper";
+import { constructCFModelTableArnComponent, constructCFModelTableNameComponent } from "../utils/cloudformationHelpers";
+import { appsyncTableSuffix, ServiceName } from "../utils/constants";
 import {
   fetchPermissionCategories,
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
-} from '../utils/permissionMapUtils';
+} from "../utils/permissionMapUtils";
 
 /**
  * This whole file desperately needs to be refactored
@@ -31,14 +31,14 @@ export const askExecRolePermissionsQuestions = async (
   currentPermissionMap?,
   currentEnvMap?,
   category?: string,
-  serviceName?: string,
+  serviceName?: string
 ): Promise<ExecRolePermissionsResponse> => {
   // feature flag for graphQL permission bugfix as part of PR-5342
-  const generateGraphQLPermissions = FeatureFlags.getBoolean('appSync.generateGraphQLPermissions');
+  const generateGraphQLPermissions = FeatureFlags.getBoolean("appSync.generateGraphQLPermissions");
 
   const amplifyMeta = stateManager.getMeta();
 
-  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers' && category !== 'predictions');
+  const categories = Object.keys(amplifyMeta).filter((category) => category !== "providers" && category !== "predictions");
 
   // retrieve api's AppSync resource name for conditional logic
   // in blending appsync @model-backed dynamoDB tables into storage category flow
@@ -46,8 +46,8 @@ export const askExecRolePermissionsQuestions = async (
 
   // if there is api category AppSync resource and no storage category, add it back to selection
   // since storage category is responsible for managing appsync @model-backed dynamoDB table permissions
-  if (!categories.includes('storage') && appsyncResourceName !== undefined) {
-    categories.push('storage');
+  if (!categories.includes("storage") && appsyncResourceName !== undefined) {
+    categories.push("storage");
   }
 
   const categoryPermissionQuestion = selectCategories(categories, currentPermissionMap);
@@ -65,16 +65,16 @@ export const askExecRolePermissionsQuestions = async (
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
 
     // filter out lambda layers always, we don't support granting permissions to layers
-    resourcesList = resourcesList.filter(resourceName => amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer);
+    resourcesList = resourcesList.filter((resourceName) => amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer);
 
-    if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
+    if (selectedCategory === "storage" && "api" in amplifyMeta) {
       if (appsyncResourceName) {
-        const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
+        const resourceDirPath = path.join(backendDir, "api", appsyncResourceName);
         const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
         const directivesMap: any = TransformPackage.collectDirectivesByTypeNames(project.schema);
         const modelNames = Object.keys(directivesMap.types)
-          .filter(typeName => directivesMap.types[typeName].includes('model'))
-          .map(modelName => `${modelName}:${appsyncTableSuffix}`);
+          .filter((typeName) => directivesMap.types[typeName].includes("model"))
+          .map((modelName) => `${modelName}:${appsyncTableSuffix}`);
         resourcesList.push(...modelNames);
       }
     } else if (selectedCategory === category || selectedCategory === categoryName) {
@@ -86,13 +86,13 @@ export const askExecRolePermissionsQuestions = async (
         // A new function resource does not exist in amplifyMeta yet
         const isNewFunctionResource = !selectedResource;
         resourcesList = resourcesList.filter(
-          resourceName =>
+          (resourceName) =>
             resourceName !== resourceNameToUpdate &&
-            (isNewFunctionResource || amplifyMeta[selectedCategory][resourceName].service === selectedResource.service),
+            (isNewFunctionResource || amplifyMeta[selectedCategory][resourceName].service === selectedResource.service)
         );
       } else {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
+          (resourceName) => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable
         );
       }
     }
@@ -117,10 +117,10 @@ export const askExecRolePermissionsQuestions = async (
       for (const resourceName of selectedResources) {
         // If the resource is AppSync, use GraphQL operations for permission policies.
         // Otherwise, default to CRUD permissions.
-        const serviceType = _.get(amplifyMeta, [selectedCategory, resourceName, 'service']);
+        const serviceType = _.get(amplifyMeta, [selectedCategory, resourceName, "service"]);
         let options;
         switch (serviceType) {
-          case 'AppSync':
+          case "AppSync":
             options = generateGraphQLPermissions ? graphqlOperations : crudOptions;
             break;
           default:
@@ -129,11 +129,9 @@ export const askExecRolePermissionsQuestions = async (
         }
 
         // In case of some resources they are not in the meta file so check for resource existence as well
-        const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
+        const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, "mobileHubMigrated"], false);
         if (isMobileHubImportedResource) {
-          printer.warn(
-            `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
-          );
+          printer.warn(`Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
         } else {
           const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName);
@@ -145,7 +143,7 @@ export const askExecRolePermissionsQuestions = async (
             resourceName,
             resourcePolicy,
             appsyncResourceName,
-            selectedCategory,
+            selectedCategory
           );
           categoryPolicies.push(...permissionPolicies);
           if (!permissions[selectedCategory]) {
@@ -156,13 +154,17 @@ export const askExecRolePermissionsQuestions = async (
         }
       }
     } catch (e) {
-      if (e.name === 'PluginMethodNotFoundError') {
+      if (e.name === "PluginMethodNotFoundError") {
         printer.warn(`${selectedCategory} category does not support resource policies yet.`);
       } else {
-        throw new AmplifyError('PluginPolicyAddError', {
-          message: `Policies cannot be added for ${selectedCategory}`,
-          details: e.message,
-        }, e);
+        throw new AmplifyError(
+          "PluginPolicyAddError",
+          {
+            message: `Policies cannot be added for ${selectedCategory}`,
+            details: e.message,
+          },
+          e
+        );
       }
     }
   }
@@ -181,49 +183,49 @@ export const askExecRolePermissionsQuestions = async (
 };
 
 export type ExecRolePermissionsResponse = Required<
-  Pick<FunctionParameters, 'categoryPolicies' | 'environmentMap' | 'topLevelComment' | 'dependsOn' | 'mutableParametersState'>
+  Pick<FunctionParameters, "categoryPolicies" | "environmentMap" | "topLevelComment" | "dependsOn" | "mutableParametersState">
 >;
 
 // Inquirer Questions
 
 const selectResourcesInCategory = (choices: DistinctChoice<any>[], currentPermissionMap: any, category: any): CheckboxQuestion => ({
-  type: 'checkbox',
-  name: 'resources',
+  type: "checkbox",
+  name: "resources",
   message: `${_.capitalize(category)} has ${choices.length} resources in this project. Select the one you would like your Lambda to access`,
   choices,
   default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
 });
 
 const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: object): CheckboxQuestion => ({
-  type: 'checkbox',
-  name: 'categories',
-  message: 'Select the categories you want this function to have access to.',
+  type: "checkbox",
+  name: "categories",
+  message: "Select the categories you want this function to have access to.",
   choices,
   default: fetchPermissionCategories(currentPermissionMap),
 });
 
 const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: any, resourceName: any) => ({
-  type: 'checkbox',
-  name: 'options',
+  type: "checkbox",
+  name: "options",
   message: `Select the operations you want to permit on ${resourceName}`,
   choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
+  validate: (answers) => (_.isEmpty(answers) ? "You must select at least one operation" : true),
   default: currentPermissions,
 });
 
 export async function getResourcesForCfn(context, resourceName, resourcePolicy, appsyncResourceName, selectedCategory) {
   if (resourceName.endsWith(appsyncTableSuffix)) {
-    resourcePolicy.providerPlugin = 'awscloudformation';
-    resourcePolicy.service = 'DynamoDB';
+    resourcePolicy.providerPlugin = "awscloudformation";
+    resourcePolicy.service = "DynamoDB";
     const dynamoDBTableARNComponents = await constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
 
     // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
     resourcePolicy.customPolicyResource = [
       {
-        'Fn::Join': ['', dynamoDBTableARNComponents],
+        "Fn::Join": ["", dynamoDBTableARNComponents],
       },
       {
-        'Fn::Join': ['', [...dynamoDBTableARNComponents, '/index/*']],
+        "Fn::Join": ["", [...dynamoDBTableARNComponents, "/index/*"]],
       },
     ];
   }
@@ -232,34 +234,34 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
     context,
     selectedCategory,
     resourceName,
-    'getPermissionPolicies',
-    [context, { [resourceName]: resourcePolicy }],
+    "getPermissionPolicies",
+    [context, { [resourceName]: resourcePolicy }]
   );
 
   // replace resource attributes for @model-backed dynamoDB tables
   const cfnResources = await Promise.all<$TSAny>(
-    resourceAttributes.map(async attributes =>
+    resourceAttributes.map(async (attributes) =>
       attributes.resourceName?.endsWith(appsyncTableSuffix)
         ? {
             resourceName: appsyncResourceName,
-            category: 'api',
-            attributes: ['GraphQLAPIIdOutput'],
+            category: "api",
+            attributes: ["GraphQLAPIIdOutput"],
             needsAdditionalDynamoDBResourceProps: true,
             // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
-            _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+            _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, "Table"),
             _cfJoinComponentTableName: await constructCFModelTableNameComponent(
               appsyncResourceName,
               attributes.resourceName,
-              appsyncTableSuffix,
+              appsyncTableSuffix
             ),
             _cfJoinComponentTableArn: await constructCFModelTableArnComponent(
               appsyncResourceName,
               attributes.resourceName,
-              appsyncTableSuffix,
+              appsyncTableSuffix
             ),
           }
-        : attributes,
-    ),
+        : attributes
+    )
   );
   return { permissionPolicies, cfnResources };
 }
@@ -268,7 +270,7 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];
-  resources.forEach(resource => {
+  resources.forEach((resource) => {
     const { category, resourceName, attributes } = resource;
     /**
      * while resourceProperties
@@ -284,21 +286,21 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
 
       environmentMap[modelEnvNameKey] = resource._cfJoinComponentTableName;
       environmentMap[modelEnvArnKey] = {
-        'Fn::Join': ['', resource._cfJoinComponentTableArn],
+        "Fn::Join": ["", resource._cfJoinComponentTableArn],
       };
 
       envVars.add(modelEnvNameKey);
       envVars.add(modelEnvArnKey);
     }
 
-    attributes.forEach(attribute => {
+    attributes.forEach((attribute) => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
       const refName = `${category}${resourceName}${attribute}`;
       environmentMap[envName] = { Ref: refName };
       envVars.add(envName);
     });
 
-    if (!dependsOn.find(dep => dep.resourceName === resourceName && dep.category === category)) {
+    if (!dependsOn.find((dep) => dep.resourceName === resourceName && dep.category === category)) {
       dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
@@ -308,12 +310,12 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
   });
 
   if (currentEnvMap) {
-    _.keys(currentEnvMap).forEach(key => {
+    _.keys(currentEnvMap).forEach((key) => {
       envVars.add(key);
     });
   }
 
-  const envVarStringList = Array.from(envVars).sort().join('\n\t');
+  const envVarStringList = Array.from(envVars).sort().join("\n\t");
 
   if (envVarStringList) {
     printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);

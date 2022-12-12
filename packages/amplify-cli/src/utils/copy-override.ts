@@ -1,5 +1,5 @@
-import fs from 'fs';
-import { promisify } from 'util';
+import fs from "fs";
+import { promisify } from "util";
 // Workaround 'pkg' bug: https://github.com/zeit/pkg/issues/420
 // Copying files from snapshot via `fs.copyFileSync` crashes with ENOENT
 // Overriding copyFileSync with primitive alternative
@@ -9,7 +9,7 @@ import { promisify } from 'util';
 export const copyOverride = () => {
   if (!fs.copyFile) return;
 
-  const path = require('path');
+  const path = require("path");
 
   const originalCopyFile = fs.copyFile;
   const originalCopyFileSync = fs.copyFileSync;
@@ -20,11 +20,11 @@ export const copyOverride = () => {
     if (!isBundled(path.resolve(src))) {
       return originalCopyFile(src, dest, flags, callback);
     }
-    if (typeof flags === 'function') {
+    if (typeof flags === "function") {
       callback = flags;
       flags = 0;
-    } else if (typeof callback !== 'function') {
-      throw new TypeError('Callback must be a function');
+    } else if (typeof callback !== "function") {
+      throw new TypeError("Callback must be a function");
     }
 
     fs.readFile(src, (readError, content) => {
@@ -34,12 +34,12 @@ export const copyOverride = () => {
       }
       // eslint-disable-next-line no-bitwise
       if (flags & fs.constants.COPYFILE_EXCL) {
-        fs.stat(dest, statError => {
+        fs.stat(dest, (statError) => {
           if (!statError) {
-            callback(Object.assign(new Error('File already exists'), { code: 'EEXIST' }));
+            callback(Object.assign(new Error("File already exists"), { code: "EEXIST" }));
             return;
           }
-          if (statError.code !== 'ENOENT') {
+          if (statError.code !== "ENOENT") {
             callback(statError);
             return;
           }
@@ -62,11 +62,11 @@ export const copyOverride = () => {
       try {
         fs.statSync(dest);
       } catch (statError) {
-        if (statError.code !== 'ENOENT') throw statError;
+        if (statError.code !== "ENOENT") throw statError;
         fs.writeFileSync(dest, content);
         return;
       }
-      throw Object.assign(new Error('File already exists'), { code: 'EEXIST' });
+      throw Object.assign(new Error("File already exists"), { code: "EEXIST" });
     }
     fs.writeFileSync(dest, content);
   };

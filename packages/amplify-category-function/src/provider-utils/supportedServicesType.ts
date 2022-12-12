@@ -1,6 +1,6 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
-import { LayerParameters } from './awscloudformation/utils/layerParams';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { FunctionParameters } from "amplify-function-plugin-interface";
+import { LayerParameters } from "./awscloudformation/utils/layerParams";
 
 export interface SupportedServices {
   Lambda: ServiceConfig<FunctionParameters>;
@@ -19,7 +19,7 @@ export interface FunctionWalkthroughProvider {
   updateWalkthrough: (
     context: $TSContext,
     resourceToUpdate?: string,
-    params?: Partial<FunctionParameters>,
+    params?: Partial<FunctionParameters>
   ) => Promise<Partial<FunctionParameters>>;
   migrate?: Function;
   getIAMPolicies?: Function;
@@ -31,6 +31,6 @@ export interface LayerWalkthroughProvider {
   updateWalkthrough: (
     context: $TSContext,
     resourceToUpdate?: string,
-    params?: Partial<LayerParameters>,
+    params?: Partial<LayerParameters>
   ) => Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }>;
 }

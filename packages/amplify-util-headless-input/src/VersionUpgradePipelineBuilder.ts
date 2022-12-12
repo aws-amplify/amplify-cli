@@ -1,4 +1,4 @@
-import { VersionUpgradePipeline } from './HeadlessInputValidator';
+import { VersionUpgradePipeline } from "./HeadlessInputValidator";
 
 /**
  * Utility class that can be used to construct a VersionUpgradePipeline by specifying an array of transformation functions and a map of version numbers to array indexes
@@ -18,7 +18,7 @@ export class VersionUpgradePipelineBuilder {
   }
 
   build(): VersionUpgradePipeline {
-    return version => {
+    return (version) => {
       return this.transformationFunctions.slice(this.versionIndexMap.get(version));
     };
   }

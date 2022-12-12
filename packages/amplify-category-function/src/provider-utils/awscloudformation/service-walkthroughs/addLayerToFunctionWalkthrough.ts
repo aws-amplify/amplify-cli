@@ -1,8 +1,8 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, FunctionParameters, FunctionRuntime, LambdaLayer } from 'amplify-function-plugin-interface';
-import { askCustomArnQuestion, askLayerOrderQuestion, askLayerSelection } from '../utils/addLayerToFunctionUtils';
+import { $TSContext, stateManager } from "amplify-cli-core";
+import { FunctionDependency, FunctionParameters, FunctionRuntime, LambdaLayer } from "amplify-function-plugin-interface";
+import { askCustomArnQuestion, askLayerOrderQuestion, askLayerSelection } from "../utils/addLayerToFunctionUtils";
 
-const confirmationPrompt = 'Do you want to enable Lambda layers for this function?';
+const confirmationPrompt = "Do you want to enable Lambda layers for this function?";
 
 /**
  * Performs the walkthrough to add layers to a function
@@ -13,10 +13,10 @@ const confirmationPrompt = 'Do you want to enable Lambda layers for this functio
  */
 export const addLayersToFunctionWalkthrough = async (
   context: $TSContext,
-  runtime: Pick<FunctionRuntime, 'value'>,
+  runtime: Pick<FunctionRuntime, "value">,
   previousSelections: LambdaLayer[] = [],
-  defaultConfirm = false,
-): Promise<Required<Pick<FunctionParameters, 'lambdaLayers' | 'dependsOn'>>> => {
+  defaultConfirm = false
+): Promise<Required<Pick<FunctionParameters, "lambdaLayers" | "dependsOn">>> => {
   let lambdaLayers: LambdaLayer[] = [];
   let dependsOn: FunctionDependency[] = [];
 
@@ -30,7 +30,7 @@ export const addLayersToFunctionWalkthrough = async (
     context,
     stateManager.getMeta(),
     runtime.value,
-    previousSelections,
+    previousSelections
   ));
 
   if (askArnQuestion) {
@@ -38,9 +38,9 @@ export const addLayersToFunctionWalkthrough = async (
   }
 
   if (lambdaLayers.length === 0) {
-    context.print.info('No Lambda layers were selected');
+    context.print.info("No Lambda layers were selected");
     if (previousSelections.length > 0) {
-      const plural = previousSelections.length > 1 ? 's' : '';
+      const plural = previousSelections.length > 1 ? "s" : "";
       const removeMessage = `Removing ${previousSelections.length} previously added Lambda layer${plural} from Lambda function`;
       context.print.info(removeMessage);
     }

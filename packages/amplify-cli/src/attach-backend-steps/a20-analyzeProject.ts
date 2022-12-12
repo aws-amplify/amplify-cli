@@ -1,7 +1,7 @@
-import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
-import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
+import { normalizeEditor, editorSelection } from "../extensions/amplify-helpers/editor-selection";
+import { amplifyCLIConstants } from "../extensions/amplify-helpers/constants";
+import { $TSContext, stateManager } from "amplify-cli-core";
+import { normalizeProjectName } from "../extensions/amplify-helpers/project-name-validation";
 
 export async function analyzeProject(context: $TSContext) {
   let defaultEditor = getDefaultEditor();

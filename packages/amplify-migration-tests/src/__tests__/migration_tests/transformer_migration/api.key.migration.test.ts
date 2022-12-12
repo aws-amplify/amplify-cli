@@ -7,15 +7,15 @@ import {
   deleteProjectDir,
   updateApiSchema,
   getProjectConfig,
-} from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { initJSProjectWithProfile, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from "../../../migration-helpers";
 
-describe('amplify key force push', () => {
+describe("amplify key force push", () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: 'unintialized' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: "unintialized" };
+    const migrateToVersion = { v: "unintialized" };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
@@ -23,8 +23,8 @@ describe('amplify key force push', () => {
   });
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('api-key-cli-migration');
-    await initJSProjectWithProfile(projRoot, { name: 'gqlkeymigration' });
+    projRoot = await createNewProjectDir("api-key-cli-migration");
+    await initJSProjectWithProfile(projRoot, { name: "gqlkeymigration" });
   });
 
   afterEach(async () => {
@@ -32,8 +32,8 @@ describe('amplify key force push', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init project, add key and migrate with force push', async () => {
-    const initialSchema = 'migrations_key/simple_key.graphql';
+  it("init project, add key and migrate with force push", async () => {
+    const initialSchema = "migrations_key/simple_key.graphql";
     const { projectName } = getProjectConfig(projRoot);
     // add api and push with installed cli
     await addApiWithoutSchemaOldDx(projRoot);

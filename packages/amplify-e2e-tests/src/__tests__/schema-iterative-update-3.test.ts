@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from "path";
 import {
   createNewProjectDir,
   initJSProjectWithProfile,
@@ -9,32 +9,32 @@ import {
   amplifyPush,
   updateApiSchema,
   amplifyPushUpdate,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('Schema iterative update - delete', () => {
+describe("Schema iterative update - delete", () => {
   let projectDir: string;
 
   beforeAll(async () => {
-    projectDir = await createNewProjectDir('schemaIterative');
+    projectDir = await createNewProjectDir("schemaIterative");
     await initJSProjectWithProfile(projectDir, {
-      name: 'deletekeys',
+      name: "deletekeys",
     });
 
-    addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
+    addFeatureFlag(projectDir, "graphqltransformer", "enableiterativegsiupdates", true);
   });
   afterAll(async () => {
     await deleteProject(projectDir);
     deleteProjectDir(projectDir);
   });
-  it('should support removal of multiple @key directive from a single @model', async () => {
-    const apiName = 'deletekeys';
+  it("should support removal of multiple @key directive from a single @model", async () => {
+    const apiName = "deletekeys";
 
-    const initialSchema = path.join('iterative-push', 'multiple-key-delete', 'initial-schema.graphql');
+    const initialSchema = path.join("iterative-push", "multiple-key-delete", "initial-schema.graphql");
     await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 
-    const finalSchema = path.join('iterative-push', 'multiple-key-delete', 'final-schema.graphql');
+    const finalSchema = path.join("iterative-push", "multiple-key-delete", "final-schema.graphql");
     await updateApiSchema(projectDir, apiName, finalSchema);
     await amplifyPushUpdate(projectDir);
   });

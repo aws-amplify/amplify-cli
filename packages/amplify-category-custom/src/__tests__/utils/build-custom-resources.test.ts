@@ -1,16 +1,16 @@
-import { $TSContext } from 'amplify-cli-core';
-import execa from 'execa';
-import { buildCustomResources } from '../../utils/build-custom-resources';
+import { $TSContext } from "amplify-cli-core";
+import execa from "execa";
+import { buildCustomResources } from "../../utils/build-custom-resources";
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
-jest.mock('../../utils/dependency-management-utils');
-jest.mock('../../utils/generate-cfn-from-cdk');
-jest.mock('execa');
-jest.mock('ora');
+jest.mock("amplify-cli-core");
+jest.mock("amplify-prompts");
+jest.mock("../../utils/dependency-management-utils");
+jest.mock("../../utils/generate-cfn-from-cdk");
+jest.mock("execa");
+jest.mock("ora");
 
-jest.mock('fs-extra', () => ({
-  readFileSync: jest.fn().mockReturnValue('mockCode'),
+jest.mock("fs-extra", () => ({
+  readFileSync: jest.fn().mockReturnValue("mockCode"),
   existsSync: jest.fn().mockReturnValue(true),
   ensureDirSync: jest.fn().mockReturnValue(true),
   ensureDir: jest.fn(),
@@ -18,25 +18,25 @@ jest.mock('fs-extra', () => ({
   writeFile: jest.fn(),
 }));
 
-jest.mock('ora', () => () => ({
+jest.mock("ora", () => () => ({
   start: jest.fn(),
   fail: jest.fn(),
   succeed: jest.fn(),
   stop: jest.fn(),
 }));
 
-jest.mock('../../utils/dependency-management-utils', () => ({
-  getAllResources: jest.fn().mockResolvedValue({ mockedvalue: 'mockedkey' }),
+jest.mock("../../utils/dependency-management-utils", () => ({
+  getAllResources: jest.fn().mockResolvedValue({ mockedvalue: "mockedkey" }),
 }));
 
-jest.mock('../../utils/generate-cfn-from-cdk', () => ({
+jest.mock("../../utils/generate-cfn-from-cdk", () => ({
   generateCloudFormationFromCDK: jest.fn(),
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  getPackageManager: jest.fn().mockResolvedValue('npm'),
+jest.mock("amplify-cli-core", () => ({
+  getPackageManager: jest.fn().mockResolvedValue("npm"),
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
+    getBackendDirPath: jest.fn().mockReturnValue("mockTargetDir"),
   },
   JSONUtilities: {
     writeJson: jest.fn(),
@@ -45,7 +45,7 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-describe('build custom resources scenarios', () => {
+describe("build custom resources scenarios", () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
@@ -58,12 +58,12 @@ describe('build custom resources scenarios', () => {
         getResourceStatus: jest.fn().mockResolvedValue({
           allResources: [
             {
-              resourceName: 'mockresource1',
-              service: 'customCDK',
+              resourceName: "mockresource1",
+              service: "customCDK",
             },
             {
-              resourceName: 'mockresource2',
-              service: 'customCDK',
+              resourceName: "mockresource2",
+              service: "customCDK",
             },
           ],
         }),
@@ -71,7 +71,7 @@ describe('build custom resources scenarios', () => {
     } as unknown as $TSContext;
   });
 
-  it('build all resources', async () => {
+  it("build all resources", async () => {
     await buildCustomResources(mockContext);
 
     // 2 for npm install and 2 for tsc build (1 per resource)

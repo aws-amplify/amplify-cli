@@ -1,11 +1,9 @@
-import {
-  $TSAny, $TSContext, $TSObject, AmplifyError, pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import extract from 'extract-zip';
-import * as fs from 'fs-extra';
-import sequential from 'promise-sequential';
-import { APIGateway } from './aws-utils/aws-apigw';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import extract from "extract-zip";
+import * as fs from "fs-extra";
+import sequential from "promise-sequential";
+import { APIGateway } from "./aws-utils/aws-apigw";
 
 /**
  * Download API models from API Gateway
@@ -16,16 +14,16 @@ export const downloadAPIModels = async (context: $TSContext, allResources: $TSOb
 
   const framework = projectConfig.frontend;
 
-  if (['javascript', 'flutter'].includes(framework)) {
+  if (["javascript", "flutter"].includes(framework)) {
     return;
   }
 
-  const resources = allResources.filter(resource => resource.service === 'API Gateway');
+  const resources = allResources.filter((resource) => resource.service === "API Gateway");
   const promises = [];
 
   if (resources.length > 0) {
     printer.blankLine();
-    printer.info('Creating API models...');
+    printer.info("Creating API models...");
   }
 
   for (const resource of resources) {
@@ -66,7 +64,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
   const tempDir = `${backendDir}/.temp`;
 
   switch (framework) {
-    case 'android':
+    case "android":
       {
         const generatedSrc = `${tempDir}/${apiName}-Artifact-1.0/src/main/java`;
 
@@ -77,7 +75,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
         fs.copySync(generatedSrc, target);
       }
       break;
-    case 'ios':
+    case "ios":
       {
         const generatedSrc = `${tempDir}/aws-apigateway-ios-swift/generated-src`;
 
@@ -89,7 +87,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
       }
       break;
     default:
-      throw new AmplifyError('FrameworkNotSupportedError', {
+      throw new AmplifyError("FrameworkNotSupportedError", {
         message: `Unsupported framework. ${framework}`,
       });
   }
@@ -98,14 +96,14 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
 const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny => {
   const apiUrl = resource.output.RootUrl;
   const apiName = resource.output.ApiName;
-  const firstSplit = apiUrl.split('/');
+  const firstSplit = apiUrl.split("/");
   const stage = firstSplit[3];
 
-  const secondSplit = firstSplit[2].split('.');
+  const secondSplit = firstSplit[2].split(".");
   const apiId = secondSplit[0];
 
   switch (framework) {
-    case 'android':
+    case "android":
       return {
         restApiId: apiId,
         sdkType: framework,
@@ -114,14 +112,14 @@ const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny =
           groupId: `${apiName}-GroupID`,
           invokerPackage: apiName,
           artifactId: `${apiName}-Artifact`,
-          artifactVersion: '1.0',
+          artifactVersion: "1.0",
         },
       };
 
-    case 'ios':
+    case "ios":
       return {
         restApiId: apiId,
-        sdkType: 'swift',
+        sdkType: "swift",
         stageName: stage,
         parameters: {
           classPrefix: apiName,
@@ -129,7 +127,7 @@ const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny =
       };
 
     default:
-      throw new AmplifyError('FrameworkNotSupportedError', {
+      throw new AmplifyError("FrameworkNotSupportedError", {
         message: `Unsupported framework. ${framework}`,
       });
   }

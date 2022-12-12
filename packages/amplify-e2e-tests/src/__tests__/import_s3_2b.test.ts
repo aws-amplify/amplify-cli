@@ -11,19 +11,14 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  createStorageSettings,
-  getShortId,
-  headlessPullExpectError,
-  importS3,
-} from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { createStorageSettings, getShortId, headlessPullExpectError, importS3 } from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('s3 import b', () => {
-  const projectPrefix = 'sssimp';
-  const ogProjectPrefix = 'ogsssimp';
+describe("s3 import b", () => {
+  const projectPrefix = "sssimp";
+  const ogProjectPrefix = "ogsssimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -34,7 +29,7 @@ describe('s3 import b', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the s3 bucket to import by other test projects
@@ -93,7 +88,7 @@ describe('s3 import b', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('storage headless pull missing parameters', async () => {
+  it("storage headless pull missing parameters", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -109,12 +104,12 @@ describe('s3 import b', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('s3import-pull');
+      projectRootPull = await createNewProjectDir("s3import-pull");
 
-      const envName = 'integtest';
+      const envName = "integtest";
       const providersParam = {
         awscloudformation: {
-          configLevel: 'project',
+          configLevel: "project",
           useProfile: true,
           profileName,
         },
@@ -125,10 +120,10 @@ describe('s3 import b', () => {
           projectRootPull,
           { envName, appId },
           providersParam,
-          'Error: storage headless is missing the following inputParams bucketName, region',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
+          "Error: storage headless is missing the following inputParams bucketName, region",
+          {}
+        )
+      ).rejects.toThrowError("Process exited with non zero exit code 1");
     } finally {
       deleteProjectDir(projectRootPull);
     }

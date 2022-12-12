@@ -1,9 +1,9 @@
-import inquirer from 'inquirer';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import inquirer from "inquirer";
+import { ResourceDoesNotExistError, exitOnNextTick } from "amplify-cli-core";
 export async function askAnalyticsCategoryKinesisQuestions(context: any) {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();
-  const kinesisResources = allResources.filter((resource: any) => resource.service === 'Kinesis');
+  const kinesisResources = allResources.filter((resource: any) => resource.service === "Kinesis");
 
   let targetResourceName;
   if (kinesisResources.length === 0) {
@@ -17,9 +17,9 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
     context.print.success(`Selected resource ${targetResourceName}`);
   } else {
     const resourceNameQuestion = {
-      type: 'list',
-      name: 'kinesisAnalyticsResourceName',
-      message: 'Select an Analytics resource Kinesis stream to associate with',
+      type: "list",
+      name: "kinesisAnalyticsResourceName",
+      message: "Select an Analytics resource Kinesis stream to associate with",
       choices: kinesisResources.map((resource: any) => resource.resourceName),
     };
 
@@ -35,21 +35,21 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
     triggerEventSourceMappings: [
       {
         batchSize: 100,
-        startingPosition: 'LATEST',
+        startingPosition: "LATEST",
         eventSourceArn: streamArnParamRef,
-        functionTemplateType: 'kinesis',
-        functionTemplateName: 'Kinesis.cs.ejs',
+        functionTemplateType: "kinesis",
+        functionTemplateName: "Kinesis.cs.ejs",
         triggerPolicies: [
           {
-            Effect: 'Allow',
+            Effect: "Allow",
             Action: [
-              'kinesis:DescribeStream',
-              'kinesis:DescribeStreamSummary',
-              'kinesis:GetRecords',
-              'kinesis:GetShardIterator',
-              'kinesis:ListShards',
-              'kinesis:ListStreams',
-              'kinesis:SubscribeToShard',
+              "kinesis:DescribeStream",
+              "kinesis:DescribeStreamSummary",
+              "kinesis:GetRecords",
+              "kinesis:GetShardIterator",
+              "kinesis:ListShards",
+              "kinesis:ListStreams",
+              "kinesis:SubscribeToShard",
             ],
             Resource: streamArnParamRef,
           },
@@ -58,9 +58,9 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
     ],
     dependsOn: [
       {
-        category: 'analytics',
+        category: "analytics",
         resourceName: targetResourceName,
-        attributes: ['kinesisStreamArn'],
+        attributes: ["kinesisStreamArn"],
       },
     ],
   };

@@ -1,6 +1,6 @@
-import aws from './aws.js';
-import { loadConfiguration } from '../configuration-manager';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import aws from "./aws.js";
+import { loadConfiguration } from "../configuration-manager";
+import { $TSAny, $TSContext } from "amplify-cli-core";
 
 export class STS {
   private static instance: STS;

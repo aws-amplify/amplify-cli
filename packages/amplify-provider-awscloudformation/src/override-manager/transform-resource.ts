@@ -1,14 +1,21 @@
 import {
-  $TSContext, AmplifyError, AmplifyErrorType, AmplifyException, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import ora from 'ora';
-import * as path from 'path';
-import { transformRootStack } from '.';
-import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
-import { rootStackFileName } from '../push-resources';
-import { isMigrateProject, isRootOverrideFileModifiedSinceLastPush } from './root-stack-utils';
+  $TSContext,
+  AmplifyError,
+  AmplifyErrorType,
+  AmplifyException,
+  FeatureFlags,
+  IAmplifyResource,
+  JSONUtilities,
+  pathManager,
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as fs from "fs-extra";
+import ora from "ora";
+import * as path from "path";
+import { transformRootStack } from ".";
+import { prePushCfnTemplateModifier } from "../pre-push-cfn-processor/pre-push-cfn-modifier";
+import { rootStackFileName } from "../push-resources";
+import { isMigrateProject, isRootOverrideFileModifiedSinceLastPush } from "./root-stack-utils";
 
 /**
  *
@@ -27,11 +34,11 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
         spinner = ora(`Building resource ${resource.category}/${resource.resourceName}`);
         spinner.start();
         await transformCategoryStack(context, resource);
-        FeatureFlags.ensureFeatureFlag('project', 'overrides');
+        FeatureFlags.ensureFeatureFlag("project", "overrides");
         spinner.stop();
         return;
       }
-      printer.debug('Overrides functionality is not implemented for this category');
+      printer.debug("Overrides functionality is not implemented for this category");
     } else {
       // old app -> migrate project must transform -> change detected
       // new app -> just initialized project no transform -> no change detected
@@ -62,25 +69,28 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
     // because we want the customer to fix invalid overrides or custom stack errors
     // before deployments
     const overrideOrCustomStackErrorsList: AmplifyErrorType[] = [
-      'MissingOverridesInstallationRequirementsError',
-      'InvalidOverrideError',
-      'InvalidCustomResourceError',
+      "MissingOverridesInstallationRequirementsError",
+      "InvalidOverrideError",
+      "InvalidCustomResourceError",
     ];
     if (
-      (err instanceof AmplifyException
-      && overrideOrCustomStackErrorsList.find(v => v === err.name))
+      (err instanceof AmplifyException && overrideOrCustomStackErrorsList.find((v) => v === err.name)) ||
       // this is a special exception for the API category which would otherwise have a
       // circular dependency if it imported AmplifyException
-      || err['_amplifyErrorType'] === 'InvalidOverrideError') {
-      
+      err["_amplifyErrorType"] === "InvalidOverrideError"
+    ) {
       // if the exception is not already an AmplifyException re-throw it as an AmplifyException
       // so that user's get the appropriate resolution steps that we intended
-      if(err['_amplifyErrorType'] === 'InvalidOverrideError') {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+      if (err["_amplifyErrorType"] === "InvalidOverrideError") {
+        throw new AmplifyError(
+          "InvalidOverrideError",
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: "There may be runtime errors in your overrides file. If so, fix the errors and try again.",
+          },
+          err
+        );
       }
       // otherwise just rethrow the AmplifyException
       throw err;

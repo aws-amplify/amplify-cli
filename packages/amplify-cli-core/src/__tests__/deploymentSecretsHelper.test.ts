@@ -1,11 +1,11 @@
-import { DeploymentSecrets } from '..';
-import * as helper from '../deploymentSecretsHelper';
+import { DeploymentSecrets } from "..";
+import * as helper from "../deploymentSecretsHelper";
 
-describe('test deployment secrets helper', () => {
+describe("test deployment secrets helper", () => {
   const mockDeployment: DeploymentSecrets = {
     appSecrets: [
       {
-        rootStackId: 'stackid1',
+        rootStackId: "stackid1",
         environments: {
           dev: {
             auth: {
@@ -17,7 +17,7 @@ describe('test deployment secrets helper', () => {
         },
       },
       {
-        rootStackId: 'stackid2',
+        rootStackId: "stackid2",
         environments: {
           dev: {
             auth: {
@@ -30,51 +30,51 @@ describe('test deployment secrets helper', () => {
       },
     ],
   };
-  it('remove but not found category', () => {
+  it("remove but not found category", () => {
     expect(
       helper.removeFromDeploymentSecrets({
         currentDeploymentSecrets: mockDeployment,
-        category: 'function',
-        envName: 'asd',
-        keyName: 'hostedUIProviderCreds',
-        resource: 'functionxyz',
-        rootStackId: 'stackid1',
-      }).appSecrets.length,
+        category: "function",
+        envName: "asd",
+        keyName: "hostedUIProviderCreds",
+        resource: "functionxyz",
+        rootStackId: "stackid1",
+      }).appSecrets.length
     ).toEqual(2);
   });
-  it('remove but not found env', () => {
+  it("remove but not found env", () => {
     expect(
       helper.removeFromDeploymentSecrets({
         currentDeploymentSecrets: mockDeployment,
-        category: 'auth',
-        envName: 'asd',
-        keyName: 'hostedUIProviderCreds',
-        resource: 'functionxyz',
-        rootStackId: 'stackid1',
-      }).appSecrets.length,
+        category: "auth",
+        envName: "asd",
+        keyName: "hostedUIProviderCreds",
+        resource: "functionxyz",
+        rootStackId: "stackid1",
+      }).appSecrets.length
     ).toEqual(2);
   });
 
-  it('remove but not found resource', () => {
+  it("remove but not found resource", () => {
     expect(
       helper.removeFromDeploymentSecrets({
         currentDeploymentSecrets: mockDeployment,
-        category: 'auth',
-        envName: 'dev',
-        keyName: 'hostedUIProviderCreds',
-        resource: 'wrongresourcename',
-        rootStackId: 'stackid1',
-      }).appSecrets.length,
+        category: "auth",
+        envName: "dev",
+        keyName: "hostedUIProviderCreds",
+        resource: "wrongresourcename",
+        rootStackId: "stackid1",
+      }).appSecrets.length
     ).toEqual(2);
   });
-  it('remove and found', () => {
+  it("remove and found", () => {
     const removedDeploymentSecrets = helper.removeFromDeploymentSecrets({
       currentDeploymentSecrets: mockDeployment,
-      category: 'auth',
-      envName: 'dev',
-      keyName: 'hostedUIProviderCreds',
-      resource: 'tagseb306692',
-      rootStackId: 'stackid1',
+      category: "auth",
+      envName: "dev",
+      keyName: "hostedUIProviderCreds",
+      resource: "tagseb306692",
+      rootStackId: "stackid1",
     });
     expect(removedDeploymentSecrets.appSecrets.length).toEqual(1);
   });

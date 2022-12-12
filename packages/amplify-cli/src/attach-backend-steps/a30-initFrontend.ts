@@ -1,7 +1,7 @@
-import * as inquirer from 'inquirer';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
-import { normalizeFrontendHandlerName } from '../input-params-manager';
-import { ListQuestion } from 'inquirer';
+import * as inquirer from "inquirer";
+import { getFrontendPlugins } from "../extensions/amplify-helpers/get-frontend-plugins";
+import { normalizeFrontendHandlerName } from "../input-params-manager";
+import { ListQuestion } from "inquirer";
 
 export async function initFrontend(context) {
   if (
@@ -45,13 +45,13 @@ async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
   }
 
   if (!frontend && inputParams && inputParams.yes) {
-    frontend = 'javascript';
+    frontend = "javascript";
   }
 
   if (!frontend) {
     const selectFrontendHandler: ListQuestion<{ selectedFrontendHandler: string }> = {
-      type: 'list',
-      name: 'selectedFrontendHandler',
+      type: "list",
+      name: "selectedFrontendHandler",
       message: "Choose the type of app that you're building",
       choices: frontendPluginList,
       default: suitableFrontend,

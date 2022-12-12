@@ -1,9 +1,9 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
-import { EOL } from 'os';
+import { addCircleCITags, getCLIPath, nspawn as spawn } from "@aws-amplify/amplify-e2e-core";
+import { EOL } from "os";
 
 const defaultSettings = {
   name: EOL,
-  envName: 'integtest',
+  envName: "integtest",
   editor: EOL,
   appType: EOL,
   framework: EOL,
@@ -24,36 +24,36 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
 
   if (s.disableAmplifyAppCreation === true) {
     env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: "1",
     };
   }
 
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
-      .wait('Enter a name for the project')
+    spawn(getCLIPath(testingWithLatestCodebase), ["init"], { cwd, stripColors: true, env })
+      .wait("Enter a name for the project")
       .sendLine(s.name)
-      .wait('Enter a name for the environment')
+      .wait("Enter a name for the environment")
       .sendLine(s.envName)
-      .wait('Choose your default editor:')
+      .wait("Choose your default editor:")
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
       .sendLine(s.appType)
-      .wait('What javascript framework are you using')
+      .wait("What javascript framework are you using")
       .sendLine(s.framework)
-      .wait('Source Directory Path:')
+      .wait("Source Directory Path:")
       .sendLine(s.srcDir)
-      .wait('Distribution Directory Path:')
+      .wait("Distribution Directory Path:")
       .sendLine(s.distDir)
-      .wait('Build Command:')
+      .wait("Build Command:")
       .sendLine(s.buildCmd)
-      .wait('Start Command:')
+      .wait("Start Command:")
       .sendCarriageReturn()
-      .wait('Using default provider  awscloudformation')
+      .wait("Using default provider  awscloudformation")
       .wait(/(Select the authentication method you want to use|Do you want to use an AWS profile)/)
       .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
+      .wait("Please choose the profile you want to use")
       .sendLine(s.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -72,38 +72,38 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
 
   if (s.disableAmplifyAppCreation === true) {
     env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: "1",
     };
   }
 
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
-      .wait('Enter a name for the project')
+    spawn(getCLIPath(testingWithLatestCodebase), ["init"], { cwd, stripColors: true, env })
+      .wait("Enter a name for the project")
       .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
+      .wait("Initialize the project with the above configuration?")
       .sendConfirmNo()
-      .wait('Enter a name for the environment')
+      .wait("Enter a name for the environment")
       .sendLine(s.envName)
-      .wait('Choose your default editor:')
+      .wait("Choose your default editor:")
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
       .sendLine(s.appType)
-      .wait('What javascript framework are you using')
+      .wait("What javascript framework are you using")
       .sendLine(s.framework)
-      .wait('Source Directory Path:')
+      .wait("Source Directory Path:")
       .sendLine(s.srcDir)
-      .wait('Distribution Directory Path:')
+      .wait("Distribution Directory Path:")
       .sendLine(s.distDir)
-      .wait('Build Command:')
+      .wait("Build Command:")
       .sendLine(s.buildCmd)
-      .wait('Start Command:')
+      .wait("Start Command:")
       .sendCarriageReturn()
-      .wait('Using default provider  awscloudformation')
+      .wait("Using default provider  awscloudformation")
       .wait(/(Select the authentication method you want to use|Do you want to use an AWS profile)/)
       .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
+      .wait("Please choose the profile you want to use")
       .sendLine(s.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -122,29 +122,29 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], {
+    spawn(getCLIPath(), ["init"], {
       cwd,
       stripColors: true,
       env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: "1",
       },
     })
-      .wait('Enter a name for the project')
+      .wait("Enter a name for the project")
       .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
+      .wait("Initialize the project with the above configuration?")
       .sendConfirmNo()
-      .wait('Enter a name for the environment')
+      .wait("Enter a name for the environment")
       .sendLine(s.envName)
-      .wait('Choose your default editor:')
+      .wait("Choose your default editor:")
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .send('j')
+      .send("j")
       .sendCarriageReturn()
-      .wait('Where is your Res directory')
+      .wait("Where is your Res directory")
       .sendCarriageReturn()
-      .wait('Select the authentication method you want to use:')
+      .wait("Select the authentication method you want to use:")
       .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
+      .wait("Please choose the profile you want to use")
       .sendLine(s.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

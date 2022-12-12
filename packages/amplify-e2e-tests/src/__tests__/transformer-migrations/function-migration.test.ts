@@ -7,16 +7,16 @@ import {
   amplifyPush,
   addApi,
   amplifyPushUpdate,
-} from '@aws-amplify/amplify-e2e-core';
-import { addSimpleFunction, updateFunctionNameInSchema } from '../../schema-api-directives/functionTester';
-import { updateSchemaInTestProject, testQueries } from '../../schema-api-directives/common';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../../schema-api-directives/authHelper';
+} from "@aws-amplify/amplify-e2e-core";
+import { addSimpleFunction, updateFunctionNameInSchema } from "../../schema-api-directives/functionTester";
+import { updateSchemaInTestProject, testQueries } from "../../schema-api-directives/common";
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from "../../schema-api-directives/authHelper";
 
-describe('api directives @function v1 to v2 migration', () => {
+describe("api directives @function v1 to v2 migration", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('function');
+    projectDir = await createNewProjectDir("function");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -25,7 +25,7 @@ describe('api directives @function v1 to v2 migration', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('function directive migration testing', async () => {
+  it("function directive migration testing", async () => {
     const testModule = {
       func1,
       func2,
@@ -33,15 +33,15 @@ describe('api directives @function v1 to v2 migration', () => {
       query,
       expected_result_query,
     };
-    const v1TransformerVersion = 'v1';
-    const v2TransformerVersion = 'v2';
-    const function1Name = await addSimpleFunction(projectDir, testModule, 'func1');
-    const function2Name = await addSimpleFunction(projectDir, testModule, 'func2');
+    const v1TransformerVersion = "v1";
+    const v2TransformerVersion = "v2";
+    const function1Name = await addSimpleFunction(projectDir, testModule, "func1");
+    const function2Name = await addSimpleFunction(projectDir, testModule, "func2");
     await addApi(projectDir, { transformerVersion: 1 });
     updateSchemaInTestProject(projectDir, testModule.schema);
-    updateFunctionNameInSchema(projectDir, '<function1-name>', function1Name);
-    updateFunctionNameInSchema(projectDir, '<function2-name>', function2Name);
-    updateFunctionNameInSchema(projectDir, '<transformer-version>', v1TransformerVersion);
+    updateFunctionNameInSchema(projectDir, "<function1-name>", function1Name);
+    updateFunctionNameInSchema(projectDir, "<function2-name>", function2Name);
+    updateFunctionNameInSchema(projectDir, "<transformer-version>", v1TransformerVersion);
     await amplifyPush(projectDir);
 
     let awsconfig = configureAmplify(projectDir);
@@ -50,12 +50,12 @@ describe('api directives @function v1 to v2 migration', () => {
 
     await testQueries(testModule, appSyncClient);
 
-    await addFeatureFlag(projectDir, 'graphqltransformer', 'transformerVersion', 2);
-    await addFeatureFlag(projectDir, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
+    await addFeatureFlag(projectDir, "graphqltransformer", "transformerVersion", 2);
+    await addFeatureFlag(projectDir, "graphqltransformer", "useExperimentalPipelinedTransformer", true);
     updateSchemaInTestProject(projectDir, testModule.schema);
-    updateFunctionNameInSchema(projectDir, '<function1-name>', function1Name);
-    updateFunctionNameInSchema(projectDir, '<function2-name>', function2Name);
-    updateFunctionNameInSchema(projectDir, '<transformer-version>', v2TransformerVersion);
+    updateFunctionNameInSchema(projectDir, "<function1-name>", function1Name);
+    updateFunctionNameInSchema(projectDir, "<function2-name>", function2Name);
+    updateFunctionNameInSchema(projectDir, "<transformer-version>", v2TransformerVersion);
     await amplifyPushUpdate(projectDir);
 
     awsconfig = configureAmplify(projectDir);
@@ -66,7 +66,7 @@ describe('api directives @function v1 to v2 migration', () => {
   });
 
   // schema
-  const env = '${env}';
+  const env = "${env}";
   const schema = `
     #Transformer Version: <transformer-version>
     type Query {
@@ -94,7 +94,7 @@ describe('api directives @function v1 to v2 migration', () => {
   `;
   const expected_result_query = {
     data: {
-      doSomeWork: 'initial mutation message|processed by worker-function|processed by audit function',
+      doSomeWork: "initial mutation message|processed by worker-function|processed by audit function",
     },
   };
 });

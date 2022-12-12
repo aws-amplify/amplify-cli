@@ -8,14 +8,15 @@ import {
   apiGqlCompile,
   amplifyPush,
   generateModels,
-  createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('global sandbox mode c', () => {
+describe("global sandbox mode c", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('sandbox');
+    projectDir = await createNewProjectDir("sandbox");
     await initJSProjectWithProfile(projectDir);
   });
 
@@ -25,7 +26,7 @@ describe('global sandbox mode c', () => {
   });
 
   // TODO: need a reason why we're skipping this or we should remove this test
-  it.skip('compiles schema with three models and pushes to cloud', async () => {
+  it.skip("compiles schema with three models and pushes to cloud", async () => {
     await addApiWithThreeModels(projectDir);
     await apiGqlCompile(projectDir, true);
     await generateModels(projectDir);

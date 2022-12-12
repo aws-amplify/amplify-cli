@@ -15,14 +15,14 @@ import {
   removeFunction,
   setCategoryParameters,
   updateFunction,
-} from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentYes, removeEnvironment } from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { addEnvironmentYes, removeEnvironment } from "../environment/env";
 
-describe('function secret value', () => {
+describe("function secret value", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('funcsecrets');
+    projRoot = await createNewProjectDir("funcsecrets");
   });
 
   afterEach(async () => {
@@ -30,31 +30,31 @@ describe('function secret value', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('configures secret that is accessible in the cloud', async () => {
+  it("configures secret that is accessible in the cloud", async () => {
     // add func with secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     // override lambda code to fetch the secret and return the value
-    overrideFunctionCodeNode(projRoot, funcName, 'retrieve-secret.js');
+    overrideFunctionCodeNode(projRoot, funcName, "retrieve-secret.js");
 
     await amplifyPushAuth(projRoot);
 
     const lambdaEvent = {
-      secretNames: ['TEST_SECRET'],
+      secretNames: ["TEST_SECRET"],
     };
 
     const meta = getProjectMeta(projRoot);
@@ -62,25 +62,25 @@ describe('function secret value', () => {
 
     // check that the lambda response includes the secret value
     const response = await invokeFunction(`${funcName}-integtest`, JSON.stringify(lambdaEvent), region);
-    expect(JSON.parse(response.Payload.toString())[0]?.Value).toEqual('testsecretvalue');
+    expect(JSON.parse(response.Payload.toString())[0]?.Value).toEqual("testsecretvalue");
   });
 
-  it('removes secrets immediately when func not pushed', async () => {
+  it("removes secrets immediately when func not pushed", async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     // remove secret
@@ -88,36 +88,36 @@ describe('function secret value', () => {
       projRoot,
       {
         secretsConfig: {
-          operation: 'delete',
-          name: 'TEST_SECRET',
+          operation: "delete",
+          name: "TEST_SECRET",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     // check that ssm param doesn't exist
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+    await expectParams([], ["TEST_SECRET"], region, appId, "integtest", funcName);
   });
 
-  it('removes secrets immediately when unpushed function is removed from project', async () => {
+  it("removes secrets immediately when unpushed function is removed from project", async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await removeFunction(projRoot, funcName);
@@ -126,25 +126,25 @@ describe('function secret value', () => {
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+    await expectParams([], ["TEST_SECRET"], region, appId, "integtest", funcName);
   });
 
-  it('removes secrets on push when func is already pushed', async () => {
+  it("removes secrets on push when func is already pushed", async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projRoot);
@@ -154,41 +154,41 @@ describe('function secret value', () => {
       projRoot,
       {
         secretsConfig: {
-          operation: 'delete',
-          name: 'TEST_SECRET',
+          operation: "delete",
+          name: "TEST_SECRET",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     // check that ssm param still exists
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, 'integtest', funcName);
+    await expectParams([{ name: "TEST_SECRET", value: "testsecretvalue" }], [], region, appId, "integtest", funcName);
 
     await amplifyPushAuth(projRoot);
 
     // check that ssm param doesn't exist
-    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+    await expectParams([], ["TEST_SECRET"], region, appId, "integtest", funcName);
   });
 
-  it('removes secrets on push when pushed function is removed', async () => {
+  it("removes secrets on push when pushed function is removed", async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projRoot);
@@ -200,84 +200,84 @@ describe('function secret value', () => {
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, 'integtest', funcName);
+    await expectParams([{ name: "TEST_SECRET", value: "testsecretvalue" }], [], region, appId, "integtest", funcName);
 
     await amplifyPushAuth(projRoot);
 
     // check that ssm param doesn't exist
-    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+    await expectParams([], ["TEST_SECRET"], region, appId, "integtest", funcName);
   });
 
-  it('removes / copies secrets when env removed / added, respectively', async () => {
+  it("removes / copies secrets when env removed / added, respectively", async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
-    const newEnvName = 'testtest';
+    const newEnvName = "testtest";
     await addEnvironmentYes(projRoot, { envName: newEnvName });
 
     // check that ssm param exists for new env
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, newEnvName, funcName);
+    await expectParams([{ name: "TEST_SECRET", value: "testsecretvalue" }], [], region, appId, newEnvName, funcName);
 
-    await removeEnvironment(projRoot, { envName: 'integtest' });
+    await removeEnvironment(projRoot, { envName: "integtest" });
 
     // check that ssm param doesn't exist in removed env
-    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+    await expectParams([], ["TEST_SECRET"], region, appId, "integtest", funcName);
   });
 
-  it('prompts for missing secrets and removes unused secrets on push', async () => {
+  it("prompts for missing secrets and removes unused secrets on push", async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: funcName,
         secretsConfig: {
-          operation: 'add',
-          name: 'TEST_SECRET',
-          value: 'testsecretvalue',
+          operation: "add",
+          name: "TEST_SECRET",
+          value: "testsecretvalue",
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projRoot);
 
     // replace contents of function-parameters.json with a different secret name
     // this will make amplify think the original secret has been removed and a new one has been added
-    const funcParams = getCategoryParameters(projRoot, 'function', funcName);
-    funcParams.secretNames = ['A_NEW_SECRET'];
-    setCategoryParameters(projRoot, 'function', funcName, funcParams);
+    const funcParams = getCategoryParameters(projRoot, "function", funcName);
+    funcParams.secretNames = ["A_NEW_SECRET"];
+    setCategoryParameters(projRoot, "function", funcName, funcParams);
     // trigger a func update
-    overrideFunctionCodeNode(projRoot, funcName, 'retrieve-secret.js');
+    overrideFunctionCodeNode(projRoot, funcName, "retrieve-secret.js");
 
     // push -> should prompt for value for new secret
-    await amplifyPushMissingFuncSecret(projRoot, 'anewtestsecretvalue');
+    await amplifyPushMissingFuncSecret(projRoot, "anewtestsecretvalue");
 
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
 
     // check that old value is removed and new one is added
-    await expectParams([{ name: 'A_NEW_SECRET', value: 'anewtestsecretvalue' }], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+    await expectParams([{ name: "A_NEW_SECRET", value: "anewtestsecretvalue" }], ["TEST_SECRET"], region, appId, "integtest", funcName);
   });
 });
 
@@ -287,9 +287,9 @@ const expectParams = async (
   region: string,
   appId: string,
   envName: string,
-  funcName: string,
+  funcName: string
 ) => {
-  const result = await getSSMParameters(region, appId, envName, funcName, expectToExist.map(exist => exist.name).concat(expectNotExist));
+  const result = await getSSMParameters(region, appId, envName, funcName, expectToExist.map((exist) => exist.name).concat(expectNotExist));
 
   const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${name}`;
 
@@ -297,9 +297,9 @@ const expectParams = async (
   expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
 
   expect(result.Parameters.length).toBe(expectToExist.length);
-  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: param.Value })).sort(sortByName);
+  const mappedResult = result.Parameters.map((param) => ({ name: param.Name, value: param.Value })).sort(sortByName);
   const mappedExpect = expectToExist
-    .map(exist => ({ name: `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${exist.name}`, value: exist.value }))
+    .map((exist) => ({ name: `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${exist.name}`, value: exist.value }))
     .sort(sortByName);
   expect(mappedResult).toEqual(mappedExpect);
 };

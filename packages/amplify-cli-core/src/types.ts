@@ -1,7 +1,7 @@
 /* eslint-disable-next-line import/no-cycle */
-import { ViewResourceTableParams } from './cliViewAPI';
-import { ServiceSelection } from './serviceSelection';
-import { Tag } from './tags';
+import { ViewResourceTableParams } from "./cliViewAPI";
+import { ServiceSelection } from "./serviceSelection";
+import { Tag } from "./tags";
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -11,8 +11,8 @@ import { Tag } from './tags';
 export type $TSAny = any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 
 /**
-  * Use it for all CLI Context class references, it enables a quick way to see what we have on the context
-  */
+ * Use it for all CLI Context class references, it enables a quick way to see what we have on the context
+ */
 export type $TSContext = {
   amplify: AmplifyToolkit;
   /**
@@ -33,22 +33,22 @@ export type $TSContext = {
   filesystem: IContextFilesystem;
   template: IContextTemplate;
   updatingAuth: $TSAny;
- };
+};
 
 /**
-  * type for category name
-  */
+ * type for category name
+ */
 export type CategoryName = string;
 
 /**
-  * type for resource name
-  */
+ * type for resource name
+ */
 export type ResourceName = string;
 
 /**
-  * User amplify-prompts package instead
-  * @deprecated
-  */
+ * User amplify-prompts package instead
+ * @deprecated
+ */
 export type IContextPrint = {
   /**
    * Use printer.info from amplify-prompts instead
@@ -79,7 +79,7 @@ export type IContextPrint = {
    *  Use the table function into formatter.ts from amplify-prompts instead
    * @deprecated
    */
-  table: (data: string[][], options?: { format?: 'markdown' | 'lean' }) => void;
+  table: (data: string[][], options?: { format?: "markdown" | "lean" }) => void;
   /**
    *  Use printer.debug from amplify-prompts instead
    * @deprecated
@@ -108,9 +108,9 @@ export type IContextPrint = {
 };
 
 /**
-  * Use stateManager from amplify-cli-core instead
-  * @deprecated
-  */
+ * Use stateManager from amplify-cli-core instead
+ * @deprecated
+ */
 export type IContextFilesystem = {
   remove: (targetPath: string) => void;
   read: (targetPath: string, encoding?: string) => $TSAny;
@@ -121,16 +121,16 @@ export type IContextFilesystem = {
 };
 
 /**
-  * ejs template interface
-  * @deprecated
-  */
+ * ejs template interface
+ * @deprecated
+ */
 export type IContextTemplate = {
   generate: (opts: { template: string; target: string; props: $TSObject; directory: string }) => string;
 };
 
 /**
-  * Plugin platform interface
-  */
+ * Plugin platform interface
+ */
 export type IPluginPlatform = {
   pluginDirectories: string[];
   pluginPrefixes: string[];
@@ -142,15 +142,15 @@ export type IPluginPlatform = {
 };
 
 /**
-  * Plugin collection interface
-  */
+ * Plugin collection interface
+ */
 export type IPluginCollection = {
   [pluginType: string]: IPluginInfo[];
 };
 
 /**
-  * Plugin interface
-  */
+ * Plugin interface
+ */
 export type IPluginInfo = {
   packageName: string;
   packageVersion: string;
@@ -159,8 +159,8 @@ export type IPluginInfo = {
 };
 
 /**
-  * Deployment secrets type
-  */
+ * Deployment secrets type
+ */
 export type DeploymentSecrets = {
   appSecrets: Array<{
     rootStackId: string;
@@ -169,77 +169,77 @@ export type DeploymentSecrets = {
 };
 
 /**
-  * Plugins or other packages bundled with the CLI that pass a file to a system command or execute a binary, must export a function named
-  * "getPackageAssetPaths" of this type.
-  *
-  * The function must return the relative paths of all files and folders that the package passes into a system command.
-  * If the package is an Amplify plugin, the path must be relative to the location of the amplify-plugin.json file
-  * If the package is not an Amplify plugin, the path must be relative to the location of require.resolve('your-package')
-  *
-  * This function will be executed by the CLI during installation.
-  *
-  * At runtime, the assets can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativePath)
-  * where "pathManager" is the PathManager instance exported by this package,
-  * "packageName" is the name of your package (used as a key to locate the assets),
-  * and "relativePath" is the path to the asset relative to the root of the package.
-  *
-  * For example, suppose you have a package called "my-fancy-package".
-  * This package expects at runtime to have access to all of the binary files in the folder "<package-root>/resources/binaries"
-  * as well as access to a jar file at "<package-root>/resources/jars/myJar.jar"
-  *
-  * In that case, this package will export the following function:
-  *
-  * export const getPackageAssetPaths = () => ['resources/binaries', 'resources/jars/myJar.jar'];
-  *
-  * A binary could then be accessed at:
-  * path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/binaries', 'myBinary')
-  *
-  * Likewise the jar can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/jars/myJar.jar')
-  */
+ * Plugins or other packages bundled with the CLI that pass a file to a system command or execute a binary, must export a function named
+ * "getPackageAssetPaths" of this type.
+ *
+ * The function must return the relative paths of all files and folders that the package passes into a system command.
+ * If the package is an Amplify plugin, the path must be relative to the location of the amplify-plugin.json file
+ * If the package is not an Amplify plugin, the path must be relative to the location of require.resolve('your-package')
+ *
+ * This function will be executed by the CLI during installation.
+ *
+ * At runtime, the assets can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativePath)
+ * where "pathManager" is the PathManager instance exported by this package,
+ * "packageName" is the name of your package (used as a key to locate the assets),
+ * and "relativePath" is the path to the asset relative to the root of the package.
+ *
+ * For example, suppose you have a package called "my-fancy-package".
+ * This package expects at runtime to have access to all of the binary files in the folder "<package-root>/resources/binaries"
+ * as well as access to a jar file at "<package-root>/resources/jars/myJar.jar"
+ *
+ * In that case, this package will export the following function:
+ *
+ * export const getPackageAssetPaths = () => ['resources/binaries', 'resources/jars/myJar.jar'];
+ *
+ * A binary could then be accessed at:
+ * path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/binaries', 'myBinary')
+ *
+ * Likewise the jar can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/jars/myJar.jar')
+ */
 export type GetPackageAssetPaths = () => Promise<string[]>;
 
 /**
-  * Placeholder type
-  */
+ * Placeholder type
+ */
 export type $IPluginManifest = $TSAny;
 
 /**
-  * Use it for all file content read from amplify-meta.json
-  */
+ * Use it for all file content read from amplify-meta.json
+ */
 export type $TSMeta = $TSAny;
 
 /**
-  * Use it for all file content read from team-provider-info.json
-  */
+ * Use it for all file content read from team-provider-info.json
+ */
 export type $TSTeamProviderInfo = $TSAny;
 
 /**
-  * Use it for all object initializer usages: {}
-  */
+ * Use it for all object initializer usages: {}
+ */
 export type $TSObject = Record<string, $TSAny>;
 
 /**
-  * There are tons of places where we use these two pieces of information to identify a resource
-  * We can use this type to type those instances
-  */
+ * There are tons of places where we use these two pieces of information to identify a resource
+ * We can use this type to type those instances
+ */
 export interface ResourceTuple {
   category: string;
   resourceName: string;
- }
+}
 
 /* eslint-disable @typescript-eslint/naming-convention */
 /**
-  * enum for supported Amplify frontend choices
-  */
+ * enum for supported Amplify frontend choices
+ */
 export enum AmplifyFrontend {
-  android = 'android',
-  ios = 'ios',
-  javascript = 'javascript',
+  android = "android",
+  ios = "ios",
+  javascript = "javascript",
 }
 
 /**
-  * AmplifyProjectConfig interface
-  */
+ * AmplifyProjectConfig interface
+ */
 export interface AmplifyProjectConfig {
   projectName: string;
   version: string;
@@ -248,8 +248,8 @@ export interface AmplifyProjectConfig {
 }
 
 /**
-  * higher level context object that could be used in plugins
-  */
+ * higher level context object that could be used in plugins
+ */
 export interface ProviderContext {
   provider: string;
   service: string;
@@ -257,12 +257,12 @@ export interface ProviderContext {
 }
 
 /**
-  * Placeholder type
-  */
+ * Placeholder type
+ */
 export type $TSCopyJob = $TSAny;
 
- // Temporary interface until Context refactor
- interface AmplifyToolkit {
+// Temporary interface until Context refactor
+interface AmplifyToolkit {
   confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
@@ -311,7 +311,7 @@ export type $TSCopyJob = $TSAny;
     category?: string,
     resourceName?: string,
     filteredResources?: { category: string; resourceName: string }[],
-    rebuild?: boolean,
+    rebuild?: boolean
   ) => $TSAny;
   storeCurrentCloudBackend: (context: $TSContext) => $TSAny;
 
@@ -326,11 +326,11 @@ export type $TSCopyJob = $TSAny;
     category: string,
     resource: string,
     questionOptions?: {
-     headless?: boolean;
-     serviceSuffix?: { [serviceName: string]: string };
-     serviceDeletionInfo?: { [serviceName: string]: string };
+      headless?: boolean;
+      serviceSuffix?: { [serviceName: string]: string };
+      serviceDeletionInfo?: { [serviceName: string]: string };
     },
-    resourceNameCallback?: (resourceName: string) => Promise<void>,
+    resourceNameCallback?: (resourceName: string) => Promise<void>
   ) => Promise<{ service: string; resourceName: string } | undefined>;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
@@ -343,21 +343,21 @@ export type $TSCopyJob = $TSAny;
     category: string,
     servicesMetadata: $TSAny,
     customQuestion?: $TSAny,
-    optionNameOverrides?: Record<string, string>,
+    optionNameOverrides?: Record<string, string>
   ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
   updateamplifyMetaAfterResourceUpdate: (
     category: string,
     resourceName: string,
     metaResourceKey: string,
-    metaResourceData?: $TSAny,
+    metaResourceData?: $TSAny
   ) => $TSMeta;
   updateamplifyMetaAfterResourceAdd: (
     category: string,
     resourceName: string,
     metaResourceData: $TSAny,
     backendResourceData?: $TSAny,
-    overwriteObjectIfExists?: boolean,
+    overwriteObjectIfExists?: boolean
   ) => void;
   updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
   /* eslint-disable-next-line spellcheck/spell-checker */
@@ -399,5 +399,5 @@ export type $TSCopyJob = $TSAny;
     unauthRoleName?: string;
   };
   invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
-  getTags: (context: $TSContext) => Tag[],
- }
+  getTags: (context: $TSContext) => Tag[];
+}

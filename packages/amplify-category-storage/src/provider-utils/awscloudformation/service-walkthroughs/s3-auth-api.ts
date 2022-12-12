@@ -1,7 +1,7 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { AmplifyCategories } from 'amplify-cli-core';
-import os from 'os';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { AmplifyCategories } from "amplify-cli-core";
+import os from "os";
 
 /* This file contains all functions interacting with AUTH category */
 
@@ -13,10 +13,10 @@ import os from 'os';
  * @returns Name of the auth resource used by S3
  */
 export async function getAuthResourceARN(context: $TSContext): Promise<string> {
-  let authResources = (await context.amplify.getResourceStatus('auth')).allResources;
-  authResources = authResources.filter((resource: $TSAny) => resource.service === 'Cognito');
+  let authResources = (await context.amplify.getResourceStatus("auth")).allResources;
+  authResources = authResources.filter((resource: $TSAny) => resource.service === "Cognito");
   if (authResources.length === 0) {
-    throw new Error('No auth resource found. Please add it using amplify add auth');
+    throw new Error("No auth resource found. Please add it using amplify add auth");
   }
   return authResources[0].resourceName as string;
 }
@@ -34,7 +34,7 @@ export async function migrateAuthDependencyResource(context: $TSContext): Promis
     return true;
   }
   if (authResourceName) {
-    return context.amplify.invokePluginMethod<boolean>(context, AmplifyCategories.AUTH, undefined, 'migrateAuthResource', [
+    return context.amplify.invokePluginMethod<boolean>(context, AmplifyCategories.AUTH, undefined, "migrateAuthResource", [
       context,
       authResourceName,
     ]);
@@ -51,14 +51,14 @@ export async function migrateAuthDependencyResource(context: $TSContext): Promis
 export async function checkStorageAuthenticationRequirements(
   context: $TSContext,
   storageResourceName: string,
-  allowUnauthenticatedIdentities: boolean,
+  allowUnauthenticatedIdentities: boolean
 ) {
-  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
+  const storageRequirements = { authSelections: "identityPoolAndUserPool", allowUnauthenticatedIdentities };
 
-  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'checkRequirements', [
+  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, "checkRequirements", [
     storageRequirements,
     context,
-    'storage',
+    "storage",
     storageResourceName,
   ]);
 
@@ -80,7 +80,7 @@ export async function checkStorageAuthenticationRequirements(
         storageRequirements.allowUnauthenticatedIdentities = false;
       }
 
-      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'externalAuthEnable', [
+      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, "externalAuthEnable", [
         context,
         AmplifyCategories.STORAGE,
         storageResourceName,

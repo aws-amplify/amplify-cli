@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from "lodash";
 import {
   $TSAny,
   $TSContext,
@@ -9,10 +9,10 @@ import {
   exitOnNextTick,
   JSONUtilities,
   pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
 import {
   GroupAccessType,
   S3AccessType,
@@ -21,9 +21,9 @@ import {
   S3TriggerPrefixType,
   S3UserInputs,
   S3UserInputTriggerFunctionParams,
-} from '../service-walkthrough-types/s3-user-input-types';
-import { migrateAuthDependencyResource } from './s3-auth-api';
-import { buildShortUUID } from './s3-walkthrough';
+} from "../service-walkthrough-types/s3-user-input-types";
+import { migrateAuthDependencyResource } from "./s3-auth-api";
+import { buildShortUUID } from "./s3-walkthrough";
 
 export interface MigrationParams {
   parametersFilepath: string;
@@ -35,16 +35,16 @@ export interface MigrationParams {
 }
 
 export enum S3CFNPermissionType {
-  CREATE = 's3:PutObject',
-  READ = 's3:GetObject',
-  DELETE = 's3:DeleteObject',
-  LIST = 's3:ListBucket',
+  CREATE = "s3:PutObject",
+  READ = "s3:GetObject",
+  DELETE = "s3:DeleteObject",
+  LIST = "s3:ListBucket",
 }
 
 export enum S3StorageParamsPermissionType {
-  CREATE_AND_UPDATE = 'create/update',
-  READ = 'read',
-  DELETE = 'delete',
+  CREATE_AND_UPDATE = "create/update",
+  READ = "read",
+  DELETE = "delete",
 }
 
 export interface S3CFNPermissionMapType {
@@ -58,7 +58,7 @@ interface IObjectS3PermissionType {
   [key: string]: S3PermissionType[];
 }
 export interface S3PermissionMapType extends IObjectS3PermissionType {
-  'create/update': S3PermissionType[];
+  "create/update": S3PermissionType[];
   read: S3PermissionType[];
   delete: S3PermissionType[];
 }
@@ -108,9 +108,9 @@ export class S3InputState {
     this._category = AmplifyCategories.STORAGE;
     this._service = AmplifySupportedService.S3;
     const projectBackendDirPath = pathManager.getBackendDirPath();
-    this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
+    this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, "cli-inputs.json"));
     this._resourceName = resourceName;
-    this.buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'build'));
+    this.buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, "build"));
     if (userInput) {
       //Add flow
       this._inputPayload = userInput;
@@ -127,8 +127,8 @@ export class S3InputState {
 
   getOldS3ParamsForMigration(): MigrationParams {
     const backendDir = pathManager.getBackendDirPath();
-    const oldParametersFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, 'parameters.json');
-    const oldCFNFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, 's3-cloudformation-template.json');
+    const oldParametersFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, "parameters.json");
+    const oldCFNFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, "s3-cloudformation-template.json");
     const oldStorageParamsFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, `storage-params.json`);
     const oldParameters = JSONUtilities.readJson<$TSAny>(oldParametersFilepath, { throwIfNotExist: true });
     const oldCFN = JSONUtilities.readJson<$TSAny>(oldCFNFilepath, { throwIfNotExist: true });
@@ -147,10 +147,10 @@ export class S3InputState {
   inferAuthPermissions(oldParams: $TSAny): $TSAny[] {
     if (
       oldParams.selectedAuthenticatedPermissions &&
-      ((oldParams.s3PermissionsAuthenticatedPublic && oldParams.s3PermissionsAuthenticatedPublic != 'DISALLOW') ||
-        (oldParams.s3PermissionsAuthenticatedPrivate && oldParams.s3PermissionsAuthenticatedPrivate != 'DISALLOW') ||
-        (oldParams.s3PermissionsAuthenticatedProtected && oldParams.s3PermissionsAuthenticatedProtected != 'DISALLOW') ||
-        (oldParams.s3PermissionsAuthenticatedUploads && oldParams.s3PermissionsAuthenticatedUploads != 'DISALLOW'))
+      ((oldParams.s3PermissionsAuthenticatedPublic && oldParams.s3PermissionsAuthenticatedPublic != "DISALLOW") ||
+        (oldParams.s3PermissionsAuthenticatedPrivate && oldParams.s3PermissionsAuthenticatedPrivate != "DISALLOW") ||
+        (oldParams.s3PermissionsAuthenticatedProtected && oldParams.s3PermissionsAuthenticatedProtected != "DISALLOW") ||
+        (oldParams.s3PermissionsAuthenticatedUploads && oldParams.s3PermissionsAuthenticatedUploads != "DISALLOW"))
     ) {
       return oldParams.selectedAuthenticatedPermissions;
     } else {
@@ -160,10 +160,10 @@ export class S3InputState {
   inferGuestPermissions(oldParams: $TSAny): $TSAny[] {
     if (
       oldParams.selectedGuestPermissions &&
-      ((oldParams.s3PermissionsGuestPublic && oldParams.s3PermissionsGuestPublic != 'DISALLOW') ||
-        (oldParams.s3PermissionsGuestPrivate && oldParams.s3PermissionsGuestPrivate != 'DISALLOW') ||
-        (oldParams.s3PermissionsGuestProtected && oldParams.s3PermissionsGuestProtected != 'DISALLOW') ||
-        (oldParams.s3PermissionsGuestUploads && oldParams.s3PermissionsGuestUploads != 'DISALLOW'))
+      ((oldParams.s3PermissionsGuestPublic && oldParams.s3PermissionsGuestPublic != "DISALLOW") ||
+        (oldParams.s3PermissionsGuestPrivate && oldParams.s3PermissionsGuestPrivate != "DISALLOW") ||
+        (oldParams.s3PermissionsGuestProtected && oldParams.s3PermissionsGuestProtected != "DISALLOW") ||
+        (oldParams.s3PermissionsGuestUploads && oldParams.s3PermissionsGuestUploads != "DISALLOW"))
     ) {
       return oldParams.selectedGuestPermissions;
     } else {
@@ -181,7 +181,7 @@ export class S3InputState {
       storageAccess: S3AccessType.AUTH_ONLY,
       guestAccess: [],
       authAccess: [],
-      triggerFunction: 'NONE',
+      triggerFunction: "NONE",
       groupAccess: undefined,
     };
     const authPermissions = this.inferAuthPermissions(oldParams);
@@ -209,7 +209,7 @@ export class S3InputState {
       }
     }
 
-    if (storageParams && storageParams.hasOwnProperty('groupPermissionMap')) {
+    if (storageParams && storageParams.hasOwnProperty("groupPermissionMap")) {
       userInputs.groupAccess = S3InputState.getPolicyMapFromStorageParamPolicyMap(storageParams.groupPermissionMap);
     }
 
@@ -231,8 +231,8 @@ export class S3InputState {
 
   public checkNeedsMigration(): boolean {
     const backendDir = pathManager.getBackendDirPath();
-    const oldParametersFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, 'parameters.json');
-    const oldCFNFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, 's3-cloudformation-template.json');
+    const oldParametersFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, "parameters.json");
+    const oldCFNFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, "s3-cloudformation-template.json");
     return fs.existsSync(oldParametersFilepath) && fs.existsSync(oldCFNFilepath);
   }
 
@@ -285,7 +285,7 @@ export class S3InputState {
               triggerParams.triggerFunction !== triggerFunctionName
             ) {
               throw new Error(
-                `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`,
+                `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`
               );
             }
           }
@@ -303,7 +303,7 @@ export class S3InputState {
     if (this._inputPayload) {
       this._inputPayload.adminTriggerFunction = adminLambdaTrigger;
     } else {
-      throw new Error('Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.');
+      throw new Error("Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.");
     }
   }
 
@@ -311,7 +311,7 @@ export class S3InputState {
     if (this._inputPayload) {
       this._inputPayload.adminTriggerFunction = undefined;
     } else {
-      throw new Error('Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.');
+      throw new Error("Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.");
     }
   }
 
@@ -332,7 +332,7 @@ export class S3InputState {
     if ((this._inputPayload as S3UserInputs).additionalTriggerFunctions) {
       let functionExists = false;
       const existingTriggerFunctions = (this._inputPayload as S3UserInputs).additionalTriggerFunctions;
-      additionalTriggerFunctions = existingTriggerFunctions?.map(functionParams => {
+      additionalTriggerFunctions = existingTriggerFunctions?.map((functionParams) => {
         if (
           functionParams.triggerPrefix === triggerFunctionParams.triggerPrefix &&
           functionParams.triggerFunction === triggerFunctionParams.triggerFunction
@@ -361,7 +361,7 @@ export class S3InputState {
       try {
         this._inputPayload = this.getCliInputPayload();
       } catch (e) {
-        throw new Error('cli-inputs.json file missing from the resource directory');
+        throw new Error("cli-inputs.json file missing from the resource directory");
       }
     }
     return this._inputPayload;
@@ -371,7 +371,7 @@ export class S3InputState {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
-    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'S3UserInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, "S3UserInputs");
     return await schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
@@ -468,7 +468,7 @@ export class S3InputState {
   }
 
   public static getPolicyMapFromStorageParamPolicyMap(
-    groupStorageParamsPolicyMap: GroupStorageParamsAccessType,
+    groupStorageParamsPolicyMap: GroupStorageParamsAccessType
   ): GroupAccessType | undefined {
     if (groupStorageParamsPolicyMap) {
       const result: GroupAccessType = {};
@@ -498,7 +498,7 @@ export class S3InputState {
     this._inputPayload = props.inputPayload;
 
     // validate cli-inputs.json
-    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'S3UserInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, "S3UserInputs");
     schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
   }
 
@@ -519,7 +519,7 @@ export class S3InputState {
     try {
       cliInputs = JSONUtilities.readJson<S3UserInputs>(this._cliInputsFilePath)!;
     } catch (e) {
-      throw new Error('cli-inputs.json file missing from the resource directory');
+      throw new Error("cli-inputs.json file missing from the resource directory");
     }
     return cliInputs;
   }

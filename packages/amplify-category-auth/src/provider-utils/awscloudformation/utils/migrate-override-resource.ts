@@ -1,11 +1,9 @@
-import {
-  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as path from 'path';
-import { v4 as uuid } from 'uuid';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
+import { $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as path from "path";
+import { v4 as uuid } from "uuid";
+import * as fs from "fs-extra";
+import _ from "lodash";
 import {
   CognitoCLIInputs,
   CognitoConfiguration,
@@ -17,13 +15,13 @@ import {
   PasswordRecoveryResult,
   AdminQueriesResult,
   PasswordPolicyResult,
-} from '../service-walkthrough-types/awsCognito-user-input-types';
+} from "../service-walkthrough-types/awsCognito-user-input-types";
 
 /**
  * migrates resources to support override feature
  */
 export const migrateResourceToSupportOverride = async (resourceName: string): Promise<void> => {
-  printer.debug('Starting Migration Process');
+  printer.debug("Starting Migration Process");
   /**
    * backup resource folder
    * get parameters.json
@@ -35,31 +33,35 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
     throw projectNotInitializedError();
   }
   const authResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, resourceName);
-  const userPoolGroupResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, 'userPoolGroups');
+  const userPoolGroupResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, "userPoolGroups");
   const backupAuthResourceFolder = backup(authResourceDirPath, projectPath, resourceName);
-  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'userPoolGroups');
+  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, "userPoolGroups");
 
   try {
-    const parameters = JSONUtilities.readJson<$TSObject>(path.join(authResourceDirPath, 'parameters.json'), { throwIfNotExist: true });
+    const parameters = JSONUtilities.readJson<$TSObject>(path.join(authResourceDirPath, "parameters.json"), { throwIfNotExist: true });
     fs.emptyDirSync(authResourceDirPath);
     // remove UserPool Resource
     if (parameters?.userPoolGroupList?.length > 0) {
-      fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'template.json'));
-      fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'parameters.json'));
+      fs.unlinkSync(path.join(userPoolGroupResourceDirPath, "template.json"));
+      fs.unlinkSync(path.join(userPoolGroupResourceDirPath, "parameters.json"));
     }
 
     // convert parameters.json to cli-inputs.json
     const cliInputs = mapParametersJsonToCliInputs(parameters!);
-    const cliInputsPath = path.join(authResourceDirPath, 'cli-inputs.json');
+    const cliInputsPath = path.join(authResourceDirPath, "cli-inputs.json");
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
-    printer.debug('Migration is Successful');
+    printer.debug("Migration is Successful");
   } catch (e) {
     rollback(authResourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    throw new AmplifyError('MigrationError', {
-      message: `There was an error migrating your project: ${e.message}`,
-      details: `Migration operations are rolled back.`,
-    }, e);
+    throw new AmplifyError(
+      "MigrationError",
+      {
+        message: `There was an error migrating your project: ${e.message}`,
+        details: `Migration operations are rolled back.`,
+      },
+      e
+    );
   } finally {
     cleanUp(backupAuthResourceFolder);
     cleanUp(backupUserPoolGroupResourceFolder);
@@ -68,11 +70,11 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
 
 const backup = (authResourcePath: string, projectPath: string, resourceName: string): string | undefined => {
   if (fs.existsSync(authResourcePath)) {
-    const backupAuthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
+    const backupAuthResourceDirName = `${resourceName}-BACKUP-${uuid().split("-")[0]}`;
     const backupAuthResourceDirPath = path.join(projectPath, backupAuthResourceDirName);
 
     if (fs.existsSync(backupAuthResourceDirPath)) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError("MigrationError", {
         message: `Backup folder for ${resourceName} already exists.`,
         resolution: `Delete the backup folder and try again.`,
       });
@@ -186,10 +188,10 @@ const mapParametersJsonToCliInputs = (parameters: $TSObject): CognitoCLIInputs =
   }
 
   // removing undefined values
-  const filteredCliInputs = _.pickBy(cliInputs, v => v !== undefined) as CognitoConfiguration;
+  const filteredCliInputs = _.pickBy(cliInputs, (v) => v !== undefined) as CognitoConfiguration;
 
   return {
-    version: '1',
+    version: "1",
     cognitoConfig: filteredCliInputs,
   };
 };

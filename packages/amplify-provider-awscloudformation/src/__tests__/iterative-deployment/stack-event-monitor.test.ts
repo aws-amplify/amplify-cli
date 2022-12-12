@@ -1,26 +1,31 @@
-import type { CloudFormation } from 'aws-sdk';
-import { StackEventMonitor } from '../../iterative-deployment/stack-event-monitor';
+import type { CloudFormation } from "aws-sdk";
+import { StackEventMonitor } from "../../iterative-deployment/stack-event-monitor";
 
 const stackProgressPrinterStub = {
   printerFn: jest.fn(),
   addEventActivity: jest.fn(),
 };
 
-const cfn = ({
+const cfn = {
   describeStackEvents: () => ({
-    promise: () => Promise.resolve({
-      NextToken: undefined,
-    }),
+    promise: () =>
+      Promise.resolve({
+        NextToken: undefined,
+      }),
   }),
-} as unknown) as CloudFormation;
+} as unknown as CloudFormation;
 
 jest.useFakeTimers();
 
-describe('StackEventMonitor', () => {
-  const monitor = new StackEventMonitor(cfn, 'testStackName',
-    stackProgressPrinterStub.printerFn, stackProgressPrinterStub.addEventActivity);
+describe("StackEventMonitor", () => {
+  const monitor = new StackEventMonitor(
+    cfn,
+    "testStackName",
+    stackProgressPrinterStub.printerFn,
+    stackProgressPrinterStub.addEventActivity
+  );
 
-  test('start StackEventMonitor', () => {
+  test("start StackEventMonitor", () => {
     monitor.start();
 
     jest.runAllTimers();
@@ -32,7 +37,7 @@ describe('StackEventMonitor', () => {
     });
   });
 
-  test('stop StackEventMonitor', () => {
+  test("stop StackEventMonitor", () => {
     monitor.stop();
 
     expect(stackProgressPrinterStub.printerFn).toBeCalled();

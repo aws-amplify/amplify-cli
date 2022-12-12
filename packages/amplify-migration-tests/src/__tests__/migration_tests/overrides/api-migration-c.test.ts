@@ -12,50 +12,50 @@ import {
   getProjectMeta,
   getTransformConfig,
   updateAPIWithResolutionStrategyWithModels,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { join } from 'path';
-import { addApiWithSchemaAndConflictDetectionOldDx, initJSProjectWithProfile } from '../../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import { TRANSFORM_CURRENT_VERSION } from "graphql-transformer-core";
+import { join } from "path";
+import { addApiWithSchemaAndConflictDetectionOldDx, initJSProjectWithProfile } from "../../../migration-helpers";
 
-describe('api migration update test c', () => {
+describe("api migration update test c", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('graphql-api');
+    projRoot = await createNewProjectDir("graphql-api");
   });
 
   afterEach(async () => {
-    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot, undefined, true);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a sync enabled project and update conflict resolution strategy', async () => {
+  it("init a sync enabled project and update conflict resolution strategy", async () => {
     const name = `syncenabled`;
     // init and add api with locally installed cli
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
+    await addApiWithSchemaAndConflictDetectionOldDx(projRoot, "simple_model.graphql");
     await amplifyPush(projRoot);
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual("VERSION");
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual("AUTOMERGE");
 
     // update and push with codebase
     await updateAPIWithResolutionStrategyWithModels(projRoot, { testingWithLatestCodebase: true });
-    expect(getCLIInputs(projRoot, 'api', 'syncenabled')).toBeDefined();
+    expect(getCLIInputs(projRoot, "api", "syncenabled")).toBeDefined();
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual("VERSION");
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual("OPTIMISTIC_CONCURRENCY");
 
     await amplifyPushUpdate(projRoot, undefined, true, true);
     const meta = getProjectMeta(projRoot);

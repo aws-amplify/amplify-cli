@@ -1,1 +1,1 @@
-export { AppSyncUnitResolver } from './unit-resolver';
+export { AppSyncUnitResolver } from "./unit-resolver";

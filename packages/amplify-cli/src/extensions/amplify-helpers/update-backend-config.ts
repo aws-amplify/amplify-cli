@@ -1,5 +1,5 @@
-import { $TSAny, $TSObject, stateManager } from 'amplify-cli-core';
-import _ from 'lodash';
+import { $TSAny, $TSObject, stateManager } from "amplify-cli-core";
+import _ from "lodash";
 
 export function updateBackendConfigAfterResourceAdd(category: string, resourceName: string, options: $TSObject) {
   const backendConfig = stateManager.getBackendConfig(undefined, {

@@ -9,7 +9,7 @@ import {
   getProjectMeta,
   modifyRestAPI,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
 const setupAmplifyProject = async (cwd: string): Promise<void> => {
   await amplifyConfigureProject({
@@ -18,10 +18,10 @@ const setupAmplifyProject = async (cwd: string): Promise<void> => {
   });
 };
 
-describe('amplify api add', () => {
+describe("amplify api add", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('containers');
+    projRoot = await createNewProjectDir("containers");
   });
 
   afterEach(async () => {
@@ -29,8 +29,8 @@ describe('amplify api add', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init project, enable containers and add multi-container api push, edit and push', async () => {
-    const envName = 'devtest';
+  it("init project, enable containers and add multi-container api push, edit and push", async () => {
+    const envName = "devtest";
     const apiName = `containermodifyapi${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: `multict${generateRandomShortId()}`, envName });
     await setupAmplifyProject(projRoot);

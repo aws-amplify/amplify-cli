@@ -33,23 +33,23 @@ mutation CreatePost(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    title: 'title1',
+    id: "1",
+    title: "title1",
     metadata: {
-      category: 'comedy',
+      category: "comedy",
     },
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
+      id: "1",
+      title: "title1",
       metadata: {
-        category: 'comedy',
+        category: "comedy",
       },
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -72,23 +72,23 @@ mutation UpdatePost(
 
 export const input_mutation2 = {
   input: {
-    id: '1',
-    title: 'title1-updated',
+    id: "1",
+    title: "title1-updated",
     metadata: {
-      category: 'news',
+      category: "news",
     },
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updatePost: {
-      id: '1',
-      title: 'title1-updated',
+      id: "1",
+      title: "title1-updated",
       metadata: {
-        category: 'news',
+        category: "news",
       },
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -109,13 +109,13 @@ query GetPost{
 export const expected_result_query = {
   data: {
     getPost: {
-      id: '1',
-      title: 'title1-updated',
+      id: "1",
+      title: "title1-updated",
       metadata: {
-        category: 'news',
+        category: "news",
       },
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

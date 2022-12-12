@@ -1,36 +1,36 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { categoryName } from '../../constants';
+import { $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { categoryName } from "../../constants";
 
-export const name = 'update'; // subcommand
-export const alias = ['configure'];
+export const name = "update"; // subcommand
+export const alias = ["configure"];
 
 export async function run(context: $TSContext) {
   const { amplify } = context;
-  const serviceMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
+  const serviceMetadata = (await import("../../provider-utils/supported-services")).supportedServices;
 
   return amplify
     .serviceSelectionPrompt(context, categoryName, serviceMetadata)
-    .then(async result => {
+    .then(async (result) => {
       const providerController = await import(`../../provider-utils/${result.providerName}`);
 
       if (!providerController) {
-        printer.error('Provider not configured for this category');
+        printer.error("Provider not configured for this category");
         return;
       }
 
       return providerController.updateResource(context, categoryName, result.service);
     })
-    .then(result => {
+    .then((result) => {
       if (result) {
-        printer.success('Successfully updated resource');
+        printer.success("Successfully updated resource");
       }
     })
-    .catch(async err => {
+    .catch(async (err) => {
       if (err.stack) {
         printer.info(err.stack);
       }
-      printer.error('An error occurred when updating the storage resource');
+      printer.error("An error occurred when updating the storage resource");
 
       await context.usageData.emitError(err);
 

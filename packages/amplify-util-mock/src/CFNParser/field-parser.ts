@@ -1,5 +1,5 @@
-import { isPlainObject } from 'lodash';
-import { CloudFormationParseContext } from './types';
+import { isPlainObject } from "lodash";
+import { CloudFormationParseContext } from "./types";
 
 import {
   cfnAnd,
@@ -15,26 +15,26 @@ import {
   cfnSplit,
   cfnSub,
   cfnImportValue,
-} from './intrinsic-functions';
+} from "./intrinsic-functions";
 
 const intrinsicFunctionMap = {
-  'Fn::Join': cfnJoin,
-  'Fn::Sub': cfnSub,
-  'Fn::GetAtt': cfnGetAtt,
-  'Fn::Split': cfnSplit,
+  "Fn::Join": cfnJoin,
+  "Fn::Sub": cfnSub,
+  "Fn::GetAtt": cfnGetAtt,
+  "Fn::Split": cfnSplit,
   Ref: cfnRef,
-  'Fn::Select': cfnSelect,
-  'Fn::If': cfnIf,
-  'Fn::Equals': cfnEquals,
-  'Fn::And': cfnAnd,
-  'Fn::Or': cfnOr,
-  'Fn::Not': cfnNot,
+  "Fn::Select": cfnSelect,
+  "Fn::If": cfnIf,
+  "Fn::Equals": cfnEquals,
+  "Fn::And": cfnAnd,
+  "Fn::Or": cfnOr,
+  "Fn::Not": cfnNot,
   Condition: cfnCondition,
-  'Fn::ImportValue': cfnImportValue,
+  "Fn::ImportValue": cfnImportValue,
 };
 
 export function parseValue(node, context: CloudFormationParseContext) {
-  if (['string', 'number'].includes(typeof node)) return node;
+  if (["string", "number"].includes(typeof node)) return node;
 
   // convert object to plain object
   node = JSON.parse(JSON.stringify(node));

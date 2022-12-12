@@ -1,78 +1,78 @@
-import { AppSyncUnitResolver } from '../../resolvers/unit-resolver';
-import { AmplifyAppSyncSimulator } from '../..';
-import { RESOLVER_KIND, AppSyncSimulatorUnitResolverConfig } from '../../type-definition';
+import { AppSyncUnitResolver } from "../../resolvers/unit-resolver";
+import { AmplifyAppSyncSimulator } from "../..";
+import { RESOLVER_KIND, AppSyncSimulatorUnitResolverConfig } from "../../type-definition";
 
-describe('Unit resolver', () => {
+describe("Unit resolver", () => {
   const getDataLoader = jest.fn();
   const getMappingTemplate = jest.fn();
-  const simulatorContext: AmplifyAppSyncSimulator = ({
+  const simulatorContext: AmplifyAppSyncSimulator = {
     getDataLoader,
     getMappingTemplate,
-  } as any) as AmplifyAppSyncSimulator;
+  } as any as AmplifyAppSyncSimulator;
   let baseConfig;
 
   beforeEach(() => {
     jest.resetAllMocks();
     getDataLoader.mockReturnValue({
       load: () => {
-        return 'DATA';
+        return "DATA";
       },
     });
-    getMappingTemplate.mockReturnValue('TEMPLATE');
+    getMappingTemplate.mockReturnValue("TEMPLATE");
     baseConfig = {
-      fieldName: 'getPost',
-      typeName: 'Query',
+      fieldName: "getPost",
+      typeName: "Query",
       kind: RESOLVER_KIND.UNIT,
-      dataSourceName: 'TodoTable',
+      dataSourceName: "TodoTable",
     };
   });
 
-  it('should initialize when the request and response mapping templates are inline templates', () => {
+  it("should initialize when the request and response mapping templates are inline templates", () => {
     const config: AppSyncSimulatorUnitResolverConfig = {
       ...baseConfig,
-      requestMappingTemplate: 'request',
-      responseMappingTemplate: 'response',
+      requestMappingTemplate: "request",
+      responseMappingTemplate: "response",
     };
     expect(() => new AppSyncUnitResolver(config, simulatorContext)).not.toThrow();
     expect(getMappingTemplate).not.toHaveBeenCalled();
   });
 
-  it('should work when the request and response mapping are external template', () => {
+  it("should work when the request and response mapping are external template", () => {
     const config: AppSyncSimulatorUnitResolverConfig = {
       ...baseConfig,
-      requestMappingTemplateLocation: 'resolvers/request',
-      responseMappingTemplateLocation: 'resolvers/response',
+      requestMappingTemplateLocation: "resolvers/request",
+      responseMappingTemplateLocation: "resolvers/response",
     };
     expect(() => new AppSyncUnitResolver(config, simulatorContext)).not.toThrow();
     expect(getMappingTemplate).toHaveBeenCalledTimes(2);
   });
 
-  it('should throw error when templates are missing', () => {
+  it("should throw error when templates are missing", () => {
     getMappingTemplate.mockImplementation(() => {
-      throw new Error('mock error');
+      throw new Error("mock error");
     });
-    expect(() => new AppSyncUnitResolver(baseConfig, simulatorContext)).toThrowError('Missing response mapping template mock error');
+    expect(() => new AppSyncUnitResolver(baseConfig, simulatorContext)).toThrowError("Missing response mapping template mock error");
     expect(getMappingTemplate).toHaveBeenCalled();
   });
 
-  describe('resolve', () => {
+  describe("resolve", () => {
     let templates;
     let resolver;
 
     const info = {};
-    const DATA_FROM_DATA_SOURCE = 'DATA FROM DATA SOURCE';
+    const DATA_FROM_DATA_SOURCE = "DATA FROM DATA SOURCE";
     const REQUEST_TEMPLATE_RESULT = {
-      version: '2017-02-29',
-      result: 'REQUEST_TEMPLATE_RESULT',
+      version: "2017-02-29",
+      result: "REQUEST_TEMPLATE_RESULT",
     };
     const RESPONSE_TEMPLATE_RESULT = {
-      version: '2017-02-29',
-      data: 'RESPONSE_TEMPLATE_RESULT',
+      version: "2017-02-29",
+      data: "RESPONSE_TEMPLATE_RESULT",
     };
     let dataFetcher;
 
-    const source = 'SOURCE';
-    const args = { key: 'value' };
+    const source = "SOURCE";
+    const args = { key: "value" };
     const context = {
       appsyncErrors: [],
     };
@@ -99,40 +99,40 @@ describe('Unit resolver', () => {
       getDataLoader.mockReturnValue({
         load: dataFetcher,
       });
-      getMappingTemplate.mockImplementation(templateName => {
+      getMappingTemplate.mockImplementation((templateName) => {
         return templates[templateName];
       });
 
       resolver = new AppSyncUnitResolver(
-        { ...baseConfig, requestMappingTemplateLocation: 'request', responseMappingTemplateLocation: 'response' },
-        simulatorContext,
+        { ...baseConfig, requestMappingTemplateLocation: "request", responseMappingTemplateLocation: "response" },
+        simulatorContext
       );
     });
 
-    it('should resolve', async () => {
+    it("should resolve", async () => {
       const result = await resolver.resolve(source, args, context, info);
       expect(result).toEqual(RESPONSE_TEMPLATE_RESULT);
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
       expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
-      expect(getDataLoader).toBeCalledWith('TodoTable');
+      expect(getDataLoader).toBeCalledWith("TodoTable");
       expect(templates.response.render).toHaveBeenCalledWith({ source, arguments: args, result: DATA_FROM_DATA_SOURCE }, context, info);
     });
 
-    it('should not call the response mapping template with template version 2017-02-29 and data fetcher throws error', async () => {
+    it("should not call the response mapping template with template version 2017-02-29 and data fetcher throws error", async () => {
       dataFetcher.mockImplementation(() => {
-        throw new Error('Some request template error');
+        throw new Error("Some request template error");
       });
 
-      await expect(() => resolver.resolve(source, args, context, info)).rejects.toThrowError('Some request template error');
+      await expect(() => resolver.resolve(source, args, context, info)).rejects.toThrowError("Some request template error");
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
       expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
-      expect(getDataLoader).toBeCalledWith('TodoTable');
+      expect(getDataLoader).toBeCalledWith("TodoTable");
       expect(templates.response.render).not.toHaveBeenCalled();
     });
 
-    it('should render response mapping when data fetcher throws error and template version is 2018-05-29', async () => {
-      REQUEST_TEMPLATE_RESULT.version = '2018-05-29';
-      const error = new Error('Some request template error');
+    it("should render response mapping when data fetcher throws error and template version is 2018-05-29", async () => {
+      REQUEST_TEMPLATE_RESULT.version = "2018-05-29";
+      const error = new Error("Some request template error");
       dataFetcher.mockImplementation(() => {
         throw error;
       });
@@ -140,12 +140,12 @@ describe('Unit resolver', () => {
       expect(result).toEqual(RESPONSE_TEMPLATE_RESULT);
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
       expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
-      expect(getDataLoader).toBeCalledWith('TodoTable');
+      expect(getDataLoader).toBeCalledWith("TodoTable");
       expect(templates.response.render).toHaveBeenCalledWith({ source, arguments: args, error: error, result: null }, context, info);
     });
 
-    it('should not render response mapping template when #return is used in request mapping template', async () => {
-      REQUEST_TEMPLATE_RESULT.version = '2018-05-29';
+    it("should not render response mapping template when #return is used in request mapping template", async () => {
+      REQUEST_TEMPLATE_RESULT.version = "2018-05-29";
       templates.request.render.mockReturnValue({
         ...REQUEST_TEMPLATE_RESULT,
         errors: [],
@@ -159,18 +159,18 @@ describe('Unit resolver', () => {
       expect(templates.response.render).not.toHaveBeenCalled();
     });
 
-    it('should collect all the errors in context object', async () => {
+    it("should collect all the errors in context object", async () => {
       templates.request.render.mockReturnValue({
         ...REQUEST_TEMPLATE_RESULT,
-        errors: ['request error'],
+        errors: ["request error"],
       });
       templates.response.render.mockReturnValue({
         ...REQUEST_TEMPLATE_RESULT,
-        errors: ['response error'],
+        errors: ["response error"],
       });
       const result = await resolver.resolve(source, args, context, info);
       expect(result).toEqual(REQUEST_TEMPLATE_RESULT.result);
-      expect(context.appsyncErrors).toEqual(['request error', 'response error']);
+      expect(context.appsyncErrors).toEqual(["request error", "response error"]);
     });
   });
 });

@@ -1,15 +1,15 @@
-import { AmplifyError, stateManager } from 'amplify-cli-core';
-import * as assert from 'assert';
-import { CognitoIdentity } from 'aws-sdk';
-import bodyParser from 'body-parser'; // eslint-disable-line
-import cors from 'cors';
-import express from 'express'; // eslint-disable-line
-import http from 'http';
-import * as jose from 'jose';
-import _ from 'lodash';
+import { AmplifyError, stateManager } from "amplify-cli-core";
+import * as assert from "assert";
+import { CognitoIdentity } from "aws-sdk";
+import bodyParser from "body-parser"; // eslint-disable-line
+import cors from "cors";
+import express from "express"; // eslint-disable-line
+import http from "http";
+import * as jose from "jose";
+import _ from "lodash";
 
-import { Printer } from 'amplify-prompts';
-import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from './auth-types';
+import { Printer } from "amplify-prompts";
+import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from "./auth-types";
 
 /**
  * Admin login server class
@@ -20,7 +20,7 @@ export class AdminLoginServer {
   private port = 4242; // placeholder
   private server: http.Server;
   private print: Printer;
-  private host = '0.0.0.0'; // using this ip address for the host forces express to listen on IPV4 even if IPV6 is available
+  private host = "0.0.0.0"; // using this ip address for the host forces express to listen on IPV4 even if IPV6 is available
 
   private corsOptions: {
     origin: string[];
@@ -32,8 +32,8 @@ export class AdminLoginServer {
     this.appId = appId;
     this.corsOptions = {
       origin: [originUrl],
-      methods: ['GET', 'POST', 'OPTIONS'],
-      allowedHeaders: 'Content-Type',
+      methods: ["GET", "POST", "OPTIONS"],
+      allowedHeaders: "Content-Type",
     };
     this.print = print;
     this.app = express();
@@ -59,9 +59,10 @@ export class AdminLoginServer {
     return this.port;
   }
 
-  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> { // eslint-disable-line
+  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
+    // eslint-disable-line
     const cognitoIdentity = new CognitoIdentity({ region });
-    const login = idToken.payload.iss.replace('https://', '');
+    const login = idToken.payload.iss.replace("https://", "");
     const logins = {
       [login]: idToken.jwtToken,
     };
@@ -72,23 +73,24 @@ export class AdminLoginServer {
       })
       .promise();
     if (!IdentityId) {
-      throw new AmplifyError('AmplifyStudioLoginError', {
-        message: 'IdentityId not defined. Amplify CLI was unable to retrieve credentials.',
+      throw new AmplifyError("AmplifyStudioLoginError", {
+        message: "IdentityId not defined. Amplify CLI was unable to retrieve credentials.",
       });
     }
     return IdentityId;
   }
 
   private async setupRoute(callback): Promise<void> {
-    this.app.post('/amplifyadmin/', async (req, res) => { // eslint-disable-line
+    this.app.post("/amplifyadmin/", async (req, res) => {
+      // eslint-disable-line
       if (!req.body || req.body.error) {
         this.shutdown();
-        if (req.body.error === 'CANCELLED') {
-          this.print.info('Login canceled');
+        if (req.body.error === "CANCELLED") {
+          this.print.info("Login canceled");
           process.exit(0);
         }
-        throw new AmplifyError('AmplifyStudioLoginError', {
-          message: 'Failed to receive expected authentication tokens.',
+        throw new AmplifyError("AmplifyStudioLoginError", {
+          message: "Failed to receive expected authentication tokens.",
         });
       }
       try {
@@ -97,22 +99,28 @@ export class AdminLoginServer {
         res.sendStatus(200);
       } catch (err) {
         res.sendStatus(500);
-        throw new AmplifyError('AmplifyStudioLoginError', {
-          message: `Failed to receive expected authentication tokens. Error: [${err}]`,
-        }, err);
+        throw new AmplifyError(
+          "AmplifyStudioLoginError",
+          {
+            message: `Failed to receive expected authentication tokens. Error: [${err}]`,
+          },
+          err
+        );
       }
       callback();
     });
-    this.app.get('/ping', async (_, res) => { // eslint-disable-line
+    this.app.get("/ping", async (_, res) => {
+      // eslint-disable-line
       res.send({ success: true });
     });
   }
 
-  private async validateTokens( // eslint-disable-line
+  private async validateTokens(
+    // eslint-disable-line
     tokens: {
       accessToken: CognitoAccessToken;
       idToken: CognitoIdToken;
-    },
+    }
   ): Promise<boolean> {
     const issuer: string = tokens.idToken.payload.iss;
     const audience: string = tokens.idToken.payload.aud;
@@ -123,9 +131,9 @@ export class AdminLoginServer {
     if (Array.isArray(decodedJwtId.aud) && decodedJwtId.aud.length > 1) {
       assert.strictEqual(decodedJwtId.azp, audience); // checking mandatory presence as per the ID Token profile
     }
-    assert.ok(typeof decodedJwtId.sub === 'string' && decodedJwtId.sub);
-    assert.ok('iat' in decodedJwtId); // checking mandatory presence
-    assert.ok('exp' in decodedJwtId); // checking mandatory presence, when present it was already validated
+    assert.ok(typeof decodedJwtId.sub === "string" && decodedJwtId.sub);
+    assert.ok("iat" in decodedJwtId); // checking mandatory presence
+    assert.ok("exp" in decodedJwtId); // checking mandatory presence, when present it was already validated
 
     const { payload: decodedJwtAccess } = await jose.jwtVerify(tokens.accessToken.jwtToken, N_JWKS);
 
@@ -136,12 +144,10 @@ export class AdminLoginServer {
    * Stores tokens received by server
    */
   public async storeTokens(payload: AdminAuthPayload, appId: string): Promise<void> {
-    const areTokensValid = await this.validateTokens(
-      {
-        idToken: payload.idToken,
-        accessToken: payload.accessToken,
-      },
-    );
+    const areTokensValid = await this.validateTokens({
+      idToken: payload.idToken,
+      accessToken: payload.accessToken,
+    });
     if (areTokensValid) {
       const IdentityId = await this.getIdentityId(payload.idToken, payload.IdentityPoolId, payload.region);
       const config = { ...payload, IdentityId };

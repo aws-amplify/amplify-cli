@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo } from "graphql";
 
 export class TemplateSentError extends Error {
   extensions: any;
@@ -13,7 +13,7 @@ export class TemplateSentError extends Error {
       path = path.prev;
     } while (path);
 
-    const fieldNode = info.fieldNodes.find(f => f.name.value === fieldName);
+    const fieldNode = info.fieldNodes.find((f) => f.name.value === fieldName);
     const filedLocation = (fieldNode && fieldNode.loc.startToken) || null;
     this.extensions = {
       message: message,
@@ -36,12 +36,12 @@ export class TemplateSentError extends Error {
 
 export class Unauthorized extends TemplateSentError {
   constructor(gqlMessage, info: GraphQLResolveInfo) {
-    super(gqlMessage, 'Unauthorized', {}, {}, info);
+    super(gqlMessage, "Unauthorized", {}, {}, info);
     Object.setPrototypeOf(this, Unauthorized.prototype);
   }
 }
 export class ValidateError extends TemplateSentError {
-  constructor(public message: string, info: GraphQLResolveInfo, public type: string = 'CustomTemplateException', public data: any = null) {
+  constructor(public message: string, info: GraphQLResolveInfo, public type: string = "CustomTemplateException", public data: any = null) {
     super(message, type, {}, {}, info);
     Object.setPrototypeOf(this, ValidateError.prototype);
   }

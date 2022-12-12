@@ -24,8 +24,8 @@ mutation CreatePost {
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: 'a-post-id',
-      title: 'Post Title',
+      id: "a-post-id",
+      title: "Post Title",
     },
   },
 };
@@ -41,8 +41,8 @@ mutation CreateCommentOnPost {
 export const expected_result_mutation2 = {
   data: {
     createComment: {
-      id: 'a-comment-id',
-      content: 'A comment',
+      id: "a-comment-id",
+      content: "A comment",
     },
   },
 };
@@ -65,13 +65,13 @@ query getPost {
 export const expected_result_query = {
   data: {
     getPost: {
-      id: 'a-post-id',
-      title: 'Post Title',
+      id: "a-post-id",
+      title: "Post Title",
       comments: {
         items: [
           {
-            id: 'a-comment-id',
-            content: 'A comment',
+            id: "a-comment-id",
+            content: "A comment",
           },
         ],
       },

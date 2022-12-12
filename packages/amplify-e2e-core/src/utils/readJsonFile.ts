@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import * as fs from "fs-extra";
 
 function stripBOM(content: string) {
   if (content.charCodeAt(0) === 0xfeff) {
@@ -7,6 +7,6 @@ function stripBOM(content: string) {
   return content;
 }
 
-export function readJsonFile(jsonFilePath, encoding: BufferEncoding = 'utf8') {
+export function readJsonFile(jsonFilePath, encoding: BufferEncoding = "utf8") {
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }

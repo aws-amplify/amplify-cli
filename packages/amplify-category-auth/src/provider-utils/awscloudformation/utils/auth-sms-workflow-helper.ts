@@ -1,9 +1,9 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { getSupportedServices } from '../../supported-services';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { ProviderUtils } from '../import/types';
-import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
+import { $TSContext, stateManager } from "amplify-cli-core";
+import { getSupportedServices } from "../../supported-services";
+import { AuthInputState } from "../auth-inputs-manager/auth-input-state";
+import { ProviderUtils } from "../import/types";
+import { CognitoConfiguration } from "../service-walkthrough-types/awsCognito-user-input-types";
+import { ServiceQuestionHeadlessResult } from "../service-walkthrough-types/cognito-user-input-types";
 
 export type UserPoolMessageConfiguration = {
   mfaConfiguration?: string;
@@ -12,16 +12,16 @@ export type UserPoolMessageConfiguration = {
 };
 
 export const doesConfigurationIncludeSMS = (request: CognitoConfiguration | ServiceQuestionHeadlessResult): boolean => {
-  if ((request.mfaConfiguration === 'OPTIONAL' || request.mfaConfiguration === 'ON') && request.mfaTypes?.includes('SMS Text Message')) {
+  if ((request.mfaConfiguration === "OPTIONAL" || request.mfaConfiguration === "ON") && request.mfaTypes?.includes("SMS Text Message")) {
     return true;
   }
 
   return (
-    request.usernameAttributes?.some(str =>
+    request.usernameAttributes?.some((str) =>
       str
-        ?.split(',')
-        .map(str => str.trim())
-        .includes('phone_number'),
+        ?.split(",")
+        .map((str) => str.trim())
+        .includes("phone_number")
     ) || false
   );
 };
@@ -34,7 +34,7 @@ const getProviderPlugin = (context: $TSContext): ProviderUtils => {
 };
 
 async function loadResourceParametersLegacyCode(authResourceName: string): Promise<UserPoolMessageConfiguration> {
-  const legacyParameters = await stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
+  const legacyParameters = await stateManager.getResourceParametersJson(undefined, "auth", authResourceName);
   const userPoolMessageConfig: UserPoolMessageConfiguration = {
     mfaConfiguration: legacyParameters.mfaConfiguration,
     mfaTypes: legacyParameters.mfaTypes,
@@ -62,6 +62,6 @@ export const loadImportedAuthParameters = async (context: $TSContext, userPoolNa
   return {
     mfaConfiguration: mfaConfig.MfaConfiguration,
     usernameAttributes: userPoolDetails.UsernameAttributes,
-    mfaTypes: mfaConfig.SmsMfaConfiguration ? ['SMS Text Message'] : [],
+    mfaTypes: mfaConfig.SmsMfaConfiguration ? ["SMS Text Message"] : [],
   };
 };

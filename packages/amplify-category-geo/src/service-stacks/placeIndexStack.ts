@@ -1,17 +1,16 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
-import { Effect } from '@aws-cdk/aws-iam';
-import * as fs from 'fs-extra';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { PlaceIndexParameters } from '../service-utils/placeIndexParams';
-import { AccessType } from '../service-utils/resourceParams';
-import { BaseStack, TemplateMappings } from './baseStack';
-import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
+import * as cdk from "@aws-cdk/core";
+import * as iam from "@aws-cdk/aws-iam";
+import * as lambda from "@aws-cdk/aws-lambda";
+import { CfnResource, Duration, Fn } from "@aws-cdk/core";
+import { Effect } from "@aws-cdk/aws-iam";
+import * as fs from "fs-extra";
+import { Runtime } from "@aws-cdk/aws-lambda";
+import { PlaceIndexParameters } from "../service-utils/placeIndexParams";
+import { AccessType } from "../service-utils/resourceParams";
+import { BaseStack, TemplateMappings } from "./baseStack";
+import { customPlaceIndexLambdaCodePath } from "../service-utils/constants";
 
-type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
-  TemplateMappings & { authResourceName: string };
+type PlaceIndexStackProps = Pick<PlaceIndexParameters, "accessType" | "groupPermissions"> & TemplateMappings & { authResourceName: string };
 
 /**
  * class to generate cfn for placeIndex resource
@@ -30,24 +29,22 @@ export class PlaceIndexStack extends BaseStack {
     this.accessType = this.props.accessType;
     this.groupPermissions = this.props.groupPermissions;
     this.authResourceName = this.props.authResourceName;
-    this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
+    this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref("AWS::Region"), "locationServiceRegion");
 
-    const inputParameters: string[] = this.props.groupPermissions.map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`,
-    );
+    const inputParameters: string[] = this.props.groupPermissions.map((group: string) => `authuserPoolGroups${group}GroupRole`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
-      'authRoleName',
-      'unauthRoleName',
-      'indexName',
-      'dataProvider',
-      'dataSourceIntendedUse',
-      'env',
-      'isDefault',
+      "authRoleName",
+      "unauthRoleName",
+      "indexName",
+      "dataProvider",
+      "dataSourceIntendedUse",
+      "env",
+      "isDefault"
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
-    this.placeIndexName = Fn.join('-', [this.parameters.get('indexName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
+    this.placeIndexName = Fn.join("-", [this.parameters.get("indexName")!.valueAsString, this.parameters.get("env")!.valueAsString]);
 
     this.placeIndexResource = this.constructIndexResource();
     this.constructIndexPolicyResource(this.placeIndexResource);
@@ -56,16 +53,16 @@ export class PlaceIndexStack extends BaseStack {
 
   private constructOutputs(): void {
     // eslint-disable-next-line no-new
-    new cdk.CfnOutput(this, 'Name', {
-      value: this.placeIndexResource.getAtt('IndexName').toString(),
+    new cdk.CfnOutput(this, "Name", {
+      value: this.placeIndexResource.getAtt("IndexName").toString(),
     });
     // eslint-disable-next-line no-new
-    new cdk.CfnOutput(this, 'Region', {
+    new cdk.CfnOutput(this, "Region", {
       value: this.placeIndexRegion,
     });
     // eslint-disable-next-line no-new
-    new cdk.CfnOutput(this, 'Arn', {
-      value: this.placeIndexResource.getAtt('IndexArn').toString(),
+    new cdk.CfnOutput(this, "Arn", {
+      value: this.placeIndexResource.getAtt("IndexArn").toString(),
     });
   }
 
@@ -73,44 +70,44 @@ export class PlaceIndexStack extends BaseStack {
     const geoCreateIndexStatement = new iam.PolicyStatement({
       effect: Effect.ALLOW,
     });
-    geoCreateIndexStatement.addActions('geo:CreatePlaceIndex');
+    geoCreateIndexStatement.addActions("geo:CreatePlaceIndex");
     geoCreateIndexStatement.addAllResources();
 
-    const placeIndexARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:place-index/${indexName}', {
+    const placeIndexARN = cdk.Fn.sub("arn:aws:geo:${region}:${account}:place-index/${indexName}", {
       region: this.placeIndexRegion,
-      account: cdk.Fn.ref('AWS::AccountId'),
+      account: cdk.Fn.ref("AWS::AccountId"),
       indexName: this.placeIndexName,
     });
 
     const geoUpdateDeleteIndexStatement = new iam.PolicyStatement({
       effect: Effect.ALLOW,
     });
-    geoUpdateDeleteIndexStatement.addActions('geo:UpdatePlaceIndex', 'geo:DeletePlaceIndex');
+    geoUpdateDeleteIndexStatement.addActions("geo:UpdatePlaceIndex", "geo:DeletePlaceIndex");
     geoUpdateDeleteIndexStatement.addResources(placeIndexARN);
 
-    const dataSource = this.parameters.get('dataProvider')!.valueAsString;
+    const dataSource = this.parameters.get("dataProvider")!.valueAsString;
 
-    const dataSourceIntendedUse = this.parameters.get('dataSourceIntendedUse')!.valueAsString;
+    const dataSourceIntendedUse = this.parameters.get("dataSourceIntendedUse")!.valueAsString;
 
-    const customPlaceIndexLambdaCode = fs.readFileSync(customPlaceIndexLambdaCodePath, 'utf-8');
-    const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
+    const customPlaceIndexLambdaCode = fs.readFileSync(customPlaceIndexLambdaCodePath, "utf-8");
+    const customPlaceIndexLambda = new lambda.Function(this, "CustomPlaceIndexLambda", {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
-      handler: 'index.handler',
+      handler: "index.handler",
       runtime: Runtime.NODEJS_14_X,
       timeout: Duration.seconds(300),
     });
     customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);
     customPlaceIndexLambda.addToRolePolicy(geoUpdateDeleteIndexStatement);
 
-    const placeIndexCustomResource = new cdk.CustomResource(this, 'CustomPlaceIndex', {
+    const placeIndexCustomResource = new cdk.CustomResource(this, "CustomPlaceIndex", {
       serviceToken: customPlaceIndexLambda.functionArn,
-      resourceType: 'Custom::LambdaCallout',
+      resourceType: "Custom::LambdaCallout",
       properties: {
         indexName: this.placeIndexName,
         dataSource,
         dataSourceIntendedUse,
         region: this.placeIndexRegion,
-        env: cdk.Fn.ref('env'),
+        env: cdk.Fn.ref("env"),
       },
     });
 
@@ -123,37 +120,28 @@ export class PlaceIndexStack extends BaseStack {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: [
-            'geo:SearchPlaceIndexForPosition',
-            'geo:SearchPlaceIndexForText',
-            'geo:SearchPlaceIndexForSuggestions',
-            'geo:GetPlace'],
-          resources: [indexResource.getAtt('IndexArn').toString()],
+          actions: ["geo:SearchPlaceIndexForPosition", "geo:SearchPlaceIndexForText", "geo:SearchPlaceIndexForSuggestions", "geo:GetPlace"],
+          resources: [indexResource.getAtt("IndexArn").toString()],
         }),
       ],
     });
 
     const cognitoRoles: Array<string> = [];
-    if (this.accessType === AccessType.AuthorizedUsers
-      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    if (this.accessType === AccessType.AuthorizedUsers || this.accessType === AccessType.AuthorizedAndGuestUsers) {
+      cognitoRoles.push(this.parameters.get("authRoleName")!.valueAsString);
     }
     if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
+      cognitoRoles.push(this.parameters.get("unauthRoleName")!.valueAsString);
     }
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
         cognitoRoles.push(
-          cdk.Fn.join('-',
-            [
-            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`,
-            ]),
+          cdk.Fn.join("-", [this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString, `${group}GroupRole`])
         );
       });
     }
 
-    return new iam.CfnPolicy(this, 'PlaceIndexPolicy', {
+    return new iam.CfnPolicy(this, "PlaceIndexPolicy", {
       policyName: `${this.placeIndexName}Policy`,
       roles: cognitoRoles,
       policyDocument: policy,

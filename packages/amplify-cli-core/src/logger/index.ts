@@ -1,4 +1,4 @@
-import { Redactor, logger } from 'amplify-cli-logger';
+import { Redactor, logger } from "amplify-cli-logger";
 
 export const getLogger = (moduleName: string, fileName: string) => {
   return {

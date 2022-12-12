@@ -1,6 +1,6 @@
-import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorBaseResolverConfig } from '../type-definition';
-import { VelocityTemplate } from '../velocity';
+import { AmplifyAppSyncSimulator } from "..";
+import { AppSyncSimulatorBaseResolverConfig } from "../type-definition";
+import { VelocityTemplate } from "../velocity";
 
 export abstract class AppSyncBaseResolver {
   constructor(protected config: AppSyncSimulatorBaseResolverConfig, protected simulatorContext: AmplifyAppSyncSimulator) {
@@ -22,10 +22,10 @@ export abstract class AppSyncBaseResolver {
     if (this.config.responseMappingTemplate) {
       return new VelocityTemplate(
         {
-          path: 'INLINE_TEMPLATE',
+          path: "INLINE_TEMPLATE",
           content: this.config.responseMappingTemplate,
         },
-        this.simulatorContext,
+        this.simulatorContext
       );
     }
     return this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
@@ -35,10 +35,10 @@ export abstract class AppSyncBaseResolver {
     if (this.config.requestMappingTemplate) {
       return new VelocityTemplate(
         {
-          path: 'INLINE_TEMPLATE',
+          path: "INLINE_TEMPLATE",
           content: this.config.requestMappingTemplate,
         },
-        this.simulatorContext,
+        this.simulatorContext
       );
     }
     return this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);

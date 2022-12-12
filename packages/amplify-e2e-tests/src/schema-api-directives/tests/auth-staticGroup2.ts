@@ -38,23 +38,23 @@ mutation CreateDraft(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    title: 'title1',
-    content: 'content1',
-    owner: 'user1',
-    editors: ['user1'],
+    id: "1",
+    title: "title1",
+    content: "content1",
+    owner: "user1",
+    editors: ["user1"],
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createDraft: {
-      id: '1',
-      title: 'title1',
-      content: 'content1',
-      owner: 'user1',
-      editors: ['user1'],
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1",
+      content: "content1",
+      owner: "user1",
+      editors: ["user1"],
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -76,23 +76,23 @@ export const mutation2 = `
   }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
-    title: 'title1-updated',
-    content: 'content1-updated',
-    owner: 'user1',
-    editors: ['user1'],
+    id: "1",
+    title: "title1-updated",
+    content: "content1-updated",
+    owner: "user1",
+    editors: ["user1"],
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updateDraft: {
-      id: '1',
-      title: 'title1-updated',
-      content: 'content1-updated',
-      owner: 'user1',
-      editors: ['user1'],
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1-updated",
+      content: "content1-updated",
+      owner: "user1",
+      editors: ["user1"],
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

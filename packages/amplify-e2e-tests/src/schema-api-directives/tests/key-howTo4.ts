@@ -1,10 +1,10 @@
-import _ from 'lodash';
-import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from '@aws-amplify/amplify-e2e-core';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-import { testQueries, testMutations } from '../common';
+import _ from "lodash";
+import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from "@aws-amplify/amplify-e2e-core";
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from "../authHelper";
+import { testQueries, testMutations } from "../common";
 
 //schema
-export const schemaName = 'selective_sync.graphql';
+export const schemaName = "selective_sync.graphql";
 export const schema = `
 type Comment @model
 @key(name: "byUsername", fields: ["username", "createdAt"], queryField: "commentsByUsername")
@@ -118,20 +118,20 @@ export const expected_result_query1 = {
     syncComments: {
       items: [
         {
-          content: 'order2',
-          username: 'user2',
-          createdAt: '2018-01-01T01:05:49.129Z',
-          editor: 'user1',
-          data1: 'example3',
-          data2: 'example4',
+          content: "order2",
+          username: "user2",
+          createdAt: "2018-01-01T01:05:49.129Z",
+          editor: "user1",
+          data1: "example3",
+          data2: "example4",
         },
         {
-          content: 'order1',
-          username: 'user2',
-          createdAt: '2019-01-01T01:05:49.129Z',
-          editor: 'user1',
-          data1: 'example1',
-          data2: 'example2',
+          content: "order1",
+          username: "user2",
+          createdAt: "2019-01-01T01:05:49.129Z",
+          editor: "user1",
+          data1: "example1",
+          data2: "example2",
         },
       ],
     },
@@ -158,12 +158,12 @@ export const expected_result_query2 = {
     syncComments: {
       items: [
         {
-          content: 'order1',
-          username: 'user2',
-          createdAt: '2019-01-01T01:05:49.129Z',
-          editor: 'user1',
-          data1: 'example1',
-          data2: 'example2',
+          content: "order1",
+          username: "user2",
+          createdAt: "2019-01-01T01:05:49.129Z",
+          editor: "user1",
+          data1: "example1",
+          data2: "example2",
         },
       ],
     },
@@ -191,12 +191,12 @@ export const expected_result_query3 = {
     syncComments: {
       items: [
         {
-          content: 'order1',
-          username: 'user2',
-          createdAt: '2019-01-01T01:05:49.129Z',
-          editor: 'user1',
-          data1: 'example1',
-          data2: 'example2',
+          content: "order1",
+          username: "user2",
+          createdAt: "2019-01-01T01:05:49.129Z",
+          editor: "user1",
+          data1: "example1",
+          data2: "example2",
         },
       ],
     },
@@ -224,12 +224,12 @@ export const expected_result_query4 = {
     syncComments: {
       items: [
         {
-          content: 'order1',
-          username: 'user1',
-          createdAt: '2015-01-01T01:05:49.129Z',
-          editor: 'user2',
-          data1: 'example1',
-          data2: 'example2',
+          content: "order1",
+          username: "user1",
+          createdAt: "2015-01-01T01:05:49.129Z",
+          editor: "user2",
+          data1: "example1",
+          data2: "example2",
         },
       ],
     },
@@ -257,12 +257,12 @@ export const expected_result_query5 = {
     syncComments: {
       items: [
         {
-          content: 'order1',
-          username: 'user1',
-          createdAt: '2015-01-01T01:05:49.129Z',
-          editor: 'user2',
-          data1: 'example1',
-          data2: 'example2',
+          content: "order1",
+          username: "user1",
+          createdAt: "2015-01-01T01:05:49.129Z",
+          editor: "user2",
+          data1: "example1",
+          data2: "example2",
         },
       ],
     },

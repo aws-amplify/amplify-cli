@@ -9,15 +9,16 @@ import {
   apiGqlCompile,
   amplifyPush,
   generateModels,
-  createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('global sandbox mode b', () => {
+describe("global sandbox mode b", () => {
   let projectDir: string;
-  const apiName = 'sandbox';
+  const apiName = "sandbox";
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('sandbox');
+    projectDir = await createNewProjectDir("sandbox");
     await initJSProjectWithProfile(projectDir);
   });
 
@@ -26,9 +27,9 @@ describe('global sandbox mode b', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('compiles schema user-added schema and pushes to cloud', async () => {
+  it("compiles schema user-added schema and pushes to cloud", async () => {
     await addApiWithoutSchema(projectDir, { apiName });
-    updateApiSchema(projectDir, apiName, 'model_with_sandbox_mode.graphql');
+    updateApiSchema(projectDir, apiName, "model_with_sandbox_mode.graphql");
     await apiGqlCompile(projectDir, true);
     await generateModels(projectDir);
     await amplifyPush(projectDir, true);

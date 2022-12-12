@@ -1,17 +1,15 @@
-import {
-  $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from "amplify-cli-core";
 
-import * as aws from 'aws-sdk';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as ini from 'ini';
-import * as inquirer from 'inquirer';
-import proxyAgent from 'proxy-agent';
-import * as constants from './constants';
-import { fileLogger } from './utils/aws-logger';
+import * as aws from "aws-sdk";
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as ini from "ini";
+import * as inquirer from "inquirer";
+import proxyAgent from "proxy-agent";
+import * as constants from "./constants";
+import { fileLogger } from "./utils/aws-logger";
 
-const logger = fileLogger('system-config-manager');
+const logger = fileLogger("system-config-manager");
 
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
@@ -25,19 +23,19 @@ export const setProfile = (awsConfigInfo: $TSAny, profileName: string): void => 
   let credentials = {};
   let config = {};
   if (fs.existsSync(credentialsFilePath)) {
-    logger('setProfile.credentialsFilePathExists', [credentialsFilePath])();
+    logger("setProfile.credentialsFilePathExists", [credentialsFilePath])();
     makeFileOwnerReadWrite(credentialsFilePath);
-    credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+    credentials = ini.parse(fs.readFileSync(credentialsFilePath, "utf-8"));
   }
 
   if (fs.existsSync(configFilePath)) {
-    logger('setProfile.configFilePathExists', [configFilePath])();
+    logger("setProfile.configFilePathExists", [configFilePath])();
     makeFileOwnerReadWrite(configFilePath);
-    config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
+    config = ini.parse(fs.readFileSync(configFilePath, "utf-8"));
   }
 
   let isCredSet = false;
-  Object.keys(credentials).forEach(key => {
+  Object.keys(credentials).forEach((key) => {
     const keyName = key.trim();
     if (profileName === keyName) {
       credentials[key].aws_access_key_id = awsConfigInfo.accessKeyId;
@@ -53,20 +51,20 @@ export const setProfile = (awsConfigInfo: $TSAny, profileName: string): void => 
   }
 
   let isConfigSet = false;
-  Object.keys(config).forEach(key => {
-    const keyName = key.replace('profile', '').trim();
+  Object.keys(config).forEach((key) => {
+    const keyName = key.replace("profile", "").trim();
     if (profileName === keyName) {
       config[key].region = awsConfigInfo.region;
       isConfigSet = true;
     }
   });
   if (!isConfigSet) {
-    const keyName = profileName === 'default' ? 'default' : `profile ${profileName}`;
+    const keyName = profileName === "default" ? "default" : `profile ${profileName}`;
     config[keyName] = {
       region: awsConfigInfo.region,
     };
   }
-  logger('setProfile.writeCredentialsFilePath', [credentialsFilePath])();
+  logger("setProfile.writeCredentialsFilePath", [credentialsFilePath])();
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: SecretFileMode });
   fs.writeFileSync(configFilePath, ini.stringify(config), { mode: SecretFileMode });
 };
@@ -79,7 +77,7 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
-    logger('getProfiledAwsConfig.profileConfig', [profileConfig])();
+    logger("getProfiledAwsConfig.profileConfig", [profileConfig])();
     if (!isRoleSourceProfile && (profileConfig.role_arn || profileConfig.credential_process)) {
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
@@ -97,7 +95,7 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
         awsConfigInfo.credentialProvider = chain;
       }
     } else {
-      logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
+      logger("getProfiledAwsConfig.getProfileCredentials", [profileName]);
       const profileCredentials = getProfileCredentials(profileName);
       awsConfigInfo = {
         ...profileConfig,
@@ -106,7 +104,7 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
       validateCredentials(awsConfigInfo, profileName);
     }
   } else {
-    throw new AmplifyError('ProfileConfigurationError', {
+    throw new AmplifyError("ProfileConfigurationError", {
       message: `Profile configuration is missing for: ${profileName}`,
     });
   }
@@ -122,12 +120,12 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
 };
 
 const makeFileOwnerReadWrite = (filePath: string): void => {
-  logger('makeFileOwnerReadWrite', [filePath])();
-  fs.chmodSync(filePath, '600');
+  logger("makeFileOwnerReadWrite", [filePath])();
+  fs.chmodSync(filePath, "600");
 };
 
 const getRoleCredentials = async (context: $TSContext, profileName: string, profileConfig: $TSAny): Promise<$TSAny> => {
-  const roleSessionName = profileConfig.role_session_name || 'amplify';
+  const roleSessionName = profileConfig.role_session_name || "amplify";
   let roleCredentials = getCachedRoleCredentials(profileConfig.role_arn, roleSessionName);
 
   if (!roleCredentials) {
@@ -138,11 +136,11 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
     if (profileConfig.mfa_serial) {
       context.print.info(`Profile ${profileName} is configured to assume role`);
       context.print.info(`  ${profileConfig.role_arn}`);
-      context.print.info('It requires MFA authentication. The MFA device is');
+      context.print.info("It requires MFA authentication. The MFA device is");
       context.print.info(`  ${profileConfig.mfa_serial}`);
       mfaTokenCode = await getMfaTokenCode();
     }
-    logger('getRoleCredentials.aws.STS', [sourceProfileAwsConfig])();
+    logger("getRoleCredentials.aws.STS", [sourceProfileAwsConfig])();
     const sts = new aws.STS(sourceProfileAwsConfig);
     const assumeRoleRequest = {
       RoleArn: profileConfig.role_arn,
@@ -152,7 +150,7 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
       SerialNumber: profileConfig.mfa_serial,
       TokenCode: mfaTokenCode,
     };
-    const log = logger('getRoleCredentials.sts.assumeRole', [assumeRoleRequest]);
+    const log = logger("getRoleCredentials.sts.assumeRole", [assumeRoleRequest]);
     try {
       log();
       const roleData = await sts.assumeRole(assumeRoleRequest).promise();
@@ -180,17 +178,17 @@ const getMfaTokenCode = async (): Promise<string> => {
     shouldResumeSpinning = true;
   }
   const inputMfaTokenCode = {
-    type: 'input',
-    name: 'tokenCode',
-    message: 'Enter the MFA token code:',
-    validate: value => {
+    type: "input",
+    name: "tokenCode",
+    message: "Enter the MFA token code:",
+    validate: (value) => {
       let isValid = value.length === 6;
       if (!isValid) {
-        return 'Must have length equal to 6';
+        return "Must have length equal to 6";
       }
       isValid = /^[\d]*$/.test(value);
       if (!isValid) {
-        return 'Must only contain digits, e.g., must satisfy regular expression pattern: [\\d]*';
+        return "Must only contain digits, e.g., must satisfy regular expression pattern: [\\d]*";
       }
       return true;
     },
@@ -232,10 +230,11 @@ const validateCachedCredentials = (roleCredentials: $TSAny): boolean => {
   let isValid = false;
 
   if (roleCredentials) {
-    isValid = !isCredentialsExpired(roleCredentials)
-      && roleCredentials.accessKeyId
-      && roleCredentials.secretAccessKey
-      && roleCredentials.sessionToken;
+    isValid =
+      !isCredentialsExpired(roleCredentials) &&
+      roleCredentials.accessKeyId &&
+      roleCredentials.secretAccessKey &&
+      roleCredentials.sessionToken;
   }
 
   return isValid;
@@ -266,16 +265,16 @@ export const resetCache = async (context: $TSContext, profileName: string): Prom
     if (cacheContents[profileConfig.role_arn]) {
       delete cacheContents[profileConfig.role_arn];
       const jsonString = JSON.stringify(cacheContents, null, 4);
-      fs.writeFileSync(cacheFilePath, jsonString, 'utf8');
-      context.print.success('  Cached temp credentials are deleted for the project.');
-      context.print.info('');
+      fs.writeFileSync(cacheFilePath, jsonString, "utf8");
+      context.print.success("  Cached temp credentials are deleted for the project.");
+      context.print.info("");
     } else {
-      context.print.info('  No temp credentials are cached for the project.');
-      context.print.info('');
+      context.print.info("  No temp credentials are cached for the project.");
+      context.print.info("");
     }
   } else {
-    context.print.info('  No temp credentials are cached for the project.');
-    context.print.info('');
+    context.print.info("  No temp credentials are cached for the project.");
+    context.print.info("");
   }
 
   return awsConfigInfo;
@@ -283,18 +282,18 @@ export const resetCache = async (context: $TSContext, profileName: string): Prom
 
 const getCacheFilePath = (): string => {
   const sharedConfigDirPath = path.join(pathManager.getHomeDotAmplifyDirPath(), constants.Label);
-  logger('getCacheFilePath', [sharedConfigDirPath])();
+  logger("getCacheFilePath", [sharedConfigDirPath])();
   fs.ensureDirSync(sharedConfigDirPath);
   return path.join(sharedConfigDirPath, constants.CacheFileName);
 };
 
 const getProfileConfig = (profileName: string): $TSAny => {
   let profileConfig;
-  logger('getProfileConfig', [profileName])();
+  logger("getProfileConfig", [profileName])();
   if (fs.existsSync(configFilePath)) {
-    const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-    Object.keys(config).forEach(key => {
-      const keyName = key.replace('profile', '').trim();
+    const config = ini.parse(fs.readFileSync(configFilePath, "utf-8"));
+    Object.keys(config).forEach((key) => {
+      const keyName = key.replace("profile", "").trim();
       if (profileName === keyName) {
         profileConfig = config[key];
       }
@@ -308,11 +307,11 @@ const getProfileConfig = (profileName: string): $TSAny => {
  */
 export const getProfileCredentials = (profileName: string): $TSAny => {
   let profileCredentials;
-  logger('getProfileCredentials', [profileName])();
+  logger("getProfileCredentials", [profileName])();
   if (fs.existsSync(credentialsFilePath)) {
-    const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+    const credentials = ini.parse(fs.readFileSync(credentialsFilePath, "utf-8"));
 
-    Object.keys(credentials).forEach(key => {
+    Object.keys(credentials).forEach((key) => {
       const keyName = key.trim();
       if (profileName === keyName) {
         profileCredentials = credentials[key];
@@ -326,14 +325,14 @@ export const getProfileCredentials = (profileName: string): $TSAny => {
 const validateCredentials = (credentials: $TSAny, profileName: string): void => {
   const missingKeys = [];
   if (!credentials?.accessKeyId && !process.env.AWS_ACCESS_KEY_ID) {
-    missingKeys.push('aws_access_key_id');
+    missingKeys.push("aws_access_key_id");
   }
   if (!credentials?.secretAccessKey && !process.env.AWS_SECRET_ACCESS_KEY) {
-    missingKeys.push('aws_secret_access_key');
+    missingKeys.push("aws_secret_access_key");
   }
   if (missingKeys.length > 0) {
-    throw new AmplifyError('ProfileConfigurationError', {
-      message: `Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`,
+    throw new AmplifyError("ProfileConfigurationError", {
+      message: `Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(", ")}`,
     });
   }
 };
@@ -356,12 +355,12 @@ const normalizeKeys = (config: $TSAny): $TSAny => {
  */
 export const getProfileRegion = (profileName: string): string => {
   let profileRegion;
-  logger('getProfileRegion', [profileName])();
+  logger("getProfileRegion", [profileName])();
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     profileRegion = profileConfig.region;
   }
-  logger('getProfileRegion', [profileRegion])();
+  logger("getProfileRegion", [profileRegion])();
 
   return profileRegion;
 };
@@ -372,10 +371,10 @@ export const getProfileRegion = (profileName: string): string => {
 export const getNamedProfiles = (): $TSAny => {
   let namedProfiles;
   if (fs.existsSync(configFilePath)) {
-    const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
+    const config = ini.parse(fs.readFileSync(configFilePath, "utf-8"));
     namedProfiles = {};
-    Object.keys(config).forEach(key => {
-      const profileName = key.replace('profile', '').trim();
+    Object.keys(config).forEach((key) => {
+      const profileName = key.replace("profile", "").trim();
       if (!namedProfiles[profileName]) {
         namedProfiles[profileName] = config[key];
       }

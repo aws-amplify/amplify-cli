@@ -4,24 +4,24 @@ import {
   CognitoUserPoolSigninMethod,
   CognitoUserProperty,
   UpdateAuthRequest,
-} from 'amplify-headless-interface';
+} from "amplify-headless-interface";
 import {
   getAddAuthRequestAdaptor,
   getUpdateAuthRequestAdaptor,
-} from '../../../../provider-utils/awscloudformation/utils/auth-request-adaptors';
-import { FeatureFlags } from 'amplify-cli-core';
+} from "../../../../provider-utils/awscloudformation/utils/auth-request-adaptors";
+import { FeatureFlags } from "amplify-cli-core";
 
-describe('get add auth request adaptor', () => {
+describe("get add auth request adaptor", () => {
   beforeEach(() => {
     FeatureFlags.getBoolean = () => false;
   });
-  describe('valid translations', () => {
-    it('translates request with minimal user pool config only', () => {
+  describe("valid translations", () => {
+    it("translates request with minimal user pool config only", () => {
       const addAuthRequest: AddAuthRequest = {
         version: 2,
-        resourceName: 'myTestAuth',
+        resourceName: "myTestAuth",
         serviceConfiguration: {
-          serviceName: 'Cognito',
+          serviceName: "Cognito",
           userPoolConfiguration: {
             signinMethod: CognitoUserPoolSigninMethod.EMAIL,
             requiredSignupAttributes: [CognitoUserProperty.EMAIL],
@@ -30,16 +30,16 @@ describe('get add auth request adaptor', () => {
         },
       };
 
-      expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+      expect(getAddAuthRequestAdaptor("javascript")(addAuthRequest)).toMatchSnapshot();
     });
   });
-  it('translates request with aliasAttributes', () => {
+  it("translates request with aliasAttributes", () => {
     FeatureFlags.getBoolean = () => true;
     const addAuthRequest: AddAuthRequest = {
       version: 2,
-      resourceName: 'myTestAuth',
+      resourceName: "myTestAuth",
       serviceConfiguration: {
-        serviceName: 'Cognito',
+        serviceName: "Cognito",
         userPoolConfiguration: {
           signinMethod: CognitoUserPoolSigninMethod.EMAIL,
           requiredSignupAttributes: [CognitoUserProperty.EMAIL],
@@ -53,15 +53,15 @@ describe('get add auth request adaptor', () => {
       },
     };
 
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    expect(getAddAuthRequestAdaptor("javascript")(addAuthRequest)).toMatchSnapshot();
   });
-  it('translates request without aliasAttributes', () => {
+  it("translates request without aliasAttributes", () => {
     FeatureFlags.getBoolean = () => true;
     const addAuthRequest: AddAuthRequest = {
       version: 2,
-      resourceName: 'myTestAuth',
+      resourceName: "myTestAuth",
       serviceConfiguration: {
-        serviceName: 'Cognito',
+        serviceName: "Cognito",
         userPoolConfiguration: {
           signinMethod: CognitoUserPoolSigninMethod.EMAIL,
           requiredSignupAttributes: [CognitoUserProperty.EMAIL],
@@ -75,46 +75,46 @@ describe('get add auth request adaptor', () => {
       },
     };
 
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    expect(getAddAuthRequestAdaptor("javascript")(addAuthRequest)).toMatchSnapshot();
   });
 
-  it('translates request with autoVerifiedAttributes', () => {
+  it("translates request with autoVerifiedAttributes", () => {
     FeatureFlags.getBoolean = () => true;
     const addAuthRequest: AddAuthRequest = {
       version: 2,
-      resourceName: 'myTestAuth',
+      resourceName: "myTestAuth",
       serviceConfiguration: {
-        serviceName: 'Cognito',
+        serviceName: "Cognito",
         includeIdentityPool: false,
         userPoolConfiguration: {
           signinMethod: CognitoUserPoolSigninMethod.EMAIL,
           requiredSignupAttributes: [CognitoUserProperty.EMAIL],
           autoVerifiedAttributes: [
             {
-              type: 'EMAIL',
-              verificationMessage: 'test email verificaiton message {####}',
-              verificationSubject: 'test email verification subject',
+              type: "EMAIL",
+              verificationMessage: "test email verificaiton message {####}",
+              verificationSubject: "test email verification subject",
             },
             {
-              type: 'PHONE_NUMBER',
-              verificationMessage: 'test sms verification message {####}',
+              type: "PHONE_NUMBER",
+              verificationMessage: "test sms verification message {####}",
             },
           ],
         },
       },
     };
 
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    expect(getAddAuthRequestAdaptor("javascript")(addAuthRequest)).toMatchSnapshot();
   });
 });
 
-describe('get update auth request adaptor', () => {
-  describe('valid translations', () => {
-    it('translates empty oAuth config into hostedUI: false', () => {
+describe("get update auth request adaptor", () => {
+  describe("valid translations", () => {
+    it("translates empty oAuth config into hostedUI: false", () => {
       const updateAuthRequest: UpdateAuthRequest = {
         version: 2,
         serviceModification: {
-          serviceName: 'Cognito',
+          serviceName: "Cognito",
           userPoolModification: {
             oAuth: {},
           },
@@ -122,7 +122,7 @@ describe('get update auth request adaptor', () => {
         },
       };
 
-      expect(getUpdateAuthRequestAdaptor('javascript', ['required_attribute'])(updateAuthRequest)).toMatchSnapshot();
+      expect(getUpdateAuthRequestAdaptor("javascript", ["required_attribute"])(updateAuthRequest)).toMatchSnapshot();
     });
   });
 });

@@ -1,11 +1,11 @@
-import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { IndexTransformer, PrimaryKeyTransformer } from "@aws-amplify/graphql-index-transformer";
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from "@aws-amplify/graphql-relational-transformer";
+import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
+import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
+import { FeatureFlagProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from "../__e2e__/utils";
+import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
+import { AmplifyAppSyncSimulator } from "@aws-amplify/amplify-appsync-simulator";
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -15,7 +15,7 @@ let server: AmplifyAppSyncSimulator;
 
 jest.setTimeout(20000);
 
-describe('@model with relational transformer', () => {
+describe("@model with relational transformer", () => {
   beforeAll(async () => {
     const validSchema = `
     type Post @model @auth(rules: [{ allow: public }]) {
@@ -54,7 +54,7 @@ describe('@model with relational transformer', () => {
           new AuthTransformer(),
         ],
         featureFlags: {
-          getBoolean: name => (name === 'improvePluralization' ? true : false),
+          getBoolean: (name) => (name === "improvePluralization" ? true : false),
         } as FeatureFlagProvider,
       });
       const out = transformer.transform(validSchema);
@@ -64,13 +64,13 @@ describe('@model with relational transformer', () => {
       const result = await deploy(out, ddbClient);
       server = result.simulator;
 
-      GRAPHQL_ENDPOINT = server.url + '/graphql';
+      GRAPHQL_ENDPOINT = server.url + "/graphql";
       logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
       const apiKey = result.config.appSync.apiKey;
       logDebug(apiKey);
       GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
-        'x-api-key': apiKey,
+        "x-api-key": apiKey,
       });
     } catch (e) {
       console.error(e);
@@ -94,7 +94,7 @@ describe('@model with relational transformer', () => {
    * Test queries below
    */
 
-  test('queryPost query', async () => {
+  test("queryPost query", async () => {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
           createPost(input: { title: "Test Query" }) {
@@ -102,10 +102,10 @@ describe('@model with relational transformer', () => {
               title
           }
       }`,
-      {},
+      {}
     );
     expect(createResponse.data.createPost.id).toBeDefined();
-    expect(createResponse.data.createPost.title).toEqual('Test Query');
+    expect(createResponse.data.createPost.title).toEqual("Test Query");
     const createCommentResponse = await GRAPHQL_CLIENT.query(
       `mutation {
           createComment(input: { content: "A comment!", postId: "${createResponse.data.createPost.id}" }) {
@@ -117,10 +117,10 @@ describe('@model with relational transformer', () => {
               }
           }
       }`,
-      {},
+      {}
     );
     expect(createCommentResponse.data.createComment.id).toBeDefined();
-    expect(createCommentResponse.data.createComment.content).toEqual('A comment!');
+    expect(createCommentResponse.data.createComment.content).toEqual("A comment!");
     expect(createCommentResponse.data.createComment.post.id).toEqual(createResponse.data.createPost.id);
     expect(createCommentResponse.data.createComment.post.title).toEqual(createResponse.data.createPost.title);
     const queryResponse = await GRAPHQL_CLIENT.query(
@@ -136,7 +136,7 @@ describe('@model with relational transformer', () => {
               }
           }
       }`,
-      {},
+      {}
     );
     expect(queryResponse.data.getPost).toBeDefined();
     const items = queryResponse.data.getPost.comments.items;
@@ -144,8 +144,8 @@ describe('@model with relational transformer', () => {
     expect(items[0].id).toEqual(createCommentResponse.data.createComment.id);
   });
 
-  test('create comment without a post and then querying the comment.', async () => {
-    const comment1 = 'a comment and a date! - 1';
+  test("create comment without a post and then querying the comment.", async () => {
+    const comment1 = "a comment and a date! - 1";
 
     try {
       const createCommentResponse1 = await GRAPHQL_CLIENT.query(
@@ -159,7 +159,7 @@ describe('@model with relational transformer', () => {
               }
             }
           }`,
-        {},
+        {}
       );
       expect(createCommentResponse1.data.createComment.id).toBeDefined();
       expect(createCommentResponse1.data.createComment.post).toBeNull();
@@ -175,7 +175,7 @@ describe('@model with relational transformer', () => {
                   }
               }
           }`,
-        {},
+        {}
       );
       expect(queryResponseDesc.data.getComment).toBeDefined();
       expect(queryResponseDesc.data.getComment.post).toBeNull();
@@ -185,9 +185,9 @@ describe('@model with relational transformer', () => {
     }
   });
 
-  test('default limit is 50', async () => {
-    const postID = 'e2eConnectionPost';
-    const postTitle = 'samplePost';
+  test("default limit is 50", async () => {
+    const postID = "e2eConnectionPost";
+    const postTitle = "samplePost";
     const createPost = await GRAPHQL_CLIENT.query(
       `mutation CreatePost {
         createPost(input: {title: "${postTitle}", id: "${postID}"}) {
@@ -196,7 +196,7 @@ describe('@model with relational transformer', () => {
         }
       }
       `,
-      {},
+      {}
     );
     expect(createPost.data.createPost).toBeDefined();
     expect(createPost.data.createPost.id).toEqual(postID);
@@ -215,7 +215,7 @@ describe('@model with relational transformer', () => {
             }
           }
         `,
-        {},
+        {}
       );
     }
 
@@ -236,7 +236,7 @@ describe('@model with relational transformer', () => {
             }
           }
         }`,
-      { id: postID },
+      { id: postID }
     );
 
     expect(getPost.data.getPost.comments.items.length).toEqual(50);

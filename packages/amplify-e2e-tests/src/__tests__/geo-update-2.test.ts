@@ -18,26 +18,26 @@ import {
   addGeofenceCollectionWithDefault,
   getGeofenceCollection,
   updateSecondGeofenceCollectionAsDefault,
-} from '@aws-amplify/amplify-e2e-core';
-import { existsSync } from 'fs';
-import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import { existsSync } from "fs";
+import path from "path";
+import { getAWSExports } from "../aws-exports/awsExports";
 
-describe('amplify geo update', () => {
+describe("amplify geo update", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('geo-update-test');
+    projRoot = await createNewProjectDir("geo-update-test");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config, add multiple map resources and update the default map', async () => {
+  it("init a project with default auth config, add multiple map resources and update the default map", async () => {
     const [map1Id, map2Id, map3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
@@ -67,7 +67,7 @@ describe('amplify geo update', () => {
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
-  it('init a project with default auth config, add multiple place index resources and update the default index', async () => {
+  it("init a project with default auth config, add multiple place index resources and update the default index", async () => {
     const [index1Id, index2Id, index3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
@@ -97,11 +97,11 @@ describe('amplify geo update', () => {
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
-  it('init a project with default auth config, add multiple geofence collection resources and update the default collection', async () => {
+  it("init a project with default auth config, add multiple geofence collection resources and update the default collection", async () => {
     const [collection1Id, collection2Id, collection3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
+    const cognitoGroups = ["admin", "admin1"];
     await updateAuthAddUserGroups(projRoot, cognitoGroups);
     await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
     await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true, isDefault: false });

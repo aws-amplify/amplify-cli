@@ -1,11 +1,11 @@
-import { spinner } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { spinner } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
 /**
  * Display warning all channels have been enabled
  */
 export const viewShowAllChannelsEnabledWarning = (): void => {
-  printer.info('All the available notification channels have already been enabled.');
+  printer.info("All the available notification channels have already been enabled.");
 };
 /**
  * Display warning that amplify push is required to enable the channel
@@ -33,6 +33,6 @@ export const viewShowInlineModeInstructionsStop = async (channelName: string): P
  * @param channelName name of the channel to be enabled
  * @param err Error thrown by the pinpoint helper
  */
-export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error|string): Promise<void> => {
+export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error | string): Promise<void> => {
   spinner.fail(`Channel ${channelName}: Auth and Pinpoint resources deployment failed with Error ${err}`);
 };

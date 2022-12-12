@@ -1,11 +1,11 @@
-import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
-import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';
-import * as path from 'path';
-import { populateCfnParams } from './populate-cfn-params';
-import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
-import detect from 'detect-port';
-import { MOCK_API_PORT } from '../../api/api';
-import { populateLambdaMockEnvVars } from './populate-lambda-mock-env-vars';
+import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from "amplify-cli-core";
+import { lambdaFunctionHandler } from "../../CFNParser/resource-processors/lambda";
+import * as path from "path";
+import { populateCfnParams } from "./populate-cfn-params";
+import { ProcessedLambdaFunction } from "../../CFNParser/stack/types";
+import detect from "detect-port";
+import { MOCK_API_PORT } from "../../api/api";
+import { populateLambdaMockEnvVars } from "./populate-lambda-mock-env-vars";
 
 const CFN_DEFAULT_CONDITIONS = {
   ShouldNotCreateEnvResources: true,
@@ -21,14 +21,14 @@ const CFN_DEFAULT_CONDITIONS = {
 export const loadLambdaConfig = async (
   context: $TSContext,
   resourceName: string,
-  overrideApiToLocal = false,
+  overrideApiToLocal = false
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
-  const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
+  const resourcePath = path.join(pathManager.getBackendDirPath(), "function", resourceName);
   const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
-    path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
+    path.join(resourcePath, `${resourceName}-cloudformation-template.json`)
   );
-  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
+  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === "AWS::Lambda::Function");
   if (!lambdaDef) {
     return;
   }

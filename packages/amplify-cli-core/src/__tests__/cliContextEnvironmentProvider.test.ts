@@ -1,21 +1,21 @@
-import { CLIEnvironmentProvider, CLIContextEnvironmentProvider } from '..';
+import { CLIEnvironmentProvider, CLIContextEnvironmentProvider } from "..";
 
-describe('ContextCLIEnvironmentProvider tests', () => {
-  test('returns env name from initialized context', () => {
+describe("ContextCLIEnvironmentProvider tests", () => {
+  test("returns env name from initialized context", () => {
     const context: any = {
       getEnvInfo: (_: boolean): any => {
         return {
-          envName: 'testenv',
+          envName: "testenv",
         };
       },
     };
 
     const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
 
-    expect(envProvider.getCurrentEnvName()).toBe('testenv');
+    expect(envProvider.getCurrentEnvName()).toBe("testenv");
   });
 
-  test('returns empty env name from when envInfo is undefined in context', () => {
+  test("returns empty env name from when envInfo is undefined in context", () => {
     const context: any = {
       getEnvInfo: (_: boolean): any => {
         return undefined;
@@ -24,10 +24,10 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
     const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
 
-    expect(envProvider.getCurrentEnvName()).toBe('');
+    expect(envProvider.getCurrentEnvName()).toBe("");
   });
 
-  test('returns empty env name from when envInfo.envName is undefined in context', () => {
+  test("returns empty env name from when envInfo.envName is undefined in context", () => {
     const context: any = {
       getEnvInfo: (_: boolean): any => {
         return {
@@ -38,10 +38,10 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
     const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
 
-    expect(envProvider.getCurrentEnvName()).toBe('');
+    expect(envProvider.getCurrentEnvName()).toBe("");
   });
 
-  test('returns empty env name from when getEnvInfo throws', () => {
+  test("returns empty env name from when getEnvInfo throws", () => {
     const context: any = {
       getEnvInfo: (_: boolean): any => {
         throw new Error();
@@ -50,12 +50,12 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
     const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
 
-    expect(envProvider.getCurrentEnvName()).toBe('');
+    expect(envProvider.getCurrentEnvName()).toBe("");
   });
 
-  test('throws when undefined context passed in', () => {
+  test("throws when undefined context passed in", () => {
     expect(() => {
       const _: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(undefined as any);
-    }).toThrowError('CLIContextEnvironmentProvider expects a context instance');
+    }).toThrowError("CLIContextEnvironmentProvider expects a context instance");
   });
 });

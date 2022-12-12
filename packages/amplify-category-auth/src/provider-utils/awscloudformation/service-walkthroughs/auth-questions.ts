@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsdoc/require-jsdoc */
-import inquirer from 'inquirer';
-import chalk from 'chalk';
-import _, { uniq, pullAll } from 'lodash';
-import path from 'path';
+import inquirer from "inquirer";
+import chalk from "chalk";
+import _, { uniq, pullAll } from "lodash";
+import path from "path";
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 // @ts-ignore
-import { Sort } from 'enquirer';
-import { $TSContext } from 'amplify-cli-core';
-import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
-import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
+import { Sort } from "enquirer";
+import { $TSContext } from "amplify-cli-core";
+import { extractApplePrivateKey } from "../utils/extract-apple-private-key";
+import { authProviders, attributeProviderMap, capabilities } from "../assets/string-maps";
 
-const category = 'auth';
+const category = "auth";
 
 /* eslint-disable no-param-reassign */
 export const serviceWalkthrough = async (
-  context:$TSContext,
-  defaultValuesFilename:any,
-  stringMapsFilename:any,
-  serviceMetadata:any,
-  coreAnswers: {[key: string]: any} = {},
+  context: $TSContext,
+  defaultValuesFilename: any,
+  stringMapsFilename: any,
+  serviceMetadata: any,
+  coreAnswers: { [key: string]: any } = {}
 ): Promise<Record<string, unknown>> => {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
@@ -44,7 +44,7 @@ export const serviceWalkthrough = async (
     const answer: any = await inquirer.prompt(question);
 
     /* eslint-disable spellcheck/spell-checker */
-    if ('signinwithapplePrivateKeyUserPool' in answer) {
+    if ("signinwithapplePrivateKeyUserPool" in answer) {
       answer.signinwithapplePrivateKeyUserPool = extractApplePrivateKey(answer.signinwithapplePrivateKeyUserPool);
     }
     /* eslint-enable spellcheck/spell-checker */
@@ -56,13 +56,13 @@ export const serviceWalkthrough = async (
       adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
     }
 
-    if (answer.triggers && answer.triggers !== '{}') {
+    if (answer.triggers && answer.triggers !== "{}") {
       const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
-      selectionMetadata.forEach((selection: {[key: string]: any}) => {
-        Object.keys(selection.triggers).forEach(t => {
+      selectionMetadata.forEach((selection: { [key: string]: any }) => {
+        Object.keys(selection.triggers).forEach((t) => {
           if (!tempTriggers[t] && answer.triggers.includes(selection.value)) {
             tempTriggers[t] = selection.triggers[t];
           } else if (tempTriggers[t] && answer.triggers.includes(selection.value)) {
@@ -83,7 +83,7 @@ export const serviceWalkthrough = async (
 
     // LEARN MORE BLOCK
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
-      const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
+      const helpText = `\n${questionObj.learnMore.replace(new RegExp("[\\n]", "g"), "\n\n")}\n\n`;
       questionObj.prefix = chalk.green(helpText);
       // ITERATOR BLOCK
     } else if (
@@ -91,15 +91,15 @@ export const serviceWalkthrough = async (
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
         key to find the array of values it should splice into.
       */
-      questionObj.iterator
-      && answer[questionObj.key]
-      && answer[questionObj.key].length > 0
+      questionObj.iterator &&
+      answer[questionObj.key] &&
+      answer[questionObj.key].length > 0
     ) {
       const replacementArray = context.updatingAuth[questionObj.iterator];
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
         questionObj.validation = questionObj.iteratorValidation;
         const newValue = await inquirer.prompt({
-          name: 'updated',
+          name: "updated",
           message: `Update ${answer[questionObj.key][t]}`,
           validate: amplify.inputValidation(questionObj),
         });
@@ -122,41 +122,41 @@ export const serviceWalkthrough = async (
         coreAnswers[questionObj.key].push(answer[questionObj.key]);
       }
       const addAnother = await inquirer.prompt({
-        name: 'repeater',
-        type: 'confirm',
+        name: "repeater",
+        type: "confirm",
         default: false,
         message: `Do you want to add another ${questionObj.addAnotherLoop}`,
       });
       if (!addAnother.repeater) {
         j += 1;
       }
-    } else if (questionObj.key === 'updateFlow') {
+    } else if (questionObj.key === "updateFlow") {
       /*
         if the user selects a default or fully manual config option during an update,
         we set the useDefault value so that the appropriate questions are displayed
       */
-      if (answer.updateFlow === 'updateUserPoolGroups') {
+      if (answer.updateFlow === "updateUserPoolGroups") {
         userPoolGroupList = await updateUserPoolGroups(context);
-      } else if (answer.updateFlow === 'updateAdminQueries') {
+      } else if (answer.updateFlow === "updateAdminQueries") {
         adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
-      } else if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
+      } else if (["manual", "defaultSocial", "default"].includes(answer.updateFlow)) {
         answer.useDefault = answer.updateFlow;
-        if (answer.useDefault === 'defaultSocial') {
+        if (answer.useDefault === "defaultSocial") {
           coreAnswers.hostedUI = true;
         }
 
-        if (answer.useDefault === 'default') {
+        if (answer.useDefault === "default") {
           coreAnswers.hostedUI = false;
         }
         delete answer.updateFlow;
       }
       coreAnswers = { ...coreAnswers, ...answer };
       j += 1;
-    } else if (!context.updatingAuth && answer.useDefault && ['default', 'defaultSocial'].includes(answer.useDefault)) {
+    } else if (!context.updatingAuth && answer.useDefault && ["default", "defaultSocial"].includes(answer.useDefault)) {
       // if the user selects defaultSocial, we set hostedUI to true to avoid re-asking this question
       coreAnswers = { ...coreAnswers, ...answer };
-      coreAnswers.authSelections = 'identityPoolAndUserPool';
-      if (coreAnswers.useDefault === 'defaultSocial') {
+      coreAnswers.authSelections = "identityPoolAndUserPool";
+      if (coreAnswers.useDefault === "defaultSocial") {
         coreAnswers.hostedUI = true;
       }
       j += 1;
@@ -169,9 +169,9 @@ export const serviceWalkthrough = async (
   // POST-QUESTION LOOP PARSING
 
   // if user selects user pool only, ensure that we clean id pool options
-  if (coreAnswers.authSelections === 'userPoolOnly' && context.updatingAuth) {
+  if (coreAnswers.authSelections === "userPoolOnly" && context.updatingAuth) {
     context.print.warning(
-      `Warning! Your existing IdentityPool: ${context.updatingAuth.identityPoolName} will be deleted upon the next “amplify push”!`,
+      `Warning! Your existing IdentityPool: ${context.updatingAuth.identityPoolName} will be deleted upon the next “amplify push”!`
     );
     delete context.updatingAuth.identityPoolName;
     delete context.updatingAuth.allowUnauthenticatedIdentities;
@@ -190,9 +190,9 @@ export const serviceWalkthrough = async (
     identityPoolProviders(coreAnswers, projectType);
   }
 
-  const isPullOrEnvCommand = context.input.command === 'pull' || context.input.command === 'env';
-  if (coreAnswers.authSelections !== 'identityPoolOnly' && context.input.command !== 'init' && !isPullOrEnvCommand) {
-    if (coreAnswers.useDefault === 'manual') {
+  const isPullOrEnvCommand = context.input.command === "pull" || context.input.command === "env";
+  if (coreAnswers.authSelections !== "identityPoolOnly" && context.input.command !== "init" && !isPullOrEnvCommand) {
+    if (coreAnswers.useDefault === "manual") {
       coreAnswers.triggers = await lambdaFlow(context, coreAnswers.triggers);
     }
   }
@@ -206,7 +206,7 @@ export const serviceWalkthrough = async (
   structureOAuthMetadata(coreAnswers, context, getAllDefaults, amplify);
 
   if (coreAnswers.usernameAttributes && !Array.isArray(coreAnswers.usernameAttributes)) {
-    if (coreAnswers.usernameAttributes === 'username') {
+    if (coreAnswers.usernameAttributes === "username") {
       delete coreAnswers.usernameAttributes;
     } else {
       coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split();
@@ -217,7 +217,7 @@ export const serviceWalkthrough = async (
     ...coreAnswers,
     userPoolGroupList,
     adminQueryGroup,
-    serviceName: 'Cognito',
+    serviceName: "Cognito",
   };
 };
 /* eslint-enable no-param-reassign */
@@ -228,9 +228,9 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
 
   const userGroupParamsPath = path.join(
     context.amplify.pathManager.getBackendDirPath(),
-    'auth',
-    'userPoolGroups',
-    'user-pool-group-precedence.json',
+    "auth",
+    "userPoolGroups",
+    "user-pool-group-precedence.json"
   );
 
   try {
@@ -248,9 +248,9 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
 
     const deletionAnswer = await inquirer.prompt([
       {
-        name: 'groups2BeDeleted',
-        type: 'checkbox',
-        message: 'Select any user pool groups you want to delete:',
+        name: "groups2BeDeleted",
+        type: "checkbox",
+        message: "Select any user pool groups you want to delete:",
         choices: deletionChoices,
       },
     ]);
@@ -267,14 +267,14 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
   if (userPoolGroupList.length < 1) {
     answer = await inquirer.prompt([
       {
-        name: 'userPoolGroupName',
-        type: 'input',
-        message: 'Provide a name for your user pool group:',
+        name: "userPoolGroupName",
+        type: "input",
+        message: "Provide a name for your user pool group:",
         validate: context.amplify.inputValidation({
           validation: {
-            operator: 'regex',
-            value: '^[a-zA-Z0-9]+$',
-            onErrorMsg: 'Resource name should be alphanumeric',
+            operator: "regex",
+            value: "^[a-zA-Z0-9]+$",
+            onErrorMsg: "Resource name should be alphanumeric",
           },
           required: true,
         }),
@@ -284,23 +284,23 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
   }
 
   let addAnother = await inquirer.prompt({
-    name: 'repeater',
-    type: 'confirm',
+    name: "repeater",
+    type: "confirm",
     default: false,
-    message: 'Do you want to add another User Pool Group',
+    message: "Do you want to add another User Pool Group",
   });
 
   while (addAnother.repeater === true) {
     answer = await inquirer.prompt([
       {
-        name: 'userPoolGroupName',
-        type: 'input',
-        message: 'Provide a name for your user pool group:',
+        name: "userPoolGroupName",
+        type: "input",
+        message: "Provide a name for your user pool group:",
         validate: context.amplify.inputValidation({
           validation: {
-            operator: 'regex',
-            value: '^[a-zA-Z0-9]+$',
-            onErrorMsg: 'Resource name should be alphanumeric',
+            operator: "regex",
+            value: "^[a-zA-Z0-9]+$",
+            onErrorMsg: "Resource name should be alphanumeric",
           },
           required: true,
         }),
@@ -310,10 +310,10 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
     userPoolGroupList.push(answer.userPoolGroupName);
 
     addAnother = await inquirer.prompt({
-      name: 'repeater',
-      type: 'confirm',
+      name: "repeater",
+      type: "confirm",
       default: false,
-      message: 'Do you want to add another User Pool Group',
+      message: "Do you want to add another User Pool Group",
     });
   }
 
@@ -326,9 +326,9 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
 
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     const sortPrompt = new Sort({
-      name: 'sortUserPools',
-      hint: `(Use ${chalk.green.bold('<shift>+<right/left>')} to change the order)`,
-      message: 'Sort the user pool groups in order of preference',
+      name: "sortUserPools",
+      hint: `(Use ${chalk.green.bold("<shift>+<right/left>")} to change the order)`,
+      message: "Sort the user pool groups in order of preference",
       choices: userPoolGroupList,
       shiftLeft(...args: any[]) {
         return this.shiftUp(...args);
@@ -347,29 +347,29 @@ const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): 
   let adminGroup;
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
-  if (await context.amplify.confirmPrompt('Do you want to restrict access to the admin queries API to a specific Group')) {
-    userPoolGroupListClone.push('Enter a custom group');
+  if (await context.amplify.confirmPrompt("Do you want to restrict access to the admin queries API to a specific Group")) {
+    userPoolGroupListClone.push("Enter a custom group");
 
     const adminGroupAnswer = await inquirer.prompt([
       {
-        name: 'adminGroup',
-        type: 'list',
-        message: 'Select the group to restrict access with:',
+        name: "adminGroup",
+        type: "list",
+        message: "Select the group to restrict access with:",
         choices: userPoolGroupListClone,
       },
     ]);
 
-    if (adminGroupAnswer.adminGroup === 'Enter a custom group') {
+    if (adminGroupAnswer.adminGroup === "Enter a custom group") {
       const temp = await inquirer.prompt([
         {
-          name: 'userPoolGroupName',
-          type: 'input',
-          message: 'Provide a group name:',
+          name: "userPoolGroupName",
+          type: "input",
+          message: "Provide a group name:",
           validate: context.amplify.inputValidation({
             validation: {
-              operator: 'regex',
-              value: '^[a-zA-Z0-9]+$',
-              onErrorMsg: 'Resource name should be alphanumeric',
+              operator: "regex",
+              value: "^[a-zA-Z0-9]+$",
+              onErrorMsg: "Resource name should be alphanumeric",
             },
             required: true,
           }),
@@ -392,7 +392,7 @@ export const identityPoolProviders = (coreAnswers: any, projectType: any): any =
   coreAnswers.selectedParties = {};
   authProviders.forEach((provider: any) => {
     // don't send google value in cf if native project, since we need to make an openid provider
-    if (projectType === 'javascript' || provider.answerHashKey !== 'googleClientId') {
+    if (projectType === "javascript" || provider.answerHashKey !== "googleClientId") {
       if (coreAnswers[provider.answerHashKey]) {
         coreAnswers.selectedParties[provider.value] = coreAnswers[provider.answerHashKey];
       }
@@ -403,16 +403,16 @@ export const identityPoolProviders = (coreAnswers: any, projectType: any): any =
       */
       if (coreAnswers[provider.answerHashKey] && provider.concatKeys) {
         provider.concatKeys.forEach((i: any) => {
-          coreAnswers.selectedParties[provider.value] = coreAnswers.selectedParties[provider.value].concat(';', coreAnswers[i]);
+          coreAnswers.selectedParties[provider.value] = coreAnswers.selectedParties[provider.value].concat(";", coreAnswers[i]);
         });
       }
     }
   });
-  if (projectType !== 'javascript' && coreAnswers.authProviders.includes('accounts.google.com')) {
+  if (projectType !== "javascript" && coreAnswers.authProviders.includes("accounts.google.com")) {
     coreAnswers.audiences = [coreAnswers.googleClientId];
-    if (projectType === 'ios') {
+    if (projectType === "ios") {
       coreAnswers.audiences.push(coreAnswers.googleIos);
-    } else if (projectType === 'android') {
+    } else if (projectType === "android") {
       coreAnswers.audiences.push(coreAnswers.googleAndroid);
     }
   }
@@ -425,19 +425,19 @@ export const identityPoolProviders = (coreAnswers: any, projectType: any): any =
   hostedUIProviderCreds is saved in deployment-secrets.
 */
 export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAnswers?: any): any => {
-  if (coreAnswers.useDefault === 'default') {
+  if (coreAnswers.useDefault === "default") {
     return null;
   }
   const answers = Object.assign(prevAnswers || {}, coreAnswers);
   const attributesForMapping = answers.requiredAttributes
-    ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
-    : ['email', 'username'];
-  const res: {[key: string]: any} = {};
+    ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat("username")
+    : ["email", "username"];
+  const res: { [key: string]: any } = {};
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map((providerName: any) => {
         const lowerCaseEl = providerName.toLowerCase();
-        const delimiter = providerName === 'Facebook' ? ',' : ' ';
+        const delimiter = providerName === "Facebook" ? "," : " ";
         const scopes: any[] = [];
         const maps: any = {};
         attributesForMapping.forEach((attribute: keyof typeof attributeProviderMap) => {
@@ -447,8 +447,8 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
               scopes.push(attributeKey[`${lowerCaseEl}`].scope);
             }
           }
-          if (providerName === 'Google' && !scopes.includes('openid')) {
-            scopes.unshift('openid');
+          if (providerName === "Google" && !scopes.includes("openid")) {
+            scopes.unshift("openid");
           }
           if (attributeKey && attributeKey[`${lowerCaseEl}`] && attributeKey[`${lowerCaseEl}`].attr) {
             maps[attribute] = attributeKey[`${lowerCaseEl}`].attr;
@@ -459,12 +459,12 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
           authorize_scopes: scopes.join(delimiter),
           AttributeMapping: maps,
         };
-      }),
+      })
     );
     res.hostedUIProviderCreds = JSON.stringify(
       oAuthProviders.map((el: any) => {
         const lowerCaseEl = el.toLowerCase();
-        if (el === 'SignInWithApple') {
+        if (el === "SignInWithApple") {
           return {
             ProviderName: el,
             client_id: coreAnswers[`${lowerCaseEl}ClientIdUserPool`],
@@ -478,7 +478,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
           client_id: coreAnswers[`${lowerCaseEl}AppIdUserPool`],
           client_secret: coreAnswers[`${lowerCaseEl}AppSecretUserPool`],
         };
-      }),
+      })
     );
   }
   return res;
@@ -488,14 +488,12 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
   Format hosted UI oAuth data per lambda spec
 */
 export const structureOAuthMetadata = (coreAnswers: any, context: $TSContext, defaults: any, amplify: any): any => {
-  if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
+  if (coreAnswers.useDefault === "default" && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
   }
   const answers = { ...context.updatingAuth, ...coreAnswers };
-  let {
-    AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs,
-  } = answers;
+  let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
   } else if (coreAnswers.newCallbackURLs) {
@@ -548,20 +546,24 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
   try {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
-    providers.map(providerName => providerName.toLowerCase()).forEach((providerName: string) => {
-      const provider: {authorize_scopes: string} | undefined = parsedMetaData.find((currentProvider: any) => currentProvider.ProviderName === providerName);
-      const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
-      if (providerName === 'SignInWithApple') {
-        providerKeys[`${providerName}ClientIdUserPool`] = creds?.client_id;
-        providerKeys[`${providerName}TeamIdUserPool`] = creds?.team_id;
-        providerKeys[`${providerName}KeyIdUserPool`] = creds?.key_id;
-        providerKeys[`${providerName}PrivateKeyUserPool`] = creds?.private_key;
-      } else {
-        providerKeys[`${providerName}AppIdUserPool`] = creds?.client_id;
-        providerKeys[`${providerName}AppSecretUserPool`] = creds?.client_secret;
-      }
-      providerKeys[`${providerName}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(',');
-    });
+    providers
+      .map((providerName) => providerName.toLowerCase())
+      .forEach((providerName: string) => {
+        const provider: { authorize_scopes: string } | undefined = parsedMetaData.find(
+          (currentProvider: any) => currentProvider.ProviderName === providerName
+        );
+        const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
+        if (providerName === "SignInWithApple") {
+          providerKeys[`${providerName}ClientIdUserPool`] = creds?.client_id;
+          providerKeys[`${providerName}TeamIdUserPool`] = creds?.team_id;
+          providerKeys[`${providerName}KeyIdUserPool`] = creds?.key_id;
+          providerKeys[`${providerName}PrivateKeyUserPool`] = creds?.private_key;
+        } else {
+          providerKeys[`${providerName}AppIdUserPool`] = creds?.client_id;
+          providerKeys[`${providerName}AppSecretUserPool`] = creds?.client_secret;
+        }
+        providerKeys[`${providerName}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(",");
+      });
   } catch (e) {
     return {};
   }
@@ -584,13 +586,13 @@ const handleUpdates = (context: $TSContext, coreAnswers: any): any => {
 
   if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
     const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
-    const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
+    const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, "auth", resourceName);
     const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, hostedUIProviderCreds);
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 
-  if (context.updatingAuth && context.updatingAuth.authSelections === 'identityPoolOnly') {
-    coreAnswers.authSelections = 'identityPoolAndUserPool';
+  if (context.updatingAuth && context.updatingAuth.authSelections === "identityPoolOnly") {
+    coreAnswers.authSelections = "identityPoolAndUserPool";
   }
 };
 /* eslint-enable no-param-reassign */
@@ -598,112 +600,112 @@ const handleUpdates = (context: $TSContext, coreAnswers: any): any => {
 /*
   Adding lambda triggers
 */
-const lambdaFlow = async (context: $TSContext, answers: any):Promise<any> => {
-  const triggers = await context.amplify.triggerFlow(context, 'cognito', 'auth', answers);
+const lambdaFlow = async (context: $TSContext, answers: any): Promise<any> => {
+  const triggers = await context.amplify.triggerFlow(context, "cognito", "auth", answers);
   return triggers || answers;
 };
 
-export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptions: any):any => {
+export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptions: any): any => {
   let policy = {};
   const actions: any[] = [];
 
   crudOptions.forEach((crudOption: any) => {
     switch (crudOption) {
-      case 'create':
+      case "create":
         actions.push(
-          'cognito-idp:ConfirmSignUp',
-          'cognito-idp:AdminCreateUser',
-          'cognito-idp:CreateUserImportJob',
-          'cognito-idp:AdminSetUserSettings',
-          'cognito-idp:AdminLinkProviderForUser',
-          'cognito-idp:CreateIdentityProvider',
-          'cognito-idp:AdminConfirmSignUp',
-          'cognito-idp:AdminDisableUser',
-          'cognito-idp:AdminRemoveUserFromGroup',
-          'cognito-idp:SetUserMFAPreference',
-          'cognito-idp:SetUICustomization',
-          'cognito-idp:SignUp',
-          'cognito-idp:VerifyUserAttribute',
-          'cognito-idp:SetRiskConfiguration',
-          'cognito-idp:StartUserImportJob',
-          'cognito-idp:AdminSetUserPassword',
-          'cognito-idp:AssociateSoftwareToken',
-          'cognito-idp:CreateResourceServer',
-          'cognito-idp:RespondToAuthChallenge',
-          'cognito-idp:CreateUserPoolClient',
-          'cognito-idp:AdminUserGlobalSignOut',
-          'cognito-idp:GlobalSignOut',
-          'cognito-idp:AddCustomAttributes',
-          'cognito-idp:CreateGroup',
-          'cognito-idp:CreateUserPool',
-          'cognito-idp:AdminForgetDevice',
-          'cognito-idp:AdminAddUserToGroup',
-          'cognito-idp:AdminRespondToAuthChallenge',
-          'cognito-idp:ForgetDevice',
-          'cognito-idp:CreateUserPoolDomain',
-          'cognito-idp:AdminEnableUser',
-          'cognito-idp:AdminUpdateDeviceStatus',
-          'cognito-idp:StopUserImportJob',
-          'cognito-idp:InitiateAuth',
-          'cognito-idp:AdminInitiateAuth',
-          'cognito-idp:AdminSetUserMFAPreference',
-          'cognito-idp:ConfirmForgotPassword',
-          'cognito-idp:SetUserSettings',
-          'cognito-idp:VerifySoftwareToken',
-          'cognito-idp:AdminDisableProviderForUser',
-          'cognito-idp:SetUserPoolMfaConfig',
-          'cognito-idp:ChangePassword',
-          'cognito-idp:ConfirmDevice',
-          'cognito-idp:AdminResetUserPassword',
-          'cognito-idp:ResendConfirmationCode',
+          "cognito-idp:ConfirmSignUp",
+          "cognito-idp:AdminCreateUser",
+          "cognito-idp:CreateUserImportJob",
+          "cognito-idp:AdminSetUserSettings",
+          "cognito-idp:AdminLinkProviderForUser",
+          "cognito-idp:CreateIdentityProvider",
+          "cognito-idp:AdminConfirmSignUp",
+          "cognito-idp:AdminDisableUser",
+          "cognito-idp:AdminRemoveUserFromGroup",
+          "cognito-idp:SetUserMFAPreference",
+          "cognito-idp:SetUICustomization",
+          "cognito-idp:SignUp",
+          "cognito-idp:VerifyUserAttribute",
+          "cognito-idp:SetRiskConfiguration",
+          "cognito-idp:StartUserImportJob",
+          "cognito-idp:AdminSetUserPassword",
+          "cognito-idp:AssociateSoftwareToken",
+          "cognito-idp:CreateResourceServer",
+          "cognito-idp:RespondToAuthChallenge",
+          "cognito-idp:CreateUserPoolClient",
+          "cognito-idp:AdminUserGlobalSignOut",
+          "cognito-idp:GlobalSignOut",
+          "cognito-idp:AddCustomAttributes",
+          "cognito-idp:CreateGroup",
+          "cognito-idp:CreateUserPool",
+          "cognito-idp:AdminForgetDevice",
+          "cognito-idp:AdminAddUserToGroup",
+          "cognito-idp:AdminRespondToAuthChallenge",
+          "cognito-idp:ForgetDevice",
+          "cognito-idp:CreateUserPoolDomain",
+          "cognito-idp:AdminEnableUser",
+          "cognito-idp:AdminUpdateDeviceStatus",
+          "cognito-idp:StopUserImportJob",
+          "cognito-idp:InitiateAuth",
+          "cognito-idp:AdminInitiateAuth",
+          "cognito-idp:AdminSetUserMFAPreference",
+          "cognito-idp:ConfirmForgotPassword",
+          "cognito-idp:SetUserSettings",
+          "cognito-idp:VerifySoftwareToken",
+          "cognito-idp:AdminDisableProviderForUser",
+          "cognito-idp:SetUserPoolMfaConfig",
+          "cognito-idp:ChangePassword",
+          "cognito-idp:ConfirmDevice",
+          "cognito-idp:AdminResetUserPassword",
+          "cognito-idp:ResendConfirmationCode"
         );
         break;
-      case 'update':
+      case "update":
         actions.push(
-          'cognito-idp:ForgotPassword',
-          'cognito-idp:UpdateAuthEventFeedback',
-          'cognito-idp:UpdateResourceServer',
-          'cognito-idp:UpdateUserPoolClient',
-          'cognito-idp:AdminUpdateUserAttributes',
-          'cognito-idp:UpdateUserAttributes',
-          'cognito-idp:UpdateUserPoolDomain',
-          'cognito-idp:UpdateIdentityProvider',
-          'cognito-idp:UpdateGroup',
-          'cognito-idp:AdminUpdateAuthEventFeedback',
-          'cognito-idp:UpdateDeviceStatus',
-          'cognito-idp:UpdateUserPool',
+          "cognito-idp:ForgotPassword",
+          "cognito-idp:UpdateAuthEventFeedback",
+          "cognito-idp:UpdateResourceServer",
+          "cognito-idp:UpdateUserPoolClient",
+          "cognito-idp:AdminUpdateUserAttributes",
+          "cognito-idp:UpdateUserAttributes",
+          "cognito-idp:UpdateUserPoolDomain",
+          "cognito-idp:UpdateIdentityProvider",
+          "cognito-idp:UpdateGroup",
+          "cognito-idp:AdminUpdateAuthEventFeedback",
+          "cognito-idp:UpdateDeviceStatus",
+          "cognito-idp:UpdateUserPool"
         );
         break;
-      case 'read':
+      case "read":
         actions.push(
-          'cognito-identity:Describe*',
-          'cognito-identity:Get*',
-          'cognito-identity:List*',
-          'cognito-idp:Describe*',
-          'cognito-idp:AdminGetDevice',
-          'cognito-idp:AdminGetUser',
-          'cognito-idp:AdminList*',
-          'cognito-idp:List*',
-          'cognito-sync:Describe*',
-          'cognito-sync:Get*',
-          'cognito-sync:List*',
-          'iam:ListOpenIdConnectProviders',
-          'iam:ListRoles',
-          'sns:ListPlatformApplications',
+          "cognito-identity:Describe*",
+          "cognito-identity:Get*",
+          "cognito-identity:List*",
+          "cognito-idp:Describe*",
+          "cognito-idp:AdminGetDevice",
+          "cognito-idp:AdminGetUser",
+          "cognito-idp:AdminList*",
+          "cognito-idp:List*",
+          "cognito-sync:Describe*",
+          "cognito-sync:Get*",
+          "cognito-sync:List*",
+          "iam:ListOpenIdConnectProviders",
+          "iam:ListRoles",
+          "sns:ListPlatformApplications"
         );
         break;
-      case 'delete':
+      case "delete":
         actions.push(
-          'cognito-idp:DeleteUserPoolDomain',
-          'cognito-idp:DeleteResourceServer',
-          'cognito-idp:DeleteGroup',
-          'cognito-idp:AdminDeleteUserAttributes',
-          'cognito-idp:DeleteUserPoolClient',
-          'cognito-idp:DeleteUserAttributes',
-          'cognito-idp:DeleteUserPool',
-          'cognito-idp:AdminDeleteUser',
-          'cognito-idp:DeleteIdentityProvider',
-          'cognito-idp:DeleteUser',
+          "cognito-idp:DeleteUserPoolDomain",
+          "cognito-idp:DeleteResourceServer",
+          "cognito-idp:DeleteGroup",
+          "cognito-idp:AdminDeleteUserAttributes",
+          "cognito-idp:DeleteUserPoolClient",
+          "cognito-idp:DeleteUserAttributes",
+          "cognito-idp:DeleteUserPool",
+          "cognito-idp:AdminDeleteUser",
+          "cognito-idp:DeleteIdentityProvider",
+          "cognito-idp:DeleteUser"
         );
         break;
       default:
@@ -721,8 +723,8 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
     throw new Error(`Cannot get resource: ${resourceName} from '${category}' category.`);
   }
 
-  if (authResource.serviceType === 'imported') {
-    const userPoolId = _.get(authResource, ['output', 'UserPoolId'], undefined);
+  if (authResource.serviceType === "imported") {
+    const userPoolId = _.get(authResource, ["output", "UserPoolId"], undefined);
 
     if (!userPoolId) {
       throw new Error(`Cannot read the UserPoolId attribute value from the output section of resource: '${resourceName}'.`);
@@ -736,16 +738,16 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
   }
 
   policy = {
-    Effect: 'Allow',
+    Effect: "Allow",
     Action: actions,
     Resource: [
       {
-        'Fn::Join': ['', ['arn:aws:cognito-idp:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':userpool/', userPoolReference]],
+        "Fn::Join": ["", ["arn:aws:cognito-idp:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":userpool/", userPoolReference]],
       },
     ],
   };
 
-  const attributes = ['UserPoolId'];
+  const attributes = ["UserPoolId"];
 
   return { policy, attributes };
 };

@@ -1,12 +1,12 @@
-import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncBaseResolver } from './base-resolver';
-import { AppSyncSimulatorPipelineResolverConfig } from '../type-definition';
+import { AmplifyAppSyncSimulator } from "..";
+import { AppSyncBaseResolver } from "./base-resolver";
+import { AppSyncSimulatorPipelineResolverConfig } from "../type-definition";
 
 export class AppSyncPipelineResolver extends AppSyncBaseResolver {
   constructor(protected config: AppSyncSimulatorPipelineResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
     super(config, simulatorContext);
     try {
-      config.functions.map(fn => simulatorContext.getFunction(fn));
+      config.functions.map((fn) => simulatorContext.getFunction(fn));
     } catch (e) {
       throw new Error(`Invalid config for PIPELINE_RESOLVER ${JSON.stringify(config)}`);
     }
@@ -59,7 +59,7 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
     ({ result, errors: templateErrors } = responseMappingTemplate.render(
       { source, arguments: args, result: prevResult, prevResult, stash },
       context,
-      info,
+      info
     ));
     context.appsyncErrors = [...context.appsyncErrors, ...(templateErrors || [])];
     return result;

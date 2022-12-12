@@ -1,5 +1,5 @@
 //schema
-const env = '${env}';
+const env = "${env}";
 export const schema = `
 #change: replaced "GraphQLResolverFunction" with the "<function-name>" placeholder, the test will replace it with the actual function name
 type Query {
@@ -94,32 +94,32 @@ export const expected_result_query = {
   data: {
     posts: [
       {
-        id: '1',
-        title: 'AWS Lambda: How To Guide.',
+        id: "1",
+        title: "AWS Lambda: How To Guide.",
         comments: [
           {
-            postId: '1',
-            content: 'Great guide!',
+            postId: "1",
+            content: "Great guide!",
           },
           {
-            postId: '1',
-            content: 'Thanks for sharing!',
+            postId: "1",
+            content: "Thanks for sharing!",
           },
         ],
       },
       {
-        id: '2',
-        title: 'AWS Amplify Launches @function and @key directives.',
+        id: "2",
+        title: "AWS Amplify Launches @function and @key directives.",
         comments: [
           {
-            postId: '2',
+            postId: "2",
             content: "Can't wait to try them out!",
           },
         ],
       },
       {
-        id: '3',
-        title: 'Serverless 101',
+        id: "3",
+        title: "Serverless 101",
         comments: [],
       },
     ],

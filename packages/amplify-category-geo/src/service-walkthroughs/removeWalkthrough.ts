@@ -1,7 +1,7 @@
-import { printer, prompter } from 'amplify-prompts';
-import { ServiceName } from '../service-utils/constants';
-import { getGeoResources } from '../service-utils/resourceUtils';
-import { getServiceFriendlyName } from './resourceWalkthrough';
+import { printer, prompter } from "amplify-prompts";
+import { ServiceName } from "../service-utils/constants";
+import { getGeoResources } from "../service-utils/resourceUtils";
+import { getServiceFriendlyName } from "./resourceWalkthrough";
 
 /**
  * CLI walkthrough to select resource to be removed

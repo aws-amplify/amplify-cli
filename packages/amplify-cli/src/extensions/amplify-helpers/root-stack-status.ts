@@ -1,8 +1,8 @@
-import { pathManager } from 'amplify-cli-core';
-import { rootStackFileName } from 'amplify-provider-awscloudformation';
-import { hashElement, HashElementOptions } from 'folder-hash';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { pathManager } from "amplify-cli-core";
+import { rootStackFileName } from "amplify-provider-awscloudformation";
+import { hashElement, HashElementOptions } from "folder-hash";
+import * as fs from "fs-extra";
+import * as path from "path";
 
 export function getHashForRootStack(dirPath, files?: string[]) {
   const options: HashElementOptions = {
@@ -11,7 +11,7 @@ export function getHashForRootStack(dirPath, files?: string[]) {
     },
   };
 
-  return hashElement(dirPath, options).then(result => result.hash);
+  return hashElement(dirPath, options).then((result) => result.hash);
 }
 
 export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
@@ -31,6 +31,6 @@ export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<bo
       return false;
     }
   } catch (error) {
-    throw new Error('Amplify Project not initialized.');
+    throw new Error("Amplify Project not initialized.");
   }
 }

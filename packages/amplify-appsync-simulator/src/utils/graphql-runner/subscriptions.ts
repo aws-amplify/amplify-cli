@@ -1,8 +1,8 @@
-import { subscribe, GraphQLSchema, DocumentNode } from 'graphql';
-import { ExecutionResult } from 'graphql/execution/execute';
-import { AppSyncGraphQLExecutionContext } from './index';
-import { runQueryOrMutation } from './query-and-mutation';
-import { getOperationType } from './helpers';
+import { subscribe, GraphQLSchema, DocumentNode } from "graphql";
+import { ExecutionResult } from "graphql/execution/execute";
+import { AppSyncGraphQLExecutionContext } from "./index";
+import { runQueryOrMutation } from "./query-and-mutation";
+import { getOperationType } from "./helpers";
 
 export type SubscriptionResult = ExecutionResult & {
   asyncIterator: AsyncIterableIterator<ExecutionResult>;
@@ -13,12 +13,12 @@ export async function runSubscription(
   document: DocumentNode,
   variables: Record<string, any>,
   operationName: string | undefined,
-  context: AppSyncGraphQLExecutionContext,
+  context: AppSyncGraphQLExecutionContext
 ): Promise<SubscriptionResult | ExecutionResult> {
   const operationType = getOperationType(document);
-  if (operationType !== 'subscription') {
+  if (operationType !== "subscription") {
     const error = new Error(`Expected operation type subscription, received ${operationType}`);
-    error.name = 'GraphQL operation error';
+    error.name = "GraphQL operation error";
     throw error;
   }
 

@@ -1,9 +1,9 @@
-import { URL } from 'url';
-import { GraphQLInt, GraphQLScalarType, GraphQLError, Kind, StringValueNode, ValueNode } from 'graphql';
-import { isValidNumber } from 'libphonenumber-js';
-import * as net from 'net';
+import { URL } from "url";
+import { GraphQLInt, GraphQLScalarType, GraphQLError, Kind, StringValueNode, ValueNode } from "graphql";
+import { isValidNumber } from "libphonenumber-js";
+import * as net from "net";
 
-import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
+import { GraphQLDate, GraphQLTime, GraphQLDateTime } from "graphql-iso-date";
 
 const EMAIL_ADDRESS_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -11,7 +11,7 @@ const EMAIL_ADDRESS_REGEX =
 // Some of the custom scalars in this file are inspired by the graphql-scalars npm module.
 
 const phoneValidator = (ast, options) => {
-  const { country = 'US' } = options;
+  const { country = "US" } = options;
   const { kind, value } = ast;
   if (kind !== Kind.STRING) {
     throw new GraphQLError(`Query error: Can only parse strings got a: ${kind}`, [ast]);
@@ -19,7 +19,7 @@ const phoneValidator = (ast, options) => {
 
   const isValid = isValidNumber(value, country);
   if (!isValid) {
-    throw new GraphQLError('Query error: Not a valid phone number', [ast]);
+    throw new GraphQLError("Query error: Not a valid phone number", [ast]);
   }
 
   return value;
@@ -31,27 +31,27 @@ class AWSPhone extends GraphQLScalarType {
     super({
       name,
       description,
-      serialize: value => {
+      serialize: (value) => {
         const ast = {
           kind: Kind.STRING,
           value,
         };
         return phoneValidator(ast, options);
       },
-      parseValue: value => {
+      parseValue: (value) => {
         const ast = {
           kind: Kind.STRING,
           value,
         };
         return phoneValidator(ast, options);
       },
-      parseLiteral: ast => phoneValidator(ast, options),
+      parseLiteral: (ast) => phoneValidator(ast, options),
     });
   }
 }
 
 const AWSDate = new GraphQLScalarType({
-  name: 'AWSDate',
+  name: "AWSDate",
   description: GraphQLDate.description,
   serialize(value) {
     return GraphQLDate.serialize(value);
@@ -65,7 +65,7 @@ const AWSDate = new GraphQLScalarType({
 });
 
 const AWSTime = new GraphQLScalarType({
-  name: 'AWSTime',
+  name: "AWSTime",
   description: GraphQLTime.description,
   serialize(value) {
     return GraphQLTime.serialize(value);
@@ -79,7 +79,7 @@ const AWSTime = new GraphQLScalarType({
 });
 
 const AWSDateTime = new GraphQLScalarType({
-  name: 'AWSDateTime',
+  name: "AWSDateTime",
   description: GraphQLDateTime.description,
   serialize(value) {
     return GraphQLDateTime.serialize(value);
@@ -93,11 +93,11 @@ const AWSDateTime = new GraphQLScalarType({
 });
 
 const AWSTimestamp = new GraphQLScalarType({
-  name: 'AWSTimestamp',
+  name: "AWSTimestamp",
   description:
-    'The AWSTimestamp scalar type represents the number of seconds that have elapsed \
+    "The AWSTimestamp scalar type represents the number of seconds that have elapsed \
 since 1970-01-01T00:00Z. Timestamps are serialized and deserialized as numbers. Negative values \
-are also accepted and these represent the number of seconds till 1970-01-01T00:00Z.',
+are also accepted and these represent the number of seconds till 1970-01-01T00:00Z.",
   serialize(value) {
     return GraphQLInt.serialize(value);
   },
@@ -114,8 +114,8 @@ are also accepted and these represent the number of seconds till 1970-01-01T00:0
 });
 
 // Unified the code for both types from graphql-scalars library.
-const validateIPAddress = value => {
-  if (typeof value !== 'string') {
+const validateIPAddress = (value) => {
+  if (typeof value !== "string") {
     throw new TypeError(`Value is not string: ${value}`);
   }
   if (net.isIPv4(value) || net.isIPv6(value)) {
@@ -126,8 +126,8 @@ const validateIPAddress = value => {
 };
 
 const AWSIPAddress = new GraphQLScalarType({
-  name: 'AWSIPAddress',
-  description: 'The AWSIPAddress scalar type represents a valid IPv4 or IPv6 address string.',
+  name: "AWSIPAddress",
+  description: "The AWSIPAddress scalar type represents a valid IPv4 or IPv6 address string.",
   serialize(value) {
     return validateIPAddress(value);
   },
@@ -143,7 +143,7 @@ const AWSIPAddress = new GraphQLScalarType({
 });
 
 const parseJson = (value: string) => {
-  if (typeof value !== 'string') {
+  if (typeof value !== "string") {
     throw new GraphQLError(`Unable to parse ${value} as valid JSON.`);
   }
 
@@ -155,8 +155,8 @@ const parseJson = (value: string) => {
 };
 
 const AWSJSON = new GraphQLScalarType({
-  name: 'AWSJSON',
-  description: 'The AWSJSON scalar type represents a valid json object serialized as a string.',
+  name: "AWSJSON",
+  description: "The AWSJSON scalar type represents a valid json object serialized as a string.",
   serialize(value) {
     return JSON.stringify(value);
   },
@@ -172,8 +172,8 @@ const AWSJSON = new GraphQLScalarType({
   },
 });
 
-const validateEmail = value => {
-  if (typeof value !== 'string') {
+const validateEmail = (value) => {
+  if (typeof value !== "string") {
     throw new TypeError(`Value is not string: ${value}`);
   }
 
@@ -185,9 +185,9 @@ const validateEmail = value => {
 };
 
 const AWSEmail = new GraphQLScalarType({
-  name: 'AWSEmail',
+  name: "AWSEmail",
   description:
-    'A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.',
+    "A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.",
   serialize: validateEmail,
   parseValue: validateEmail,
   parseLiteral(ast) {
@@ -199,11 +199,11 @@ const AWSEmail = new GraphQLScalarType({
   },
 });
 
-const parseUrlValue = value => (value ? new URL(value.toString()) : value);
+const parseUrlValue = (value) => (value ? new URL(value.toString()) : value);
 
 const AWSURL = new GraphQLScalarType({
-  name: 'AWSURL',
-  description: 'A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.',
+  name: "AWSURL",
+  description: "A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.",
   serialize(value) {
     if (value) {
       return new URL(value.toString()).toString();
@@ -226,7 +226,7 @@ export const scalars = {
   AWSDate,
   AWSTime,
   AWSDateTime,
-  AWSPhone: new AWSPhone({ name: 'AWSPhone', description: 'AWSPhone' }),
+  AWSPhone: new AWSPhone({ name: "AWSPhone", description: "AWSPhone" }),
   AWSEmail,
   AWSURL,
   AWSTimestamp,
@@ -235,8 +235,8 @@ export const scalars = {
 
 export function wrapSchema(schemaString) {
   const scalarStrings = Object.keys(scalars)
-    .map(scalarKey => `scalar ${scalarKey}\n`)
-    .join('');
+    .map((scalarKey) => `scalar ${scalarKey}\n`)
+    .join("");
 
   return scalarStrings + schemaString;
 }

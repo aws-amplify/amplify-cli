@@ -1,4 +1,4 @@
-import { TableDescription, TableName } from 'aws-sdk/clients/dynamodb';
+import { TableDescription, TableName } from "aws-sdk/clients/dynamodb";
 
 export interface IDynamoDBService {
   listTables(): Promise<TableName[]>;

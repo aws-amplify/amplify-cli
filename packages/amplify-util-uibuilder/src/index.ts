@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import path from 'path';
+import { $TSContext } from "amplify-cli-core";
+import path from "path";
 
 // TODO: remove dynamic require
 
@@ -7,7 +7,7 @@ import path from 'path';
  * executes main amplify command into uibuilder
  */
 export const executeAmplifyCommand = async (context: $TSContext, cmd: string): Promise<void> => {
-  const commandsDirPath = path.normalize(path.join(__dirname, 'commands'));
+  const commandsDirPath = path.normalize(path.join(__dirname, "commands"));
   const commandPath = path.join(commandsDirPath, cmd || context.input.command);
   // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
   const commandModule = require(commandPath);
@@ -18,7 +18,7 @@ export const executeAmplifyCommand = async (context: $TSContext, cmd: string): P
  * runs event based command
  */
 export const handleAmplifyEvent = async (context: $TSContext, { event }: { event: string }): Promise<void> => {
-  const eventHandlersDirPath = path.normalize(path.join(__dirname, 'event-handlers'));
+  const eventHandlersDirPath = path.normalize(path.join(__dirname, "event-handlers"));
   const eventHandlerPath = path.join(eventHandlersDirPath, `handle-${event}`);
   // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
   const eventHandlerModule = require(eventHandlerPath);

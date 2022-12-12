@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import { sleep } from './sleep';
+import _ from "lodash";
+import { sleep } from "./sleep";
 
 const defaultSettings: RetrySettings = {
   times: Infinity,
@@ -19,11 +19,9 @@ export const retry = async <T>(
   func: () => Promise<T>,
   successPredicate: (res?: T) => boolean,
   settings?: Partial<RetrySettings>,
-  failurePredicate?: (res?: T) => boolean,
+  failurePredicate?: (res?: T) => boolean
 ): Promise<T> => {
-  const {
-    times, delayMS, timeoutMS, stopOnError,
-  } = _.merge({}, defaultSettings, settings);
+  const { times, delayMS, timeoutMS, stopOnError } = _.merge({}, defaultSettings, settings);
 
   let count = 0;
   let result: T;
@@ -36,16 +34,16 @@ export const retry = async <T>(
       if (successPredicate(result)) {
         return result;
       }
-      if (typeof failurePredicate === 'function' && failurePredicate(result)) {
-        throw new Error('Retry-able function execution result matched failure predicate. Stopping retries.');
+      if (typeof failurePredicate === "function" && failurePredicate(result)) {
+        throw new Error("Retry-able function execution result matched failure predicate. Stopping retries.");
       }
       console.warn(`Retry-able function execution did not match success predicate. Result was [${JSON.stringify(result)}]. Retrying...`);
     } catch (err) {
       console.warn(`Retry-able function execution failed with [${err.message || err}]`);
       if (stopOnError) {
-        console.log('Stopping retries on error.');
+        console.log("Stopping retries on error.");
       } else {
-        console.log('Retrying...');
+        console.log("Retrying...");
       }
       terminate = stopOnError;
     }
@@ -53,7 +51,7 @@ export const retry = async <T>(
     await sleep(delayMS);
   } while (!terminate && count <= times && Date.now() - startTime < timeoutMS);
 
-  throw new Error('Retry-able function did not match predicate within the given retry constraints');
+  throw new Error("Retry-able function did not match predicate within the given retry constraints");
 };
 
 /**

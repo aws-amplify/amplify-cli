@@ -1,13 +1,11 @@
-import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api directives @auth batch 1', () => {
+describe("api directives @auth batch 1", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth1');
+    projectDir = await createNewProjectDir("auth1");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -16,8 +14,8 @@ describe('api directives @auth batch 1', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth owner1', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner1');
+  it("auth owner1", async () => {
+    const testresult = await testSchema(projectDir, "auth", "owner1");
     expect(testresult).toBeTruthy();
   });
 });

@@ -1,4 +1,4 @@
-import { STS } from './aws-utils/aws-sts';
+import { STS } from "./aws-utils/aws-sts";
 
 export async function getAccountId(context) {
   const amplifySts = await STS.getInstance(context);
@@ -6,6 +6,6 @@ export async function getAccountId(context) {
     const data = await amplifySts.getCallerIdentity();
     return data.Account;
   } catch (ex) {
-    return '';
+    return "";
   }
 }

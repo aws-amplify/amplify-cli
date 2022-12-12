@@ -31,16 +31,16 @@ mutation CreateEmployee(
 }`;
 export const input_mutation = {
   input: {
-    id: '1',
-    username: 'user1',
-    salary: '10000',
+    id: "1",
+    username: "user1",
+    salary: "10000",
   },
 };
 export const expected_result_mutation = {
   data: {
     createEmployee: {
-      id: '1',
-      username: 'user1',
+      id: "1",
+      username: "user1",
       salary: null,
     },
   },
@@ -58,9 +58,9 @@ export const query = `
 export const expected_result_query = {
   data: {
     getEmployee: {
-      id: '1',
-      username: 'user1',
-      salary: '10000',
+      id: "1",
+      username: "user1",
+      salary: "10000",
     },
   },
 };

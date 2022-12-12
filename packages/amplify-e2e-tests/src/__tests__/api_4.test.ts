@@ -7,25 +7,25 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
+} from "@aws-amplify/amplify-e2e-core";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+import gql from "graphql-tag";
 
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 
-describe('multi-key GSI behavior', () => {
-  const projName = 'multikey';
+describe("multi-key GSI behavior", () => {
+  const projName = "multikey";
 
-  const firstName = 'John';
-  const lastName = 'Doe';
+  const firstName = "John";
+  const lastName = "Doe";
   const age = 23;
-  const birthDate = '1998-03-02';
-  const nickname = 'Johnny';
+  const birthDate = "1998-03-02";
+  const nickname = "Johnny";
   const height = 72;
-  const eyeColor = 'purple'; // he's a special boy
+  const eyeColor = "purple"; // he's a special boy
 
-  const getPersonByNameAndAge = 'getPersonByNameAndAge';
-  const getPersonByNicknameAndHeight = 'getPersonByNicknameAndHeight';
+  const getPersonByNameAndAge = "getPersonByNameAndAge";
+  const getPersonByNicknameAndHeight = "getPersonByNicknameAndHeight";
 
   let appSyncClient: AWSAppSyncClient<any>;
   let projRoot: string;
@@ -33,7 +33,7 @@ describe('multi-key GSI behavior', () => {
     projRoot = await createNewProjectDir(projName);
     await initJSProjectWithProfile(projRoot, { name: projName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projName, 'multi-gsi.graphql');
+    await updateApiSchema(projRoot, projName, "multi-gsi.graphql");
     await amplifyPush(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
@@ -43,7 +43,7 @@ describe('multi-key GSI behavior', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('does not include record in GSI when create mutation does not specify GSI fields', async () => {
+  it("does not include record in GSI when create mutation does not specify GSI fields", async () => {
     const createMutation = /* GraphQL */ `
       mutation CreatePerson {
         createPerson(input: {
@@ -58,7 +58,7 @@ describe('multi-key GSI behavior', () => {
 
     const createResult = await appSyncClient.mutate({
       mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createResult.errors).toBeUndefined();
@@ -68,7 +68,7 @@ describe('multi-key GSI behavior', () => {
     await verifyGetPersonByNicknameAndHeight(firstName, 0);
   });
 
-  it('only includes record in specified GSI when multiple keys in schema but create mutation only includes one', async () => {
+  it("only includes record in specified GSI when multiple keys in schema but create mutation only includes one", async () => {
     const createMutation = /* GraphQL */ `
       mutation CreatePerson {
         createPerson(input: {
@@ -84,7 +84,7 @@ describe('multi-key GSI behavior', () => {
 
     const createResult = await appSyncClient.mutate({
       mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createResult.errors).toBeUndefined();
@@ -97,7 +97,7 @@ describe('multi-key GSI behavior', () => {
     await verifyGetPersonByNicknameAndHeight(firstName, 0);
   });
 
-  it('does not modify GSI when update mutation does not include GSI fields', async () => {
+  it("does not modify GSI when update mutation does not include GSI fields", async () => {
     const createMutation = /* GraphQL */ `
       mutation CreatePerson {
         createPerson(input: {
@@ -113,7 +113,7 @@ describe('multi-key GSI behavior', () => {
 
     const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createResult.errors).toBeUndefined();
@@ -139,7 +139,7 @@ describe('multi-key GSI behavior', () => {
 
     const updateResult = await appSyncClient.mutate({
       mutation: gql(updateMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(updateResult.errors).toBeUndefined();
@@ -148,7 +148,7 @@ describe('multi-key GSI behavior', () => {
     await verifyGetPersonByNameAndAge(firstName, 1, { age, birthDate });
   });
 
-  it('only modifies specified GSI when multiple keys in schema but update mutation only includes one', async () => {
+  it("only modifies specified GSI when multiple keys in schema but update mutation only includes one", async () => {
     const createMutation = /* GraphQL */ `
     mutation CreatePerson {
       createPerson(input: {
@@ -166,7 +166,7 @@ describe('multi-key GSI behavior', () => {
 
     const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createResult.errors).toBeUndefined();
@@ -178,7 +178,7 @@ describe('multi-key GSI behavior', () => {
     await verifyGetPersonByNameAndAge(firstName, 1, { age, birthDate });
     await verifyGetPersonByNicknameAndHeight(firstName, 1, { nickname, height });
 
-    const newNickname = 'Jon-jon';
+    const newNickname = "Jon-jon";
     const newHeight = 71;
 
     const updateMutation = /* GraphQL */ `
@@ -197,7 +197,7 @@ describe('multi-key GSI behavior', () => {
 
     const updateResult = await appSyncClient.mutate({
       mutation: gql(updateMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(updateResult.errors).toBeUndefined();
@@ -261,7 +261,7 @@ describe('multi-key GSI behavior', () => {
 
     const queryResult = await appSyncClient.query({
       query: gql(query),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
       variables: queryInput,
     });
 
@@ -273,7 +273,7 @@ describe('multi-key GSI behavior', () => {
   const verifyGetPersonByNicknameAndHeight = async (
     firstName: string,
     expectedCount: number,
-    beginsWith?: { nickname: string; height: number },
+    beginsWith?: { nickname: string; height: number }
   ) => {
     const query = beginsWith
       ? /* GraphQL */ `
@@ -308,7 +308,7 @@ describe('multi-key GSI behavior', () => {
 
     const queryResult = await appSyncClient.query({
       query: gql(query),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
       variables: queryInput,
     });
 

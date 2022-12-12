@@ -1,7 +1,5 @@
-import {
-  $TSObject, HydrateTags, pathManager, stateManager, Tag,
-} from 'amplify-cli-core';
-import { Context } from '../../domain/context';
+import { $TSObject, HydrateTags, pathManager, stateManager, Tag } from "amplify-cli-core";
+import { Context } from "../../domain/context";
 
 /**
  * get project tags for the current environment
@@ -30,11 +28,11 @@ export const getTags = (context: Context): Tag[] => {
 
 const initialTags: Tag[] = [
   {
-    Key: 'user:Stack',
-    Value: '{project-env}',
+    Key: "user:Stack",
+    Value: "{project-env}",
   },
   {
-    Key: 'user:Application',
-    Value: '{project-name}',
+    Key: "user:Application",
+    Value: "{project-name}",
   },
 ];

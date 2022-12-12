@@ -1,5 +1,5 @@
-import globby from 'globby';
-import * as fs from 'fs-extra';
+import globby from "globby";
+import * as fs from "fs-extra";
 
 export const convertNumBytes = (numBytes: number) => ({
   toKB: () => Math.round(numBytes / 1024),

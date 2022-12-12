@@ -1,4 +1,4 @@
-import { ResourceImpact, TemplateDiff } from '@aws-cdk/cloudformation-diff';
+import { ResourceImpact, TemplateDiff } from "@aws-cdk/cloudformation-diff";
 
 export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
   onlyUpdatesTableNameProperty,
@@ -15,7 +15,7 @@ export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
 const onlyUpdatesTableNameProperty = (stackName: string, diff: TemplateDiff) => {
   const propertyUpdates = diff.resources.changes[`${stackName}Table`].propertyUpdates;
   try {
-    expect(Object.keys(propertyUpdates)).toEqual(['TableName']); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
+    expect(Object.keys(propertyUpdates)).toEqual(["TableName"]); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
   } catch (err) {
     console.error(`Expected only TableName update for table ${stackName}Table. Instead got updates:`);
     console.log(JSON.stringify(propertyUpdates, undefined, 2));
@@ -26,20 +26,20 @@ const onlyUpdatesTableNameProperty = (stackName: string, diff: TemplateDiff) => 
 const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
   const propertyUpdates = diff.resources.changes[`${stackName}Table`].propertyUpdates;
   const newTableName = propertyUpdates.TableName.newValue;
-  expect(newTableName['Fn::Join']).toBeDefined();
-  const joinParams = newTableName['Fn::Join'];
+  expect(newTableName["Fn::Join"]).toBeDefined();
+  const joinParams = newTableName["Fn::Join"];
   const joinStr = joinParams[0] as string;
   const joinElements = joinParams[1] as any[];
 
-  const apiId = 'testApiId';
-  const env = 'testEnv';
+  const apiId = "testApiId";
+  const env = "testEnv";
 
-  const replacedElements = joinElements.map(el => {
-    if (typeof el?.Ref === 'string') {
-      if (el.Ref.startsWith('referencetotransformerrootstackGraphQLAPI')) {
+  const replacedElements = joinElements.map((el) => {
+    if (typeof el?.Ref === "string") {
+      if (el.Ref.startsWith("referencetotransformerrootstackGraphQLAPI")) {
         return apiId;
       }
-      if (el.Ref.startsWith('referencetotransformerrootstackenv')) {
+      if (el.Ref.startsWith("referencetotransformerrootstackenv")) {
         return env;
       }
     }
@@ -51,8 +51,8 @@ const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
 
 const dataSourceLogicalIdsAreSame = (_: string, diff: TemplateDiff) => {
   const areDataSourcesReplaced = Object.values(diff.resources.changes)
-    .filter(diff => diff.resourceType === 'AWS::AppSync::DataSource')
-    .map(diff => diff.changeImpact === ResourceImpact.WILL_REPLACE)
+    .filter((diff) => diff.resourceType === "AWS::AppSync::DataSource")
+    .map((diff) => diff.changeImpact === ResourceImpact.WILL_REPLACE)
     .reduce((acc, it) => acc && it, true);
   expect(areDataSourcesReplaced).toBe(true);
 };

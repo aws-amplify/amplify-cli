@@ -48,14 +48,14 @@ mutation CreatePost {
 export const expected_result_subscription = [
   {
     onCreatePost: {
-      postname: 'post1',
-      content: 'post1 content',
+      postname: "post1",
+      content: "post1 content",
     },
   },
   {
     onCreatePost: {
-      postname: 'post2',
-      content: 'post2 content',
+      postname: "post2",
+      content: "post2 content",
     },
   },
 ];

@@ -1,2 +1,2 @@
-export * from './myFormCheckout.component';
-export * from './myIcon.component';
+export * from "./myFormCheckout.component";
+export * from "./myIcon.component";

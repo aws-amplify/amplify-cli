@@ -1,4 +1,4 @@
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from "amplify-cli-core";
 import {
   addAuthWithDefault,
   addDDBWithTrigger,
@@ -13,22 +13,22 @@ import {
   getProjectMeta,
   updateDDBWithTriggerMigration,
   updateS3AddTriggerWithAuthOnlyReqMigration,
-} from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from "../../migration-helpers";
 
-describe('amplify add/update storage(DDB)', () => {
+describe("amplify add/update storage(DDB)", () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: 'unintialized' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: "unintialized" };
+    const migrateToVersion = { v: "unintialized" };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
   });
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('ddb-add-update migration');
+    projRoot = await createNewProjectDir("ddb-add-update migration");
   });
 
   afterEach(async () => {
@@ -36,7 +36,7 @@ describe('amplify add/update storage(DDB)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add/update ddb table with & without trigger', async () => {
+  it("init a project and add/update ddb table with & without trigger", async () => {
     // init, add storage and push with local cli
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
@@ -53,7 +53,7 @@ describe('amplify add/update storage(DDB)', () => {
       Arn: table1Arn,
       Region: table1Region,
       StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();
@@ -68,7 +68,7 @@ describe('amplify add/update storage(DDB)', () => {
       Arn: table2Arn,
       Region: table2Region,
       StreamArn: table2StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[1].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[1].output;
 
     expect(table2Name).toBeDefined();
     expect(table2Arn).toBeDefined();
@@ -97,10 +97,10 @@ function getPluginDependsOnFromResourceMeta(resourceMeta: $TSObject, dependencyC
   throw new Error(`${resourceMeta.providerMetadata.logicalId} has no dependsOn of ${dependencyCategory}`);
 }
 
-describe('amplify add/update storage(S3)', () => {
+describe("amplify add/update storage(S3)", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('s3-add-update migration');
+    projRoot = await createNewProjectDir("s3-add-update migration");
   });
 
   afterEach(async () => {
@@ -108,7 +108,7 @@ describe('amplify add/update storage(S3)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add s3 bucket & update with new trigger', async () => {
+  it("init a project and add s3 bucket & update with new trigger", async () => {
     // init, add storage and push with local cli
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
@@ -119,14 +119,14 @@ describe('amplify add/update storage(S3)', () => {
     await amplifyPushAuth(projRoot, true /*latest codebase*/);
 
     const meta = getProjectMeta(projRoot);
-    const s3Meta = getPluginServiceMetaFromAmplifyMeta(meta, 'S3');
+    const s3Meta = getPluginServiceMetaFromAmplifyMeta(meta, "S3");
     const output = s3Meta.output;
     expect(output.BucketName).toBeDefined();
     expect(output.Region).toBeDefined();
 
     const bucketExists = await checkIfBucketExists(output.BucketName, output.Region);
     expect(bucketExists).toMatchObject({});
-    const dependsOnFunctionMeta = getPluginDependsOnFromResourceMeta(s3Meta, 'function');
+    const dependsOnFunctionMeta = getPluginDependsOnFromResourceMeta(s3Meta, "function");
     expect(dependsOnFunctionMeta.resourceName).toBeDefined();
   });
 });

@@ -1,22 +1,16 @@
 /* eslint-disable */
-import {
-  addApi, amplifyPush, updateAuthAddUserGroups, getAwsIOSConfig,
-} from '@aws-amplify/amplify-e2e-core';
-import Amplify from 'aws-amplify';
-import {
-  signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId,
-} from '../authHelper';
-import {
-  updateSchemaInTestProject, testMutations, testQueries, testSubscriptions,
-} from '../common';
+import { addApi, amplifyPush, updateAuthAddUserGroups, getAwsIOSConfig } from "@aws-amplify/amplify-e2e-core";
+import Amplify from "aws-amplify";
+import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from "../authHelper";
+import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from "../common";
 
-const GROUPNAME = 'Admin';
-const USERNAME = 'user1';
-const PASSWORD = 'user1Password';
+const GROUPNAME = "Admin";
+const USERNAME = "user1";
+const PASSWORD = "user1Password";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
-    'Amazon Cognito User Pool': {},
+    "Amazon Cognito User Pool": {},
     transformerVersion: 2,
   });
 
@@ -80,18 +74,18 @@ mutation CreatePost(
 
 export const input_mutation = {
   input: {
-    id: '1',
-    title: 'title1',
+    id: "1",
+    title: "title1",
   },
 };
 
 export const expected_result_mutation = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
       owner: USERNAME,
     },
   },
@@ -111,8 +105,8 @@ export const query = `
 export const expected_result_query = {
   data: {
     getPost: {
-      id: '1',
-      title: 'title1',
+      id: "1",
+      title: "title1",
       owner: USERNAME,
     },
   },

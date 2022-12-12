@@ -1,16 +1,15 @@
 /* eslint-disable spellcheck/spell-checker */
-import {
-  FeatureFlags, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { FeatureFlags, pathManager, stateManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
 // This is copy-pasta from the category api until they can expose the method to plugins
 
 /**
  * Shorthand for Feature flag retrieval.
  */
-const useExperimentalPipelinedTransformerFF = (): boolean => FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-const transformerVersionFF = (): number => FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+const useExperimentalPipelinedTransformerFF = (): boolean =>
+  FeatureFlags.getBoolean("graphQLTransformer.useExperimentalPipelinedTransformer");
+const transformerVersionFF = (): number => FeatureFlags.getNumber("graphQLTransformer.transformerVersion");
 
 /**
  * Inspect feature flags for the project and determine if this particular project should be using graphql v2 or v1.
@@ -57,6 +56,6 @@ const migrateToTransformerVersionFeatureFlag = async (): Promise<void> => {
   printer.warn(
     `\nThe project is configured with 'transformerVersion': ${transformerVersionFF()}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelinedTransformerFF()}. Setting the 'transformerVersion': ${
       config.features.graphqltransformer.transformerversion
-    }. 'useExperimentalPipelinedTransformer' is deprecated.`,
+    }. 'useExperimentalPipelinedTransformer' is deprecated.`
   );
 };

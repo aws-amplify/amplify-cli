@@ -14,16 +14,16 @@ import {
   getBackendAmplifyMeta,
   getTeamProviderInfo,
   amplifyPullNonInteractive,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import * as path from "path";
 
-describe('amplify pull in two directories', () => {
+describe("amplify pull in two directories", () => {
   let projRoot: string;
   let projRoot2: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('pull-test');
-    projRoot2 = await createNewProjectDir('pull-test-2');
+    projRoot = await createNewProjectDir("pull-test");
+    projRoot2 = await createNewProjectDir("pull-test-2");
   });
 
   afterEach(async () => {
@@ -32,13 +32,13 @@ describe('amplify pull in two directories', () => {
     deleteProjectDir(projRoot2);
   });
 
-  it('pulling twice with noUpdateBackend does not re-prompt', async () => {
+  it("pulling twice with noUpdateBackend does not re-prompt", async () => {
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
-      name: 'testapi',
+      name: "testapi",
     });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, 'testapi', 'simple_model.graphql');
+    await updateApiSchema(projRoot, "testapi", "simple_model.graphql");
     await amplifyPush(projRoot);
     const appId = getAppId(projRoot);
     await amplifyPull(projRoot2, { appId, emptyDir: true, noUpdateBackend: true });
@@ -46,17 +46,21 @@ describe('amplify pull in two directories', () => {
   });
 });
 
-describe('amplify pull', () => {
-  const envName = 'testing';
+describe("amplify pull", () => {
+  const envName = "testing";
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('pull-test');
+    projRoot = await createNewProjectDir("pull-test");
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
   });
 
-  it('preserves team-provider-info contents across restore backend calls', async () => {
+  it("preserves team-provider-info contents across restore backend calls", async () => {
     // add a function with an env var and push
-    await addFunction(projRoot, { functionTemplate: 'Hello World', environmentVariables: { key: 'testVar', value: 'testValue' } }, 'nodejs');
+    await addFunction(
+      projRoot,
+      { functionTemplate: "Hello World", environmentVariables: { key: "testVar", value: "testValue" } },
+      "nodejs"
+    );
     await amplifyPushAuth(projRoot);
 
     // grab the appId from the meta file
@@ -65,7 +69,7 @@ describe('amplify pull', () => {
     const originalTpi = getTeamProviderInfo(projRoot);
 
     // remove the #current-cloud-backend directory
-    const ccbPath = path.join(projRoot, 'amplify', '#current-cloud-backend');
+    const ccbPath = path.join(projRoot, "amplify", "#current-cloud-backend");
     await fs.remove(ccbPath);
 
     // pull the project which will execute the restore backend codepath because of the missing #current-cloud-backend directory

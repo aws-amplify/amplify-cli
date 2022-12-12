@@ -6,8 +6,8 @@ import {
   headlessAuthImport,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { ImportAuthRequest } from 'amplify-headless-interface';
+} from "@aws-amplify/amplify-e2e-core";
+import { ImportAuthRequest } from "amplify-headless-interface";
 import {
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
@@ -16,17 +16,17 @@ import {
   getAuthProjectDetails,
   removeImportedAuthWithDefault,
   setupOgProjectWithAuth,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const PROJECT_NAME = 'authTest';
+const PROJECT_NAME = "authTest";
 const defaultsSettings = {
   name: PROJECT_NAME,
 };
 
-describe('headless auth', () => {
+describe("headless auth", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth-update');
+    projRoot = await createNewProjectDir("auth-update");
   });
 
   afterEach(async () => {
@@ -34,12 +34,12 @@ describe('headless auth', () => {
     deleteProjectDir(projRoot);
   });
 
-  describe('import', () => {
+  describe("import", () => {
     let ogProjectSettings: { name: string };
     let ogProjectRoot: string;
 
     beforeEach(async () => {
-      const ogProjectPrefix = 'ogauimphea';
+      const ogProjectPrefix = "ogauimphea";
       ogProjectSettings = {
         name: ogProjectPrefix,
       };
@@ -52,9 +52,7 @@ describe('headless auth', () => {
       deleteProjectDir(ogProjectRoot);
     });
 
-    test.each([
-      ['userpool only', false],
-    ])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
+    test.each([["userpool only", false]])("cognito userpool %s", async (_: string, withIdentityPool: boolean) => {
       const ogProjectDetails = await setupOgProjectWithAuth(ogProjectRoot, ogProjectSettings, withIdentityPool);
 
       const importAuthRequest: ImportAuthRequest = {

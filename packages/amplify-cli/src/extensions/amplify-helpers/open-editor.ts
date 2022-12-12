@@ -1,18 +1,18 @@
-import * as fs from 'fs-extra';
-import * as which from 'which';
-import open from 'open';
-import execa, { sync as execaSync } from 'execa';
-import * as inquirer from 'inquirer';
-import * as envEditor from 'env-editor';
-import { editorSelection } from './editor-selection';
-import { getEnvInfo } from './get-env-info';
-import { $TSContext } from 'amplify-cli-core';
+import * as fs from "fs-extra";
+import * as which from "which";
+import open from "open";
+import execa, { sync as execaSync } from "execa";
+import * as inquirer from "inquirer";
+import * as envEditor from "env-editor";
+import { editorSelection } from "./editor-selection";
+import { getEnvInfo } from "./get-env-info";
+import { $TSContext } from "amplify-cli-core";
 
 export async function openEditor(context: $TSContext, filePath: string, waitToContinue = true): Promise<void> {
   const continueQuestion: inquirer.InputQuestion = {
-    type: 'input',
-    name: 'pressKey',
-    message: 'Press enter to continue',
+    type: "input",
+    name: "pressKey",
+    message: "Press enter to continue",
   };
 
   // Check if default editor is chosen in init step
@@ -20,7 +20,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
 
   const editorSelected = defaultEditor || (await editorSelection());
 
-  if (editorSelected !== 'none') {
+  if (editorSelected !== "none") {
     const editorArguments: string[] = [];
 
     let editor: envEditor.Editor;
@@ -29,11 +29,11 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
 
     if (!editor) {
       context.print.error(
-        `Selected editor '${editorSelected}' was not found in your machine. Open your favorite editor and modify the file if needed.`,
+        `Selected editor '${editorSelected}' was not found in your machine. Open your favorite editor and modify the file if needed.`
       );
     }
 
-    let editorPath: string | undefined = editor.paths.find(p => fs.existsSync(p));
+    let editorPath: string | undefined = editor.paths.find((p) => fs.existsSync(p));
 
     // Check if the binary can be located with which
     if (!editorPath) {
@@ -50,7 +50,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
     if (!editorPath) {
       context.print.warning(`Couldn’t find selected code editor (${editorSelected}) on your machine.`);
 
-      const openFile = await context.amplify.confirmPrompt('Try opening with system-default editor instead?', true);
+      const openFile = await context.amplify.confirmPrompt("Try opening with system-default editor instead?", true);
 
       if (openFile) {
         await open(filePath, { wait: waitToContinue });
@@ -60,8 +60,8 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
         }
       }
     } else {
-      if (editorSelected === 'vscode') {
-        editorArguments.push('--goto');
+      if (editorSelected === "vscode") {
+        editorArguments.push("--goto");
       }
 
       editorArguments.push(filePath);
@@ -70,12 +70,12 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
         if (!editor.isTerminalEditor) {
           const subProcess = execa(editorPath, editorArguments, {
             detached: true,
-            stdio: 'ignore',
+            stdio: "ignore",
           });
 
-          subProcess.on('error', err => {
+          subProcess.on("error", (err) => {
             context.print.error(
-              `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
+              `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`
             );
           });
 
@@ -87,7 +87,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
         } else {
           await execaSync(editorPath, editorArguments, {
             detached: true,
-            stdio: 'inherit',
+            stdio: "inherit",
           });
         }
       } catch (e) {

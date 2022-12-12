@@ -10,16 +10,16 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
 const defaultsSettings = {
-  name: 'authTest',
+  name: "authTest",
 };
 
-describe('amplify add auth...', () => {
+describe("amplify add auth...", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
   });
 
   afterEach(async () => {
@@ -27,7 +27,7 @@ describe('amplify add auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init an IOS project and add default auth', async () => {
+  it("...should init an IOS project and add default auth", async () => {
     await initIosProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -41,9 +41,9 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.ClientSecret).toBeUndefined();
 
     // update parameter to generate client Secret
-    const parameters = getCLIInputs(projRoot, 'auth', id);
+    const parameters = getCLIInputs(projRoot, "auth", id);
     parameters.cognitoConfig.userpoolClientGenerateSecret = true;
-    setCLIInputs(projRoot, 'auth', id, parameters);
+    setCLIInputs(projRoot, "auth", id, parameters);
 
     await amplifyPushAuth(projRoot);
 

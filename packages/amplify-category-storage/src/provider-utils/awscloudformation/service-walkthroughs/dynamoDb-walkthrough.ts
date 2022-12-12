@@ -9,29 +9,29 @@ import {
   pathManager,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
-import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { v4 as uuid } from 'uuid';
-import { DDBStackTransform } from '../cdk-stack-builder/ddb-stack-transform';
+} from "amplify-cli-core";
+import { alphanumeric, printer, prompter, Validator } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { v4 as uuid } from "uuid";
+import { DDBStackTransform } from "../cdk-stack-builder/ddb-stack-transform";
 import {
   DynamoDBAttributeDefType,
   DynamoDBCLIInputs,
   DynamoDBCLIInputsGSIType,
   DynamoDBCLIInputsKeyType,
-} from '../service-walkthrough-types/dynamoDB-user-input-types';
-import { DynamoDBInputState } from './dynamoDB-input-state';
+} from "../service-walkthrough-types/dynamoDB-user-input-types";
+import { DynamoDBInputState } from "./dynamoDB-input-state";
 
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
 
 export async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
   printer.blankLine();
-  printer.info('Welcome to the NoSQL DynamoDB database wizard');
-  printer.info('This wizard asks you a series of questions to help determine how to set up your NoSQL database table.');
+  printer.info("Welcome to the NoSQL DynamoDB database wizard");
+  printer.info("This wizard asks you a series of questions to help determine how to set up your NoSQL database table.");
   printer.blankLine();
 
-  const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
+  const defaultValuesSrc = path.join(__dirname, "..", "default-values", defaultValuesFilename);
   const { getAllDefaults } = await import(defaultValuesSrc);
   const { amplify } = context;
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
@@ -68,18 +68,18 @@ export async function updateWalkthrough(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
   const dynamoDbResources: $TSObject = {};
 
-  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
     if (
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === AmplifySupportedService.DYNAMODB &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
-      amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType !== 'imported'
+      amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType !== "imported"
     ) {
       dynamoDbResources[resourceName] = amplifyMeta[AmplifyCategories.STORAGE][resourceName];
     }
   });
 
   if (!amplifyMeta[AmplifyCategories.STORAGE] || Object.keys(dynamoDbResources).length === 0) {
-    const errMessage = 'No resources to update. You need to add a resource.';
+    const errMessage = "No resources to update. You need to add a resource.";
 
     printer.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
@@ -88,7 +88,7 @@ export async function updateWalkthrough(context: $TSContext) {
   }
 
   const resources = Object.keys(dynamoDbResources);
-  const resourceName = await prompter.pick('Specify the resource that you would want to update', resources);
+  const resourceName = await prompter.pick("Specify the resource that you would want to update", resources);
 
   // Check if we need to migrate to cli-inputs.json
   const cliInputsState = new DynamoDBInputState(context, resourceName);
@@ -126,7 +126,7 @@ export async function updateWalkthrough(context: $TSContext) {
   }
 
   if (!cliInputs.resourceName) {
-    throw new Error('resourceName not found in cli-inputs');
+    throw new Error("resourceName not found in cli-inputs");
   }
 
   const { attributeAnswers, indexableAttributeList } = await askAttributeListQuestion(existingAttributeDefinitions);
@@ -146,7 +146,7 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
   const triggerFunctions: string[] = existingTriggerFunctions || [];
 
   if (!existingTriggerFunctions || existingTriggerFunctions.length === 0) {
-    if (await prompter.confirmContinue('Do you want to add a Lambda Trigger for your Table?')) {
+    if (await prompter.confirmContinue("Do you want to add a Lambda Trigger for your Table?")) {
       let triggerName;
       try {
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
@@ -161,14 +161,14 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
     let continueWithTriggerOperationQuestion = true;
 
     while (continueWithTriggerOperationQuestion) {
-      const triggerOperationAnswer = await prompter.pick('Select from the following options', [
-        'Add a Trigger',
-        'Remove a trigger',
+      const triggerOperationAnswer = await prompter.pick("Select from the following options", [
+        "Add a Trigger",
+        "Remove a trigger",
         `I'm done`,
       ]);
 
       switch (triggerOperationAnswer) {
-        case 'Add a Trigger': {
+        case "Add a Trigger": {
           try {
             triggerName = await addTrigger(context, resourceName, triggerFunctions);
             triggerFunctions.push(triggerName);
@@ -179,10 +179,10 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
           }
           break;
         }
-        case 'Remove a trigger': {
+        case "Remove a trigger": {
           try {
             if (triggerFunctions.length === 0) {
-              throw new Error('No triggers found associated with this table');
+              throw new Error("No triggers found associated with this table");
             } else {
               triggerName = await removeTrigger(context, resourceName, triggerFunctions);
 
@@ -192,7 +192,7 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
                 triggerFunctions.splice(index, 1);
                 continueWithTriggerOperationQuestion = false;
               } else {
-                throw new Error('Could not find trigger function');
+                throw new Error("Could not find trigger function");
               }
             }
           } catch (e) {
@@ -217,15 +217,15 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
 async function askGSIQuestion(
   indexableAttributeList: string[],
   attributeDefinitions: DynamoDBAttributeDefType[],
-  existingGSIList?: DynamoDBCLIInputsGSIType[],
+  existingGSIList?: DynamoDBCLIInputsGSIType[]
 ) {
   printer.blankLine();
   printer.info(
-    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
+    "You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key."
   );
-  printer.info('To learn more about indexes, see:');
+  printer.info("To learn more about indexes, see:");
   printer.info(
-    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
+    "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes"
   );
   printer.blankLine();
 
@@ -234,12 +234,12 @@ async function askGSIQuestion(
   if (
     existingGSIList &&
     !!existingGSIList.length &&
-    (await prompter.yesOrNo('Do you want to keep existing global seconday indexes created on your table?', true))
+    (await prompter.yesOrNo("Do you want to keep existing global seconday indexes created on your table?", true))
   ) {
     gsiList = existingGSIList;
   }
 
-  if (await prompter.yesOrNo('Do you want to add global secondary indexes to your table?', true)) {
+  if (await prompter.yesOrNo("Do you want to add global secondary indexes to your table?", true)) {
     let continuewithGSIQuestions = true;
 
     while (continuewithGSIQuestions) {
@@ -249,14 +249,14 @@ async function askGSIQuestion(
           (input: string) =>
             /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
 
-        const gsiName = await prompter.input('Provide the GSI name', {
-          validate: gsiNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
+        const gsiName = await prompter.input("Provide the GSI name", {
+          validate: gsiNameValidator("You can use the following characters: a-z A-Z 0-9 - _"),
         });
 
-        const gsiPartitionKeyName = await prompter.pick('Choose partition key for the GSI', [...new Set(indexableAttributeList)]);
+        const gsiPartitionKeyName = await prompter.pick("Choose partition key for the GSI", [...new Set(indexableAttributeList)]);
 
         const gsiPrimaryKeyIndex = attributeDefinitions.findIndex(
-          (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiPartitionKeyName,
+          (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiPartitionKeyName
         );
 
         /* eslint-enable */
@@ -271,10 +271,10 @@ async function askGSIQuestion(
         const sortKeyOptions = indexableAttributeList.filter((att: string) => att !== gsiPartitionKeyName);
 
         if (sortKeyOptions.length > 0) {
-          if (await prompter.yesOrNo('Do you want to add a sort key to your global secondary index?', true)) {
-            const gsiSortKeyName = await prompter.pick('Choose sort key for the GSI', [...new Set(sortKeyOptions)]);
+          if (await prompter.yesOrNo("Do you want to add a sort key to your global secondary index?", true)) {
+            const gsiSortKeyName = await prompter.pick("Choose sort key for the GSI", [...new Set(sortKeyOptions)]);
             const gsiSortKeyIndex = attributeDefinitions.findIndex(
-              (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiSortKeyName,
+              (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiSortKeyName
             );
             gsiItem.sortKey = {
               fieldName: gsiSortKeyName,
@@ -284,9 +284,9 @@ async function askGSIQuestion(
         }
 
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
+        continuewithGSIQuestions = await prompter.yesOrNo("Do you want to add more global secondary indexes to your table?", true);
       } else {
-        printer.error('You do not have any other attributes remaining to configure');
+        printer.error("You do not have any other attributes remaining to configure");
         break;
       }
     }
@@ -297,14 +297,14 @@ async function askGSIQuestion(
 async function askSortKeyQuestion(
   indexableAttributeList: string[],
   attributeDefinitions: DynamoDBAttributeDefType[],
-  partitionKeyFieldName: string,
+  partitionKeyFieldName: string
 ): Promise<undefined | DynamoDBCLIInputsKeyType> {
-  if (await prompter.yesOrNo('Do you want to add a sort key to your table?', true)) {
+  if (await prompter.yesOrNo("Do you want to add a sort key to your table?", true)) {
     // Ask for sort key
     if (attributeDefinitions.length > 1) {
       const sortKeyName = await prompter.pick(
-        'Choose sort key for the table',
-        indexableAttributeList.filter((att: string) => att !== partitionKeyFieldName),
+        "Choose sort key for the table",
+        indexableAttributeList.filter((att: string) => att !== partitionKeyFieldName)
       );
       const sortKeyAttrTypeIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === sortKeyName);
 
@@ -313,7 +313,7 @@ async function askSortKeyQuestion(
         fieldType: attributeDefinitions[sortKeyAttrTypeIndex].AttributeType,
       };
     } else {
-      printer.error('You must add additional keys in order to select a sort key.');
+      printer.error("You must add additional keys in order to select a sort key.");
     }
   }
   return;
@@ -322,16 +322,16 @@ async function askSortKeyQuestion(
 async function askPrimaryKeyQuestion(indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[]) {
   printer.blankLine();
   printer.info(
-    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
+    "Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key."
   );
   printer.blankLine();
-  printer.info('To learn more about primary keys, see:');
+  printer.info("To learn more about primary keys, see:");
   printer.info(
-    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
+    "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey"
   );
   printer.blankLine();
 
-  const partitionKeyName = await prompter.pick('Choose partition key for the table', indexableAttributeList);
+  const partitionKeyName = await prompter.pick("Choose partition key for the table", indexableAttributeList);
   const primaryAttrTypeIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === partitionKeyName);
 
   return {
@@ -342,20 +342,20 @@ async function askPrimaryKeyQuestion(indexableAttributeList: string[], attribute
 
 async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBCLIInputsKeyType[]) {
   const attributeTypes = {
-    string: { code: 'string', indexable: true },
-    number: { code: 'number', indexable: true },
-    binary: { code: 'binary', indexable: true },
-    boolean: { code: 'boolean', indexable: false },
-    list: { code: 'list', indexable: false },
-    map: { code: 'map', indexable: false },
-    null: { code: 'null', indexable: false },
-    'string-set': { code: 'string-set', indexable: false },
-    'number-set': { code: 'number-set', indexable: false },
-    'binary-set': { code: 'binary-set', indexable: false },
+    string: { code: "string", indexable: true },
+    number: { code: "number", indexable: true },
+    binary: { code: "binary", indexable: true },
+    boolean: { code: "boolean", indexable: false },
+    list: { code: "list", indexable: false },
+    map: { code: "map", indexable: false },
+    null: { code: "null", indexable: false },
+    "string-set": { code: "string-set", indexable: false },
+    "number-set": { code: "number-set", indexable: false },
+    "binary-set": { code: "binary-set", indexable: false },
   };
 
   printer.blankLine();
-  printer.info('You can now add columns to the table.');
+  printer.info("You can now add columns to the table.");
   printer.blankLine();
 
   let continueAttributeQuestion = true;
@@ -375,7 +375,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
   if (existingAttributes.length > 0) {
     attributeAnswers = existingAttributes;
     indexableAttributeList = attributeAnswers.map((attr: DynamoDBAttributeDefType) => attr.AttributeName);
-    continueAttributeQuestion = await prompter.yesOrNo('Would you like to add another column?', true);
+    continueAttributeQuestion = await prompter.yesOrNo("Would you like to add another column?", true);
   }
 
   while (continueAttributeQuestion) {
@@ -384,14 +384,14 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
       (input: string) =>
         /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
 
-    const attributeName = await prompter.input('What would you like to name this column', {
-      validate: attributeNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
+    const attributeName = await prompter.input("What would you like to name this column", {
+      validate: attributeNameValidator("You can use the following characters: a-z A-Z 0-9 - _"),
     });
 
-    const attributeType = await prompter.pick('Choose the data type', Object.keys(attributeTypes));
+    const attributeType = await prompter.pick("Choose the data type", Object.keys(attributeTypes));
 
     if (attributeAnswers.findIndex((attribute: DynamoDBAttributeDefType) => attribute.AttributeName === attributeName) !== -1) {
-      continueAttributeQuestion = await prompter.confirmContinue('This attribute was already added. Do you want to add another attribute?');
+      continueAttributeQuestion = await prompter.confirmContinue("This attribute was already added. Do you want to add another attribute?");
       continue;
     }
 
@@ -406,7 +406,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
       indexableAttributeList.push(attributeName);
     }
 
-    continueAttributeQuestion = await prompter.yesOrNo('Would you like to add another column?', true);
+    continueAttributeQuestion = await prompter.yesOrNo("Would you like to add another column?", true);
   }
 
   return { attributeAnswers, indexableAttributeList };
@@ -418,28 +418,28 @@ async function askTableNameQuestion(defaultValues: any, resourceName: string) {
     (input: string) =>
       /^[a-zA-Z0-9._-]+$/.test(input) ? true : message;
 
-  const tableName = await prompter.input('Provide table name', {
-    validate: tableNameValidator('You can use the following characters: a-z A-Z 0-9 . - _'),
-    initial: resourceName || defaultValues['tableName'],
+  const tableName = await prompter.input("Provide table name", {
+    validate: tableNameValidator("You can use the following characters: a-z A-Z 0-9 . - _"),
+    initial: resourceName || defaultValues["tableName"],
   });
 
   return tableName;
 }
 
 async function askResourceNameQuestion(defaultValues: any): Promise<string> {
-  const resourceName = await prompter.input('Provide a friendly name', {
+  const resourceName = await prompter.input("Provide a friendly name", {
     validate: alphanumeric(),
-    initial: defaultValues['resourceName'],
+    initial: defaultValues["resourceName"],
   });
 
   return resourceName;
 }
 
 async function removeTrigger(context: $TSContext, resourceName: string, triggerList: string[]) {
-  const functionName = await prompter.pick('Select from the function you would like to remove', triggerList);
+  const functionName = await prompter.pick("Select from the function you would like to remove", triggerList);
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+  const functionCFNFilePath = path.join(projectBackendDirPath, "function", functionName, `${functionName}-cloudformation-template.json`);
 
   if (fs.existsSync(functionCFNFilePath)) {
     const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
@@ -450,20 +450,20 @@ async function removeTrigger(context: $TSContext, resourceName: string, triggerL
     // Update the functions resource
     const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
 
-    fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
+    fs.writeFileSync(functionCFNFilePath, functionCFNString, "utf8");
   }
 
   return functionName;
 }
 
 async function addTrigger(context: $TSContext, resourceName: string, triggerList: string[]) {
-  const triggerTypeAnswer = await prompter.pick('Select from the following options', [
-    'Choose an existing function from the project',
-    'Create a new function',
+  const triggerTypeAnswer = await prompter.pick("Select from the following options", [
+    "Choose an existing function from the project",
+    "Create a new function",
   ]);
   let functionName;
 
-  if (triggerTypeAnswer === 'Choose an existing function from the project') {
+  if (triggerTypeAnswer === "Choose an existing function from the project") {
     let lambdaResources = await getLambdaFunctions(context);
 
     if (triggerList) {
@@ -482,12 +482,12 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
       throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
-    functionName = await prompter.pick('Select from the following options', lambdaResources);
+    functionName = await prompter.pick("Select from the following options", lambdaResources);
   } else {
     // Create a new lambda trigger
 
     const targetDir = context.amplify.pathManager.getBackendDirPath();
-    const [shortId] = uuid().split('-');
+    const [shortId] = uuid().split("-");
 
     functionName = `${resourceName}Trigger${shortId}`;
 
@@ -501,23 +501,23 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
     const copyJobs = [
       {
         dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'lambda-cloudformation-template.json.ejs'),
-        target: path.join(targetDir, 'function', functionName, `${functionName}-cloudformation-template.json`),
+        template: path.join("..", "..", "..", "..", "resources", "triggers", "dynamoDB", "lambda-cloudformation-template.json.ejs"),
+        target: path.join(targetDir, "function", functionName, `${functionName}-cloudformation-template.json`),
       },
       {
         dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'event.json'),
-        target: path.join(targetDir, 'function', functionName, 'src', 'event.json'),
+        template: path.join("..", "..", "..", "..", "resources", "triggers", "dynamoDB", "event.json"),
+        target: path.join(targetDir, "function", functionName, "src", "event.json"),
       },
       {
         dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'index.js'),
-        target: path.join(targetDir, 'function', functionName, 'src', 'index.js'),
+        template: path.join("..", "..", "..", "..", "resources", "triggers", "dynamoDB", "index.js"),
+        target: path.join(targetDir, "function", functionName, "src", "index.js"),
       },
       {
         dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'package.json.ejs'),
-        target: path.join(targetDir, 'function', functionName, 'src', 'package.json'),
+        template: path.join("..", "..", "..", "..", "resources", "triggers", "dynamoDB", "package.json.ejs"),
+        target: path.join(targetDir, "function", functionName, "src", "package.json"),
       },
     ];
 
@@ -528,54 +528,54 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
 
     const backendConfigs = {
       service: AmplifySupportedService.LAMBDA,
-      providerPlugin: 'awscloudformation',
+      providerPlugin: "awscloudformation",
       build: true,
     };
 
-    context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+    context.amplify.updateamplifyMetaAfterResourceAdd("function", functionName, backendConfigs);
 
     printer.success(`Successfully added resource ${functionName} locally`);
   }
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+  const functionCFNFilePath = path.join(projectBackendDirPath, "function", functionName, `${functionName}-cloudformation-template.json`);
 
   if (fs.existsSync(functionCFNFilePath)) {
     const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
 
     // Update parameters block
     functionCFNFile.Parameters[`storage${resourceName}Name`] = {
-      Type: 'String',
+      Type: "String",
       Default: `storage${resourceName}Name`,
     };
 
     functionCFNFile.Parameters[`storage${resourceName}Arn`] = {
-      Type: 'String',
+      Type: "String",
       Default: `storage${resourceName}Arn`,
     };
 
     functionCFNFile.Parameters[`storage${resourceName}StreamArn`] = {
-      Type: 'String',
+      Type: "String",
       Default: `storage${resourceName}Arn`,
     };
 
     // Update policies
     functionCFNFile.Resources[`${resourceName}TriggerPolicy`] = {
-      DependsOn: ['LambdaExecutionRole'],
-      Type: 'AWS::IAM::Policy',
+      DependsOn: ["LambdaExecutionRole"],
+      Type: "AWS::IAM::Policy",
       Properties: {
         PolicyName: `lambda-trigger-policy-${resourceName}`,
         Roles: [
           {
-            Ref: 'LambdaExecutionRole',
+            Ref: "LambdaExecutionRole",
           },
         ],
         PolicyDocument: {
-          Version: '2012-10-17',
+          Version: "2012-10-17",
           Statement: [
             {
-              Effect: 'Allow',
-              Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+              Effect: "Allow",
+              Action: ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"],
               Resource: [
                 {
                   Ref: `storage${resourceName}StreamArn`,
@@ -590,7 +590,7 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
     // Add TriggerResource
 
     functionCFNFile.Resources[`${resourceName}Trigger`] = {
-      Type: 'AWS::Lambda::EventSourceMapping',
+      Type: "AWS::Lambda::EventSourceMapping",
       DependsOn: [`${resourceName}TriggerPolicy`],
       Properties: {
         BatchSize: 100,
@@ -599,9 +599,9 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
           Ref: `storage${resourceName}StreamArn`,
         },
         FunctionName: {
-          'Fn::GetAtt': ['LambdaFunction', 'Arn'],
+          "Fn::GetAtt": ["LambdaFunction", "Arn"],
         },
-        StartingPosition: 'LATEST',
+        StartingPosition: "LATEST",
       },
     };
 
@@ -616,7 +616,7 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
     resourceDependsOn.forEach((resource: any) => {
       if (resource.resourceName === resourceName) {
         resourceExists = true;
-        resourceDependsOn.attributes = ['Name', 'Arn', 'StreamArn'];
+        resourceDependsOn.attributes = ["Name", "Arn", "StreamArn"];
       }
     });
 
@@ -624,16 +624,16 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
       resourceDependsOn.push({
         category: AmplifyCategories.STORAGE,
         resourceName,
-        attributes: ['Name', 'Arn', 'StreamArn'],
+        attributes: ["Name", "Arn", "StreamArn"],
       });
     }
 
     // Update the functions resource
     const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
 
-    fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
+    fs.writeFileSync(functionCFNFilePath, functionCFNString, "utf8");
 
-    context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
+    context.amplify.updateamplifyMetaAfterResourceUpdate("function", functionName, "dependsOn", resourceDependsOn);
     printer.success(`Successfully updated resource ${functionName} locally`);
 
     if (await prompter.confirmContinue(`Do you want to edit the local ${functionName} lambda function now?`)) {
@@ -656,20 +656,20 @@ async function getLambdaFunctions(context: $TSContext) {
 }
 
 export function migrate(context: $TSContext, projectPath: any, resourceName: any) {
-  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', AmplifyCategories.STORAGE, resourceName);
+  const resourceDirPath = path.join(projectPath, "amplify", "backend", AmplifyCategories.STORAGE, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
 
   // Removes dangling commas from a JSON
   const removeDanglingCommas = (value: any) => {
     const regex = /,(?!\s*?[{["'\w])/g;
 
-    return value.replace(regex, '');
+    return value.replace(regex, "");
   };
 
   /* Current Dynamo CFN's have a trailing comma (accepted by CFN),
   but fails on JSON.parse(), hence removing it */
 
-  let oldcfnString = fs.readFileSync(cfnFilePath, 'utf8');
+  let oldcfnString = fs.readFileSync(cfnFilePath, "utf8");
   oldcfnString = removeDanglingCommas(oldcfnString);
 
   const oldCfn = JSON.parse(oldcfnString);
@@ -684,7 +684,7 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
   }
 
   (newCfn as any).Parameters.env = {
-    Type: 'String',
+    Type: "String",
   };
 
   // Add conditions block
@@ -693,31 +693,31 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
   }
 
   (newCfn as any).Conditions.ShouldNotCreateEnvResources = {
-    'Fn::Equals': [
+    "Fn::Equals": [
       {
-        Ref: 'env',
+        Ref: "env",
       },
-      'NONE',
+      "NONE",
     ],
   };
 
   // Add if condition for resource name change
   (newCfn as any).Resources.DynamoDBTable.Properties.TableName = {
-    'Fn::If': [
-      'ShouldNotCreateEnvResources',
+    "Fn::If": [
+      "ShouldNotCreateEnvResources",
       {
-        Ref: 'tableName',
+        Ref: "tableName",
       },
       {
-        'Fn::Join': [
-          '',
+        "Fn::Join": [
+          "",
           [
             {
-              Ref: 'tableName',
+              Ref: "tableName",
             },
-            '-',
+            "-",
             {
-              Ref: 'env',
+              Ref: "env",
             },
           ],
         ],
@@ -725,9 +725,9 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
     ],
   };
 
-  const jsonString = JSON.stringify(newCfn, null, '\t');
+  const jsonString = JSON.stringify(newCfn, null, "\t");
 
-  fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+  fs.writeFileSync(cfnFilePath, jsonString, "utf8");
 }
 
 export function getIAMPolicies(resourceName: string, crudOptions: $TSAny) {
@@ -736,17 +736,17 @@ export function getIAMPolicies(resourceName: string, crudOptions: $TSAny) {
 
   crudOptions.forEach((crudOption: $TSAny) => {
     switch (crudOption) {
-      case 'create':
-        actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
+      case "create":
+        actions.push("dynamodb:Put*", "dynamodb:Create*", "dynamodb:BatchWriteItem");
         break;
-      case 'update':
-        actions.push('dynamodb:Update*', 'dynamodb:RestoreTable*');
+      case "update":
+        actions.push("dynamodb:Update*", "dynamodb:RestoreTable*");
         break;
-      case 'read':
-        actions.push('dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query');
+      case "read":
+        actions.push("dynamodb:Get*", "dynamodb:BatchGetItem", "dynamodb:List*", "dynamodb:Describe*", "dynamodb:Scan", "dynamodb:Query");
         break;
-      case 'delete':
-        actions.push('dynamodb:Delete*');
+      case "delete":
+        actions.push("dynamodb:Delete*");
         break;
       default:
         console.log(`${crudOption} not supported`);
@@ -754,27 +754,27 @@ export function getIAMPolicies(resourceName: string, crudOptions: $TSAny) {
   });
 
   policy = {
-    Effect: 'Allow',
+    Effect: "Allow",
     Action: actions,
     Resource: crudOptions.customPolicyResource
       ? crudOptions.customPolicyResource
       : [
           { Ref: `${AmplifyCategories.STORAGE}${resourceName}Arn` },
           {
-            'Fn::Join': [
-              '/',
+            "Fn::Join": [
+              "/",
               [
                 {
                   Ref: `${AmplifyCategories.STORAGE}${resourceName}Arn`,
                 },
-                'index/*',
+                "index/*",
               ],
             ],
           },
         ],
   };
 
-  const attributes = ['Name', 'Arn', 'StreamArn'];
+  const attributes = ["Name", "Arn", "StreamArn"];
 
   return { policy, attributes };
 }

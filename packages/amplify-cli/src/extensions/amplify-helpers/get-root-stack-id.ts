@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from "amplify-cli-core";
 
 /**
  * Gets the root stack id
@@ -6,8 +6,8 @@ import { stateManager } from 'amplify-cli-core';
 export const getRootStackId = (): string => {
   const amplifyMeta = stateManager.getMeta();
   const stackId = amplifyMeta?.providers?.awscloudformation?.StackId;
-  if (typeof stackId === 'string') {
-    return stackId.split('/')[2];
+  if (typeof stackId === "string") {
+    return stackId.split("/")[2];
   }
-  throw new Error('Root stack Id not found');
+  throw new Error("Root stack Id not found");
 };

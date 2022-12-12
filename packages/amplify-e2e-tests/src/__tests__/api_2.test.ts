@@ -14,47 +14,41 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
   updateAPIWithResolutionStrategyWithModels,
-} from '@aws-amplify/amplify-e2e-core';
-import AWSAppSyncClient, {
-  AUTH_TYPE,
-} from 'aws-appsync';
-import {
-  existsSync,
-} from 'fs';
-import gql from 'graphql-tag';
-import {
-  TRANSFORM_CURRENT_VERSION,
-} from 'graphql-transformer-core';
-import _ from 'lodash';
-import * as path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+import { existsSync } from "fs";
+import gql from "graphql-tag";
+import { TRANSFORM_CURRENT_VERSION } from "graphql-transformer-core";
+import _ from "lodash";
+import * as path from "path";
 
-const providerName = 'awscloudformation';
+const providerName = "awscloudformation";
 
 // to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 // to deal with subscriptions in node env
-(global as any).WebSocket = require('ws');
+(global as any).WebSocket = require("ws");
 
-describe('amplify add api (GraphQL)', () => {
+describe("amplify add api (GraphQL)", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('graphql-api');
+    projRoot = await createNewProjectDir("graphql-api");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with conflict detection enabled and a schema with @key, test update mutation', async () => {
+  it("init a project with conflict detection enabled and a schema with @key, test update mutation", async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const name = 'keyconflictdetection';
+    const name = "keyconflictdetection";
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'key-conflict-detection.graphql');
+    await updateApiSchema(projRoot, name, "key-conflict-detection.graphql");
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -88,13 +82,13 @@ describe('amplify add api (GraphQL)', () => {
     `;
     const createInput = {
       input: {
-        noteId: '1',
-        note: 'initial note',
+        noteId: "1",
+        note: "initial note",
       },
     };
     const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
       variables: createInput,
     });
 
@@ -115,14 +109,14 @@ describe('amplify add api (GraphQL)', () => {
     const updateInput = {
       input: {
         noteId: createResultData.createNote.noteId,
-        note: 'note updated',
+        note: "note updated",
         _version: createResultData.createNote._version,
       },
     };
 
     const updateResult: any = await appSyncClient.mutate({
       mutation: gql(updateMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
       variables: updateInput,
     });
     const updateResultData = updateResult.data as any;
@@ -135,12 +129,12 @@ describe('amplify add api (GraphQL)', () => {
     expect(updateResultData.updateNote.note).toEqual(updateInput.input.note);
   });
 
-  it('init a project with conflict detection enabled and toggle disable', async () => {
+  it("init a project with conflict detection enabled and toggle disable", async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const name = 'conflictdetection';
+    const name = "conflictdetection";
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await updateApiSchema(projRoot, name, "simple_model.graphql");
 
     await amplifyPush(projRoot);
 
@@ -162,8 +156,8 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual("VERSION");
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual("AUTOMERGE");
 
     // remove DataStore feature
     await apiDisableDataStore(projRoot, {});
@@ -173,9 +167,9 @@ describe('amplify add api (GraphQL)', () => {
     expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
   });
 
-  it('init a project with conflict detection enabled and admin UI enabled to generate DataStore models in the cloud', async () => {
+  it("init a project with conflict detection enabled and admin UI enabled to generate DataStore models in the cloud", async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const name = 'dsadminui';
+    const name = "dsadminui";
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name });
 
     let meta = getProjectMeta(projRoot);
@@ -191,7 +185,7 @@ describe('amplify add api (GraphQL)', () => {
     await enableAdminUI(appId, envName, region);
 
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await updateApiSchema(projRoot, name, "simple_model.graphql");
     await amplifyPush(projRoot);
 
     meta = getProjectMeta(projRoot);
@@ -209,19 +203,19 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
-  it('init a sync enabled project and update conflict resolution strategy', async () => {
+  it("init a sync enabled project and update conflict resolution strategy", async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const name = 'syncenabled';
+    const name = "syncenabled";
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await updateApiSchema(projRoot, name, "simple_model.graphql");
 
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual("VERSION");
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual("AUTOMERGE");
 
     await updateAPIWithResolutionStrategyWithModels(projRoot, {});
 
@@ -231,8 +225,8 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
-    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
-    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual("VERSION");
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual("OPTIMISTIC_CONCURRENCY");
 
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);

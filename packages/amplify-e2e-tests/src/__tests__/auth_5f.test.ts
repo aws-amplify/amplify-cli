@@ -9,18 +9,18 @@ import {
   getBackendAmplifyMeta,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
-const PROJECT_NAME = 'authTest';
+const PROJECT_NAME = "authTest";
 const defaultsSettings = {
   name: PROJECT_NAME,
 };
 
-describe('headless auth f', () => {
+describe("headless auth f", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth-update');
+    projRoot = await createNewProjectDir("auth-update");
   });
 
   afterEach(async () => {
@@ -28,7 +28,7 @@ describe('headless auth f', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('removes auth resource', async () => {
+  it("removes auth resource", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);

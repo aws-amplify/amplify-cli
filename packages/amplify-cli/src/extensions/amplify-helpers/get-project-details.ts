@@ -1,14 +1,14 @@
-import { $TSAny, stateManager } from 'amplify-cli-core';
-import { getEnvInfo } from './get-env-info';
+import { $TSAny, stateManager } from "amplify-cli-core";
+import { getEnvInfo } from "./get-env-info";
 
 /**
  * Amplify project's persistent state
  */
 export interface IAmplifyProjectDetails {
-  projectConfig : $TSAny,
-  amplifyMeta: $TSAny,
-  localEnvInfo: $TSAny,
-  backendConfig: $TSAny,
+  projectConfig: $TSAny;
+  amplifyMeta: $TSAny;
+  localEnvInfo: $TSAny;
+  backendConfig: $TSAny;
 }
 
 /**

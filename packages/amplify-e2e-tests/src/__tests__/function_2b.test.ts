@@ -16,14 +16,14 @@ import {
   loadFunctionTestFile,
   createRandomName,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
-describe('nodejs', () => {
-  describe('amplify add function with additional permissions', () => {
+describe("nodejs", () => {
+  describe("amplify add function with additional permissions", () => {
     let projRoot: string;
     beforeEach(async () => {
-      projRoot = await createNewProjectDir('fn-with-perm');
+      projRoot = await createNewProjectDir("fn-with-perm");
     });
 
     afterEach(async () => {
@@ -31,9 +31,9 @@ describe('nodejs', () => {
       deleteProjectDir(projRoot);
     });
 
-    it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
+    it("lambda with dynamoDB permissions should be able to scan ddb", async () => {
       await initJSProjectWithProfile(projRoot, {
-        name: 'dynamodbscan',
+        name: "dynamodbscan",
       });
 
       const random = generateRandomShortId();
@@ -42,33 +42,37 @@ describe('nodejs', () => {
 
       // test ability to scan both appsync @model-backed and regular ddb tables
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-      await updateApiSchema(projRoot, 'dynamodbscan', 'simple_model.graphql');
+      await updateApiSchema(projRoot, "dynamodbscan", "simple_model.graphql");
       await addSimpleDDB(projRoot, { name: ddbName });
 
       await addFunction(
         projRoot,
         {
           name: fnName,
-          functionTemplate: 'Hello World',
+          functionTemplate: "Hello World",
           additionalPermissions: {
-            permissions: ['storage'],
-            choices: ['api', 'storage', 'function'],
-            resources: [ddbName, 'Todo:@model(appsync)'],
-            resourceChoices: [ddbName, 'Todo:@model(appsync)'],
-            operations: ['read'],
+            permissions: ["storage"],
+            choices: ["api", "storage", "function"],
+            resources: [ddbName, "Todo:@model(appsync)"],
+            resourceChoices: [ddbName, "Todo:@model(appsync)"],
+            operations: ["read"],
           },
         },
-        'nodejs',
+        "nodejs"
       );
 
-      const functionCode = loadFunctionTestFile('dynamodb-scan.js');
+      const functionCode = loadFunctionTestFile("dynamodb-scan.js");
 
       overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
-      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map((key) => meta.api[key])[0].output;
+      const {
+        Arn: functionArn,
+        Name: functionName,
+        Region: region,
+      } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(appsyncId).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
@@ -86,7 +90,7 @@ describe('nodejs', () => {
       expect(payload1.ScannedCount).toBeDefined();
 
       // test regular storage resource dynamoDB scan
-      const { Name: tableName } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+      const { Name: tableName } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
       const result2 = await invokeFunction(functionName, JSON.stringify({ tableName }), region);
       expect(result2.StatusCode).toBe(200);
       expect(result2.Payload).toBeDefined();
@@ -99,7 +103,7 @@ describe('nodejs', () => {
       expect(payload2.ScannedCount).toBeDefined();
     });
 
-    it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+    it("existing lambda updated with additional permissions should be able to scan ddb", async () => {
       const appName = createRandomName();
       await initJSProjectWithProfile(projRoot, {
         name: appName,
@@ -110,42 +114,46 @@ describe('nodejs', () => {
         projRoot,
         {
           name: fnName,
-          functionTemplate: 'Hello World',
+          functionTemplate: "Hello World",
         },
-        'nodejs',
+        "nodejs"
       );
 
-      const functionCode = loadFunctionTestFile('dynamodb-scan.js');
+      const functionCode = loadFunctionTestFile("dynamodb-scan.js");
 
       overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
       await amplifyPushAuth(projRoot);
       let meta = getProjectMeta(projRoot);
-      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const {
+        Arn: functionArn,
+        Name: functionName,
+        Region: region,
+      } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(functionArn).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
 
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-      await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+      await updateApiSchema(projRoot, appName, "simple_model.graphql");
       await updateFunction(
         projRoot,
         {
           name: fnName,
           additionalPermissions: {
-            permissions: ['storage'],
-            choices: ['function', 'api', 'storage'],
-            resources: ['Todo:@model(appsync)'],
-            resourceChoices: ['Todo:@model(appsync)'],
-            operations: ['read'],
+            permissions: ["storage"],
+            choices: ["function", "api", "storage"],
+            resources: ["Todo:@model(appsync)"],
+            resourceChoices: ["Todo:@model(appsync)"],
+            operations: ["read"],
           },
         },
-        'nodejs',
+        "nodejs"
       );
       await amplifyPush(projRoot);
 
       meta = getProjectMeta(projRoot);
-      const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+      const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map((key) => meta.api[key])[0].output;
       const result = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
       expect(result.StatusCode).toBe(200);
       expect(result.Payload).toBeDefined();

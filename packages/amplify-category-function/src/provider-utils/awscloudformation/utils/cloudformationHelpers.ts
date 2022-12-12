@@ -1,9 +1,9 @@
-import { appsyncTableSuffix } from './constants';
-import { getAppSyncResourceName } from './appSyncHelper';
-import * as path from 'path';
-import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
-import { categoryName } from '../../../constants';
-import { getTableNameForModel, readProjectConfiguration } from 'graphql-transformer-core';
+import { appsyncTableSuffix } from "./constants";
+import { getAppSyncResourceName } from "./appSyncHelper";
+import * as path from "path";
+import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate } from "amplify-cli-core";
+import { categoryName } from "../../../constants";
+import { getTableNameForModel, readProjectConfiguration } from "graphql-transformer-core";
 
 const functionCloudFormationFilePath = (functionName: string) =>
   path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
@@ -23,8 +23,8 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   const categorySet = new Set();
 
   if (currentDefaults.permissions) {
-    Object.keys(currentDefaults.permissions).forEach(category => {
-      Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(currentDefaults.permissions).forEach((category) => {
+      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
         categorySet.add(category);
         currentResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
@@ -32,8 +32,8 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   }
 
   if (newDefaults.permissions) {
-    Object.keys(newDefaults.permissions).forEach(category => {
-      Object.keys(newDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(newDefaults.permissions).forEach((category) => {
+      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
         newResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
@@ -43,20 +43,20 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
     apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, true);
   }
 
-  currentResources.forEach(resourceName => {
+  currentResources.forEach((resourceName) => {
     if (newResources.indexOf(resourceName) === -1) {
       deletedResources.push(resourceName);
     }
   });
 
-  const deleteAppSyncTableResources = deletedResources.filter(resource => resource.includes(appsyncTableSuffix.toUpperCase()));
-  deletedResources = deletedResources.filter(resource => !resource.includes(appsyncTableSuffix.toUpperCase()));
-  deleteAppSyncTableResources.forEach(table => {
+  const deleteAppSyncTableResources = deletedResources.filter((resource) => resource.includes(appsyncTableSuffix.toUpperCase()));
+  deletedResources = deletedResources.filter((resource) => !resource.includes(appsyncTableSuffix.toUpperCase()));
+  deleteAppSyncTableResources.forEach((table) => {
     const appsyncResourceName = getAppSyncResourceName();
     const replacementTableSuffix = `:${appsyncTableSuffix.toUpperCase()}_`;
     const modelEnvPrefix = `API_${appsyncResourceName.toUpperCase()}_${table
-      .replace(replacementTableSuffix, 'TABLE')
-      .replace('STORAGE_', '')}`;
+      .replace(replacementTableSuffix, "TABLE")
+      .replace("STORAGE_", "")}`;
     const modelEnvNameKey = `${modelEnvPrefix}_NAME`;
     const modelEnvArnKey = `${modelEnvPrefix}_ARN`;
     deletedResources.push(modelEnvNameKey);
@@ -64,7 +64,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   });
 
   const toBeDeletedEnvVariables = [];
-  Object.keys(oldCFNEnvVariables).forEach(envVar => {
+  Object.keys(oldCFNEnvVariables).forEach((envVar) => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (envVar.includes(deletedResources[i])) {
         toBeDeletedEnvVariables.push(envVar);
@@ -73,7 +73,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
     }
   });
 
-  toBeDeletedEnvVariables.forEach(envVar => {
+  toBeDeletedEnvVariables.forEach((envVar) => {
     delete oldCFNEnvVariables[envVar];
   });
 
@@ -89,8 +89,8 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
 
   const categorySet = new Set();
   if (currentDefaults.permissions) {
-    Object.keys(currentDefaults.permissions).forEach(category => {
-      Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(currentDefaults.permissions).forEach((category) => {
+      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
         categorySet.add(category);
         currentResources.push(`${category}${resourceName}`);
       });
@@ -98,8 +98,8 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
   }
 
   if (newDefaults.permissions) {
-    Object.keys(newDefaults.permissions).forEach(category => {
-      Object.keys(newDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(newDefaults.permissions).forEach((category) => {
+      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
         newResources.push(`${category}${resourceName}`);
       });
     });
@@ -110,7 +110,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
     apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, false);
   }
 
-  currentResources.forEach(resourceName => {
+  currentResources.forEach((resourceName) => {
     if (newResources.indexOf(resourceName) === -1) {
       deletedResources.push(resourceName);
     }
@@ -118,7 +118,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
 
   const toBeDeletedParameters = [];
 
-  Object.keys(oldCFNParameters).forEach(parameter => {
+  Object.keys(oldCFNParameters).forEach((parameter) => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (parameter.includes(deletedResources[i])) {
         toBeDeletedParameters.push(parameter);
@@ -126,7 +126,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
       }
     }
   });
-  toBeDeletedParameters.forEach(parameter => {
+  toBeDeletedParameters.forEach((parameter) => {
     delete oldCFNParameters[parameter];
   });
 
@@ -139,19 +139,19 @@ export function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption) => {
     switch (crudOption) {
-      case 'create':
-        actions.push('lambda:Create*', 'lambda:Put*', 'lambda:Add*');
+      case "create":
+        actions.push("lambda:Create*", "lambda:Put*", "lambda:Add*");
         break;
-      case 'update':
-        actions.push('lambda:Update*');
+      case "update":
+        actions.push("lambda:Update*");
         break;
-      case 'read':
-        actions.push('lambda:Get*', 'lambda:List*', 'lambda:Invoke*');
+      case "read":
+        actions.push("lambda:Get*", "lambda:List*", "lambda:Invoke*");
         break;
-      case 'delete':
-        actions.push('lambda:Delete*', 'lambda:Remove*');
+      case "delete":
+        actions.push("lambda:Delete*", "lambda:Remove*");
         break;
       default:
         console.log(`${crudOption} not supported`);
@@ -159,20 +159,20 @@ export function getIAMPolicies(resourceName, crudOptions) {
   });
 
   policy = {
-    Effect: 'Allow',
+    Effect: "Allow",
     Action: actions,
     Resource: [
       {
-        'Fn::Join': [
-          '',
+        "Fn::Join": [
+          "",
           [
-            'arn:aws:lambda:',
+            "arn:aws:lambda:",
             {
-              Ref: 'AWS::Region',
+              Ref: "AWS::Region",
             },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':function:',
+            ":",
+            { Ref: "AWS::AccountId" },
+            ":function:",
             {
               Ref: `${categoryName}${resourceName}Name`,
             },
@@ -182,7 +182,7 @@ export function getIAMPolicies(resourceName, crudOptions) {
     ],
   };
 
-  const attributes = ['Name'];
+  const attributes = ["Name"];
 
   return { policy, attributes };
 }
@@ -190,39 +190,39 @@ export function getIAMPolicies(resourceName, crudOptions) {
 /** CF template component of join function { "Fn::Join": ["": THIS_PART ] } */
 export async function constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
   return [
-    'arn:aws:dynamodb:',
-    { Ref: 'AWS::Region' },
-    ':',
-    { Ref: 'AWS::AccountId' },
-    ':table/',
+    "arn:aws:dynamodb:",
+    { Ref: "AWS::Region" },
+    ":",
+    { Ref: "AWS::AccountId" },
+    ":table/",
     await constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
   ] as $TSAny[];
 }
 
 /** CF template component of join function { "Fn::Join": ["-": THIS_PART ] } */
 export async function constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
-  const tableName = await mapModelNameToTableName(resourceName.replace(`:${appsyncTableSuffix}`, ''));
+  const tableName = await mapModelNameToTableName(resourceName.replace(`:${appsyncTableSuffix}`, ""));
   return {
-    'Fn::ImportValue': {
-      'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${tableName}Table:Name`,
+    "Fn::ImportValue": {
+      "Fn::Sub": `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${tableName}Table:Name`,
     },
   };
 }
 
 export function constructCloudWatchEventComponent(cfnFilePath: string, cfnContent) {
   cfnContent.Resources.CloudWatchEvent = {
-    Type: 'AWS::Events::Rule',
+    Type: "AWS::Events::Rule",
     Properties: {
-      Description: 'Schedule rule for Lambda',
+      Description: "Schedule rule for Lambda",
       ScheduleExpression: {
-        Ref: 'CloudWatchRule',
+        Ref: "CloudWatchRule",
       },
-      State: 'ENABLED',
+      State: "ENABLED",
       Targets: [
         {
-          Arn: { 'Fn::GetAtt': ['LambdaFunction', 'Arn'] },
+          Arn: { "Fn::GetAtt": ["LambdaFunction", "Arn"] },
           Id: {
-            Ref: 'LambdaFunction',
+            Ref: "LambdaFunction",
           },
         },
       ],
@@ -230,35 +230,35 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
   };
   // append permissions to invoke lambda via cloiudwatch to CFN file
   cfnContent.Resources.PermissionForEventsToInvokeLambda = {
-    Type: 'AWS::Lambda::Permission',
+    Type: "AWS::Lambda::Permission",
     Properties: {
       FunctionName: {
-        Ref: 'LambdaFunction',
+        Ref: "LambdaFunction",
       },
-      Action: 'lambda:InvokeFunction',
-      Principal: 'events.amazonaws.com',
-      SourceArn: { 'Fn::GetAtt': ['CloudWatchEvent', 'Arn'] },
+      Action: "lambda:InvokeFunction",
+      Principal: "events.amazonaws.com",
+      SourceArn: { "Fn::GetAtt": ["CloudWatchEvent", "Arn"] },
     },
   };
   // append the outputs section of cloudwatchRULE
   cfnContent.Outputs.CloudWatchEventRule = {
     Value: {
-      Ref: 'CloudWatchEvent',
+      Ref: "CloudWatchEvent",
     },
   };
 
   // apend the cloudwatch parameters if not present
   if (cfnContent.Parameters.CloudWatchRule === undefined) {
     cfnContent.Parameters.CloudWatchRule = {
-      Type: 'String',
-      Default: 'NONE',
-      Description: ' Schedule Expression',
+      Type: "String",
+      Default: "NONE",
+      Description: " Schedule Expression",
     };
   }
 }
 
 function apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, isEnvParams) {
-  const apiAddFlag = resourceSet.has('api') || !newResources.find(resource => resource.includes('storage'));
+  const apiAddFlag = resourceSet.has("api") || !newResources.find((resource) => resource.includes("storage"));
   if (apiAddFlag) {
     isEnvParams ? currentResources.push(`API_${apiResourceName.toUpperCase()}_`) : currentResources.push(`api${apiResourceName}`);
   }
@@ -266,7 +266,7 @@ function apiResourceAddCheck(currentResources, newResources, apiResourceName, re
 
 async function mapModelNameToTableName(modelName: string): Promise<string> {
   const appSyncResourceName = getAppSyncResourceName();
-  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'api', appSyncResourceName);
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), "api", appSyncResourceName);
   const project = await readProjectConfiguration(resourceDirPath);
   return getTableNameForModel(project.schema, modelName);
 }

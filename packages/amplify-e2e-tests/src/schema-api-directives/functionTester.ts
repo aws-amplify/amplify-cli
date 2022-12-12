@@ -1,17 +1,17 @@
-import path from 'path';
-import { v4 as uuid } from 'uuid';
-import fs from 'fs-extra';
-import { amplifyPush, addFunction, addApi } from '@aws-amplify/amplify-e2e-core';
+import path from "path";
+import { v4 as uuid } from "uuid";
+import fs from "fs-extra";
+import { amplifyPush, addFunction, addApi } from "@aws-amplify/amplify-e2e-core";
 
-import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from './authHelper';
+import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from "./authHelper";
 
-import { updateSchemaInTestProject, testQueries } from './common';
+import { updateSchemaInTestProject, testQueries } from "./common";
 
 export async function runFunctionTest(projectDir: string, testModule: any) {
-  const functionName = await addSimpleFunction(projectDir, testModule, 'func');
+  const functionName = await addSimpleFunction(projectDir, testModule, "func");
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
-  updateFunctionNameInSchema(projectDir, '<function-name>', functionName);
+  updateFunctionNameInSchema(projectDir, "<function-name>", functionName);
   await amplifyPush(projectDir);
 
   const awsconfig = configureAmplify(projectDir);
@@ -27,13 +27,13 @@ export async function addSimpleFunction(projectDir: string, testModule: any, fun
     projectDir,
     {
       name: functionName,
-      functionTemplate: 'Hello World',
+      functionTemplate: "Hello World",
     },
-    'nodejs',
+    "nodejs"
   );
 
-  const amplifyBackendDirPath = path.join(projectDir, 'amplify', 'backend');
-  const amplifyFunctionIndexFilePath = path.join(amplifyBackendDirPath, 'function', functionName, 'src', 'index.js');
+  const amplifyBackendDirPath = path.join(projectDir, "amplify", "backend");
+  const amplifyFunctionIndexFilePath = path.join(amplifyBackendDirPath, "function", functionName, "src", "index.js");
 
   fs.writeFileSync(amplifyFunctionIndexFilePath, testModule[funcName]);
 
@@ -41,18 +41,18 @@ export async function addSimpleFunction(projectDir: string, testModule: any, fun
 }
 
 export function randomizedFunctionName(functionName: string) {
-  functionName = functionName.toLowerCase().replace(/[^0-9a-zA-Z]/gi, '');
-  const [shortId] = uuid().split('-');
+  functionName = functionName.toLowerCase().replace(/[^0-9a-zA-Z]/gi, "");
+  const [shortId] = uuid().split("-");
   return `${functionName}${shortId}`;
 }
 
 export function updateFunctionNameInSchema(projectDir: string, functionNamePlaceHolder: string, functionName: string) {
-  const backendApiDirPath = path.join(projectDir, 'amplify', 'backend', 'api');
+  const backendApiDirPath = path.join(projectDir, "amplify", "backend", "api");
   const apiResDirName = fs.readdirSync(backendApiDirPath)[0];
-  const amplifySchemaFilePath = path.join(backendApiDirPath, apiResDirName, 'schema.graphql');
+  const amplifySchemaFilePath = path.join(backendApiDirPath, apiResDirName, "schema.graphql");
 
   let amplifySchemaFileContents = fs.readFileSync(amplifySchemaFilePath).toString();
-  const placeHolderRegex = new RegExp(functionNamePlaceHolder, 'g');
+  const placeHolderRegex = new RegExp(functionNamePlaceHolder, "g");
   amplifySchemaFileContents = amplifySchemaFileContents.replace(placeHolderRegex, functionName);
   fs.writeFileSync(amplifySchemaFilePath, amplifySchemaFileContents);
 }

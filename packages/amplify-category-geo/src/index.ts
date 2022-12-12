@@ -1,34 +1,34 @@
-import { $TSContext, $TSObject, stateManager, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { category } from './constants';
-import * as addCommand from './commands/geo/add';
-import * as updateCommand from './commands/geo/update';
-import * as removeCommand from './commands/geo/remove';
-import * as consoleCommand from './commands/geo/console';
-import * as helpCommand from './commands/geo/help';
-import * as importCommand from './commands/geo/import';
-import { getServicePermissionPolicies } from './service-utils/resourceUtils';
-import { ServiceName } from './service-utils/constants';
-import { addResourceHeadless, updateResourceHeadless } from './provider-controllers';
+import { $TSContext, $TSObject, stateManager, $TSAny } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { category } from "./constants";
+import * as addCommand from "./commands/geo/add";
+import * as updateCommand from "./commands/geo/update";
+import * as removeCommand from "./commands/geo/remove";
+import * as consoleCommand from "./commands/geo/console";
+import * as helpCommand from "./commands/geo/help";
+import * as importCommand from "./commands/geo/import";
+import { getServicePermissionPolicies } from "./service-utils/resourceUtils";
+import { ServiceName } from "./service-utils/constants";
+import { addResourceHeadless, updateResourceHeadless } from "./provider-controllers";
 
 export const executeAmplifyCommand = async (context: $TSContext) => {
   switch (context.input.command) {
-    case 'add':
+    case "add":
       await addCommand.run(context);
       break;
-    case 'update':
+    case "update":
       await updateCommand.run(context);
       break;
-    case 'remove':
+    case "remove":
       await removeCommand.run(context);
       break;
-    case 'console':
+    case "console":
       await consoleCommand.run(context);
       break;
-    case 'help':
+    case "help":
       await helpCommand.run(context);
       break;
-    case 'import':
+    case "import":
       await importCommand.run(context);
       break;
     default:
@@ -47,7 +47,7 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
   const permissionPolicies: $TSObject[] = [];
   const resourceAttributes: $TSObject[] = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     try {
       const service: ServiceName = amplifyMeta[resourceName].service as ServiceName;
 
@@ -75,10 +75,10 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
-    case 'add':
+    case "add":
       await addResourceHeadless(context, headlessPayload);
       break;
-    case 'update':
+    case "update":
       await updateResourceHeadless(context, headlessPayload);
       break;
     default:

@@ -1,10 +1,10 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable spellcheck/spell-checker */
-import { Input } from './input';
-import { AmplifyToolkit } from './amplify-toolkit';
-import { PluginPlatform } from './plugin-platform';
-import { IUsageData } from './amplify-usageData';
+import { Input } from "./input";
+import { AmplifyToolkit } from "./amplify-toolkit";
+import { PluginPlatform } from "./plugin-platform";
+import { IUsageData } from "./amplify-usageData";
 
 /**
  * Amplify Context object to manage global state

@@ -23,19 +23,19 @@ export const mutation1 = `
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
+    id: "1",
     wage: 10000,
-    currency: 'usd',
+    currency: "usd",
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createSalary: {
-      id: '1',
+      id: "1",
       wage: 10000,
-      currency: 'usd',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      currency: "usd",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -55,19 +55,19 @@ mutation UpdateSalary(
 }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
+    id: "1",
     wage: 12000,
-    currency: 'usd',
+    currency: "usd",
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updateSalary: {
-      id: '1',
+      id: "1",
       wage: 12000,
-      currency: 'usd',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      currency: "usd",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

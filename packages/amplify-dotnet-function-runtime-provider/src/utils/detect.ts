@@ -1,7 +1,7 @@
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
-import execa from 'execa';
-import which from 'which';
-import { currentSupportedVersion, executableName } from '../constants';
+import { CheckDependenciesResult } from "amplify-function-plugin-interface";
+import execa from "execa";
+import which from "which";
+import { currentSupportedVersion, executableName } from "../constants";
 
 export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
   const executablePath = which.sync(executableName, {
@@ -15,7 +15,7 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const sdkResult = execa.sync(executableName, ['--list-sdks']);
+  const sdkResult = execa.sync(executableName, ["--list-sdks"]);
   const installedSdks = sdkResult.stdout;
 
   if (sdkResult.exitCode !== 0) {
@@ -23,7 +23,7 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
   }
   const sdkInstalled = installedSdks && installedSdks.match(/^3\.1/m);
 
-  const toolResult = execa.sync(executableName, ['tool', 'list', '--global']);
+  const toolResult = execa.sync(executableName, ["tool", "list", "--global"]);
   const installedToolList = toolResult.stdout;
 
   if (toolResult.exitCode !== 0) {
@@ -49,10 +49,10 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
   } else {
     const result = {
       hasRequiredDependencies: false,
-      errorMessage: 'Unable to detect required dependencies:\n',
+      errorMessage: "Unable to detect required dependencies:\n",
     };
     if (!sdkInstalled) {
-      result.errorMessage += '- The .NET Core 3.1 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n';
+      result.errorMessage += "- The .NET Core 3.1 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n";
     }
     if (!toolInstalled) {
       result.errorMessage +=

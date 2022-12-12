@@ -1,9 +1,9 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { constants } from '../domain/constants';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import * as path from "path";
+import * as fs from "fs-extra";
+import { constants } from "../domain/constants";
+import { PluginManifest } from "../domain/plugin-manifest";
+import { PluginVerificationResult, PluginVerificationError } from "../domain/plugin-verification-result";
+import { JSONUtilities, $TSAny } from "amplify-cli-core";
 
 type VerificationContext = {
   pluginDirPath: string;
@@ -34,10 +34,10 @@ export async function validPluginName(pluginName: string): Promise<PluginNameVal
   const result: PluginNameValidationResult = {
     isValid: true,
   };
-  const corePluginJson = JSONUtilities.readJson<$TSAny>(path.normalize(path.join(__dirname, '..', '..', 'amplify-plugin.json')));
+  const corePluginJson = JSONUtilities.readJson<$TSAny>(path.normalize(path.join(__dirname, "..", "..", "amplify-plugin.json")));
   if (corePluginJson && corePluginJson.commands && corePluginJson.commands.includes(pluginName)) {
     result.isValid = false;
-    result.message = 'Amplify CLI core command names can not be used as plugin name';
+    result.message = "Amplify CLI core command names can not be used as plugin name";
   }
   return result;
 }
@@ -120,7 +120,7 @@ async function verifyEventHandlers(context: VerificationContext): Promise<Plugin
 
     isVerified =
       context.pluginModule.hasOwnProperty(constants.HandleAmplifyEvent) &&
-      typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
+      typeof context.pluginModule[constants.HandleAmplifyEvent] === "function";
   }
 
   if (isVerified) {

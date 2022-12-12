@@ -9,14 +9,12 @@ import {
   initJSProjectWithProfile,
   removeAllNotificationChannel,
   removeNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  getShortId,
-} from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { getShortId } from "../import-helpers";
 
-describe('notification category test - SMS', () => {
-  const testChannel = 'SMS';
-  const testChannelSelection = 'SMS';
+describe("notification category test - SMS", () => {
+  const testChannel = "SMS";
+  const testChannelSelection = "SMS";
   const projectPrefix = `notification${testChannel}`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -46,9 +44,9 @@ describe('notification category test - SMS', () => {
     expect(appId).toBeDefined();
 
     // expect that Notifications, Analytics, and Auth categories are shown
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // SMS should be found
     const meta = getBackendAmplifyMeta(projectRoot);
@@ -58,16 +56,16 @@ describe('notification category test - SMS', () => {
     await removeNotificationChannel(projectRoot, testChannelSelection);
 
     // notifications should still exist even though sms channel was removed
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // notifications are removed entirely
     await removeAllNotificationChannel(projectRoot);
 
     // analytics should still exist
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // notifications should not exist by checking the amplify-meta.json file
     const updatedMeta = getBackendAmplifyMeta(projectRoot);

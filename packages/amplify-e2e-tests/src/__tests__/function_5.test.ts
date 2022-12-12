@@ -14,16 +14,16 @@ import {
   updateFunction,
   amplifyPushWithoutCodegen,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
-describe('test initEnv() behavior in function', () => {
+describe("test initEnv() behavior in function", () => {
   let projRoot: string;
   let projRoot2: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-    projRoot2 = await createNewProjectDir('functions2');
+    projRoot = await createNewProjectDir("functions");
+    projRoot2 = await createNewProjectDir("functions2");
   });
 
   afterEach(async () => {
@@ -32,18 +32,18 @@ describe('test initEnv() behavior in function', () => {
     deleteProjectDir(projRoot2);
   });
 
-  it('init a project and add simple function and uncomment cors header', async () => {
+  it("init a project and add simple function and uncomment cors header", async () => {
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const functionName = `testfunction${generateRandomShortId()}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
+    await addFunction(projRoot, { functionTemplate: "Hello World", name: functionName }, "nodejs");
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
-    const { Arn: functionArn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(region).toBeDefined();
-    expect(_.get(meta, ['function', functionName, 's3Bucket'], undefined)).toBeDefined();
+    expect(_.get(meta, ["function", functionName, "s3Bucket"], undefined)).toBeDefined();
 
     await amplifyPull(projRoot2, { emptyDir: true, appId });
 
@@ -52,28 +52,28 @@ describe('test initEnv() behavior in function', () => {
       projRoot2,
       {
         schedulePermissions: {
-          interval: 'Weekly',
-          action: 'Update the schedule',
+          interval: "Weekly",
+          action: "Update the schedule",
           noScheduleAdded: true,
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projRoot2);
     const meta2 = getProjectMeta(projRoot2);
-    const { Arn: functionArn2, Region: region2 } = Object.keys(meta2.function).map(key => meta2.function[key])[0].output;
+    const { Arn: functionArn2, Region: region2 } = Object.keys(meta2.function).map((key) => meta2.function[key])[0].output;
     expect(functionArn2).toBeDefined();
     expect(region2).toBeDefined();
-    expect(_.get(meta2, ['function', functionName, 's3Bucket'], undefined)).toBeDefined();
+    expect(_.get(meta2, ["function", functionName, "s3Bucket"], undefined)).toBeDefined();
   });
 });
 
-describe('test dependency in root stack', () => {
+describe("test dependency in root stack", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
+    projRoot = await createNewProjectDir("functions");
   });
 
   afterEach(async () => {
@@ -81,39 +81,39 @@ describe('test dependency in root stack', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with api and function and update the @model and add function access to @model', async () => {
-    const projectName = 'mytestapi';
+  it("init a project with api and function and update the @model and add function access to @model", async () => {
+    const projectName = "mytestapi";
     await initJSProjectWithProfile(projRoot, {
       name: projectName,
     });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projectName, 'simple_model.graphql');
+    await updateApiSchema(projRoot, projectName, "simple_model.graphql");
 
     const fnName = `integtestfn${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
         name: fnName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
       },
-      'nodejs',
+      "nodejs"
     );
     await amplifyPush(projRoot);
-    await updateApiSchema(projRoot, projectName, 'two-model-schema.graphql');
+    await updateApiSchema(projRoot, projectName, "two-model-schema.graphql");
     await updateFunction(
       projRoot,
       {
         name: fnName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['api', 'function', 'storage'],
-          resources: ['Comment:@model(appsync)'],
-          resourceChoices: ['Post:@model(appsync)', 'Comment:@model(appsync)'],
-          operations: ['read'],
+          permissions: ["storage"],
+          choices: ["api", "function", "storage"],
+          resources: ["Comment:@model(appsync)"],
+          resourceChoices: ["Post:@model(appsync)", "Comment:@model(appsync)"],
+          operations: ["read"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
     await amplifyPushWithoutCodegen(projRoot, undefined, true);
   });

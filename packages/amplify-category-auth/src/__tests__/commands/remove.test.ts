@@ -1,27 +1,27 @@
-import { stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as remove from '../../commands/auth/remove';
-import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { stateManager, $TSContext, AmplifyError } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as remove from "../../commands/auth/remove";
+import { messages } from "../../provider-utils/awscloudformation/assets/string-maps";
 
-jest.mock('amplify-prompts');
+jest.mock("amplify-prompts");
 
 const saveCLIInputPayloadMock = jest.fn();
 
-jest.mock('fs-extra');
+jest.mock("fs-extra");
 
-jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state', () => ({
+jest.mock("../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state", () => ({
   AuthInputState: jest.fn().mockImplementation(() => ({
     isCLIInputsValid: jest.fn(),
     getCLIInputPayload: jest.fn().mockImplementation(() => ({
       cognitoConfig: {
-        userPoolGroupList: ['admin'],
+        userPoolGroupList: ["admin"],
       },
     })),
     saveCLIInputPayload: saveCLIInputPayloadMock,
   })),
 }));
 
-jest.mock('amplify-cli-core');
+jest.mock("amplify-cli-core");
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 stateManagerMock.getMeta.mockReturnValue({
@@ -36,16 +36,16 @@ stateManagerMock.getMeta.mockReturnValue({
   },
   auth: {
     mockResource1: {
-      service: 'Cognito',
+      service: "Cognito",
     },
   },
 });
 
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
-AmplifyErrorMock.mockImplementation(() => (new Error('test error') as unknown) as any);
+AmplifyErrorMock.mockImplementation(() => new Error("test error") as unknown as any);
 
 const removeResourceMock = jest.fn().mockResolvedValue({
-  service: 'Cognito',
+  service: "Cognito",
 });
 
 const warningString = messages.dependenciesExists;
@@ -54,10 +54,10 @@ const mockContext = {
     removeResource: removeResourceMock,
   },
   parameters: {
-    first: 'mockFirst',
+    first: "mockFirst",
   },
 };
-const ContextStubTyped = (mockContext as unknown) as $TSContext;
+const ContextStubTyped = mockContext as unknown as $TSContext;
 
 beforeEach(() => jest.clearAllMocks());
 
@@ -71,10 +71,10 @@ test(`remove method should  not  display warning when there is no dependency wit
   stateManagerMock.getMeta.mockReturnValueOnce({
     auth: {
       mockResource1: {
-        service: 'Cognito',
+        service: "Cognito",
       },
       mockResource2: {
-        service: 'Cognito-UserPool-Groups',
+        service: "Cognito-UserPool-Groups",
       },
     },
   });
@@ -85,13 +85,13 @@ test(`remove method should  not  display warning when there is no dependency wit
 
 test(`remove called when warning displayed for existing category resource and removes userPool group`, async () => {
   removeResourceMock.mockResolvedValueOnce({
-    service: 'Cognito-UserPool-Groups',
+    service: "Cognito-UserPool-Groups",
   });
   await remove.run(ContextStubTyped);
   expect(saveCLIInputPayloadMock).toBeCalledWith({ cognitoConfig: { userPoolGroupList: [] } });
 });
 
-test('remove throws error if project has analytics', async () => {
+test("remove throws error if project has analytics", async () => {
   stateManagerMock.getMeta.mockReturnValueOnce({
     analytics: {
       mockAnalytics1: {},
@@ -107,7 +107,7 @@ test('remove throws error if project has analytics', async () => {
     },
     auth: {
       mockResource1: {
-        service: 'Cognito',
+        service: "Cognito",
       },
     },
   });

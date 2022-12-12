@@ -1,19 +1,19 @@
-import { v1toV2Upgrade } from '../authVersionUpgrades';
+import { v1toV2Upgrade } from "../authVersionUpgrades";
 
-describe('v1toV2Upgrade', () => {
-  it('bumps payload version to 2', () => {
+describe("v1toV2Upgrade", () => {
+  it("bumps payload version to 2", () => {
     expect(v1toV2Upgrade({ version: 1 }).version).toBe(2);
   });
 
-  it('maps email pwRecovery in service config to autoVerifiedAttributes', () => {
+  it("maps email pwRecovery in service config to autoVerifiedAttributes", () => {
     const payload = {
       version: 1,
       serviceConfiguration: {
         userPoolConfiguration: {
           passwordRecovery: {
-            deliveryMethod: 'EMAIL',
-            emailMessage: 'test email message',
-            emailSubject: 'test email subject',
+            deliveryMethod: "EMAIL",
+            emailMessage: "test email message",
+            emailSubject: "test email subject",
           },
         },
       },
@@ -25,9 +25,9 @@ describe('v1toV2Upgrade', () => {
         userPoolConfiguration: {
           autoVerifiedAttributes: [
             {
-              type: 'EMAIL',
-              verificationMessage: 'test email message',
-              verificationSubject: 'test email subject',
+              type: "EMAIL",
+              verificationMessage: "test email message",
+              verificationSubject: "test email subject",
             },
           ],
         },
@@ -35,14 +35,14 @@ describe('v1toV2Upgrade', () => {
     });
   });
 
-  it('maps sms pwRecovery in service config to autoVerifiedAttributes', () => {
+  it("maps sms pwRecovery in service config to autoVerifiedAttributes", () => {
     const payload = {
       version: 1,
       serviceConfiguration: {
         userPoolConfiguration: {
           passwordRecovery: {
-            deliveryMethod: 'SMS',
-            smsMessage: 'test sms message',
+            deliveryMethod: "SMS",
+            smsMessage: "test sms message",
           },
         },
       },
@@ -54,8 +54,8 @@ describe('v1toV2Upgrade', () => {
         userPoolConfiguration: {
           autoVerifiedAttributes: [
             {
-              type: 'PHONE_NUMBER',
-              verificationMessage: 'test sms message',
+              type: "PHONE_NUMBER",
+              verificationMessage: "test sms message",
             },
           ],
         },
@@ -63,15 +63,15 @@ describe('v1toV2Upgrade', () => {
     });
   });
 
-  it('maps email pwRecovery in service modification to autoVerifiedAttributes', () => {
+  it("maps email pwRecovery in service modification to autoVerifiedAttributes", () => {
     const payload = {
       version: 1,
       serviceModification: {
         userPoolModification: {
           passwordRecovery: {
-            deliveryMethod: 'EMAIL',
-            emailMessage: 'test email message',
-            emailSubject: 'test email subject',
+            deliveryMethod: "EMAIL",
+            emailMessage: "test email message",
+            emailSubject: "test email subject",
           },
         },
       },
@@ -83,9 +83,9 @@ describe('v1toV2Upgrade', () => {
         userPoolModification: {
           autoVerifiedAttributes: [
             {
-              type: 'EMAIL',
-              verificationMessage: 'test email message',
-              verificationSubject: 'test email subject',
+              type: "EMAIL",
+              verificationMessage: "test email message",
+              verificationSubject: "test email subject",
             },
           ],
         },
@@ -93,14 +93,14 @@ describe('v1toV2Upgrade', () => {
     });
   });
 
-  it('maps sms pwRecovery in service modification to autoVerifiedAttributes', () => {
+  it("maps sms pwRecovery in service modification to autoVerifiedAttributes", () => {
     const payload = {
       version: 1,
       serviceModification: {
         userPoolModification: {
           passwordRecovery: {
-            deliveryMethod: 'SMS',
-            smsMessage: 'test sms message',
+            deliveryMethod: "SMS",
+            smsMessage: "test sms message",
           },
         },
       },
@@ -112,8 +112,8 @@ describe('v1toV2Upgrade', () => {
         userPoolModification: {
           autoVerifiedAttributes: [
             {
-              type: 'PHONE_NUMBER',
-              verificationMessage: 'test sms message',
+              type: "PHONE_NUMBER",
+              verificationMessage: "test sms message",
             },
           ],
         },
@@ -121,13 +121,13 @@ describe('v1toV2Upgrade', () => {
     });
   });
 
-  it('bumps version with no other changes when service config does not contian pwRecovery', () => {
+  it("bumps version with no other changes when service config does not contian pwRecovery", () => {
     const payload = {
       version: 1,
       serviceModification: {
         userPoolModification: {
           passwordPolicy: {
-            test: 'test',
+            test: "test",
           },
         },
       },

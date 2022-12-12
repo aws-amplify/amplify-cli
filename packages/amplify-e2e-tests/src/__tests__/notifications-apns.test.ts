@@ -8,14 +8,12 @@ import {
   initJSProjectWithProfile,
   removeAllNotificationChannel,
   removeNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  getShortId,
-} from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { getShortId } from "../import-helpers";
 
-describe('notification category test - APNS', () => {
-  const testChannel = 'APNS';
-  const testChannelSelection = 'APNS |  Apple Push Notifications   ';
+describe("notification category test - APNS", () => {
+  const testChannel = "APNS";
+  const testChannelSelection = "APNS |  Apple Push Notifications   ";
   const projectPrefix = `notification${testChannel}`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -42,20 +40,20 @@ describe('notification category test - APNS', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     await removeNotificationChannel(projectRoot, testChannelSelection);
 
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     await removeAllNotificationChannel(projectRoot);
 
-    await amplifyStatus(projectRoot, '^(Notifications)');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "^(Notifications)");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
   });
 });

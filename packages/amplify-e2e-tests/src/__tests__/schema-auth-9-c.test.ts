@@ -1,16 +1,14 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 
-import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api directives @auth batch 8c', () => {
+describe("api directives @auth batch 8c", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth8');
+    projectDir = await createNewProjectDir("auth8");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -19,8 +17,8 @@ describe('api directives @auth batch 8c', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth generatesOwner', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'generatesOwner');
+  it("auth generatesOwner", async () => {
+    const testresult = await testSchema(projectDir, "auth", "generatesOwner");
     expect(testresult).toBeTruthy();
   });
 });

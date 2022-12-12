@@ -2,18 +2,18 @@
  * AppSync GraphQL client for testing AmplifyAppSyncSimulator
  */
 
-import * as http from 'http';
-import type { GraphQLError } from 'graphql';
-import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType } from '../../';
-import jwt from 'jsonwebtoken';
+import * as http from "http";
+import type { GraphQLError } from "graphql";
+import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType } from "../../";
+import jwt from "jsonwebtoken";
 
 /**
  * Minimal gql tag just for syntax highlighting and Prettier while writing client GraphQL queries
  */
 export const gql = (chunks: TemplateStringsArray, ...variables: unknown[]): string =>
   chunks
-    .reduce((accumulator, chunk, index) => `${accumulator}${chunk}${index in variables ? variables[index] : ''}`, '')
-    .replace(/^\s+|\s$/g, '');
+    .reduce((accumulator, chunk, index) => `${accumulator}${chunk}${index in variables ? variables[index] : ""}`, "")
+    .replace(/^\s+|\s$/g, "");
 
 interface AppSyncSimulatorAuthentication {
   type: AmplifyAppSyncSimulatorAuthenticationType;
@@ -46,21 +46,21 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
   auth?: AppSyncSimulatorIAMAuthentication | AppSyncSimulatorApiKeyAuthentication | AppSyncSimulatorCognitoKeyAuthentication;
 }): Promise<ResponseDataType> {
   const headers: http.OutgoingHttpHeaders = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
   switch (auth?.type) {
     case AmplifyAppSyncSimulatorAuthenticationType.API_KEY:
-      headers['x-api-key'] = auth.apiKey;
+      headers["x-api-key"] = auth.apiKey;
       break;
 
     case AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS:
       headers.Authorization = jwt.sign(
         {
           username: auth.username,
-          'cognito:groups': auth.groups ?? [],
+          "cognito:groups": auth.groups ?? [],
         },
-        'mockSecret',
-        { issuer: `https://cognito-idp.mock-region.amazonaws.com/mockUserPool` },
+        "mockSecret",
+        { issuer: `https://cognito-idp.mock-region.amazonaws.com/mockUserPool` }
       );
       break;
 
@@ -74,20 +74,20 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
     const httpRequest = http.request(
       appSync.url,
       {
-        host: 'localhost',
-        path: '/graphql',
-        method: 'POST',
+        host: "localhost",
+        path: "/graphql",
+        method: "POST",
         headers,
       },
-      result => {
-        let data = '';
+      (result) => {
+        let data = "";
         result
-          .setEncoding('utf-8')
-          .on('data', (chunk: string) => {
+          .setEncoding("utf-8")
+          .on("data", (chunk: string) => {
             data += chunk;
           })
-          .once('end', () => {
-            if (!result.headers['content-type']?.toLowerCase().includes('application/json')) {
+          .once("end", () => {
+            if (!result.headers["content-type"]?.toLowerCase().includes("application/json")) {
               return reject(new Error(`AppSync GraphQL result failed: ${data}`));
             }
             const body: { data: ResponseDataType; errors?: readonly GraphQLError[] } = JSON.parse(data);
@@ -96,8 +96,8 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
             }
             resolve(body.data);
           })
-          .once('error', err => reject(err));
-      },
+          .once("error", (err) => reject(err));
+      }
     );
     httpRequest.end(JSON.stringify({ query, variables }));
   });

@@ -1,5 +1,5 @@
 //Define all common classes and interfaces required to generate cloudformation using CDK.
-import * as cdk from '@aws-cdk/core';
+import * as cdk from "@aws-cdk/core";
 
 //Base template
 //Customer can use these params to mutate the Cloudformation for the resource

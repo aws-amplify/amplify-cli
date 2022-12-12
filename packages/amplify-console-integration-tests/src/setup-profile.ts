@@ -1,4 +1,4 @@
-import { setupAWSProfile } from './profile-helper';
+import { setupAWSProfile } from "./profile-helper";
 
 process.nextTick(() => {
   try {

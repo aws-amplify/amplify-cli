@@ -1,12 +1,12 @@
-import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as iam from '@aws-cdk/aws-iam';
-import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { IStackSynthesizer, ISynthesisSession } from '@aws-cdk/core';
-import { AmplifyError, AmplifyFault, JSONUtilities } from 'amplify-cli-core';
+import * as cdk from "@aws-cdk/core";
+import * as s3 from "@aws-cdk/aws-s3";
+import * as iam from "@aws-cdk/aws-iam";
+import { AmplifyRootStackTemplate } from "@aws-amplify/cli-extensibility-helper";
+import { IStackSynthesizer, ISynthesisSession } from "@aws-cdk/core";
+import { AmplifyError, AmplifyFault, JSONUtilities } from "amplify-cli-core";
 
-const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
-const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
+const CFN_TEMPLATE_FORMAT_VERSION = "2010-09-09";
+const ROOT_CFN_DESCRIPTION = "Root Stack for AWS Amplify CLI";
 
 export type AmplifyRootStackProps = {
   synthesizer: IStackSynthesizer;
@@ -69,7 +69,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw new AmplifyError('DuplicateLogicalIdError', {
+      throw new AmplifyError("DuplicateLogicalIdError", {
         message: `Logical Id already exists: ${logicalId}.`,
       });
     }
@@ -80,47 +80,47 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
     }
-    throw new AmplifyError('ParameterNotFoundError', {
+    throw new AmplifyError("ParameterNotFoundError", {
       message: `Cfn Parameter with LogicalId ${logicalId} doesn't exist`,
     });
   }
 
   generateRootStackResources = async () => {
-    this.deploymentBucket = new s3.CfnBucket(this, 'DeploymentBucket', {
-      bucketName: this._cfnParameterMap.get('DeploymentBucketName').valueAsString,
+    this.deploymentBucket = new s3.CfnBucket(this, "DeploymentBucket", {
+      bucketName: this._cfnParameterMap.get("DeploymentBucketName").valueAsString,
     });
 
     this.deploymentBucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
-    this.authRole = new iam.CfnRole(this, 'AuthRole', {
-      roleName: this._cfnParameterMap.get('AuthRoleName').valueAsString,
+    this.authRole = new iam.CfnRole(this, "AuthRole", {
+      roleName: this._cfnParameterMap.get("AuthRoleName").valueAsString,
       assumeRolePolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Sid: '',
-            Effect: 'Deny',
+            Sid: "",
+            Effect: "Deny",
             Principal: {
-              Federated: 'cognito-identity.amazonaws.com',
+              Federated: "cognito-identity.amazonaws.com",
             },
-            Action: 'sts:AssumeRoleWithWebIdentity',
+            Action: "sts:AssumeRoleWithWebIdentity",
           },
         ],
       },
     });
 
-    this.unauthRole = new iam.CfnRole(this, 'UnauthRole', {
-      roleName: this._cfnParameterMap.get('UnauthRoleName').valueAsString,
+    this.unauthRole = new iam.CfnRole(this, "UnauthRole", {
+      roleName: this._cfnParameterMap.get("UnauthRoleName").valueAsString,
       assumeRolePolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Sid: '',
-            Effect: 'Deny',
+            Sid: "",
+            Effect: "Deny",
             Principal: {
-              Federated: 'cognito-identity.amazonaws.com',
+              Federated: "cognito-identity.amazonaws.com",
             },
-            Action: 'sts:AssumeRoleWithWebIdentity',
+            Action: "sts:AssumeRoleWithWebIdentity",
           },
         ],
       },
@@ -148,8 +148,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   unauthRole?: iam.CfnRole;
 
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
-      message: 'Method not implemented.',
+    throw new AmplifyFault("NotImplementedFault", {
+      message: "Method not implemented.",
     });
   }
 
@@ -158,20 +158,20 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   }
 
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
-      message: 'Method not implemented.',
+    throw new AmplifyFault("NotImplementedFault", {
+      message: "Method not implemented.",
     });
   }
 
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
-      message: 'Method not implemented.',
+    throw new AmplifyFault("NotImplementedFault", {
+      message: "Method not implemented.",
     });
   }
 
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
-      message: 'Method not implemented.',
+    throw new AmplifyFault("NotImplementedFault", {
+      message: "Method not implemented.",
     });
   }
 

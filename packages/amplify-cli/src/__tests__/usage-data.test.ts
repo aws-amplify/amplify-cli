@@ -1,18 +1,18 @@
-import url from 'url';
-import nock from 'nock';
-import * as uuid from 'uuid';
+import url from "url";
+import nock from "nock";
+import * as uuid from "uuid";
 
-import { UsageData } from '../domain/amplify-usageData/UsageData';
-import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
-import { Input } from '../domain/input';
-import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
-import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
+import { UsageData } from "../domain/amplify-usageData/UsageData";
+import { getUrl } from "../domain/amplify-usageData/getUsageDataUrl";
+import { Input } from "../domain/input";
+import { ManuallyTimedCodePath } from "../domain/amplify-usageData/UsageDataTypes";
+import { UsageDataPayload } from "../domain/amplify-usageData/UsageDataPayload";
 
-const baseOriginalUrl = 'https://cli.amplify';
-const pathToUrl = '/metrics';
+const baseOriginalUrl = "https://cli.amplify";
+const pathToUrl = "/metrics";
 const originalUrl = `${baseOriginalUrl}${pathToUrl}`;
 
-describe('test usageData', () => {
+describe("test usageData", () => {
   beforeAll(() => {
     process.env = Object.assign(process.env, { AMPLIFY_CLI_BETA_USAGE_TRACKING_URL: originalUrl });
   });
@@ -23,122 +23,155 @@ describe('test usageData', () => {
 
   const scope = nock(baseOriginalUrl, {
     reqheaders: {
-      'content-type': 'application/json',
+      "content-type": "application/json",
     },
   }).persist();
 
-  it('test getUrl', () => {
+  it("test getUrl", () => {
     const testUrl = getUrl();
     const parseOriginalUrl = url.parse(originalUrl);
     expect(testUrl).toEqual(parseOriginalUrl);
   });
 
-  it('test instance', () => {
+  it("test instance", () => {
     const a = UsageData.Instance;
     const b = UsageData.Instance;
     const timeStamp = Date.now();
-    a.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
-    b.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
+    a.init(uuid.v4(), "", new Input([]), "accountId", { editor: "vscode", framework: "react", frontend: "javascript" }, timeStamp);
+    b.init(uuid.v4(), "", new Input([]), "accountId", { editor: "vscode", framework: "react", frontend: "javascript" }, timeStamp);
     expect(a).toEqual(b);
   });
 
-  it('records specified code path timer', async () => {
+  it("records specified code path timer", async () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
     usageData.stopCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
-    scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
+    scope.post(pathToUrl, () => true).reply(200, "1234567890".repeat(14));
 
-    const result = await (usageData as any).emit(null, 'SUCCEEDED') as UsageDataPayload;
+    const result = (await (usageData as any).emit(null, "SUCCEEDED")) as UsageDataPayload;
     expect(result.codePathDurations.pluginTime).toBeDefined();
   });
 
-  it('test update stack event modification', () => {
+  it("test update stack event modification", () => {
     /* eslint-disable spellcheck/spell-checker */
 
     const events = [
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-Todo-18AZMC2HP0N83/4fe5a6b0-dae1-11ec-ab72-0e1658febb4d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-Todo-18AZMC2HP0N83/4fe5a6b0-dae1-11ec-ab72-0e1658febb4d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-CustomResourcesjson-1XNIY9ZVM7FS2/811f1f40-dae1-11ec-8183-0e2f1a71649d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-CustomResourcesjson-1XNIY9ZVM7FS2/811f1f40-dae1-11ec-8183-0e2f1a71649d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-Todo-18AZMC2HP0N83/4fe5a6b0-dae1-11ec-ab72-0e1658febb4d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-Todo-18AZMC2HP0N83/4fe5a6b0-dae1-11ec-ab72-0e1658febb4d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-CustomResourcesjson-1XNIY9ZVM7FS2/811f1f40-dae1-11ec-8183-0e2f1a71649d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA-CustomResourcesjson-1XNIY9ZVM7FS2/811f1f40-dae1-11ec-8183-0e2f1a71649d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-functioncfnupdatestackece40aa4-4ENG44WXAUB9/55f48360-dae0-11ec-976f-12a4a24bb93d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-functioncfnupdatestackece40aa4-4ENG44WXAUB9/55f48360-dae0-11ec-976f-12a4a24bb93d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-functioncfnupdatestackece40aa4-4ENG44WXAUB9/55f48360-dae0-11ec-976f-12a4a24bb93d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-functioncfnupdatestackece40aa4-4ENG44WXAUB9/55f48360-dae0-11ec-976f-12a4a24bb93d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-functioncfnupdatestackece40aa4-4ENG44WXAUB9/55f48360-dae0-11ec-976f-12a4a24bb93d',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-functioncfnupdatestackece40aa4-4ENG44WXAUB9/55f48360-dae0-11ec-976f-12a4a24bb93d",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605-apicfnupdatestack-CFN5Z5P4EPIA/1cb34450-dae1-11ec-903e-0e3cee95ccd9",
       },
       {
-        StackId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
-        PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911',
+        StackId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
+        PhysicalResourceId:
+          "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911",
       },
     ];
-    UsageData.Instance.calculatePushNormalizationFactor(events, 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911');
+    UsageData.Instance.calculatePushNormalizationFactor(
+      events,
+      "arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911"
+    );
     /* eslint-enable spellcheck/spell-checker */
 
     expect((UsageData.Instance as unknown as any).pushNormalizationFactor).toEqual(3);
   });
 
-  it('errors if starting a duplicate timer', () => {
+  it("errors if starting a duplicate timer", () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).toThrowErrorMatchingInlineSnapshot(
-      '"initEnvCategories already has a running timer"',
+      '"initEnvCategories already has a running timer"'
     );
   });
 
-  it('does nothing when stopping a timer that is not running', () => {
+  it("does nothing when stopping a timer that is not running", () => {
     const usageData = UsageData.Instance;
     expect(() => usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT)).not.toThrow();
   });
 });
 
-describe('test usageData calls', () => {
+describe("test usageData calls", () => {
   beforeAll(() => {
     process.env = Object.assign(process.env, { AMPLIFY_CLI_BETA_USAGE_TRACKING_URL: originalUrl });
   });
@@ -149,37 +182,37 @@ describe('test usageData calls', () => {
   });
   const scope = nock(baseOriginalUrl, {
     reqheaders: {
-      'content-type': 'application/json',
+      "content-type": "application/json",
     },
   }).persist();
 
-  it('test https with 503', async () => {
-    scope.post(pathToUrl, () => true).reply(503, 'Service Unavailable');
+  it("test https with 503", async () => {
+    scope.post(pathToUrl, () => true).reply(503, "Service Unavailable");
     await checkUsageData();
   });
 
-  it('test https with 400', async () => {
-    scope.post(pathToUrl, () => true).reply(400, 'Bad Request');
+  it("test https with 400", async () => {
+    scope.post(pathToUrl, () => true).reply(400, "Bad Request");
     await checkUsageData();
   });
 
-  it('test https with 302 redirect', async () => {
+  it("test https with 302 redirect", async () => {
     scope
       .post(pathToUrl, () => true)
       .reply(302, undefined, {
-        Location: 'https://somewhere/metrics',
+        Location: "https://somewhere/metrics",
       })
-      .post('/metrics')
-      .reply(400, 'Bad Request');
+      .post("/metrics")
+      .reply(400, "Bad Request");
     await checkUsageData();
   });
 
-  it('test https with 200 long random string', async () => {
-    scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
+  it("test https with 200 long random string", async () => {
+    scope.post(pathToUrl, () => true).reply(200, "1234567890".repeat(14));
     await checkUsageData();
   });
 
-  it('test delay', async () => {
+  it("test delay", async () => {
     scope.post(pathToUrl, () => true).delay(10000);
     await checkUsageData();
   });
@@ -188,7 +221,7 @@ describe('test usageData calls', () => {
 const checkUsageData = async (): Promise<void> => {
   const abortResponse = await UsageData.Instance.emitAbort();
   expect(abortResponse).toBeUndefined();
-  const errorResponse = await UsageData.Instance.emitError(new Error('something went wrong'));
+  const errorResponse = await UsageData.Instance.emitError(new Error("something went wrong"));
   expect(errorResponse).toBeUndefined();
 
   const successResponse = await UsageData.Instance.emitSuccess();

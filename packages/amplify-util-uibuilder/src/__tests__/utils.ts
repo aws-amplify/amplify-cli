@@ -1,48 +1,48 @@
-import type { GenericDataSchema } from '@aws-amplify/codegen-ui';
+import type { GenericDataSchema } from "@aws-amplify/codegen-ui";
 
 export const exampleSchema: GenericDataSchema = {
-  dataSourceType: 'DataStore',
+  dataSourceType: "DataStore",
   models: {
     Author: {
       fields: {
         id: {
-          dataType: 'ID',
+          dataType: "ID",
           required: true,
           readOnly: false,
           isArray: false,
         },
         name: {
-          dataType: 'String',
+          dataType: "String",
           required: false,
           readOnly: false,
           isArray: false,
         },
         profileImageSrc: {
-          dataType: 'AWSURL',
+          dataType: "AWSURL",
           required: false,
           readOnly: false,
           isArray: false,
         },
         description: {
-          dataType: 'String',
+          dataType: "String",
           required: false,
           readOnly: false,
           isArray: false,
         },
         books: {
-          dataType: 'String',
+          dataType: "String",
           required: false,
           readOnly: false,
           isArray: true,
         },
         createdAt: {
-          dataType: 'AWSDateTime',
+          dataType: "AWSDateTime",
           required: false,
           readOnly: true,
           isArray: false,
         },
         updatedAt: {
-          dataType: 'AWSDateTime',
+          dataType: "AWSDateTime",
           required: false,
           readOnly: true,
           isArray: false,
@@ -52,17 +52,16 @@ export const exampleSchema: GenericDataSchema = {
     JoinTable: {
       fields: {
         id: {
-          dataType: 'ID',
+          dataType: "ID",
           required: true,
           readOnly: false,
           isArray: false,
         },
       },
-      isJoinTable: true
+      isJoinTable: true,
     },
     EmptyModel: {
-      fields: {
-      },
+      fields: {},
     },
   },
   enums: {}, // eslint-disable-line spellcheck/spell-checker

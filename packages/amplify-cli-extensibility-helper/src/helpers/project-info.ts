@@ -1,5 +1,5 @@
-import { stateManager } from 'amplify-cli-core';
-import { AmplifyProjectInfo } from '../types';
+import { stateManager } from "amplify-cli-core";
+import { AmplifyProjectInfo } from "../types";
 
 /**
  * get project Info

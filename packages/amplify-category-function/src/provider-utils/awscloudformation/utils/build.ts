@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
-import { buildFunction, BuildRequestMeta } from './buildFunction';
-import { buildLayer } from './buildLayer';
-import { ServiceName } from './constants';
+import { $TSContext } from "amplify-cli-core";
+import { buildFunction, BuildRequestMeta } from "./buildFunction";
+import { buildLayer } from "./buildLayer";
+import { ServiceName } from "./constants";
 
 export const buildResource = (context: $TSContext, resource: BuildRequestMeta & { service: string }) => {
   // only build lambda functions and lambda layers

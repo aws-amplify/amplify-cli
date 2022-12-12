@@ -1,14 +1,14 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer';
-import { Context } from '../domain/context';
-import { constants } from '../domain/constants';
-import { AmplifyEvent } from '../domain/amplify-event';
-import { AmplifyPluginType } from '../domain/amplify-plugin-type';
-import { validPluginName } from './verify-plugin';
-import { createIndentation } from './display-plugin-platform';
-import { InputQuestion, ConfirmQuestion } from 'inquirer';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import * as path from "path";
+import * as fs from "fs-extra";
+import * as inquirer from "inquirer";
+import { Context } from "../domain/context";
+import { constants } from "../domain/constants";
+import { AmplifyEvent } from "../domain/amplify-event";
+import { AmplifyPluginType } from "../domain/amplify-plugin-type";
+import { validPluginName } from "./verify-plugin";
+import { createIndentation } from "./display-plugin-platform";
+import { InputQuestion, ConfirmQuestion } from "inquirer";
+import { JSONUtilities, $TSAny } from "amplify-cli-core";
 
 const INDENTATIONSPACE = 4;
 
@@ -22,7 +22,7 @@ export default async function createNewPlugin(context: Context, pluginParentDirP
 }
 
 async function getPluginName(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
-  let pluginName = 'my-amplify-plugin';
+  let pluginName = "my-amplify-plugin";
   const yesFlag = context.input.options && context.input.options[constants.YES];
 
   if (context.input.subCommands!.length > 1) {
@@ -30,14 +30,14 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
     pluginName = context.input.subCommands![1];
   } else if (!yesFlag) {
     const pluginNameQuestion: InputQuestion = {
-      type: 'input',
-      name: 'pluginName',
-      message: 'What should be the name of the plugin:',
+      type: "input",
+      name: "pluginName",
+      message: "What should be the name of the plugin:",
       default: pluginName,
       validate: async (input: string) => {
         const pluginNameValidationResult = await validPluginName(input);
         if (!pluginNameValidationResult.isValid) {
-          return pluginNameValidationResult.message || 'Invalid plugin name';
+          return pluginNameValidationResult.message || "Invalid plugin name";
         }
         return true;
       },
@@ -51,9 +51,9 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
   if (fs.existsSync(pluginDirPath) && !yesFlag) {
     context.print.error(`The directory ${pluginName} already exists`);
     const overwriteQuestion: ConfirmQuestion = {
-      type: 'confirm',
-      name: 'ifOverWrite',
-      message: 'Do you want to overwrite it?',
+      type: "confirm",
+      name: "ifOverWrite",
+      message: "Do you want to overwrite it?",
       default: false,
     };
     const answer = await inquirer.prompt(overwriteQuestion);
@@ -72,11 +72,11 @@ async function copyAndUpdateTemplateFiles(context: Context, pluginParentDirPath:
   const pluginType = await promptForPluginType(context);
   const eventHandlers = await promptForEventSubscription(context);
 
-  let srcDirPath = path.join(__dirname, '../../templates/plugin-template');
+  let srcDirPath = path.join(__dirname, "../../templates/plugin-template");
   if (pluginType === AmplifyPluginType.frontend.toString()) {
-    srcDirPath = path.join(__dirname, '../../templates/plugin-template-frontend');
+    srcDirPath = path.join(__dirname, "../../templates/plugin-template-frontend");
   } else if (pluginType === AmplifyPluginType.provider.toString()) {
-    srcDirPath = path.join(__dirname, '../../templates/plugin-template-provider');
+    srcDirPath = path.join(__dirname, "../../templates/plugin-template-provider");
   }
   fs.copySync(srcDirPath, pluginDirPath);
 
@@ -95,12 +95,12 @@ async function promptForPluginType(context: Context): Promise<string> {
   }
   {
     const pluginTypes = Object.keys(AmplifyPluginType);
-    const LEARNMORE = 'Learn more';
+    const LEARNMORE = "Learn more";
     const choices = pluginTypes.concat([LEARNMORE]);
     const answer = await inquirer.prompt({
-      type: 'list',
-      name: 'selection',
-      message: 'Specify the plugin type',
+      type: "list",
+      name: "selection",
+      message: "Specify the plugin type",
       choices,
       default: AmplifyPluginType.util,
     });
@@ -113,7 +113,7 @@ async function promptForPluginType(context: Context): Promise<string> {
 }
 
 function displayAmplifyPluginTypesLearnMore(context: Context) {
-  context.print.green('The Amplify CLI supports these plugin types:');
+  context.print.green("The Amplify CLI supports these plugin types:");
   context.print.red(AmplifyPluginType.category);
   context.print.green(`${AmplifyPluginType.category} plugins allows the CLI user to add, \
 remove and configure a set of backend resources. They in turn use provider plugins to \
@@ -131,8 +131,10 @@ generation of all the configuration files required by the frontend framework.`);
   context.print.red(AmplifyPluginType.util);
   context.print.green(`${AmplifyPluginType.util} plugins are general purpose utility plugins, \
 they provide utility functions for other plugins.`);
-  context.print.green('For more information please read - \
-  https://docs.amplify.aws/cli/plugins/architecture#plugin-types');
+  context.print.green(
+    "For more information please read - \
+  https://docs.amplify.aws/cli/plugins/architecture#plugin-types"
+  );
 }
 
 async function promptForEventSubscription(context: Context): Promise<string[]> {
@@ -143,12 +145,12 @@ async function promptForEventSubscription(context: Context): Promise<string[]> {
     return eventHandlers;
   }
   {
-    const LEARNMORE = 'Learn more';
+    const LEARNMORE = "Learn more";
     const choices = eventHandlers.concat([LEARNMORE]);
     const answer = await inquirer.prompt({
-      type: 'checkbox',
-      name: 'selections',
-      message: 'What Amplify CLI events do you want the plugin to handle?',
+      type: "checkbox",
+      name: "selections",
+      message: "What Amplify CLI events do you want the plugin to handle?",
       choices,
       default: eventHandlers,
     });
@@ -162,14 +164,20 @@ async function promptForEventSubscription(context: Context): Promise<string[]> {
 
 function displayAmplifyEventsLearnMore(context: Context) {
   const indentationStr = createIndentation(INDENTATIONSPACE);
-  context.print.green('The Amplify CLI aims to provide a flexible and loosely-coupled \
-pluggable platform for the plugins.');
-  context.print.green('To make this possible, \
-the platform broadcasts events for plugins to handle.');
-  context.print.green('If a plugin subscribes to an event, its event handler is \
-invoked by the Amplify CLI Core on such event.');
-  context.print.green('');
-  context.print.green('The Amplify CLI currently broadcasts these events to plugins:');
+  context.print.green(
+    "The Amplify CLI aims to provide a flexible and loosely-coupled \
+pluggable platform for the plugins."
+  );
+  context.print.green(
+    "To make this possible, \
+the platform broadcasts events for plugins to handle."
+  );
+  context.print.green(
+    "If a plugin subscribes to an event, its event handler is \
+invoked by the Amplify CLI Core on such event."
+  );
+  context.print.green("");
+  context.print.green("The Amplify CLI currently broadcasts these events to plugins:");
   context.print.red(AmplifyEvent.PreInit);
   context.print.green(`${indentationStr}${AmplifyEvent.PreInit} handler is invoked prior to the \
 execution of the amplify init command.`);
@@ -188,12 +196,14 @@ execution of the amplify pull command.`);
   context.print.red(AmplifyEvent.PostPull);
   context.print.green(`${indentationStr}${AmplifyEvent.PostPull} handler is invoked on the \
 complete execution of the amplify pull command.`);
-  context.print.warning('This feature is currently under active development, \
-events might be added or removed in future releases.');
+  context.print.warning(
+    "This feature is currently under active development, \
+events might be added or removed in future releases."
+  );
 }
 
 function updatePackageJson(pluginDirPath: string, pluginName: string): void {
-  const filePath = path.join(pluginDirPath, 'package.json');
+  const filePath = path.join(pluginDirPath, "package.json");
   const packageJson = JSONUtilities.readJson<$TSAny>(filePath);
 
   packageJson.name = pluginName;
@@ -213,11 +223,11 @@ function updateAmplifyPluginJson(pluginDirPath: string, pluginName: string, plug
 }
 
 function updateEventHandlersFolder(pluginDirPath: string, eventHandlers: string[]): void {
-  const dirPath = path.join(pluginDirPath, 'event-handlers');
+  const dirPath = path.join(pluginDirPath, "event-handlers");
   const fileNames = fs.readdirSync(dirPath);
 
-  fileNames.forEach(fileName => {
-    const eventName = fileName.replace('handle-', '').split('.')[0];
+  fileNames.forEach((fileName) => {
+    const eventName = fileName.replace("handle-", "").split(".")[0];
     if (!eventHandlers.includes(eventName)) {
       fs.removeSync(path.join(dirPath, fileName));
     }

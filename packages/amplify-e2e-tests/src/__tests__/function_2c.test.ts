@@ -8,14 +8,14 @@ import {
   getFunctionSrcNode,
   initJSProjectWithProfile,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
-describe('nodejs', () => {
-  describe('amplify add function with additional permissions', () => {
+describe("nodejs", () => {
+  describe("amplify add function with additional permissions", () => {
     let projRoot: string;
     beforeEach(async () => {
-      projRoot = await createNewProjectDir('fn-with-perm');
+      projRoot = await createNewProjectDir("fn-with-perm");
     });
 
     afterEach(async () => {
@@ -23,12 +23,12 @@ describe('nodejs', () => {
       deleteProjectDir(projRoot);
     });
 
-    it('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
+    it("@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT", async () => {
       await initJSProjectWithProfile(projRoot, {
-        name: 'modelbackedlambda',
+        name: "modelbackedlambda",
       });
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-      await updateApiSchema(projRoot, 'modelbackedlambda', 'simple_model.graphql');
+      await updateApiSchema(projRoot, "modelbackedlambda", "simple_model.graphql");
 
       const fnName = `integtestfn${generateRandomShortId()}`;
 
@@ -36,22 +36,22 @@ describe('nodejs', () => {
         projRoot,
         {
           name: fnName,
-          functionTemplate: 'Hello World',
+          functionTemplate: "Hello World",
           additionalPermissions: {
-            permissions: ['storage'],
-            choices: ['api', 'storage'],
-            resources: ['Todo:@model(appsync)'],
-            resourceChoices: ['Todo:@model(appsync)'],
-            operations: ['read'],
+            permissions: ["storage"],
+            choices: ["api", "storage"],
+            resources: ["Todo:@model(appsync)"],
+            resourceChoices: ["Todo:@model(appsync)"],
+            operations: ["read"],
           },
         },
-        'nodejs',
+        "nodejs"
       );
 
       const lambdaSource = getFunctionSrcNode(projRoot, fnName);
-      expect(lambdaSource.includes('TODOTABLE_NAME')).toBeTruthy();
-      expect(lambdaSource.includes('TODOTABLE_ARN')).toBeTruthy();
-      expect(lambdaSource.includes('GRAPHQLAPIIDOUTPUT')).toBeTruthy();
+      expect(lambdaSource.includes("TODOTABLE_NAME")).toBeTruthy();
+      expect(lambdaSource.includes("TODOTABLE_ARN")).toBeTruthy();
+      expect(lambdaSource.includes("GRAPHQLAPIIDOUTPUT")).toBeTruthy();
     });
   });
 });

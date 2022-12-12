@@ -1,27 +1,34 @@
 /* eslint-disable no-param-reassign */
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, AmplifyError } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
 import {
-  ensurePinpointApp, isPinpointAppDeployed, isPinpointDeploymentRequired, pushAuthAndAnalyticsPinpointResources,
-} from '../../pinpoint-helper';
-import { enableChannel } from '../../notifications-manager';
+  ensurePinpointApp,
+  isPinpointAppDeployed,
+  isPinpointDeploymentRequired,
+  pushAuthAndAnalyticsPinpointResources,
+} from "../../pinpoint-helper";
+import { enableChannel } from "../../notifications-manager";
 
-import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../channel-types';
-import { writeData } from '../../multi-env-manager-utils';
+import { ChannelConfigDeploymentType, IChannelAPIResponse } from "../../channel-types";
+import { writeData } from "../../multi-env-manager-utils";
 import {
   viewShowAllChannelsEnabledWarning,
   viewShowDeferredModeInstructions,
   viewShowInlineModeInstructionsFail,
   viewShowInlineModeInstructionsStart,
   viewShowInlineModeInstructionsStop,
-} from '../../display-utils';
+} from "../../display-utils";
 import {
-  getChannelViewName, getChannelNameFromView, getAvailableChannels, isValidChannel, isChannelDeploymentDeferred,
-} from '../../notifications-backend-cfg-channel-api';
-import { checkMigratedFromMobileHub, getDisabledChannelsFromAmplifyMeta } from '../../notifications-amplify-meta-api';
+  getChannelViewName,
+  getChannelNameFromView,
+  getAvailableChannels,
+  isValidChannel,
+  isChannelDeploymentDeferred,
+} from "../../notifications-backend-cfg-channel-api";
+import { checkMigratedFromMobileHub, getDisabledChannelsFromAmplifyMeta } from "../../notifications-amplify-meta-api";
 
-export const name = 'add';
-export const alias = 'enable';
+export const name = "add";
+export const alias = "enable";
 
 /**
  * Display question to select notification channel to be enabled
@@ -33,19 +40,19 @@ export const alias = 'enable';
 const viewQuestionAskNotificationChannelToBeEnabled = async (
   availableChannels: Array<string>,
   disabledChannels: Array<string>,
-  selectedChannel: string|undefined,
-): Promise<string|undefined> => {
-  let channelViewName = (selectedChannel) ? getChannelViewName(selectedChannel) : undefined;
-  const availableChannelViewNames = availableChannels.map(channelName => getChannelViewName(channelName));
-  const disabledChannelViewNames = disabledChannels.map(channelName => getChannelViewName(channelName));
+  selectedChannel: string | undefined
+): Promise<string | undefined> => {
+  let channelViewName = selectedChannel ? getChannelViewName(selectedChannel) : undefined;
+  const availableChannelViewNames = availableChannels.map((channelName) => getChannelViewName(channelName));
+  const disabledChannelViewNames = disabledChannels.map((channelName) => getChannelViewName(channelName));
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
-    channelViewName = await prompter.pick('Choose the notification channel to enable', disabledChannelViewNames);
+    channelViewName = await prompter.pick("Choose the notification channel to enable", disabledChannelViewNames);
   } else if (!disabledChannelViewNames.includes(channelViewName)) {
     printer.info(`The ${channelViewName} channel has already been enabled.`);
     channelViewName = undefined;
   }
-  return (channelViewName) ? getChannelNameFromView(channelViewName) : undefined;
+  return channelViewName ? getChannelNameFromView(channelViewName) : undefined;
 };
 
 /**
@@ -55,8 +62,8 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
  */
 export const run = async (context: $TSContext): Promise<$TSContext> => {
   if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
-    throw new AmplifyError('ConfigurationError', {
-      message: 'Notifications has been migrated from Mobile Hub and channels cannot be added with Amplify CLI.',
+    throw new AmplifyError("ConfigurationError", {
+      message: "Notifications has been migrated from Mobile Hub and channels cannot be added with Amplify CLI.",
     });
   }
 
@@ -85,16 +92,20 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       } catch (err) {
         // if the push fails, the user will be prompted to deploy the resource manually
         await viewShowInlineModeInstructionsFail(channelName, err);
-        throw new AmplifyError('DeploymentError', {
-          message: 'Failed to deploy Auth and Pinpoint resources.',
-          resolution: 'Deploy the Auth and Pinpoint resources manually.',
-        }, err);
+        throw new AmplifyError(
+          "DeploymentError",
+          {
+            message: "Failed to deploy Auth and Pinpoint resources.",
+            resolution: "Deploy the Auth and Pinpoint resources manually.",
+          },
+          err
+        );
       }
       context = pinpointAppStatus.context;
     }
     // enable the channel
     if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
-      const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
+      const channelAPIResponse: IChannelAPIResponse | undefined = await enableChannel(context, channelName);
       await writeData(context, channelAPIResponse);
       if (channelAPIResponse?.deploymentType === ChannelConfigDeploymentType.DEFERRED) {
         viewShowDeferredModeInstructions();

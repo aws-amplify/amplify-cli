@@ -1,5 +1,5 @@
-import * as pty from 'node-pty';
-import chalk from 'chalk';
+import * as pty from "node-pty";
+import chalk from "chalk";
 
 export type RecordingHeader = {
   version: 2;
@@ -10,7 +10,7 @@ export type RecordingHeader = {
   env: any;
 };
 
-export type RecordingFrame = [number, 'o' | 'i', string];
+export type RecordingFrame = [number, "o" | "i", string];
 export type Recording = {
   header: RecordingHeader;
   frames: RecordingFrame[];
@@ -31,7 +31,7 @@ export class Recorder {
     private options: any,
     cwd?: string,
     private cols: number = 120,
-    private rows: number = 30,
+    private rows: number = 30
   ) {
     this.exitCode = undefined;
     this.cwd = options.cwd || process.cwd();
@@ -41,7 +41,7 @@ export class Recorder {
         width: cols,
         height: rows,
         timestamp: null,
-        title: 'Recording',
+        title: "Recording",
         env: {},
       },
       frames: [],
@@ -51,10 +51,10 @@ export class Recorder {
   run() {
     this.startTime = Date.now();
     if (this.exitCode !== undefined) {
-      throw new Error('Already executed. Please start a new instance');
+      throw new Error("Already executed. Please start a new instance");
     }
     this.childProcess = pty.spawn(this.cmd, this.args, {
-      name: 'xterm-color',
+      name: "xterm-color",
       cols: this.cols,
       rows: this.rows,
       cwd: this.cwd,
@@ -73,7 +73,7 @@ export class Recorder {
       this.childProcess.write(data);
       return;
     }
-    throw new Error('Can not write data. Program is either already executed or has not been run');
+    throw new Error("Can not write data. Program is either already executed or has not been run");
   }
 
   addOnDataHandler(fn: (content: string) => void) {
@@ -93,7 +93,7 @@ export class Recorder {
   }
 
   getRecording(): string {
-    return [JSON.stringify(this.recording.header), ...this.recording.frames.map(frame => JSON.stringify(frame))].join('\n');
+    return [JSON.stringify(this.recording.header), ...this.recording.frames.map((frame) => JSON.stringify(frame))].join("\n");
   }
 
   getRecordingFrames(): Readonly<RecordingFrame[]> {
@@ -109,7 +109,7 @@ export class Recorder {
   }
 
   sendEof() {
-    this.childProcess.write('\x04'); // ^D
+    this.childProcess.write("\x04"); // ^D
   }
 
   resumeRecording(): void {
@@ -144,13 +144,13 @@ export class Recorder {
   }
 
   private addFrame(data: string) {
-    this.recording.frames.push([(Date.now() - this.startTime) / 1000, 'o', data]);
+    this.recording.frames.push([(Date.now() - this.startTime) / 1000, "o", data]);
   }
 
   private renderPrompt(cwd: string, cmd?: string, args?: string[]) {
-    const separator = '\u2b80';
-    const basePrompt = `${chalk.bgBlack('user@host') + chalk.black(separator)}${chalk.bgBlue(cwd) + chalk.blue(separator)}`;
-    const cmdPrompt = cmd ? `${cmd} ${args.length ? args.join(' ') : ''}` : '';
+    const separator = "\u2b80";
+    const basePrompt = `${chalk.bgBlack("user@host") + chalk.black(separator)}${chalk.bgBlue(cwd) + chalk.blue(separator)}`;
+    const cmdPrompt = cmd ? `${cmd} ${args.length ? args.join(" ") : ""}` : "";
     return `${basePrompt} ${cmdPrompt}\r\n`;
   }
 }

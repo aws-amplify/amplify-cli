@@ -1,4 +1,4 @@
-export const EXPAND = ' >';
+export const EXPAND = " >";
 
 export type InquirerOption = {
   name: string;

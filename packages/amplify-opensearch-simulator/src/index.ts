@@ -1,42 +1,50 @@
-import waitPort from 'wait-port';
-import detectPort from 'detect-port';
-import execa from 'execa';
-import { ensureDir, writeFileSync, existsSync } from 'fs-extra';
-import gunzip from 'gunzip-maybe';
-import nodeFetch from 'node-fetch';
-import { join } from 'path';
-import { pipeline, Readable } from 'stream';
-import tar from 'tar';
-import { promisify } from 'util';
-const { fromEvent } = require('promise-toolbox');
-import * as openpgp from 'openpgp';
-import { $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, GetPackageAssetPaths, pathManager, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import waitPort from "wait-port";
+import detectPort from "detect-port";
+import execa from "execa";
+import { ensureDir, writeFileSync, existsSync } from "fs-extra";
+import gunzip from "gunzip-maybe";
+import nodeFetch from "node-fetch";
+import { join } from "path";
+import { pipeline, Readable } from "stream";
+import tar from "tar";
+import { promisify } from "util";
+const { fromEvent } = require("promise-toolbox");
+import * as openpgp from "openpgp";
+import {
+  $TSAny,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  isWindowsPlatform,
+  GetPackageAssetPaths,
+  pathManager,
+  AmplifyError,
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
 // default port that opensearch chooses
 const basePort = 9200;
 
 const defaultOptions: Required<OpenSearchEmulatorOptions> = {
-  clusterName: 'opensearch-cluster',
-  nodeName: 'opensearch-node-local',
+  clusterName: "opensearch-cluster",
+  nodeName: "opensearch-node-local",
   port: basePort,
-  type: 'single-node',
+  type: "single-node",
   startTimeout: 20 * 1000,
 };
 
 const retryInterval = 20;
 const maxRetries = 5;
-export const supportedOpenSearchVersion = '1.3.0'; // latest version of OpenSearch supported by AWS ES
-export const relativePathToOpensearchLocal = join('opensearch', supportedOpenSearchVersion);
-export const packageName = '@aws-amplify/amplify-opensearch-simulator';
+export const supportedOpenSearchVersion = "1.3.0"; // latest version of OpenSearch supported by AWS ES
+export const relativePathToOpensearchLocal = join("opensearch", supportedOpenSearchVersion);
+export const packageName = "@aws-amplify/amplify-opensearch-simulator";
 
 type OpenSearchEmulatorOptions = {
-  port?: number; 
-  clusterName?: string; 
+  port?: number;
+  clusterName?: string;
   nodeName?: string;
-  type?: string; 
+  type?: string;
   startTimeout?: number;
-}
+};
 
 export class OpenSearchEmulator {
   public proc: execa.ExecaChildProcess<string>;
@@ -48,11 +56,11 @@ export class OpenSearchEmulator {
     return this;
   }
 
-  public get pid(): number|undefined {
+  public get pid(): number | undefined {
     return this.proc?.pid;
   }
 
-  public get port(): number|undefined {
+  public get port(): number | undefined {
     return this.opts?.port;
   }
 
@@ -66,13 +74,13 @@ export class OpenSearchEmulator {
       return Promise.resolve();
     }
     this.proc?.kill();
-    return fromEvent(this.proc, 'exit');
+    return fromEvent(this.proc, "exit");
   }
 }
 
 const wait = (ms: number) => {
   let timeoutHandle: NodeJS.Timeout;
-  const promise = new Promise(accept => {
+  const promise = new Promise((accept) => {
     timeoutHandle = global.setTimeout(accept, ms);
   });
 
@@ -112,31 +120,31 @@ export const buildArgs = (options: OpenSearchEmulatorOptions, pathToOpenSearchDa
 
 export const launch = async (
   pathToOpenSearchData: string,
-  givenOptions: OpenSearchEmulatorOptions = {}, 
-  retry = 0, 
+  givenOptions: OpenSearchEmulatorOptions = {},
+  retry = 0,
   startTime: number = Date.now()
-): Promise<OpenSearchEmulator> => { 
+): Promise<OpenSearchEmulator> => {
   if (isWindowsPlatform) {
-    throw new AmplifyError('SearchableMockUnsupportedPlatformError', {
-      message: 'Cannot launch OpenSearch simulator on windows OS',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    throw new AmplifyError("SearchableMockUnsupportedPlatformError", {
+      message: "Cannot launch OpenSearch simulator on windows OS",
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
   // launch will retry but ensure it will not retry indefinitely.
   if (retry >= maxRetries) {
-    throw new AmplifyFault('MockProcessFault', {
-      message: 'Max retries hit for starting OpenSearch simulator',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    throw new AmplifyFault("MockProcessFault", {
+      message: "Max retries hit for starting OpenSearch simulator",
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
   try {
     await ensureOpenSearchLocalExists(pathToOpenSearchData);
   } catch (error) {
-    throw new AmplifyFault('MockProcessFault', {
-      message: 'Failed to setup local OpenSearch simulator',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    throw new AmplifyFault("MockProcessFault", {
+      message: "Failed to setup local OpenSearch simulator",
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -146,16 +154,16 @@ export const launch = async (
   } else {
     const freePort = await detectPort(port);
     if (freePort !== port) {
-      throw new AmplifyError('SearchableMockUnavailablePortError', {
+      throw new AmplifyError("SearchableMockUnavailablePortError", {
         message: `Port ${port} is not free. Please use a different port`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
   }
   const opts: Required<OpenSearchEmulatorOptions> = { ...defaultOptions, ...givenOptions, port };
 
   const args = buildArgs(opts, pathToOpenSearchData);
-  printer.info('Spawning OpenSearch Simulator with options: ' + JSON.stringify({ args, cwd: getOpensearchLocalDirectory() }));
+  printer.info("Spawning OpenSearch Simulator with options: " + JSON.stringify({ args, cwd: getOpensearchLocalDirectory() }));
   const openSearchBinPath = await getPathToOpenSearchBinary();
 
   const proc = execa(openSearchBinPath, args, {
@@ -164,32 +172,31 @@ export const launch = async (
 
   const emulator = await startOpensearchEmulator(opts, proc, port, startTime, givenOptions, getOpensearchLocalDirectory(), retry);
   if (!emulator) {
-    throw new AmplifyError('SearchableMockProcessError', {
-      message: 'Unable to start the Opensearch emulator. Please restart the mock process.',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    throw new AmplifyError("SearchableMockProcessError", {
+      message: "Unable to start the Opensearch emulator. Please restart the mock process.",
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
   return emulator;
 };
 
 export const startOpensearchEmulator = async (
-  opts: Required<OpenSearchEmulatorOptions>, 
-  proc: execa.ExecaChildProcess<string>, 
-  port: number, 
-  startTime: number, 
-  givenOptions: OpenSearchEmulatorOptions, 
-  pathToOpenSearchData: string, 
+  opts: Required<OpenSearchEmulatorOptions>,
+  proc: execa.ExecaChildProcess<string>,
+  port: number,
+  startTime: number,
+  givenOptions: OpenSearchEmulatorOptions,
+  pathToOpenSearchData: string,
   retry: number
-): Promise<OpenSearchEmulator|undefined> => {
-
+): Promise<OpenSearchEmulator | undefined> => {
   function startingTimeout() {
-    printer.error('Failed to start within timeout');
+    printer.error("Failed to start within timeout");
     // ensure process is halted.
     proc?.kill();
-    const err: $TSAny = new Error('start has timed out!');
-    err.code = 'timeout';
+    const err: $TSAny = new Error("start has timed out!");
+    err.code = "timeout";
     throw err;
-  };
+  }
 
   // define this now so we can use it later to remove a listener.
   let prematureExit: $TSAny;
@@ -207,76 +214,76 @@ export const startOpensearchEmulator = async (
     await Promise.race([
       startingEmulatorPromise(opts, proc, port),
       waiter.promise.then(startingTimeout),
-      exitingEmulatorPromise(proc, prematureExit)
+      exitingEmulatorPromise(proc, prematureExit),
     ]);
-    printer.info('Successfully launched OpenSearch Simulator on' + JSON.stringify({ port, time: Date.now() - startTime }));
+    printer.info("Successfully launched OpenSearch Simulator on" + JSON.stringify({ port, time: Date.now() - startTime }));
   } catch (err) {
     // retry starting the Simulator after a small "back off" time
     // if we have a premature exit or the port is bound in a different process.
-    if (err.code === 'premature' || err.code === 'port_taken') {
+    if (err.code === "premature" || err.code === "port_taken") {
       if (givenOptions.port) {
         throw new Error(`${givenOptions.port} is bound and unavailable`);
       }
-      printer.info('Queue retry in' + retryInterval);
+      printer.info("Queue retry in" + retryInterval);
       return wait(retryInterval).promise.then(() => launch(pathToOpenSearchData, givenOptions, retry + 1, startTime));
     }
     throw err;
   } finally {
     waiter && waiter.cancel();
-    if (typeof prematureExit === 'function') {
-      proc.removeListener('exit', prematureExit);
+    if (typeof prematureExit === "function") {
+      proc.removeListener("exit", prematureExit);
     }
   }
   return new OpenSearchEmulator(proc, opts);
-}
+};
 
 export const startingEmulatorPromise = (opts: Required<OpenSearchEmulatorOptions>, proc: execa.ExecaChildProcess<string>, port: number) => {
   return new Promise((accept, reject) => {
-    let stdout = '';
-    let stderr = '';
+    let stdout = "";
+    let stderr = "";
 
-    function readStderrBuffer(buffer: { toString: () => string; }) {
+    function readStderrBuffer(buffer: { toString: () => string }) {
       stderr += buffer.toString();
 
       // Check stderr for any known errors.
       if (/^Invalid directory to start OpenSearch.$/.test(stderr)) {
-        proc?.stdout?.removeListener('data', readStdoutBuffer);
-        proc?.stderr?.removeListener('data', readStderrBuffer);
-        const err: $TSAny = new Error('invalid directory to start OpenSearch');
-        err.code = 'bad_config';
+        proc?.stdout?.removeListener("data", readStdoutBuffer);
+        proc?.stderr?.removeListener("data", readStderrBuffer);
+        const err: $TSAny = new Error("invalid directory to start OpenSearch");
+        err.code = "bad_config";
         reject(err);
       }
     }
 
-    function readStdoutBuffer(buffer: { toString: () => string; }) {
+    function readStdoutBuffer(buffer: { toString: () => string }) {
       stdout += buffer.toString();
 
       if (stdout.indexOf(opts.port.toString()) !== -1) {
-        proc?.stdout?.removeListener('data', readStdoutBuffer);
-        proc?.stderr?.removeListener('data', readStderrBuffer);
+        proc?.stdout?.removeListener("data", readStdoutBuffer);
+        proc?.stderr?.removeListener("data", readStderrBuffer);
         accept(
           waitPort({
-            host: 'localhost',
+            host: "localhost",
             port,
-            output: 'silent',
-          }),
+            output: "silent",
+          })
         );
       }
     }
-    proc?.stderr?.on('data', readStderrBuffer);
-    proc?.stdout?.on('data', readStdoutBuffer);
+    proc?.stderr?.on("data", readStderrBuffer);
+    proc?.stdout?.on("data", readStdoutBuffer);
   });
 };
 
 export const exitingEmulatorPromise = (proc: execa.ExecaChildProcess<string>, prematureExit: $TSAny) => {
   return new Promise((accept, reject) => {
     prematureExit = () => {
-      const err: $TSAny = new Error('premature exit');
-      err.code = 'premature';
-      proc.removeListener('exit', prematureExit);
+      const err: $TSAny = new Error("premature exit");
+      err.code = "premature";
+      proc.removeListener("exit", prematureExit);
       reject(err);
     };
-    proc.on('exit', prematureExit);
+    proc.on("exit", prematureExit);
   });
 };
 
@@ -293,10 +300,10 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
 
   await ensureDir(pathToOpenSearchLocal);
 
-  const latestSig = (await nodeFetch(sigFileUrl).then(res => res.buffer()));
+  const latestSig = await nodeFetch(sigFileUrl).then((res) => res.buffer());
 
-  const latestPublicKey = (await nodeFetch(publicKeyUrl).then(res => res.text()));
-  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then(res => res.buffer());
+  const latestPublicKey = await nodeFetch(publicKeyUrl).then((res) => res.text());
+  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then((res) => res.buffer());
 
   const signature = await openpgp.signature.read(latestSig);
   const publickey = await openpgp.key.readArmored(latestPublicKey);
@@ -304,16 +311,16 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
   const verificationResult = await openpgp.verify({
     message: message,
     signature: signature,
-    publicKeys: publickey.keys
+    publicKeys: publickey.keys,
   });
 
   const { verified } = verificationResult.signatures[0];
   const verifyResult = await verified;
 
   if (!verifyResult) {
-    throw new AmplifyFault('MockProcessFault', {
-      message: 'PGP signature of downloaded OpenSearch binary did not match',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    throw new AmplifyFault("MockProcessFault", {
+      message: "PGP signature of downloaded OpenSearch binary did not match",
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -321,16 +328,16 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
 };
 
 export const writeOpensearchEmulatorArtifacts = async (
-  pathToOpenSearchLocal: string, 
-  opensearchSimulatorGunZippedTarball: $TSAny, 
+  pathToOpenSearchLocal: string,
+  opensearchSimulatorGunZippedTarball: $TSAny,
   latestSig: $TSAny,
   latestPublicKey: $TSAny
 ) => {
-  const pathToOpenSearchLib = join(pathToOpenSearchLocal, 'opensearchLib');
+  const pathToOpenSearchLib = join(pathToOpenSearchLocal, "opensearchLib");
   await ensureDir(pathToOpenSearchLib);
   existsSync(pathToOpenSearchLib);
   const sigFilePath = join(pathToOpenSearchLocal, `opensearch-min-${supportedOpenSearchVersion}-linux-x64.tar.gz.sig`);
-  const publicKeyPath = join(pathToOpenSearchLocal, 'opensearch.pgp');
+  const publicKeyPath = join(pathToOpenSearchLocal, "opensearch.pgp");
   const tarFilePath = join(pathToOpenSearchLocal, `opensearch-min-${supportedOpenSearchVersion}-linux-x64.tar.gz`);
   writeFileSync(tarFilePath, opensearchSimulatorGunZippedTarball);
   writeFileSync(sigFilePath, latestSig);
@@ -340,7 +347,11 @@ export const writeOpensearchEmulatorArtifacts = async (
 
 export const unzipOpensearchBuildFile = async (opensearchSimulatorGunZippedTarball: Buffer, pathToOpenSearchLib: string) => {
   // Create a Readable stream from the in-memory tar.gz, unzip it, and extract it to 'pathToOpenSearchLib'
-  await promisify(pipeline)(Readable.from(opensearchSimulatorGunZippedTarball), gunzip(), tar.extract({ C: pathToOpenSearchLib, stripComponents: 1 }));
+  await promisify(pipeline)(
+    Readable.from(opensearchSimulatorGunZippedTarball),
+    gunzip(),
+    tar.extract({ C: pathToOpenSearchLib, stripComponents: 1 })
+  );
 };
 
 export const openSearchLocalExists = async (pathToOpenSearchLocal: string): Promise<boolean> => {
@@ -349,9 +360,9 @@ export const openSearchLocalExists = async (pathToOpenSearchLocal: string): Prom
 
 export const getPathToOpenSearchBinary = async (pathToOpenSearchLocal?: string): Promise<string> => {
   if (pathToOpenSearchLocal) {
-    return join(pathToOpenSearchLocal, 'opensearchLib', 'bin', 'opensearch');
+    return join(pathToOpenSearchLocal, "opensearchLib", "bin", "opensearch");
   }
-  return join('opensearchLib', 'bin', 'opensearch');
+  return join("opensearchLib", "bin", "opensearch");
 };
 
 export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativePathToOpensearchLocal];
@@ -359,4 +370,4 @@ export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeP
 export const getOpensearchLocalDirectory = () => {
   const opensearchLocalDir = pathManager.getAmplifyPackageLibDirPath(packageName);
   return join(opensearchLocalDir, relativePathToOpensearchLocal);
-}
+};

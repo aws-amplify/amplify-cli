@@ -1,19 +1,19 @@
-import path from 'path';
-import fs from 'fs-extra';
+import path from "path";
+import fs from "fs-extra";
 import {
   addAuthWithPreTokenGenerationTrigger,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   updateAuthAddUserGroups,
   amplifyPush,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
+import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from "../authHelper";
 
-import { updateSchemaInTestProject, testMutation } from '../common';
+import { updateSchemaInTestProject, testMutation } from "../common";
 
-const GROUPNAME = 'Moderator';
-const USERNAME = 'user1';
-const PASSWORD = 'user1Password';
+const GROUPNAME = "Moderator";
+const USERNAME = "user1";
+const PASSWORD = "user1Password";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithPreTokenGenerationTrigger(projectDir);
@@ -34,9 +34,9 @@ export async function runTest(projectDir: string, testModule: any) {
 }
 
 export function updateTriggerHandler(projectDir: string) {
-  const backendFunctionDirPath = path.join(projectDir, 'amplify', 'backend', 'function');
+  const backendFunctionDirPath = path.join(projectDir, "amplify", "backend", "function");
   const functionName = fs.readdirSync(backendFunctionDirPath)[0];
-  const triggerHandlerFilePath = path.join(backendFunctionDirPath, functionName, 'src', 'alter-claims.js');
+  const triggerHandlerFilePath = path.join(backendFunctionDirPath, functionName, "src", "alter-claims.js");
   fs.writeFileSync(triggerHandlerFilePath, func);
 }
 
@@ -93,12 +93,12 @@ mutation CreatePost {
 export const expected_result_createPostMutation = {
   data: {
     createPost: {
-      id: '1',
-      owner: 'user1',
-      postname: 'post1',
-      content: 'post1 content',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      owner: "user1",
+      postname: "post1",
+      content: "post1 content",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

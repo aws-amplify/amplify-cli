@@ -1,12 +1,12 @@
-import { AmplifyAppSyncAPIConfig, AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
-import { extractHeader, getAllowedAuthTypes, isValidOIDCToken, extractJwtToken } from './helpers';
+import { AmplifyAppSyncAPIConfig, AmplifyAppSyncSimulatorAuthenticationType } from "../../type-definition";
+import { extractHeader, getAllowedAuthTypes, isValidOIDCToken, extractJwtToken } from "./helpers";
 
 export function getAuthorizationMode(
   headers: Record<string, string | string[]>,
-  appSyncConfig: AmplifyAppSyncAPIConfig,
+  appSyncConfig: AmplifyAppSyncAPIConfig
 ): AmplifyAppSyncSimulatorAuthenticationType {
-  const apiKey = extractHeader(headers, 'x-api-key');
-  const rawAuthHeader = extractHeader(headers, 'Authorization');
+  const apiKey = extractHeader(headers, "x-api-key");
+  const rawAuthHeader = extractHeader(headers, "Authorization");
   const authorization = Array.isArray(rawAuthHeader) ? rawAuthHeader[0] : rawAuthHeader;
   const jwtToken = extractJwtToken(authorization);
   const allowedAuthTypes = getAllowedAuthTypes(appSyncConfig);
@@ -21,13 +21,13 @@ export function getAuthorizationMode(
         return AmplifyAppSyncSimulatorAuthenticationType.API_KEY;
       }
 
-      throw new Error('UnauthorizedException: Invalid API key');
+      throw new Error("UnauthorizedException: Invalid API key");
     }
   }
 
   if (authorization) {
     if (isIamAllowed) {
-      const isSignatureV4Token = authorization.startsWith('AWS4-HMAC-SHA256');
+      const isSignatureV4Token = authorization.startsWith("AWS4-HMAC-SHA256");
       if (isSignatureV4Token) {
         return AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM;
       }
@@ -35,7 +35,7 @@ export function getAuthorizationMode(
 
     if (jwtToken) {
       if (isCupAllowed) {
-        const isCupToken = jwtToken.iss.startsWith('https://cognito-idp.');
+        const isCupToken = jwtToken.iss.startsWith("https://cognito-idp.");
         if (isCupToken) {
           return AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS;
         }
@@ -51,8 +51,8 @@ export function getAuthorizationMode(
         }
       }
     }
-    throw new Error('UnauthorizedException: Invalid JWT token');
+    throw new Error("UnauthorizedException: Invalid JWT token");
   }
 
-  throw new Error('UnauthorizedException: Missing authorization');
+  throw new Error("UnauthorizedException: Missing authorization");
 }

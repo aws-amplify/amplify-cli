@@ -1,15 +1,15 @@
-import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from 'amplify-cli-core';
-import { category, authCategoryName } from '../constants';
-import path from 'path';
-import _ from 'lodash';
-import { BaseStack } from '../service-stacks/baseStack';
-import { parametersFileName, ServiceName } from './constants';
-import { ResourceParameters, AccessType } from './resourceParams';
-import os from 'os';
-import { getMapIamPolicies } from './mapUtils';
-import { getPlaceIndexIamPolicies } from './placeIndexUtils';
-import { getGeofenceCollectionIamPolicies } from './geofenceCollectionUtils';
-import { printer } from 'amplify-prompts';
+import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from "amplify-cli-core";
+import { category, authCategoryName } from "../constants";
+import path from "path";
+import _ from "lodash";
+import { BaseStack } from "../service-stacks/baseStack";
+import { parametersFileName, ServiceName } from "./constants";
+import { ResourceParameters, AccessType } from "./resourceParams";
+import os from "os";
+import { getMapIamPolicies } from "./mapUtils";
+import { getPlaceIndexIamPolicies } from "./placeIndexUtils";
+import { getGeofenceCollectionIamPolicies } from "./geofenceCollectionUtils";
+import { printer } from "amplify-prompts";
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
@@ -52,7 +52,7 @@ export const updateParametersFile = (parameters: $TSObject, resourceName: string
  * @returns resource information available in Amplify Meta file
  */
 export const getGeoServiceMeta = async (service: ServiceName): Promise<$TSObject> =>
-  _.pickBy(stateManager.getMeta()?.[category], val => val.service === service);
+  _.pickBy(stateManager.getMeta()?.[category], (val) => val.service === service);
 
 /**
  * Get the Geo resource configurations stored in Amplify Meta file
@@ -70,26 +70,12 @@ export const readResourceMetaParameters = async (service: ServiceName, resourceN
  */
 export const updateDefaultResource = async (context: $TSContext, service: ServiceName, defaultResource?: string) => {
   const serviceResources = await getGeoServiceMeta(service);
-  Object.keys(serviceResources).forEach(resource => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      resource,
-      'isDefault',
-      (defaultResource === resource)
-    );
+  Object.keys(serviceResources).forEach((resource) => {
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, "isDefault", defaultResource === resource);
 
-    context.amplify.updateBackendConfigAfterResourceUpdate(
-      category,
-      resource,
-      'isDefault',
-      (defaultResource === resource)
-    );
+    context.amplify.updateBackendConfigAfterResourceUpdate(category, resource, "isDefault", defaultResource === resource);
 
-    updateParametersFile(
-      { isDefault: (defaultResource === resource) },
-      resource,
-      parametersFileName
-    );
+    updateParametersFile({ isDefault: defaultResource === resource }, resource, parametersFileName);
   });
 };
 
@@ -106,13 +92,13 @@ export const geoServiceExists = async (service: ServiceName): Promise<boolean> =
  */
 export const checkAuthConfig = async (
   context: $TSContext,
-  parameters: Pick<ResourceParameters, 'name' | 'accessType'>,
-  service: ServiceName,
+  parameters: Pick<ResourceParameters, "name" | "accessType">,
+  service: ServiceName
 ) => {
   if (parameters.accessType === AccessType.AuthorizedAndGuestUsers) {
-    const authRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
+    const authRequirements = { authSelections: "identityPoolOnly", allowUnauthenticatedIdentities: true };
 
-    const checkResult: $TSObject = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    const checkResult: $TSObject = await context.amplify.invokePluginMethod(context, "auth", undefined, "checkRequirements", [
       authRequirements,
       context,
       category,
@@ -122,7 +108,7 @@ export const checkAuthConfig = async (
     // If auth is not added, throw error
     if (!checkResult.authEnabled) {
       throw new Error(
-        `Adding ${service} to your project requires the Auth category for managing authentication rules. Please add auth using "amplify add auth"`,
+        `Adding ${service} to your project requires the Auth category for managing authentication rules. Please add auth using "amplify add auth"`
       );
     }
 
@@ -139,7 +125,7 @@ export const checkAuthConfig = async (
     // If auth is not imported and there were errors, adjust or enable auth configuration
     if (!checkResult.requirementsMet) {
       try {
-        await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        await context.amplify.invokePluginMethod(context, "auth", undefined, "externalAuthEnable", [
           context,
           category,
           service,
@@ -168,7 +154,7 @@ export const getServicePermissionPolicies = (
   context: $TSContext,
   service: ServiceName,
   resourceName: string,
-  crudOptions: string[],
+  crudOptions: string[]
 ): { policy: $TSObject[]; attributes: string[] } => {
   switch (service) {
     case ServiceName.Map:
@@ -176,7 +162,7 @@ export const getServicePermissionPolicies = (
     case ServiceName.PlaceIndex:
       return getPlaceIndexIamPolicies(resourceName, crudOptions);
     case ServiceName.GeofenceCollection:
-        return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
+      return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
     default:
       printer.warn(`${service} not supported in category ${category}`);
   }
@@ -189,16 +175,16 @@ export const getServicePermissionPolicies = (
 export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
   const geoMeta = stateManager.getMeta()?.[category];
   return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
-}
+};
 
 export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
   const authMeta = stateManager.getMeta()?.[authCategoryName];
-  const cognitoResources = authMeta ? Object.keys(authMeta).filter(authResource => authMeta[authResource].service === 'Cognito') : [];
+  const cognitoResources = authMeta ? Object.keys(authMeta).filter((authResource) => authMeta[authResource].service === "Cognito") : [];
   if (cognitoResources.length === 0) {
     throw new Error('No auth resource found. Run "amplify add auth"');
   }
   return cognitoResources[0];
-}
+};
 
 export type ResourceDependsOn = {
   category: string;
@@ -216,18 +202,18 @@ export const getResourceDependencies = (groupNames: string[], authResourceName: 
     {
       category: authCategoryName,
       resourceName: authResourceName,
-      attributes: ['UserPoolId']
-    }
+      attributes: ["UserPoolId"],
+    },
   ];
   if (groupNames && groupNames.length > 0) {
     dependsOnResources.push({
       category: authCategoryName,
-      resourceName: 'userPoolGroups',
-      attributes: groupNames.map(group => `${group}GroupRole`)
+      resourceName: "userPoolGroups",
+      attributes: groupNames.map((group) => `${group}GroupRole`),
     });
   }
   return dependsOnResources;
-}
+};
 
 /**
  * Get the Geo resources added to the project
@@ -235,4 +221,4 @@ export const getResourceDependencies = (groupNames: string[], authResourceName: 
 export const getGeoResources = async (service: ServiceName): Promise<string[]> => {
   const serviceMeta = await getGeoServiceMeta(service);
   return serviceMeta ? Object.keys(serviceMeta) : [];
-}
+};

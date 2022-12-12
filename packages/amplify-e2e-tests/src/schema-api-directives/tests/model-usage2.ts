@@ -25,7 +25,7 @@ mutation CreatePost {
 export const expected_result_mutation = {
   graphQLErrors: [
     {
-      message: 'Schema is not configured for mutations.',
+      message: "Schema is not configured for mutations.",
     },
   ],
 };

@@ -1,8 +1,8 @@
-import moment from 'moment';
-import 'moment-timezone';
-import 'moment-jdateformatparser';
+import moment from "moment";
+import "moment-timezone";
+import "moment-jdateformatparser";
 
-declare module 'moment' {
+declare module "moment" {
   export interface Moment {
     toMomentFormatString: (format: string) => string;
     formatWithJDF: (format: string) => string;
@@ -35,9 +35,7 @@ export const time = () => ({
   nowFormatted(format: string, timezone: string = null): string | null {
     try {
       if (timezone) {
-        return moment()
-          .tz(timezone)
-          .formatWithJDF(format);
+        return moment().tz(timezone).formatWithJDF(format);
       }
 
       return moment().formatWithJDF(format);
@@ -50,7 +48,7 @@ export const time = () => ({
     return timestamp ? timestamp.valueOf() : null;
   },
   parseISO8601ToEpochMilliSeconds(dateTime): number | null {
-    const timestamp = parseTimestamp(dateTime, 'YYYY-MM-DDTHH:mm:ss.SZ');
+    const timestamp = parseTimestamp(dateTime, "YYYY-MM-DDTHH:mm:ss.SZ");
     return timestamp ? timestamp.valueOf() : null;
   },
   epochMilliSecondsToSeconds(milliseconds: number): number | null {
@@ -67,11 +65,9 @@ export const time = () => ({
       return null;
     }
   },
-  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone = 'UTC'): string | null {
+  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone = "UTC"): string | null {
     try {
-      return moment(timestamp)
-        .tz(timezone)
-        .formatWithJDF(format);
+      return moment(timestamp).tz(timezone).formatWithJDF(format);
     } catch (e) {
       return null;
     }

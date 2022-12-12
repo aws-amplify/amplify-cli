@@ -7,12 +7,12 @@ import {
   getBot,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify add interactions', () => {
+describe("amplify add interactions", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('interactions');
+    projRoot = await createNewProjectDir("interactions");
   });
 
   afterEach(async () => {
@@ -20,7 +20,7 @@ describe('amplify add interactions', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add  simple interaction', async () => {
+  it("init a project and add  simple interaction", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addSampleInteraction(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -29,7 +29,7 @@ describe('amplify add interactions', () => {
       FunctionArn: functionArn,
       BotName: botName,
       Region: region,
-    } = Object.keys(meta.interactions).map(key => meta.interactions[key])[0].output;
+    } = Object.keys(meta.interactions).map((key) => meta.interactions[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(botName).toBeDefined();
     expect(region).toBeDefined();

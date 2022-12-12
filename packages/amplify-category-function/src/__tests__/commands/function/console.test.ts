@@ -1,6 +1,6 @@
-import { run } from '../../../commands/function/console';
-import { supportedServices } from '../../../provider-utils/supported-services';
-jest.mock('../../../provider-utils/supported-services', () => ({
+import { run } from "../../../commands/function/console";
+import { supportedServices } from "../../../provider-utils/supported-services";
+jest.mock("../../../provider-utils/supported-services", () => ({
   supportedServices: {
     myMockService: {
       providerController: {
@@ -10,11 +10,11 @@ jest.mock('../../../provider-utils/supported-services', () => ({
   },
 }));
 
-describe('open console', () => {
-  it('calls open console', async () => {
+describe("open console", () => {
+  it("calls open console", async () => {
     const contextStub = {
       amplify: {
-        serviceSelectionPrompt: jest.fn(() => Promise.resolve({ service: 'myMockService' })),
+        serviceSelectionPrompt: jest.fn(() => Promise.resolve({ service: "myMockService" })),
       },
     };
     await run(contextStub);

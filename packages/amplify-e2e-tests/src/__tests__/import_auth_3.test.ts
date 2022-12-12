@@ -12,8 +12,8 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   initProjectWithAccessKey,
-} from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from "../environment/env";
 import {
   addAppClientWithoutSecret,
   addAppClientWithSecret,
@@ -29,15 +29,15 @@ import {
   getOGAuthProjectDetails,
   getShortId,
   importUserPoolOnly,
-} from '../import-helpers';
-import { getCognitoResourceName } from '../schema-api-directives/authHelper';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
+} from "../import-helpers";
+import { getCognitoResourceName } from "../schema-api-directives/authHelper";
+import { randomizedFunctionName } from "../schema-api-directives/functionTester";
 
-describe('auth import userpool only', () => {
-  const profileName = 'amplify-integ-test-user';
+describe("auth import userpool only", () => {
+  const profileName = "amplify-integ-test-user";
 
-  const projectPrefix = 'auimpup';
-  const ogProjectPrefix = 'ogauimpup';
+  const projectPrefix = "auimpup";
+  const ogProjectPrefix = "ogauimpup";
 
   const projectSettings = {
     name: projectPrefix,
@@ -48,7 +48,7 @@ describe('auth import userpool only', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the user pool to import by other test projects
@@ -112,30 +112,30 @@ describe('auth import userpool only', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('imported auth, push, pull to empty directory, files should match', async () => {
+  it("imported auth, push, pull to empty directory, files should match", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
-    const functionName = randomizedFunctionName('authimpfunc');
+    const functionName = randomizedFunctionName("authimpfunc");
     const authResourceName = getCognitoResourceName(projectRoot);
 
     await addFunction(
       projectRoot,
       {
         name: functionName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['auth'],
-          choices: ['auth'],
+          permissions: ["auth"],
+          choices: ["auth"],
           resources: [authResourceName],
           resourceChoices: [authResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
+          operations: ["create", "read", "update", "delete"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projectRoot);
@@ -146,7 +146,7 @@ describe('auth import userpool only', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('authimport-pull');
+      projectRootPull = await createNewProjectDir("authimport-pull");
 
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
@@ -158,14 +158,14 @@ describe('auth import userpool only', () => {
     }
   });
 
-  it('imported auth, create prod env, files should match', async () => {
+  it("imported auth, create prod env, files should match", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     await amplifyPushAuth(projectRoot);
 
-    const firstEnvName = 'integtest';
-    const secondEnvName = 'prod';
+    const firstEnvName = "integtest";
+    const secondEnvName = "prod";
 
     await addEnvironmentWithImportedAuth(projectRoot, {
       envName: secondEnvName,
@@ -200,20 +200,20 @@ describe('auth import userpool only', () => {
   });
 
   // Disable as credentials are correctly not listing any UserPools with OG prefix
-  it.skip('init project in different region, import auth, should fail with error', async () => {
+  it.skip("init project in different region, import auth, should fail with error", async () => {
     // Set it to make sure deleteProject error will be ignored
     ignoreProjectDeleteErrors = true;
 
     const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
-      throw new Error('Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable');
+      throw new Error("Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable");
     }
 
-    const newProjectRegion = process.env.CLI_REGION === 'us-west-2' ? 'us-east-2' : 'us-west-2';
+    const newProjectRegion = process.env.CLI_REGION === "us-west-2" ? "us-east-2" : "us-west-2";
 
     await initProjectWithAccessKey(projectRoot, {
       ...projectSettings,
-      envName: 'integtest',
+      envName: "integtest",
       accessKeyId: AWS_ACCESS_KEY_ID,
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
       region: newProjectRegion,
@@ -221,22 +221,22 @@ describe('auth import userpool only', () => {
 
     // The previously configured Cognito User Pool: '${userPoolName}' (${userPoolId}) cannot be found.
     await expect(
-      await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }),
-    ).rejects.toThrowError('Process exited with non zero exit code 1');
+      await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" })
+    ).rejects.toThrowError("Process exited with non zero exit code 1");
   });
 
   // Used for creating custom app clients. This should match with web app client setting for import to work
   const customAppClientSettings: AppClientSettings = {
-    supportedIdentityProviders: ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'],
+    supportedIdentityProviders: ["COGNITO", "Facebook", "Google", "LoginWithAmazon", "SignInWithApple"],
     allowedOAuthFlowsUserPoolClient: true,
-    callbackURLs: ['https://sin1/', 'https://sin2/'],
-    logoutURLs: ['https://sout1/', 'https://sout2/'],
-    allowedOAuthFlows: ['code'],
-    allowedScopes: ['aws.cognito.signin.user.admin', 'email', 'openid', 'phone', 'profile'],
+    callbackURLs: ["https://sin1/", "https://sin2/"],
+    logoutURLs: ["https://sout1/", "https://sout2/"],
+    allowedOAuthFlows: ["code"],
+    allowedScopes: ["aws.cognito.signin.user.admin", "email", "openid", "phone", "profile"],
   };
 
-  it('should support importing AppClient with secret', async () => {
-    const nativeAppClientName = 'nativeClientWithSecret';
+  it("should support importing AppClient with secret", async () => {
+    const nativeAppClientName = "nativeClientWithSecret";
     let appClientId;
     let appclientSecret;
     try {
@@ -245,9 +245,9 @@ describe('auth import userpool only', () => {
         profileName,
         ogProjectRoot,
         nativeAppClientName,
-        customAppClientSettings,
+        customAppClientSettings
       ));
-      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: '_app_clientWeb' });
+      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: "_app_clientWeb" });
       await amplifyPushAuth(projectRoot);
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       const projectDetails = getAuthProjectDetails(projectRoot);
@@ -264,8 +264,8 @@ describe('auth import userpool only', () => {
     }
   });
 
-  it('should support importing AppClient with out secret', async () => {
-    const nativeAppClientName = 'nativeClientWithOutSecret';
+  it("should support importing AppClient with out secret", async () => {
+    const nativeAppClientName = "nativeClientWithOutSecret";
     let appClientId;
     let appclientSecret;
 
@@ -276,10 +276,10 @@ describe('auth import userpool only', () => {
         profileName,
         ogProjectRoot,
         nativeAppClientName,
-        customAppClientSettings,
+        customAppClientSettings
       ));
 
-      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: '_app_clientWeb' });
+      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: "_app_clientWeb" });
 
       await amplifyPushAuth(projectRoot);
 

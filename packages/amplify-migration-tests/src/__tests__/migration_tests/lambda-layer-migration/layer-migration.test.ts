@@ -12,8 +12,8 @@ import {
   removeLayerVersion,
   updateFunction,
   updateLayer,
-} from '@aws-amplify/amplify-e2e-core';
-import { v4 as uuid } from 'uuid';
+} from "@aws-amplify/amplify-e2e-core";
+import { v4 as uuid } from "uuid";
 import {
   initJSProjectWithProfileOldDX,
   initJSProjectWithProfile,
@@ -22,23 +22,23 @@ import {
   legacyUpdateOptData,
   validateLayerConfigFilesMigrated,
   versionCheck,
-} from '../../../migration-helpers';
+} from "../../../migration-helpers";
 
-describe('test lambda layer migration flow introduced in v5.0.0', () => {
+describe("test lambda layer migration flow introduced in v5.0.0", () => {
   let projRoot: string;
   let versionToMigrateFrom: string;
 
   beforeAll(async () => {
-    const version = { v: 'unintialized' };
+    const version = { v: "unintialized" };
     await versionCheck(process.cwd(), false, version);
     versionToMigrateFrom = version.v;
   });
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-    if (versionToMigrateFrom === '4.28.2') {
+    projRoot = await createNewProjectDir("functions");
+    if (versionToMigrateFrom === "4.28.2") {
       await initJSProjectWithProfileOldDX(projRoot, {}, false);
-    } else if (versionToMigrateFrom === '4.52.0') {
+    } else if (versionToMigrateFrom === "4.52.0") {
       await initJSProjectWithProfile(projRoot, {});
     } else {
       throw new Error(`layer-migration.test.ts was invoked with an unexpected installed Amplify CLI version: ${versionToMigrateFrom}`);
@@ -55,16 +55,16 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     const orgId = process.env.LAYERS_AWS_ORG_ID;
 
     if (!accountId || !orgId) {
-      throw new Error('One or both env vars are not set: LAYERS_AWS_ACCOUNT_ID, LAYERS_AWS_ORG_ID');
+      throw new Error("One or both env vars are not set: LAYERS_AWS_ACCOUNT_ID, LAYERS_AWS_ORG_ID");
     }
 
     const { projectName: projName } = getProjectConfig(projRoot);
-    const [shortId] = uuid().split('-');
+    const [shortId] = uuid().split("-");
     const layerName = `test${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
     const layerSettings = {
       layerName,
-      permissions: ['Specific AWS accounts', 'Specific AWS organization'] as LayerPermissionChoice[],
+      permissions: ["Specific AWS accounts", "Specific AWS organization"] as LayerPermissionChoice[],
       accountId,
       orgId,
       projName,
@@ -73,22 +73,22 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
 
     await legacyAddLayer(projRoot, layerSettings);
     await amplifyPushAuth(projRoot, false);
-    await amplifyStatus(projRoot, 'No Change', true);
+    await amplifyStatus(projRoot, "No Change", true);
     await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
-    await amplifyStatus(projRoot, 'Update', true);
+    await amplifyStatus(projRoot, "Update", true);
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
     await amplifyPushLayer(projRoot, {}, true);
     await removeLayerVersion(projRoot, { removeLegacyOnly: true }, [1], [1, 2], true);
     legacyAddOptData(projRoot, layerName);
     await amplifyPushLayer(projRoot, {}, true);
-    await amplifyStatus(projRoot, 'No Change', true);
+    await amplifyStatus(projRoot, "No Change", true);
   });
 
   it('migrate layer in Create state with "amplify push"', async () => {
     const { projectName: projName } = getProjectConfig(projRoot);
-    const [shortId] = uuid().split('-');
+    const [shortId] = uuid().split("-");
     const layerName = `test${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
     const layerSettings = {
       layerName,
       projName,
@@ -101,9 +101,9 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   it('migrate layer in Update state with "amplify push"', async () => {
-    const [shortId] = uuid().split('-');
+    const [shortId] = uuid().split("-");
     const layerName = `test${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
     const layerSettings = {
       layerName,
       runtimes: [layerRuntime],
@@ -118,9 +118,9 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   it('migrate layer in No Change state with "amplify update function" by updating permissions', async () => {
-    const [shortId] = uuid().split('-');
+    const [shortId] = uuid().split("-");
     const layerName = `test${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
     const layerSettings = {
       layerName,
       runtimes: [layerRuntime],
@@ -132,20 +132,20 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
       projRoot,
       {
         ...layerSettings,
-        projName: '',
+        projName: "",
         changePermissionOnLatestVersion: true,
         migrateLegacyLayer: true,
-        permissions: ['Public (Anyone on AWS can use this layer)'] as LayerPermissionChoice[],
+        permissions: ["Public (Anyone on AWS can use this layer)"] as LayerPermissionChoice[],
       },
-      true,
+      true
     );
     await amplifyPushLayer(projRoot, {}, true);
     await removeLayerVersion(projRoot, { removeLegacyOnly: true }, [1], [1, 2], true);
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
   });
 
-  it('migrates a layer with no runtime', async () => {
-    const [shortId] = uuid().split('-');
+  it("migrates a layer with no runtime", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `test${shortId}`;
     const layerSettings = {
       layerName,
@@ -157,16 +157,16 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     await amplifyPushAuth(projRoot, false);
     await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
     await amplifyPushLayer(projRoot, {}, true);
-    legacyUpdateOptData(projRoot, layerName, 'update');
+    legacyUpdateOptData(projRoot, layerName, "update");
     await amplifyPushLayer(projRoot, {}, true);
 
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
   });
 
-  it('handle add and update function when legacy layer is present', async () => {
-    const [shortId] = uuid().split('-');
+  it("handle add and update function when legacy layer is present", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `test${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
     const functionSettings = {
       testingWithLatestCodebase: true,
       layerOptions: {
@@ -177,7 +177,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     };
 
     await legacyAddLayer(projRoot, { layerName: layerName, runtimes: [layerRuntime] });
-    await addFunction(projRoot, { ...functionSettings, functionTemplate: 'Hello World' }, layerRuntime);
+    await addFunction(projRoot, { ...functionSettings, functionTemplate: "Hello World" }, layerRuntime);
     await updateFunction(projRoot, functionSettings, layerRuntime);
   });
 });

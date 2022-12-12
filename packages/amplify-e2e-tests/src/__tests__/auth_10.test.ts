@@ -6,17 +6,17 @@ import {
   getBackendConfig,
   initJSProjectWithProfile,
   updateAuthMFAConfiguration,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
 const defaultsSettings = {
-  name: 'authTest',
+  name: "authTest",
 };
 
-describe('amplify update auth', () => {
+describe("amplify update auth", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
   });
 
   afterEach(async () => {
@@ -24,7 +24,7 @@ describe('amplify update auth', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should update backend-config.json on auth update', async () => {
+  it("...should update backend-config.json on auth update", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     const backendConfigBefore = await getBackendConfig(projRoot);
@@ -34,10 +34,10 @@ describe('amplify update auth', () => {
 
     expect(backendConfigBefore).toBeDefined();
     const beforeMFAConfiguration = (Object.values(backendConfigBefore.auth)[0] as any).frontendAuthConfig.mfaConfiguration;
-    expect(beforeMFAConfiguration).toEqual('OFF');
+    expect(beforeMFAConfiguration).toEqual("OFF");
 
     expect(backendConfigAfter).toBeDefined();
     const afterMFAConfiguration = (Object.values(backendConfigAfter.auth)[0] as any).frontendAuthConfig.mfaConfiguration;
-    expect(afterMFAConfiguration).toEqual('OPTIONAL');
+    expect(afterMFAConfiguration).toEqual("OPTIONAL");
   });
 });

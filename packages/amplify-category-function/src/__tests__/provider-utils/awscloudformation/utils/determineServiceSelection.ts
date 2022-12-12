@@ -1,8 +1,8 @@
-import { determineServiceSelection } from '../../../../provider-utils/awscloudformation/utils/determineServiceSelection';
-import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
+import { determineServiceSelection } from "../../../../provider-utils/awscloudformation/utils/determineServiceSelection";
+import { ServiceName } from "../../../../provider-utils/awscloudformation/utils/constants";
 
 const serviceSelectionPromptMock = jest.fn();
-const mockChooseServiceMessage = 'mockChooseServiceMessage';
+const mockChooseServiceMessage = "mockChooseServiceMessage";
 const mockContext = {
   amplify: {
     getResourceStatus: async () => {
@@ -12,14 +12,14 @@ const mockContext = {
   },
 };
 
-describe('determineServiceSelection', () => {
-  it('returns LambdaFunction when no resources exists', async () => {
+describe("determineServiceSelection", () => {
+  it("returns LambdaFunction when no resources exists", async () => {
     const response = await determineServiceSelection(mockContext, mockChooseServiceMessage);
     expect(response.service === ServiceName.LambdaFunction);
     expect(serviceSelectionPromptMock).toBeCalledTimes(0);
   });
 
-  it('returns LambdaFunction when only LambdaFunction resources exists', async () => {
+  it("returns LambdaFunction when only LambdaFunction resources exists", async () => {
     mockContext.amplify.getResourceStatus = async () => {
       return {
         allResources: [
@@ -34,7 +34,7 @@ describe('determineServiceSelection', () => {
     expect(serviceSelectionPromptMock).toBeCalledTimes(0);
   });
 
-  it('returns LambdaLayer when only LambdaLayer resources exists', async () => {
+  it("returns LambdaLayer when only LambdaLayer resources exists", async () => {
     mockContext.amplify.getResourceStatus = async () => {
       return {
         allResources: [
@@ -49,7 +49,7 @@ describe('determineServiceSelection', () => {
     expect(serviceSelectionPromptMock).toBeCalledTimes(0);
   });
 
-  it('returns LambdaLayer when existing LambdaFunction resources have mobileHubMigrated', async () => {
+  it("returns LambdaLayer when existing LambdaFunction resources have mobileHubMigrated", async () => {
     mockContext.amplify.getResourceStatus = async () => {
       return {
         allResources: [
@@ -68,7 +68,7 @@ describe('determineServiceSelection', () => {
     expect(serviceSelectionPromptMock).toBeCalledTimes(0);
   });
 
-  it('prompts for user input when both LambdaFunction and LambdaLayer resources exist', async () => {
+  it("prompts for user input when both LambdaFunction and LambdaLayer resources exist", async () => {
     mockContext.amplify.getResourceStatus = async () => {
       return {
         allResources: [

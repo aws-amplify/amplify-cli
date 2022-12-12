@@ -1,18 +1,18 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
-import { IDynamoDBService, IS3Service } from 'amplify-util-import';
-import { Bucket } from 'aws-sdk/clients/s3';
-import { TableDescription } from 'aws-sdk/clients/dynamodb';
+import { $TSContext, $TSObject } from "amplify-cli-core";
+import { IDynamoDBService, IS3Service } from "amplify-util-import";
+import { Bucket } from "aws-sdk/clients/s3";
+import { TableDescription } from "aws-sdk/clients/dynamodb";
 
 // parameters.json
 export type S3ResourceParameters = {
   resourceName: string;
-  serviceType: 'imported'; // string literal, not changing for import
+  serviceType: "imported"; // string literal, not changing for import
 };
 
 // Persisted into amplify-meta
 export type S3BackendConfiguration = {
-  service: 'S3'; // string literal for this category
-  serviceType: 'imported'; // string literal, not changing for import
+  service: "S3"; // string literal for this category
+  serviceType: "imported"; // string literal, not changing for import
   providerPlugin: string;
   dependsOn: $TSObject[];
 };
@@ -58,13 +58,13 @@ export interface ProviderUtils {
 // parameters.json
 export type DynamoDBResourceParameters = {
   resourceName: string;
-  serviceType: 'imported'; // string literal, not changing for import
+  serviceType: "imported"; // string literal, not changing for import
 };
 
 // Persisted into amplify-meta
 export type DynamoDBBackendConfiguration = {
-  service: 'DynamoDB'; // string literal for this category
-  serviceType: 'imported'; // string literal, not changing for import
+  service: "DynamoDB"; // string literal for this category
+  serviceType: "imported"; // string literal, not changing for import
   providerPlugin: string;
   dependsOn: $TSObject[];
 };

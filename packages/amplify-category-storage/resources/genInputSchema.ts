@@ -1,12 +1,12 @@
-import { TypeDef, CLIInputSchemaGenerator, AmplifySupportedService } from 'amplify-cli-core';
+import { TypeDef, CLIInputSchemaGenerator, AmplifySupportedService } from "amplify-cli-core";
 
 //ResourceProvider TypeDefs
 const DDBStorageTypeDef: TypeDef = {
-  typeName: 'DynamoDBCLIInputs',
+  typeName: "DynamoDBCLIInputs",
   service: AmplifySupportedService.DYNAMODB,
 };
 const S3StorageTypeDef: TypeDef = {
-  typeName: 'S3UserInputs',
+  typeName: "S3UserInputs",
   service: AmplifySupportedService.S3,
 };
 

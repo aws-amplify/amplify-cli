@@ -1,11 +1,11 @@
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { KeyTransformer } from 'graphql-key-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
-import 'isomorphic-fetch';
+import { ModelAuthTransformer } from "graphql-auth-transformer";
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
+import { KeyTransformer } from "graphql-key-transformer";
+import { FeatureFlagProvider, GraphQLTransform } from "graphql-transformer-core";
+import { signUpAddToGroupAndGetJwtToken } from "./utils/cognito-utils";
+import { GraphQLClient } from "./utils/graphql-client";
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from "./utils/index";
+import "isomorphic-fetch";
 
 jest.setTimeout(2000000);
 
@@ -28,15 +28,15 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
-const USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = "fake_user_pool";
 
-const USERNAME1 = 'user1@test.com';
-const USERNAME2 = 'user2@test.com';
-const USERNAME3 = 'user3@test.com';
+const USERNAME1 = "user1@test.com";
+const USERNAME2 = "user2@test.com";
+const USERNAME3 = "user3@test.com";
 
-const ADMIN_GROUP_NAME = 'Admin';
-const DEVS_GROUP_NAME = 'Devs';
-const PARTICIPANT_GROUP_NAME = 'Participant';
+const ADMIN_GROUP_NAME = "Admin";
+const DEVS_GROUP_NAME = "Devs";
+const PARTICIPANT_GROUP_NAME = "Participant";
 
 beforeAll(async () => {
   // Create a stack for the post model with auth enabled.
@@ -59,14 +59,14 @@ beforeAll(async () => {
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+            authenticationType: "AMAZON_COGNITO_USER_POOLS",
           },
           additionalAuthenticationProviders: [],
         },
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === "improvePluralization" ? true : false),
     } as FeatureFlagProvider,
   });
 
@@ -80,7 +80,7 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = server.url + "/graphql";
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     // Verify we have all the details
@@ -107,7 +107,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -129,66 +129,66 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('createOrder mutation as admin', async () => {
-  const response = await createOrder(GRAPHQL_CLIENT_1, USERNAME2, 'order1');
+test("createOrder mutation as admin", async () => {
+  const response = await createOrder(GRAPHQL_CLIENT_1, USERNAME2, "order1");
   expect(response.data.createOrder.customerEmail).toBeDefined();
-  expect(response.data.createOrder.orderId).toEqual('order1');
+  expect(response.data.createOrder.orderId).toEqual("order1");
   expect(response.data.createOrder.createdAt).toBeDefined();
 });
 
-test('createOrder mutation as owner', async () => {
-  const response = await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'order2');
+test("createOrder mutation as owner", async () => {
+  const response = await createOrder(GRAPHQL_CLIENT_2, USERNAME2, "order2");
   expect(response.data.createOrder.customerEmail).toBeDefined();
-  expect(response.data.createOrder.orderId).toEqual('order2');
+  expect(response.data.createOrder.orderId).toEqual("order2");
   expect(response.data.createOrder.createdAt).toBeDefined();
 });
 
-test('createOrder mutation as owner', async () => {
-  const response = await createOrder(GRAPHQL_CLIENT_3, USERNAME2, 'order3');
+test("createOrder mutation as owner", async () => {
+  const response = await createOrder(GRAPHQL_CLIENT_3, USERNAME2, "order3");
   expect(response.data.createOrder).toBeNull();
   expect(response.errors).toHaveLength(1);
 });
 
-test('list orders as owner', async () => {
-  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'owned1');
-  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'owned2');
+test("list orders as owner", async () => {
+  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, "owned1");
+  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, "owned2");
   const listResponse = await listOrders(GRAPHQL_CLIENT_3, USERNAME3, {
-    beginsWith: 'owned',
+    beginsWith: "owned",
   });
   expect(listResponse.data.listOrders.items).toHaveLength(2);
 });
 
-test('list orders as non owner', async () => {
-  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'unowned1');
-  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'unowned2');
+test("list orders as non owner", async () => {
+  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, "unowned1");
+  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, "unowned2");
   const listResponse = await listOrders(GRAPHQL_CLIENT_2, USERNAME3, {
-    beginsWith: 'unowned',
+    beginsWith: "unowned",
   });
   expect(listResponse.data.listOrders.items).toHaveLength(0);
 });
 
-test('get orders as owner', async () => {
-  await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'myobj');
-  const getResponse = await getOrder(GRAPHQL_CLIENT_2, USERNAME2, 'myobj');
-  expect(getResponse.data.getOrder.orderId).toEqual('myobj');
+test("get orders as owner", async () => {
+  await createOrder(GRAPHQL_CLIENT_2, USERNAME2, "myobj");
+  const getResponse = await getOrder(GRAPHQL_CLIENT_2, USERNAME2, "myobj");
+  expect(getResponse.data.getOrder.orderId).toEqual("myobj");
 });
 
-test('get orders as non-owner', async () => {
-  await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'notmyobj');
-  const getResponse = await getOrder(GRAPHQL_CLIENT_3, USERNAME2, 'notmyobj');
+test("get orders as non-owner", async () => {
+  await createOrder(GRAPHQL_CLIENT_2, USERNAME2, "notmyobj");
+  const getResponse = await getOrder(GRAPHQL_CLIENT_3, USERNAME2, "notmyobj");
   expect(getResponse.data.getOrder).toBeNull();
   expect(getResponse.errors).toHaveLength(1);
 });
 
-test('query orders as owner', async () => {
-  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'ownedby3a');
-  const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_3, 'ownedby3a');
+test("query orders as owner", async () => {
+  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, "ownedby3a");
+  const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_3, "ownedby3a");
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(1);
 });
 
-test('query orders as non owner', async () => {
-  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'notownedby2a');
-  const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_2, 'notownedby2a');
+test("query orders as non owner", async () => {
+  await createOrder(GRAPHQL_CLIENT_3, USERNAME3, "notownedby2a");
+  const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_2, "notownedby2a");
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(0);
 });
 
@@ -203,7 +203,7 @@ async function createOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    },
+    }
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -220,7 +220,7 @@ async function updateOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    },
+    }
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -237,7 +237,7 @@ async function deleteOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    },
+    }
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -252,7 +252,7 @@ async function getOrder(client: GraphQLClient, customerEmail: string, orderId: s
             createdAt
         }
     }`,
-    { customerEmail, orderId },
+    { customerEmail, orderId }
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -270,7 +270,7 @@ async function listOrders(client: GraphQLClient, customerEmail: string, orderId:
             nextToken
         }
     }`,
-    { customerEmail, orderId },
+    { customerEmail, orderId }
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -288,7 +288,7 @@ async function ordersByOrderId(client: GraphQLClient, orderId: string) {
             nextToken
         }
     }`,
-    { orderId },
+    { orderId }
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;

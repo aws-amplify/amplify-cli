@@ -1,10 +1,8 @@
-import {
-  $TSContext, AmplifyError, getPackageManager, pathManager,
-} from 'amplify-cli-core';
-import { execSync } from 'child_process';
-import * as fs from 'fs-extra';
-import * as url from 'url';
-import { generateLocalEnvInfoFile } from './s9-onSuccess';
+import { $TSContext, AmplifyError, getPackageManager, pathManager } from "amplify-cli-core";
+import { execSync } from "child_process";
+import * as fs from "fs-extra";
+import * as url from "url";
+import { generateLocalEnvInfoFile } from "./s9-onSuccess";
 
 /**
  * Executes before init
@@ -12,7 +10,7 @@ import { generateLocalEnvInfoFile } from './s9-onSuccess';
 export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => {
   if (context.parameters.options.app) {
     // Setting up a sample app
-    context.print.warning('Note: Amplify does not have knowledge of the url provided');
+    context.print.warning("Note: Amplify does not have knowledge of the url provided");
     const repoUrl = context.parameters.options.app;
 
     await validateGithubRepo(repoUrl);
@@ -33,12 +31,16 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
   try {
     url.parse(repoUrl);
 
-    execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
+    execSync(`git ls-remote ${repoUrl}`, { stdio: "ignore" });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Invalid remote github url',
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    }, e);
+    throw new AmplifyError(
+      "ProjectInitError",
+      {
+        message: "Invalid remote github url",
+        link: "https://docs.amplify.aws/cli/project/troubleshooting/",
+      },
+      e
+    );
   }
 };
 
@@ -49,20 +51,24 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   const files = fs.readdirSync(process.cwd());
 
   if (files.length > 0) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Unable to clone repository',
-      resolution: 'Please ensure you run this command in an empty directory',
+    throw new AmplifyError("ProjectInitError", {
+      message: "Unable to clone repository",
+      resolution: "Please ensure you run this command in an empty directory",
     });
   }
 
   try {
-    execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
+    execSync(`git clone ${repoUrl} .`, { stdio: "inherit" });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Unable to clone repository',
-      details: e.message,
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    }, e);
+    throw new AmplifyError(
+      "ProjectInitError",
+      {
+        message: "Unable to clone repository",
+        details: e.message,
+        link: "https://docs.amplify.aws/cli/project/troubleshooting/",
+      },
+      e
+    );
   }
 };
 
@@ -73,7 +79,7 @@ const installPackage = (): void => {
   const packageManager = getPackageManager();
 
   if (packageManager !== null) {
-    execSync(`${packageManager.executable} install`, { stdio: 'inherit' });
+    execSync(`${packageManager.executable} install`, { stdio: "inherit" });
   }
 };
 
@@ -82,12 +88,12 @@ const installPackage = (): void => {
  */
 const setLocalEnvDefaults = async (context: $TSContext): Promise<void> => {
   const projectPath = process.cwd();
-  const defaultEditor = 'vscode';
+  const defaultEditor = "vscode";
   // eslint-disable-next-line spellcheck/spell-checker
-  const envName = 'sampledev';
+  const envName = "sampledev";
   context.print.warning(`Setting default editor to ${defaultEditor}`);
   context.print.warning(`Setting environment to ${envName}`);
-  context.print.warning('Run amplify configure project to change the default configuration later');
+  context.print.warning("Run amplify configure project to change the default configuration later");
 
   context.exeInfo.localEnvInfo = {
     projectPath,

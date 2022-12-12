@@ -7,12 +7,12 @@ import {
   deleteProjectDir,
   initJSProjectWithProfile,
   updateSimpleDDBwithGSI,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify add/update storage(DDB) with GSI', () => {
+describe("amplify add/update storage(DDB) with GSI", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('ddb-gsi');
+    projRoot = await createNewProjectDir("ddb-gsi");
   });
 
   afterEach(async () => {
@@ -20,7 +20,7 @@ describe('amplify add/update storage(DDB) with GSI', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project add a GSI and then update with another GSI', async () => {
+  it("init a project add a GSI and then update with another GSI", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addSimpleDDBwithGSI(projRoot, {});

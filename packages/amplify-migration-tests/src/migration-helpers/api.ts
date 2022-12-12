@@ -7,8 +7,8 @@ import {
   nspawn as spawn,
   selectRuntime,
   selectTemplate,
-} from '@aws-amplify/amplify-e2e-core';
-import { assign } from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import { assign } from "lodash";
 
 /**
  * Old Dx prior to this api workflow change https://github.com/aws-amplify/amplify-cli/pull/8153
@@ -16,10 +16,10 @@ import { assign } from 'lodash';
 export function addApiWithoutSchemaOldDx(cwd: string, opts: Partial<AddApiOptions> = {}) {
   const options = assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services:')
+    spawn(getCLIPath(), ["add", "api"], { cwd, stripColors: true })
+      .wait("Please select from one of the below mentioned services:")
       .sendCarriageReturn()
-      .wait('Provide API name:')
+      .wait("Provide API name:")
       .sendLine(options.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
@@ -29,14 +29,14 @@ export function addApiWithoutSchemaOldDx(cwd: string, opts: Partial<AddApiOption
       .sendCarriageReturn()
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
+      .wait("Do you have an annotated GraphQL schema?")
       .sendConfirmNo()
-      .wait('Choose a schema template:')
+      .wait("Choose a schema template:")
       .sendCarriageReturn()
-      .wait('Do you want to edit the schema now?')
+      .wait("Do you want to edit the schema now?")
       .sendConfirmNo()
       .wait(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
       )
       .run((err: Error) => {
         if (!err) {
@@ -51,10 +51,10 @@ export function addApiWithoutSchemaOldDx(cwd: string, opts: Partial<AddApiOption
 export function addApiWithSchemaAndConflictDetectionOldDx(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services:')
+    spawn(getCLIPath(), ["add", "api"], { cwd, stripColors: true })
+      .wait("Please select from one of the below mentioned services:")
       .sendCarriageReturn()
-      .wait('Provide API name:')
+      .wait("Provide API name:")
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
@@ -72,10 +72,10 @@ export function addApiWithSchemaAndConflictDetectionOldDx(cwd: string, schemaFil
       .sendCarriageReturn()
       .wait(/.*Do you have an annotated GraphQL schema.*/)
       .sendConfirmYes()
-      .wait('Provide your schema file path:')
+      .wait("Provide your schema file path:")
       .sendLine(schemaPath)
       .wait(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
       )
       .run((err: Error) => {
         if (!err) {
@@ -89,31 +89,31 @@ export function addApiWithSchemaAndConflictDetectionOldDx(cwd: string, schemaFil
 
 export function addRestApiOldDx(cwd: string, settings: any) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
-  const chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
-    .wait('Select from one of the below mentioned services')
+  const chain = spawn(getCLIPath(), ["add", "api"], { cwd, stripColors: true })
+    .wait("Select from one of the below mentioned services")
     .sendKeyDown()
     .sendCarriageReturn(); // REST
 
   if (!isFirstRestApi) {
-    chain.wait('Would you like to add a new path to an existing REST API');
+    chain.wait("Would you like to add a new path to an existing REST API");
 
     if (settings.path) {
       chain
         .sendYes()
-        .wait('Select the REST API you want to update')
+        .wait("Select the REST API you want to update")
         .sendCarriageReturn() // Select the first REST API
-        .wait('What would you like to do?')
+        .wait("What would you like to do?")
         .sendCarriageReturn() // Add another path
-        .wait('Provide a path')
+        .wait("Provide a path")
         .sendLine(settings.path)
-        .wait('Choose a lambda source')
+        .wait("Choose a lambda source")
         .sendKeyDown()
         .sendCarriageReturn() // Existing lambda
-        .wait('Choose the Lambda function to invoke by this path')
+        .wait("Choose the Lambda function to invoke by this path")
         .sendCarriageReturn() // Pick first one
-        .wait('Restrict API access')
+        .wait("Restrict API access")
         .sendConfirmNo() // Do not restrict access
-        .wait('Do you want to add another path')
+        .wait("Do you want to add another path")
         .sendConfirmNo() // Do not add another path
         .sendEof();
 
@@ -123,79 +123,79 @@ export function addRestApiOldDx(cwd: string, settings: any) {
     }
   }
 
-  chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');
+  chain.wait("Provide a friendly name for your resource to be used as a label for this category in the project");
   if (settings.apiName) {
     chain.sendLine(settings.apiName);
   } else {
     chain.sendCarriageReturn();
   }
-  chain.wait('Provide a path').sendCarriageReturn().wait('Choose a lambda source');
+  chain.wait("Provide a path").sendCarriageReturn().wait("Choose a lambda source");
 
   if (settings.existingLambda) {
     chain
       .sendKeyDown()
       .sendCarriageReturn() // Existing lambda
-      .wait('Choose the Lambda function to invoke by this path'); // Expect only 1 Lambda is present
+      .wait("Choose the Lambda function to invoke by this path"); // Expect only 1 Lambda is present
   } else {
     chain
       .sendCarriageReturn() // Create new Lambda function
-      .wait('Provide an AWS Lambda function name')
+      .wait("Provide an AWS Lambda function name")
       .sendCarriageReturn();
 
-    selectRuntime(chain, 'nodejs');
+    selectRuntime(chain, "nodejs");
 
     const templateName = settings.isCrud
-      ? 'CRUD function for DynamoDB (Integration with API Gateway)'
-      : 'Serverless ExpressJS function (Integration with API Gateway)';
-    selectTemplate(chain, templateName, 'nodejs');
+      ? "CRUD function for DynamoDB (Integration with API Gateway)"
+      : "Serverless ExpressJS function (Integration with API Gateway)";
+    selectTemplate(chain, templateName, "nodejs");
 
     if (settings.isCrud) {
       chain
-        .wait('Choose a DynamoDB data source option')
+        .wait("Choose a DynamoDB data source option")
         .sendCarriageReturn() // Use DDB table configured in current project
-        .wait('Choose from one of the already configured DynamoDB tables')
+        .wait("Choose from one of the already configured DynamoDB tables")
         .sendCarriageReturn(); // Use first one in the list
     }
 
     chain
-      .wait('Do you want to configure advanced settings?')
+      .wait("Do you want to configure advanced settings?")
       .sendConfirmNo()
-      .wait('Do you want to edit the local lambda function now')
+      .wait("Do you want to edit the local lambda function now")
       .sendConfirmNo();
   }
 
-  chain.wait('Restrict API access');
+  chain.wait("Restrict API access");
   if (settings.restrictAccess) {
     chain.sendConfirmYes();
 
     if (settings.hasUserPoolGroups) {
-      chain.wait('Restrict access by').sendCarriageReturn(); // Auth/Guest Users
+      chain.wait("Restrict access by").sendCarriageReturn(); // Auth/Guest Users
     }
 
-    chain.wait('Who should have access');
+    chain.wait("Who should have access");
 
     if (settings.allowGuestUsers) {
       chain
         .sendKeyDown()
         .sendCarriageReturn() // Authenticated and Guest users
-        .wait('What permissions do you want to grant to Authenticated users')
-        .send('a') // CRUD permissions for authenticated users
+        .wait("What permissions do you want to grant to Authenticated users")
+        .send("a") // CRUD permissions for authenticated users
         .sendCarriageReturn()
-        .wait('What permissions do you want to grant to Guest users')
-        .send('a') // CRUD permissions for guest users
+        .wait("What permissions do you want to grant to Guest users")
+        .send("a") // CRUD permissions for guest users
         .sendCarriageReturn();
     } else {
       chain
         .sendCarriageReturn() // Authenticated users only
-        .wait('What permissions do you want to grant to Authenticated users')
-        .send('a') // CRUD permissions
+        .wait("What permissions do you want to grant to Authenticated users")
+        .send("a") // CRUD permissions
         .sendCarriageReturn();
     }
   } else {
     chain.sendConfirmNo(); // Do not restrict access
   }
 
-  chain.wait('Do you want to add another path').sendConfirmNo().sendEof();
+  chain.wait("Do you want to add another path").sendConfirmNo().sendEof();
 
   return chain.runAsync();
 }

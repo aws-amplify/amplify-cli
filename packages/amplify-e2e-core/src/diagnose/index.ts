@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from '..';
+import { nspawn as spawn, getCLIPath } from "..";
 
 /**
  * invokes cli for diagnose with --send-report flag
@@ -6,12 +6,12 @@ import { nspawn as spawn, getCLIPath } from '..';
  * @returns void
  */
 export const diagnoseSendReport = async (cwd: string): Promise<string> => {
-  let path = '';
-  const callback = (text:string): void => {
-    const index = text.lastIndexOf(':');
+  let path = "";
+  const callback = (text: string): void => {
+    const index = text.lastIndexOf(":");
     path = text.substring(index + 1).trim();
   };
-  await spawn(getCLIPath(), ['diagnose', '--send-report'], { cwd, stripColors: true })
+  await spawn(getCLIPath(), ["diagnose", "--send-report"], { cwd, stripColors: true })
     .wait(/Report saved/, callback)
     .wait(/Done/)
     .sendEof()
@@ -20,12 +20,12 @@ export const diagnoseSendReport = async (cwd: string): Promise<string> => {
 };
 
 /**
- * Send failing zipping 
+ * Send failing zipping
  * @param cwd current working directory
  */
 export const diagnoseSendReport_ZipFailed = async (cwd: string): Promise<void> => {
-  await spawn(getCLIPath(), ['diagnose', '--send-report'], { cwd, stripColors: true })
-    .wait('File at path:')
+  await spawn(getCLIPath(), ["diagnose", "--send-report"], { cwd, stripColors: true })
+    .wait("File at path:")
     .wait(/Creating Zip/)
     .sendEof()
     .runAsync();

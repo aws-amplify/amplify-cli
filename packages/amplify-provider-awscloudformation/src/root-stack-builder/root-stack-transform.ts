@@ -1,14 +1,21 @@
-import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
+import { AmplifyRootStackTemplate } from "@aws-amplify/cli-extensibility-helper";
+import * as cdk from "@aws-cdk/core";
 import {
-  $TSContext, AmplifyError, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
-} from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as vm from 'vm2';
-import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
-import { RootStackSynthesizer } from './stack-synthesizer';
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  buildOverrideDir,
+  CFNTemplateFormat,
+  pathManager,
+  Template,
+  writeCFNTemplate,
+} from "amplify-cli-core";
+import { formatter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as vm from "vm2";
+import { AmplifyRootStack, AmplifyRootStackOutputs } from "./root-stack-builder";
+import { RootStackSynthesizer } from "./stack-synthesizer";
 
 /**
  * class to manage stack lifecycle
@@ -36,7 +43,7 @@ export class AmplifyRootStackTransform {
     await this.generateRootStackTemplate();
 
     // apply override on Amplify Object having CDK Constructs for Root Stack
-    if (context.input.command !== 'init') {
+    if (context.input.command !== "init") {
       await this.applyOverride();
     }
 
@@ -44,7 +51,7 @@ export class AmplifyRootStackTransform {
     const template: Template = await this.synthesizeTemplates();
 
     // save stack
-    if (context.input.command !== 'init') {
+    if (context.input.command !== "init") {
       await this.saveBuildFiles(context, template);
     }
     return template;
@@ -57,28 +64,32 @@ export class AmplifyRootStackTransform {
 
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideFilePath, 'build', 'override.js'), 'utf-8').catch(() => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-        return '';
+      const overrideCode: string = await fs.readFile(path.join(overrideFilePath, "build", "override.js"), "utf-8").catch(() => {
+        formatter.list(["No override File Found", `To override ${this._resourceName} run amplify override auth`]);
+        return "";
       });
       const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
+        console: "inherit",
         timeout: 5000,
         sandbox: {},
         require: {
-          context: 'sandbox',
-          builtin: ['path'],
+          context: "sandbox",
+          builtin: ["path"],
           external: true,
         },
       });
       try {
         await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
       } catch (err) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          "InvalidOverrideError",
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: "There may be runtime errors in your overrides file. If so, fix the errors and try again.",
+          },
+          err
+        );
       }
     }
   };
@@ -88,104 +99,104 @@ export class AmplifyRootStackTransform {
    * @returns CFN Template
    */
   private generateRootStackTemplate = async (): Promise<void> => {
-    this._rootTemplateObj = new AmplifyRootStack(this.app, 'AmplifyRootStack', { synthesizer: this._synthesizer });
+    this._rootTemplateObj = new AmplifyRootStack(this.app, "AmplifyRootStack", { synthesizer: this._synthesizer });
 
     this._rootTemplateObj.addCfnParameter(
       {
-        type: 'String',
-        description: 'Name of the common deployment bucket provided by the parent stack',
-        default: 'DeploymentBucket',
+        type: "String",
+        description: "Name of the common deployment bucket provided by the parent stack",
+        default: "DeploymentBucket",
       },
-      'DeploymentBucketName',
+      "DeploymentBucketName"
     );
 
     this._rootTemplateObj.addCfnParameter(
       {
-        type: 'String',
-        description: 'Name of the common deployment bucket provided by the parent stack',
-        default: 'AuthRoleName',
+        type: "String",
+        description: "Name of the common deployment bucket provided by the parent stack",
+        default: "AuthRoleName",
       },
-      'AuthRoleName',
+      "AuthRoleName"
     );
 
     this._rootTemplateObj.addCfnParameter(
       {
-        type: 'String',
-        description: 'Name of the common deployment bucket provided by the parent stack',
-        default: 'UnAuthRoleName',
+        type: "String",
+        description: "Name of the common deployment bucket provided by the parent stack",
+        default: "UnAuthRoleName",
       },
-      'UnauthRoleName',
+      "UnauthRoleName"
     );
 
     // Add Outputs
     this._rootTemplateObj.addCfnOutput(
       {
-        description: 'CloudFormation provider root stack Region',
-        value: cdk.Fn.ref('AWS::Region'),
-        exportName: cdk.Fn.sub('${AWS::StackName}-Region'),
+        description: "CloudFormation provider root stack Region",
+        value: cdk.Fn.ref("AWS::Region"),
+        exportName: cdk.Fn.sub("${AWS::StackName}-Region"),
       },
-      'Region',
+      "Region"
     );
 
     this._rootTemplateObj.addCfnOutput(
       {
-        description: 'CloudFormation provider root stack ID',
-        value: cdk.Fn.ref('AWS::StackName'),
-        exportName: cdk.Fn.sub('${AWS::StackName}-StackName'),
+        description: "CloudFormation provider root stack ID",
+        value: cdk.Fn.ref("AWS::StackName"),
+        exportName: cdk.Fn.sub("${AWS::StackName}-StackName"),
       },
-      'StackName',
+      "StackName"
     );
 
     this._rootTemplateObj.addCfnOutput(
       {
-        description: 'CloudFormation provider root stack name',
-        value: cdk.Fn.ref('AWS::StackId'),
-        exportName: cdk.Fn.sub('${AWS::StackName}-StackId'),
+        description: "CloudFormation provider root stack name",
+        value: cdk.Fn.ref("AWS::StackId"),
+        exportName: cdk.Fn.sub("${AWS::StackName}-StackId"),
       },
-      'StackId',
+      "StackId"
     );
 
     this._rootTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.getAtt('AuthRole', 'Arn').toString(),
+        value: cdk.Fn.getAtt("AuthRole", "Arn").toString(),
       },
-      'AuthRoleArn',
+      "AuthRoleArn"
     );
 
     this._rootTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.getAtt('UnauthRole', 'Arn').toString(),
+        value: cdk.Fn.getAtt("UnauthRole", "Arn").toString(),
       },
-      'UnauthRoleArn',
+      "UnauthRoleArn"
     );
 
     await this._rootTemplateObj.generateRootStackResources();
 
     // add another stack as above stack duplicate logical Ids
-    this._rootTemplateObjOutputs = new AmplifyRootStackOutputs(this.app, 'AmplifyRootStackOutputs', {
+    this._rootTemplateObjOutputs = new AmplifyRootStackOutputs(this.app, "AmplifyRootStackOutputs", {
       synthesizer: this._synthesizerOutputs,
     });
     this._rootTemplateObjOutputs.addCfnOutput(
       {
-        description: 'CloudFormation provider root stack deployment bucket name',
-        value: cdk.Fn.ref('DeploymentBucketName'),
-        exportName: cdk.Fn.sub('${AWS::StackName}-DeploymentBucketName'),
+        description: "CloudFormation provider root stack deployment bucket name",
+        value: cdk.Fn.ref("DeploymentBucketName"),
+        exportName: cdk.Fn.sub("${AWS::StackName}-DeploymentBucketName"),
       },
-      'DeploymentBucketName',
+      "DeploymentBucketName"
     );
 
     this._rootTemplateObjOutputs.addCfnOutput(
       {
-        value: cdk.Fn.ref('AuthRole'),
+        value: cdk.Fn.ref("AuthRole"),
       },
-      'AuthRoleName',
+      "AuthRoleName"
     );
 
     this._rootTemplateObjOutputs.addCfnOutput(
       {
-        value: cdk.Fn.ref('UnauthRole'),
+        value: cdk.Fn.ref("UnauthRole"),
       },
-      'UnauthRoleName',
+      "UnauthRoleName"
     );
   };
 
@@ -196,15 +207,15 @@ export class AmplifyRootStackTransform {
     this.app?.synth();
     const templates = this._synthesizer.collectStacks();
     const templatesOutput = this._synthesizerOutputs.collectStacks();
-    const cfnRootStack: Template = templates.get('AmplifyRootStack');
-    const cfnRootStackOutputs: Template = templatesOutput.get('AmplifyRootStackOutputs');
+    const cfnRootStack: Template = templates.get("AmplifyRootStack");
+    const cfnRootStackOutputs: Template = templatesOutput.get("AmplifyRootStackOutputs");
     Object.assign(cfnRootStack.Outputs, cfnRootStackOutputs.Outputs);
     return cfnRootStack;
   };
 
   private saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
-    const rootStackFileName = 'root-cloudformation-stack.json';
-    const rootStackFilePath = path.join(pathManager.getBackendDirPath(), this._resourceName, 'build', rootStackFileName);
+    const rootStackFileName = "root-cloudformation-stack.json";
+    const rootStackFilePath = path.join(pathManager.getBackendDirPath(), this._resourceName, "build", rootStackFileName);
     // write CFN template
     await writeCFNTemplate(template, rootStackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
@@ -220,7 +231,7 @@ export class AmplifyRootStackTransform {
       return this._rootTemplateObj;
     }
 
-    throw new AmplifyFault('RootStackNotFoundFault', {
+    throw new AmplifyFault("RootStackNotFoundFault", {
       message: `Root Stack Template doesn't exist.`,
     });
   }

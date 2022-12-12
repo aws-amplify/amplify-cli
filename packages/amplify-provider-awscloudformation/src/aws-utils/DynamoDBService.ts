@@ -1,8 +1,8 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { IDynamoDBService } from 'amplify-util-import';
-import DynamoDB, { ListTablesInput, ListTablesOutput, TableDescription, TableName } from 'aws-sdk/clients/dynamodb';
-import { loadConfiguration } from '../configuration-manager';
-import { pagedAWSCall } from './paged-call';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { IDynamoDBService } from "amplify-util-import";
+import DynamoDB, { ListTablesInput, ListTablesOutput, TableDescription, TableName } from "aws-sdk/clients/dynamodb";
+import { loadConfiguration } from "../configuration-manager";
+import { pagedAWSCall } from "./paged-call";
 
 export const createDynamoDBService = async (context: $TSContext, options: $TSAny): Promise<DynamoDBService> => {
   let credentials = {};
@@ -37,8 +37,8 @@ export class DynamoDBService implements IDynamoDBService {
         {
           Limit: 100,
         },
-        response => response?.TableNames,
-        async response => response?.LastEvaluatedTableName,
+        (response) => response?.TableNames,
+        async (response) => response?.LastEvaluatedTableName
       );
 
       this.cachedTableList.push(...result!);

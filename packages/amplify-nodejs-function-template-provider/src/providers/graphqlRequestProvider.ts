@@ -1,21 +1,19 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
-import path from 'path';
-import fs from 'fs-extra';
-import {
-  AmplifySupportedService, exitOnNextTick, $TSContext,
-} from 'amplify-cli-core';
+import { FunctionTemplateParameters } from "amplify-function-plugin-interface";
+import path from "path";
+import fs from "fs-extra";
+import { AmplifySupportedService, exitOnNextTick, $TSContext } from "amplify-cli-core";
 
-import { printer } from 'amplify-prompts';
-import { getDstMap } from '../utils/destFileMapper';
-import { templateRoot } from '../utils/constants';
+import { printer } from "amplify-prompts";
+import { getDstMap } from "../utils/destFileMapper";
+import { templateRoot } from "../utils/constants";
 
-const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda', 'appsync-request');
+const pathToTemplateFilesIAM = path.join(templateRoot, "lambda", "appsync-request");
 
 /**
  * Graphql request to an AppSync API using Node runtime Lambda function
  */
 export async function graphqlRequest(context: $TSContext): Promise<FunctionTemplateParameters> {
-  const { allResources } = await context.amplify.getResourceStatus('api');
+  const { allResources } = await context.amplify.getResourceStatus("api");
 
   const apiResource = allResources.find((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
 
@@ -24,14 +22,17 @@ export async function graphqlRequest(context: $TSContext): Promise<FunctionTempl
     exitOnNextTick(0);
   }
 
-  const AWS_IAM = 'AWS_IAM';
+  const AWS_IAM = "AWS_IAM";
   function isIAM(authType: string) {
     return authType === AWS_IAM;
   }
 
-  function isAppSyncWithIAM(config : any) {
+  function isAppSyncWithIAM(config: any) {
     const { authConfig } = config.output;
-    return [authConfig.defaultAuthentication.authenticationType, ...authConfig.additionalAuthenticationProviders.map((provider : any) => provider.authenticationType)].some(isIAM);
+    return [
+      authConfig.defaultAuthentication.authenticationType,
+      ...authConfig.additionalAuthenticationProviders.map((provider: any) => provider.authenticationType),
+    ].some(isIAM);
   }
 
   const iamCheck = isAppSyncWithIAM(apiResource);
@@ -46,7 +47,7 @@ export async function graphqlRequest(context: $TSContext): Promise<FunctionTempl
     functionTemplate: {
       sourceRoot: pathToTemplateFilesIAM,
       sourceFiles: files,
-      defaultEditorFile: path.join('src', 'index.js'),
+      defaultEditorFile: path.join("src", "index.js"),
       destMap: getDstMap(files),
     },
   };

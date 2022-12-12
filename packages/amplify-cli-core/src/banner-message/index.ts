@@ -1,7 +1,7 @@
-import fetch from 'node-fetch';
-import semver from 'semver';
-import ProxyAgent from 'proxy-agent';
-import { getLogger } from '../logger';
+import fetch from "node-fetch";
+import semver from "semver";
+import ProxyAgent from "proxy-agent";
+import { getLogger } from "../logger";
 
 export type Message = {
   message: string;
@@ -14,10 +14,10 @@ export type Message = {
   };
 };
 
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL = 'https://aws-amplify.github.io/amplify-cli/banner-message.json';
-const MAX_SUPPORTED_MESSAGE_CONFIG_VERSION = '1.0.0';
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
+const MAX_SUPPORTED_MESSAGE_CONFIG_VERSION = "1.0.0";
 
-const logger = getLogger('amplify-cli-core', 'banner-message/index.ts');
+const logger = getLogger("amplify-cli-core", "banner-message/index.ts");
 
 export class BannerMessage {
   private static instance?: BannerMessage;
@@ -33,7 +33,7 @@ export class BannerMessage {
 
   private static ensureInitialized = () => {
     if (!BannerMessage.instance) {
-      throw new Error('BannerMessage is not initialized');
+      throw new Error("BannerMessage is not initialized");
     }
   };
 
@@ -52,7 +52,7 @@ export class BannerMessage {
       this.messages = body.messages ?? [];
     } catch (e) {
       // network error should not cause CLI execution failure
-      logger.error('fetch banner message failed', e);
+      logger.error("fetch banner message failed", e);
     }
   };
 
@@ -67,13 +67,13 @@ export class BannerMessage {
     }
 
     const matchingMessageItems = this.messages.filter(
-      m =>
+      (m) =>
         m.id === messageId &&
         m.conditions?.enabled !== false &&
-        (m.conditions?.cliVersions ? semver.satisfies(this.cliVersion, m.conditions.cliVersions) : true),
+        (m.conditions?.cliVersions ? semver.satisfies(this.cliVersion, m.conditions.cliVersions) : true)
     );
 
-    const messageItem = matchingMessageItems.find(m => {
+    const messageItem = matchingMessageItems.find((m) => {
       if (m.conditions) {
         const currentTime = Date.now();
         const startTime = m.conditions?.startTime ? Date.parse(m.conditions?.startTime) : currentTime;

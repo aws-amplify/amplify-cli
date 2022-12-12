@@ -9,9 +9,9 @@ import {
   scanTable,
   rebuildApi,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-const projName = 'apitest';
+const projName = "apitest";
 let projRoot;
 beforeEach(async () => {
   projRoot = await createNewProjectDir(projName);
@@ -24,15 +24,15 @@ afterEach(async () => {
   deleteProjectDir(projRoot);
 });
 
-describe('amplify rebuild api', () => {
-  it('recreates all model tables', async () => {
+describe("amplify rebuild api", () => {
+  it("recreates all model tables", async () => {
     const projMeta = getProjectMeta(projRoot);
     const apiId = projMeta?.api?.[projName]?.output?.GraphQLAPIIdOutput;
     const region = projMeta?.providers?.awscloudformation?.Region;
     expect(apiId).toBeDefined();
     expect(region).toBeDefined();
     const tableName = `Todo-${apiId}-integtest`;
-    await putItemInTable(tableName, region, { id: 'this is a test value' });
+    await putItemInTable(tableName, region, { id: "this is a test value" });
     const scanResultBefore = await scanTable(tableName, region);
     expect(scanResultBefore.Items.length).toBe(1);
 

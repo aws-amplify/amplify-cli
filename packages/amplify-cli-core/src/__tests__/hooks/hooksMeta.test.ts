@@ -1,16 +1,16 @@
-import { HooksMeta } from '../../hooks/hooksMeta';
-import { stateManager } from '../../state-manager';
+import { HooksMeta } from "../../hooks/hooksMeta";
+import { stateManager } from "../../state-manager";
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
-jest.mock('../../state-manager');
+jest.mock("../../state-manager");
 stateManager_mock.localEnvInfoExists.mockReturnValue(true);
 stateManager_mock.getLocalEnvInfo.mockReturnValue({
-  projectPath: '/project-path',
-  defaultEditor: 'vscode',
-  envName: 'production',
+  projectPath: "/project-path",
+  defaultEditor: "vscode",
+  envName: "production",
 });
 
-describe('HooksMeta tests', () => {
+describe("HooksMeta tests", () => {
   beforeEach(async () => {
     HooksMeta.getInstance();
   });
@@ -18,41 +18,41 @@ describe('HooksMeta tests', () => {
     HooksMeta.releaseInstance();
   });
 
-  test('should identify env commands', () => {
-    const input = { command: 'env', plugin: 'core', subCommands: ['add'] };
+  test("should identify env commands", () => {
+    const input = { command: "env", plugin: "core", subCommands: ["add"] };
     const hooksMeta = HooksMeta.getInstance();
     hooksMeta.setHookEventFromInput(input);
 
-    expect(hooksMeta.getHookEvent()?.command).toEqual('add');
-    expect(hooksMeta.getHookEvent()?.subCommand).toEqual('env');
+    expect(hooksMeta.getHookEvent()?.command).toEqual("add");
+    expect(hooksMeta.getHookEvent()?.subCommand).toEqual("env");
   });
 
-  test('should identify configure as update for notification and hosting', () => {
+  test("should identify configure as update for notification and hosting", () => {
     let hooksMeta = HooksMeta.getInstance();
 
-    hooksMeta.setHookEventFromInput({ command: 'configure', plugin: 'notifications' });
-    expect(hooksMeta.getHookEvent()?.command).toEqual('update');
-    expect(hooksMeta.getHookEvent()?.subCommand).toEqual('notifications');
+    hooksMeta.setHookEventFromInput({ command: "configure", plugin: "notifications" });
+    expect(hooksMeta.getHookEvent()?.command).toEqual("update");
+    expect(hooksMeta.getHookEvent()?.subCommand).toEqual("notifications");
 
     HooksMeta.releaseInstance();
     hooksMeta = HooksMeta.getInstance();
 
-    hooksMeta.setHookEventFromInput({ command: 'configure', plugin: 'hosting' });
-    expect(hooksMeta.getHookEvent()?.command).toEqual('update');
-    expect(hooksMeta.getHookEvent()?.subCommand).toEqual('hosting');
+    hooksMeta.setHookEventFromInput({ command: "configure", plugin: "hosting" });
+    expect(hooksMeta.getHookEvent()?.command).toEqual("update");
+    expect(hooksMeta.getHookEvent()?.subCommand).toEqual("hosting");
   });
 
-  test('should idenfity mock commands', () => {
-    const input = { command: 'api', plugin: 'mock' };
+  test("should idenfity mock commands", () => {
+    const input = { command: "api", plugin: "mock" };
     const hooksMeta = HooksMeta.getInstance();
     hooksMeta.setHookEventFromInput(input);
 
-    expect(hooksMeta.getHookEvent()?.command).toEqual('mock');
-    expect(hooksMeta.getHookEvent()?.subCommand).toEqual('api');
+    expect(hooksMeta.getHookEvent()?.command).toEqual("mock");
+    expect(hooksMeta.getHookEvent()?.subCommand).toEqual("api");
   });
 
-  test('should not set the command and subcommand on unknown/unsupported events', () => {
-    const input = { command: 'init', plugin: 'core' };
+  test("should not set the command and subcommand on unknown/unsupported events", () => {
+    const input = { command: "init", plugin: "core" };
     const hooksMeta = HooksMeta.getInstance();
     hooksMeta.setHookEventFromInput(input);
 
@@ -60,21 +60,21 @@ describe('HooksMeta tests', () => {
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual(undefined);
   });
 
-  test('should identify environment', () => {
-    const input = { command: 'publish', plugin: 'core' };
+  test("should identify environment", () => {
+    const input = { command: "publish", plugin: "core" };
     const hooksMeta = HooksMeta.getInstance();
     hooksMeta.setHookEventFromInput(input);
 
-    expect(hooksMeta.getHookEvent()?.command).toEqual('publish');
+    expect(hooksMeta.getHookEvent()?.command).toEqual("publish");
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual(undefined);
     expect(hooksMeta.getDataParameter()?.amplify.environment).toEqual({
-      projectPath: '/project-path',
-      defaultEditor: 'vscode',
-      envName: 'production',
+      projectPath: "/project-path",
+      defaultEditor: "vscode",
+      envName: "production",
     });
   });
 
-  test('should return correct HooksMeta object - getInstance', () => {
+  test("should return correct HooksMeta object - getInstance", () => {
     let hooksMeta = HooksMeta.getInstance();
 
     expect(hooksMeta).toBeDefined();
@@ -86,27 +86,27 @@ describe('HooksMeta tests', () => {
 
     hooksMeta = HooksMeta.getInstance(
       {
-        command: 'pull',
-        plugin: 'core',
+        command: "pull",
+        plugin: "core",
         subCommands: undefined,
         options: {
           forcePush: true,
         },
       },
-      'pre',
+      "pre"
     );
     expect(hooksMeta).toBeDefined();
-    expect(hooksMeta.getHookEvent().command).toEqual('pull');
-    expect(hooksMeta.getHookEvent().eventPrefix).toEqual('pre');
+    expect(hooksMeta.getHookEvent().command).toEqual("pull");
+    expect(hooksMeta.getHookEvent().eventPrefix).toEqual("pre");
     expect(hooksMeta.getHookEvent().forcePush).toEqual(true);
     expect(hooksMeta.getErrorParameter()).not.toBeDefined();
 
     // if the event was defined and Amplify emits an error, getInstance should attatch the error parameter to the already defined event
-    hooksMeta = HooksMeta.getInstance(undefined, 'post', { message: 'test_message', stack: 'test_stack' });
+    hooksMeta = HooksMeta.getInstance(undefined, "post", { message: "test_message", stack: "test_stack" });
     expect(hooksMeta).toBeDefined();
-    expect(hooksMeta.getHookEvent().command).toEqual('pull');
-    expect(hooksMeta.getHookEvent().eventPrefix).toEqual('post');
+    expect(hooksMeta.getHookEvent().command).toEqual("pull");
+    expect(hooksMeta.getHookEvent().eventPrefix).toEqual("post");
     expect(hooksMeta.getHookEvent().forcePush).toEqual(true);
-    expect(hooksMeta.getErrorParameter()).toEqual({ message: 'test_message', stack: 'test_stack' });
+    expect(hooksMeta.getErrorParameter()).toEqual({ message: "test_message", stack: "test_stack" });
   });
 });

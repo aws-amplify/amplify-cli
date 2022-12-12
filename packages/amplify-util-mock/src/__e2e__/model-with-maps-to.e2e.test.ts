@@ -1,12 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { GraphQLClient } from './utils/graphql-client';
-import {
-  deploy, launchDDBLocal, logDebug, terminateDDB,
-} from './utils/index';
+import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
+import { MapsToTransformer } from "@aws-amplify/graphql-maps-to-transformer";
+import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
+import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
+import { GraphQLClient } from "./utils/graphql-client";
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from "./utils/index";
 
 let graphqlClient;
 let server;
@@ -27,7 +25,7 @@ beforeAll(async () => {
       transformers: [new ModelTransformer(), new AuthTransformer(), new MapsToTransformer()],
       featureFlags: {
         getBoolean: (value: string, defaultValue?: boolean): boolean => {
-          if (value === 'userSubUsernameForDefaultIdentityClaim') {
+          if (value === "userSubUsernameForDefaultIdentityClaim") {
             return false;
           }
           return defaultValue;
@@ -47,7 +45,7 @@ beforeAll(async () => {
     logDebug(`Using graphql url: ${endpoint}`);
 
     const { apiKey } = result.config.appSync;
-    graphqlClient = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
+    graphqlClient = new GraphQLClient(endpoint, { "x-api-key": apiKey });
   } catch (e) {
     logDebug(e);
     console.warn(`Could not setup mock server: ${e}`);
@@ -70,7 +68,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Model with original name specified points to original table', async () => {
+test("Model with original name specified points to original table", async () => {
   const response = await graphqlClient.query(
     `mutation {
         createTodo(input: {title: "Test Todo"}) {
@@ -78,10 +76,10 @@ test('Model with original name specified points to original table', async () => 
             title
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 2));
   expect(response?.data?.createTodo?.id).toBeDefined();
-  expect(response?.data?.createTodo?.title).toEqual('Test Todo');
+  expect(response?.data?.createTodo?.title).toEqual("Test Todo");
   // successful response means that it was able to write to the original table correctly
 });

@@ -1,12 +1,10 @@
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { IDynamoDBService } from 'amplify-util-import';
-import Enquirer from 'enquirer';
-import _ from 'lodash';
-import { importMessages } from './messages';
+import { ensureEnvParamManager } from "@aws-amplify/amplify-environment-parameters";
+import { $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { IDynamoDBService } from "amplify-util-import";
+import Enquirer from "enquirer";
+import _ from "lodash";
+import { importMessages } from "./messages";
 import {
   DynamoDBBackendConfiguration,
   DynamoDBEnvSpecificResourceParameters,
@@ -17,7 +15,7 @@ import {
   DynamoDBResourceParameters,
   ImportDynamoDBHeadlessParameters,
   ProviderUtils,
-} from './types';
+} from "./types";
 
 /**
  * entry point for importing DynamoDB table
@@ -27,7 +25,7 @@ export const importDynamoDB = async (
   serviceSelection: ServiceSelection,
   previousResourceParameters: DynamoDBResourceParameters | undefined,
   providerPluginInstance?: ProviderUtils,
-  printSuccessMessage = true,
+  printSuccessMessage = true
 ): Promise<{ envSpecificParameters: DynamoDBEnvSpecificResourceParameters } | undefined> => {
   // Load provider
   const providerPlugin = providerPluginInstance || (await import(serviceSelection.provider));
@@ -37,7 +35,7 @@ export const importDynamoDB = async (
     context,
     serviceSelection.providerName,
     providerUtils,
-    previousResourceParameters,
+    previousResourceParameters
   );
 
   if (!importServiceWalkthroughResult) {
@@ -64,15 +62,15 @@ const printSuccess = (tableName: string): void => {
   printer.blankLine();
   printer.info(`✅ DynamoDB Table '${tableName}' was successfully imported.`);
   printer.blankLine();
-  printer.info('Next steps:');
-  printer.info('- This resource can now be accessed from REST APIs (`amplify add api`) and Functions (`amplify add function`)');
+  printer.info("Next steps:");
+  printer.info("- This resource can now be accessed from REST APIs (`amplify add api`) and Functions (`amplify add function`)");
 };
 
 const importServiceWalkthrough = async (
   context: $TSContext,
   providerName: string,
   providerUtils: ProviderUtils,
-  previousResourceParameters: DynamoDBResourceParameters | undefined,
+  previousResourceParameters: DynamoDBResourceParameters | undefined
 ): Promise<{ questionParameters: DynamoDBImportParameters; answers: DynamoDBImportAnswers } | undefined> => {
   const dynamoDB = await providerUtils.createDynamoDBService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -85,9 +83,11 @@ const importServiceWalkthrough = async (
   const storageResources = <{ service: string; output: { Name: string } }[]>(
     Object.values(_.get(amplifyMeta, [AmplifyCategories.STORAGE], []))
   );
-  const dynamoDBResources = storageResources.filter(r => r.service === 'DynamoDB' && !!r.output && !!r.output.Name).map(r => r.output.Name);
+  const dynamoDBResources = storageResources
+    .filter((r) => r.service === "DynamoDB" && !!r.output && !!r.output.Name)
+    .map((r) => r.output.Name);
 
-  tableList = tableList.filter(t => !dynamoDBResources.includes(t));
+  tableList = tableList.filter((t) => !dynamoDBResources.includes(t));
 
   // Return if no User Pool found in the project's region
   if (_.isEmpty(tableList)) {
@@ -112,14 +112,14 @@ const importServiceWalkthrough = async (
     // eslint-disable-next-line prefer-destructuring
     answers.tableName = tableList[0];
 
-    answers.resourceName = answers.tableName.replace(/[\W_]+/g, '');
+    answers.resourceName = answers.tableName.replace(/[\W_]+/g, "");
     answers.tableDescription = await dynamoDB.getTableDetails(answers.tableName);
 
     printer.info(importMessages.OneTable(answers.tableName));
   } else {
     const tableNameQuestion = {
-      type: 'autocomplete',
-      name: 'tableName',
+      type: "autocomplete",
+      name: "tableName",
       message: importMessages.TableSelection,
       required: true,
       choices: tableList,
@@ -131,7 +131,7 @@ const importServiceWalkthrough = async (
     const { tableName } = await enquirer.prompt(tableNameQuestion as $TSAny);
 
     answers.tableName = tableName!;
-    answers.resourceName = answers.tableName!.replace(/[\W_]+/g, '');
+    answers.resourceName = answers.tableName!.replace(/[\W_]+/g, "");
 
     answers.tableDescription = await dynamoDB.getTableDetails(answers.tableName);
   }
@@ -155,7 +155,7 @@ const updateStateFiles = async (
   context: $TSContext,
   questionParameters: DynamoDBImportParameters,
   answers: DynamoDBImportAnswers,
-  updateEnvSpecificParameters: boolean,
+  updateEnvSpecificParameters: boolean
 ): Promise<{
   backendConfiguration: DynamoDBBackendConfiguration;
   resourceParameters: DynamoDBResourceParameters;
@@ -163,8 +163,8 @@ const updateStateFiles = async (
   envSpecificParameters: DynamoDBEnvSpecificResourceParameters;
 }> => {
   const backendConfiguration: DynamoDBBackendConfiguration = {
-    service: 'DynamoDB',
-    serviceType: 'imported',
+    service: "DynamoDB",
+    serviceType: "imported",
     providerPlugin: questionParameters.providerName,
     dependsOn: [],
   };
@@ -172,7 +172,7 @@ const updateStateFiles = async (
   // Create and persist parameters
   const resourceParameters: DynamoDBResourceParameters = {
     resourceName: answers.resourceName!,
-    serviceType: 'imported',
+    serviceType: "imported",
   };
 
   stateManager.setResourceParametersJson(undefined, AmplifyCategories.STORAGE, answers.resourceName!, resourceParameters);
@@ -187,7 +187,7 @@ const updateStateFiles = async (
     answers.resourceName!,
     metaConfiguration,
     backendConfiguration,
-    true,
+    true
   );
 
   // Update team provider-info
@@ -213,11 +213,11 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
     StreamArn: answers.tableDescription!.LatestStreamArn,
   };
 
-  const hashKey = answers.tableDescription!.KeySchema?.find(ks => ks.KeyType === 'HASH');
-  const sortKeys = answers.tableDescription!.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
+  const hashKey = answers.tableDescription!.KeySchema?.find((ks) => ks.KeyType === "HASH");
+  const sortKeys = answers.tableDescription!.KeySchema?.filter((ks) => ks.KeyType === "RANGE");
 
   if (hashKey) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === hashKey.AttributeName);
 
     if (attribute) {
       output.PartitionKeyName = hashKey.AttributeName;
@@ -226,7 +226,7 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
   }
 
   if (sortKeys && sortKeys.length > 0) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === sortKeys[0].AttributeName);
 
     if (attribute) {
       output.SortKeyName = sortKeys[0].AttributeName;
@@ -239,7 +239,7 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
 
 const createEnvSpecificResourceParameters = (
   answers: DynamoDBImportAnswers,
-  questionParameters: DynamoDBImportParameters,
+  questionParameters: DynamoDBImportParameters
 ): DynamoDBEnvSpecificResourceParameters => {
   const envSpecificResourceParameters: DynamoDBEnvSpecificResourceParameters = {
     tableName: answers.tableName!,
@@ -248,11 +248,11 @@ const createEnvSpecificResourceParameters = (
     streamArn: answers.tableDescription!.LatestStreamArn,
   };
 
-  const hashKey = answers.tableDescription!.KeySchema?.find(ks => ks.KeyType === 'HASH');
-  const sortKeys = answers.tableDescription!.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
+  const hashKey = answers.tableDescription!.KeySchema?.find((ks) => ks.KeyType === "HASH");
+  const sortKeys = answers.tableDescription!.KeySchema?.filter((ks) => ks.KeyType === "RANGE");
 
   if (hashKey) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === hashKey.AttributeName);
 
     if (attribute) {
       envSpecificResourceParameters.partitionKeyName = hashKey.AttributeName;
@@ -261,7 +261,7 @@ const createEnvSpecificResourceParameters = (
   }
 
   if (sortKeys && sortKeys.length > 0) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === sortKeys[0].AttributeName);
 
     if (attribute) {
       envSpecificResourceParameters.sortKeyName = sortKeys[0].AttributeName;
@@ -285,13 +285,13 @@ export const importedDynamoDBEnvInit = async (
   providerUtils: ProviderUtils,
   currentEnvSpecificParameters: DynamoDBEnvSpecificResourceParameters,
   isInHeadlessMode: boolean,
-  headlessParams: ImportDynamoDBHeadlessParameters,
+  headlessParams: ImportDynamoDBHeadlessParameters
 ): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: DynamoDBEnvSpecificResourceParameters }> => {
   const dynamoDB = await providerUtils.createDynamoDBService(context);
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === "pull" || (context.input.command === "env" && context.input.subCommands[0] === "pull");
+  const isEnvAdd = context.input.command === "env" && context.input.subCommands[0] === "add";
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
@@ -310,7 +310,14 @@ export const importedDynamoDBEnvInit = async (
       if (currentResource && currentResource.output) {
         const {
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          Name, Region, Arn, StreamArn, PartitionKeyName, PartitionKeyType, SortKeyName, SortKeyType,
+          Name,
+          Region,
+          Arn,
+          StreamArn,
+          PartitionKeyName,
+          PartitionKeyType,
+          SortKeyName,
+          SortKeyType,
         } = currentResource.output;
 
         /* eslint-disable no-param-reassign */
@@ -329,19 +336,23 @@ export const importedDynamoDBEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance
-      .getResourceParamManager(AmplifyCategories.STORAGE, resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager(
+      AmplifyCategories.STORAGE,
+      resourceName
+    );
 
     if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
-        name: 'importExisting',
-        type: 'confirm',
+        name: "importExisting",
+        type: "confirm",
         message: importMessages.ImportPreviousTable(
-          resourceName, resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!, context.exeInfo.sourceEnvName,
+          resourceName,
+          resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!,
+          context.exeInfo.sourceEnvName
         ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
-        format: (e: $TSAny) => (e ? 'Yes' : 'No'),
+        format: (e: $TSAny) => (e ? "Yes" : "No"),
       } as $TSAny);
 
       if (!importExisting) {
@@ -410,7 +421,7 @@ const headlessImport = async (
   dynamoDB: IDynamoDBService,
   providerName: string,
   resourceParameters: DynamoDBResourceParameters,
-  headlessParams: ImportDynamoDBHeadlessParameters,
+  headlessParams: ImportDynamoDBHeadlessParameters
 ): Promise<{ succeeded: boolean; envSpecificParameters: DynamoDBEnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
@@ -448,7 +459,7 @@ const headlessImport = async (
 
 const ensureHeadlessParameters = (
   resourceParameters: DynamoDBResourceParameters,
-  headlessParams: ImportDynamoDBHeadlessParameters,
+  headlessParams: ImportDynamoDBHeadlessParameters
 ): DynamoDBEnvSpecificResourceParameters => {
   // If we are doing headless mode, validate parameter presence and overwrite the input values from env specific params since they can be
   // different for the current env operation (eg region can mismatch)
@@ -457,22 +468,22 @@ const ensureHeadlessParameters = (
   const missingParams = [];
 
   if (!headlessParams.tables) {
-    missingParams.push('tables');
+    missingParams.push("tables");
   }
 
   if (!headlessParams.region) {
-    missingParams.push('region');
+    missingParams.push("region");
   }
 
   if (missingParams.length > 0) {
-    throw new Error(`storage headless is missing the following inputParams ${missingParams.join(', ')}`);
+    throw new Error(`storage headless is missing the following inputParams ${missingParams.join(", ")}`);
   }
 
-  const tableParams = Object.keys(headlessParams.tables).filter(t => t === resourceParameters.resourceName);
+  const tableParams = Object.keys(headlessParams.tables).filter((t) => t === resourceParameters.resourceName);
 
   if (tableParams?.length !== 1) {
     throw new Error(
-      `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`,
+      `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`
     );
   }
 
@@ -485,12 +496,12 @@ const ensureHeadlessParameters = (
 };
 
 enum DynamoDBParam {
-  TABLE_NAME = 'tableName',
-  REGION = 'region',
-  ARN = 'arn',
-  STREAM_ARN = 'streamArn',
-  PARTITION_KEY_NAME = 'partitionKeyName',
-  PARTITION_KEY_TYPE = 'partitionKeyType',
-  SORT_KEY_NAME = 'sortKeyName',
-  SORT_KEY_TYPE = 'sortKeyType',
+  TABLE_NAME = "tableName",
+  REGION = "region",
+  ARN = "arn",
+  STREAM_ARN = "streamArn",
+  PARTITION_KEY_NAME = "partitionKeyName",
+  PARTITION_KEY_TYPE = "partitionKeyType",
+  SORT_KEY_NAME = "sortKeyName",
+  SORT_KEY_TYPE = "sortKeyType",
 }

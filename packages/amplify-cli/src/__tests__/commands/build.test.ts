@@ -1,37 +1,37 @@
-import { run } from '../../commands/build';
-import { $TSContext } from 'amplify-cli-core';
+import { run } from "../../commands/build";
+import { $TSContext } from "amplify-cli-core";
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-provider-awscloudformation');
-jest.mock('@aws-amplify/amplify-category-custom');
+jest.mock("amplify-cli-core");
+jest.mock("amplify-provider-awscloudformation");
+jest.mock("@aws-amplify/amplify-category-custom");
 
-describe('run build command', () => {
-  it('runs build command for only a resource', async () => {
+describe("run build command", () => {
+  it("runs build command for only a resource", async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({
           resourcesToBeCreated: [
             {
-              category: 'mockcategory1',
-              service: 'mockservice1',
-              resourceName: 'mockResourceName1',
+              category: "mockcategory1",
+              service: "mockservice1",
+              resourceName: "mockResourceName1",
             },
             {
-              category: 'mockcategory2',
-              service: 'mockservice2',
-              resourceName: 'mockResourceName2',
+              category: "mockcategory2",
+              service: "mockservice2",
+              resourceName: "mockResourceName2",
             },
           ],
           resourcesToBeUpdated: [
             {
-              category: 'mockcategory3',
-              service: 'mockservice3',
-              resourceName: 'mockResourceName3',
+              category: "mockcategory3",
+              service: "mockservice3",
+              resourceName: "mockResourceName3",
             },
             {
-              category: 'mockcategory4',
-              service: 'mockservice4',
-              resourceName: 'mockResourceName4',
+              category: "mockcategory4",
+              service: "mockservice4",
+              resourceName: "mockResourceName4",
             },
           ],
         }),
@@ -40,7 +40,7 @@ describe('run build command', () => {
         invokePluginMethod: jest.fn(),
       },
       input: {
-        subCommands: ['mockcategory1', 'mockResourceName1'],
+        subCommands: ["mockcategory1", "mockResourceName1"],
       },
     };
 
@@ -49,32 +49,32 @@ describe('run build command', () => {
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(1);
   });
 
-  it('runs build command for only all resources in a category', async () => {
+  it("runs build command for only all resources in a category", async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({
           resourcesToBeCreated: [
             {
-              category: 'mockcategory1',
-              service: 'mockservice1',
-              resourceName: 'mockResourceName1',
+              category: "mockcategory1",
+              service: "mockservice1",
+              resourceName: "mockResourceName1",
             },
             {
-              category: 'mockcategory1',
-              service: 'mockservice2',
-              resourceName: 'mockResourceName2',
+              category: "mockcategory1",
+              service: "mockservice2",
+              resourceName: "mockResourceName2",
             },
           ],
           resourcesToBeUpdated: [
             {
-              category: 'mockcategory1',
-              service: 'mockservice3',
-              resourceName: 'mockResourceName3',
+              category: "mockcategory1",
+              service: "mockservice3",
+              resourceName: "mockResourceName3",
             },
             {
-              category: 'mockcategory4',
-              service: 'mockservice4',
-              resourceName: 'mockResourceName4',
+              category: "mockcategory4",
+              service: "mockservice4",
+              resourceName: "mockResourceName4",
             },
           ],
         }),
@@ -83,7 +83,7 @@ describe('run build command', () => {
         invokePluginMethod: jest.fn(),
       },
       input: {
-        subCommands: ['mockcategory1'],
+        subCommands: ["mockcategory1"],
       },
     };
 
@@ -92,32 +92,32 @@ describe('run build command', () => {
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(3);
   });
 
-  it('runs build command successfully for all resources in all categories', async () => {
+  it("runs build command successfully for all resources in all categories", async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({
           resourcesToBeCreated: [
             {
-              category: 'mockcategory1',
-              service: 'mockservice1',
-              resourceName: 'mockResourceName1',
+              category: "mockcategory1",
+              service: "mockservice1",
+              resourceName: "mockResourceName1",
             },
             {
-              category: 'mockcategory2',
-              service: 'mockservice2',
-              resourceName: 'mockResourceName2',
+              category: "mockcategory2",
+              service: "mockservice2",
+              resourceName: "mockResourceName2",
             },
           ],
           resourcesToBeUpdated: [
             {
-              category: 'mockcategory3',
-              service: 'mockservice3',
-              resourceName: 'mockResourceName3',
+              category: "mockcategory3",
+              service: "mockservice3",
+              resourceName: "mockResourceName3",
             },
             {
-              category: 'mockcategory4',
-              service: 'mockservice4',
-              resourceName: 'mockResourceName4',
+              category: "mockcategory4",
+              service: "mockservice4",
+              resourceName: "mockResourceName4",
             },
           ],
         }),
@@ -132,7 +132,7 @@ describe('run build command', () => {
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(5);
   });
 
-  it('runs command successfully empty Arrays', async () => {
+  it("runs command successfully empty Arrays", async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({

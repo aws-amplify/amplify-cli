@@ -1,14 +1,12 @@
-import {
-  $TSContext, AmplifyError, stateManager,
-} from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer';
-import * as path from 'path';
-import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { editors, editorSelection, normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
-import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
-import { getSuitableFrontend } from './s1-initFrontend';
+import { $TSContext, AmplifyError, stateManager } from "amplify-cli-core";
+import * as fs from "fs-extra";
+import * as inquirer from "inquirer";
+import * as path from "path";
+import { amplifyCLIConstants } from "../extensions/amplify-helpers/constants";
+import { editors, editorSelection, normalizeEditor } from "../extensions/amplify-helpers/editor-selection";
+import { getFrontendPlugins } from "../extensions/amplify-helpers/get-frontend-plugins";
+import { isProjectNameValid, normalizeProjectName } from "../extensions/amplify-helpers/project-name-validation";
+import { getSuitableFrontend } from "./s1-initFrontend";
 
 /**
  * Analyzes the project
@@ -23,8 +21,8 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
   // default to that here unless different param specified
   const { frontend } = context?.parameters?.options;
   if (!frontend) {
-    context.print.warning('No frontend specified. Defaulting to android.');
-    context.exeInfo.projectConfig.frontend = 'android';
+    context.print.warning("No frontend specified. Defaulting to android.");
+    context.exeInfo.projectConfig.frontend = "android";
   } else {
     context.exeInfo.projectConfig.frontend = frontend;
   }
@@ -38,9 +36,9 @@ export const displayConfigurationDefaults = (
   context: $TSContext,
   defaultProjectName: string,
   defaultEnv: string | undefined,
-  defaultEditorName: string,
+  defaultEditorName: string
 ): void => {
-  context.print.info('Project information');
+  context.print.info("Project information");
   context.print.info(`| Name: ${defaultProjectName}`);
   context.print.info(`| Environment: ${defaultEnv}`);
   context.print.info(`| Default editor: ${defaultEditorName}`);
@@ -51,7 +49,7 @@ const setConfigurationDefaults = (
   projectPath: string,
   defaultProjectName: string,
   defaultEnv: string | undefined,
-  defaultEditor: string,
+  defaultEditor: string
 ): void => {
   setExeInfo(context, projectPath, defaultEditor, defaultEnv);
   setProjectConfig(context, defaultProjectName);
@@ -68,13 +66,13 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   if (context?.exeInfo?.inputParams?.amplify?.defaultEditor) {
     defaultEditor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
   } else {
-    defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
+    defaultEditor = editors.length > 0 ? editors[0].value : "vscode";
   }
-  const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
-  const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
+  const editorIndex = editors.findIndex((editorEntry) => editorEntry.value === defaultEditor);
+  const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : "Visual Studio Code";
 
-  context.print.success('The following configuration will be applied:');
-  context.print.info('');
+  context.print.success("The following configuration will be applied:");
+  context.print.info("");
 
   displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 
@@ -83,9 +81,9 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   const frontendModule = await import(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
-  context.print.info('');
+  context.print.info("");
 
-  if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
+  if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt("Initialize the project with the above configuration?"))) {
     setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
@@ -97,13 +95,13 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
 export const analyzeProject = async (context: $TSContext): Promise<$TSContext> => {
   // eslint-disable-next-line spellcheck/spell-checker
   if (!context.parameters.options.app || !context.parameters.options.quickstart) {
-    context.print.warning('Note: It is recommended to run this command from the root of your app directory');
+    context.print.warning("Note: It is recommended to run this command from the root of your app directory");
   }
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
 
-  if (context.exeInfo.isNewProject && context.parameters.command !== 'env') {
+  if (context.exeInfo.isNewProject && context.parameters.command !== "env") {
     await displayAndSetDefaults(context, projectPath, projectName);
   }
 
@@ -175,11 +173,11 @@ const getProjectName = async (context: $TSContext): Promise<string> => {
 
     if (!context.exeInfo.inputParams.yes) {
       const projectNameQuestion: inquirer.InputQuestion = {
-        type: 'input',
-        name: 'inputProjectName',
-        message: 'Enter a name for the project',
+        type: "input",
+        name: "inputProjectName",
+        message: "Enter a name for the project",
         default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: (input) => isProjectNameValid(input) || "Project name should be between 3 and 20 characters and alphanumeric",
       };
 
       const answer = await inquirer.prompt(projectNameQuestion);
@@ -208,17 +206,17 @@ const getEditor = async (context: $TSContext): Promise<string> => {
 
 const isEnvNameValid = (inputEnvName: string): boolean => /^[a-z]{2,10}$/.test(inputEnvName);
 
-const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
+const INVALID_ENV_NAME_MSG = "Environment name must be between 2 and 10 characters, and lowercase only.";
 
 const getDefaultEnv = (context: $TSContext): string | undefined => {
-  let defaultEnv = 'dev';
+  let defaultEnv = "dev";
 
   if (context?.exeInfo?.inputParams?.amplify?.envName) {
     if (isEnvNameValid(context.exeInfo.inputParams.amplify.envName)) {
       defaultEnv = context.exeInfo.inputParams.amplify.envName;
       return defaultEnv;
     }
-    throw new AmplifyError('EnvironmentNameError', {
+    throw new AmplifyError("EnvironmentNameError", {
       message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
       resolution: INVALID_ENV_NAME_MSG,
     });
@@ -238,12 +236,12 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError("ProjectInitError", {
       message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
       resolution: INVALID_ENV_NAME_MSG,
     });
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError("ProjectInitError", {
       message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
       resolution: INVALID_ENV_NAME_MSG,
     });
@@ -252,11 +250,11 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
   const newEnvQuestion = async (): Promise<void> => {
     const defaultEnvName = getDefaultEnv(context);
     const envNameQuestion: inquirer.InputQuestion = {
-      type: 'input',
-      name: 'envName',
-      message: 'Enter a name for the environment',
+      type: "input",
+      name: "envName",
+      message: "Enter a name for the environment",
       default: defaultEnvName,
-      validate: input => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
+      validate: (input) => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));
@@ -269,11 +267,11 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
     const envAddExec = checkEnvAddExec(context);
 
     if (allEnvs.length > 0 && envAddExec === false) {
-      if (await context.amplify.confirmPrompt('Do you want to use an existing environment?')) {
+      if (await context.amplify.confirmPrompt("Do you want to use an existing environment?")) {
         const envQuestion: inquirer.ListQuestion = {
-          type: 'list',
-          name: 'envName',
-          message: 'Choose the environment you would like to use:',
+          type: "list",
+          name: "envName",
+          message: "Choose the environment you would like to use:",
           choices: allEnvs,
         };
 
@@ -338,4 +336,4 @@ const getDefaultEditor = (): string => {
  * @param {$TSContext} context The Amplify context object
  * @returns `boolean`
  */
-const checkEnvAddExec = (context): boolean => context.parameters.command === 'env' && context.parameters.array[0] === 'add';
+const checkEnvAddExec = (context): boolean => context.parameters.command === "env" && context.parameters.array[0] === "add";

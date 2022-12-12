@@ -1,4 +1,4 @@
-import ci from 'ci-info';
+import ci from "ci-info";
 
 /**
  * Determine if the CLI is running in a CI/CD environment or not.

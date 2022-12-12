@@ -1,23 +1,21 @@
-import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
-import { TemplateMappings } from '../service-stacks/baseStack';
-import { provider, ServiceName } from '../service-utils/constants';
-import { checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
-import { addGeofenceCollectionResource, removeGeofenceCollectionResource, updateGeofenceCollectionResource } from './geofenceCollection';
-import {
-  addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless,
-} from './map';
-import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from './placeIndex';
+import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import { validateAddGeoRequest, validateUpdateGeoRequest } from "amplify-util-headless-input";
+import { TemplateMappings } from "../service-stacks/baseStack";
+import { provider, ServiceName } from "../service-utils/constants";
+import { checkGeoResourceExists } from "../service-utils/resourceUtils";
+import { getServiceFriendlyName } from "../service-walkthroughs/resourceWalkthrough";
+import { addGeofenceCollectionResource, removeGeofenceCollectionResource, updateGeofenceCollectionResource } from "./geofenceCollection";
+import { addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless } from "./map";
+import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from "./placeIndex";
 
 /**
  * Entry point for creating a new Geo resource
  */
 export const addResource = async (context: $TSContext, service: string): Promise<string | undefined> => {
   if (!projectHasAuth()) {
-    if (await prompter.yesOrNo('geo category resources require auth (Amazon Cognito). Do you want to add auth now?')) {
-      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'add', [context]);
+    if (await prompter.yesOrNo("geo category resources require auth (Amazon Cognito). Do you want to add auth now?")) {
+      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, "add", [context]);
     } else {
       printer.info('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
       return undefined;
@@ -68,15 +66,15 @@ export const removeResource = async (context: $TSContext, service: string): Prom
   }
 };
 
-export const projectHasAuth = (): boolean => !!Object.values(stateManager.getMeta()?.auth || {})
-  .find(meta => (meta as $TSObject)?.service === AmplifySupportedService.COGNITO);
+export const projectHasAuth = (): boolean =>
+  !!Object.values(stateManager.getMeta()?.auth || {}).find((meta) => (meta as $TSObject)?.service === AmplifySupportedService.COGNITO);
 
 export const printNextStepsSuccessMessage = () => {
   printer.blankLine();
-  printer.success('Next steps:');
+  printer.success("Next steps:");
   printer.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   printer.info(
-    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
+    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud'
   );
 };
 
@@ -92,13 +90,13 @@ export const openConsole = (service: string) => {
   let selection: string | undefined;
   switch (service) {
     case ServiceName.Map:
-      selection = 'maps';
+      selection = "maps";
       break;
     case ServiceName.PlaceIndex:
-      selection = 'places';
+      selection = "places";
       break;
     case ServiceName.GeofenceCollection:
-      selection = 'geofencing';
+      selection = "geofencing";
       break;
     default:
       selection = undefined;
@@ -122,7 +120,7 @@ export const getTemplateMappings = async (context: $TSContext): Promise<Template
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const providerPlugin = await import(providerPlugins[provider]);
   const regionMapping = providerPlugin.getLocationRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     Mappings.RegionMapping[region] = {
       locationServiceRegion: regionMapping[region],
     };
@@ -133,10 +131,7 @@ export const getTemplateMappings = async (context: $TSContext): Promise<Template
 /**
  * Entry point for headless command of creating a new Geo resource
  */
-export const addResourceHeadless = async (
-  context: $TSContext,
-  headlessPayload: string,
-): Promise<string | undefined> => {
+export const addResourceHeadless = async (context: $TSContext, headlessPayload: string): Promise<string | undefined> => {
   if (!projectHasAuth()) {
     throw new Error('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
   }
@@ -156,13 +151,10 @@ export const addResourceHeadless = async (
 /**
  * Entry point for headless command of updating an existing Geo resource
  */
-export const updateResourceHeadless = async (
-  context: $TSContext,
-  headlessPayload: string,
-): Promise<string | undefined> => {
+export const updateResourceHeadless = async (context: $TSContext, headlessPayload: string): Promise<string | undefined> => {
   const { serviceModification } = await validateUpdateGeoRequest(headlessPayload);
   const { serviceName, name } = serviceModification;
-  if (!await checkGeoResourceExists(name)) {
+  if (!(await checkGeoResourceExists(name))) {
     throw new Error(`Geo resource with name '${name}' does not exist.`);
   }
   switch (serviceName) {

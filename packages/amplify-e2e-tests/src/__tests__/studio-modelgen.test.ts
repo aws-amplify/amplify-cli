@@ -11,21 +11,21 @@ import {
   updateApiSchema,
   getDeploymentBucketObject,
   getProjectConfig,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('upload Studio CMS assets on push of Studio enabled project', () => {
+describe("upload Studio CMS assets on push of Studio enabled project", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('studio-cms-upload');
+    projRoot = await createNewProjectDir("studio-cms-upload");
   });
 
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
-  it('uploads expected CMS assets to shared location in S3 bucket', async () => {
+  it("uploads expected CMS assets to shared location in S3 bucket", async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const name = 'studiocmstest';
+    const name = "studiocmstest";
     const defaultsSettings = {
       disableAmplifyAppCreation: false,
       name,
@@ -48,7 +48,7 @@ describe('upload Studio CMS assets on push of Studio enabled project', () => {
     await enableAdminUI(appId, envName, region);
 
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 2 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await updateApiSchema(projRoot, name, "simple_model.graphql");
     await amplifyPush(projRoot);
 
     // expect CMS assets to be present in S3

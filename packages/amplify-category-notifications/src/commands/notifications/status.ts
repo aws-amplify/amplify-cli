@@ -1,15 +1,13 @@
-import {
-  $TSContext,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import chalk from 'chalk';
-import { IChannelAvailability, INotificationsConfigStatus } from '../../channel-types';
-import { getNotificationsAppMeta } from '../../notifications-amplify-meta-api';
-import { getNotificationConfigStatus } from '../../notifications-api';
-import { getChannelViewInfo } from '../../notifications-backend-cfg-channel-api';
+import { $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import chalk from "chalk";
+import { IChannelAvailability, INotificationsConfigStatus } from "../../channel-types";
+import { getNotificationsAppMeta } from "../../notifications-amplify-meta-api";
+import { getNotificationConfigStatus } from "../../notifications-api";
+import { getChannelViewInfo } from "../../notifications-backend-cfg-channel-api";
 
-export const name = 'status';
-export const alias = ['list', 'ls'];
+export const name = "status";
+export const alias = ["list", "ls"];
 
 const viewStyles = {
   enabled: chalk.bold.green,
@@ -24,18 +22,18 @@ const viewStyles = {
 
 const getDeployedStyledStatus = (deployedChannel: string, deployedChannels: IChannelAvailability, configuredState: string): string => {
   if (deployedChannels.enabledChannels.includes(deployedChannel)) {
-    if (configuredState === 'Enabled') {
-      return viewStyles.deployed('Deployed');
+    if (configuredState === "Enabled") {
+      return viewStyles.deployed("Deployed");
     }
-    return viewStyles.pendingDeployment('Not Deployed'); // remote state is disabled
+    return viewStyles.pendingDeployment("Not Deployed"); // remote state is disabled
   }
   if (deployedChannels.disabledChannels.includes(deployedChannel)) {
-    if (configuredState === 'Disabled') {
-      return viewStyles.deployed('Deployed');
+    if (configuredState === "Disabled") {
+      return viewStyles.deployed("Deployed");
     }
-    return viewStyles.pendingDeployment('Not Deployed'); // remote state is enabled
+    return viewStyles.pendingDeployment("Not Deployed"); // remote state is enabled
   }
-  return viewStyles.notDeployed('Not Deployed');
+  return viewStyles.notDeployed("Not Deployed");
 };
 
 const viewNotificationsAppURL = async (context: $TSContext, appName: string): Promise<void> => {
@@ -47,16 +45,24 @@ const viewNotificationsAppURL = async (context: $TSContext, appName: string): Pr
 };
 
 const viewDisplayChannelAvailability = async (context: $TSContext, backend: INotificationsConfigStatus): Promise<void> => {
-  const tableOptions = [['Channel', 'Status', 'Deployed/Not Deployed']];
+  const tableOptions = [["Channel", "Status", "Deployed/Not Deployed"]];
   for (const enabledChannel of backend.local.channels.enabledChannels) {
     const channelViewInfo = getChannelViewInfo(enabledChannel);
-    tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels, 'Enabled')]);
+    tableOptions.push([
+      channelViewInfo.viewName,
+      viewStyles.enabled("Enabled"),
+      getDeployedStyledStatus(enabledChannel, backend.deployed.channels, "Enabled"),
+    ]);
   }
   for (const disabledChannel of backend.local.channels.disabledChannels) {
     const channelViewInfo = getChannelViewInfo(disabledChannel);
-    tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels, 'Disabled')]);
+    tableOptions.push([
+      channelViewInfo.viewName,
+      viewStyles.disabled("Disabled"),
+      getDeployedStyledStatus(disabledChannel, backend.deployed.channels, "Disabled"),
+    ]);
   }
-  context.print.table(tableOptions, { format: 'lean' });
+  context.print.table(tableOptions, { format: "lean" });
 };
 
 const viewDisplayNotificationsResourceInfo = async (backend: INotificationsConfigStatus): Promise<void> => {

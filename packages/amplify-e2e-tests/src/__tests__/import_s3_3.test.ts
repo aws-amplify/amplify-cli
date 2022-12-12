@@ -1,4 +1,4 @@
-import * as aws from 'aws-sdk';
+import * as aws from "aws-sdk";
 import {
   addAuthWithDefault,
   amplifyPushAuth,
@@ -9,7 +9,7 @@ import {
   initJSProjectWithProfile,
   importHeadlessStorage,
   removeHeadlessStorage,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   expectLocalAndCloudMetaFilesMatching,
   getShortId,
@@ -17,13 +17,13 @@ import {
   expectNoStorageInMeta,
   expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
   getS3ResourceName,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('headless s3 import', () => {
-  const projectPrefix = 'sssheadimp';
-  const bucketPrefix = 'sss-headless-import-';
+describe("headless s3 import", () => {
+  const projectPrefix = "sssheadimp";
+  const bucketPrefix = "sss-headless-import-";
 
   const projectSettings = {
     name: projectPrefix,
@@ -59,11 +59,11 @@ describe('headless s3 import', () => {
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
     if (
-      locationResponse.LocationConstraint === undefined
-      || locationResponse.LocationConstraint === ''
-      || locationResponse.LocationConstraint === null
+      locationResponse.LocationConstraint === undefined ||
+      locationResponse.LocationConstraint === "" ||
+      locationResponse.LocationConstraint === null
     ) {
-      bucketLocation = 'us-east-1';
+      bucketLocation = "us-east-1";
     } else {
       bucketLocation = locationResponse.LocationConstraint;
     }
@@ -99,7 +99,7 @@ describe('headless s3 import', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('import storage when no auth resource is in the project', async () => {
+  it("import storage when no auth resource is in the project", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
 
     const processResult = await importHeadlessStorage(
@@ -107,20 +107,20 @@ describe('headless s3 import', () => {
       {
         version: 1,
         serviceConfiguration: {
-          serviceName: 'S3',
+          serviceName: "S3",
           bucketName: bucketNameToImport,
         },
       },
-      false,
+      false
     );
 
     expect(processResult.exitCode).toBe(1);
     expect(processResult.stderr).toContain(
-      'Cannot headlessly import storage resource without an existing auth resource. It can be added with \\"amplify add auth\\"',
+      'Cannot headlessly import storage resource without an existing auth resource. It can be added with \\"amplify add auth\\"'
     );
   });
 
-  it('import storage when there is already a storage resource in the project', async () => {
+  it("import storage when there is already a storage resource in the project", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
 
@@ -129,33 +129,33 @@ describe('headless s3 import', () => {
       {
         version: 1,
         serviceConfiguration: {
-          serviceName: 'S3',
+          serviceName: "S3",
           bucketName: bucketNameToImport,
         },
       },
-      false,
+      false
     );
 
     expect(processResult.exitCode).toBe(0);
-    expect(processResult.stdout).toEqual('');
+    expect(processResult.stdout).toEqual("");
 
     const processResultFail = await importHeadlessStorage(
       projectRoot,
       {
         version: 1,
         serviceConfiguration: {
-          serviceName: 'S3',
+          serviceName: "S3",
           bucketName: bucketNameToImport,
         },
       },
-      false,
+      false
     );
 
     expect(processResultFail.exitCode).toBe(1);
-    expect(processResultFail.stderr).toContain('Amazon S3 storage was already added to your project');
+    expect(processResultFail.stderr).toContain("Amazon S3 storage was already added to your project");
   });
 
-  it('import storage with non-existent bucket`', async () => {
+  it("import storage with non-existent bucket`", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
 
@@ -166,35 +166,35 @@ describe('headless s3 import', () => {
       {
         version: 1,
         serviceConfiguration: {
-          serviceName: 'S3',
+          serviceName: "S3",
           bucketName: fakeBucketName,
         },
       },
-      false,
+      false
     );
 
     expect(processResult.exitCode).toBe(1);
     expect(processResult.stderr).toContain(`The specified bucket: \\"${fakeBucketName}\\" does not exist.`);
   });
 
-  it('import storage successfully and push, remove storage and push`', async () => {
+  it("import storage successfully and push, remove storage and push`", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
 
     const processResult = await importHeadlessStorage(projectRoot, {
       version: 1,
       serviceConfiguration: {
-        serviceName: 'S3',
+        serviceName: "S3",
         bucketName: bucketNameToImport,
       },
     });
 
     expect(processResult.exitCode).toBe(0);
-    expect(processResult.stdout).toEqual('');
+    expect(processResult.stdout).toEqual("");
 
-    await amplifyStatus(projectRoot, 'Import');
+    await amplifyStatus(projectRoot, "Import");
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
+    await amplifyStatus(projectRoot, "No Change");
 
     const storageResourceName = getS3ResourceName(projectRoot);
 
@@ -211,13 +211,13 @@ describe('headless s3 import', () => {
     await removeHeadlessStorage(projectRoot, {
       version: 1,
       serviceConfiguration: {
-        serviceName: 'S3',
+        serviceName: "S3",
         resourceName: storageResourceName,
         // deleteBucketAndContents: true,
       },
     });
 
-    await amplifyStatus(projectRoot, 'Unlink');
+    await amplifyStatus(projectRoot, "Unlink");
 
     await amplifyPushAuth(projectRoot);
 

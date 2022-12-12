@@ -1,5 +1,5 @@
-import { console } from '../..';
+import { console } from "../..";
 
-export const subcommand = 'console';
+export const subcommand = "console";
 
 export const run = console;

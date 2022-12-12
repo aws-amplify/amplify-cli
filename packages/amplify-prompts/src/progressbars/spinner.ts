@@ -3,7 +3,7 @@
  * and use a re writable block instead.
  */
 
-import { AmplifyTerminal, TerminalLine } from './terminal';
+import { AmplifyTerminal, TerminalLine } from "./terminal";
 
 /**
  * Amplify spinner instance
@@ -18,8 +18,8 @@ export class AmplifySpinner {
 
   constructor() {
     this.frameCount = 0;
-    this.frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-    this.prefixText = '';
+    this.frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+    this.prefixText = "";
     this.refreshRate = 50;
     this.terminal = null;
   }
@@ -34,10 +34,12 @@ export class AmplifySpinner {
     if (this.timer) {
       clearTimeout(this.timer);
     }
-    const lines = [{
-      renderString: `${this.frames[this.frameCount]} ${this.prefixText}`,
-      color: '',
-    }];
+    const lines = [
+      {
+        renderString: `${this.frames[this.frameCount]} ${this.prefixText}`,
+        color: "",
+      },
+    ];
     this.frameCount = ++this.frameCount % this.frames.length;
     this.terminal.writeLines(lines);
     this.timer = setTimeout(() => this.render(), this.refreshRate);
@@ -50,7 +52,7 @@ export class AmplifySpinner {
     if (!this.terminal) {
       this.terminal = new AmplifyTerminal();
     }
-    this.prefixText = text ? text.replace('\n', '') : this.prefixText;
+    this.prefixText = text ? text.replace("\n", "") : this.prefixText;
     this.terminal.cursor(false);
     this.render();
   }
@@ -63,7 +65,7 @@ export class AmplifySpinner {
       this.start(text);
       return;
     }
-    this.prefixText = text ? text.replace('\n', '') : this.prefixText;
+    this.prefixText = text ? text.replace("\n", "") : this.prefixText;
   }
 
   /**
@@ -73,10 +75,12 @@ export class AmplifySpinner {
     if (!this.terminal) {
       return;
     }
-    const lines: TerminalLine[] = [{
-      renderString: text || '',
-      color: success ? 'green' : 'red',
-    }];
+    const lines: TerminalLine[] = [
+      {
+        renderString: text || "",
+        color: success ? "green" : "red",
+      },
+    ];
 
     clearTimeout(this.timer);
     this.terminal.writeLines(lines);

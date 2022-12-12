@@ -1,7 +1,7 @@
 /**
  * Defines the json object expected by `amplify add geo --headless`
  */
- export interface AddGeoRequest {
+export interface AddGeoRequest {
   /**
    * The schema version.
    */
@@ -57,13 +57,13 @@ export interface MapConfiguration {
  */
 export enum AccessType {
   AuthorizedUsers = "AuthorizedUsers",
-  AuthorizedAndGuestUsers = "AuthorizedAndGuestUsers"
+  AuthorizedAndGuestUsers = "AuthorizedAndGuestUsers",
 }
 
 /**
  * Supported Geo Map Styles
  */
- export enum MapStyle {
+export enum MapStyle {
   VectorEsriNavigation = "VectorEsriNavigation",
   VectorEsriStreets = "VectorEsriStreets",
   VectorEsriTopographic = "VectorEsriTopographic",
@@ -74,5 +74,5 @@ export enum AccessType {
   VectorHereExplore = "VectorHereExplore",
   VectorHereExploreTruck = "VectorHereExploreTruck",
   RasterHereExploreSatellite = "RasterHereExploreSatellite",
-  HybridHereExploreSatellite = "HybridHereExploreSatellite"
+  HybridHereExploreSatellite = "HybridHereExploreSatellite",
 }

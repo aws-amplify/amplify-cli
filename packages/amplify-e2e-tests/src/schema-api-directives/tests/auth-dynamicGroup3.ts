@@ -41,8 +41,8 @@ mutation CreateDraft {
 export const expected_result_mutation1 = {
   data: {
     createDraft: {
-      id: '1',
-      groupsCanAccess: ['BizDev'],
+      id: "1",
+      groupsCanAccess: ["BizDev"],
     },
   },
 };
@@ -63,8 +63,8 @@ mutation CreateDraft {
 export const expected_result_mutation2 = {
   data: {
     createDraft: {
-      id: '2',
-      groupsCanAccess: ['Marketing'],
+      id: "2",
+      groupsCanAccess: ["Marketing"],
     },
   },
 };

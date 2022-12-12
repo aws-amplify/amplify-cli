@@ -1,5 +1,5 @@
-import { JavaArray } from './array';
-import { JavaInteger } from './integer';
+import { JavaArray } from "./array";
+import { JavaInteger } from "./integer";
 
 export class JavaString {
   value: string;
@@ -40,7 +40,7 @@ export class JavaString {
   }
 
   replaceAll(find, replace) {
-    const rep = this.value.replace(new RegExp(find, 'g'), replace);
+    const rep = this.value.replace(new RegExp(find, "g"), replace);
     return new JavaString(rep);
   }
 
@@ -64,12 +64,12 @@ export class JavaString {
     // in the regex into the result. To remove the groups from the result we need the count of capturing groups in
     // the provided regex, the only way in JS seems to be via a match to an empty string
     const testRe = new RegExp(`${regexString.toString()}|`);
-    const ngroups = ''.match(testRe).length; // actually num of groups plus one, ie "" and the (empty) groups
+    const ngroups = "".match(testRe).length; // actually num of groups plus one, ie "" and the (empty) groups
 
     const re = new RegExp(regexString.toString());
 
     const result = this.value.split(re, limit).filter((v, ii) => !(ii % ngroups));
-    return new JavaArray(result, e => new JavaString(e.toString()));
+    return new JavaArray(result, (e) => new JavaString(e.toString()));
   }
 
   startsWith(prefix, toffset = 0) {

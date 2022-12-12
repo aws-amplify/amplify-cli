@@ -10,15 +10,15 @@ import {
   initJSProjectWithProfile,
   amplifyPushUpdate,
   addPinpointAnalytics,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   expectLocalAndPulledAwsExportsMatching,
   expectLocalAndPulledBackendAmplifyMetaMatching,
   expectLocalAndPulledBackendConfigMatching,
   getShortId,
-} from '../import-helpers';
+} from "../import-helpers";
 
-describe('notification category compatibility test', () => {
+describe("notification category compatibility test", () => {
   const projectPrefix = `notificationCompatibility`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -54,7 +54,7 @@ describe('notification category compatibility test', () => {
 
     // SETUP NOTIFICATIONS CHANNEL & PUSH (IN-APP MESSAGING)
     const settings = { resourceName: pinpointResourceName };
-    await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true);
+    await addNotificationChannel(projectRoot, settings, "In-App Messaging", true, true);
 
     // PUSH NOTIFICATIONS
     await amplifyPushAuth(projectRoot);
@@ -67,8 +67,8 @@ describe('notification category compatibility test', () => {
     expectLocalAndPulledAwsExportsMatching(projectRoot, pullTestProjectRoot);
 
     // all categories should show up
-    await amplifyStatus(projectRoot, 'Auth');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Notifications');
+    await amplifyStatus(projectRoot, "Auth");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Notifications");
   });
 });

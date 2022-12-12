@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import * as path from "path";
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -9,10 +9,10 @@ import {
   CategoryInputState,
   FeatureFlags,
   $TSContext,
-} from 'amplify-cli-core';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
-import _ from 'lodash';
+} from "amplify-cli-core";
+import { CognitoCLIInputs } from "../service-walkthrough-types/awsCognito-user-input-types";
+import { CognitoStackOptions } from "../service-walkthrough-types/cognito-user-input-types";
+import _ from "lodash";
 
 export class AuthInputState extends CategoryInputState {
   #cliInputsFilePath: string; //cli-inputs.json (output) filepath
@@ -28,12 +28,12 @@ export class AuthInputState extends CategoryInputState {
     this.#resourceName = resourceName;
 
     const projectBackendDirPath = pathManager.getBackendDirPath();
-    this.#cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'cli-inputs.json'));
-    this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'build'));
+    this.#cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, "cli-inputs.json"));
+    this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, "build"));
   }
 
   public async isCLIInputsValid(cliInputs: CognitoCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator(this.context, this.#service, this.#category, 'CognitoCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, this.#service, this.#category, "CognitoCLIInputs");
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
@@ -49,7 +49,7 @@ export class AuthInputState extends CategoryInputState {
     // converting stringified triggers to object
     if (!_.isEmpty(cliInputs.cognitoConfig.triggers)) {
       cliInputs.cognitoConfig.triggers =
-        typeof cliInputs.cognitoConfig.triggers === 'string'
+        typeof cliInputs.cognitoConfig.triggers === "string"
           ? JSONUtilities.parse(cliInputs.cognitoConfig.triggers)
           : cliInputs.cognitoConfig.triggers;
     }
@@ -69,17 +69,17 @@ export class AuthInputState extends CategoryInputState {
   public async loadResourceParameters(context: $TSContext, cliInputs: CognitoCLIInputs): Promise<CognitoStackOptions> {
     const roles = {
       authRoleArn: {
-        'Fn::GetAtt': ['AuthRole', 'Arn'],
+        "Fn::GetAtt": ["AuthRole", "Arn"],
       },
       unauthRoleArn: {
-        'Fn::GetAtt': ['UnauthRole', 'Arn'],
+        "Fn::GetAtt": ["UnauthRole", "Arn"],
       },
     };
 
     let parameters: CognitoStackOptions = {
       ...cliInputs.cognitoConfig,
       ...roles,
-      breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+      breakCircularDependency: FeatureFlags.getBoolean("auth.breakcirculardependency"),
       dependsOn: [],
     };
 
@@ -92,8 +92,8 @@ export class AuthInputState extends CategoryInputState {
         dependsOn = parameters.dependsOn;
       } else {
         // generate dependsOn from cli-inputs
-        const dependsOnKeys = Object.keys(parameters.triggers).map(i => `${parameters.resourceName}${i}`);
-        dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
+        const dependsOnKeys = Object.keys(parameters.triggers).map((i) => `${parameters.resourceName}${i}`);
+        dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, "Cognito");
       }
       parameters = Object.assign(parameters, {
         triggers: parameters.triggers,

@@ -1,13 +1,13 @@
-import { $TSAny, stateManager } from 'amplify-cli-core';
-import * as _ from 'lodash';
-import { init } from './app-config';
+import { $TSAny, stateManager } from "amplify-cli-core";
+import * as _ from "lodash";
+import { init } from "./app-config";
 // eslint-disable-next-line spellcheck/spell-checker
-import { attachExtentions as attachExtensions } from './context-extensions';
-import { NoUsageData, UsageData } from './domain/amplify-usageData';
-import { ProjectSettings } from './domain/amplify-usageData/UsageDataTypes';
-import { Context } from './domain/context';
-import { Input } from './domain/input';
-import { PluginPlatform } from './domain/plugin-platform';
+import { attachExtentions as attachExtensions } from "./context-extensions";
+import { NoUsageData, UsageData } from "./domain/amplify-usageData";
+import { ProjectSettings } from "./domain/amplify-usageData/UsageDataTypes";
+import { Context } from "./domain/context";
+import { Input } from "./domain/input";
+import { PluginPlatform } from "./domain/plugin-platform";
 
 /**
  * Initialize the context object
@@ -30,7 +30,7 @@ export const attachUsageData = async (context: Context, processStartTimeStamp: n
   const { AMPLIFY_CLI_ENABLE_USAGE_DATA } = process.env;
   const config = init(context);
   const usageTrackingEnabled = AMPLIFY_CLI_ENABLE_USAGE_DATA
-    ? AMPLIFY_CLI_ENABLE_USAGE_DATA === 'true'
+    ? AMPLIFY_CLI_ENABLE_USAGE_DATA === "true"
     : config.usageDataConfig.isUsageTrackingEnabled;
   if (usageTrackingEnabled) {
     context.usageData = UsageData.Instance;
@@ -46,21 +46,21 @@ export const attachUsageData = async (context: Context, processStartTimeStamp: n
     context.input,
     accountId,
     getProjectSettings(),
-    processStartTimeStamp,
+    processStartTimeStamp
   );
 };
 
 const getSafeAccountId = (): string => {
-  const emptyString = '';
+  const emptyString = "";
   if (!stateManager.metaFileExists()) {
     return emptyString;
   }
   const amplifyMeta = stateManager.getMeta();
-  const stackId = _.get(amplifyMeta, ['providers', 'awscloudformation', 'StackId']) as string;
+  const stackId = _.get(amplifyMeta, ["providers", "awscloudformation", "StackId"]) as string;
   if (!stackId) {
     return emptyString;
   }
-  const splitString = stackId.split(':');
+  const splitString = stackId.split(":");
   if (splitString.length > 4) {
     return splitString[4];
   }

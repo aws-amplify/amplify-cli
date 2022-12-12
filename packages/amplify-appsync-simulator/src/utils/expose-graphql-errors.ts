@@ -10,7 +10,7 @@
  */
 
 export function exposeGraphQLErrors(errors = []) {
-  return errors.map(e => {
+  return errors.map((e) => {
     if (e.extensions) {
       const additionalProps = Object.entries(e.extensions).reduce((sum, [k, v]) => {
         return { ...sum, [k]: { value: v, enumerable: true } };

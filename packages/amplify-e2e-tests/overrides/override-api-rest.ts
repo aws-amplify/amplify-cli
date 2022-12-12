@@ -1,16 +1,16 @@
 export function override(resources: any) {
   const desc = {
-    'Fn::Join': [' ', ['Description', 'override', 'successful']],
+    "Fn::Join": [" ", ["Description", "override", "successful"]],
   };
 
   resources.addCfnParameter(
     {
-      type: 'String',
-      description: 'Test parameter',
+      type: "String",
+      description: "Test parameter",
     },
-    'DESCRIPTION',
-    desc,
+    "DESCRIPTION",
+    desc
   );
 
-  resources.restApi.description = { Ref: 'DESCRIPTION' };
+  resources.restApi.description = { Ref: "DESCRIPTION" };
 }

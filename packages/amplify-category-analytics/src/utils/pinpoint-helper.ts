@@ -1,11 +1,17 @@
 import {
   AmplifySupportedService,
-  pathManager, readCFNTemplate,
-  open, $TSAny, $TSContext, $TSMeta, AmplifyCategories, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as path from 'path';
-import { getAnalyticsResources } from './analytics-helper';
+  pathManager,
+  readCFNTemplate,
+  open,
+  $TSAny,
+  $TSContext,
+  $TSMeta,
+  AmplifyCategories,
+  stateManager,
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as path from "path";
+import { getAnalyticsResources } from "./analytics-helper";
 
 /**
  * Pinpoint app type definition
@@ -15,7 +21,7 @@ export type PinpointApp = {
   appName: string;
 };
 
-export const pinpointInAppMessagingPolicyName = 'pinpointInAppMessagingPolicyName';
+export const pinpointInAppMessagingPolicyName = "pinpointInAppMessagingPolicyName";
 
 /**
  * opens resource in AWS console
@@ -31,7 +37,7 @@ export const console = async (context: $TSContext): Promise<void> => {
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     open(consoleUrl, { wait: false });
   } else {
-    printer.error('Neither analytics nor notifications is enabled in the cloud.');
+    printer.error("Neither analytics nor notifications is enabled in the cloud.");
   }
 };
 
@@ -41,7 +47,7 @@ const scanCategoryMetaForPinpoint = (categoryMeta: $TSMeta): $TSAny => {
     const services = Object.keys(categoryMeta);
     for (const service of services) {
       const serviceMeta = categoryMeta[service];
-      if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id) {
+      if (serviceMeta.service === "Pinpoint" && serviceMeta.output && serviceMeta.output.Id) {
         result = {
           Id: serviceMeta.output.Id,
         };
@@ -87,7 +93,7 @@ export const pinpointHasInAppMessagingPolicy = (context: $TSContext): boolean =>
     pathManager.getBackendDirPath(),
     AmplifyCategories.ANALYTICS,
     resources[0].resourceName,
-    `pinpoint-cloudformation-template.json`,
+    `pinpoint-cloudformation-template.json`
   );
   const { cfnTemplate } = readCFNTemplate(pinpointCloudFormationTemplatePath, { throwIfNotExist: false }) || {};
   return !!cfnTemplate?.Parameters?.[pinpointInAppMessagingPolicyName];
@@ -101,8 +107,8 @@ export const getNotificationsCategoryHasPinpointIfExists = (): PinpointApp | und
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
     const pinpointServiceResource = Object.keys(categoryResources).find(
-      (resource: string) => categoryResources[resource].service === AmplifySupportedService.PINPOINT
-        && categoryResources[resource].output.Id,
+      (resource: string) =>
+        categoryResources[resource].service === AmplifySupportedService.PINPOINT && categoryResources[resource].output.Id
     );
 
     if (pinpointServiceResource) {
@@ -123,8 +129,14 @@ export const getPinpointRegionMappings = async (context: $TSContext): Promise<Re
   const Mappings: Record<string, $TSAny> = {
     RegionMapping: {},
   };
-  const regionMapping: $TSAny = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getPinpointRegionMapping', []);
-  Object.keys(regionMapping).forEach(region => {
+  const regionMapping: $TSAny = await context.amplify.invokePluginMethod(
+    context,
+    "awscloudformation",
+    undefined,
+    "getPinpointRegionMapping",
+    []
+  );
+  Object.keys(regionMapping).forEach((region) => {
     Mappings.RegionMapping[region] = {
       pinpointRegion: regionMapping[region],
     };

@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { showAllHelp } from '../extensions/amplify-helpers/show-all-help';
+import { $TSContext } from "amplify-cli-core";
+import { showAllHelp } from "../extensions/amplify-helpers/show-all-help";
 
 /**
  * displays amplify help menu

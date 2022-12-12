@@ -1,23 +1,23 @@
-import CLITable from 'cli-table3';
-import importedColors from 'colors/safe';
-import ejs from 'ejs';
-import * as fs from 'fs-extra';
-import inquirer from 'inquirer';
-import * as path from 'path';
-import { Context } from './domain/context';
+import CLITable from "cli-table3";
+import importedColors from "colors/safe";
+import ejs from "ejs";
+import * as fs from "fs-extra";
+import inquirer from "inquirer";
+import * as path from "path";
+import { Context } from "./domain/context";
 
 importedColors.setTheme({
-  highlight: 'cyan',
-  info: 'reset',
-  warning: 'yellow',
-  success: 'green',
-  error: 'red',
-  line: 'grey',
-  muted: 'grey',
-  green: 'green',
-  yellow: 'yellow',
-  red: 'red',
-  blue: 'blue',
+  highlight: "cyan",
+  info: "reset",
+  warning: "yellow",
+  success: "green",
+  error: "red",
+  line: "grey",
+  muted: "grey",
+  green: "green",
+  yellow: "yellow",
+  red: "red",
+  blue: "blue",
 });
 
 type CliPrintColors = typeof importedColors & {
@@ -50,8 +50,8 @@ function attachPrompt(context: Context) {
   context.prompt = {
     confirm: async (message: string, defaultValue = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
-        name: 'yesno',
-        type: 'confirm',
+        name: "yesno",
+        type: "confirm",
         message,
         default: defaultValue,
       });
@@ -59,21 +59,21 @@ function attachPrompt(context: Context) {
     },
     ask: async (questions: any) => {
       if (Array.isArray(questions)) {
-        questions = questions.map(q => {
-          if (q.type === 'rawlist' || q.type === 'list') {
-            q.type = 'select';
+        questions = questions.map((q) => {
+          if (q.type === "rawlist" || q.type === "list") {
+            q.type = "select";
           }
-          if (q.type === 'expand') {
-            q.type = 'autocomplete';
+          if (q.type === "expand") {
+            q.type = "autocomplete";
           }
-          if (q.type === 'checkbox') {
-            q.type = 'multiselect';
+          if (q.type === "checkbox") {
+            q.type = "multiselect";
           }
-          if (q.type === 'radio') {
-            q.type = 'select';
+          if (q.type === "radio") {
+            q.type = "select";
           }
-          if (q.type === 'question') {
-            q.type = 'input';
+          if (q.type === "question") {
+            q.type = "input";
           }
           return q;
         });
@@ -114,9 +114,9 @@ function attachRuntime(context: Context) {
   context.runtime = {
     plugins: [],
   };
-  Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
+  Object.keys(context.pluginPlatform.plugins).forEach((pluginShortName) => {
     const pluginInfos = context.pluginPlatform.plugins[pluginShortName];
-    pluginInfos.forEach(pluginInfo => {
+    pluginInfos.forEach((pluginInfo) => {
       const name = path.basename(pluginInfo.packageLocation);
       const directory = pluginInfo.packageLocation;
       const pluginName = pluginInfo.manifest.name;
@@ -141,13 +141,13 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding = 'utf8'): any => {
+  read: (targetPath: string, encoding = "utf8"): any => {
     const result = fs.readFileSync(targetPath, encoding);
     return result;
   },
   write: (targetPath: string, data: any): void => {
     fs.ensureFileSync(targetPath);
-    fs.writeFileSync(targetPath, data, 'utf-8');
+    fs.writeFileSync(targetPath, data, "utf-8");
   },
   exists: (targetPath: string): boolean => {
     const result = fs.existsSync(targetPath);
@@ -166,9 +166,9 @@ const contextFileSystem = {
 function attachPatching(context: Context) {
   context.patching = {
     replace: async (filePath: string, oldContent: string, newContent: string): Promise<string> => {
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const fileContent = fs.readFileSync(filePath, "utf-8");
       const updatedFileContent = fileContent.replace(oldContent, newContent);
-      fs.writeFileSync(filePath, updatedFileContent, 'utf-8');
+      fs.writeFileSync(filePath, updatedFileContent, "utf-8");
       return Promise.resolve(updatedFileContent);
     },
   };
@@ -230,7 +230,7 @@ function fancy(message?: string): void {
   console.log(message);
 }
 
-function debug(message: string, title = 'DEBUG'): void {
+function debug(message: string, title = "DEBUG"): void {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 
@@ -239,28 +239,28 @@ function debug(message: string, title = 'DEBUG'): void {
   console.log(colors.rainbow(botLine));
 }
 
-function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
+function table(data: string[][], options: { format?: "markdown" | "lean" } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
-    case 'markdown':
+    case "markdown":
       const header = data.shift();
       t = new CLITable({
-        style: { head: ['reset'] }, // "no color"
+        style: { head: ["reset"] }, // "no color"
         head: header,
         chars: CLI_TABLE_MARKDOWN,
       });
       t.push(...data);
       t.unshift(columnHeaderDivider(t));
       break;
-    case 'lean':
+    case "lean":
       t = new CLITable({
-        style: { head: ['reset'] }, // "no color"
+        style: { head: ["reset"] }, // "no color"
       });
       t.push(...data);
       break;
     default:
       t = new CLITable({
-        style: { head: ['reset'] }, // "no color"
+        style: { head: ["reset"] }, // "no color"
         chars: CLI_TABLE_COMPACT,
       });
       t.push(...data);
@@ -269,7 +269,7 @@ function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {})
 }
 
 function columnHeaderDivider(cliTable: CLITable.Table): string[] {
-  return findWidths(cliTable).map(w => Array(w).join('-'));
+  return findWidths(cliTable).map((w) => Array(w).join("-"));
 }
 
 function findWidths(cliTable: CLITable.Table): number[] {
@@ -287,28 +287,28 @@ function getRows(cliTable: CLITable.Table) {
 }
 
 const CLI_TABLE_COMPACT = {
-  top: '',
-  'top-mid': '',
-  'top-left': '',
-  'top-right': '',
-  bottom: '',
-  'bottom-mid': '',
-  'bottom-left': '',
-  'bottom-right': '',
-  left: ' ',
-  'left-mid': '',
-  mid: '',
-  'mid-mid': '',
-  right: '',
-  'right-mid': '',
-  middle: ' ',
+  top: "",
+  "top-mid": "",
+  "top-left": "",
+  "top-right": "",
+  bottom: "",
+  "bottom-mid": "",
+  "bottom-left": "",
+  "bottom-right": "",
+  left: " ",
+  "left-mid": "",
+  mid: "",
+  "mid-mid": "",
+  right: "",
+  "right-mid": "",
+  middle: " ",
 };
 
 const CLI_TABLE_MARKDOWN = {
   ...CLI_TABLE_COMPACT,
-  left: '|',
-  right: '|',
-  middle: '|',
+  left: "|",
+  right: "|",
+  middle: "|",
 };
 
 function attachTemplate(context: Context) {
@@ -333,7 +333,7 @@ function attachTemplate(context: Context) {
       const content = ejs.render(templateContent, data);
 
       if (target.length > 0) {
-        const dir = target.replace(/$(\/)*/g, '');
+        const dir = target.replace(/$(\/)*/g, "");
         const dest = contextFileSystem.path(dir);
         contextFileSystem.write(dest, content);
       }

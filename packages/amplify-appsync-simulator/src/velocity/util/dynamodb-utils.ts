@@ -1,14 +1,14 @@
-import { Converter } from 'aws-sdk/clients/dynamodb';
-import { DynamoDBSet } from 'aws-sdk/lib/dynamodb/set';
+import { Converter } from "aws-sdk/clients/dynamodb";
+import { DynamoDBSet } from "aws-sdk/lib/dynamodb/set";
 
-import { toJSON } from '../value-mapper/to-json';
+import { toJSON } from "../value-mapper/to-json";
 
 export const dynamodbUtils = {
   toDynamoDB(value: any) {
     return Converter.input(toJSON(value));
   },
-  $toSet(values, fn = value => value) {
-    return this.toDynamoDB(new DynamoDBSet([].concat(values).map(value => fn(value))));
+  $toSet(values, fn = (value) => value) {
+    return this.toDynamoDB(new DynamoDBSet([].concat(values).map((value) => fn(value))));
   },
   toDynamoDBJson(value) {
     return JSON.stringify(this.toDynamoDB(value));
@@ -88,12 +88,12 @@ export const dynamodbUtils = {
     return JSON.stringify(this.toMapValues(values));
   },
   toS3ObjectJson() {
-    throw new Error('not implemented');
+    throw new Error("not implemented");
   },
   toS3Object() {
-    throw new Error('not implemented');
+    throw new Error("not implemented");
   },
   fromS3ObjectJson() {
-    throw new Error('not implemented');
+    throw new Error("not implemented");
   },
 };

@@ -1,29 +1,29 @@
-import express from 'express';
-import cors from 'cors';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import xml from 'xml';
-import * as bodyParser from 'body-parser';
-import * as convert from 'xml-js';
-import { fromEvent } from 'promise-toolbox';
-import serveStatic from 'serve-static';
-import * as glob from 'glob';
-import o2x from 'object-to-xml';
-import { v4 as uuid } from 'uuid';
-import etag from 'etag';
-import { EventEmitter } from 'events';
+import express from "express";
+import cors from "cors";
+import * as path from "path";
+import * as fs from "fs-extra";
+import xml from "xml";
+import * as bodyParser from "body-parser";
+import * as convert from "xml-js";
+import { fromEvent } from "promise-toolbox";
+import serveStatic from "serve-static";
+import * as glob from "glob";
+import o2x from "object-to-xml";
+import { v4 as uuid } from "uuid";
+import etag from "etag";
+import { EventEmitter } from "events";
 
-import { StorageSimulatorServerConfig } from '../index';
+import { StorageSimulatorServerConfig } from "../index";
 
-import * as util from './utils';
+import * as util from "./utils";
 
-const LIST_CONTENT = 'Contents';
-const LIST_COMMOM_PREFIXES = 'CommonPrefixes';
-const EVENT_RECORDS = 'Records';
+const LIST_CONTENT = "Contents";
+const LIST_COMMOM_PREFIXES = "CommonPrefixes";
+const EVENT_RECORDS = "Records";
 
 const corsOptions = {
   maxAge: 20000,
-  exposedHeaders: ['x-amz-server-side-encryption', 'x-amz-request-id', 'x-amz-id-2', 'ETag'],
+  exposedHeaders: ["x-amz-server-side-encryption", "x-amz-request-id", "x-amz-id-2", "ETag"],
 };
 export class StorageServer extends EventEmitter {
   private app;
@@ -45,7 +45,7 @@ export class StorageServer extends EventEmitter {
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
     this.app.use(cors(corsOptions));
-    this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
+    this.app.use(bodyParser.raw({ limit: "100mb", type: "*/*" }));
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
 
     this.server = null;
@@ -55,12 +55,12 @@ export class StorageServer extends EventEmitter {
 
   start() {
     if (this.server) {
-      throw new Error('Server is already running');
+      throw new Error("Server is already running");
     }
 
     this.server = this.app.listen(this.config.port);
 
-    return fromEvent(this.server, 'listening').then(() => {
+    return fromEvent(this.server, "listening").then(() => {
       this.connection = this.server.address();
       this.url = `http://localhost:${this.connection.port}`;
       return this.server;
@@ -83,26 +83,26 @@ export class StorageServer extends EventEmitter {
 
     // create eventObj for thr trigger
 
-    if (request.method === 'PUT') {
+    if (request.method === "PUT") {
       this.handleRequestPut(request, response);
     }
 
-    if (request.method === 'POST') {
+    if (request.method === "POST") {
       this.handleRequestPost(request, response);
     }
 
-    if (request.method === 'GET') {
+    if (request.method === "GET") {
       this.handleRequestGet(request, response);
     }
 
-    if (request.method === 'LIST') {
+    if (request.method === "LIST") {
       this.handleRequestList(request, response);
     }
 
-    if (request.method === 'DELETE') {
+    if (request.method === "DELETE") {
       // emit event for delete
       const eventObj = this.createEvent(request);
-      this.emit('event', eventObj);
+      this.emit("event", eventObj);
       this.handleRequestDelete(request, response);
     }
   }
@@ -112,30 +112,30 @@ export class StorageServer extends EventEmitter {
     if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
       fs.readFile(filePath, (err, data) => {
         if (err) {
-          console.log('error');
+          console.log("error");
         }
         response.send(data);
       });
     } else {
       // fixup the keyname for proper error message since it is normalized for the given platform
       // remove the leading path separator and replace the remaining ones.
-      let keyName = request.params.path.replace(/\\/g, '/');
-      if (keyName.startsWith('/')) {
+      let keyName = request.params.path.replace(/\\/g, "/");
+      if (keyName.startsWith("/")) {
         keyName = keyName.slice(1);
       }
-      response.set('Content-Type', 'text/xml');
+      response.set("Content-Type", "text/xml");
       response.status(404);
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
           Error: {
-            Code: 'NoSuchKey',
-            Message: 'The specified key does not exist.',
+            Code: "NoSuchKey",
+            Message: "The specified key does not exist.",
             Key: keyName,
-            RequestId: '',
-            HostId: '',
+            RequestId: "",
+            HostId: "",
           },
-        }),
+        })
       );
     }
   }
@@ -146,19 +146,19 @@ export class StorageServer extends EventEmitter {
     ListBucketResult[LIST_COMMOM_PREFIXES] = [];
 
     let maxKeys;
-    const prefix = request.query.prefix || '';
+    const prefix = request.query.prefix || "";
     if (request.query.maxKeys !== undefined) {
       maxKeys = Math.min(request.query.maxKeys, 1000);
     } else {
       maxKeys = 1000;
     }
-    const delimiter = request.query.delimiter || '';
-    const startAfter = request.query.startAfter || '';
+    const delimiter = request.query.delimiter || "";
+    const startAfter = request.query.startAfter || "";
     let keyCount = 0;
     // getting folders recursively
     const dirPath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
 
-    const files = glob.sync('**/*', {
+    const files = glob.sync("**/*", {
       cwd: dirPath,
       absolute: true,
     });
@@ -166,12 +166,12 @@ export class StorageServer extends EventEmitter {
       // We have to normalize glob returned filenames to make sure deriving the keyname will work under every OS.
       const normalizedFile = path.normalize(file);
       // Remove directory portion, cut starting slash, replace backslash with slash.
-      let keyName = normalizedFile.replace(dirPath, '').replace(/\\/g, '/');
-      if (keyName.startsWith('/')) {
+      let keyName = normalizedFile.replace(dirPath, "").replace(/\\/g, "/");
+      if (keyName.startsWith("/")) {
         keyName = keyName.slice(1);
       }
 
-      if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
+      if (delimiter !== "" && util.checkfile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
           prefix: request.params.path + keyName,
         });
@@ -186,37 +186,37 @@ export class StorageServer extends EventEmitter {
           LastModified: new Date(fs.statSync(file).mtime).toISOString(),
           Size: fs.statSync(file).size,
           ETag: etag(file),
-          StorageClass: 'STANDARD',
+          StorageClass: "STANDARD",
         });
         keyCount = keyCount + 1;
       }
     }
-    ListBucketResult['Name'] = this.route.split('/')[1];
-    ListBucketResult['Prefix'] = request.query.prefix || '';
-    ListBucketResult['KeyCount'] = keyCount;
-    ListBucketResult['MaxKeys'] = maxKeys;
-    ListBucketResult['Delimiter'] = delimiter;
+    ListBucketResult["Name"] = this.route.split("/")[1];
+    ListBucketResult["Prefix"] = request.query.prefix || "";
+    ListBucketResult["KeyCount"] = keyCount;
+    ListBucketResult["MaxKeys"] = maxKeys;
+    ListBucketResult["Delimiter"] = delimiter;
     if (keyCount === maxKeys) {
-      ListBucketResult['IsTruncated'] = true;
+      ListBucketResult["IsTruncated"] = true;
     } else {
-      ListBucketResult['IsTruncated'] = false;
+      ListBucketResult["IsTruncated"] = false;
     }
-    response.set('Content-Type', 'text/xml');
+    response.set("Content-Type", "text/xml");
     response.send(
       o2x({
         '?xml version="1.0" encoding="utf-8"?': null,
         ListBucketResult,
-      }),
+      })
     );
   }
 
   private async handleRequestDelete(request, response) {
     const filePath = path.join(this.localDirectoryPath, request.params.path);
     if (fs.existsSync(filePath)) {
-      fs.unlink(filePath, err => {
+      fs.unlink(filePath, (err) => {
         if (err) throw err;
-        response.set('Content-Type', 'text/xml');
-        response.send(xml(convert.json2xml(JSON.stringify(request.params.id + 'was deleted'))));
+        response.set("Content-Type", "text/xml");
+        response.send(xml(convert.json2xml(JSON.stringify(request.params.id + "was deleted"))));
       });
     } else {
       response.sendStatus(204);
@@ -235,10 +235,10 @@ export class StorageServer extends EventEmitter {
       fs.writeFileSync(directoryPath, new_data);
       // event trigger  to differentitiate between multipart and normal put
       const eventObj = this.createEvent(request);
-      this.emit('event', eventObj);
+      this.emit("event", eventObj);
     }
-    response.set('Content-Type', 'text/xml');
-    response.send(xml(convert.json2xml(JSON.stringify('upload success'))));
+    response.set("Content-Type", "text/xml");
+    response.send(xml(convert.json2xml(JSON.stringify("upload success"))));
   }
 
   private async handleRequestPost(request, response) {
@@ -247,7 +247,7 @@ export class StorageServer extends EventEmitter {
       const id = uuid();
       this.uploadIds.push(id);
       this.upload_bufferMap[id] = {};
-      response.set('Content-Type', 'text/xml');
+      response.set("Content-Type", "text/xml");
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -256,7 +256,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             UploadId: id,
           },
-        }),
+        })
       );
     } else if (this.uploadIds.includes(request.query.uploadId)) {
       const arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
@@ -265,7 +265,7 @@ export class StorageServer extends EventEmitter {
       // remove the current upload ID
       this.uploadIds.splice(this.uploadIds.indexOf(request.query.uploadId), 1);
 
-      response.set('Content-Type', 'text/xml');
+      response.set("Content-Type", "text/xml");
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -275,13 +275,13 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             Etag: etag(directoryPath),
           },
-        }),
+        })
       );
       const buf = Buffer.concat(arr);
       fs.writeFileSync(directoryPath, buf);
       // event trigger for multipart post
       const eventObj = this.createEvent(request);
-      this.emit('event', eventObj);
+      this.emit("event", eventObj);
     } else {
       const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
       fs.ensureFileSync(directoryPath);
@@ -289,8 +289,8 @@ export class StorageServer extends EventEmitter {
       fs.writeFileSync(directoryPath, new_data);
       // event trigger for normal post
       const eventObj = this.createEvent(request);
-      this.emit('event', eventObj);
-      response.set('Content-Type', 'text/xml');
+      this.emit("event", eventObj);
+      response.set("Content-Type", "text/xml");
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -300,7 +300,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             Etag: etag(directoryPath),
           },
-        }),
+        })
       );
     }
   }
@@ -311,20 +311,20 @@ export class StorageServer extends EventEmitter {
     eventObj[EVENT_RECORDS] = [];
 
     const event = {
-      eventVersion: '2.0',
-      eventSource: 'aws:s3',
-      awsRegion: 'local',
+      eventVersion: "2.0",
+      eventSource: "aws:s3",
+      awsRegion: "local",
       eventTime: new Date().toISOString(),
       eventName: `ObjectCreated:${request.method}`,
     };
 
     const s3 = {
-      s3SchemaVersion: '1.0',
-      configurationId: 'testConfigRule',
+      s3SchemaVersion: "1.0",
+      configurationId: "testConfigRule",
       bucket: {
         name: String(this.route).substring(1),
         ownerIdentity: {
-          principalId: 'A3NL1KOZZKExample',
+          principalId: "A3NL1KOZZKExample",
         },
         arn: `arn:aws:s3:::${String(this.route).substring(1)}`,
       },
@@ -332,7 +332,7 @@ export class StorageServer extends EventEmitter {
         key: request.params.path,
         size: fs.statSync(filePath).size,
         eTag: etag(filePath),
-        versionId: '096fKKXTRTtl3on89fVO.nfljtsv6qko',
+        versionId: "096fKKXTRTtl3on89fVO.nfljtsv6qko",
       },
     };
     eventObj[EVENT_RECORDS].push({

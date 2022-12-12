@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { readJsonFile } from '@aws-amplify/amplify-e2e-core';
+import * as path from "path";
+import * as fs from "fs-extra";
+import { readJsonFile } from "@aws-amplify/amplify-e2e-core";
 
 export function verifyPlugin(pluginDirPath: string): boolean {
   if (fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory()) {
@@ -10,7 +10,7 @@ export function verifyPlugin(pluginDirPath: string): boolean {
 }
 
 function verifyNodePackage(pluginDirPath: string): boolean {
-  const pluginPackageJsonFilePath = path.join(pluginDirPath, 'package.json');
+  const pluginPackageJsonFilePath = path.join(pluginDirPath, "package.json");
 
   if (!fs.existsSync(pluginPackageJsonFilePath) || !fs.statSync(pluginPackageJsonFilePath).isFile()) {
     return false;
@@ -26,7 +26,7 @@ function verifyNodePackage(pluginDirPath: string): boolean {
 }
 
 function verifyAmplifyManifest(pluginDirPath: string, pluginModule: any): boolean {
-  const pluginManifestFilePath = path.join(pluginDirPath, 'amplify-plugin.json');
+  const pluginManifestFilePath = path.join(pluginDirPath, "amplify-plugin.json");
   if (!fs.existsSync(pluginManifestFilePath) || !fs.statSync(pluginManifestFilePath).isFile()) {
     return false;
   }
@@ -43,7 +43,7 @@ function verifyEventHandlers(manifest: any, pluginModule: any): boolean {
   let isVerified = true;
 
   if (manifest.eventHandlers && manifest.eventHandlers.length > 0) {
-    isVerified = pluginModule.hasOwnProperty('handleAmplifyEvent') && typeof pluginModule['handleAmplifyEvent'] === 'function';
+    isVerified = pluginModule.hasOwnProperty("handleAmplifyEvent") && typeof pluginModule["handleAmplifyEvent"] === "function";
   }
   return isVerified;
 }

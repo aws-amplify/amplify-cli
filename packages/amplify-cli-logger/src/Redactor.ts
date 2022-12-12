@@ -1,6 +1,6 @@
-const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token'];
+const containsToRedact = ["key", "id", "password", "name", "arn", "address", "app", "bucket", "token"];
 const quotes = '\\\\?"';
-const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
+const keyMatcher = `\\w*?(${containsToRedact.join("|")})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
 /**
  * Redacts json string
@@ -8,10 +8,10 @@ const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"
  * @returns redacted json string
  */
 export const Redactor = (arg: string | undefined): string => {
-  if (!arg) return '';
+  if (!arg) return "";
 
   // matches any json and gives values in json
-  const jsonRegex = new RegExp(completeMatch, 'gmi');
+  const jsonRegex = new RegExp(completeMatch, "gmi");
   // test for value in containsToRedact
   if (jsonRegex.test(arg)) {
     jsonRegex.lastIndex = 0;
@@ -23,7 +23,7 @@ export const Redactor = (arg: string | undefined): string => {
         valuesToRedact.push(m[3]);
       }
     } while (m !== null);
-    valuesToRedact.forEach(val => {
+    valuesToRedact.forEach((val) => {
       // replace value using string Masker
       arg = arg?.replace(val, stringMasker);
     });
@@ -38,27 +38,27 @@ export const Redactor = (arg: string | undefined): string => {
  * @returns replaced string
  */
 export const stringMasker = (s: string): string => {
-  if (!s.includes('-') && !s.includes('/')) return redactPart(s);
+  if (!s.includes("-") && !s.includes("/")) return redactPart(s);
 
   // if string only includes '/' char
-  if (s.includes('/') && !s.includes('-')) return redactBySlashSplit(s);
+  if (s.includes("/") && !s.includes("-")) return redactBySlashSplit(s);
   const newString = s
-    .split('-') // split string by '-'
-    .map(part => {
+    .split("-") // split string by '-'
+    .map((part) => {
       // and then redact the smaller pieces separated by '/'
-      if (part.includes('/')) {
+      if (part.includes("/")) {
         // start redacting only when it contains '/'
         return redactBySlashSplit(part);
       }
       return redactPart(part);
     })
-    .join('-');
+    .join("-");
 
   return newString;
 };
 
 // redacts all the pieces joined by '/' individually
-const redactBySlashSplit = (s: string): string => s.split('/').map(redactPart).join('/');
+const redactBySlashSplit = (s: string): string => s.split("/").map(redactPart).join("/");
 
 // replaces 60% of string by [***]
 const redactPart = (s: string): string => {

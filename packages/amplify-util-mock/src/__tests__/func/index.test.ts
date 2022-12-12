@@ -1,41 +1,41 @@
-import { $TSAny } from 'amplify-cli-core';
-import { start } from '../../func';
-import { getInvoker, getBuilder } from 'amplify-category-function';
-import { stateManager } from 'amplify-cli-core';
-import _ from 'lodash';
-import * as inquirer from 'inquirer';
+import { $TSAny } from "amplify-cli-core";
+import { start } from "../../func";
+import { getInvoker, getBuilder } from "amplify-category-function";
+import { stateManager } from "amplify-cli-core";
+import _ from "lodash";
+import * as inquirer from "inquirer";
 
-jest.mock('../../utils/lambda/load-lambda-config', () => ({
-  loadLambdaConfig: jest.fn(() => ({ handler: 'index.testHandle' })),
+jest.mock("../../utils/lambda/load-lambda-config", () => ({
+  loadLambdaConfig: jest.fn(() => ({ handler: "index.testHandle" })),
 }));
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   JSONUtilities: {
     readJson: jest.fn(),
   },
   pathManager: {
-    getBackendDirPath: () => 'fake-backend-path',
+    getBackendDirPath: () => "fake-backend-path",
   },
   stateManager: {
     getMeta: jest.fn().mockReturnValue({}),
   },
 }));
-jest.mock('amplify-category-function', () => ({
-  getInvoker: jest.fn().mockResolvedValue(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 10))),
+jest.mock("amplify-category-function", () => ({
+  getInvoker: jest.fn().mockResolvedValue(() => new Promise((resolve) => setTimeout(() => resolve("lambda value"), 10))),
   getBuilder: jest.fn().mockReturnValue(() => {}),
   isMockable: jest.fn().mockReturnValue({ isMockable: true }),
-  category: 'function',
+  category: "function",
 }));
 
-jest.mock('inquirer');
+jest.mock("inquirer");
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 
 const getInvoker_mock = getInvoker as jest.MockedFunction<typeof getInvoker>;
 const getBuilder_mock = getBuilder as jest.MockedFunction<typeof getBuilder>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 
-const funcName = 'funcName';
+const funcName = "funcName";
 
-describe('function start', () => {
+describe("function start", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -44,7 +44,7 @@ describe('function start', () => {
     input: {
       subCommands: [funcName],
       options: {
-        event: 'event.json',
+        event: "event.json",
         timeout: 1,
       },
     },
@@ -52,7 +52,7 @@ describe('function start', () => {
       inputValidation: () => () => true,
       readJsonFile: jest.fn(),
       getResourceStatus: () => ({ allResources: [] }),
-      getEnvInfo: () => ({ envName: 'testing' }),
+      getEnvInfo: () => ({ envName: "testing" }),
     },
     print: {
       success: jest.fn(),
@@ -66,8 +66,8 @@ describe('function start', () => {
 
   // NOTE: A warning from jest saying that async operations weren't stopped in the test is expected here
   // because the mock function is designed to keep running after the timeout to ensure that the timeout works
-  it('times out function execution at the default time', async () => {
-    getInvoker_mock.mockResolvedValueOnce(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 11000)));
+  it("times out function execution at the default time", async () => {
+    getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve("lambda value"), 11000)));
     context_stub.input.options.timeout = undefined;
     await start(context_stub);
     expect(context_stub.print.error.mock.calls[0][0]).toMatchInlineSnapshot(`"funcName failed with the following error:"`);
@@ -75,20 +75,20 @@ describe('function start', () => {
     context_stub.input.options.timeout = 1;
   });
 
-  it('times out function execution at the specified time', async () => {
-    getInvoker_mock.mockResolvedValueOnce(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 2000)));
+  it("times out function execution at the specified time", async () => {
+    getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve("lambda value"), 2000)));
     await start(context_stub);
     expect(context_stub.print.info.mock.calls[0][0]).toMatchSnapshot();
   });
 
-  it('triggers a dev build before invoking', async () => {
+  it("triggers a dev build before invoking", async () => {
     let isBuilt = false;
     getBuilder_mock.mockReturnValueOnce(async () => {
       isBuilt = true;
     });
     getInvoker_mock.mockResolvedValueOnce(async () => {
       if (!isBuilt) {
-        throw new Error('Build was not called before invoke');
+        throw new Error("Build was not called before invoke");
       }
     });
 
@@ -97,12 +97,12 @@ describe('function start', () => {
     expect(getInvoker_mock.mock.calls.length).toBe(1);
   });
 
-  it('mocks function name specified in command line params', async () => {
+  it("mocks function name specified in command line params", async () => {
     await start(context_stub);
     expect(getBuilder_mock.mock.calls[0][1]).toBe(funcName);
   });
 
-  it('mocks function if only one function in the project', async () => {
+  it("mocks function if only one function in the project", async () => {
     const context_stub_copy = _.merge({}, context_stub);
     delete context_stub_copy.input.subCommands;
 
@@ -114,10 +114,10 @@ describe('function start', () => {
 
     await start(context_stub_copy);
 
-    expect(getBuilder_mock.mock.calls[0][1]).toBe('func1');
+    expect(getBuilder_mock.mock.calls[0][1]).toBe("func1");
   });
 
-  it('prompts for function name if none specified and project has multiple functions', async () => {
+  it("prompts for function name if none specified and project has multiple functions", async () => {
     const context_stub_copy = _.merge({}, context_stub);
     delete context_stub_copy.input.subCommands;
 
@@ -129,18 +129,18 @@ describe('function start', () => {
       },
     });
 
-    inquirer_mock.prompt.mockResolvedValueOnce({ resourceName: 'func2' });
+    inquirer_mock.prompt.mockResolvedValueOnce({ resourceName: "func2" });
 
     await start(context_stub_copy);
 
-    expect(inquirer_mock.prompt.mock.calls[0][0][0].choices).toStrictEqual(['func1', 'func2', 'func3']);
-    expect(getBuilder_mock.mock.calls[0][1]).toBe('func2');
+    expect(inquirer_mock.prompt.mock.calls[0][0][0].choices).toStrictEqual(["func1", "func2", "func3"]);
+    expect(getBuilder_mock.mock.calls[0][1]).toBe("func2");
   });
 
-  it('handles no options specified', async () => {
+  it("handles no options specified", async () => {
     const invoker = jest.fn().mockResolvedValue(null);
     getInvoker_mock.mockResolvedValueOnce(invoker);
-    inquirer_mock.prompt.mockResolvedValueOnce({ eventName: 'event.json' });
+    inquirer_mock.prompt.mockResolvedValueOnce({ eventName: "event.json" });
 
     const context_stub_copy = _.merge({}, context_stub);
     context_stub_copy.input.options = undefined;

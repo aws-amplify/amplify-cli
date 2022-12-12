@@ -77,18 +77,18 @@ query GetUserWithPosts {
 export const expected_result_query1 = {
   data: {
     getUser: {
-      id: 'U1',
-      username: 'user1',
+      id: "U1",
+      username: "user1",
       posts: {
         items: [
           {
             post: {
-              title: 'Post 1',
+              title: "Post 1",
             },
           },
           {
             post: {
-              title: 'Post 2',
+              title: "Post 2",
             },
           },
         ],
@@ -122,23 +122,23 @@ query GetPostWithEditorsWithPosts {
 export const expected_result_query2 = {
   data: {
     getPost: {
-      id: 'P1',
-      title: 'Post 1',
+      id: "P1",
+      title: "Post 1",
       editors: {
         items: [
           {
             editor: {
-              username: 'user1',
+              username: "user1",
               posts: {
                 items: [
                   {
                     post: {
-                      title: 'Post 1',
+                      title: "Post 1",
                     },
                   },
                   {
                     post: {
-                      title: 'Post 2',
+                      title: "Post 2",
                     },
                   },
                 ],
@@ -147,12 +147,12 @@ export const expected_result_query2 = {
           },
           {
             editor: {
-              username: 'user2',
+              username: "user2",
               posts: {
                 items: [
                   {
                     post: {
-                      title: 'Post 1',
+                      title: "Post 1",
                     },
                   },
                 ],

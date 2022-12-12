@@ -1,8 +1,8 @@
-import { DocumentNode, parse } from 'graphql';
-import { ExecutionResult, ExecutionResultDataDefault } from 'graphql/execution/execute';
-import { IncomingMessage } from 'http';
-import * as WebSocket from 'ws';
-import { Server as WebSocketServer, ServerOptions } from 'ws';
+import { DocumentNode, parse } from "graphql";
+import { ExecutionResult, ExecutionResultDataDefault } from "graphql/execution/execute";
+import { IncomingMessage } from "http";
+import * as WebSocket from "ws";
+import { Server as WebSocketServer, ServerOptions } from "ws";
 import {
   GQLMessageConnectionAck,
   GQLMessageConnectionInit,
@@ -11,12 +11,12 @@ import {
   isSubscriptionConnectionInitMessage,
   isSubscriptionStartMessage,
   isSubscriptionStopMessage,
-} from './message-type-guards';
-import { MESSAGE_TYPES } from './message-types';
-import { decodeHeaderFromQueryParam } from './utils';
+} from "./message-type-guards";
+import { MESSAGE_TYPES } from "./message-types";
+import { decodeHeaderFromQueryParam } from "./utils";
 
-export const REALTIME_SUBSCRIPTION_PATH = '/graphql/realtime';
-const PROTOCOL = 'graphql-ws';
+export const REALTIME_SUBSCRIPTION_PATH = "/graphql/realtime";
+const PROTOCOL = "graphql-ws";
 const KEEP_ALIVE_TIMEOUT = 4 * 60 * 1000; // Wait time between Keep Alive Message
 // Max time the client will wait for Keep Alive message before disconnecting. Sent to the client as part of connection ack
 const CONNECTION_TIMEOUT_DURATION = 5 * 60 * 1000;
@@ -42,7 +42,7 @@ export type WebsocketSubscriptionServerOptions = {
     query: DocumentNode,
     variable: Record<string, any>,
     headers: Record<string, any>,
-    request: IncomingMessage,
+    request: IncomingMessage
   ) => Promise<AsyncIterableIterator<ExecutionResult<ExecutionResultDataDefault>> | ExecutionResult<ExecutionResultDataDefault>>;
   keepAlive?: number;
   connectionTimeoutDuration?: number;
@@ -73,21 +73,21 @@ export class WebsocketSubscriptionServer {
 
   start() {
     if (!this.webSocketServer) {
-      throw new Error('No server is attached');
+      throw new Error("No server is attached");
     }
-    this.webSocketServer.on('connection', this.onSocketConnection);
+    this.webSocketServer.on("connection", this.onSocketConnection);
   }
 
   stop() {
-    this.webSocketServer?.off('connection', this.onSocketConnection);
-    this.connections?.forEach(connection => {
+    this.webSocketServer?.off("connection", this.onSocketConnection);
+    this.connections?.forEach((connection) => {
       this.onClose(connection);
     });
     this.webSocketServer?.close();
   }
 
   private onClose = (connectionContext: ConnectionContext): void => {
-    connectionContext.subscriptions.forEach(subscriptionId => {
+    connectionContext.subscriptions.forEach((subscriptionId) => {
       this.stopAsyncIterator(connectionContext, subscriptionId.id);
     });
     if (connectionContext.pingIntervalHandle) {
@@ -117,8 +117,8 @@ export class WebsocketSubscriptionServer {
   private onSocketConnection = async (socket: WebSocket, request: IncomingMessage): Promise<void> => {
     (socket as any).upgradeReq = request;
     try {
-      if (typeof socket.protocol === 'undefined' || socket.protocol !== PROTOCOL) {
-        throw new Error('Invalid protocol');
+      if (typeof socket.protocol === "undefined" || socket.protocol !== PROTOCOL) {
+        throw new Error("Invalid protocol");
       }
       const connectionContext: ConnectionContext = {
         request,
@@ -132,20 +132,20 @@ export class WebsocketSubscriptionServer {
 
       this.connections.add(connectionContext);
 
-      const onMessage = message => {
+      const onMessage = (message) => {
         this.onMessage(connectionContext, message);
       };
 
       const onClose = (error?: Error | string) => {
-        socket.off('message', onMessage);
-        socket.off('close', onClose);
-        socket.off('error', onClose);
+        socket.off("message", onMessage);
+        socket.off("close", onClose);
+        socket.off("error", onClose);
         this.onSocketDisconnection(connectionContext, error);
       };
 
-      socket.on('message', onMessage);
-      socket.on('close', onClose);
-      socket.on('error', onClose);
+      socket.on("message", onMessage);
+      socket.on("close", onClose);
+      socket.on("error", onClose);
     } catch (e) {
       socket.close(1002); // protocol error
       return;
@@ -155,7 +155,7 @@ export class WebsocketSubscriptionServer {
   private onSocketDisconnection = (connectionContext: ConnectionContext, error?: Error | string): void => {
     this.onClose(connectionContext);
     if (error) {
-      this.sendError(connectionContext, '', { message: error instanceof Error ? error.message : error });
+      this.sendError(connectionContext, "", { message: error instanceof Error ? error.message : error });
       setTimeout(() => {
         // 1011 is an unexpected condition prevented the request from being fulfilled
         connectionContext.socket.close(1011);
@@ -182,9 +182,9 @@ export class WebsocketSubscriptionServer {
             return this.onUnsubscribe(connectionContext, message);
           }
       }
-      throw new Error('Invalid message');
+      throw new Error("Invalid message");
     } catch (e) {
-      this.sendError(connectionContext, '', { errors: [{ message: e.message }] });
+      this.sendError(connectionContext, "", { errors: [{ message: e.message }] });
     }
   };
 
@@ -202,7 +202,7 @@ export class WebsocketSubscriptionServer {
     connectionContext: ConnectionContext,
     subscriptionId: string,
     errorPayload: any,
-    type: MESSAGE_TYPES.GQL_ERROR | MESSAGE_TYPES.GQL_CONNECTION_ERROR = MESSAGE_TYPES.GQL_ERROR,
+    type: MESSAGE_TYPES.GQL_ERROR | MESSAGE_TYPES.GQL_CONNECTION_ERROR = MESSAGE_TYPES.GQL_ERROR
   ) => {
     if ([MESSAGE_TYPES.GQL_CONNECTION_ERROR, MESSAGE_TYPES.GQL_ERROR].indexOf(type) === -1) {
       throw new Error(`Message type should for error should be one of ${MESSAGE_TYPES.GQL_ERROR} or ${MESSAGE_TYPES.GQL_CONNECTION_ERROR}`);

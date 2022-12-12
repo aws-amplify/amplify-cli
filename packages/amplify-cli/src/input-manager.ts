@@ -1,11 +1,11 @@
 // normalize command line arguments, allow verb / noun place switch
-import { Input } from './domain/input';
-import { constants } from './domain/constants';
-import { PluginPlatform } from './domain/plugin-platform';
-import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
-import { InputVerificationResult } from './domain/input-verification-result';
-import { pathManager, stateManager } from 'amplify-cli-core';
-import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
+import { Input } from "./domain/input";
+import { constants } from "./domain/constants";
+import { PluginPlatform } from "./domain/plugin-platform";
+import { getPluginsWithName, getAllPluginNames } from "./plugin-manager";
+import { InputVerificationResult } from "./domain/input-verification-result";
+import { pathManager, stateManager } from "amplify-cli-core";
+import { insertAmplifyIgnore } from "./extensions/amplify-helpers/git-manager";
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   const result = new Input(process.argv);
@@ -43,7 +43,7 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
     while (result.argv.length > index) {
       result.options = result.options || {};
       if (/^-/.test(result.argv[index])) {
-        const key = result.argv[index].replace(/^-+/, '');
+        const key = result.argv[index].replace(/^-+/, "");
         index += 1;
         if (result.argv.length > index && !/^-/.test(result.argv[index])) {
           result.options[key] = result.argv[index];
@@ -99,7 +99,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
   const result = new InputVerificationResult();
 
   // Normalize status command options
-  if (input.command === 'status') {
+  if (input.command === "status") {
     input = normalizeStatusCommandOptions(input);
   }
 
@@ -181,14 +181,14 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
     }
 
     if (!result.verified) {
-      let commandString = input.plugin === constants.CORE ? '' : input.plugin;
+      let commandString = input.plugin === constants.CORE ? "" : input.plugin;
 
       if (input.command! !== constants.PLUGIN_DEFAULT_COMMAND) {
-        commandString += ' ' + input.command!;
+        commandString += " " + input.command!;
       }
 
       if (input.subCommands) {
-        commandString += ' ' + input.subCommands!.join(' ');
+        commandString += " " + input.subCommands!.join(" ");
       }
 
       result.message = `The Amplify CLI can NOT find command: ${commandString}`;
@@ -202,8 +202,8 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
 }
 
 function aliasArgs(argv: string[]) {
-  if (argv.length >= 4 && argv[2] === 'override' && argv[3] === 'project') {
-    argv[3] = 'root';
+  if (argv.length >= 4 && argv[2] === "override" && argv[3] === "project") {
+    argv[3] = "root";
 
     // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitingore for older projects
     const { projectPath } = stateManager.getLocalEnvInfo();
@@ -214,17 +214,19 @@ function aliasArgs(argv: string[]) {
 
 const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
   const newObj = {};
-  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
+  Object.entries(obj).forEach(([key, value]) => {
+    newObj[key.toLowerCase()] = value;
+  });
   return newObj;
 };
 
 const normalizeStatusCommandOptions = (input: Input): Input => {
   const options = input.options ? input.options : {};
-  const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
+  const allowedVerboseIndicators = [constants.VERBOSE, "v"];
   // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
-  allowedVerboseIndicators.forEach(verboseFlag => {
+  allowedVerboseIndicators.forEach((verboseFlag) => {
     if (options[verboseFlag] !== undefined) {
-      if (typeof options[verboseFlag] === 'string') {
+      if (typeof options[verboseFlag] === "string") {
         const pluginName = (options[verboseFlag] as string).toLowerCase();
         options[pluginName] = true;
       }
@@ -242,7 +244,7 @@ const normalizeStatusCommandOptions = (input: Input): Input => {
   if (returnInput.subCommands) {
     const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
     const inputSubCommands: string[] = [];
-    returnInput.subCommands.forEach(subCommand => {
+    returnInput.subCommands.forEach((subCommand) => {
       // plugins are inferred as sub-commands when positionally supplied
       if (!allowedSubCommands.includes(subCommand)) {
         options[subCommand.toLowerCase()] = true;

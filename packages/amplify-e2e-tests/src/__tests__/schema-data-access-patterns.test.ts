@@ -1,13 +1,11 @@
-import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api data access patterns', () => {
+describe("api data access patterns", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('data-access-pattern');
+    projectDir = await createNewProjectDir("data-access-pattern");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -16,8 +14,8 @@ describe('api data access patterns', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('data-access patterns', async () => {
-    const testresult = await testSchema(projectDir, 'data-access', 'patterns');
+  it("data-access patterns", async () => {
+    const testresult = await testSchema(projectDir, "data-access", "patterns");
     expect(testresult).toBeTruthy();
   });
 });

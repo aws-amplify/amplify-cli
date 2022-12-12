@@ -24,7 +24,7 @@ export class DiagnoseReportUploadError extends Error {}
 export class ResourceDoesNotExistError extends Error {
   public constructor(errMessage: string) {
     super();
-    this.name = 'ResourceDoesNotExistError';
+    this.name = "ResourceDoesNotExistError";
     this.message = errMessage;
     this.stack = undefined;
   }
@@ -36,7 +36,7 @@ export class ResourceDoesNotExistError extends Error {
 export class ResourceCountLimitExceedError extends Error {
   public constructor(errMessage: string) {
     super();
-    this.name = 'ResourceCountLimitExceedError';
+    this.name = "ResourceCountLimitExceedError";
     this.message = errMessage;
     this.stack = undefined;
   }

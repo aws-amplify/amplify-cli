@@ -1,13 +1,13 @@
-import { GraphQLSchema, parse } from 'graphql';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
-import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
-import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';
-import { runSubscription, SubscriptionResult } from '../../../utils/graphql-runner/subscriptions';
+import { GraphQLSchema, parse } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { AmplifyAppSyncSimulatorAuthenticationType } from "../../../type-definition";
+import { AppSyncGraphQLExecutionContext } from "../../../utils/graphql-runner";
+import { runQueryOrMutation } from "../../../utils/graphql-runner/query-and-mutation";
+import { runSubscription, SubscriptionResult } from "../../../utils/graphql-runner/subscriptions";
 
-jest.mock('../../../utils/graphql-runner/query-and-mutation');
+jest.mock("../../../utils/graphql-runner/query-and-mutation");
 const mockRunQuery = runQueryOrMutation as jest.Mock;
-describe('runSubscription', () => {
+describe("runSubscription", () => {
   const schemaDoc = parse(/* GraphQL */ `
     type Query {
       getName: String!
@@ -22,7 +22,7 @@ describe('runSubscription', () => {
   let subscriptionSubscribe = jest.fn();
 
   const executionContext: AppSyncGraphQLExecutionContext = {
-    headers: { 'x-api-key': 'da-fake-key' },
+    headers: { "x-api-key": "da-fake-key" },
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
     appsyncErrors: [],
   };
@@ -54,7 +54,7 @@ describe('runSubscription', () => {
     mockRunQuery.mockReturnValue({ data: null, errors: [] });
   });
 
-  it('should call subscribe resolver', async () => {
+  it("should call subscribe resolver", async () => {
     const doc = parse(/* GraphQL */ `
       subscription onSetName {
         onSetName
@@ -62,19 +62,19 @@ describe('runSubscription', () => {
     `);
 
     const result = await runSubscription(schema, doc, variables, undefined, executionContext);
-    expect(typeof (result as SubscriptionResult).asyncIterator[Symbol.asyncIterator]).toEqual('function');
+    expect(typeof (result as SubscriptionResult).asyncIterator[Symbol.asyncIterator]).toEqual("function");
     expect(subscriptionSubscribe).toHaveBeenCalled();
     expect(subscriptionSubscribe.mock.calls[0][2]).toEqual(executionContext);
   });
 
-  it('should throw error when the subscription is not authorized', async () => {
+  it("should throw error when the subscription is not authorized", async () => {
     const doc = parse(/* GraphQL */ `
       subscription onSetName {
         onSetName
       }
     `);
 
-    const resolverError = { data: null, errors: [{ error: 'Unauthorized' }] };
+    const resolverError = { data: null, errors: [{ error: "Unauthorized" }] };
     mockRunQuery.mockReturnValue(resolverError);
     const iterator = await runSubscription(schema, doc, variables, undefined, executionContext);
     expect(iterator[Symbol.asyncIterator]).toBeUndefined();

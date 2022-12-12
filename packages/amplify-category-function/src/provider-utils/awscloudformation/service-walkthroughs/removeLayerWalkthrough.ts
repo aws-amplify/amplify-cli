@@ -1,16 +1,16 @@
-import { $TSContext, $TSObject, pathManager, stateManager } from 'amplify-cli-core';
-import chalk from 'chalk';
-import inquirer, { QuestionCollection } from 'inquirer';
-import ora from 'ora';
-import { categoryName } from '../../../constants';
-import { LayerCloudState } from '../utils/layerCloudState';
-import { saveLayerVersionsToBeRemovedByCfn } from '../utils/layerConfiguration';
-import { getLambdaFunctionsDependentOnLayerFromMeta, getLayerName, loadStoredLayerParameters } from '../utils/layerHelpers';
-import { LayerVersionMetadata } from '../utils/layerParams';
-import { loadFunctionParameters } from '../utils/loadFunctionParameters';
-import { updateLayerArtifacts } from '../utils/storeResources';
+import { $TSContext, $TSObject, pathManager, stateManager } from "amplify-cli-core";
+import chalk from "chalk";
+import inquirer, { QuestionCollection } from "inquirer";
+import ora from "ora";
+import { categoryName } from "../../../constants";
+import { LayerCloudState } from "../utils/layerCloudState";
+import { saveLayerVersionsToBeRemovedByCfn } from "../utils/layerConfiguration";
+import { getLambdaFunctionsDependentOnLayerFromMeta, getLayerName, loadStoredLayerParameters } from "../utils/layerHelpers";
+import { LayerVersionMetadata } from "../utils/layerParams";
+import { loadFunctionParameters } from "../utils/loadFunctionParameters";
+import { updateLayerArtifacts } from "../utils/storeResources";
 
-const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
+const removeLayerQuestion = "Choose the Layer versions you want to remove.";
 
 export async function removeWalkthrough(context: $TSContext, layerName: string): Promise<string | undefined> {
   const layerCloudState = LayerCloudState.getInstance(layerName);
@@ -33,17 +33,17 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     return undefined;
   }
 
-  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.legacyLayer);
-  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.legacyLayer);
+  const legacyLayerSelectedVersions = selectedLayerVersion.filter((r) => r.legacyLayer);
+  const newLayerSelectedVersions = selectedLayerVersion.filter((r) => !r.legacyLayer);
 
   // if everything is selected remove the layer entirely
   if (layerVersionList.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
     return layerName;
   }
 
-  context.print.info('Layer versions marked for deletion:');
-  selectedLayerVersion.forEach(version => {
-    context.print.info(`- ${version.Version} | Description: ${version.Description || ''}`);
+  context.print.info("Layer versions marked for deletion:");
+  selectedLayerVersion.forEach((version) => {
+    context.print.info(`- ${version.Version} | Description: ${version.Description || ""}`);
   });
 
   warnLegacyRemoval(context, legacyLayerSelectedVersions, newLayerSelectedVersions);
@@ -53,7 +53,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     await deleteLayerVersionsWithSdk(
       context,
       getLayerName(context, layerName),
-      legacyLayerSelectedVersions.map(r => r.Version),
+      legacyLayerSelectedVersions.map((r) => r.Version)
     );
   }
 
@@ -63,8 +63,8 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
       const { envName } = stateManager.getLocalEnvInfo();
       saveLayerVersionsToBeRemovedByCfn(
         layerName,
-        newLayerSelectedVersions.map(r => r.Version),
-        envName,
+        newLayerSelectedVersions.map((r) => r.Version),
+        envName
       );
     }
 
@@ -86,36 +86,36 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
 function warnLegacyRemoval(
   context: $TSContext,
   legacyLayerVersions: LayerVersionForPossibleRemoval[],
-  newLayerVersions: LayerVersionForPossibleRemoval[],
+  newLayerVersions: LayerVersionForPossibleRemoval[]
 ) {
-  const amplifyPush = chalk.green('amplify push');
-  const legacyVersions: number[] = legacyLayerVersions.map(r => r.Version);
+  const amplifyPush = chalk.green("amplify push");
+  const legacyVersions: number[] = legacyLayerVersions.map((r) => r.Version);
 
   if (legacyLayerVersions.length > 0 && newLayerVersions.length > 0) {
     context.print.warning(
       `Warning: By continuing, these layer versions [${legacyVersions.join(
-        ', ',
-      )}] will be immediately deleted. All other layer versions will be deleted on ${amplifyPush}.`,
+        ", "
+      )}] will be immediately deleted. All other layer versions will be deleted on ${amplifyPush}.`
     );
   } else if (legacyLayerVersions.length > 0) {
-    context.print.warning(`Warning: By continuing, these layer versions [${legacyVersions.join(', ')}] will be immediately deleted.`);
+    context.print.warning(`Warning: By continuing, these layer versions [${legacyVersions.join(", ")}] will be immediately deleted.`);
   } else if (newLayerVersions.length > 0) {
     context.print.warning(`Layer versions will be deleted on ${amplifyPush}.`);
   }
 
   context.print.warning(`All new layer versions created with the Amplify CLI will only be deleted on ${amplifyPush}.`);
-  context.print.info('');
+  context.print.info("");
 }
 
 async function deleteLayerVersionsWithSdk(context: $TSContext, layerName: string, versions: number[]) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const lambdaClient = await providerPlugin.getLambdaSdk(context);
-  const spinner = ora('Deleting layer version from the cloud...').start();
+  const spinner = ora("Deleting layer version from the cloud...").start();
   try {
     await lambdaClient.deleteLayerVersions(layerName, versions);
-    spinner.succeed('Layers deleted');
+    spinner.succeed("Layers deleted");
   } catch (ex) {
-    spinner.fail('Failed deleting');
+    spinner.fail("Failed deleting");
     throw ex;
   } finally {
     spinner.stop();
@@ -125,14 +125,14 @@ async function deleteLayerVersionsWithSdk(context: $TSContext, layerName: string
 function disablePinnedVersions(
   lambdaFunctionsDependentOnLayer: [string, $TSObject][],
   layerName: string,
-  layerVersionList: LayerVersionForPossibleRemoval[],
+  layerVersionList: LayerVersionForPossibleRemoval[]
 ) {
   lambdaFunctionsDependentOnLayer.forEach(([lambdaFunctionName]: [string, $TSObject]) => {
     const { lambdaLayers: lambdaLayerDependencies } = loadFunctionParameters(
-      pathManager.getResourceDirectoryPath(undefined, categoryName, lambdaFunctionName),
+      pathManager.getResourceDirectoryPath(undefined, categoryName, lambdaFunctionName)
     );
 
-    lambdaLayerDependencies.forEach(layerDependency => {
+    lambdaLayerDependencies.forEach((layerDependency) => {
       if (layerDependency.resourceName === layerName && layerDependency.isLatestVersionSelected === false) {
         for (const layerVersion of layerVersionList) {
           if (layerVersion.Version === layerDependency.version) {
@@ -148,16 +148,16 @@ function disablePinnedVersions(
 
 const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionCollection[] => [
   {
-    name: 'versions',
+    name: "versions",
     message: removeLayerQuestion,
-    type: 'checkbox',
+    type: "checkbox",
     choices: layerVersionList
       .sort((versiona, versionb) => versiona.Version - versionb.Version)
-      .map(version => ({
+      .map((version) => ({
         disabled:
           Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0
-            ? `Can't be removed. ${version.pinnedByFunctions.join(', ')} depend${
-                version.pinnedByFunctions.length > 1 ? '' : 's'
+            ? `Can't be removed. ${version.pinnedByFunctions.join(", ")} depend${
+                version.pinnedByFunctions.length > 1 ? "" : "s"
               } on this version.`
             : false,
         name: `${version.Version}: ${version.Description}`,

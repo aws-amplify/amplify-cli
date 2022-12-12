@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from "amplify-cli-core";
 import {
   addAuthWithDefault,
   addAuthWithMaxOptions,
@@ -12,18 +12,18 @@ import {
   getUserPool,
   initJSProjectWithProfile,
   runAmplifyAuthConsole,
-} from '@aws-amplify/amplify-e2e-core';
-import * as path from 'path';
-import * as fs from 'fs-extra';
+} from "@aws-amplify/amplify-e2e-core";
+import * as path from "path";
+import * as fs from "fs-extra";
 
-const PROJECT_NAME = 'authTest';
+const PROJECT_NAME = "authTest";
 const defaultSettings = {
   name: PROJECT_NAME,
 };
-describe('zero config auth', () => {
+describe("zero config auth", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('zero-config-auth');
+    projRoot = await createNewProjectDir("zero-config-auth");
   });
 
   afterEach(async () => {
@@ -31,7 +31,7 @@ describe('zero config auth', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a javascript project and add auth with all options and update front end config', async () => {
+  it("...should init a javascript project and add auth with all options and update front end config", async () => {
     await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -72,14 +72,14 @@ describe('zero config auth', () => {
     `);
   });
 
-  it('...should init a project and add auth with defaults with overrides', async () => {
+  it("...should init a project and add auth with defaults with overrides", async () => {
     await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(meta.auth).filter(key => meta.auth[key].service === 'Cognito');
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const authResourceName = Object.keys(meta.auth).filter((key) => meta.auth[key].service === "Cognito");
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
 
@@ -87,20 +87,20 @@ describe('zero config auth', () => {
     await amplifyOverrideAuth(projRoot);
 
     // this is where we will write our override logic to
-    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'auth', `${authResourceName}`, 'override.ts');
+    const destOverrideFilePath = path.join(projRoot, "amplify", "backend", "auth", `${authResourceName}`, "override.ts");
 
     // test override file in compilation error state
-    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    const srcInvalidOverrideCompileError = path.join(__dirname, "..", "..", "overrides", "override-compile-error.txt");
     fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
     await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
 
     // test override file in runtime error state
-    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, "..", "..", "overrides", "override-runtime-error.txt");
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
     await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
 
     // test happy path
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
+    const srcOverrideFilePath = path.join(__dirname, "..", "..", "overrides", "override-auth.ts");
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
 

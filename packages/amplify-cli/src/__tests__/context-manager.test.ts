@@ -1,14 +1,14 @@
-import { stateManager } from 'amplify-cli-core';
-import { Input } from '../domain/input';
-import { PluginPlatform } from '../domain/plugin-platform';
-import * as appConfig from '../app-config';
-import { constructContext, attachUsageData } from '../context-manager';
-import { Context } from '../domain/context';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { UsageData, NoUsageData } from '../domain/amplify-usageData';
+import { stateManager } from "amplify-cli-core";
+import { Input } from "../domain/input";
+import { PluginPlatform } from "../domain/plugin-platform";
+import * as appConfig from "../app-config";
+import { constructContext, attachUsageData } from "../context-manager";
+import { Context } from "../domain/context";
+import { PluginInfo } from "../domain/plugin-info";
+import { PluginManifest } from "../domain/plugin-manifest";
+import { UsageData, NoUsageData } from "../domain/amplify-usageData";
 
-jest.mock('../domain/amplify-usageData/', () => ({
+jest.mock("../domain/amplify-usageData/", () => ({
   UsageData: {
     Instance: {
       setIsHeadless: jest.fn(),
@@ -27,20 +27,20 @@ jest.mock('../domain/amplify-usageData/', () => ({
     })),
   },
 }));
-jest.mock('../app-config');
-jest.mock('amplify-cli-core');
+jest.mock("../app-config");
+jest.mock("amplify-cli-core");
 
-describe('test attachUsageData', () => {
-  const version = 'latestVersion';
-  const mockContext = jest.createMockFromModule<Context>('../domain/context');
+describe("test attachUsageData", () => {
+  const version = "latestVersion";
+  const mockContext = jest.createMockFromModule<Context>("../domain/context");
 
   mockContext.input = new Input([
-    '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
-    '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
-    'status',
+    "/Users/userName/.nvm/versions/node/v8.11.4/bin/node",
+    "/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify",
+    "status",
   ]);
   mockContext.pluginPlatform = new PluginPlatform();
-  mockContext.pluginPlatform.plugins.core = [new PluginInfo('', version, '', new PluginManifest('', ''))];
+  mockContext.pluginPlatform.plugins.core = [new PluginInfo("", version, "", new PluginManifest("", ""))];
   mockContext.usageData = {
     init: jest.fn(),
     setIsHeadless: jest.fn(),
@@ -64,12 +64,12 @@ describe('test attachUsageData', () => {
     providers: {
       awscloudformation: {
         // eslint-disable-next-line spellcheck/spell-checker
-        StackId: 'arn:aws:cloudformation:us-east-1:accountId:stack/amplify/8b4ba810-5208-11ec-bb0f-12f4d8376f67',
+        StackId: "arn:aws:cloudformation:us-east-1:accountId:stack/amplify/8b4ba810-5208-11ec-bb0f-12f4d8376f67",
       },
     },
   });
 
-  it('constructContext', () => {
+  it("constructContext", () => {
     const context = constructContext(mockContext.pluginPlatform, mockContext.input);
     expect(context).toBeDefined();
     expect(context.amplify).toBeDefined();
@@ -77,10 +77,10 @@ describe('test attachUsageData', () => {
     expect(context.input).toEqual(mockContext.input);
   });
 
-  it('test with usage data enabled', async () => {
+  it("test with usage data enabled", async () => {
     const returnValue = {
       usageDataConfig: {
-        installationUuid: 'uuid',
+        installationUuid: "uuid",
         isUsageTrackingEnabled: true,
       },
       setValues: jest.fn(),
@@ -93,16 +93,16 @@ describe('test attachUsageData', () => {
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
-      'accountId',
+      "accountId",
       {},
-      ts,
+      ts
     );
   });
 
-  it('test with usage data disabled', async () => {
+  it("test with usage data disabled", async () => {
     const returnValue = {
       usageDataConfig: {
-        installationUuid: 'uuid',
+        installationUuid: "uuid",
         isUsageTrackingEnabled: false,
       },
       setValues: jest.fn(),
@@ -115,9 +115,9 @@ describe('test attachUsageData', () => {
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
-      'accountId',
+      "accountId",
       {},
-      ts,
+      ts
     );
   });
 });

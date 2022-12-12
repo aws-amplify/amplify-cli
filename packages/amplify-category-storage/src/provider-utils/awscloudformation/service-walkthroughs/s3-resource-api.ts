@@ -1,8 +1,8 @@
-import { $TSContext, AmplifyCategories, AmplifySupportedService, CLISubCommandType, stateManager } from 'amplify-cli-core';
-import { AmplifyS3ResourceStackTransform } from '../cdk-stack-builder/s3-stack-transform';
-import { S3UserInputs, S3UserInputTriggerFunctionParams } from '../service-walkthrough-types/s3-user-input-types';
-import { S3InputState } from './s3-user-input-state';
-import { createNewLambdaAndUpdateCFN, isMigrateStorageRequired, migrateStorageCategory } from './s3-walkthrough';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, CLISubCommandType, stateManager } from "amplify-cli-core";
+import { AmplifyS3ResourceStackTransform } from "../cdk-stack-builder/s3-stack-transform";
+import { S3UserInputs, S3UserInputTriggerFunctionParams } from "../service-walkthrough-types/s3-user-input-types";
+import { S3InputState } from "./s3-user-input-state";
+import { createNewLambdaAndUpdateCFN, isMigrateStorageRequired, migrateStorageCategory } from "./s3-walkthrough";
 
 /**
  * @returns Name of S3 resource or undefined
@@ -12,7 +12,7 @@ export function s3GetResourceName(): string | undefined {
   let resourceName = undefined;
   if (amplifyMeta[AmplifyCategories.STORAGE]) {
     const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === AmplifySupportedService.S3) {
         resourceName = resource;
       }
@@ -68,7 +68,7 @@ export async function s3CreateStorageResource(context: $TSContext, storageInput:
   //if s3 resource exists throw exception
   const storageResourceName: string | undefined = s3GetResourceName();
   if (storageResourceName) {
-    throw new Error('Add Storage Failed.. already exists');
+    throw new Error("Add Storage Failed.. already exists");
   }
   //validate bucket Name
   if (storageInput.bucketName) {
@@ -79,11 +79,11 @@ export async function s3CreateStorageResource(context: $TSContext, storageInput:
 }
 
 export function s3ValidateBucketName(bucketName: string) {
-  const regexp = '^[a-z0-9-]{3,47}$';
-  const isValidBucketName = new RegExp(regexp, 'g').test(bucketName);
+  const regexp = "^[a-z0-9-]{3,47}$";
+  const isValidBucketName = new RegExp(regexp, "g").test(bucketName);
   if (!isValidBucketName) {
     throw new Error(
-      'Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character',
+      "Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character"
     );
   }
   return true;
@@ -100,7 +100,7 @@ export function s3ValidateBucketName(bucketName: string) {
 export async function s3AddStorageLambdaTrigger(
   context: $TSContext,
   s3ResourceName: string,
-  storageLambdaTrigger: S3UserInputTriggerFunctionParams,
+  storageLambdaTrigger: S3UserInputTriggerFunctionParams
 ) {
   const cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
@@ -133,7 +133,7 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
   const s3UserInput = cliInputsState.getUserInput();
   if (s3UserInput.adminTriggerFunction?.triggerFunction === s3UserInput.triggerFunction) {
     throw new Error(
-      `Error removing trigger function from storage resource ${s3ResourceName} : function used by ${AmplifyCategories.PREDICTIONS}`,
+      `Error removing trigger function from storage resource ${s3ResourceName} : function used by ${AmplifyCategories.PREDICTIONS}`
     );
   }
 
@@ -153,7 +153,7 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
 export async function s3RegisterAdminTrigger(
   context: $TSContext,
   s3ResourceName: string,
-  adminLambdaTrigger: S3UserInputTriggerFunctionParams,
+  adminLambdaTrigger: S3UserInputTriggerFunctionParams
 ) {
   const cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
@@ -197,7 +197,7 @@ export async function s3RemoveAdminLambdaTrigger(context: $TSContext, s3Resource
 export async function addLambdaTrigger(
   context: $TSContext,
   s3ResourceName: string,
-  triggerFunctionParams: S3UserInputTriggerFunctionParams,
+  triggerFunctionParams: S3UserInputTriggerFunctionParams
 ): Promise<string | undefined> {
   const cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
@@ -237,15 +237,15 @@ async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInpu
   if (phase == CLISubCommandType.ADD) {
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.STORAGE, storageInput.resourceName as string, {
       service: AmplifySupportedService.S3,
-      providerPlugin: 'awscloudformation',
+      providerPlugin: "awscloudformation",
       dependsOn,
     });
   } else {
     context.amplify.updateamplifyMetaAfterResourceUpdate(
       AmplifyCategories.STORAGE,
       storageInput.resourceName as string,
-      'dependsOn',
-      dependsOn,
+      "dependsOn",
+      dependsOn
     );
   }
 }

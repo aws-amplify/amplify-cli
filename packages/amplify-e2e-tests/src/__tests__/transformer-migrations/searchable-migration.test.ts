@@ -6,14 +6,18 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import gql from 'graphql-tag';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
+import gql from "graphql-tag";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 
-describe('transformer model searchable migration test', () => {
+describe("transformer model searchable migration test", () => {
   let projRoot: string;
   let projectName: string;
   let appSyncClient;
@@ -32,25 +36,25 @@ describe('transformer model searchable migration test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('migration of searchable directive - search should return expected results', async () => {
-    const v1Schema = 'transformer_migration/searchable-v1.graphql';
-    const v2Schema = 'transformer_migration/searchable-v2.graphql';
+  it("migration of searchable directive - search should return expected results", async () => {
+    const v1Schema = "transformer_migration/searchable-v1.graphql";
+    const v2Schema = "transformer_migration/searchable-v2.graphql";
 
     await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, v1Schema);
     await amplifyPush(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
-    await runAndValidateQuery('test1', 'test1', 10);
+    await runAndValidateQuery("test1", "test1", 10);
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
+    await addFeatureFlag(projRoot, "graphqltransformer", "transformerVersion", 2);
+    await addFeatureFlag(projRoot, "graphqltransformer", "useExperimentalPipelinedTransformer", true);
 
     await updateApiSchema(projRoot, projectName, v2Schema);
     await amplifyPushUpdate(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
-    await runAndValidateQuery('test2', 'test2', 10);
+    await runAndValidateQuery("test2", "test2", 10);
   });
 
   const getAppSyncClientFromProj = (projRoot: string) => {
@@ -75,10 +79,10 @@ describe('transformer model searchable migration test', () => {
 
   const runMutation = async (query: string) => {
     try {
-      const q = [query, ...fragments].join('\n');
+      const q = [query, ...fragments].join("\n");
       const response = await appSyncClient.mutate({
         mutation: gql(q),
-        fetchPolicy: 'no-cache',
+        fetchPolicy: "no-cache",
       });
       return response;
     } catch (e) {
@@ -87,7 +91,8 @@ describe('transformer model searchable migration test', () => {
     }
   };
 
-  const createEntry = async (name: string, description: string, count: number) => await runMutation(getCreateTodosMutation(name, description, count));
+  const createEntry = async (name: string, description: string, count: number) =>
+    await runMutation(getCreateTodosMutation(name, description, count));
 
   function getCreateTodosMutation(name: string, description: string, count: number): string {
     return `mutation {

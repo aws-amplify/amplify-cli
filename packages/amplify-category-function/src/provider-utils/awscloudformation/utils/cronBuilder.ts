@@ -1,4 +1,4 @@
-const DEFAULT_INTERVAL = ['*'];
+const DEFAULT_INTERVAL = ["*"];
 /**
  * Initializes a CronBuilder with an optional initial cron expression.
  * @constructor
@@ -21,12 +21,12 @@ export class CronBuilder {
    */
   build() {
     return [
-      this.initialExpression.minute.join(','),
-      this.initialExpression.hour.join(','),
-      this.initialExpression.dayOfTheMonth.join(','),
-      this.initialExpression.month.join(','),
-      this.initialExpression.dayOfTheWeek.join(','),
-    ].join(' ');
+      this.initialExpression.minute.join(","),
+      this.initialExpression.hour.join(","),
+      this.initialExpression.dayOfTheMonth.join(","),
+      this.initialExpression.month.join(","),
+      this.initialExpression.dayOfTheWeek.join(","),
+    ].join(" ");
   }
 
   /**
@@ -34,8 +34,8 @@ export class CronBuilder {
    * @param {!string} measureOfTime one of "minute", "hour", etc
    * @returns {!string} comma separated blah blah
    */
-  get = function(measureOfTime) {
-    return this.initialExpression[measureOfTime].join(',');
+  get = function (measureOfTime) {
+    return this.initialExpression[measureOfTime].join(",");
   };
 
   /**
@@ -45,11 +45,11 @@ export class CronBuilder {
    * @returns {!string} the comma separated version of the value that you passed in
    * @throws {Error} if your "value" is not an Array&lt;String&gt;
    */
-  set = function(measureOfTime, value) {
+  set = function (measureOfTime, value) {
     if (!Array.isArray(value)) {
-      throw new Error('Invalid value; Value must be in the form of an Array.');
+      throw new Error("Invalid value; Value must be in the form of an Array.");
     }
     this.initialExpression[measureOfTime] = value;
-    return this.initialExpression[measureOfTime].join(',');
+    return this.initialExpression[measureOfTime].join(",");
   };
 }

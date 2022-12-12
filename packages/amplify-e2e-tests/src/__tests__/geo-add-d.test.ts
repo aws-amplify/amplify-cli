@@ -13,26 +13,26 @@ import {
   getMap,
   generateRandomShortId,
   getGeoJSConfiguration,
-} from '@aws-amplify/amplify-e2e-core';
-import { existsSync } from 'fs';
-import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import { existsSync } from "fs";
+import path from "path";
+import { getAWSExports } from "../aws-exports/awsExports";
 
-describe('amplify geo add d', () => {
+describe("amplify geo add d", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('geo-add-test');
+    projRoot = await createNewProjectDir("geo-add-test");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config and add two map resources with the second set to default', async () => {
+  it("init a project with default auth config and add two map resources with the second set to default", async () => {
     const map1Id = `map${generateRandomShortId()}`;
     const map2Id = `map${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});

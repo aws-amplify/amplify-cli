@@ -11,24 +11,22 @@ import {
   getProjectMeta,
   getUserPool,
   updateHeadlessAuth,
-} from '@aws-amplify/amplify-e2e-core';
-import { UpdateAuthRequest } from 'amplify-headless-interface';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as _ from 'lodash';
-import {
-  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile,
-} from '../../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { UpdateAuthRequest } from "amplify-headless-interface";
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as _ from "lodash";
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from "../../../migration-helpers";
 
 const defaultSettings = {
-  name: 'authMigration',
+  name: "authMigration",
 };
-describe('amplify auth migration e', () => {
+describe("amplify auth migration e", () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: 'unintialized' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: "unintialized" };
+    const migrateToVersion = { v: "unintialized" };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
@@ -36,29 +34,29 @@ describe('amplify auth migration e', () => {
   });
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth_migration');
+    projRoot = await createNewProjectDir("auth_migration");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot, undefined, true);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('updates existing auth resource', async () => {
+  it("updates existing auth resource", async () => {
     const updateAuthRequest: UpdateAuthRequest = {
       version: 2,
       serviceModification: {
-        serviceName: 'Cognito',
+        serviceName: "Cognito",
         userPoolModification: {
           userPoolGroups: [
             {
-              groupName: 'group1',
+              groupName: "group1",
             },
             {
-              groupName: 'group2',
+              groupName: "group2",
             },
           ],
         },
@@ -74,9 +72,9 @@ describe('amplify auth migration e', () => {
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
-    expect(_.get(meta, ['auth', 'userPoolGroups'])).toBeDefined();
+    expect(_.get(meta, ["auth", "userPoolGroups"])).toBeDefined();
   });
 });

@@ -3,7 +3,7 @@ export function override(props: any): any {
     challengeRequiredOnNewDevice: true,
   };
   props.userPool.userAttributeUpdateSettings = {
-    attributesRequireVerificationBeforeUpdate: ['email'],
+    attributesRequireVerificationBeforeUpdate: ["email"],
   };
   return props;
 }

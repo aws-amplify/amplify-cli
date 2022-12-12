@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-cycle
-import { AMPLIFY_SUPPORT_DOCS } from '../cliConstants';
+import { AMPLIFY_SUPPORT_DOCS } from "../cliConstants";
 
 /**
  * Base class for all Amplify exceptions
@@ -29,7 +29,7 @@ export abstract class AmplifyException extends Error {
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
     public readonly options: AmplifyExceptionOptions,
-    public readonly downstreamException?: Error,
+    public readonly downstreamException?: Error
   ) {
     // If an AmplifyException was already thrown, we must allow it to reach the user.
     // This ensures that resolution steps, and the original error are bubbled up.
@@ -45,29 +45,32 @@ export abstract class AmplifyException extends Error {
   }
 
   toObject = (): object => {
-    const {
-      name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack,
-    } = this;
+    const { name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack } = this;
 
     return {
-      errorName, errorMessage, errorDetails, resolution, link, ...(process.argv.includes('--debug') ? { stack } : {}),
+      errorName,
+      errorMessage,
+      errorDetails,
+      resolution,
+      link,
+      ...(process.argv.includes("--debug") ? { stack } : {}),
     };
-  }
+  };
 }
 
 /**
  * Amplify exception classifications
  */
-export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
+export type AmplifyExceptionClassification = "FAULT" | "ERROR";
 
 /**
  * Amplify Error options object
  */
 export type AmplifyExceptionOptions = {
-  message: string,
-  details?: string,
-  resolution?: string,
-  link?: string,
+  message: string;
+  details?: string;
+  resolution?: string;
+  link?: string;
 };
 
 /**
@@ -86,101 +89,101 @@ export type AmplifyExceptionType = AmplifyErrorType | AmplifyFaultType;
  * Amplify error types
  */
 export type AmplifyErrorType =
-  | 'AmplifyStudioError'
-  | 'AmplifyStudioLoginError'
-  | 'AmplifyStudioNotEnabledError'
-  | 'ApiCategorySchemaNotFoundError'
-  | 'AuthImportError'
-  | 'BackendConfigValidationError'
-  | 'BucketAlreadyExistsError'
-  | 'BucketNotFoundError'
-  | 'CategoryNotEnabledError'
-  | 'CloudFormationTemplateError'
-  | 'CommandNotSupportedError'
-  | 'ConfigurationError'
-  | 'DeploymentError'
-  | 'DeploymentInProgressError'
-  | 'DirectoryError'
-  | 'DirectoryAlreadyExistsError'
-  | 'DuplicateLogicalIdError'
-  | 'EnvironmentConfigurationError'
-  | 'EnvironmentNameError'
-  | 'EnvironmentNotInitializedError'
-  | 'FeatureFlagsValidationError'
-  | 'FrameworkNotSupportedError'
-  | 'FunctionTooLargeError'
-  | 'InputValidationError'
-  | 'InvalidAmplifyAppIdError'
-  | 'InvalidCustomResourceError'
-  | 'InvalidOverrideError'
-  | 'InvalidStackError'
-  | 'IterativeRollbackError'
-  | 'LambdaLayerDeleteError'
-  | 'MigrationError'
-  | 'MissingAmplifyMetaFileError'
-  | 'MissingOverridesInstallationRequirementsError'
-  | 'ModelgenError'
-  | 'NestedProjectInitError'
-  | 'NoUpdateBackendError'
-  | 'NotImplementedError'
-  | 'OpenSslCertificateError'
-  | 'ParameterNotFoundError'
-  | 'PermissionsError'
-  | 'PluginMethodNotFoundError'
-  | 'PluginNotFoundError'
-  | 'PluginPolicyAddError'
-  | 'ProfileConfigurationError'
-  | 'ProjectAppIdResolveError'
-  | 'ProjectInitError'
-  | 'ProjectNotFoundError'
-  | 'ProjectNotInitializedError'
-  | 'PushResourcesError'
-  | 'RegionNotAvailableError'
-  | 'RemoveNotificationAppError'
-  | 'ResourceAlreadyExistsError'
-  | 'ResourceInUseError'
-  | 'ResourceNotReadyError'
-  | 'StackNotFoundError'
-  | 'StackStateError'
-  | 'UserInputError'
-  | 'MockProcessError'
-  | 'SearchableMockUnsupportedPlatformError'
-  | 'SearchableMockUnavailablePortError'
-  | 'SearchableMockProcessError';
+  | "AmplifyStudioError"
+  | "AmplifyStudioLoginError"
+  | "AmplifyStudioNotEnabledError"
+  | "ApiCategorySchemaNotFoundError"
+  | "AuthImportError"
+  | "BackendConfigValidationError"
+  | "BucketAlreadyExistsError"
+  | "BucketNotFoundError"
+  | "CategoryNotEnabledError"
+  | "CloudFormationTemplateError"
+  | "CommandNotSupportedError"
+  | "ConfigurationError"
+  | "DeploymentError"
+  | "DeploymentInProgressError"
+  | "DirectoryError"
+  | "DirectoryAlreadyExistsError"
+  | "DuplicateLogicalIdError"
+  | "EnvironmentConfigurationError"
+  | "EnvironmentNameError"
+  | "EnvironmentNotInitializedError"
+  | "FeatureFlagsValidationError"
+  | "FrameworkNotSupportedError"
+  | "FunctionTooLargeError"
+  | "InputValidationError"
+  | "InvalidAmplifyAppIdError"
+  | "InvalidCustomResourceError"
+  | "InvalidOverrideError"
+  | "InvalidStackError"
+  | "IterativeRollbackError"
+  | "LambdaLayerDeleteError"
+  | "MigrationError"
+  | "MissingAmplifyMetaFileError"
+  | "MissingOverridesInstallationRequirementsError"
+  | "ModelgenError"
+  | "NestedProjectInitError"
+  | "NoUpdateBackendError"
+  | "NotImplementedError"
+  | "OpenSslCertificateError"
+  | "ParameterNotFoundError"
+  | "PermissionsError"
+  | "PluginMethodNotFoundError"
+  | "PluginNotFoundError"
+  | "PluginPolicyAddError"
+  | "ProfileConfigurationError"
+  | "ProjectAppIdResolveError"
+  | "ProjectInitError"
+  | "ProjectNotFoundError"
+  | "ProjectNotInitializedError"
+  | "PushResourcesError"
+  | "RegionNotAvailableError"
+  | "RemoveNotificationAppError"
+  | "ResourceAlreadyExistsError"
+  | "ResourceInUseError"
+  | "ResourceNotReadyError"
+  | "StackNotFoundError"
+  | "StackStateError"
+  | "UserInputError"
+  | "MockProcessError"
+  | "SearchableMockUnsupportedPlatformError"
+  | "SearchableMockUnavailablePortError"
+  | "SearchableMockProcessError";
 
 /**
  * Amplify fault types
  */
 export type AmplifyFaultType =
-  | 'AnalyticsCategoryFault'
-  | 'AmplifyBackupFault'
-  | 'BackendPullFault'
-  | 'ConfigurationFault'
-  | 'BackendDeleteFault'
-  | 'ConfigurationFault'
-  | 'DeploymentFault'
-  | 'NotificationsChannelAPNSFault'
-  | 'NotificationsChannelEmailFault'
-  | 'NotificationsChannelFCMFault'
-  | 'NotificationsChannelSmsFault'
-  | 'NotificationsChannelInAppMessagingFault'
-  | 'NotImplementedFault'
-  | 'ProjectDeleteFault'
-  | 'ProjectInitFault'
-  | 'PluginNotLoadedFault'
-  | 'PushResourcesFault'
-  | 'PullBackendFault'
-  | 'ResourceExportFault'
-  | 'ResourceNotFoundFault'
-  | 'ResourceNotReadyFault'
-  | 'ResourceRemoveFault'
-  | 'RootStackNotFoundFault'
-  | 'ServiceCallFault'
-  | 'TimeoutFault'
-  | 'TriggerUploadFault'
-  | 'UnexpectedS3Fault'
-  | 'UnknownFault'
-  | 'UnknownNodeJSFault'
-  | 'MockProcessFault'
-  | 'AuthCategoryFault'
-  | 'ZipExtractFault';
+  | "AnalyticsCategoryFault"
+  | "AmplifyBackupFault"
+  | "BackendPullFault"
+  | "ConfigurationFault"
+  | "BackendDeleteFault"
+  | "ConfigurationFault"
+  | "DeploymentFault"
+  | "NotificationsChannelAPNSFault"
+  | "NotificationsChannelEmailFault"
+  | "NotificationsChannelFCMFault"
+  | "NotificationsChannelSmsFault"
+  | "NotificationsChannelInAppMessagingFault"
+  | "NotImplementedFault"
+  | "ProjectDeleteFault"
+  | "ProjectInitFault"
+  | "PluginNotLoadedFault"
+  | "PushResourcesFault"
+  | "PullBackendFault"
+  | "ResourceExportFault"
+  | "ResourceNotFoundFault"
+  | "ResourceNotReadyFault"
+  | "ResourceRemoveFault"
+  | "RootStackNotFoundFault"
+  | "ServiceCallFault"
+  | "TimeoutFault"
+  | "TriggerUploadFault"
+  | "UnexpectedS3Fault"
+  | "UnknownFault"
+  | "UnknownNodeJSFault"
+  | "MockProcessFault"
+  | "AuthCategoryFault"
+  | "ZipExtractFault";

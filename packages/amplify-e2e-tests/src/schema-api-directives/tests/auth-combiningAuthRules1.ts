@@ -1,4 +1,4 @@
-import { runMultiAutTest } from '../common';
+import { runMultiAutTest } from "../common";
 
 export async function runTest(projectDir: string, testModule: any) {
   await runMultiAutTest(projectDir, testModule);
@@ -40,18 +40,18 @@ mutation CreatePost(
 }`;
 export const input_mutation = {
   input: {
-    id: '1',
-    title: 'title1',
+    id: "1",
+    title: "title1",
   },
 };
 export const expected_result_mutation = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
-      owner: 'user1',
+      id: "1",
+      title: "title1",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
+      owner: "user1",
     },
   },
 };

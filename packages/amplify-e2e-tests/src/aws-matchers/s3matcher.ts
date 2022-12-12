@@ -1,4 +1,4 @@
-import { S3 } from 'aws-sdk';
+import { S3 } from "aws-sdk";
 
 export const toBeAS3Bucket = async (bucketName: string) => {
   const s3 = new S3();

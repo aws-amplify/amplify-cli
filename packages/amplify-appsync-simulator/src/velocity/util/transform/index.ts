@@ -1,27 +1,27 @@
-import { generateFilterExpression } from './dynamodb-filter';
-import ElasticsearchHelper from '../elasticsearch-helper';
-import { $TSObject } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { generateFilterExpression } from "./dynamodb-filter";
+import ElasticsearchHelper from "../elasticsearch-helper";
+import { $TSObject } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
 export const transformUtils = {
-  toDynamoDBConditionExpression: condition => {
+  toDynamoDBConditionExpression: (condition) => {
     const result = generateFilterExpression(condition.toJSON());
     return JSON.stringify({
-      expression: result.expressions.join(' ').trim(),
+      expression: result.expressions.join(" ").trim(),
       expressionNames: result.expressionNames,
     });
   },
 
-  toDynamoDBFilterExpression: filter => {
+  toDynamoDBFilterExpression: (filter) => {
     const result = generateFilterExpression(filter.toJSON());
     return JSON.stringify({
-      expression: result.expressions.join(' ').trim(),
+      expression: result.expressions.join(" ").trim(),
       expressionNames: result.expressionNames,
       expressionValues: result.expressionValues,
     });
   },
 
-  toElasticsearchQueryDSL: filter => {
+  toElasticsearchQueryDSL: (filter) => {
     const elasticsearchHelper = new ElasticsearchHelper();
     if (!filter) {
       return null;
@@ -34,5 +34,5 @@ export const transformUtils = {
       printer.error("Error when constructing the Elasticsearch Query DSL using the model transform utils. {}");
       return null;
     }
-  }
+  },
 };

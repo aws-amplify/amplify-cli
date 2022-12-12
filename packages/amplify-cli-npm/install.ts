@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { install } from '.';
+import { install } from ".";
 
 install();

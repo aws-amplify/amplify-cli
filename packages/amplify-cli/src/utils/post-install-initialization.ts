@@ -1,6 +1,6 @@
-import { GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { GetPackageAssetPaths, pathManager } from "amplify-cli-core";
+import * as fs from "fs-extra";
+import * as path from "path";
 
 /**
  * This function is run first thing after a new Amplify installation
@@ -12,12 +12,12 @@ export const postInstallInitialization = async () => {
   await fs.ensureDir(pathManager.getAmplifyLibRoot());
 
   // set env var to prevent errors due to no package libs
-  process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB = 'true';
+  process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB = "true";
 
   await Promise.all(
-    copyPkgAssetRegistry.map(async packageName => {
+    copyPkgAssetRegistry.map(async (packageName) => {
       const { getPackageAssetPaths } = (await import(packageName)) as { getPackageAssetPaths: GetPackageAssetPaths };
-      if (typeof getPackageAssetPaths !== 'function') {
+      if (typeof getPackageAssetPaths !== "function") {
         return;
       }
       const pluginArtifactPaths = await getPackageAssetPaths();
@@ -25,17 +25,13 @@ export const postInstallInitialization = async () => {
         return;
       }
       await Promise.all(
-        pluginArtifactPaths.map(assetPath => {
+        pluginArtifactPaths.map((assetPath) => {
           const resolvedPackageRoot = resolvePackageRoot(packageName);
           const targetLibFolder = pathManager.getAmplifyPackageLibDirPath(packageName);
-          fs.copy(
-            path.join(resolvedPackageRoot, assetPath),
-            path.join(targetLibFolder, assetPath),
-          )
-        }
-        ),
+          fs.copy(path.join(resolvedPackageRoot, assetPath), path.join(targetLibFolder, assetPath));
+        })
       );
-    }),
+    })
   );
   delete process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB;
 };
@@ -43,15 +39,15 @@ export const postInstallInitialization = async () => {
 const resolvePackageRoot = (packageName: string) => {
   const resolveDir = path.parse(require.resolve(packageName)).dir;
   const pathParts = resolveDir.split(path.sep);
-  return pathParts.slice(0, pathParts.indexOf(packageName.replace(/^@.+\//, '')) + 1).join(path.sep);
+  return pathParts.slice(0, pathParts.indexOf(packageName.replace(/^@.+\//, "")) + 1).join(path.sep);
 };
 
 // Registry of packages that have files that need to be copied to the .amplify folder on CLI installation
 const copyPkgAssetRegistry = [
-  'amplify-dynamodb-simulator',
-  'amplify-frontend-ios',
-  'amplify-go-function-runtime-provider',
-  'amplify-java-function-runtime-provider',
-  '@aws-amplify/amplify-opensearch-simulator',
-  'amplify-python-function-runtime-provider',
+  "amplify-dynamodb-simulator",
+  "amplify-frontend-ios",
+  "amplify-go-function-runtime-provider",
+  "amplify-java-function-runtime-provider",
+  "@aws-amplify/amplify-opensearch-simulator",
+  "amplify-python-function-runtime-provider",
 ];

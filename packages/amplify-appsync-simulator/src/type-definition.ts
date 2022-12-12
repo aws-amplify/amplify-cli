@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request } from "express";
 export type AppSyncMockFile = {
   path?: string;
   content: string;
@@ -11,8 +11,8 @@ export type AppSyncSimulatorFunctionsConfig = {
   responseMappingTemplateLocation: string;
 };
 export enum RESOLVER_KIND {
-  UNIT = 'UNIT',
-  PIPELINE = 'PIPELINE',
+  UNIT = "UNIT",
+  PIPELINE = "PIPELINE",
 }
 
 export interface AppSyncSimulatorBaseResolverConfig {
@@ -47,10 +47,10 @@ export interface AppSyncSimulatorPipelineResolver extends AppSyncSimulatorUnitRe
 }
 
 export const enum AppSyncSimulatorDataSourceType {
-  DynamoDB = 'AMAZON_DYNAMODB',
-  Lambda = 'AWS_LAMBDA',
-  OpenSearch = 'AMAZON_ELASTICSEARCH',
-  None = 'NONE',
+  DynamoDB = "AMAZON_DYNAMODB",
+  Lambda = "AWS_LAMBDA",
+  OpenSearch = "AMAZON_ELASTICSEARCH",
+  None = "NONE",
 }
 
 export interface AppSyncSimulatorDataSourceBaseConfig {
@@ -82,11 +82,11 @@ export type AppSyncSimulatorDataSourceConfig =
 export type AppSyncSimulatorSchemaConfig = AppSyncMockFile;
 
 export enum AmplifyAppSyncSimulatorAuthenticationType {
-  API_KEY = 'API_KEY',
-  AWS_IAM = 'AWS_IAM',
-  AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
-  OPENID_CONNECT = 'OPENID_CONNECT',
-  AWS_LAMBDA = 'AWS_LAMBDA',
+  API_KEY = "API_KEY",
+  AWS_IAM = "AWS_IAM",
+  AMAZON_COGNITO_USER_POOLS = "AMAZON_COGNITO_USER_POOLS",
+  OPENID_CONNECT = "OPENID_CONNECT",
+  AWS_LAMBDA = "AWS_LAMBDA",
 }
 
 export type AmplifyAppSyncAuthenticationProviderAPIConfig = {

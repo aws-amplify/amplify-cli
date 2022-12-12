@@ -1,17 +1,17 @@
-import { $TSContext } from 'amplify-cli-core';
-import { run } from '../../commands/storage/update';
-import * as providerController from '../../provider-utils/awscloudformation/index';
+import { $TSContext } from "amplify-cli-core";
+import { run } from "../../commands/storage/update";
+import * as providerController from "../../provider-utils/awscloudformation/index";
 
-jest.mock('../../provider-utils/awscloudformation/index');
-jest.mock('amplify-cli-core');
+jest.mock("../../provider-utils/awscloudformation/index");
+jest.mock("amplify-cli-core");
 
 const providerController_mock = providerController as jest.Mocked<typeof providerController>;
 providerController_mock.updateResource.mockImplementation = jest.fn().mockImplementation(async () => {
-  return 'mockResourceName';
+  return "mockResourceName";
 });
 
-describe('update ddb command tests', () => {
-  const provider = 'awscloudformation';
+describe("update ddb command tests", () => {
+  const provider = "awscloudformation";
   let mockContext: $TSContext;
 
   beforeEach(() => {
@@ -21,20 +21,20 @@ describe('update ddb command tests', () => {
     } as unknown as $TSContext;
   });
 
-  it('update resource workflow is invoked for DDB', async () => {
-    const service = 'DynamoDB';
+  it("update resource workflow is invoked for DDB", async () => {
+    const service = "DynamoDB";
     mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
       return { service: service, providerName: provider };
     });
 
     await run(mockContext);
 
-    expect(providerController_mock.updateResource).toHaveBeenCalledWith(mockContext, 'storage', service);
+    expect(providerController_mock.updateResource).toHaveBeenCalledWith(mockContext, "storage", service);
   });
 });
 
-describe('update s3 command tests', () => {
-  const provider = 'awscloudformation';
+describe("update s3 command tests", () => {
+  const provider = "awscloudformation";
   let mockContext: $TSContext;
 
   beforeEach(() => {
@@ -44,14 +44,14 @@ describe('update s3 command tests', () => {
     } as unknown as $TSContext;
   });
 
-  it('update resource workflow is invoked for S3', async () => {
-    const service = 'S3';
+  it("update resource workflow is invoked for S3", async () => {
+    const service = "S3";
     mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
       return { service: service, providerName: provider };
     });
 
     await run(mockContext);
 
-    expect(providerController_mock.updateResource).toHaveBeenCalledWith(mockContext, 'storage', service);
+    expect(providerController_mock.updateResource).toHaveBeenCalledWith(mockContext, "storage", service);
   });
 });

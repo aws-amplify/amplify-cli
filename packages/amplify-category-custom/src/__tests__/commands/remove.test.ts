@@ -1,9 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
-import { run } from '../../commands/custom/remove';
+import { $TSContext } from "amplify-cli-core";
+import { run } from "../../commands/custom/remove";
 
-jest.mock('amplify-cli-core');
+jest.mock("amplify-cli-core");
 
-describe('remove custom resource command tests', () => {
+describe("remove custom resource command tests", () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
@@ -14,18 +14,18 @@ describe('remove custom resource command tests', () => {
     } as unknown as $TSContext;
   });
 
-  it('remove resource workflow is invoked for custom resources with no params', async () => {
+  it("remove resource workflow is invoked for custom resources with no params", async () => {
     mockContext.amplify.removeResource = jest.fn().mockImplementation(async () => {
       return;
     });
 
     await run(mockContext);
 
-    expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, 'custom', undefined);
+    expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, "custom", undefined);
   });
 
-  it('remove resource workflow is invoked for custom resource with params as resourceName', async () => {
-    const mockResourceName = 'mockResourceName';
+  it("remove resource workflow is invoked for custom resource with params as resourceName", async () => {
+    const mockResourceName = "mockResourceName";
     mockContext.parameters.first = mockResourceName;
     mockContext.amplify.removeResource = jest.fn().mockImplementation(async () => {
       return;
@@ -33,6 +33,6 @@ describe('remove custom resource command tests', () => {
 
     await run(mockContext);
 
-    expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, 'custom', mockResourceName);
+    expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, "custom", mockResourceName);
   });
 });

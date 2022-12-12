@@ -1,10 +1,8 @@
-import {
-  $TSContext, AmplifyError,
-} from 'amplify-cli-core';
-import { checkResourceInUseByNotifications } from '../../plugin-client-api-notifications';
+import { $TSContext, AmplifyError } from "amplify-cli-core";
+import { checkResourceInUseByNotifications } from "../../plugin-client-api-notifications";
 
-const subcommand = 'remove';
-const category = 'analytics';
+const subcommand = "remove";
+const category = "analytics";
 
 export const name = subcommand;
 
@@ -20,7 +18,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const throwIfUsedByNotifications = async (selectedAnalyticsResource: string): Promise<void> => {
     const isResourceInUse = await checkResourceInUseByNotifications(context, selectedAnalyticsResource);
     if (isResourceInUse) {
-      throw new AmplifyError('ResourceInUseError', {
+      throw new AmplifyError("ResourceInUseError", {
         message: `Analytics resource ${selectedAnalyticsResource} is being used by the notifications category and cannot be removed`,
         resolution: `Run 'amplify remove notifications', then retry removing analytics`,
       });

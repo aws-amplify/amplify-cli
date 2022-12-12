@@ -1,14 +1,14 @@
-import { Source, GraphQLSchema } from 'graphql';
-import slash from 'slash';
-import { generateResolvers } from './schema';
-import { VelocityTemplate } from './velocity';
-import { getDataLoader, AmplifyAppSyncSimulatorDataLoader } from './data-loader';
-import { AppSyncUnitResolver } from './resolvers';
-import { AppSyncSimulatorServer } from './server';
-export { addDataLoader, removeDataLoader } from './data-loader';
-import { PubSub, withFilter } from 'graphql-subscriptions';
-import { AmplifySimulatorFunction } from './resolvers/function';
-import { AppSyncPipelineResolver } from './resolvers/pipeline-resolver';
+import { Source, GraphQLSchema } from "graphql";
+import slash from "slash";
+import { generateResolvers } from "./schema";
+import { VelocityTemplate } from "./velocity";
+import { getDataLoader, AmplifyAppSyncSimulatorDataLoader } from "./data-loader";
+import { AppSyncUnitResolver } from "./resolvers";
+import { AppSyncSimulatorServer } from "./server";
+export { addDataLoader, removeDataLoader } from "./data-loader";
+import { PubSub, withFilter } from "graphql-subscriptions";
+import { AmplifySimulatorFunction } from "./resolvers/function";
+import { AppSyncPipelineResolver } from "./resolvers/pipeline-resolver";
 import {
   AppSyncSimulatorServerConfig,
   AmplifyAppSyncSimulatorConfig,
@@ -17,18 +17,18 @@ import {
   AppSyncSimulatorUnitResolverConfig,
   AmplifyAppSyncAPIConfig,
   AppSyncSimulatorMappingTemplate,
-} from './type-definition';
-import { filterSubscriptions } from './utils';
-export { AppSyncGraphQLExecutionContext, JWTToken, IAMToken } from './utils';
-export * from './type-definition';
-export * from './velocity';
+} from "./type-definition";
+import { filterSubscriptions } from "./utils";
+export { AppSyncGraphQLExecutionContext, JWTToken, IAMToken } from "./utils";
+export * from "./type-definition";
+export * from "./velocity";
 
 const DEFAULT_API_CONFIG: Partial<AmplifyAppSyncAPIConfig> = {
-  authRoleName: 'assumed-role/authRole/CognitoIdentityCredentials',
-  unAuthRoleName: 'assumed-role/unAuthRole/CognitoIdentityCredentials',
-  authAccessKeyId: 'ASIAVJKIAM-AuthRole', // when accessKeyId matches assume the authRole. Otherwise, use unAuthRole
-  accountId: '12345678910',
-  apiKey: 'DA-FAKEKEY',
+  authRoleName: "assumed-role/authRole/CognitoIdentityCredentials",
+  unAuthRoleName: "assumed-role/unAuthRole/CognitoIdentityCredentials",
+  authAccessKeyId: "ASIAVJKIAM-AuthRole", // when accessKeyId matches assume the authRole. Otherwise, use unAuthRole
+  accountId: "12345678910",
+  apiKey: "DA-FAKEKEY",
 };
 
 export class AmplifyAppSyncSimulator {
@@ -48,14 +48,14 @@ export class AmplifyAppSyncSimulator {
     serverConfig: AppSyncSimulatorServerConfig = {
       port: 0,
       wsPort: 0,
-    },
+    }
   ) {
     this._serverConfig = serverConfig;
     this._pubsub = new PubSub();
     try {
       this._server = new AppSyncSimulatorServer(serverConfig, this);
     } catch (e) {
-      console.log('Could not start AppSync mock endpoint');
+      console.log("Could not start AppSync mock endpoint");
       console.log(e);
       throw e;
     }

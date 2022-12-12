@@ -1,8 +1,8 @@
-import { $TSAny, AmplifyError } from 'amplify-cli-core';
-import * as inquirer from 'inquirer';
-import sequential from 'promise-sequential';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { normalizeProviderName } from '../input-params-manager';
+import { $TSAny, AmplifyError } from "amplify-cli-core";
+import * as inquirer from "inquirer";
+import sequential from "promise-sequential";
+import { getProviderPlugins } from "../extensions/amplify-helpers/get-provider-plugins";
+import { normalizeProviderName } from "../input-params-manager";
 
 /**
  * Initializes the backend providers
@@ -27,15 +27,15 @@ const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
   const providerPluginList = Object.keys(providerPlugins);
 
   if (providerPluginList.length === 0) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Found no provider plugins',
+    throw new AmplifyError("ProjectInitError", {
+      message: "Found no provider plugins",
       resolution: `Run 'amplify plugin scan' to scan your system for provider plugins.`,
     });
   }
 
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       // eslint-disable-next-line no-param-reassign
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
@@ -50,9 +50,9 @@ const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
       providers.push(providerPluginList[0]);
     } else {
       const selectProviders: inquirer.CheckboxQuestion = {
-        type: 'checkbox',
-        name: 'selectedProviders',
-        message: 'Select the backend providers.',
+        type: "checkbox",
+        name: "selectedProviders",
+        message: "Select the backend providers.",
         choices: providerPluginList,
         default: providerPluginList[0],
       };

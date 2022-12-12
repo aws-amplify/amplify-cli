@@ -1,12 +1,23 @@
-import { CloudFront } from 'aws-sdk';
+import { CloudFront } from "aws-sdk";
 import {
-  amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand, initJSProjectWithProfile, deleteProject, deleteS3Bucket, addPRODHosting, removePRODCloudFront, removeHosting, amplifyPushWithoutCodegen, deleteProjectDir, getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+  amplifyPublishWithoutUpdate,
+  createReactTestProject,
+  resetBuildCommand,
+  initJSProjectWithProfile,
+  deleteProject,
+  deleteS3Bucket,
+  addPRODHosting,
+  removePRODCloudFront,
+  removeHosting,
+  amplifyPushWithoutCodegen,
+  deleteProjectDir,
+  getProjectMeta,
+} from "@aws-amplify/amplify-e2e-core";
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import * as path from "path";
 
-describe('amplify add hosting', () => {
+describe("amplify add hosting", () => {
   let projRoot: string;
 
   beforeAll(async () => {
@@ -29,18 +40,18 @@ describe('amplify add hosting', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('push creates correct amplify artifacts', async () => {
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
+  it("push creates correct amplify artifacts", async () => {
+    expect(fs.existsSync(path.join(projRoot, "amplify", "backend", "hosting", "S3AndCloudFront"))).toBe(true);
     const projectMeta = getProjectMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();
     expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
     expect(projectMeta.hosting.S3AndCloudFront.output.CloudFrontDistributionID).toBeDefined();
 
     const cloudFrontDistribution = await getCloudFrontDistribution(projectMeta.hosting.S3AndCloudFront.output.CloudFrontDistributionID);
-    expect(cloudFrontDistribution.DistributionConfig.HttpVersion).toEqual('http2');
+    expect(cloudFrontDistribution.DistributionConfig.HttpVersion).toEqual("http2");
   });
 
-  it('publish successfully', async () => {
+  it("publish successfully", async () => {
     let error;
     try {
       // root stack updated
@@ -51,8 +62,8 @@ describe('amplify add hosting', () => {
     expect(error).not.toBeDefined();
   });
 
-  it('publish throws error if build command is missing', async () => {
-    const currentBuildCommand = resetBuildCommand(projRoot, '');
+  it("publish throws error if build command is missing", async () => {
+    const currentBuildCommand = resetBuildCommand(projRoot, "");
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);
@@ -60,14 +71,14 @@ describe('amplify add hosting', () => {
       error = err;
     }
     expect(error).toBeDefined();
-    expect(error.message).toEqual('Process exited with non zero exit code 1');
+    expect(error.message).toEqual("Process exited with non zero exit code 1");
     resetBuildCommand(projRoot, currentBuildCommand);
   });
 
-  it('correctly updates hosting meta output after CloudFront is removed', async () => {
+  it("correctly updates hosting meta output after CloudFront is removed", async () => {
     await removePRODCloudFront(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
+    expect(fs.existsSync(path.join(projRoot, "amplify", "backend", "hosting", "S3AndCloudFront"))).toBe(true);
     const projectMeta = getProjectMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();
     expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();

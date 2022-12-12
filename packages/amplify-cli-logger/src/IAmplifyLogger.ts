@@ -1,4 +1,4 @@
-import { LogErrorPayload, LogPayload } from './Types';
+import { LogErrorPayload, LogPayload } from "./Types";
 
 export interface IAmplifyLogger {
   logError(content: LogErrorPayload): void;

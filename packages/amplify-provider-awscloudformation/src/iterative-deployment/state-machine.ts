@@ -1,4 +1,4 @@
-import { EventObject, Machine, State, assign } from 'xstate';
+import { EventObject, Machine, State, assign } from "xstate";
 import {
   getDeploymentActivityPollerHandler,
   getDeploymentOperationHandler,
@@ -8,8 +8,8 @@ import {
   isDeploymentComplete,
   isRollbackComplete,
   collectError,
-} from './helpers';
-import { send } from 'xstate/lib/actions';
+} from "./helpers";
+import { send } from "xstate/lib/actions";
 
 export type DeploymentMachineOp = {
   stackTemplatePath: string;
@@ -37,7 +37,7 @@ export type DeployMachineContext = {
   previousDeploymentIndex?: number;
 };
 
-export type DeploymentMachineEvents = 'IDLE' | 'DEPLOY' | 'ROLLBACK' | 'INDEX' | 'DONE' | 'NEXT';
+export type DeploymentMachineEvents = "IDLE" | "DEPLOY" | "ROLLBACK" | "INDEX" | "DONE" | "NEXT";
 
 export type DeploymentMachineState = State<
   DeployMachineContext,
@@ -118,74 +118,74 @@ export type StateMachineDeployHelperFunctions = {
   startRollbackFn: (context: Readonly<DeployMachineContext>) => Promise<void>;
 };
 
-export type StateMachineRollbackHelperFunctions = Omit<StateMachineDeployHelperFunctions, 'deploymentWaitFn' | 'deployFn'> & {
+export type StateMachineRollbackHelperFunctions = Omit<StateMachineDeployHelperFunctions, "deploymentWaitFn" | "deployFn"> & {
   preRollbackTableCheck: (stack: Readonly<DeploymentMachineOp>) => Promise<void>;
 };
 
 export function createDeploymentMachine(initialContext: DeployMachineContext, helperFns: StateMachineDeployHelperFunctions) {
   const machine = Machine<DeployMachineContext, DeployMachineSchema, DeployMachineEvent>(
     {
-      id: 'DeployManager',
-      initial: 'idle',
+      id: "DeployManager",
+      initial: "idle",
       context: initialContext,
       states: {
         idle: {
           on: {
             DEPLOY: {
-              target: 'deploy',
-              actions: send('NEXT'),
+              target: "deploy",
+              actions: send("NEXT"),
             },
           },
         },
         deploy: {
-          id: 'deploy',
-          initial: 'triggerDeploy',
+          id: "deploy",
+          initial: "triggerDeploy",
           states: {
             triggerDeploy: {
-              entry: assign(context => {
+              entry: assign((context) => {
                 return {
                   ...context,
                   currentIndex: context.currentIndex + 1,
                 };
               }),
               on: {
-                NEXT: [{ target: '#deployed', cond: 'isDeploymentComplete' }, { target: 'deploying' }],
+                NEXT: [{ target: "#deployed", cond: "isDeploymentComplete" }, { target: "deploying" }],
               },
             },
             deploying: {
               invoke: {
-                id: 'deploy-stack',
+                id: "deploy-stack",
                 src: getDeploymentOperationHandler(helperFns.deployFn),
                 onDone: {
-                  target: 'waitingForDeployment',
+                  target: "waitingForDeployment",
                 },
                 onError: {
-                  target: '#rollback',
+                  target: "#rollback",
                   actions: assign(collectError),
                 },
               },
             },
             waitingForDeployment: {
               invoke: {
-                id: 'wait-for-deploy-stack',
+                id: "wait-for-deploy-stack",
                 src: getDeploymentOperationHandler(helperFns.deploymentWaitFn),
                 onDone: {
-                  target: 'waitForTablesToBeReady',
+                  target: "waitForTablesToBeReady",
                 },
                 onError: {
-                  target: '#rollback',
+                  target: "#rollback",
                   actions: assign(collectError),
                 },
               },
-              activities: ['deployPoll'],
+              activities: ["deployPoll"],
             },
             waitForTablesToBeReady: {
               invoke: {
-                id: 'wait-for-table-to-be-ready',
+                id: "wait-for-table-to-be-ready",
                 src: getDeploymentOperationHandler(helperFns.tableReadyWaitFn),
                 onDone: {
-                  target: 'triggerDeploy',
-                  actions: send('NEXT'),
+                  target: "triggerDeploy",
+                  actions: send("NEXT"),
                 },
                 onError: {
                   actions: assign(collectError),
@@ -195,10 +195,10 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
           },
         },
         rollback: {
-          id: 'rollback',
-          initial: 'waitForTablesToBeReady',
+          id: "rollback",
+          initial: "waitForTablesToBeReady",
           invoke: {
-            id: 'enter-rollback',
+            id: "enter-rollback",
             src: helperFns.startRollbackFn,
           },
           states: {
@@ -210,43 +210,43 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 };
               }),
               on: {
-                NEXT: [{ target: '#rolledBack', cond: 'isRollbackComplete' }, { target: 'rollingBack' }],
+                NEXT: [{ target: "#rolledBack", cond: "isRollbackComplete" }, { target: "rollingBack" }],
               },
             },
             rollingBack: {
               invoke: {
-                id: 'rollback-stack',
+                id: "rollback-stack",
                 src: getRollbackOperationHandler(helperFns.rollbackFn),
                 onDone: {
-                  target: 'waitingForRollback',
+                  target: "waitingForRollback",
                 },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
             },
             waitingForRollback: {
               invoke: {
-                id: 'wait-for-deployment',
+                id: "wait-for-deployment",
                 src: getRollbackOperationHandler(helperFns.rollbackWaitFn),
                 onDone: {
-                  target: 'waitForTablesToBeReady',
+                  target: "waitForTablesToBeReady",
                 },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
-              activities: ['rollbackPoll'],
+              activities: ["rollbackPoll"],
             },
             waitForTablesToBeReady: {
               invoke: {
-                id: 'wait-for-table-to-be-ready',
+                id: "wait-for-table-to-be-ready",
                 src: getRollbackOperationHandler(helperFns.tableReadyWaitFn),
                 onDone: {
-                  target: 'triggerRollback',
-                  actions: send('NEXT'),
+                  target: "triggerRollback",
+                  actions: send("NEXT"),
                 },
                 onError: {
                   actions: assign(collectError),
@@ -256,16 +256,16 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
           },
         },
         deployed: {
-          id: 'deployed',
-          type: 'final',
+          id: "deployed",
+          type: "final",
         },
         rolledBack: {
-          id: 'rolledBack',
-          type: 'final',
+          id: "rolledBack",
+          type: "final",
         },
         failed: {
-          id: 'failed',
-          type: 'final',
+          id: "failed",
+          type: "final",
         },
       },
     },
@@ -278,7 +278,7 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
         deployPoll: getDeploymentActivityPollerHandler(helperFns.stackEventPollFn),
         rollbackPoll: getRollbackActivityPollerHandler(helperFns.stackEventPollFn),
       },
-    },
+    }
   );
   return machine;
 }
@@ -286,39 +286,39 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
 export function createRollbackDeploymentMachine(initialContext: DeployMachineContext, helperFns: StateMachineRollbackHelperFunctions) {
   const machine = Machine<DeployMachineContext, DeploymentRollbackSchema, DeployMachineEvent>(
     {
-      id: 'DeployManager',
-      initial: 'idle',
+      id: "DeployManager",
+      initial: "idle",
       context: initialContext,
       states: {
         idle: {
           on: {
             ROLLBACK: {
-              target: 'preRollback',
+              target: "preRollback",
             },
           },
         },
         preRollback: {
-          id: 'pre-rollback',
-          initial: 'previousDeploymentReadyCheck',
+          id: "pre-rollback",
+          initial: "previousDeploymentReadyCheck",
           states: {
             previousDeploymentReadyCheck: {
-              id: 'previous-deployment-ready-check',
+              id: "previous-deployment-ready-check",
               invoke: {
                 src: getPreRollbackOperationHandler(helperFns.rollbackWaitFn),
-                onDone: { target: 'previousTableReadyCheck' },
+                onDone: { target: "previousTableReadyCheck" },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
             },
             previousTableReadyCheck: {
-              id: 'previous-table-ready-check',
+              id: "previous-table-ready-check",
               invoke: {
                 src: getPreRollbackOperationHandler(helperFns.preRollbackTableCheck),
-                onDone: { target: '#rollback' },
+                onDone: { target: "#rollback" },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
@@ -326,19 +326,19 @@ export function createRollbackDeploymentMachine(initialContext: DeployMachineCon
           },
         },
         rollback: {
-          id: 'rollback',
-          initial: 'enterRollback',
+          id: "rollback",
+          initial: "enterRollback",
           states: {
             enterRollback: {
               invoke: {
-                id: 'enter-rollback',
+                id: "enter-rollback",
                 src: helperFns.startRollbackFn,
                 onDone: {
-                  target: 'triggerRollback',
-                  actions: send('NEXT'),
+                  target: "triggerRollback",
+                  actions: send("NEXT"),
                 },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
@@ -351,39 +351,39 @@ export function createRollbackDeploymentMachine(initialContext: DeployMachineCon
                 };
               }),
               on: {
-                NEXT: [{ target: '#rolledBack', cond: 'isRollbackComplete' }, { target: 'rollingBack' }],
+                NEXT: [{ target: "#rolledBack", cond: "isRollbackComplete" }, { target: "rollingBack" }],
               },
             },
             rollingBack: {
               invoke: {
-                id: 'rollback-stack',
+                id: "rollback-stack",
                 src: getRollbackOperationHandler(helperFns.rollbackFn),
-                onDone: { target: 'waitingForRollback' },
+                onDone: { target: "waitingForRollback" },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
             },
             waitingForRollback: {
               invoke: {
-                id: 'wait-for-deployment',
+                id: "wait-for-deployment",
                 src: getRollbackOperationHandler(helperFns.rollbackWaitFn),
-                onDone: { target: 'waitForTablesToBeReady' },
+                onDone: { target: "waitForTablesToBeReady" },
                 onError: {
-                  target: '#failed',
+                  target: "#failed",
                   actions: assign(collectError),
                 },
               },
-              activities: ['rollbackPoll'],
+              activities: ["rollbackPoll"],
             },
             waitForTablesToBeReady: {
               invoke: {
-                id: 'wait-for-table-to-be-ready',
+                id: "wait-for-table-to-be-ready",
                 src: getRollbackOperationHandler(helperFns.tableReadyWaitFn),
                 onDone: {
-                  target: 'triggerRollback',
-                  actions: send('NEXT'),
+                  target: "triggerRollback",
+                  actions: send("NEXT"),
                 },
                 onError: { actions: assign(collectError) },
               },
@@ -391,19 +391,19 @@ export function createRollbackDeploymentMachine(initialContext: DeployMachineCon
           },
         },
         rolledBack: {
-          id: 'rolledBack',
-          type: 'final',
+          id: "rolledBack",
+          type: "final",
         },
         failed: {
-          id: 'failed',
-          type: 'final',
+          id: "failed",
+          type: "final",
         },
       },
     },
     {
       guards: { isRollbackComplete },
       activities: { rollbackPoll: getRollbackActivityPollerHandler(helperFns.stackEventPollFn) },
-    },
+    }
   );
   return machine;
 }

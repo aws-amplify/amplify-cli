@@ -14,31 +14,31 @@ import {
   updateAuthAddUserGroups,
   addGeofenceCollectionWithDefault,
   getGeofenceCollection,
-} from '@aws-amplify/amplify-e2e-core';
-import { existsSync } from 'fs';
-import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import { existsSync } from "fs";
+import path from "path";
+import { getAWSExports } from "../aws-exports/awsExports";
 
-describe('amplify geo add', () => {
+describe("amplify geo add", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('geo-add-test');
+    projRoot = await createNewProjectDir("geo-add-test");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config and add two geofence collection resources with the second set to default', async () => {
+  it("init a project with default auth config and add two geofence collection resources with the second set to default", async () => {
     const collection1Id = `geofencecollection${generateRandomShortId()}`;
     const collection2Id = `geofencecollection${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
+    const cognitoGroups = ["admin", "admin1"];
     await updateAuthAddUserGroups(projRoot, cognitoGroups);
     await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
     await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true });

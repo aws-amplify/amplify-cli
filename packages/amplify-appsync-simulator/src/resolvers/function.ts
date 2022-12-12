@@ -1,7 +1,7 @@
-import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorFunctionResolverConfig } from '../type-definition';
-import { VelocityTemplate } from '../velocity';
-import { AppSyncBaseResolver } from './base-resolver';
+import { AmplifyAppSyncSimulator } from "..";
+import { AppSyncSimulatorFunctionResolverConfig } from "../type-definition";
+import { VelocityTemplate } from "../velocity";
+import { AppSyncBaseResolver } from "./base-resolver";
 
 export class AmplifySimulatorFunction extends AppSyncBaseResolver {
   constructor(protected config: AppSyncSimulatorFunctionResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
@@ -47,7 +47,7 @@ export class AmplifySimulatorFunction extends AppSyncBaseResolver {
     const responseMappingResult = await responseMappingTemplate.render(
       { source, arguments: args, result, stash: requestTemplateResult.stash, prevResult, error },
       context,
-      info,
+      info
     );
     context.appsyncErrors = [...context.appsyncErrors, ...responseMappingResult.errors];
     return {

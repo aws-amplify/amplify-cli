@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import { FeatureFlagConfiguration, FeatureFlagsEntry } from './featureFlagTypes';
-import { FeatureFlagValueProvider } from './featureFlagValueProvider';
-import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
-import { stateManager } from '../state-manager'; // eslint-disable-line import/no-cycle
+import _ from "lodash";
+import { FeatureFlagConfiguration, FeatureFlagsEntry } from "./featureFlagTypes";
+import { FeatureFlagValueProvider } from "./featureFlagValueProvider";
+import { CLIEnvironmentProvider } from "../cliEnvironmentProvider";
+import { stateManager } from "../state-manager"; // eslint-disable-line import/no-cycle
 
 /**
  * Provides a feature flag file provider options type
@@ -19,7 +19,7 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
 
   public load = async (): Promise<FeatureFlagConfiguration> => {
     if (!this.options.projectPath) {
-      throw new Error('\'projectPath\' option is missing');
+      throw new Error("'projectPath' option is missing");
     }
 
     const result: FeatureFlagConfiguration = {
@@ -37,7 +37,7 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
     // Read environment level file if we have a valid environment and the file exists
     const envName = this.environmentProvider.getCurrentEnvName();
 
-    if (envName !== '') {
+    if (envName !== "") {
       const envFeatures = await this.loadConfig(this.options.projectPath, envName);
 
       if (envFeatures) {

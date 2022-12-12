@@ -1,11 +1,11 @@
-import { MultiProgressBar } from 'amplify-prompts';
+import { MultiProgressBar } from "amplify-prompts";
 import {
   createProgressBarFormatter,
   createItemFormatter,
   CFN_SUCCESS_STATUS,
   CNF_ERROR_STATUS,
   EventMap,
-} from '../utils/progress-bar-helpers';
+} from "../utils/progress-bar-helpers";
 
 /**
  * Initializing the root and individual category bars
@@ -20,15 +20,15 @@ export const initializeProgressBars = (eventMap: EventMap): MultiProgressBar => 
     itemCompleteStatus: CFN_SUCCESS_STATUS,
     itemFailedStatus: CNF_ERROR_STATUS,
     prefixText: `Deploying resources into ${eventMap.envName} environment. This will take a few minutes.`,
-    successText: 'Deployment completed.',
-    failureText: 'Deployment failed.',
-    barCompleteChar: '=',
-    barIncompleteChar: '-',
+    successText: "Deployment completed.",
+    failureText: "Deployment failed.",
+    barCompleteChar: "=",
+    barIncompleteChar: "-",
   });
 
   let progressBarsConfigs = [];
   progressBarsConfigs.push({
-    name: 'projectBar',
+    name: "projectBar",
     value: 0,
     total: 1 + eventMap.rootResources.length,
     payload: {
@@ -38,15 +38,17 @@ export const initializeProgressBars = (eventMap: EventMap): MultiProgressBar => 
   });
 
   progressBarsConfigs = eventMap.categories.reduce(
-    (previous, current) => previous.concat({
-      name: current.name,
-      value: 0,
-      total: current.size,
-      payload: {
-        progressName: current.name,
-        envName: eventMap.envName,
-      },
-    }), progressBarsConfigs,
+    (previous, current) =>
+      previous.concat({
+        name: current.name,
+        value: 0,
+        total: current.size,
+        payload: {
+          progressName: current.name,
+          envName: eventMap.envName,
+        },
+      }),
+    progressBarsConfigs
   );
   if (newMultiBar.isTTY()) {
     newMultiBar.create(progressBarsConfigs);

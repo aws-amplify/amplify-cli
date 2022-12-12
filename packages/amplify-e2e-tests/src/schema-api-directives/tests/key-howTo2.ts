@@ -22,9 +22,9 @@ mutation CreateOrder(
 }`;
 export const input_mutation1 = {
   input: {
-    customerEmail: 'me@email.com',
-    createdAt: '2018',
-    orderId: '1',
+    customerEmail: "me@email.com",
+    createdAt: "2018",
+    orderId: "1",
   },
 };
 
@@ -42,9 +42,9 @@ mutation CreateOrder(
 }`;
 export const input_mutation2 = {
   input: {
-    customerEmail: 'me@email.com',
-    createdAt: '2019-2-14',
-    orderId: '2',
+    customerEmail: "me@email.com",
+    createdAt: "2019-2-14",
+    orderId: "2",
   },
 };
 
@@ -65,9 +65,9 @@ export const expected_result_query = {
     listOrders: {
       items: [
         {
-          orderId: '2',
-          customerEmail: 'me@email.com',
-          createdAt: '2019-2-14',
+          orderId: "2",
+          customerEmail: "me@email.com",
+          createdAt: "2019-2-14",
         },
       ],
     },

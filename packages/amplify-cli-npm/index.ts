@@ -1,4 +1,4 @@
-import { Binary } from './binary';
+import { Binary } from "./binary";
 
 /**
  * Proxies commands to the downloaded binary

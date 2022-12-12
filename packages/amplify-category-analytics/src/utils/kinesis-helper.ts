@@ -1,7 +1,5 @@
-import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
 /**
  * opens resource in AWS console
@@ -17,7 +15,7 @@ export const console = (context: $TSContext): void => {
     const consoleUrl = `https://${region}.console.aws.amazon.com/kinesis/home?region=${region}#/streams/details?streamName=${Id}&tab=details`;
     open(consoleUrl, { wait: false });
   } else {
-    printer.error('Kinesis is not enabled in the cloud.');
+    printer.error("Kinesis is not enabled in the cloud.");
   }
 };
 

@@ -1,37 +1,42 @@
-import * as fs from 'fs-extra';
-import * as dynamoEmulator from 'amplify-dynamodb-simulator';
-import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
-import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from 'amplify-cli-core';
-import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
-import * as path from 'path';
-import * as chokidar from 'chokidar';
-import _ from 'lodash';
-import fetch from 'node-fetch';
+import * as fs from "fs-extra";
+import * as dynamoEmulator from "amplify-dynamodb-simulator";
+import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from "@aws-amplify/amplify-appsync-simulator";
+import * as opensearchEmulator from "@aws-amplify/amplify-opensearch-simulator";
+import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from "amplify-cli-core";
+import { add, generate, isCodegenConfigured, switchToSDLSchema } from "amplify-codegen";
+import * as path from "path";
+import * as chokidar from "chokidar";
+import _ from "lodash";
+import fetch from "node-fetch";
 
-import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory } from '../utils';
-import { checkJavaVersion, checkJavaHome } from '../utils/index';
-import { runTransformer } from './run-graphql-transformer';
-import { processAppSyncResources } from '../CFNParser';
-import { ResolverOverrides } from './resolver-overrides';
-import { ConfigOverrideManager } from '../utils/config-override';
-import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
-import { describeTables } from '../utils/dynamo-db/utils';
-import { findModelLambdaTriggers, findSearchableLambdaTriggers, getSearchableLambdaTriggerConfig, LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
-import { getMockConfig } from '../utils/mock-config-file';
-import { getInvoker } from 'amplify-category-function';
-import { lambdaArnToConfig } from './lambda-arn-to-config';
-import { timeConstrainedInvoker } from '../func';
-import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
-import { TableDescription } from 'aws-sdk/clients/dynamodb';
-import { querySearchable } from '../utils/opensearch';
-import { getMockOpenseachDataDirectory } from '../utils/mock-directory';
-import { buildLambdaTrigger } from './lambda-invoke';
-import { printer } from 'amplify-prompts';
+import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory } from "../utils";
+import { checkJavaVersion, checkJavaHome } from "../utils/index";
+import { runTransformer } from "./run-graphql-transformer";
+import { processAppSyncResources } from "../CFNParser";
+import { ResolverOverrides } from "./resolver-overrides";
+import { ConfigOverrideManager } from "../utils/config-override";
+import { configureDDBDataSource, createAndUpdateTable } from "../utils/dynamo-db";
+import { describeTables } from "../utils/dynamo-db/utils";
+import {
+  findModelLambdaTriggers,
+  findSearchableLambdaTriggers,
+  getSearchableLambdaTriggerConfig,
+  LambdaTrigger,
+} from "../utils/lambda/find-lambda-triggers";
+import { getMockConfig } from "../utils/mock-config-file";
+import { getInvoker } from "amplify-category-function";
+import { lambdaArnToConfig } from "./lambda-arn-to-config";
+import { timeConstrainedInvoker } from "../func";
+import { ddbLambdaTriggerHandler } from "./lambda-trigger-handler";
+import { TableDescription } from "aws-sdk/clients/dynamodb";
+import { querySearchable } from "../utils/opensearch";
+import { getMockOpenseachDataDirectory } from "../utils/mock-directory";
+import { buildLambdaTrigger } from "./lambda-invoke";
+import { printer } from "amplify-prompts";
 
-export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
-export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
-export const MOCK_API_KEY = 'da2-fakeApiId123456';
+export const GRAPHQL_API_ENDPOINT_OUTPUT = "GraphQLAPIEndpointOutput";
+export const GRAPHQL_API_KEY_OUTPUT = "GraphQLAPIKeyOutput";
+export const MOCK_API_KEY = "da2-fakeApiId123456";
 export const MOCK_API_PORT = 20002;
 
 export class APITest {
@@ -51,14 +56,14 @@ export class APITest {
 
   async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
     try {
-      context.amplify.addCleanUpTask(async context => {
+      context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
       // check java version
       await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
-      const isLocalDBEmpty = !(fs.existsSync(getMockDataDirectory(context)));
+      const isLocalDBEmpty = !fs.existsSync(getMockDataDirectory(context));
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
       this.resolverOverrideManager = new ResolverOverrides(resolverDirectory);
@@ -71,9 +76,9 @@ export class APITest {
       await this.resolverOverrideManager.start();
       await this.watch(context);
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
-      
+
       // If any of the model types are searchable, start opensearch local instance
-      if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable) && (!isWindowsPlatform)) {
+      if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform) {
         this.opensearchURL = await this.startOpensearchLocalServer(context, isLocalDBEmpty);
       }
       this.appSyncSimulator.init(appSyncConfig);
@@ -84,12 +89,12 @@ export class APITest {
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
       await this.startDDBListeners(context, appSyncConfig, false);
     } catch (e) {
-      const errMessage = 'Failed to start API Mocking.';
-      context.print.error(errMessage + ' Running cleanup tasks.');
+      const errMessage = "Failed to start API Mocking.";
+      context.print.error(errMessage + " Running cleanup tasks.");
       await this.stop(context);
-      throw new AmplifyFault('MockProcessFault', {
+      throw new AmplifyFault("MockProcessFault", {
         message: `${errMessage}. Reason: ${e?.message}`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
   }
@@ -119,7 +124,9 @@ export class APITest {
       }
     } catch (e) {
       // failed to stop opensearch emulator
-      printer.error(`Failed to stop OpenSearch Local Server ${e.message}. Kill the mock process using "kill -9 ${this.opensearchEmulator?.pid}" and restart it.`);
+      printer.error(
+        `Failed to stop OpenSearch Local Server ${e.message}. Kill the mock process using "kill -9 ${this.opensearchEmulator?.pid}" and restart it.`
+      );
     }
 
     await this.appSyncSimulator.stop();
@@ -140,9 +147,9 @@ export class APITest {
 
   private async generateCode(context: any, config: AmplifyAppSyncSimulatorConfig = null) {
     try {
-      printer.info('Running GraphQL codegen');
+      printer.info("Running GraphQL codegen");
       const { projectPath } = context.amplify.getEnvInfo();
-      const schemaPath = path.join(projectPath, 'amplify', 'backend', 'api', this.apiName, 'build', 'schema.graphql');
+      const schemaPath = path.join(projectPath, "amplify", "backend", "api", this.apiName, "build", "schema.graphql");
       if (config && config.schema) {
         fs.writeFileSync(schemaPath, config.schema.content);
       }
@@ -159,26 +166,26 @@ export class APITest {
 
   private async reload(context, filePath, action) {
     const apiDir = await this.getAPIBackendDirectory(context);
-    const inputSchemaPath = path.join(apiDir, 'schema');
-    const customStackPath = path.join(apiDir, 'stacks');
+    const inputSchemaPath = path.join(apiDir, "schema");
+    const customStackPath = path.join(apiDir, "stacks");
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
-      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)) {
+      if (this.resolverOverrideManager.isTemplateFile(filePath, action === "unlink" ? true : false)) {
         switch (action) {
-          case 'add':
+          case "add":
             shouldReload = this.resolverOverrideManager.onAdd(filePath);
             break;
-          case 'change':
+          case "change":
             shouldReload = this.resolverOverrideManager.onChange(filePath);
             break;
-          case 'unlink':
+          case "unlink":
             shouldReload = this.resolverOverrideManager.onUnlink(filePath);
             break;
         }
 
         if (shouldReload) {
-          printer.info('Mapping template change detected. Reloading...');
+          printer.info("Mapping template change detected. Reloading...");
           const mappingTemplates = this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates, this.userOverriddenSlots);
           await this.appSyncSimulator.reload({
             ...this.transformerResult,
@@ -186,7 +193,7 @@ export class APITest {
           });
         }
       } else if (filePath.includes(inputSchemaPath)) {
-        printer.info('GraphQL Schema change detected. Reloading...');
+        printer.info("GraphQL Schema change detected. Reloading...");
         const config: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
@@ -194,20 +201,20 @@ export class APITest {
       } else if (filePath.includes(parameterFilePath)) {
         const apiParameters = await this.loadAPIParameters(context);
         if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
-          context.print.info('API Parameter change detected. Reloading...');
+          context.print.info("API Parameter change detected. Reloading...");
           this.apiParameters = apiParameters;
           const config = await this.runTransformer(context, this.apiParameters);
           await this.appSyncSimulator.reload(config);
           await this.generateCode(context, config);
         }
       } else if (filePath.includes(customStackPath)) {
-        printer.info('Custom stack change detected. Reloading...');
+        printer.info("Custom stack change detected. Reloading...");
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
         await this.startDDBListeners(context, config, true);
-      } else if (filePath?.includes(getMockDataDirectory(context)) && (action === 'unlink')) {
-        printer.info('Mock DB deletion detected. Clearing the OpenSearch indices...');
+      } else if (filePath?.includes(getMockDataDirectory(context)) && action === "unlink") {
+        printer.info("Mock DB deletion detected. Clearing the OpenSearch indices...");
         await this.clearAllIndices(this.opensearchURL);
       }
     } catch (e) {
@@ -227,51 +234,51 @@ export class APITest {
   }
 
   private async ensureDDBTables(config) {
-    const tables = config.tables.map(t => t.Properties);
+    const tables = config.tables.map((t) => t.Properties);
     return await createAndUpdateTable(this.ddbClient, config);
   }
 
   private async startDDBListeners(context: $TSContext, config: $TSAny, onlyNewTables: boolean): Promise<void> {
     let tables = config?.tables;
-    const searchableEnabledTableNames = config?.tables?.filter(table => table?.isSearchable)?.map(table => table?.Properties?.TableName);
+    const searchableEnabledTableNames = config?.tables
+      ?.filter((table) => table?.isSearchable)
+      ?.map((table) => table?.Properties?.TableName);
     if (onlyNewTables) {
-      tables = config?.tables?.filter(table => table?.isNewlyAdded);
+      tables = config?.tables?.filter((table) => table?.isNewlyAdded);
     }
-    const tableNames = tables?.map( (t: $TSAny) => t?.Properties?.TableName);
+    const tableNames = tables?.map((t: $TSAny) => t?.Properties?.TableName);
 
     // enable triggers for newly added searchable tables
     let newlyAddedSearchableTableNames: string[] = [];
-    if(!(_.isEmpty(searchableEnabledTableNames))) {
-      newlyAddedSearchableTableNames = searchableEnabledTableNames.filter( tableName => !(this.searchableTables.includes(tableName)) );
+    if (!_.isEmpty(searchableEnabledTableNames)) {
+      newlyAddedSearchableTableNames = searchableEnabledTableNames.filter((tableName) => !this.searchableTables.includes(tableName));
     }
     this.searchableTables = searchableEnabledTableNames;
 
-    if(!(_.isEmpty(tableNames))) {
-      const modelLambdaTriggers: {[index: string]: LambdaTrigger[];} = await findModelLambdaTriggers(context, tableNames);
-      const searchableLambdaTriggers: {[index: string]: LambdaTrigger;} = await findSearchableLambdaTriggers(context, newlyAddedSearchableTableNames, this.opensearchURL);
+    if (!_.isEmpty(tableNames)) {
+      const modelLambdaTriggers: { [index: string]: LambdaTrigger[] } = await findModelLambdaTriggers(context, tableNames);
+      const searchableLambdaTriggers: { [index: string]: LambdaTrigger } = await findSearchableLambdaTriggers(
+        context,
+        newlyAddedSearchableTableNames,
+        this.opensearchURL
+      );
       const allLambdaTriggers = modelLambdaTriggers;
       Object.entries(searchableLambdaTriggers)?.forEach(([tableName, lambdaTrigger]) => {
         if (allLambdaTriggers[tableName]) {
           allLambdaTriggers[tableName].push(lambdaTrigger);
-        }
-        else {
+        } else {
           allLambdaTriggers[tableName] = [lambdaTrigger];
         }
       });
 
       const allTablesWithTriggers = Object.keys(allLambdaTriggers);
-      const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, allTablesWithTriggers);
+      const tableStreamArns: { [index: string]: TableDescription } = await describeTables(this.ddbClient, allTablesWithTriggers);
       const allListeners = [];
       Object.entries(allLambdaTriggers)?.forEach(([tableName, lambdaTriggers]) => {
-        if(!(_.isEmpty(lambdaTriggers))) {
-          lambdaTriggers.forEach( (lambdaTrigger: LambdaTrigger) => {
+        if (!_.isEmpty(lambdaTriggers)) {
+          lambdaTriggers.forEach((lambdaTrigger: LambdaTrigger) => {
             allListeners.push(
-              ddbLambdaTriggerHandler(
-                context, 
-                tableStreamArns[tableName].LatestStreamArn, 
-                lambdaTrigger, 
-                this.ddbEmulator.url
-              )
+              ddbLambdaTriggerHandler(context, tableStreamArns[tableName].LatestStreamArn, lambdaTrigger, this.ddbEmulator.url)
             );
           });
         }
@@ -281,15 +288,15 @@ export class APITest {
   }
 
   private async configureLambdaDataSource(context, config) {
-    const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
+    const lambdaDataSources = config.dataSources.filter((d) => d.type === "AWS_LAMBDA");
     if (lambdaDataSources.length === 0) {
       return config;
     }
     return {
       ...config,
       dataSources: await Promise.all(
-        config.dataSources.map(async d => {
-          if (d.type !== 'AWS_LAMBDA') {
+        config.dataSources.map(async (d) => {
+          if (d.type !== "AWS_LAMBDA") {
             return d;
           }
           const lambdaConfig = await lambdaArnToConfig(context, d.LambdaFunctionArn);
@@ -300,16 +307,16 @@ export class APITest {
           });
           return {
             ...d,
-            invoke: payload => {
+            invoke: (payload) => {
               return timeConstrainedInvoker(
                 invoker({
                   event: payload,
                 }),
-                context.input.options,
+                context.input.options
               );
             },
           };
-        }),
+        })
       ),
     };
   }
@@ -318,40 +325,40 @@ export class APITest {
     if (isWindowsPlatform) {
       return config;
     }
-    const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
-    const opensearchDataSources = config.dataSources.filter(d => d.type === opensearchDataSourceType);
+    const opensearchDataSourceType = "AMAZON_ELASTICSEARCH";
+    const opensearchDataSources = config.dataSources.filter((d) => d.type === opensearchDataSourceType);
     if (_.isEmpty(opensearchDataSources)) {
       return config;
     }
     return {
       ...config,
       dataSources: await Promise.all(
-        config.dataSources.map(async d => {
+        config.dataSources.map(async (d) => {
           if (d.type !== opensearchDataSourceType) {
             return d;
           }
           return {
             ...d,
-            invoke: async payload => {
+            invoke: async (payload) => {
               return await querySearchable(this.opensearchURL, payload);
             },
           };
-        }),
-      )
+        })
+      ),
     };
   }
 
   private async watch(context) {
     this.watcher = await this.registerWatcher(context);
     this.watcher
-      .on('add', path => {
-        this.reload(context, path, 'add');
+      .on("add", (path) => {
+        this.reload(context, path, "add");
       })
-      .on('change', path => {
-        this.reload(context, path, 'change');
+      .on("change", (path) => {
+        this.reload(context, path, "change");
       })
-      .on('unlink', path => {
-        this.reload(context, path, 'unlink');
+      .on("unlink", (path) => {
+        this.reload(context, path, "unlink");
       });
   }
 
@@ -365,23 +372,23 @@ export class APITest {
     let appSyncApi = null;
     let name = null;
     Object.entries(apis).some((entry: any) => {
-      if (entry[1].service === 'AppSync' && entry[1].providerPlugin === 'awscloudformation') {
+      if (entry[1].service === "AppSync" && entry[1].providerPlugin === "awscloudformation") {
         appSyncApi = entry[1];
         name = entry[0];
         return true;
       }
     });
     if (!name) {
-      throw new AmplifyFault('MockProcessFault', {
-        message: 'No AppSync API is added to the project',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      throw new AmplifyFault("MockProcessFault", {
+        message: "No AppSync API is added to the project",
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
     return name;
   }
 
   private async startDynamoDBLocalServer(context) {
-    const dbPath = path.join(await getMockDataDirectory(context), 'dynamodb');
+    const dbPath = path.join(await getMockDataDirectory(context), "dynamodb");
     fs.ensureDirSync(dbPath);
     const mockConfig = await getMockConfig(context);
     this.ddbEmulator = await dynamoEmulator.launch({
@@ -397,52 +404,52 @@ export class APITest {
       const mockConfig = await getMockConfig(context);
       await this.createMockSearchableArtifacts(context);
       checkJavaHome();
-      this.opensearchEmulator = await opensearchEmulator.launch(
-        getMockOpenseachDataDirectory(context), 
-        {
-          port: null, // let the emulator choose the default
-          ...mockConfig,
-        }
-      );
+      this.opensearchEmulator = await opensearchEmulator.launch(getMockOpenseachDataDirectory(context), {
+        port: null, // let the emulator choose the default
+        ...mockConfig,
+      });
       if (isLocalDBEmpty) {
         await this.clearAllIndices(this.opensearchEmulator.url);
       }
       return this.opensearchEmulator.url;
     } catch (error) {
-      throw new AmplifyFault('MockProcessFault', {
-        message: 'Unable to start the local OpenSearch Instance.',
-        details: error?.message || '',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      throw new AmplifyFault("MockProcessFault", {
+        message: "Unable to start the local OpenSearch Instance.",
+        details: error?.message || "",
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
   }
 
-  private async clearAllIndices(openSearchURL:URL) {
+  private async clearAllIndices(openSearchURL: URL) {
     if (!openSearchURL) {
       return;
     }
-    const errMessage = 'Unable to Clear the local OpenSearch Indices.';
+    const errMessage = "Unable to Clear the local OpenSearch Indices.";
     try {
-      const url = openSearchURL.toString() + '*';
+      const url = openSearchURL.toString() + "*";
       const result = await fetch(url, {
-          method: 'DELETE',
-          headers: {
-              'Content-type': 'application/json',
-          }
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+        },
       });
       const status = await result.json();
-      if (!(status?.acknowledged)) {
-        throw new AmplifyFault('MockProcessFault', {
-          message: 'The action to delete all items in an index is not acknowledged by the Opensearch server.',
-          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      if (!status?.acknowledged) {
+        throw new AmplifyFault("MockProcessFault", {
+          message: "The action to delete all items in an index is not acknowledged by the Opensearch server.",
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
         });
       }
-    }
-    catch(error) {
-      throw new AmplifyFault('MockProcessFault', {
-        message: errMessage,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-      }, error);
+    } catch (error) {
+      throw new AmplifyFault(
+        "MockProcessFault",
+        {
+          message: errMessage,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+        },
+        error
+      );
     }
   }
 
@@ -451,40 +458,36 @@ export class APITest {
     fs.ensureDirSync(opensearchLocalDirectory);
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
     fs.ensureDirSync(mockSearchableTriggerDirectory);
-    fs.ensureDirSync(path.join(mockSearchableTriggerDirectory, 'src'));
-    const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', 'resources', 'mock-searchable-lambda-trigger');
+    fs.ensureDirSync(path.join(mockSearchableTriggerDirectory, "src"));
+    const searchableLambdaResourceDir = path.resolve(__dirname, "..", "..", "resources", "mock-searchable-lambda-trigger");
 
     // copy the Pipfile first
-    const pipFileName = 'Pipfile';
-    fs.copySync(
-      path.join(searchableLambdaResourceDir, pipFileName), 
-      path.join(mockSearchableTriggerDirectory, pipFileName),
-      { overwrite: true }
-    );
+    const pipFileName = "Pipfile";
+    fs.copySync(path.join(searchableLambdaResourceDir, pipFileName), path.join(mockSearchableTriggerDirectory, pipFileName), {
+      overwrite: true,
+    });
 
     // copy the source files
-    fs.copySync(
-      path.join(searchableLambdaResourceDir, 'source-files'), 
-      path.join(mockSearchableTriggerDirectory, 'src'),
-      { overwrite: true }
-    );
+    fs.copySync(path.join(searchableLambdaResourceDir, "source-files"), path.join(mockSearchableTriggerDirectory, "src"), {
+      overwrite: true,
+    });
 
     // build the searchable lambda trigger
     const triggerConfig = getSearchableLambdaTriggerConfig(context, null);
     const runtimeManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
-    printer.info('Building the searchable lambda trigger');
+    printer.info("Building the searchable lambda trigger");
     await buildLambdaTrigger(runtimeManager, triggerConfig);
     fs.ensureDirSync(getMockOpenseachDataDirectory(context));
   }
 
   private async getAPIBackendDirectory(context) {
     const { projectPath } = context.amplify.getEnvInfo();
-    return path.join(projectPath, 'amplify', 'backend', 'api', this.apiName);
+    return path.join(projectPath, "amplify", "backend", "api", this.apiName);
   }
 
   private async getAPIParameterFilePath(context): Promise<string> {
     const backendPath = await this.getAPIBackendDirectory(context);
-    return path.join(backendPath, 'parameters.json');
+    return path.join(backendPath, "parameters.json");
   }
 
   private async loadAPIParameters(context): Promise<object> {
@@ -493,7 +496,7 @@ export class APITest {
       return {};
     }
     try {
-      return JSON.parse(fs.readFileSync(paramPath, 'utf8'));
+      return JSON.parse(fs.readFileSync(paramPath, "utf8"));
     } catch (e) {
       e.message = `Failed to load API parameters.json \n ${e.message}`;
       throw e;
@@ -512,7 +515,7 @@ export class APITest {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
-      ignored: '**/build/**',
+      ignored: "**/build/**",
       awaitWriteFinish: true,
     });
   }
@@ -527,14 +530,14 @@ export class APITest {
       GraphQLAPIKeyOutput?: string;
       region?: string;
       testMode: boolean;
-    },
+    }
   ) {
     const currentMeta = await getAmplifyMeta(context);
     const override = currentMeta.api || {};
     if (localAppSyncDetails) {
       const appSyncApi = override[localAppSyncDetails.name] || { output: {} };
       override[localAppSyncDetails.name] = {
-        service: 'AppSync',
+        service: "AppSync",
         ...appSyncApi,
         output: {
           ...appSyncApi.output,
@@ -548,7 +551,7 @@ export class APITest {
       };
     }
 
-    this.configOverrideManager.addOverride('api', override);
+    this.configOverrideManager.addOverride("api", override);
     await this.configOverrideManager.generateOverriddenFrontendExports(context);
   }
 }

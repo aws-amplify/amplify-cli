@@ -1,21 +1,21 @@
-import * as util from '../util';
-import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import * as util from "../util";
+import { nspawn as spawn } from "@aws-amplify/amplify-e2e-core";
 
 export function headlessInit(projectRootDirPath, amplifyParam, providersParam, codegenParam): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(
       util.getCLIPath(),
       [
-        'init',
-        '--amplify',
+        "init",
+        "--amplify",
         JSON.stringify(amplifyParam),
-        '--providers',
+        "--providers",
         JSON.stringify(providersParam),
-        '--codegen',
+        "--codegen",
         JSON.stringify(codegenParam),
-        '--yes',
+        "--yes",
       ],
-      { cwd: projectRootDirPath, stripColors: true },
+      { cwd: projectRootDirPath, stripColors: true }
     ).run((err: Error) => {
       if (!err) {
         resolve();

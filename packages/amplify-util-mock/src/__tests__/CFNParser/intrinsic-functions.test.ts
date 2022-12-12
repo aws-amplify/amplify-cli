@@ -12,159 +12,159 @@ import {
   cfnOr,
   cfnImportValue,
   cfnCondition,
-} from '../../CFNParser/intrinsic-functions';
-import { CloudFormationParseContext } from '../../CFNParser/types';
-describe('intrinsic-functions', () => {
-  describe('cfnJoin', () => {
+} from "../../CFNParser/intrinsic-functions";
+import { CloudFormationParseContext } from "../../CFNParser/types";
+describe("intrinsic-functions", () => {
+  describe("cfnJoin", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
       resources: {},
       exports: {},
     };
-    it('should join values', () => {
-      const node: any = ['-', ['foo', 'bar', 'baz']];
-      const parseValue = jest.fn(ip => ip);
-      expect(cfnJoin(node, cfnContext, parseValue)).toEqual('foo-bar-baz');
+    it("should join values", () => {
+      const node: any = ["-", ["foo", "bar", "baz"]];
+      const parseValue = jest.fn((ip) => ip);
+      expect(cfnJoin(node, cfnContext, parseValue)).toEqual("foo-bar-baz");
       expect(parseValue).toHaveBeenCalledTimes(3);
       node[1].forEach((val, index) => {
         expect(parseValue.mock.calls[index][0]).toEqual(val);
       });
     });
 
-    it('should throw error if listOfValues are not present', () => {
-      const node: any = ['-'];
+    it("should throw error if listOfValues are not present", () => {
+      const node: any = ["-"];
       expect(() => {
         cfnJoin(node, cfnContext, jest.fn());
       }).toThrow();
     });
 
-    it('should throw error if if there are 3 arguments to Fn::Join are not present', () => {
-      const node: any = ['-', [], []];
+    it("should throw error if if there are 3 arguments to Fn::Join are not present", () => {
+      const node: any = ["-", [], []];
       expect(() => {
         cfnJoin(node, cfnContext, jest.fn());
       }).toThrow();
     });
   });
 
-  describe('cfnSub', () => {
+  describe("cfnSub", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
       resources: {},
       exports: {},
     };
-    it('should substitute variable', () => {
-      const parseValue = jest.fn(val => val);
-      const expr = ['My name is ${name}. I am ${age} years old', { name: 'John', age: '25' }];
-      expect(cfnSub(expr, cfnContext, parseValue)).toEqual('My name is John. I am 25 years old');
+    it("should substitute variable", () => {
+      const parseValue = jest.fn((val) => val);
+      const expr = ["My name is ${name}. I am ${age} years old", { name: "John", age: "25" }];
+      expect(cfnSub(expr, cfnContext, parseValue)).toEqual("My name is John. I am 25 years old");
       expect(parseValue).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw error if there are no substitute variable', () => {
-      const expr = ['My name is ${name}. I am ${age} years old'];
-      expect(() => cfnSub(expr, cfnContext, val => val)).toThrow();
+    it("should throw error if there are no substitute variable", () => {
+      const expr = ["My name is ${name}. I am ${age} years old"];
+      expect(() => cfnSub(expr, cfnContext, (val) => val)).toThrow();
     });
-    it('should throw error if there are no substitute variable', () => {
-      const expr = ['My name is ${name}. I am ${age} years old'];
-      expect(() => cfnSub(expr, cfnContext, val => val)).toThrow();
+    it("should throw error if there are no substitute variable", () => {
+      const expr = ["My name is ${name}. I am ${age} years old"];
+      expect(() => cfnSub(expr, cfnContext, (val) => val)).toThrow();
     });
   });
 
-  describe('cfnGetAtt', () => {
+  describe("cfnGetAtt", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
       resources: {
         FooResource: {
-          Type: 'Foo',
+          Type: "Foo",
           result: {
-            cfnExposedAttributes: { prop1: 'Prop1', props: 'missing' },
-            Prop1: 'prop1 value',
+            cfnExposedAttributes: { prop1: "Prop1", props: "missing" },
+            Prop1: "prop1 value",
           },
         },
       },
       exports: {},
     };
-    it('should get attribute value from parsed resources', () => {
-      const node = ['FooResource', 'prop1'];
-      expect(cfnGetAtt(node, cfnContext, () => {})).toEqual('prop1 value');
+    it("should get attribute value from parsed resources", () => {
+      const node = ["FooResource", "prop1"];
+      expect(cfnGetAtt(node, cfnContext, () => {})).toEqual("prop1 value");
     });
 
-    it('should throw error if resource is missing in the context', () => {
-      const node = ['MissingResource', 'prop1'];
+    it("should throw error if resource is missing in the context", () => {
+      const node = ["MissingResource", "prop1"];
       expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
     });
 
-    it('should throw if the property is missing in the resource', () => {
-      const node = ['FooResource', 'missing-prop'];
+    it("should throw if the property is missing in the resource", () => {
+      const node = ["FooResource", "missing-prop"];
       expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
     });
-    it('should throw if the property is exposed in cfnExposedAttribute but missing in the result', () => {
-      const node = ['FooResource', 'prop2'];
+    it("should throw if the property is exposed in cfnExposedAttribute but missing in the result", () => {
+      const node = ["FooResource", "prop2"];
       expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
     });
   });
 
-  describe('cfnSplit', () => {
+  describe("cfnSplit", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
       resources: {},
       exports: {},
     };
-    it('should split string', () => {
-      const node = ['-', 'foo-bar-baz'];
-      const processValue = jest.fn(val => val);
-      expect(cfnSplit(node, cfnContext, processValue)).toEqual(['foo', 'bar', 'baz']);
+    it("should split string", () => {
+      const node = ["-", "foo-bar-baz"];
+      const processValue = jest.fn((val) => val);
+      expect(cfnSplit(node, cfnContext, processValue)).toEqual(["foo", "bar", "baz"]);
       expect(processValue).toHaveBeenCalledWith(node[1], cfnContext);
     });
 
-    it('should throw error when split string is missing', () => {
-      const node = ['-'];
-      const processValue = jest.fn(val => val);
+    it("should throw error when split string is missing", () => {
+      const node = ["-"];
+      const processValue = jest.fn((val) => val);
       expect(() => cfnSplit(node, cfnContext, processValue)).toThrow();
     });
   });
 
-  describe('cfnRef', () => {
+  describe("cfnRef", () => {
     const cfnContext: CloudFormationParseContext = {
-      params: { fromParam: 'foo' },
+      params: { fromParam: "foo" },
       conditions: {},
       resources: {
-        fromResource: { Type: 'Foo', result: { ref: 'resource' } },
-        fromResource2: { Type: 'Bar', result: { Name: 'bar' } },
+        fromResource: { Type: "Foo", result: { ref: "resource" } },
+        fromResource2: { Type: "Bar", result: { Name: "bar" } },
       },
       exports: {},
     };
 
-    it('should get ref from params', () => {
-      const node = 'fromParam';
-      expect(cfnRef(node, cfnContext, () => {})).toEqual('foo');
+    it("should get ref from params", () => {
+      const node = "fromParam";
+      expect(cfnRef(node, cfnContext, () => {})).toEqual("foo");
     });
-    it('should get ref from resources', () => {
-      const node = 'fromResource';
-      expect(cfnRef(node, cfnContext, () => {})).toEqual('resource');
-    });
-
-    it('should call parseValue if the ref is not a string', () => {
-      const node = [{ 'Fn::Join': ['-', ['foo', 'bar']] }];
-      const parseValue = jest.fn(val => 'fromParam');
-      expect(cfnRef(node, cfnContext, parseValue)).toEqual('foo');
+    it("should get ref from resources", () => {
+      const node = "fromResource";
+      expect(cfnRef(node, cfnContext, () => {})).toEqual("resource");
     });
 
-    it('should throw error if the node has length more than 1 item', () => {
-      const node = ['foo', 'bar'];
+    it("should call parseValue if the ref is not a string", () => {
+      const node = [{ "Fn::Join": ["-", ["foo", "bar"]] }];
+      const parseValue = jest.fn((val) => "fromParam");
+      expect(cfnRef(node, cfnContext, parseValue)).toEqual("foo");
+    });
+
+    it("should throw error if the node has length more than 1 item", () => {
+      const node = ["foo", "bar"];
       expect(() => cfnRef(node, cfnContext, () => {})).toThrow();
     });
 
-    it('should throw error resource does not have name prop', () => {
-      const node = 'fromResource2';
+    it("should throw error resource does not have name prop", () => {
+      const node = "fromResource2";
       expect(() => cfnRef(node, cfnContext, () => {})).toThrow();
     });
   });
 
-  describe('cfnSelect', () => {
+  describe("cfnSelect", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
@@ -174,38 +174,38 @@ describe('intrinsic-functions', () => {
     afterEach(() => {
       jest.resetAllMocks();
     });
-    const parseValue = jest.fn(val => val);
+    const parseValue = jest.fn((val) => val);
 
-    it('should select the value', () => {
-      const node: any = ['2', ['foo', 'bar', 'baz']];
-      expect(cfnSelect(node, cfnContext, parseValue)).toEqual('baz');
+    it("should select the value", () => {
+      const node: any = ["2", ["foo", "bar", "baz"]];
+      expect(cfnSelect(node, cfnContext, parseValue)).toEqual("baz");
       expect(parseValue).toHaveBeenCalledTimes(2);
       expect(parseValue.mock.calls[0][0]).toEqual(node[1]);
-      expect(parseValue.mock.calls[1][0]).toEqual('baz');
+      expect(parseValue.mock.calls[1][0]).toEqual("baz");
     });
-    it('should resolve nested intrinsic functions to a list', () => {
-      parseValue.mockReturnValueOnce(['this', 'is', 'the', 'expected value']).mockImplementationOnce(input => input);
-      const parseThis = { parse: 'this' };
+    it("should resolve nested intrinsic functions to a list", () => {
+      parseValue.mockReturnValueOnce(["this", "is", "the", "expected value"]).mockImplementationOnce((input) => input);
+      const parseThis = { parse: "this" };
       const node: any = [3, parseThis];
-      expect(cfnSelect(node, cfnContext, parseValue)).toEqual('expected value');
+      expect(cfnSelect(node, cfnContext, parseValue)).toEqual("expected value");
       expect(parseValue).toHaveBeenCalledTimes(2);
       expect(parseValue.mock.calls[0][0]).toEqual(parseThis);
-      expect(parseValue.mock.calls[1][0]).toEqual('expected value');
+      expect(parseValue.mock.calls[1][0]).toEqual("expected value");
     });
 
-    it('should error on a non-list value', () => {
-      parseValue.mockReturnValueOnce('this is not an array');
-      const parseThis = { parse: 'this' };
+    it("should error on a non-list value", () => {
+      parseValue.mockReturnValueOnce("this is not an array");
+      const parseThis = { parse: "this" };
       const node: any = [2, parseThis];
       expect(() => cfnSelect(node, cfnContext, parseValue)).toThrowErrorMatchingInlineSnapshot(
-        `"FN::Select expects list item to be an array instead got \\"this is not an array\\""`,
+        `"FN::Select expects list item to be an array instead got \\"this is not an array\\""`
       );
       expect(parseValue).toHaveBeenCalled();
       expect(parseValue.mock.calls[0][0]).toEqual(parseThis);
     });
   });
 
-  describe('cfnIf', () => {
+  describe("cfnIf", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {
@@ -217,23 +217,23 @@ describe('intrinsic-functions', () => {
     };
     let parseValue;
     beforeEach(() => {
-      parseValue = jest.fn(val => val);
+      parseValue = jest.fn((val) => val);
     });
-    it('should return true value section when condition is true', () => {
-      const node = ['foo', 'foo value', 'bar value'];
-      expect(cfnIf(node, cfnContext, parseValue)).toEqual('foo value');
+    it("should return true value section when condition is true", () => {
+      const node = ["foo", "foo value", "bar value"];
+      expect(cfnIf(node, cfnContext, parseValue)).toEqual("foo value");
     });
-    it('should return false value section when condition is true', () => {
-      const node = ['bar', 'foo value', 'bar value'];
-      expect(cfnIf(node, cfnContext, parseValue)).toEqual('bar value');
+    it("should return false value section when condition is true", () => {
+      const node = ["bar", "foo value", "bar value"];
+      expect(cfnIf(node, cfnContext, parseValue)).toEqual("bar value");
     });
-    it('should return `undefined` when the returned value section is a `AWS::NoValue` Ref', () => {
-      const node = ['foo', { Ref: 'AWS::NoValue' }, 'bar value'];
+    it("should return `undefined` when the returned value section is a `AWS::NoValue` Ref", () => {
+      const node = ["foo", { Ref: "AWS::NoValue" }, "bar value"];
       expect(cfnIf(node, cfnContext, parseValue)).toBeUndefined();
     });
   });
 
-  describe('cfnEquals', () => {
+  describe("cfnEquals", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {
@@ -243,43 +243,43 @@ describe('intrinsic-functions', () => {
       resources: {},
       exports: {},
     };
-    const parseValue = jest.fn(val => val);
-    it('should return true when equal', () => {
-      const node = ['foo', 'foo'];
+    const parseValue = jest.fn((val) => val);
+    it("should return true when equal", () => {
+      const node = ["foo", "foo"];
       expect(cfnEquals(node, cfnContext, parseValue)).toBeTruthy();
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should return false when not equal', () => {
-      const node = ['foo', 'bar'];
-      expect(cfnEquals(node, cfnContext, val => val)).toBeFalsy();
+    it("should return false when not equal", () => {
+      const node = ["foo", "bar"];
+      expect(cfnEquals(node, cfnContext, (val) => val)).toBeFalsy();
     });
   });
 
-  describe('cfnNot', () => {
+  describe("cfnNot", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
       resources: {},
       exports: {},
     };
-    const parseValue = jest.fn(val => val);
-    it('should return false when Fn::Not(trueCondition)', () => {
+    const parseValue = jest.fn((val) => val);
+    it("should return false when Fn::Not(trueCondition)", () => {
       parseValue.mockReturnValueOnce(true);
-      const node = ['trueCondition'];
+      const node = ["trueCondition"];
       expect(cfnNot(node, cfnContext, parseValue)).toBeFalsy();
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should return true when {Fn::Not, falseCondition}', () => {
+    it("should return true when {Fn::Not, falseCondition}", () => {
       parseValue.mockReturnValueOnce(false);
-      const node = ['falseCondition'];
+      const node = ["falseCondition"];
       expect(cfnNot(node, cfnContext, parseValue)).toBeTruthy();
       expect(parseValue).toHaveBeenCalled();
     });
   });
 
-  describe('cfnAnd', () => {
+  describe("cfnAnd", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
@@ -291,25 +291,25 @@ describe('intrinsic-functions', () => {
     beforeEach(() => {
       parseValue = jest.fn();
     });
-    it('should return false when Fn::And encounter a false value', () => {
+    it("should return false when Fn::And encounter a false value", () => {
       parseValue.mockReturnValueOnce(true);
       parseValue.mockReturnValueOnce(true);
       parseValue.mockReturnValueOnce(false);
       parseValue.mockReturnValueOnce(true);
-      const node = ['cond1', 'cond2', 'cond3', 'cond4'];
+      const node = ["cond1", "cond2", "cond3", "cond4"];
       expect(cfnAnd(node, cfnContext, parseValue)).toBeFalsy();
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should return false when Fn::And encounter all true values', () => {
+    it("should return false when Fn::And encounter all true values", () => {
       parseValue.mockReturnValue(true);
 
-      const node = ['cond1', 'cond2', 'cond3', 'cond4'];
+      const node = ["cond1", "cond2", "cond3", "cond4"];
       expect(cfnAnd(node, cfnContext, parseValue)).toBeTruthy();
       expect(parseValue).toHaveBeenCalledTimes(4);
     });
   });
-  describe('cfnOr', () => {
+  describe("cfnOr", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
@@ -321,50 +321,50 @@ describe('intrinsic-functions', () => {
     beforeEach(() => {
       parseValue = jest.fn();
     });
-    it('should return true when Fn::Or encounter at least one true value', () => {
+    it("should return true when Fn::Or encounter at least one true value", () => {
       parseValue.mockReturnValueOnce(true);
       parseValue.mockReturnValueOnce(true);
       parseValue.mockReturnValueOnce(false);
       parseValue.mockReturnValueOnce(true);
-      const node = ['cond1', 'cond2', 'cond3', 'cond4'];
+      const node = ["cond1", "cond2", "cond3", "cond4"];
       expect(cfnOr(node, cfnContext, parseValue)).toBeTruthy();
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should return false when Fn::Or encounter all false values', () => {
+    it("should return false when Fn::Or encounter all false values", () => {
       parseValue.mockReturnValue(false);
 
-      const node = ['cond1', 'cond2', 'cond3', 'cond4'];
+      const node = ["cond1", "cond2", "cond3", "cond4"];
       expect(cfnAnd(node, cfnContext, parseValue)).toBeFalsy();
       expect(parseValue).toHaveBeenCalledTimes(4);
     });
   });
 
-  describe('cfnImportValue', () => {
+  describe("cfnImportValue", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {},
       resources: {},
-      exports: { foo: 'fooValue' },
+      exports: { foo: "fooValue" },
     };
     let parseValue;
     beforeEach(() => {
-      parseValue = jest.fn(val => val);
+      parseValue = jest.fn((val) => val);
     });
 
-    it('should return value for key from exports', () => {
-      const node = 'foo';
-      expect(cfnImportValue(node, cfnContext, parseValue)).toEqual('fooValue');
+    it("should return value for key from exports", () => {
+      const node = "foo";
+      expect(cfnImportValue(node, cfnContext, parseValue)).toEqual("fooValue");
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should return key if the value is not presnt in exports', () => {
-      const node = 'bar';
+    it("should return key if the value is not presnt in exports", () => {
+      const node = "bar";
       expect(cfnImportValue(node, cfnContext, parseValue)).toEqual(node);
     });
   });
 
-  describe('cfnCondition', () => {
+  describe("cfnCondition", () => {
     const cfnContext: CloudFormationParseContext = {
       params: {},
       conditions: {
@@ -375,12 +375,12 @@ describe('intrinsic-functions', () => {
       exports: {},
     };
 
-    it('should return condition value', () => {
-      expect(cfnCondition('bar', cfnContext, () => {})).toBeFalsy();
-      expect(cfnCondition('foo', cfnContext, () => {})).toBeTruthy();
+    it("should return condition value", () => {
+      expect(cfnCondition("bar", cfnContext, () => {})).toBeFalsy();
+      expect(cfnCondition("foo", cfnContext, () => {})).toBeTruthy();
     });
-    it('should throw if the condition is missing', () => {
-      expect(() => cfnCondition('missing-condition', cfnContext, () => {})).toThrow();
+    it("should throw if the condition is missing", () => {
+      expect(() => cfnCondition("missing-condition", cfnContext, () => {})).toThrow();
     });
   });
 });

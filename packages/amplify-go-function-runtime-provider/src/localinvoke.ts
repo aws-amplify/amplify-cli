@@ -1,11 +1,11 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import getPort from 'get-port';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { executeCommand } from './runtime';
-import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
-import execa, { ExecaChildProcess } from 'execa';
+import path from "path";
+import fs from "fs-extra";
+import { $TSContext, pathManager } from "amplify-cli-core";
+import getPort from "get-port";
+import { InvocationRequest } from "amplify-function-plugin-interface";
+import { executeCommand } from "./runtime";
+import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from "./constants";
+import execa, { ExecaChildProcess } from "execa";
 
 // Go typing standards dictating JSON properties with PascalCase format
 type LambdaResult = {
@@ -13,7 +13,7 @@ type LambdaResult = {
   Error?: string;
 };
 
-const UNKNOWN_ERROR = 'Unknown error occurred during the execution of the Lambda function';
+const UNKNOWN_ERROR = "Unknown error occurred during the execution of the Lambda function";
 
 const buildLocalInvoker = async (context: any) => {
   const localInvokerDir = path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativeShimSrcPath);
@@ -24,9 +24,9 @@ const buildLocalInvoker = async (context: any) => {
   // Check if we need to build it or it already exists
   if (!fs.existsSync(localInvokeExecutablePath)) {
     // Build localinvoker
-    context.print.info('Local invoker binary was not found, building it...');
-    executeCommand(['mod', 'tidy'], true, undefined, localInvokerDir);
-    executeCommand(['build', MAIN_SOURCE], true, undefined, localInvokerDir);
+    context.print.info("Local invoker binary was not found, building it...");
+    executeCommand(["mod", "tidy"], true, undefined, localInvokerDir);
+    executeCommand(["build", MAIN_SOURCE], true, undefined, localInvokerDir);
   }
 
   return {
@@ -37,14 +37,14 @@ const buildLocalInvoker = async (context: any) => {
 const startLambda = (request: InvocationRequest, portNumber: number, lambda: { executable: string; cwd: string }) => {
   const envVars = request.envVars || {};
 
-  envVars['_LAMBDA_SERVER_PORT'] = portNumber.toString();
+  envVars["_LAMBDA_SERVER_PORT"] = portNumber.toString();
 
   const lambdaProcess: ExecaChildProcess = execa.command(lambda.executable, {
     env: envVars,
     extendEnv: false,
     cwd: lambda.cwd,
-    stderr: 'inherit',
-    stdout: 'inherit',
+    stderr: "inherit",
+    stdout: "inherit",
   });
 
   return lambdaProcess;
@@ -67,7 +67,7 @@ export const localInvoke = async (request: InvocationRequest, context: $TSContex
   const localInvoker = await buildLocalInvoker(context);
 
   // Find a free tcp port for the Lambda to launch on
-  const portNumber = await getPort({port: getPort.makeRange(BASE_PORT, MAX_PORT)});
+  const portNumber = await getPort({ port: getPort.makeRange(BASE_PORT, MAX_PORT) });
 
   const lambdaExecutableDir = path.join(request.srcRoot, BIN_LOCAL);
   const lambdaExecutablePath = path.join(lambdaExecutableDir, MAIN_BINARY);
@@ -85,7 +85,7 @@ export const localInvoke = async (request: InvocationRequest, context: $TSContex
   let envelopeString = JSON.stringify(envelope, null);
 
   // Make sure that envelope is ending with a newline because the child process expects a line input
-  envelopeString += '\n';
+  envelopeString += "\n";
 
   const processResult = execa.sync(localInvoker.executable, {
     input: envelopeString,

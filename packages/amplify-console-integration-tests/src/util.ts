@@ -1,13 +1,13 @@
-import * as fs from 'fs-extra';
+import * as fs from "fs-extra";
 
-export { getCLIPath, isCI, npmInstall, createNewProjectDir } from '@aws-amplify/amplify-e2e-core';
+export { getCLIPath, isCI, npmInstall, createNewProjectDir } from "@aws-amplify/amplify-e2e-core";
 
 export function deleteProjectDir(projectDirpath: string) {
   return fs.removeSync(projectDirpath);
 }
 
 export function getProfileName() {
-  return 'console-integration-test-user';
+  return "console-integration-test-user";
 }
 
 function stripBOM(content: string) {
@@ -18,6 +18,6 @@ function stripBOM(content: string) {
   return content;
 }
 
-export function readJsonFileSync(jsonFilePath: string, encoding: BufferEncoding = 'utf8'): any {
+export function readJsonFileSync(jsonFilePath: string, encoding: BufferEncoding = "utf8"): any {
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }

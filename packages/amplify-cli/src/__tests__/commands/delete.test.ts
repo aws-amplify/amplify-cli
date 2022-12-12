@@ -3,23 +3,23 @@
 //
 // https://stackoverflow.com/questions/46148169/stubbing-process-exit-with-jest
 
-import { UnknownArgumentError, AmplifyError } from 'amplify-cli-core';
+import { UnknownArgumentError, AmplifyError } from "amplify-cli-core";
 
-describe('amplify delete:', () => {
+describe("amplify delete:", () => {
   const mockExit = jest.fn();
-  jest.mock('amplify-cli-core', () => ({
+  jest.mock("amplify-cli-core", () => ({
     exitOnNextTick: mockExit,
     UnknownArgumentError,
     AmplifyError,
   }));
-  const { run } = require('../../commands/delete');
+  const { run } = require("../../commands/delete");
   const runDeleteCmd = run;
 
-  it('delete run method should exist', () => {
+  it("delete run method should exist", () => {
     expect(runDeleteCmd).toBeDefined();
   });
 
-  it('delete run method should call context.amplify.deleteProject()', async () => {
+  it("delete run method should call context.amplify.deleteProject()", async () => {
     const mockContextNoCLArgs = {
       amplify: {
         deleteProject: jest.fn(),
@@ -32,13 +32,13 @@ describe('amplify delete:', () => {
     expect(mockContextNoCLArgs.amplify.deleteProject).toBeCalled();
   });
 
-  it('delete run method should display an error message', async () => {
+  it("delete run method should display an error message", async () => {
     const mockContextWithCLArgs = {
       amplify: {
         deleteProject: jest.fn(),
       },
       parameters: {
-        array: ['foo'],
+        array: ["foo"],
       },
       print: {
         error: jest.fn(),
@@ -62,7 +62,7 @@ describe('amplify delete:', () => {
     },
   };
 
-  it('delete run method should call context.amplify.deleteProject() when using force option', async () => {
+  it("delete run method should call context.amplify.deleteProject() when using force option", async () => {
     await runDeleteCmd(mockContextWithForceOption);
     expect(mockContextWithForceOption.amplify.deleteProject).toBeCalled();
   });
@@ -72,7 +72,7 @@ describe('amplify delete:', () => {
       deleteProject: jest.fn(),
     },
     parameters: {
-      array: ['foo'],
+      array: ["foo"],
     },
     options: {
       force: true,
@@ -84,7 +84,9 @@ describe('amplify delete:', () => {
       emitError: jest.fn(),
     },
   };
-  it('delete run method should display an error message when using force option', async () => {
-    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow('The "delete" command does not expect additional arguments.');
+  it("delete run method should display an error message when using force option", async () => {
+    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow(
+      'The "delete" command does not expect additional arguments.'
+    );
   });
 });

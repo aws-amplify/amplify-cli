@@ -1,16 +1,16 @@
-import { TestEntry } from './test-case-types';
+import { TestEntry } from "./test-case-types";
 
 /*
   REGISTER TEST CASES HERE
 */
 export const getTestCaseRegistry = (): TestEntry[] => [
-  ['bi-di connection', biDiConnectionSchema],
-  ['many to many', manyToManySchema],
-  ['recursive', recursiveSchema],
-  ['compound sort key', compoundSortKey],
-  ['custom primary key', customPrimaryKey],
-  ['connection on custom primary key', connectionOnCustomPrimaryKey],
-  ['support renaming timestamps', renameTimestampFields],
+  ["bi-di connection", biDiConnectionSchema],
+  ["many to many", manyToManySchema],
+  ["recursive", recursiveSchema],
+  ["compound sort key", compoundSortKey],
+  ["custom primary key", customPrimaryKey],
+  ["connection on custom primary key", connectionOnCustomPrimaryKey],
+  ["support renaming timestamps", renameTimestampFields],
   /*
   [
     'add additional tests with a descriptive name',
@@ -135,7 +135,7 @@ const namedHasManyBelongsToConnection = /* GraphQL */ `
 `;
 
 const renameTimestampFields = /* GraphQL */ `
-  type Post @model(timestamps: { createdAt: "made", updatedAt: "updated"}) {
+  type Post @model(timestamps: { createdAt: "made", updatedAt: "updated" }) {
     id: ID!
     title: String!
     contents: String

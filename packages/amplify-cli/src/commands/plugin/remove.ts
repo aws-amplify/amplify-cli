@@ -1,17 +1,17 @@
-import * as inquirer from 'inquirer';
-import { Context } from '../../domain/context';
-import { removePluginPackage, confirmAndScan } from '../../plugin-manager';
-import { PluginPlatform } from '../../domain/plugin-platform';
-import { constants } from '../../domain/constants';
-import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
-import { PluginInfo } from '../../domain/plugin-info';
+import * as inquirer from "inquirer";
+import { Context } from "../../domain/context";
+import { removePluginPackage, confirmAndScan } from "../../plugin-manager";
+import { PluginPlatform } from "../../domain/plugin-platform";
+import { constants } from "../../domain/constants";
+import { InquirerOption, EXPAND } from "../../domain/inquirer-helper";
+import { PluginInfo } from "../../domain/plugin-info";
 
 export const run = async (context: Context) => {
   const options = new Array<InquirerOption>();
   const { plugins } = context.pluginPlatform;
 
   if (plugins && Object.keys(plugins).length > 0) {
-    Object.keys(plugins).forEach(key => {
+    Object.keys(plugins).forEach((key) => {
       if (key === constants.CORE) {
         return;
       }
@@ -24,8 +24,8 @@ export const run = async (context: Context) => {
         };
         if (plugins[key].length === 1) {
           const pluginInfo = plugins[key][0];
-          option.name = pluginInfo.packageName + '@' + pluginInfo.packageVersion;
-          option.short = pluginInfo.packageName + '@' + pluginInfo.packageVersion;
+          option.name = pluginInfo.packageName + "@" + pluginInfo.packageVersion;
+          option.short = pluginInfo.packageName + "@" + pluginInfo.packageVersion;
         }
         options.push(option);
       }
@@ -34,14 +34,14 @@ export const run = async (context: Context) => {
 
   if (options.length > 0) {
     const { selections } = await inquirer.prompt({
-      type: 'checkbox',
-      name: 'selections',
-      message: 'Select the plugin packages to remove',
+      type: "checkbox",
+      name: "selections",
+      message: "Select the plugin packages to remove",
       choices: options,
     });
 
     if (selections.length > 0) {
-      const sequential = require('promise-sequential');
+      const sequential = require("promise-sequential");
       const removeTasks = selections.map((selection: Array<PluginInfo>) => async () => {
         await removeNamedPlugins(context.pluginPlatform, selection);
       });
@@ -49,7 +49,7 @@ export const run = async (context: Context) => {
       await confirmAndScan(context.pluginPlatform);
     }
   } else {
-    context.print.console.error('No plugins are found');
+    context.print.console.error("No plugins are found");
   }
 };
 
@@ -59,21 +59,21 @@ async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfos: A
   } else if (pluginInfos.length > 1) {
     const options = pluginInfos.map((pluginInfo: PluginInfo) => {
       const optionObject = {
-        name: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
+        name: pluginInfo.packageName + "@" + pluginInfo.packageVersion,
         value: pluginInfo,
-        short: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
+        short: pluginInfo.packageName + "@" + pluginInfo.packageVersion,
       };
       return optionObject;
     });
     const { selections } = await inquirer.prompt({
-      type: 'checkbox',
-      name: 'selections',
-      message: 'Select the plugin packages to remove',
+      type: "checkbox",
+      name: "selections",
+      message: "Select the plugin packages to remove",
       choices: options,
     });
 
     if (selections.length > 0) {
-      const sequential = require('promise-sequential');
+      const sequential = require("promise-sequential");
       const removeTasks = selections.map((pluginInfo: PluginInfo) => async () => {
         await removePluginPackage(pluginPlatform, pluginInfo);
       });

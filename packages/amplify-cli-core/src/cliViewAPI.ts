@@ -1,7 +1,7 @@
 //Use this file to store all types used between the CLI commands and the view/display functions
 // CLI=>(command-handler)==[CLI-View-API]=>(ux-handler/report-handler)=>output-stream
-import chalk from 'chalk';
-import { $TSAny, $TSContext } from '.';
+import chalk from "chalk";
+import { $TSAny, $TSContext } from ".";
 export interface CLIParams {
   cliCommand: string;
   cliSubcommands: string[] | undefined;
@@ -34,8 +34,8 @@ export class ViewResourceTableParams {
   getCategoryFromCLIOptions(cliOptions: object) {
     if (cliOptions) {
       return Object.keys(cliOptions)
-        .filter(key => key !== 'verbose' && key !== 'yes')
-        .map(category => category.toLowerCase());
+        .filter((key) => key !== "verbose" && key !== "yes")
+        .map((category) => category.toLowerCase());
     } else {
       return [];
     }
@@ -59,26 +59,26 @@ export class ViewResourceTableParams {
 
   public getStyledHelp() {
     return `
-${this.styleHeader('NAME')}
-${this.styleCommand('amplify status')} --  Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete)
+${this.styleHeader("NAME")}
+${this.styleCommand("amplify status")} --  Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete)
 
-${this.styleHeader('SYNOPSIS')}
-${this.styleCommand('amplify status')} [${this.styleCommand('-v')}|${this.styleCommand('--verbose')}] [${this.styleOption('category ...')}]
+${this.styleHeader("SYNOPSIS")}
+${this.styleCommand("amplify status")} [${this.styleCommand("-v")}|${this.styleCommand("--verbose")}] [${this.styleOption("category ...")}]
 
-${this.styleHeader('DESCRIPTION')}
+${this.styleHeader("DESCRIPTION")}
 The amplify status command displays the difference between the deployed state and the local state of the application.
 The following options are available:
 
-${this.styleCommand('[category ...]')}    : (Summary mode) Displays the summary of local state vs deployed state of the application
+${this.styleCommand("[category ...]")}    : (Summary mode) Displays the summary of local state vs deployed state of the application
                     usage:
-                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status')}
-                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status')} ${this.styleOption('api storage')}
+                    ${this.stylePrompt("#>")} ${this.styleCommand("amplify status")}
+                    ${this.stylePrompt("#>")} ${this.styleCommand("amplify status")} ${this.styleOption("api storage")}
 
-${this.styleCommand('-v [category ...]')} : (Verbose mode) Displays the cloudformation diff for all resources for the specified category.
+${this.styleCommand("-v [category ...]")} : (Verbose mode) Displays the cloudformation diff for all resources for the specified category.
                     If no category is provided, it shows the diff for all categories.
                     usage:
-                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status -v')}
-                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status -v ')}${this.styleOption('api storage')}
+                    ${this.stylePrompt("#>")} ${this.styleCommand("amplify status -v")}
+                    ${this.stylePrompt("#>")} ${this.styleCommand("amplify status -v ")}${this.styleOption("api storage")}
 
     `;
   }
@@ -92,6 +92,6 @@ ${this.styleCommand('-v [category ...]')} : (Verbose mode) Displays the cloudfor
     this._verbose = cliParams.cliOptions?.verbose === true;
     this._categoryList = this.getCategoryFromCLIOptions(cliParams.cliOptions);
     this._filteredResourceList = []; //TBD - add support to provide resources
-    this._help = cliParams.cliSubcommands ? cliParams.cliSubcommands.includes('help') : false;
+    this._help = cliParams.cliSubcommands ? cliParams.cliSubcommands.includes("help") : false;
   }
 }

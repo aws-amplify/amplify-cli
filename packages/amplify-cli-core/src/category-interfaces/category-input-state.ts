@@ -1,4 +1,4 @@
-import { $TSAny } from '..';
+import { $TSAny } from "..";
 
 export abstract class CategoryInputState {
   _resourceName: string;

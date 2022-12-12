@@ -1,7 +1,7 @@
-import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
-import { $TSObject } from 'amplify-cli-core';
-import { DdbAttrType } from '../cfn-template-utils';
+import { AmplifyCDKL1 } from "@aws-amplify/cli-extensibility-helper";
+import * as cdk from "@aws-cdk/core";
+import { $TSObject } from "amplify-cli-core";
+import { DdbAttrType } from "../cfn-template-utils";
 
 /**
  * AmplifyDDBResourceInputParameters
@@ -98,7 +98,7 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw new Error('logical Id already Exists');
+      throw new Error("logical Id already Exists");
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
@@ -111,6 +111,6 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
  * Types used in Build/Params.json
  */
 export enum AmplifyBuildParamsPermissions {
-  ALLOW = 'ALLOW',
-  DISALLOW = 'DISALLOW',
+  ALLOW = "ALLOW",
+  DISALLOW = "DISALLOW",
 }

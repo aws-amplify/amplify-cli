@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from "amplify-cli-core";
 
 export const extractArgs = (context: $TSContext) => {
   if (!context.input.options) {

@@ -1,16 +1,16 @@
 /* eslint-disable */
-import { addApi, amplifyPushWithoutCodegen, updateAuthAddUserGroups, getAmplifyFlutterConfig } from '@aws-amplify/amplify-e2e-core';
-import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from '../authHelper';
-import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from '../common';
-import Amplify from 'aws-amplify';
+import { addApi, amplifyPushWithoutCodegen, updateAuthAddUserGroups, getAmplifyFlutterConfig } from "@aws-amplify/amplify-e2e-core";
+import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from "../authHelper";
+import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from "../common";
+import Amplify from "aws-amplify";
 
-const GROUPNAME = 'Admin';
-const USERNAME = 'user1';
-const PASSWORD = 'user1Password';
+const GROUPNAME = "Admin";
+const USERNAME = "user1";
+const PASSWORD = "user1Password";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
-    'Amazon Cognito User Pool': {},
+    "Amazon Cognito User Pool": {},
     transformerVersion: 2,
   });
 
@@ -28,7 +28,7 @@ export async function runTest(projectDir: string, testModule: any) {
   const appSyncClient = getConfiguredAppsyncClientCognitoAuth(
     amplifyConfig.aws_appsync_graphqlEndpoint,
     amplifyConfig.aws_appsync_region,
-    user,
+    user
   );
 
   await testMutations(testModule, appSyncClient);
@@ -79,18 +79,18 @@ mutation CreatePost(
 
 export const input_mutation = {
   input: {
-    id: '1',
-    title: 'title1',
+    id: "1",
+    title: "title1",
   },
 };
 
 export const expected_result_mutation = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "1",
+      title: "title1",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
       owner: USERNAME,
     },
   },
@@ -110,8 +110,8 @@ export const query = `
 export const expected_result_query = {
   data: {
     getPost: {
-      id: '1',
-      title: 'title1',
+      id: "1",
+      title: "title1",
       owner: USERNAME,
     },
   },

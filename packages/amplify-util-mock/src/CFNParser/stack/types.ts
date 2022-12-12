@@ -4,46 +4,46 @@ export type CloudFormationParameter = {
   Default?: string | number;
 };
 export type CloudFormationFnIf = {
-  'Fn::If': [string, CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
+  "Fn::If": [string, CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
 };
 export type CloudFormationFnAnd = {
-  'Fn::And': CloudFormationIntrinsicFunction[];
+  "Fn::And": CloudFormationIntrinsicFunction[];
 };
 export type CloudFormationFnEqual = {
-  'Fn::Equals': [CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
+  "Fn::Equals": [CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
 };
 export type CloudFormationFnNot = {
-  'Fn::Not': [CloudFormationIntrinsicFunction];
+  "Fn::Not": [CloudFormationIntrinsicFunction];
 };
 export type CloudFormationFnOr = {
-  'Fn::Or': CloudFormationIntrinsicFunction[];
+  "Fn::Or": CloudFormationIntrinsicFunction[];
 };
 export type CloudFormationFnFindInMap = {
-  'Fn::FindInMap': [string, CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
+  "Fn::FindInMap": [string, CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
 };
 export type CloudFormationRef = {
   Ref: string;
 };
 export type CloudFormationFnGetAtt = {
-  'Fn::GetAtt': [string, CloudFormationRef | string];
+  "Fn::GetAtt": [string, CloudFormationRef | string];
 };
 export type CloudFormationFnBase64 = {
-  'Fn::Base64': string;
+  "Fn::Base64": string;
 };
 export type CloudFormationFnImportValue = {
-  'Fn::ImportValue': CloudFormationIntrinsicFunction; // limit to subset (Fn::Base64, Fn::FindInMap, Fn::If, Fn::Join, Fn::Select, Fn::Split, Fn::Sub, Ref)
+  "Fn::ImportValue": CloudFormationIntrinsicFunction; // limit to subset (Fn::Base64, Fn::FindInMap, Fn::If, Fn::Join, Fn::Select, Fn::Split, Fn::Sub, Ref)
 };
 export type CloudFormationFnJoin = {
-  'Fn::Join': [string, CloudFormationIntrinsicFunction[]];
+  "Fn::Join": [string, CloudFormationIntrinsicFunction[]];
 };
 export type CloudFormationFnSelect = {
-  'Fn::Select': [number, ...CloudFormationIntrinsicFunction[]]; // limit subset(Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::Split,Ref)
+  "Fn::Select": [number, ...CloudFormationIntrinsicFunction[]]; // limit subset(Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::Split,Ref)
 };
 export type CloudFormationFnSplit = {
-  'Fn::Split': [string, ...CloudFormationIntrinsicFunction[]]; // limit subset (Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Fn::Sub,Ref)
+  "Fn::Split": [string, ...CloudFormationIntrinsicFunction[]]; // limit subset (Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Fn::Sub,Ref)
 };
 export type CloudFormationFnSub = {
-  'Fn::Sub': [string, ...CloudFormationIntrinsicFunction[]]; //Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Ref
+  "Fn::Sub": [string, ...CloudFormationIntrinsicFunction[]]; //Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Ref
 };
 export type CloudFormationIntrinsicConditionFunction =
   | CloudFormationFnIf

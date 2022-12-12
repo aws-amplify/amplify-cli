@@ -1,16 +1,16 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import * as path from "path";
 
-const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
-const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
+const npm = /^win/.test(process.platform) ? "npm.cmd" : "npm";
+const amplifyAppBinPath = path.join(__dirname, "..", "..", "..", "amplify-app", "bin", "amplify-app");
+const spawnCommand = isCI() ? "amplify-app" : amplifyAppBinPath;
 
 function amplifyAppAndroid(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true })
-      .wait('Successfully created base Amplify Project')
-      .wait('Amplify setup completed successfully')
+    spawn(spawnCommand, ["--platform", "android"], { cwd: projRoot, stripColors: true })
+      .wait("Successfully created base Amplify Project")
+      .wait("Amplify setup completed successfully")
       .run(function (err) {
         if (!err) {
           resolve();
@@ -23,9 +23,9 @@ function amplifyAppAndroid(projRoot: string): Promise<void> {
 
 function amplifyAppIos(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true })
-      .wait('Successfully created base Amplify Project')
-      .wait('Amplify setup completed successfully')
+    spawn(spawnCommand, ["--platform", "ios"], { cwd: projRoot, stripColors: true })
+      .wait("Successfully created base Amplify Project")
+      .wait("Amplify setup completed successfully")
       .run(function (err) {
         if (!err) {
           resolve();
@@ -39,9 +39,9 @@ function amplifyAppIos(projRoot: string): Promise<void> {
 function amplifyAppAngular(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
-      .wait('What type of app are you building')
+      .wait("What type of app are you building")
       .sendCarriageReturn()
-      .wait('What javascript framework are you using')
+      .wait("What javascript framework are you using")
       .sendCarriageReturn()
       .run(function (err) {
         if (!err) {
@@ -56,9 +56,9 @@ function amplifyAppAngular(projRoot: string): Promise<void> {
 function amplifyAppReact(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
-      .wait('What type of app are you building')
+      .wait("What type of app are you building")
       .sendCarriageReturn()
-      .wait('What javascript framework are you using')
+      .wait("What javascript framework are you using")
       .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
       .run(function (err) {
         if (!err) {
@@ -72,7 +72,7 @@ function amplifyAppReact(projRoot: string): Promise<void> {
 
 function amplifyModelgen(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true }).run(function (err) {
+    spawn(npm, ["run", "amplify-modelgen"], { cwd: projRoot, stripColors: true }).run(function (err) {
       if (!err) {
         resolve();
       } else {
@@ -84,7 +84,7 @@ function amplifyModelgen(projRoot: string): Promise<void> {
 
 function amplifyPush(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true }).run(function (err) {
+    spawn(npm, ["run", "amplify-push"], { cwd: projRoot, stripColors: true }).run(function (err) {
       if (!err) {
         resolve();
       } else {
@@ -97,10 +97,10 @@ function amplifyPush(projRoot: string): Promise<void> {
 function addIntegAccountInConfig(projRoot: string) {
   // add test account to config since no default account in circle ci
   if (isCI()) {
-    const buildConfigPath = path.join(projRoot, 'amplify-build-config.json');
+    const buildConfigPath = path.join(projRoot, "amplify-build-config.json");
     const buildConfigFile = fs.readFileSync(buildConfigPath);
     const buildConfig = JSON.parse(buildConfigFile.toString());
-    buildConfig.profile = 'amplify-integ-test-user';
+    buildConfig.profile = "amplify-integ-test-user";
     fs.writeFileSync(buildConfigPath, JSON.stringify(buildConfig));
   }
 }

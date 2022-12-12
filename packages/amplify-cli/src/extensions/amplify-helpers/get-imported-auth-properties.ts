@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import { $TSContext } from 'amplify-cli-core';
+import _ from "lodash";
+import { $TSContext } from "amplify-cli-core";
 
 export const getImportedAuthProperties = (
-  context: $TSContext,
+  context: $TSContext
 ): {
   imported: boolean;
   userPoolId?: string;
@@ -12,14 +12,14 @@ export const getImportedAuthProperties = (
   unauthRoleName?: string;
 } => {
   const { amplifyMeta } = context.amplify.getProjectDetails();
-  const authCategoryName = 'auth';
-  const authServiceName = 'Cognito';
+  const authCategoryName = "auth";
+  const authServiceName = "Cognito";
 
   const authCategory = _.get(amplifyMeta, [authCategoryName], undefined);
 
   if (authCategory) {
     const importedAuthResources = Object.entries(authCategory).filter(
-      entry => (entry[1] as any).service === authServiceName && (entry[1] as any).serviceType === 'imported',
+      (entry) => (entry[1] as any).service === authServiceName && (entry[1] as any).serviceType === "imported"
     );
 
     if (importedAuthResources.length === 1) {

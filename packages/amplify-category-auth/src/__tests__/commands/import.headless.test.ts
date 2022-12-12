@@ -1,18 +1,18 @@
-import { executeAmplifyHeadlessCommand } from '../../../src';
-import { ImportAuthRequest } from 'amplify-headless-interface';
-import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { printer } from 'amplify-prompts';
-import { stateManager } from 'amplify-cli-core';
+import { executeAmplifyHeadlessCommand } from "../../../src";
+import { ImportAuthRequest } from "amplify-headless-interface";
+import { messages } from "../../provider-utils/awscloudformation/assets/string-maps";
+import { printer } from "amplify-prompts";
+import { stateManager } from "amplify-cli-core";
 
-jest.mock('amplify-prompts', () => ({
+jest.mock("amplify-prompts", () => ({
   printer: {
     info: jest.fn(),
     warn: jest.fn(),
   },
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock("amplify-cli-core", () => ({
+  ...(jest.requireActual("amplify-cli-core") as {}),
   FeatureFlags: {
     getBoolean: () => false,
   },
@@ -29,14 +29,14 @@ stateManager_mock.getMeta = jest.fn().mockReturnValue({
 });
 stateManager_mock.setResourceParametersJson = jest.fn();
 
-jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
+jest.mock("../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state");
 
-describe('import auth headless', () => {
+describe("import auth headless", () => {
   let mockContext: any;
-  const USER_POOL_ID = 'user-pool-123';
-  const IDENTITY_POOL_ID = 'identity-pool-123';
-  const NATIVE_CLIENT_ID = 'native-app-client-123';
-  const WEB_CLIENT_ID = 'web-app-client-123';
+  const USER_POOL_ID = "user-pool-123";
+  const IDENTITY_POOL_ID = "identity-pool-123";
+  const NATIVE_CLIENT_ID = "native-app-client-123";
+  const WEB_CLIENT_ID = "web-app-client-123";
   const defaultUserPoolClients = [
     {
       UserPoolId: USER_POOL_ID,
@@ -45,7 +45,7 @@ describe('import auth headless', () => {
     {
       UserPoolId: USER_POOL_ID,
       ClientId: NATIVE_CLIENT_ID,
-      ClientSecret: 'secret-123',
+      ClientSecret: "secret-123",
     },
   ];
   const headlessPayload: ImportAuthRequest = {
@@ -57,7 +57,7 @@ describe('import auth headless', () => {
   };
   const headlessPayloadString: string = JSON.stringify(headlessPayload);
   const projectConfig = {
-    projectName: 'amplify-import-headless-auth-test',
+    projectName: "amplify-import-headless-auth-test",
   };
   const projectDetails = {
     projectConfig,
@@ -65,12 +65,12 @@ describe('import auth headless', () => {
   };
   const getUserPoolDetails = {
     Id: USER_POOL_ID,
-    MfaConfiguration: 'ON',
+    MfaConfiguration: "ON",
   };
   const identityPoolDetails = [
     {
       IdentityPoolId: IDENTITY_POOL_ID,
-      IdentityPoolName: 'identity-pool',
+      IdentityPoolName: "identity-pool",
       AllowUnauthenticatedIdentities: true,
       CognitoIdentityProviders: [
         {
@@ -88,13 +88,13 @@ describe('import auth headless', () => {
     SoftwareTokenMfaConfiguration: {
       Enabled: true,
     },
-    MfaConfiguration: 'ON',
+    MfaConfiguration: "ON",
   };
   const getIdentityPoolRolesResponse = {
-    authRoleArn: 'arn:authRole:123',
-    authRoleName: 'authRole',
-    unauthRoleName: 'unAuthRole',
-    unauthRoleArn: 'arn:unAuthRole:123',
+    authRoleArn: "arn:authRole:123",
+    authRoleName: "authRole",
+    unauthRoleName: "unAuthRole",
+    unauthRoleArn: "arn:unAuthRole:123",
   };
   // mock fns
   const cognitoUserPoolServiceMock = jest.fn();
@@ -132,14 +132,14 @@ describe('import auth headless', () => {
         saveEnvResourceParameters: jest.fn(),
       },
       parameters: {
-        first: 'mockFirst',
+        first: "mockFirst",
       },
       input: {
-        command: 'import',
+        command: "import",
       },
-      usageData : {
-        pushHeadlessFlow : jest.fn()
-      }
+      usageData: {
+        pushHeadlessFlow: jest.fn(),
+      },
     };
   });
 
@@ -147,7 +147,7 @@ describe('import auth headless', () => {
     jest.clearAllMocks();
   });
 
-  it('should process command successfully', async () => {
+  it("should process command successfully", async () => {
     await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
     expect(getUserPoolDetailsMock).toBeCalledWith(USER_POOL_ID);
@@ -157,7 +157,7 @@ describe('import auth headless', () => {
     expect(getIdentityPoolRolesMock).toBeCalledWith(IDENTITY_POOL_ID);
   });
 
-  it('should warn if auth has already been added', async () => {
+  it("should warn if auth has already been added", async () => {
     getProjectDetailsMock.mockReturnValueOnce({
       projectConfig,
     });
@@ -173,7 +173,7 @@ describe('import auth headless', () => {
     expect(printer.warn).toBeCalledWith(messages.authExists);
   });
 
-  it('should warn if auth has already been imported', async () => {
+  it("should warn if auth has already been imported", async () => {
     getProjectDetailsMock.mockReturnValueOnce({
       projectConfig,
     });
@@ -181,7 +181,7 @@ describe('import auth headless', () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
       auth: {
         foo: {
-          serviceType: 'imported',
+          serviceType: "imported",
         },
       },
     });
@@ -189,11 +189,11 @@ describe('import auth headless', () => {
     await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
     expect(printer.warn).toBeCalledWith(
-      'Auth has already been imported to this project and cannot be modified from the CLI. To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify import auth".',
+      'Auth has already been imported to this project and cannot be modified from the CLI. To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify import auth".'
     );
   });
 
-  it('should throw user pool not found exception', async () => {
+  it("should throw user pool not found exception", async () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
@@ -202,18 +202,18 @@ describe('import auth headless', () => {
 
     try {
       getUserPoolDetailsMock.mockRejectedValueOnce({
-        name: 'ResourceNotFoundException',
+        name: "ResourceNotFoundException",
       });
 
       await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
-      fail('should throw error');
+      fail("should throw error");
     } catch (e) {
       expect(e.message).toBe(`The previously configured Cognito User Pool: '' (user-pool-123) cannot be found.`);
     }
   });
 
-  it('should throw web clients not found exception ', async () => {
+  it("should throw web clients not found exception ", async () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
@@ -225,21 +225,21 @@ describe('import auth headless', () => {
 
       await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
-      fail('should throw error');
+      fail("should throw error");
     } catch (e) {
       expect(e.message).toBe(
-        'The selected Cognito User Pool does not have at least 1 Web app client configured. Web app clients are app clients without a client secret.',
+        "The selected Cognito User Pool does not have at least 1 Web app client configured. Web app clients are app clients without a client secret."
       );
     }
   });
 
-  it('should throw no matching identity pool found exception', async () => {
+  it("should throw no matching identity pool found exception", async () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
       },
     });
-    const INVALID_USER_POOL_ID = USER_POOL_ID + '-invalid';
+    const INVALID_USER_POOL_ID = USER_POOL_ID + "-invalid";
     const invalidHeadlessPayload = {
       ...headlessPayload,
       userPoolId: INVALID_USER_POOL_ID,
@@ -248,15 +248,15 @@ describe('import auth headless', () => {
     try {
       getUserPoolDetailsMock.mockResolvedValueOnce({
         Id: INVALID_USER_POOL_ID,
-        MfaConfiguration: 'ON',
+        MfaConfiguration: "ON",
       });
       listUserPoolClientsMock.mockResolvedValueOnce(defaultUserPoolClients);
 
       await executeAmplifyHeadlessCommand(mockContext, invalidHeadlessPayloadString);
 
-      fail('should throw error');
+      fail("should throw error");
     } catch (e) {
-      expect(e.message).toBe('There are no Identity Pools found which has the selected Cognito User Pool configured as identity provider.');
+      expect(e.message).toBe("There are no Identity Pools found which has the selected Cognito User Pool configured as identity provider.");
     }
   });
 });

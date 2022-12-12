@@ -1,25 +1,21 @@
-import {
-  $TSContext, $TSObject, stateManager, pathManager, JSONUtilities,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import {
-  EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle,
-} from '../../service-utils/mapParams';
-import { AccessType, DataProvider } from '../../service-utils/resourceParams';
-import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
-import { category } from '../../constants';
-import { createMapWalkthrough, updateMapWalkthrough } from '../../service-walkthroughs/mapWalkthrough';
-import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
+import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from "../../service-utils/mapParams";
+import { AccessType, DataProvider } from "../../service-utils/resourceParams";
+import { provider, ServiceName, apiDocs } from "../../service-utils/constants";
+import { category } from "../../constants";
+import { createMapWalkthrough, updateMapWalkthrough } from "../../service-walkthroughs/mapWalkthrough";
+import { removeWalkthrough } from "../../service-walkthroughs/removeWalkthrough";
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock("amplify-cli-core");
+jest.mock("amplify-prompts");
 
-describe('Map walkthrough works as expected', () => {
-  const projectName = 'mockProject';
+describe("Map walkthrough works as expected", () => {
+  const projectName = "mockProject";
   const service = ServiceName.Map;
-  const mockMapName = 'mockmap12345';
-  const secondaryMapName = 'secondarymap12345';
-  const mockUserPoolGroup = 'mockCognitoGroup';
+  const mockMapName = "mockmap12345";
+  const secondaryMapName = "secondarymap12345";
+  const mockUserPoolGroup = "mockCognitoGroup";
   const mockMapResource = {
     resourceName: mockMapName,
     service,
@@ -32,7 +28,7 @@ describe('Map walkthrough works as expected', () => {
     mapStyle: MapStyle.VectorEsriStreets,
   };
   const mockPlaceIndexResource = {
-    resourceName: 'placeIndex12345',
+    resourceName: "placeIndex12345",
     service: ServiceName.PlaceIndex,
   };
 
@@ -50,7 +46,7 @@ describe('Map walkthrough works as expected', () => {
     groupPermissions: [mockUserPoolGroup],
   };
 
-  const mockContext = ({
+  const mockContext = {
     amplify: {
       serviceSelectionPrompt: async () => ({ service, providerName: provider }),
       inputValidation: jest.fn(),
@@ -61,7 +57,7 @@ describe('Map walkthrough works as expected', () => {
       updateBackendConfigAfterResourceRemove: jest.fn(),
     },
     usageData: { emitError: jest.fn() },
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 
   // construct mock amplify meta
   const mockAmplifyMeta: $TSObject = {
@@ -76,50 +72,50 @@ describe('Map walkthrough works as expected', () => {
     mockAmplifyMeta.geo[mockPlaceIndexResource.resourceName] = mockPlaceIndexResource;
     mockContext.amplify.getUserPoolGroupList = jest.fn().mockReturnValue([mockUserPoolGroup]);
 
-    pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
+    pathManager.getBackendDirPath = jest.fn().mockReturnValue("");
     JSONUtilities.readJson = jest.fn().mockReturnValue({});
-    JSONUtilities.writeJson = jest.fn().mockReturnValue('');
+    JSONUtilities.writeJson = jest.fn().mockReturnValue("");
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     printer.warn = jest.fn();
     printer.error = jest.fn();
     printer.success = jest.fn();
     printer.info = jest.fn();
     prompter.input = jest.fn().mockImplementation((message: string): Promise<any> => {
-      let mockUserInput = 'mock';
-      if (message === 'Provide a name for the Map:') {
+      let mockUserInput = "mock";
+      if (message === "Provide a name for the Map:") {
         mockUserInput = mockMapParameters.name;
       }
-      return new Promise<any>(resolve => {
+      return new Promise<any>((resolve) => {
         resolve(mockUserInput);
       });
     });
     prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
       let mockUserInput: string | string[];
-      if (message === 'Select one or more cognito groups to give access:') {
+      if (message === "Select one or more cognito groups to give access:") {
         mockUserInput = mockMapParameters.groupPermissions;
       }
-      if (message === 'Restrict access by?') {
-        mockUserInput = 'Both';
+      if (message === "Restrict access by?") {
+        mockUserInput = "Both";
       }
       if (message === `Specify the map style. Refer ${apiDocs.mapStyles}`) {
         mockUserInput = getGeoMapStyle(mockMapParameters.dataProvider, mockMapParameters.mapStyleType);
-      } else if (message === 'Who can access this Map?') {
+      } else if (message === "Who can access this Map?") {
         mockUserInput = mockMapParameters.accessType;
-      } else if (message === 'Select the Map you want to update') {
+      } else if (message === "Select the Map you want to update") {
         mockUserInput = mockMapParameters.name;
-      } else if (message === 'Select the Map you want to set as default:') {
+      } else if (message === "Select the Map you want to set as default:") {
         mockUserInput = secondaryMapName;
-      } else if (message === 'Select the Map you want to remove') {
+      } else if (message === "Select the Map you want to remove") {
         mockUserInput = mockMapName;
       }
-      return new Promise<any>(resolve => {
+      return new Promise<any>((resolve) => {
         resolve(mockUserInput);
       });
     });
     prompter.yesOrNo = jest.fn().mockReturnValue(mockMapParameters.isDefault);
   });
 
-  it('sets parameters based on user input for update map walkthrough', async () => {
+  it("sets parameters based on user input for update map walkthrough", async () => {
     // set initial map parameters before update
     mockAmplifyMeta.geo[mockMapName].accessType = AccessType.AuthorizedAndGuestUsers;
     mockAmplifyMeta.geo[mockMapName].isDefault = true;
@@ -136,16 +132,14 @@ describe('Map walkthrough works as expected', () => {
 
     // The default map is now changed to secondary map
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockMapName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryMapName, 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, mockMapName, "isDefault", false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, secondaryMapName, "isDefault", true);
     expect(mockContext.amplify.updateBackendConfigAfterResourceUpdate).toBeCalledTimes(2);
     // The map parameters are updated
     expect(mockMapParameters).toMatchObject(mapParams);
   });
 
-  it('early returns and prints error if no map resource to update', async () => {
+  it("early returns and prints error if no map resource to update", async () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
@@ -158,7 +152,7 @@ describe('Map walkthrough works as expected', () => {
     expect(printer.error).toBeCalledWith('No Map resource to update. Use "amplify add geo" to create a new Map.');
   });
 
-  it('sets parameters based on user input for adding subsequent map walkthrough', async () => {
+  it("sets parameters based on user input for adding subsequent map walkthrough", async () => {
     mockAmplifyMeta.geo = {};
     mockAmplifyMeta.geo[secondaryMapName] = { ...mockMapParameters, ...secondaryMapResource, isDefault: true };
     mockAmplifyMeta.geo[mockPlaceIndexResource.resourceName] = mockPlaceIndexResource;
@@ -173,7 +167,7 @@ describe('Map walkthrough works as expected', () => {
     expect(mockMapParameters).toMatchObject(mapParams);
   });
 
-  it('sets the first map added as default automatically', async () => {
+  it("sets the first map added as default automatically", async () => {
     let mapParams: Partial<MapParameters> = {
       providerContext: mockMapParameters.providerContext,
     };
@@ -186,22 +180,22 @@ describe('Map walkthrough works as expected', () => {
     expect({ ...mockMapParameters, isDefault: true }).toMatchObject(mapParams);
     // map default setting question is skipped
     expect(prompter.yesOrNo).toBeCalledTimes(1);
-    expect(prompter.yesOrNo).toBeCalledWith('Do you want to configure advanced settings?', false);
+    expect(prompter.yesOrNo).toBeCalledWith("Do you want to configure advanced settings?", false);
   });
 
-  it('sets the resource to remove correctly', async () => {
-    expect(await (removeWalkthrough(service))).toEqual(mockMapName);
+  it("sets the resource to remove correctly", async () => {
+    expect(await removeWalkthrough(service)).toEqual(mockMapName);
   });
 
-  it('early returns and prints error if no map resource to remove', async () => {
+  it("early returns and prints error if no map resource to remove", async () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     await removeWalkthrough(service);
 
-    expect(printer.error).toBeCalledWith('No Map exists in the project.');
+    expect(printer.error).toBeCalledWith("No Map exists in the project.");
   });
 
-  it('updates default map to another map if it is removed', async () => {
+  it("updates default map to another map if it is removed", async () => {
     mockContext.amplify.removeResource = jest.fn().mockReturnValue({
       service: ServiceName.Map,
       resourceName: mockMapName,
@@ -211,15 +205,13 @@ describe('Map walkthrough works as expected', () => {
     mockAmplifyMeta.geo[mockMapName].isDefault = true;
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-    const { removeMapResource } = require('../../provider-controllers/map');
+    const { removeMapResource } = require("../../provider-controllers/map");
 
-    expect(await (removeMapResource(mockContext))).toEqual(mockMapName);
+    expect(await removeMapResource(mockContext)).toEqual(mockMapName);
     // The default map is now changed to secondary map
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockMapName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryMapName, 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, mockMapName, "isDefault", false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, secondaryMapName, "isDefault", true);
     expect(mockContext.amplify.updateBackendConfigAfterResourceUpdate).toBeCalledTimes(2);
   });
 });

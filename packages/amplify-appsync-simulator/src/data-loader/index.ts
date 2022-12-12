@@ -1,9 +1,9 @@
-import { DynamoDBDataLoader } from './dynamo-db';
-import { NoneDataLoader } from './none';
-import { LambdaDataLoader } from './lambda';
-import { OpenSearchDataLoader } from './opensearch';
+import { DynamoDBDataLoader } from "./dynamo-db";
+import { NoneDataLoader } from "./none";
+import { LambdaDataLoader } from "./lambda";
+import { OpenSearchDataLoader } from "./opensearch";
 
-import { AppSyncSimulatorDataSourceConfig, AppSyncSimulatorDataSourceType } from '../type-definition';
+import { AppSyncSimulatorDataSourceConfig, AppSyncSimulatorDataSourceType } from "../type-definition";
 export interface AmplifyAppSyncSimulatorDataLoader {
   load(payload: any, extraData?: any): Promise<object | null>;
 }
@@ -20,7 +20,7 @@ export function getDataLoader(sourceType) {
 
 export function addDataLoader(
   sourceType: AppSyncSimulatorDataSourceType,
-  loader: new (config?: AppSyncSimulatorDataSourceConfig) => AmplifyAppSyncSimulatorDataLoader,
+  loader: new (config?: AppSyncSimulatorDataSourceConfig) => AmplifyAppSyncSimulatorDataLoader
 ) {
   if (DATA_LOADER_MAP.has(sourceType)) {
     throw new Error(`Data loader for source ${sourceType} is already registered`);

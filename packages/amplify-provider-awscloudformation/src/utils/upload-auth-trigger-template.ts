@@ -1,14 +1,12 @@
-import {
-  $TSContext, AmplifyError, FeatureFlags, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import * as path from 'path';
-import _ from 'lodash';
+import { $TSContext, AmplifyError, FeatureFlags, JSONUtilities, pathManager, stateManager } from "amplify-cli-core";
+import * as path from "path";
+import _ from "lodash";
 // eslint-disable-next-line import/no-cycle
-import { uploadTemplateToS3 } from '../push-resources';
-import { ProviderName } from '../constants';
+import { uploadTemplateToS3 } from "../push-resources";
+import { ProviderName } from "../constants";
 
-export const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json';
-export const AUTH_TRIGGER_STACK = 'AuthTriggerCustomLambdaStack';
+export const AUTH_TRIGGER_TEMPLATE = "auth-trigger-cloudformation-template.json";
+export const AUTH_TRIGGER_STACK = "AuthTriggerCustomLambdaStack";
 const S3_UPLOAD_PATH = `auth/${AUTH_TRIGGER_TEMPLATE}`;
 
 /**
@@ -19,12 +17,12 @@ export const uploadAuthTriggerTemplate = async (context: $TSContext): Promise<{ 
     AuthTriggerTemplateURL: undefined,
   };
 
-  if (!FeatureFlags.getBoolean('auth.breakCircularDependency')) {
+  if (!FeatureFlags.getBoolean("auth.breakCircularDependency")) {
     return defaultResult;
   }
 
-  const categoryName = 'auth';
-  const serviceName = 'Cognito';
+  const categoryName = "auth";
+  const serviceName = "Cognito";
   const { amplifyMeta } = context.amplify.getProjectDetails();
   const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, categoryName, serviceName, undefined, false);
 
@@ -33,13 +31,13 @@ export const uploadAuthTriggerTemplate = async (context: $TSContext): Promise<{ 
   }
 
   const resourceDir = path.join(pathManager.getBackendDirPath(), categoryName, cognitoResource.resourceName);
-  const authTriggerCfnFilePath = path.join(resourceDir, 'build', AUTH_TRIGGER_TEMPLATE);
-  const deploymentBucketName = _.get(amplifyMeta, ['providers', ProviderName, 'DeploymentBucketName']);
+  const authTriggerCfnFilePath = path.join(resourceDir, "build", AUTH_TRIGGER_TEMPLATE);
+  const deploymentBucketName = _.get(amplifyMeta, ["providers", ProviderName, "DeploymentBucketName"]);
 
   // This should not happen, so throw
   if (!deploymentBucketName) {
-    throw new AmplifyError('BucketNotFoundError', {
-      message: 'DeploymentBucket was not found in amplify-meta.json',
+    throw new AmplifyError("BucketNotFoundError", {
+      message: "DeploymentBucket was not found in amplify-meta.json",
     });
   }
 
@@ -51,7 +49,7 @@ export const uploadAuthTriggerTemplate = async (context: $TSContext): Promise<{ 
     return defaultResult;
   }
 
-  await uploadTemplateToS3(context, authTriggerCfnFilePath, categoryName, '', null);
+  await uploadTemplateToS3(context, authTriggerCfnFilePath, categoryName, "", null);
 
   return {
     AuthTriggerTemplateURL: `https://s3.amazonaws.com/${deploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,

@@ -1,53 +1,53 @@
-import * as inquirer from 'inquirer';
-import { JSONUtilities } from 'amplify-cli-core';
-import { merge } from 'lodash';
+import * as inquirer from "inquirer";
+import { JSONUtilities } from "amplify-cli-core";
+import { merge } from "lodash";
 
 export const editors = [
   {
-    name: 'Visual Studio Code',
-    value: 'vscode',
+    name: "Visual Studio Code",
+    value: "vscode",
   },
   {
-    name: 'Android Studio',
-    value: 'android-studio',
+    name: "Android Studio",
+    value: "android-studio",
   },
   {
-    name: 'Xcode (macOS only)',
-    value: 'xcode',
+    name: "Xcode (macOS only)",
+    value: "xcode",
   },
   {
-    name: 'Atom Editor',
-    value: 'atom',
+    name: "Atom Editor",
+    value: "atom",
   },
   {
-    name: 'Sublime Text',
-    value: 'sublime',
+    name: "Sublime Text",
+    value: "sublime",
   },
   {
-    name: 'IntelliJ IDEA',
-    value: 'intellij',
+    name: "IntelliJ IDEA",
+    value: "intellij",
   },
   {
-    name: 'Vim (via Terminal, macOS only)',
-    value: 'vim',
+    name: "Vim (via Terminal, macOS only)",
+    value: "vim",
   },
   {
-    name: 'Emacs (via Terminal, macOS only)',
-    value: 'emacs',
+    name: "Emacs (via Terminal, macOS only)",
+    value: "emacs",
   },
   {
-    name: 'None',
-    value: 'none',
+    name: "None",
+    value: "none",
   },
 ];
 
 export async function editorSelection(defaultEditor?) {
-  const normalizedDefaultEditor = editors.findIndex(editor => editor.value === defaultEditor) > -1 ? defaultEditor : undefined;
+  const normalizedDefaultEditor = editors.findIndex((editor) => editor.value === defaultEditor) > -1 ? defaultEditor : undefined;
 
   const editorQuestion: inquirer.ListQuestion = {
-    type: 'list',
-    name: 'editorSelected',
-    message: 'Choose your default editor:',
+    type: "list",
+    name: "editorSelected",
+    message: "Choose your default editor:",
     default: normalizedDefaultEditor,
     choices: editors,
   };
@@ -65,13 +65,13 @@ export function normalizeEditor(editor) {
   if (editor) {
     editor = editor.toLowerCase();
 
-    if (editor === 'idea14ce') {
-      editor = 'intellij';
-    } else if (editor === 'code') {
-      editor = 'vscode';
+    if (editor === "idea14ce") {
+      editor = "intellij";
+    } else if (editor === "code") {
+      editor = "vscode";
     }
 
-    editor = editors.findIndex(editorEntry => editorEntry.value === editor) > -1 ? editor : undefined;
+    editor = editors.findIndex((editorEntry) => editorEntry.value === editor) > -1 ? editor : undefined;
   }
 
   return editor;
@@ -85,17 +85,17 @@ export function normalizeEditor(editor) {
  */
 function hideNoManualEdit(editor) {
   switch (editor) {
-    case 'vscode':
-      const workspaceSettingsPath = '.vscode/settings.json';
+    case "vscode":
+      const workspaceSettingsPath = ".vscode/settings.json";
       const exclusionRules = {
-        'files.exclude': {
-          'amplify/.config': true,
-          'amplify/**/*-parameters.json': true,
-          'amplify/**/amplify.state': true,
-          'amplify/**/transform.conf.json': true,
-          'amplify/#current-cloud-backend': true,
-          'amplify/backend/amplify-meta.json': true,
-          'amplify/backend/awscloudformation': true,
+        "files.exclude": {
+          "amplify/.config": true,
+          "amplify/**/*-parameters.json": true,
+          "amplify/**/amplify.state": true,
+          "amplify/**/transform.conf.json": true,
+          "amplify/#current-cloud-backend": true,
+          "amplify/backend/amplify-meta.json": true,
+          "amplify/backend/awscloudformation": true,
         },
       };
       try {

@@ -1,22 +1,22 @@
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import { VelocityTemplateSimulator, AppSyncVTLContext } from '../../velocity';
+import { AppSyncAuthConfiguration } from "@aws-amplify/graphql-transformer-interfaces";
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from "@aws-amplify/amplify-appsync-simulator";
+import { VelocityTemplateSimulator, AppSyncVTLContext } from "../../velocity";
 
-describe('VTL behavior', () => {
+describe("VTL behavior", () => {
   let vtlTemplate: VelocityTemplateSimulator;
 
   beforeEach(() => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
-        authenticationType: 'API_KEY',
+        authenticationType: "API_KEY",
       },
       additionalAuthenticationProviders: [],
     };
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
-  test('Integer.parseInt()', () => {
-    const context: AppSyncVTLContext = { arguments: { input: { value: '42' } } };
+  test("Integer.parseInt()", () => {
+    const context: AppSyncVTLContext = { arguments: { input: { value: "42" } } };
     const request: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
       headers: {},

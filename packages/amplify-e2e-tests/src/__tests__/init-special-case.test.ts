@@ -14,13 +14,13 @@ import {
   initJSProjectWithProfile,
   updateAuthAddUserGroups,
   updatedInitNewEnvWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import * as specialCaseInit from '../init-special-cases';
+} from "@aws-amplify/amplify-e2e-core";
+import * as specialCaseInit from "../init-special-cases";
 
-describe('amplify init', () => {
+describe("amplify init", () => {
   let projectRoot: string;
   beforeEach(async () => {
-    projectRoot = await createNewProjectDir('special-init');
+    projectRoot = await createNewProjectDir("special-init");
   });
 
   afterEach(async () => {
@@ -28,24 +28,22 @@ describe('amplify init', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('init without credential files and no new user set up', async () => {
+  it("init without credential files and no new user set up", async () => {
     await specialCaseInit.initWithoutCredentialFileAndNoNewUserSetup(projectRoot);
     const meta = getBackendAmplifyMeta(projectRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const {
-      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
-    } = meta;
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
   });
 
-  it('test init on a git pulled project', async () => {
-    const envName = 'dev';
-    const resourceName = 'authConsoleTest';
+  it("test init on a git pulled project", async () => {
+    const envName = "dev";
+    const resourceName = "authConsoleTest";
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
     await addAuthWithDefault(projectRoot, {});
-    await updateAuthAddUserGroups(projectRoot, ['group']);
+    await updateAuthAddUserGroups(projectRoot, ["group"]);
     await amplifyPushAuth(projectRoot);
     const teamInfo = getTeamProviderInfo(projectRoot);
     expect(teamInfo).toBeDefined();
@@ -57,7 +55,7 @@ describe('amplify init', () => {
     const meta = getProjectMeta(projectRoot);
 
     const authResourceName = Object.keys(meta.auth)[0];
-    const category = 'auth';
+    const category = "auth";
 
     await gitInit(projectRoot);
     await gitCommitAll(projectRoot);
@@ -67,7 +65,7 @@ describe('amplify init', () => {
     }).toThrow();
 
     // add new environment test to not crash
-    await updatedInitNewEnvWithProfile(projectRoot, { envName: 'test' });
+    await updatedInitNewEnvWithProfile(projectRoot, { envName: "test" });
 
     // check parameters.json exists
     expect(() => {

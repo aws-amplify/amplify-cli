@@ -12,7 +12,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   createStorageSettings,
   expectLocalAndCloudMetaFilesMatching,
@@ -22,13 +22,13 @@ import {
   getStorageProjectDetails,
   headlessPull,
   importS3,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('s3 import c', () => {
-  const projectPrefix = 'sssimp';
-  const ogProjectPrefix = 'ogsssimp';
+describe("s3 import c", () => {
+  const projectPrefix = "sssimp";
+  const ogProjectPrefix = "ogsssimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -39,7 +39,7 @@ describe('s3 import c', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the s3 bucket to import by other test projects
@@ -98,7 +98,7 @@ describe('s3 import c', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('storage headless pull successful', async () => {
+  it("storage headless pull successful", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -116,12 +116,12 @@ describe('s3 import c', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('s3import-pull');
+      projectRootPull = await createNewProjectDir("s3import-pull");
 
-      const envName = 'integtest';
+      const envName = "integtest";
       const providersParam = {
         awscloudformation: {
-          configLevel: 'project',
+          configLevel: "project",
           useProfile: true,
           profileName,
         },
@@ -136,7 +136,7 @@ describe('s3 import c', () => {
 
       await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
 
-      await amplifyStatus(projectRoot, 'No Change');
+      await amplifyStatus(projectRoot, "No Change");
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);

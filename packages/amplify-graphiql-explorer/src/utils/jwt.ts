@@ -1,15 +1,15 @@
-import { decode, sign, verify } from 'jsonwebtoken';
+import { decode, sign, verify } from "jsonwebtoken";
 
 export function generateToken(decodedToken: string | object): string {
   try {
-    if (typeof decodedToken === 'string') {
+    if (typeof decodedToken === "string") {
       decodedToken = JSON.parse(decodedToken);
     }
-    const token = sign(decodedToken, 'open-secrete');
-    verify(token, 'open-secrete');
+    const token = sign(decodedToken, "open-secrete");
+    verify(token, "open-secrete");
     return token;
   } catch (e) {
-    const err = new Error('Error when generating OIDC token: ' + e.message);
+    const err = new Error("Error when generating OIDC token: " + e.message);
     throw err;
   }
 }

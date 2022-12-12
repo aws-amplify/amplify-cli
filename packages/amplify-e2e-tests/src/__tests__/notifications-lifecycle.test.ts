@@ -9,15 +9,15 @@ import {
   getAppId,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   expectLocalAndPulledAwsExportsMatching,
   expectLocalAndPulledBackendAmplifyMetaMatching,
   expectLocalAndPulledBackendConfigMatching,
   getShortId,
-} from '../import-helpers';
+} from "../import-helpers";
 
-describe('notification category lifecycle test', () => {
+describe("notification category lifecycle test", () => {
   const projectPrefix = `notificationLifecycle`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -47,7 +47,7 @@ describe('notification category lifecycle test', () => {
     deleteNeeded = true;
 
     const settings = { resourceName: `${projectPrefix}${getShortId()}` };
-    await addNotificationChannel(projectRoot, settings, 'In-App Messaging');
+    await addNotificationChannel(projectRoot, settings, "In-App Messaging");
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
@@ -67,7 +67,7 @@ describe('notification category lifecycle test', () => {
     await deleteProject(projectRoot);
 
     const stack = await describeCloudFormationStack(stackId, region);
-    expect(stack.StackStatus).toEqual('DELETE_COMPLETE');
+    expect(stack.StackStatus).toEqual("DELETE_COMPLETE");
     deleteNeeded = false;
   });
 });

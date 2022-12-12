@@ -1,11 +1,11 @@
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
-import 'isomorphic-fetch';
+import { ModelAuthTransformer } from "graphql-auth-transformer";
+import { ModelConnectionTransformer } from "graphql-connection-transformer";
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
+import { FeatureFlagProvider, GraphQLTransform } from "graphql-transformer-core";
+import { signUpAddToGroupAndGetJwtToken } from "./utils/cognito-utils";
+import { GraphQLClient } from "./utils/graphql-client";
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from "./utils/index";
+import "isomorphic-fetch";
 
 jest.setTimeout(2000000);
 
@@ -26,16 +26,16 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
-const USER_POOL_ID = 'y9CqgkEJe';
+const USER_POOL_ID = "y9CqgkEJe";
 
-const USERNAME1 = 'user1@test.com';
-const USERNAME2 = 'user2@test.com';
-const USERNAME3 = 'user3@test.com';
+const USERNAME1 = "user1@test.com";
+const USERNAME2 = "user2@test.com";
+const USERNAME3 = "user3@test.com";
 
-const ADMIN_GROUP_NAME = 'Admin';
-const DEVS_GROUP_NAME = 'Devs';
-const PARTICIPANT_GROUP_NAME = 'Participant';
-const WATCHER_GROUP_NAME = 'Watcher';
+const ADMIN_GROUP_NAME = "Admin";
+const DEVS_GROUP_NAME = "Devs";
+const PARTICIPANT_GROUP_NAME = "Participant";
+const WATCHER_GROUP_NAME = "Watcher";
 
 let ddbEmulator = null;
 let dbPath = null;
@@ -105,14 +105,14 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+            authenticationType: "AMAZON_COGNITO_USER_POOLS",
           },
           additionalAuthenticationProviders: [],
         },
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === "improvePluralization" ? true : false),
     } as FeatureFlagProvider,
   });
 
@@ -125,7 +125,7 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = server.url + "/graphql";
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
@@ -154,7 +154,7 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise<void>(res => setTimeout(() => res(), 5000));
+    await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
     console.error(e);
     throw e;
@@ -177,17 +177,17 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('creating a post and immediately view it via the User.posts connection.', async () => {
+test("creating a post and immediately view it via the User.posts connection.", async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createUser(input: { id: "user1@test.com" }) {
           id
       }
   }`,
-    {},
+    {}
   );
   logDebug(createUser1);
-  expect(createUser1.data.createUser.id).toEqual('user1@test.com');
+  expect(createUser1.data.createUser.id).toEqual("user1@test.com");
 
   const response = await GRAPHQL_CLIENT_1.query(
     `mutation {
@@ -197,11 +197,11 @@ test('creating a post and immediately view it via the User.posts connection.', a
           owner
       }
   }`,
-    {},
+    {}
   );
   logDebug(response);
   expect(response.data.createPost.id).toBeDefined();
-  expect(response.data.createPost.title).toEqual('Hello, World!');
+  expect(response.data.createPost.title).toEqual("Hello, World!");
   expect(response.data.createPost.owner).toBeDefined();
 
   const getResponse = await GRAPHQL_CLIENT_1.query(
@@ -219,16 +219,16 @@ test('creating a post and immediately view it via the User.posts connection.', a
           }
       }
   }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(getResponse, null, 4));
   expect(getResponse.data.getUser.posts.items[0].id).toBeDefined();
-  expect(getResponse.data.getUser.posts.items[0].title).toEqual('Hello, World!');
-  expect(getResponse.data.getUser.posts.items[0].owner).toEqual('user1@test.com');
-  expect(getResponse.data.getUser.posts.items[0].author.id).toEqual('user1@test.com');
+  expect(getResponse.data.getUser.posts.items[0].title).toEqual("Hello, World!");
+  expect(getResponse.data.getUser.posts.items[0].owner).toEqual("user1@test.com");
+  expect(getResponse.data.getUser.posts.items[0].author.id).toEqual("user1@test.com");
 });
 
-test('Testing reading an owner protected field as a non owner', async () => {
+test("Testing reading an owner protected field as a non owner", async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createFieldProtected(input: { id: "1", owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
@@ -237,12 +237,12 @@ test('Testing reading an owner protected field as a non owner', async () => {
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response1);
-  expect(response1.data.createFieldProtected.id).toEqual('1');
+  expect(response1.data.createFieldProtected.id).toEqual("1");
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
-  expect(response1.data.createFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected");
 
   const response2 = await GRAPHQL_CLIENT_2.query(
     `query {
@@ -252,7 +252,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response2);
   expect(response2.data.getFieldProtected.ownerOnly).toBeNull();
@@ -266,15 +266,15 @@ test('Testing reading an owner protected field as a non owner', async () => {
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response3);
-  expect(response3.data.getFieldProtected.id).toEqual('1');
+  expect(response3.data.getFieldProtected.id).toEqual("1");
   expect(response3.data.getFieldProtected.owner).toEqual(USERNAME1);
-  expect(response3.data.getFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response3.data.getFieldProtected.ownerOnly).toEqual("owner-protected");
 });
 
-test('that @connection resolvers respect @model read operations.', async () => {
+test("that @connection resolvers respect @model read operations.", async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createOpenTopLevel(input: { id: "1", owner: "${USERNAME1}", name: "open" }) {
@@ -283,12 +283,12 @@ test('that @connection resolvers respect @model read operations.', async () => {
           name
       }
   }`,
-    {},
+    {}
   );
   logDebug(response1);
-  expect(response1.data.createOpenTopLevel.id).toEqual('1');
+  expect(response1.data.createOpenTopLevel.id).toEqual("1");
   expect(response1.data.createOpenTopLevel.owner).toEqual(USERNAME1);
-  expect(response1.data.createOpenTopLevel.name).toEqual('open');
+  expect(response1.data.createOpenTopLevel.name).toEqual("open");
 
   const response2 = await GRAPHQL_CLIENT_2.query(
     `mutation {
@@ -298,12 +298,12 @@ test('that @connection resolvers respect @model read operations.', async () => {
           name
       }
   }`,
-    {},
+    {}
   );
   logDebug(response2);
-  expect(response2.data.createConnectionProtected.id).toEqual('1');
+  expect(response2.data.createConnectionProtected.id).toEqual("1");
   expect(response2.data.createConnectionProtected.owner).toEqual(USERNAME2);
-  expect(response2.data.createConnectionProtected.name).toEqual('closed');
+  expect(response2.data.createConnectionProtected.name).toEqual("closed");
 
   const response3 = await GRAPHQL_CLIENT_1.query(
     `query {
@@ -318,10 +318,10 @@ test('that @connection resolvers respect @model read operations.', async () => {
           }
       }
   }`,
-    {},
+    {}
   );
   logDebug(response3);
-  expect(response3.data.getOpenTopLevel.id).toEqual('1');
+  expect(response3.data.getOpenTopLevel.id).toEqual("1");
   expect(response3.data.getOpenTopLevel.protected.items).toHaveLength(0);
 
   const response4 = await GRAPHQL_CLIENT_2.query(
@@ -337,15 +337,15 @@ test('that @connection resolvers respect @model read operations.', async () => {
           }
       }
   }`,
-    {},
+    {}
   );
   logDebug(response4);
-  expect(response4.data.getOpenTopLevel.id).toEqual('1');
+  expect(response4.data.getOpenTopLevel.id).toEqual("1");
   expect(response4.data.getOpenTopLevel.protected.items).toHaveLength(1);
 });
 
 // Per field auth in mutations
-test('that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
+test("that owners cannot set the field of a FieldProtected object unless authorized.", async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createFieldProtected(input: { id: "2", owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
@@ -354,12 +354,12 @@ test('that owners cannot set the field of a FieldProtected object unless authori
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response1));
-  expect(response1.data.createFieldProtected.id).toEqual('2');
+  expect(response1.data.createFieldProtected.id).toEqual("2");
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
-  expect(response1.data.createFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected");
 
   const response2 = await GRAPHQL_CLIENT_1.query(
     `mutation {
@@ -369,7 +369,7 @@ test('that owners cannot set the field of a FieldProtected object unless authori
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response2);
   expect(response2.data.createFieldProtected).toBeNull();
@@ -385,10 +385,10 @@ test('that owners cannot set the field of a FieldProtected object unless authori
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response3);
-  expect(response3.data.createFieldProtected.id).toEqual('4');
+  expect(response3.data.createFieldProtected.id).toEqual("4");
   expect(response3.data.createFieldProtected.owner).toEqual(USERNAME2);
   // The length is one because the 'ownerOnly' field is protected on reads.
   // Since the caller is not the owner this will throw after the mutation succeeds
@@ -396,7 +396,7 @@ test('that owners cannot set the field of a FieldProtected object unless authori
   expect(response3.errors).toHaveLength(1);
 });
 
-test('authorized user can get Performance with no created stage', async () => {
+test("authorized user can get Performance with no created stage", async () => {
   const createPerf = `mutation {
     create: createPerformance(input: {
       id: "P3"
@@ -466,8 +466,8 @@ test('authorized user can get Performance with no created stage', async () => {
   const response2 = await GRAPHQL_CLIENT_1.query(getPerf, {});
   expect(response2).toBeDefined();
   expect(response2.data.g1).toBeDefined();
-  expect(response2.data.g1.id).toEqual('P3');
-  expect(response2.data.g1.description).toEqual('desc');
+  expect(response2.data.g1.id).toEqual("P3");
+  expect(response2.data.g1.description).toEqual("desc");
   expect(response2.data.g1.stage).toBeNull();
 
   //create stage and then add it to perf should show stage in perf
@@ -475,14 +475,14 @@ test('authorized user can get Performance with no created stage', async () => {
   const response3 = await GRAPHQL_CLIENT_1.query(updatePerf, {});
   expect(response3).toBeDefined();
   expect(response3.data.u1).toBeDefined();
-  expect(response3.data.u1.id).toEqual('P3');
+  expect(response3.data.u1.id).toEqual("P3");
   expect(response3.data.u1.stage).toMatchObject({
-    id: '003',
-    name: 'stage3',
+    id: "003",
+    name: "stage3",
   });
 });
 
-test('that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
+test("that owners cannot update the field of a FieldProtected object unless authorized.", async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
       createFieldProtected(input: { owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
@@ -491,12 +491,12 @@ test('that owners cannot update the field of a FieldProtected object unless auth
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).not.toBeNull();
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
-  expect(response1.data.createFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected");
 
   const response2 = await GRAPHQL_CLIENT_2.query(
     `mutation {
@@ -506,7 +506,7 @@ test('that owners cannot update the field of a FieldProtected object unless auth
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response2);
   expect(response2.data.updateFieldProtected).toBeNull();
@@ -522,12 +522,12 @@ test('that owners cannot update the field of a FieldProtected object unless auth
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response3);
   expect(response3.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id);
   expect(response3.data.updateFieldProtected.owner).toEqual(USERNAME1);
-  expect(response3.data.updateFieldProtected.ownerOnly).toEqual('updated');
+  expect(response3.data.updateFieldProtected.ownerOnly).toEqual("updated");
 
   // This request should succeed since we are not updating the protected field.
   const response4 = await GRAPHQL_CLIENT_3.query(
@@ -538,10 +538,10 @@ test('that owners cannot update the field of a FieldProtected object unless auth
           ownerOnly
       }
   }`,
-    {},
+    {}
   );
   logDebug(response4);
   expect(response4.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id);
   expect(response4.data.updateFieldProtected.owner).toEqual(USERNAME3);
-  expect(response4.data.updateFieldProtected.ownerOnly).toEqual('updated');
+  expect(response4.data.updateFieldProtected.ownerOnly).toEqual("updated");
 });

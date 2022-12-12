@@ -1,21 +1,21 @@
 export enum DynamoDBImmutableFields {
-  resourceName = 'resourceName',
-  tableName = 'tableName',
-  partitionKey = 'partitionKey',
-  sortKey = 'sortKey',
+  resourceName = "resourceName",
+  tableName = "tableName",
+  partitionKey = "partitionKey",
+  sortKey = "sortKey",
 }
 
 export enum FieldType {
-  string = 'string',
-  number = 'number',
-  binary = 'binary',
-  boolean = 'boolean',
-  list = 'list',
-  map = 'map',
-  null = 'null',
-  stringSet = 'string-set',
-  numberSet = 'number-set',
-  binarySet = 'binary-set',
+  string = "string",
+  number = "number",
+  binary = "binary",
+  boolean = "boolean",
+  list = "list",
+  map = "map",
+  null = "null",
+  stringSet = "string-set",
+  numberSet = "number-set",
+  binarySet = "binary-set",
 }
 
 export interface DynamoDBAttributeDefType {

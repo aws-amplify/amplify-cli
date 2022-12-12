@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 export type DeploymentState = {
-  version: '1';
+  version: "1";
   startedAt?: string;
   finishedAt?: string;
   status: DeploymentStatus;
@@ -13,25 +13,25 @@ export type DeploymentStepState = {
   previousMetaKey?: string;
 };
 
-export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
+export type StepStatusParameters = Omit<DeploymentStepState, "status">;
 
 export enum DeploymentStatus {
-  'IDLE' = 'IDLE',
-  'DEPLOYING' = 'DEPLOYING',
-  'DEPLOYED' = 'DEPLOYED',
-  'ROLLING_BACK' = 'ROLLING_BACK',
-  'ROLLED_BACK' = 'ROLLED_BACK',
-  'FAILED' = 'FAILED',
+  "IDLE" = "IDLE",
+  "DEPLOYING" = "DEPLOYING",
+  "DEPLOYED" = "DEPLOYED",
+  "ROLLING_BACK" = "ROLLING_BACK",
+  "ROLLED_BACK" = "ROLLED_BACK",
+  "FAILED" = "FAILED",
 }
 
 export enum DeploymentStepStatus {
-  'WAITING_FOR_DEPLOYMENT' = 'WAITING_FOR_DEPLOYMENT',
-  'DEPLOYING' = 'DEPLOYING',
-  'DEPLOYED' = 'DEPLOYED',
-  'WAITING_FOR_TABLE_TO_BE_READY' = 'WAITING_FOR_TABLE_TO_BE_READY',
-  'WAITING_FOR_ROLLBACK' = 'WAITING_FOR_ROLLBACK',
-  'ROLLING_BACK' = 'ROLLING_BACK',
-  'ROLLED_BACK' = 'ROLLED_BACK',
+  "WAITING_FOR_DEPLOYMENT" = "WAITING_FOR_DEPLOYMENT",
+  "DEPLOYING" = "DEPLOYING",
+  "DEPLOYED" = "DEPLOYED",
+  "WAITING_FOR_TABLE_TO_BE_READY" = "WAITING_FOR_TABLE_TO_BE_READY",
+  "WAITING_FOR_ROLLBACK" = "WAITING_FOR_ROLLBACK",
+  "ROLLING_BACK" = "ROLLING_BACK",
+  "ROLLED_BACK" = "ROLLED_BACK",
 }
 
 export interface IDeploymentStateManager {

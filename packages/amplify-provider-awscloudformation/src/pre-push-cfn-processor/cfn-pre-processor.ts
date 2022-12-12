@@ -1,9 +1,9 @@
-import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from 'amplify-cli-core';
-import * as path from 'path';
-import { ProviderName as providerName } from '../constants';
-import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
+import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from "amplify-cli-core";
+import * as path from "path";
+import { ProviderName as providerName } from "../constants";
+import { prePushCfnTemplateModifier } from "./pre-push-cfn-modifier";
 
-const buildDir = 'build';
+const buildDir = "build";
 
 /**
  * Runs transformations on a CFN template and returns a path to the transformed template
@@ -37,9 +37,9 @@ export const writeCustomPoliciesToCFNTemplate = async (
   service: string,
   cfnFile: string,
   category: string,
-  options?: { minify?: boolean },
+  options?: { minify?: boolean }
 ): Promise<void> => {
-  if (!(category === 'api' && service === 'ElasticContainer') && !(category === 'function' && service === 'Lambda')) {
+  if (!(category === "api" && service === "ElasticContainer") && !(category === "function" && service === "Lambda")) {
     return;
   }
 
@@ -48,4 +48,4 @@ export const writeCustomPoliciesToCFNTemplate = async (
   const { templateFormat, cfnTemplate } = readCFNTemplate(cfnPath);
   const newCfnTemplate = generateCustomPoliciesInTemplate(cfnTemplate, resourceName, service, category);
   await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat, minify: options?.minify });
-}
+};

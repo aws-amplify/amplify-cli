@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, pathManager, stateManager } from "amplify-cli-core";
 
 /**
  * Mobile hub command compatibility check
@@ -34,9 +32,9 @@ const checkIfMobileHubProject = (context: $TSContext): void => {
   let hasMigratedResources = false;
 
   Object.keys(meta)
-    .filter(k => k !== 'providers')
-    .forEach(category => {
-      Object.keys(meta[category]).forEach(resourceName => {
+    .filter((k) => k !== "providers")
+    .forEach((category) => {
+      Object.keys(meta[category]).forEach((resourceName) => {
         const resource = meta[category][resourceName];
 
         // Mobile hub migrated resources has this property on the resource record set to true by migrator plugin.
@@ -53,10 +51,10 @@ const ensureSupportedCommand = (context: $TSContext): void => {
   const { command } = context.input;
 
   // env commands are not supported for projects that having resources without provider assigned
-  if (command === 'env') {
-    throw new AmplifyError('CommandNotSupportedError', {
-      message: 'multi-environment support is not available for Amplify projects with Mobile Hub migrated resources.',
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+  if (command === "env") {
+    throw new AmplifyError("CommandNotSupportedError", {
+      message: "multi-environment support is not available for Amplify projects with Mobile Hub migrated resources.",
+      link: "https://docs.amplify.aws/cli/project/troubleshooting/",
     });
   }
 };

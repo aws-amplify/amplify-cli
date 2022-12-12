@@ -1,6 +1,6 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { run as generateComponents } from '../commands/generateComponents';
+import { $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { run as generateComponents } from "../commands/generateComponents";
 
 /**
  * The code to run after a pull.

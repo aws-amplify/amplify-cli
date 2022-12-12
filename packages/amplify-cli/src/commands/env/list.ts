@@ -1,6 +1,6 @@
-import { JSONUtilities } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { printEnvInfo } from '../helpers/envUtils';
+import { JSONUtilities } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { printEnvInfo } from "../helpers/envUtils";
 
 /**
  * Executes the 'env list' command
@@ -14,12 +14,12 @@ export const run = async (context): Promise<void> => {
       printer.info(JSONUtilities.stringify(allEnvs) as string);
       return;
     }
-    Object.keys(allEnvs).forEach(env => {
+    Object.keys(allEnvs).forEach((env) => {
       printer.blankLine();
       if (envName === env) {
-        printer.info(`*${env}*`, 'red');
+        printer.info(`*${env}*`, "red");
       } else {
-        printer.info(env, 'yellow');
+        printer.info(env, "yellow");
       }
       printEnvInfo(env, allEnvs);
     });
@@ -30,7 +30,7 @@ export const run = async (context): Promise<void> => {
       return;
     }
     const { table } = context.print;
-    const tableOptions = [['Environments']];
+    const tableOptions = [["Environments"]];
     for (let i = 0; i < allEnvs.length; i += 1) {
       if (allEnvs[i] === envName) {
         tableOptions.push([`*${allEnvs[i]}`]);
@@ -39,7 +39,7 @@ export const run = async (context): Promise<void> => {
       }
     }
     printer.blankLine();
-    table(tableOptions, { format: 'markdown' });
+    table(tableOptions, { format: "markdown" });
     printer.blankLine();
   }
 };

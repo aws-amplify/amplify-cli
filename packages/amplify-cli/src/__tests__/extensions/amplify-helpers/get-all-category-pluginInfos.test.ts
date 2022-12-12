@@ -1,18 +1,18 @@
-import { Input } from '../../../domain/input';
-import { constructContext } from '../../../context-manager';
+import { Input } from "../../../domain/input";
+import { constructContext } from "../../../context-manager";
 
-import { PluginCollection } from '../../../domain/plugin-collection';
-import { constructMockPluginPlatform } from './mock-plugin-platform';
+import { PluginCollection } from "../../../domain/plugin-collection";
+import { constructMockPluginPlatform } from "./mock-plugin-platform";
 
-import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
+import { getAllCategoryPluginInfo } from "../../../extensions/amplify-helpers/get-all-category-pluginInfos";
 
-test('getAllCategoryPluginInfo', () => {
+test("getAllCategoryPluginInfo", () => {
   const mockPluginPlatform = constructMockPluginPlatform();
   const mockProcessArgv = [
-    '/Users/userName/.nvm/versions/node/v12.16.1/bin/node',
-    '/Users/userName/.nvm/versions/node/v12.16.1/bin/amplify',
-    'hosting',
-    'add',
+    "/Users/userName/.nvm/versions/node/v12.16.1/bin/node",
+    "/Users/userName/.nvm/versions/node/v12.16.1/bin/amplify",
+    "hosting",
+    "add",
   ];
   const mockInput = new Input(mockProcessArgv);
   const mockContext = constructContext(mockPluginPlatform, mockInput);

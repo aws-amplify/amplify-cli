@@ -1,8 +1,8 @@
-import * as path from 'path';
-import * as os from 'os';
-import { PluginPlatform } from '../domain/plugin-platform';
-import { constants } from '../domain/constants';
-import { JSONUtilities } from 'amplify-cli-core';
+import * as path from "path";
+import * as os from "os";
+import { PluginPlatform } from "../domain/plugin-platform";
+import { constants } from "../domain/constants";
+import { JSONUtilities } from "amplify-cli-core";
 
 export function readPluginsJsonFile(): PluginPlatform | undefined {
   const pluginsFilePath = getPluginsJsonFilePath();
@@ -31,7 +31,7 @@ function getPluginsJsonFileName(): string {
   let result = constants.PLUGINS_FILE_NAME;
   const amplifyExecutableName = path.basename(process.argv[1]);
 
-  if (amplifyExecutableName === 'amplify-dev') {
+  if (amplifyExecutableName === "amplify-dev") {
     result = `${amplifyExecutableName}-${constants.PLUGINS_FILE_NAME}`;
   }
 

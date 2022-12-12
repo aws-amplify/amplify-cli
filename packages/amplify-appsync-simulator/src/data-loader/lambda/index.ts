@@ -1,5 +1,5 @@
-import { AmplifyAppSyncSimulatorDataLoader } from '..';
-import DataLoader from 'dataloader';
+import { AmplifyAppSyncSimulatorDataLoader } from "..";
+import DataLoader from "dataloader";
 
 const batchLoaders = {};
 
@@ -16,7 +16,7 @@ export class LambdaDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   async load(req, extraData) {
     try {
       let result;
-      if (req.operation === 'BatchInvoke') {
+      if (req.operation === "BatchInvoke") {
         const { fieldName, parentType } = extraData.info;
         const batchName = `${parentType}.${fieldName}`;
         const dataLoader = getBatchDataResolver(batchName, this._config.invoke);
@@ -26,7 +26,7 @@ export class LambdaDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       }
       return result;
     } catch (e) {
-      console.log('Lambda Data source failed with the following error');
+      console.log("Lambda Data source failed with the following error");
       console.error(e);
       throw e;
     }

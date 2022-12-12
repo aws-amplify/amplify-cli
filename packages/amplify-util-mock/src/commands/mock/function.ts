@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
-import { start } from '../../func';
+import { $TSContext } from "amplify-cli-core";
+import { start } from "../../func";
 
-export const name = 'function';
+export const name = "function";
 
 export const run = async (context: $TSContext) => {
   if (context.parameters.options.help) {

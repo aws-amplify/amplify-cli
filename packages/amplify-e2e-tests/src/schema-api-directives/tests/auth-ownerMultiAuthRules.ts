@@ -40,10 +40,10 @@ mutation CreateDraft {
 export const expected_result_mutation1 = {
   data: {
     createDraft: {
-      id: '<check-defined>',
-      title: 'A new draft',
-      owner: 'user1',
-      editors: ['user1'],
+      id: "<check-defined>",
+      title: "A new draft",
+      owner: "user1",
+      editors: ["user1"],
     },
   },
 };
@@ -68,9 +68,9 @@ mutation CreateDraft {
 export const expected_result_mutation2 = {
   data: {
     createDraft: {
-      id: '<check-defined>',
-      title: 'A new draft',
-      owner: 'user1',
+      id: "<check-defined>",
+      title: "A new draft",
+      owner: "user1",
       editors: [],
     },
   },
@@ -95,10 +95,10 @@ mutation CreateDraft {
 export const expected_result_mutation3 = {
   data: {
     createDraft: {
-      id: '<check-defined>',
-      title: 'A new draft',
-      owner: 'user1',
-      editors: ['editor1@my-domain.com', 'editor2@my-domain.com'],
+      id: "<check-defined>",
+      title: "A new draft",
+      owner: "user1",
+      editors: ["editor1@my-domain.com", "editor2@my-domain.com"],
     },
   },
 };
@@ -123,7 +123,7 @@ mutation CreateDraft {
 export const expected_result_mutation4 = {
   graphQLErrors: [
     {
-      errorType: 'Unauthorized',
+      errorType: "Unauthorized",
     },
   ],
 };
@@ -148,10 +148,10 @@ mutation CreateDraft {
 export const expected_result_mutation5 = {
   data: {
     createDraft: {
-      id: '<check-defined>',
-      title: 'A new draft',
+      id: "<check-defined>",
+      title: "A new draft",
       owner: null,
-      editors: ['user1'],
+      editors: ["user1"],
     },
   },
 };

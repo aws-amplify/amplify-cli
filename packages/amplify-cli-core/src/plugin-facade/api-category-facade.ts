@@ -1,12 +1,9 @@
-import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
+import { DeploymentResources as DeploymentResourcesV2 } from "@aws-amplify/graphql-transformer-core";
+import { DeploymentResources as DeploymentResourcesV1 } from "graphql-transformer-core";
 // eslint-disable-next-line import/no-cycle
-import {
-  $TSAny,
-  $TSContext,
-} from '..';
+import { $TSAny, $TSContext } from "..";
 
-const API_CATEGORY_NAME = 'api';
+const API_CATEGORY_NAME = "api";
 
 /**
  * Facade for the API Category, to facilitate typed requests against some of the plugin methods exposed.
@@ -16,14 +13,14 @@ export class ApiCategoryFacade {
    * Get the transformer version used in this project.
    */
   static async getTransformerVersion(context: $TSContext): Promise<number> {
-    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'getTransformerVersion', [context]);
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, "getTransformerVersion", [context]);
   }
 
   /**
    * Return the supported transformer directives.
    */
   static async getDirectiveDefinitions(context: $TSContext, resourceDir: string): Promise<string> {
-    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'getDirectiveDefinitions', [context, resourceDir]);
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, "getDirectiveDefinitions", [context, resourceDir]);
   }
 
   /**
@@ -32,8 +29,8 @@ export class ApiCategoryFacade {
    */
   static async transformGraphQLSchema(
     context: $TSContext,
-    options: $TSAny,
+    options: $TSAny
   ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> {
-    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'transformGraphQLSchema', [context, options]);
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, "transformGraphQLSchema", [context, options]);
   }
 }

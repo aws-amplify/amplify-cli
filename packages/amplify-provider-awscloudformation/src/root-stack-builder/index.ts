@@ -1,1 +1,1 @@
-export { AmplifyRootStackTransform } from './root-stack-transform';
+export { AmplifyRootStackTransform } from "./root-stack-transform";

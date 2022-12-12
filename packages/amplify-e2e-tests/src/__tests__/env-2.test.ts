@@ -10,17 +10,12 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  getEnvironment,
-  importEnvironment,
-} from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { getEnvironment, importEnvironment } from "../environment/env";
 
-const validate = async (meta: any) : Promise<void> => {
+const validate = async (meta: any): Promise<void> => {
   expect(meta.providers.awscloudformation).toBeDefined();
-  const {
-    AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId,
-  } = meta.providers.awscloudformation;
+  const { AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId } = meta.providers.awscloudformation;
 
   expect(authRoleArn).toBeDefined();
   expect(region).toBeDefined();
@@ -29,10 +24,10 @@ const validate = async (meta: any) : Promise<void> => {
   expect(bucketExists).toMatchObject({});
 };
 
-describe('cross project environment commands', () => {
+describe("cross project environment commands", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('import-env-test');
+    projRoot = await createNewProjectDir("import-env-test");
   });
 
   afterEach(async () => {
@@ -40,17 +35,17 @@ describe('cross project environment commands', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init two projects, get and import environment from one to the other', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'env' });
+  it("init two projects, get and import environment from one to the other", async () => {
+    await initJSProjectWithProfile(projRoot, { envName: "env" });
     await addAuthWithDefault(projRoot, {});
-    const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
+    const providerConfig: string = await getEnvironment(projRoot, { envName: "env" });
     await amplifyPushUpdate(projRoot);
 
     let projRoot2: string;
     try {
-      projRoot2 = await createNewProjectDir('import-env-test2');
+      projRoot2 = await createNewProjectDir("import-env-test2");
       await initJSProjectWithProfile(projRoot2, {});
-      await importEnvironment(projRoot2, { providerConfig, envName: 'env' });
+      await importEnvironment(projRoot2, { providerConfig, envName: "env" });
       await validate(getProjectMeta(projRoot));
       await validate(getProjectMeta(projRoot2));
     } finally {

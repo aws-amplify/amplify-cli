@@ -1,18 +1,18 @@
-import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
-import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
-import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
-import { loadFunctionParameters } from './loadFunctionParameters';
-import * as path from 'path';
-import { functionParametersFileName } from './constants';
-import { categoryName } from '../../../constants';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from "amplify-cli-core";
+import { FunctionParameters } from "amplify-function-plugin-interface";
+import { getResourcesForCfn, generateEnvVariablesForCfn } from "../service-walkthroughs/execPermissionsWalkthrough";
+import { updateCFNFileForResourcePermissions } from "../service-walkthroughs/lambda-walkthrough";
+import { loadFunctionParameters } from "./loadFunctionParameters";
+import * as path from "path";
+import { functionParametersFileName } from "./constants";
+import { categoryName } from "../../../constants";
 
 export async function updateDependentFunctionsCfn(
   context: $TSContext,
   dependentFunctionResource: $TSObject[],
   backendDir: string,
   modelsDeleted: string[],
-  apiResource: string,
+  apiResource: string
 ) {
   // remove function parameters from if there is dependency
   /*
@@ -34,10 +34,10 @@ export async function updateDependentFunctionsCfn(
       resourceName: lambda.resourceName,
       environmentMap: {
         ENV: {
-          Ref: 'env',
+          Ref: "env",
         },
         REGION: {
-          Ref: 'AWS::Region',
+          Ref: "AWS::Region",
         },
       },
     };
@@ -54,7 +54,7 @@ export async function updateDependentFunctionsCfn(
             resourceName,
             resourcePolicy,
             apiResource,
-            selectedCategory,
+            selectedCategory
           );
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
           if (!permissions[selectedCategory]) {
@@ -80,13 +80,11 @@ export async function updateDependentFunctionsCfn(
     // update dependsOn for lambda
     lambda.dependsOn = functionParameters.dependsOn;
     // update amplify-meta.json
-    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, lambda.resourceName, 'dependsOn', lambda.dependsOn);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, lambda.resourceName, "dependsOn", lambda.dependsOn);
   }
 }
 
-export function addAppSyncInvokeMethodPermission(
-  functionName: string,
-) {
+export function addAppSyncInvokeMethodPermission(functionName: string) {
   const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, functionName);
   const cfnFileName = `${functionName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
@@ -94,10 +92,10 @@ export function addAppSyncInvokeMethodPermission(
 
   if (!cfnContent?.Resources?.PermissionForAppSyncToInvokeLambda) {
     cfnContent.Resources.PermissionForAppSyncToInvokeLambda = {
-      Type: 'AWS::Lambda::Permission',
+      Type: "AWS::Lambda::Permission",
       Properties: {
         FunctionName: {
-          Ref: "LambdaFunction"
+          Ref: "LambdaFunction",
         },
         Action: "lambda:InvokeFunction",
         Principal: "appsync.amazonaws.com",

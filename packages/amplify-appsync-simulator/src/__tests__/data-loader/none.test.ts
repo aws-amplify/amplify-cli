@@ -1,8 +1,8 @@
-import { readFileSync } from 'fs';
-import { gql, appSyncClient } from '../__helpers__/appsync-client';
-import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType, RESOLVER_KIND } from '../../';
+import { readFileSync } from "fs";
+import { gql, appSyncClient } from "../__helpers__/appsync-client";
+import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType, RESOLVER_KIND } from "../../";
 
-describe('None data source', () => {
+describe("None data source", () => {
   const appSync = new AmplifyAppSyncSimulator();
   const onInboxMock = jest.fn();
   let onInboxMockSubscription;
@@ -10,7 +10,7 @@ describe('None data source', () => {
   beforeAll(async () => {
     appSync.init({
       appSync: {
-        name: 'local-appsync',
+        name: "local-appsync",
         defaultAuthenticationType: {
           authenticationType: AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM,
         },
@@ -22,20 +22,20 @@ describe('None data source', () => {
         ],
       },
       schema: {
-        content: readFileSync(require.resolve('./test-schema.graphql'), 'utf8'),
+        content: readFileSync(require.resolve("./test-schema.graphql"), "utf8"),
       },
       dataSources: [
         {
-          type: 'NONE',
-          name: 'noneDataSource',
+          type: "NONE",
+          name: "noneDataSource",
         },
       ],
       resolvers: [
         {
-          fieldName: 'page',
-          typeName: 'Mutation',
+          fieldName: "page",
+          typeName: "Mutation",
           kind: RESOLVER_KIND.UNIT,
-          dataSourceName: 'noneDataSource',
+          dataSourceName: "noneDataSource",
           // from example at https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-local-resolvers.html
           requestMappingTemplate: `
           {
@@ -53,7 +53,7 @@ describe('None data source', () => {
       ],
     });
     await appSync.start();
-    onInboxMockSubscription = await appSync.pubsub.subscribe('inbox', onInboxMock);
+    onInboxMockSubscription = await appSync.pubsub.subscribe("inbox", onInboxMock);
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -63,13 +63,13 @@ describe('None data source', () => {
     await appSync.stop();
   });
 
-  test('`page` should trigger `inbox` subscription with given parameters', async () => {
+  test("`page` should trigger `inbox` subscription with given parameters", async () => {
     const { page } = await appSyncClient<{ page: unknown }>({
       appSync,
       auth: {
         type: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-        username: 'mockUser',
-        groups: ['testGroup'],
+        username: "mockUser",
+        groups: ["testGroup"],
       },
       query: gql`
         mutation Page {
@@ -83,14 +83,14 @@ describe('None data source', () => {
       `,
     });
     expect(page).toMatchObject({
-      body: 'Hello, World!',
-      from: 'mockUser',
+      body: "Hello, World!",
+      from: "mockUser",
       sentAt: expect.any(String),
-      to: 'Nadia',
+      to: "Nadia",
     });
 
     // give pubsub some time to deliver message
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     expect(onInboxMock).toHaveBeenCalledTimes(1);
     expect(onInboxMock).toHaveBeenCalledWith(page);
   });

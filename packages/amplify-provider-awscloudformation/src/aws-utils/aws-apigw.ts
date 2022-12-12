@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
-import aws from './aws.js';
-import { APIGateway as APIGW } from 'aws-sdk';
-import { loadConfiguration } from '../configuration-manager';
+import { $TSContext } from "amplify-cli-core";
+import aws from "./aws.js";
+import { APIGateway as APIGW } from "aws-sdk";
+import { loadConfiguration } from "../configuration-manager";
 
 export class APIGateway {
   private static instance: APIGateway;

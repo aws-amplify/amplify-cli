@@ -6,14 +6,18 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+import gql from "graphql-tag";
 
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 
-describe('transformer model migration test', () => {
+describe("transformer model migration test", () => {
   let projRoot: string;
   let projectName: string;
 
@@ -29,9 +33,9 @@ describe('transformer model migration test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('migration of model key queries timestamps should succeed', async () => {
-    const modelSchemaV1 = 'transformer_migration/basic-model-v1.graphql';
-    const modelSchemaV2 = 'transformer_migration/basic-model-v2.graphql';
+  it("migration of model key queries timestamps should succeed", async () => {
+    const modelSchemaV1 = "transformer_migration/basic-model-v1.graphql";
+    const modelSchemaV2 = "transformer_migration/basic-model-v2.graphql";
 
     await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, modelSchemaV1);
@@ -49,7 +53,7 @@ describe('transformer model migration test', () => {
 
     let createPostResult = await appSyncClient.mutate({
       mutation: gql(createPostMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostResult.errors).toBeUndefined();
@@ -65,7 +69,7 @@ describe('transformer model migration test', () => {
 
     let createCustomerResult = await appSyncClient.mutate({
       mutation: gql(createCustomerMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createCustomerResult.errors).toBeUndefined();
@@ -81,7 +85,7 @@ describe('transformer model migration test', () => {
 
     let createTestResult = await appSyncClient.mutate({
       mutation: gql(createTestMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createTestResult.errors).toBeUndefined();
@@ -97,14 +101,14 @@ describe('transformer model migration test', () => {
 
     let createRenameResult = await appSyncClient.mutate({
       mutation: gql(createRenameMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createRenameResult.errors).toBeUndefined();
     expect(createRenameResult.data).toBeDefined();
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
+    await addFeatureFlag(projRoot, "graphqltransformer", "transformerVersion", 2);
+    await addFeatureFlag(projRoot, "graphqltransformer", "useExperimentalPipelinedTransformer", true);
 
     await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
@@ -121,7 +125,7 @@ describe('transformer model migration test', () => {
 
     createPostResult = await appSyncClient.mutate({
       mutation: gql(createPostMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostResult.errors).toBeUndefined();
@@ -137,7 +141,7 @@ describe('transformer model migration test', () => {
 
     createCustomerResult = await appSyncClient.mutate({
       mutation: gql(createCustomerMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createCustomerResult.errors).toBeUndefined();
@@ -153,7 +157,7 @@ describe('transformer model migration test', () => {
 
     createTestResult = await appSyncClient.mutate({
       mutation: gql(createTestMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createTestResult.errors).toBeUndefined();
@@ -169,7 +173,7 @@ describe('transformer model migration test', () => {
 
     createRenameResult = await appSyncClient.mutate({
       mutation: gql(createRenameMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createRenameResult.errors).toBeUndefined();
@@ -188,7 +192,7 @@ describe('transformer model migration test', () => {
 
     let queryResult = await appSyncClient.query({
       query: gql(postsQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();
@@ -207,7 +211,7 @@ describe('transformer model migration test', () => {
 
     queryResult = await appSyncClient.query({
       query: gql(customersQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();
@@ -227,7 +231,7 @@ describe('transformer model migration test', () => {
 
     queryResult = await appSyncClient.query({
       query: gql(testsQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();
@@ -245,7 +249,7 @@ describe('transformer model migration test', () => {
 
     queryResult = await appSyncClient.query({
       query: gql(renamesQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();

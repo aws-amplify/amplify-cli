@@ -1,9 +1,9 @@
-import { getFrontendConfig } from '@aws-amplify/amplify-category-auth';
-import { $TSAny, stateManager } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import sequential from 'promise-sequential';
-import { getResourceOutputs } from './get-resource-outputs';
+import { getFrontendConfig } from "@aws-amplify/amplify-category-auth";
+import { $TSAny, stateManager } from "amplify-cli-core";
+import * as fs from "fs-extra";
+import * as path from "path";
+import sequential from "promise-sequential";
+import { getResourceOutputs } from "./get-resource-outputs";
 
 /**
  * category output change handler
@@ -31,7 +31,7 @@ export const onCategoryOutputsChange = async (context, cloudAmplifyMeta?, localM
     for (const pluginInfo of categoryPluginInfoList[category]) {
       const { packageLocation } = pluginInfo;
       const pluginModule = await import(packageLocation);
-      if (pluginModule && typeof pluginModule.onAmplifyCategoryOutputChange === 'function') {
+      if (pluginModule && typeof pluginModule.onAmplifyCategoryOutputChange === "function") {
         outputChangedEventTasks.push(async () => {
           try {
             await attachContextExtensions(context, packageLocation);
@@ -50,7 +50,7 @@ export const onCategoryOutputsChange = async (context, cloudAmplifyMeta?, localM
 };
 
 const attachContextExtensions = async (context, packageLocation): Promise<void> => {
-  const extensionsDirPath = path.normalize(path.join(packageLocation, 'extensions'));
+  const extensionsDirPath = path.normalize(path.join(packageLocation, "extensions"));
   if (fs.existsSync(extensionsDirPath)) {
     const stats = fs.statSync(extensionsDirPath);
     if (stats.isDirectory()) {
@@ -81,17 +81,17 @@ export const ensureAmplifyMetaFrontendConfig = (amplifyMeta?): void => {
 
   if (!amplifyMeta.auth) return;
 
-  const authResourceName = Object.keys(amplifyMeta.auth).find((key: $TSAny) => amplifyMeta.auth[key].service === 'Cognito');
+  const authResourceName = Object.keys(amplifyMeta.auth).find((key: $TSAny) => amplifyMeta.auth[key].service === "Cognito");
 
   if (!authResourceName) return;
 
-  const authParameters = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
+  const authParameters = stateManager.getResourceParametersJson(undefined, "auth", authResourceName);
   const frontendAuthConfig = getFrontendConfig(authParameters);
 
   // eslint-disable-next-line no-param-reassign
   amplifyMeta.auth[authResourceName].frontendAuthConfig ??= {};
   const metaFrontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig;
-  Object.keys(frontendAuthConfig).forEach(key => {
+  Object.keys(frontendAuthConfig).forEach((key) => {
     metaFrontendAuthConfig[key] = frontendAuthConfig[key];
   });
 

@@ -1,1 +1,1 @@
-export * from './decode-header';
+export * from "./decode-header";

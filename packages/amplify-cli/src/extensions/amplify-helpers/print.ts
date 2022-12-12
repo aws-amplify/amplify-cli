@@ -1,15 +1,15 @@
-import importedColors from 'colors/safe';
-import CLITable from 'cli-table3';
+import importedColors from "colors/safe";
+import CLITable from "cli-table3";
 
 //TODO: refector, this is a copy of conext-extensions.ts
 importedColors.setTheme({
-  highlight: 'cyan',
-  info: 'reset',
-  warning: 'yellow',
-  success: 'green',
-  error: 'red',
-  line: 'grey',
-  muted: 'grey',
+  highlight: "cyan",
+  info: "reset",
+  warning: "yellow",
+  success: "green",
+  error: "red",
+  line: "grey",
+  muted: "grey",
 });
 
 type CLIPrintColors = typeof importedColors & {
@@ -52,7 +52,7 @@ function success(message) {
 /**
  * @deprecated Use printer.debug from amplify-prompts instead
  */
-function debug(message, title = 'DEBUG') {
+function debug(message, title = "DEBUG") {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 
@@ -67,10 +67,10 @@ function debug(message, title = 'DEBUG') {
 function table(data, options: any = {}) {
   let t: CLITable.Table;
   switch (options.format) {
-    case 'markdown': {
+    case "markdown": {
       const header = data.shift();
       t = new CLITable({
-        style: { head: ['reset'] }, // "no color"
+        style: { head: ["reset"] }, // "no color"
         head: header,
         chars: CLI_TABLE_MARKDOWN,
       });
@@ -78,16 +78,16 @@ function table(data, options: any = {}) {
       t.unshift(columnHeaderDivider(t));
       break;
     }
-    case 'lean': {
+    case "lean": {
       t = new CLITable({
-        style: { head: ['reset'] }, // "no color"
+        style: { head: ["reset"] }, // "no color"
       });
       t.push(...data);
       break;
     }
     default: {
       t = new CLITable({
-        style: { head: ['reset'] }, // "no color"
+        style: { head: ["reset"] }, // "no color"
         chars: CLI_TABLE_COMPACT,
       });
       t.push(...data);
@@ -97,7 +97,7 @@ function table(data, options: any = {}) {
 }
 
 function columnHeaderDivider(cliTable) {
-  return findWidths(cliTable).map(w => Array(w).join('-'));
+  return findWidths(cliTable).map((w) => Array(w).join("-"));
 }
 
 function findWidths(cliTable) {
@@ -115,28 +115,28 @@ function getRows(cliTable) {
 }
 
 const CLI_TABLE_COMPACT = {
-  top: '',
-  'top-mid': '',
-  'top-left': '',
-  'top-right': '',
-  bottom: '',
-  'bottom-mid': '',
-  'bottom-left': '',
-  'bottom-right': '',
-  left: ' ',
-  'left-mid': '',
-  mid: '',
-  'mid-mid': '',
-  right: '',
-  'right-mid': '',
-  middle: ' ',
+  top: "",
+  "top-mid": "",
+  "top-left": "",
+  "top-right": "",
+  bottom: "",
+  "bottom-mid": "",
+  "bottom-left": "",
+  "bottom-right": "",
+  left: " ",
+  "left-mid": "",
+  mid: "",
+  "mid-mid": "",
+  right: "",
+  "right-mid": "",
+  middle: " ",
 };
 
 const CLI_TABLE_MARKDOWN = {
   ...CLI_TABLE_COMPACT,
-  left: '|',
-  right: '|',
-  middle: '|',
+  left: "|",
+  right: "|",
+  middle: "|",
 };
 
 /**

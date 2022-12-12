@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import { getPublicKey } from './reporter-apis';
+import crypto from "crypto";
+import { getPublicKey } from "./reporter-apis";
 
 /**
  * encrypt a buffer using AES 256
@@ -8,17 +8,17 @@ import { getPublicKey } from './reporter-apis';
  * @returns base64 string to be encrypted
  */
 export const encryptBuffer = async (text: Buffer, passKey: string): Promise<string> => {
-  const masterKey = Buffer.from(passKey, 'utf-8');
+  const masterKey = Buffer.from(passKey, "utf-8");
   // random initialization vector
   const iv = crypto.randomBytes(16);
 
   // random salt
   const salt = crypto.randomBytes(64);
 
-  const key = crypto.pbkdf2Sync(masterKey, salt, 2145, 32, 'sha512');
+  const key = crypto.pbkdf2Sync(masterKey, salt, 2145, 32, "sha512");
 
   // AES 256 GCM Mode
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
 
   // encrypt the given text
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
@@ -27,7 +27,7 @@ export const encryptBuffer = async (text: Buffer, passKey: string): Promise<stri
   const tag = cipher.getAuthTag();
 
   // generate output
-  return Buffer.concat([salt, iv, tag, encrypted]).toString('base64');
+  return Buffer.concat([salt, iv, tag, encrypted]).toString("base64");
 };
 
 /**
@@ -37,11 +37,16 @@ export const encryptBuffer = async (text: Buffer, passKey: string): Promise<stri
  */
 export const encryptKey = async (key: string): Promise<string> => {
   const publicKey = await getPublicKey();
-  return crypto.publicEncrypt({
-    key: publicKey,
-    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-    oaepHash: 'sha256',
-  }, Buffer.from(key)).toString('base64');
+  return crypto
+    .publicEncrypt(
+      {
+        key: publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      Buffer.from(key)
+    )
+    .toString("base64");
 };
 
 /**
@@ -51,17 +56,15 @@ export const encryptKey = async (key: string): Promise<string> => {
  * @param envName the current Environment name
  * @returns
  */
-export const createHashedIdentifier = (projectName: string, appId: string, envName: string | undefined): {
-  projectIdentifier: string,
-  projectEnvIdentifier: string,
+export const createHashedIdentifier = (
+  projectName: string,
+  appId: string,
+  envName: string | undefined
+): {
+  projectIdentifier: string;
+  projectEnvIdentifier: string;
 } => {
-  const projectIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectName}-${appId}`)
-    .digest('hex');
-  const projectEnvIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectName}-${appId}-${envName}`)
-    .digest('hex');
+  const projectIdentifier = crypto.createHash("md5").update(`${projectName}-${appId}`).digest("hex");
+  const projectEnvIdentifier = crypto.createHash("md5").update(`${projectName}-${appId}-${envName}`).digest("hex");
   return { projectIdentifier, projectEnvIdentifier };
 };

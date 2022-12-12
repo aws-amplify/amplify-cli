@@ -1,11 +1,11 @@
-import { chooseServiceMessageUpdate, provider } from '../../service-utils/constants';
-import { category } from '../../constants';
-import { supportedServices } from '../../supportedServices';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { updateResource } from '../../provider-controllers';
-import { printer } from 'amplify-prompts';
+import { chooseServiceMessageUpdate, provider } from "../../service-utils/constants";
+import { category } from "../../constants";
+import { supportedServices } from "../../supportedServices";
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import { updateResource } from "../../provider-controllers";
+import { printer } from "amplify-prompts";
 
-export const name = 'update';
+export const name = "update";
 
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
@@ -14,7 +14,7 @@ export const run = async (context: $TSContext) => {
       context,
       category,
       supportedServices,
-      chooseServiceMessageUpdate,
+      chooseServiceMessageUpdate
     );
 
     if (result.providerName !== provider) {
@@ -31,7 +31,7 @@ export const run = async (context: $TSContext) => {
     if (error.stack) {
       printer.info(error.stack);
     }
-    printer.error('There was an error updating the geo resource');
+    printer.error("There was an error updating the geo resource");
     context.usageData.emitError(error);
     process.exitCode = 1;
   }

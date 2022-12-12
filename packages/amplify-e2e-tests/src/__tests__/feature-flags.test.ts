@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import * as fs from "fs-extra";
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -7,16 +7,17 @@ import {
   amplifyPush,
   amplifyPull,
   getAppId,
-  createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { pathManager } from 'amplify-cli-core';
-import { addEnvironment } from '../environment/env';
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
+import { pathManager } from "amplify-cli-core";
+import { addEnvironment } from "../environment/env";
 
-describe('feature flags', () => {
+describe("feature flags", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('feature-flags');
+    projRoot = await createNewProjectDir("feature-flags");
   });
 
   afterEach(async () => {
@@ -24,21 +25,21 @@ describe('feature flags', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init the project and cli.json should be created', async () => {
+  it("init the project and cli.json should be created", async () => {
     await initJSProjectWithProfile(projRoot, {});
 
     expect(fs.existsSync(pathManager.getCLIJSONFilePath(projRoot))).toBeTruthy();
   });
 
-  it('push and pull with multiple config files for environments', async () => {
+  it("push and pull with multiple config files for environments", async () => {
     await initJSProjectWithProfile(projRoot, {
-      name: 'apifeatureflag',
+      name: "apifeatureflag",
       disableAmplifyAppCreation: false,
     });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, 'apifeatureflag', 'simple_model.graphql');
+    await updateApiSchema(projRoot, "apifeatureflag", "simple_model.graphql");
 
-    const envName = 'test';
+    const envName = "test";
     const cliJSONPath = pathManager.getCLIJSONFilePath(projRoot);
     const testCLIJSONPath = pathManager.getCLIJSONFilePath(projRoot, envName);
 
@@ -52,7 +53,7 @@ describe('feature flags', () => {
     let projRoot2;
 
     try {
-      projRoot2 = await createNewProjectDir('feature-flags-pull');
+      projRoot2 = await createNewProjectDir("feature-flags-pull");
 
       await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
 
@@ -63,12 +64,12 @@ describe('feature flags', () => {
     }
   });
 
-  it('config is cloned when new environment is created', async () => {
+  it("config is cloned when new environment is created", async () => {
     await initJSProjectWithProfile(projRoot, {});
 
-    const envName = 'test';
+    const envName = "test";
     const cliJSONPath = pathManager.getCLIJSONFilePath(projRoot);
-    const cliDevJSONPath = pathManager.getCLIJSONFilePath(projRoot, 'integtest');
+    const cliDevJSONPath = pathManager.getCLIJSONFilePath(projRoot, "integtest");
 
     fs.copyFileSync(cliJSONPath, cliDevJSONPath);
 

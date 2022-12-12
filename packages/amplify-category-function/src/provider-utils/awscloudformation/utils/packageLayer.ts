@@ -1,19 +1,19 @@
-import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager, ZipEntry } from 'amplify-function-plugin-interface';
-import chalk from 'chalk';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import { EOL } from 'os';
-import * as path from 'path';
-import { lambdaLayerNewVersionWalkthrough } from '../service-walkthroughs/lambdaLayerWalkthrough';
-import { Packager } from '../types/packaging-types';
-import { accessPermissions, description, lambdaPackageLimitInMB, ServiceName, versionHash } from './constants';
-import { LayerCloudState } from './layerCloudState';
-import { loadLayerConfigurationFile } from './layerConfiguration';
-import { ensureLayerVersion, getChangedResources, loadPreviousLayerHash, loadStoredLayerParameters } from './layerHelpers';
-import { defaultLayerPermission } from './layerParams';
-import { updateLayerArtifacts } from './storeResources';
-import { zipPackage } from './zipResource';
+import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from "amplify-cli-core";
+import { FunctionRuntimeLifecycleManager, ZipEntry } from "amplify-function-plugin-interface";
+import chalk from "chalk";
+import * as fs from "fs-extra";
+import _ from "lodash";
+import { EOL } from "os";
+import * as path from "path";
+import { lambdaLayerNewVersionWalkthrough } from "../service-walkthroughs/lambdaLayerWalkthrough";
+import { Packager } from "../types/packaging-types";
+import { accessPermissions, description, lambdaPackageLimitInMB, ServiceName, versionHash } from "./constants";
+import { LayerCloudState } from "./layerCloudState";
+import { loadLayerConfigurationFile } from "./layerConfiguration";
+import { ensureLayerVersion, getChangedResources, loadPreviousLayerHash, loadStoredLayerParameters } from "./layerHelpers";
+import { defaultLayerPermission } from "./layerParams";
+import { updateLayerArtifacts } from "./storeResources";
+import { zipPackage } from "./zipResource";
 
 /**
  * Packages lambda layer code and artifacts into a lambda-compatible .zip file
@@ -30,30 +30,30 @@ export const packageLayer: Packager = async (context, resource, isExport) => {
   const resourcePath = pathManager.getResourceDirectoryPath(undefined, resource.category, resource.resourceName);
 
   const { runtimes } = loadLayerConfigurationFile(resource.resourceName);
-  const distDir = path.join(resourcePath, 'dist');
+  const distDir = path.join(resourcePath, "dist");
   fs.ensureDirSync(distDir);
-  const destination = path.join(distDir, 'latest-build.zip');
+  const destination = path.join(distDir, "latest-build.zip");
 
   // check total layer size is less than 250MB
   let layerSizeInBytes = 0;
   // Add up all the lib/opt folders
-  layerSizeInBytes += await getFolderSize([path.join(resourcePath, 'lib'), path.join(resourcePath, 'opt')]);
+  layerSizeInBytes += await getFolderSize([path.join(resourcePath, "lib"), path.join(resourcePath, "opt")]);
 
   if (layerSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
     throw new Error(
-      `Lambda layer ${resource.resourceName} is too large: ${convertNumBytes(layerSizeInBytes).toMB()}/${lambdaPackageLimitInMB} MB`,
+      `Lambda layer ${resource.resourceName} is too large: ${convertNumBytes(layerSizeInBytes).toMB()}/${lambdaPackageLimitInMB} MB`
     );
   }
 
-  let zipEntries: ZipEntry[] = [{ sourceFolder: path.join(resourcePath, 'opt') }];
+  let zipEntries: ZipEntry[] = [{ sourceFolder: path.join(resourcePath, "opt") }];
 
   for (const runtime of runtimes) {
-    const layerCodePath = path.join(resourcePath, 'lib', runtime.layerExecutablePath);
+    const layerCodePath = path.join(resourcePath, "lib", runtime.layerExecutablePath);
 
     // call runtime module packaging
     const runtimePlugin: FunctionRuntimeLifecycleManager = (await context.amplify.loadRuntimePlugin(
       context,
-      runtime.runtimePluginId,
+      runtime.runtimePluginId
     )) as FunctionRuntimeLifecycleManager;
 
     // prepare package request
@@ -95,21 +95,21 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
   const changedLayerResources = await getChangedResources(layerResources);
 
   const prePushNotificationTemplate = (resourceName: string, description: string, timestampString: string, accessPermissions?: string) => {
-    const descriptionLine = `  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
-    const permissionLine = `  - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}`;
+    const descriptionLine = `  - ${description}: ${chalk.green("Updated layer version ")} ${chalk.gray(timestampString)}`;
+    const permissionLine = `  - ${accessPermissions}: ${chalk.green("Maintain existing permissions")}`;
     return `${resourceName}\n${accessPermissions ? `${permissionLine}\n${descriptionLine}` : descriptionLine}`;
   };
 
   if (changedLayerResources.length > 0) {
-    context.print.info('');
-    if (layerResources.filter(layer => loadPreviousLayerHash(layer.resourceName) !== undefined).length > 0) {
-      context.print.info('Content changes in Lambda layers detected.');
+    context.print.info("");
+    if (layerResources.filter((layer) => loadPreviousLayerHash(layer.resourceName) !== undefined).length > 0) {
+      context.print.info("Content changes in Lambda layers detected.");
     }
-    context.print.info('Suggested configuration for new layer versions:');
-    context.print.info('');
+    context.print.info("Suggested configuration for new layer versions:");
+    context.print.info("");
 
     const timestampString = new Date().toISOString();
-    const prepushNotificationMessage = changedLayerResources.map(layer => {
+    const prepushNotificationMessage = changedLayerResources.map((layer) => {
       const { resourceName } = layer;
       const parameters = loadStoredLayerParameters(context, resourceName);
       layer.parameters = parameters;
@@ -120,16 +120,16 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
     });
 
     context.print.info(prepushNotificationMessage.join(EOL));
-    context.print.info('');
+    context.print.info("");
 
     const accepted =
-      context.input.options?.yes || (await context.prompt.confirm('Accept the suggested layer version configurations?', true));
+      context.input.options?.yes || (await context.prompt.confirm("Accept the suggested layer version configurations?", true));
     for (const layer of changedLayerResources) {
       let { parameters } = layer;
       if (!accepted) {
-        context.print.info('');
+        context.print.info("");
         context.print.info(`Change options layer: ${layer.resourceName}`);
-        context.print.info('');
+        context.print.info("");
         parameters = await lambdaLayerNewVersionWalkthrough(parameters, timestampString);
       } else {
         parameters.description = `Updated layer version ${timestampString}`;

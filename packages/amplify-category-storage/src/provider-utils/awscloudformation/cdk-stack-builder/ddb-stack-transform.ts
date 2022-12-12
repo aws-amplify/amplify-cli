@@ -1,18 +1,16 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
-import { App } from '@aws-cdk/core';
-import {
-  $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as vm from 'vm2';
-import { getDdbAttrType } from '../cfn-template-utils';
-import { DynamoDBCLIInputs } from '../service-walkthrough-types/dynamoDB-user-input-types';
-import { DynamoDBInputState } from '../service-walkthroughs/dynamoDB-input-state';
-import { AmplifyDDBResourceStack } from './ddb-stack-builder';
-import { AmplifyDDBResourceInputParameters } from './types';
+import { AmplifyDDBResourceTemplate } from "@aws-amplify/cli-extensibility-helper";
+import * as cdk from "@aws-cdk/core";
+import { App } from "@aws-cdk/core";
+import { $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from "amplify-cli-core";
+import { formatter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as vm from "vm2";
+import { getDdbAttrType } from "../cfn-template-utils";
+import { DynamoDBCLIInputs } from "../service-walkthrough-types/dynamoDB-user-input-types";
+import { DynamoDBInputState } from "../service-walkthroughs/dynamoDB-input-state";
+import { AmplifyDDBResourceStack } from "./ddb-stack-builder";
+import { AmplifyDDBResourceInputParameters } from "./types";
 
 /**
  * Entry point class to transform User parameters into stack and apply overrides
@@ -74,56 +72,56 @@ export class DDBStackTransform {
    * generates dynamoDB stack
    */
   async generateStack(): Promise<void> {
-    this._resourceTemplateObj = new AmplifyDDBResourceStack(this.app, 'AmplifyDDBResourceStack', this._cliInputs);
+    this._resourceTemplateObj = new AmplifyDDBResourceStack(this.app, "AmplifyDDBResourceStack", this._cliInputs);
 
     // Add Parameters
     this._resourceTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'partitionKeyName',
+      "partitionKeyName"
     );
     this._resourceTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'partitionKeyType',
+      "partitionKeyType"
     );
     this._resourceTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'env',
+      "env"
     );
     if (this._cliInputs.sortKey) {
       this._resourceTemplateObj.addCfnParameter(
         {
-          type: 'String',
+          type: "String",
         },
-        'sortKeyName',
+        "sortKeyName"
       );
 
       this._resourceTemplateObj.addCfnParameter(
         {
-          type: 'String',
+          type: "String",
         },
-        'sortKeyType',
+        "sortKeyType"
       );
     }
     this._resourceTemplateObj.addCfnParameter(
       {
-        type: 'String',
+        type: "String",
       },
-      'tableName',
+      "tableName"
     );
 
     // Add conditions
 
     this._resourceTemplateObj.addCfnCondition(
       {
-        expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),
+        expression: cdk.Fn.conditionEquals(cdk.Fn.ref("env"), "NONE"),
       },
-      'ShouldNotCreateEnvResources',
+      "ShouldNotCreateEnvResources"
     );
 
     // Add resources
@@ -133,55 +131,55 @@ export class DDBStackTransform {
     // Add outputs
     this._resourceTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.ref('DynamoDBTable'),
+        value: cdk.Fn.ref("DynamoDBTable"),
       },
-      'Name',
+      "Name"
     );
     this._resourceTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.getAtt('DynamoDBTable', 'Arn').toString(),
+        value: cdk.Fn.getAtt("DynamoDBTable", "Arn").toString(),
       },
-      'Arn',
+      "Arn"
     );
     this._resourceTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.getAtt('DynamoDBTable', 'StreamArn').toString(),
+        value: cdk.Fn.getAtt("DynamoDBTable", "StreamArn").toString(),
       },
-      'StreamArn',
+      "StreamArn"
     );
     this._resourceTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.ref('partitionKeyName'),
+        value: cdk.Fn.ref("partitionKeyName"),
       },
-      'PartitionKeyName',
+      "PartitionKeyName"
     );
     this._resourceTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.ref('partitionKeyType'),
+        value: cdk.Fn.ref("partitionKeyType"),
       },
-      'PartitionKeyType',
+      "PartitionKeyType"
     );
 
     if (this._cliInputs.sortKey) {
       this._resourceTemplateObj.addCfnOutput(
         {
-          value: cdk.Fn.ref('sortKeyName'),
+          value: cdk.Fn.ref("sortKeyName"),
         },
-        'SortKeyName',
+        "SortKeyName"
       );
       this._resourceTemplateObj.addCfnOutput(
         {
-          value: cdk.Fn.ref('sortKeyType'),
+          value: cdk.Fn.ref("sortKeyType"),
         },
-        'SortKeyType',
+        "SortKeyType"
       );
     }
 
     this._resourceTemplateObj.addCfnOutput(
       {
-        value: cdk.Fn.ref('AWS::Region'),
+        value: cdk.Fn.ref("AWS::Region"),
       },
-      'Region',
+      "Region"
     );
   }
 
@@ -190,43 +188,45 @@ export class DDBStackTransform {
    */
   async applyOverrides(): Promise<void> {
     const backendDir = pathManager.getBackendDirPath();
-    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
-    const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
+    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, "storage", this._resourceName);
+    const overrideJSFilePath = path.resolve(path.join(resourceDirPath, "build", "override.js"));
 
     const isBuild = await buildOverrideDir(backendDir, resourceDirPath);
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const { override } = await import(overrideJSFilePath).catch(() => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
+        formatter.list(["No override File Found", `To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
         return undefined;
       });
 
-      if (typeof override === 'function' && override) {
-        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-          return '';
+      if (typeof override === "function" && override) {
+        const overrideCode: string = await fs.readFile(overrideJSFilePath, "utf-8").catch(() => {
+          formatter.list(["No override File Found", `To override ${this._resourceName} run amplify override auth`]);
+          return "";
         });
 
         const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
+          console: "inherit",
           timeout: 5000,
           sandbox: {},
           require: {
-            context: 'sandbox',
-            builtin: ['path'],
+            context: "sandbox",
+            builtin: ["path"],
             external: true,
           },
         });
         try {
-          await sandboxNode
-            .run(overrideCode, overrideJSFilePath)
-            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
         } catch (err: $TSAny) {
-          throw new AmplifyError('InvalidOverrideError', {
-            message: `Executing overrides failed.`,
-            details: err.message,
-            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-          }, err);
+          throw new AmplifyError(
+            "InvalidOverrideError",
+            {
+              message: `Executing overrides failed.`,
+              details: err.message,
+              resolution: "There may be runtime errors in your overrides file. If so, fix the errors and try again.",
+            },
+            err
+          );
         }
       }
     }
@@ -251,7 +251,7 @@ export class DDBStackTransform {
     }
 
     fs.ensureDirSync(this._cliInputsState.buildFilePath);
-    const cfnInputParamsFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, 'parameters.json'));
+    const cfnInputParamsFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, "parameters.json"));
     try {
       JSONUtilities.writeJson(cfnInputParamsFilePath, this._cfnInputParams);
     } catch (e) {

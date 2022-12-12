@@ -1,6 +1,6 @@
-import { JavaArray } from './array';
-import { JavaInteger } from './integer';
-import { toJSON } from './to-json';
+import { JavaArray } from "./array";
+import { JavaInteger } from "./integer";
+import { toJSON } from "./to-json";
 
 export class JavaMap {
   private map: Map<string, any>;
@@ -33,9 +33,9 @@ export class JavaMap {
             key,
             value,
           },
-          this.mapper,
-        ),
-      ),
+          this.mapper
+        )
+      )
     );
 
     return new JavaArray(entries, this.mapper);
@@ -96,7 +96,7 @@ export class JavaMap {
         ...sum,
         [key]: toJSON(value),
       }),
-      {},
+      {}
     );
   }
 }
@@ -110,7 +110,7 @@ export function createMapProxy(map) {
       return map[prop];
     },
     set(obj, prop, val) {
-      if (typeof val !== 'function') {
+      if (typeof val !== "function") {
         map.map.set(prop, val);
       }
       return true;

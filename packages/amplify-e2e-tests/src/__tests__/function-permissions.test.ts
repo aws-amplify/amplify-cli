@@ -6,14 +6,14 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import { getShortId } from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { getShortId } from "../import-helpers";
 
-describe('amplify add function with permissions', () => {
+describe("amplify add function with permissions", () => {
   let projRoot: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('function-permissions');
+    projRoot = await createNewProjectDir("function-permissions");
   });
 
   afterEach(async () => {
@@ -21,24 +21,24 @@ describe('amplify add function with permissions', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add notifications and function permissions', async () => {
+  it("add notifications and function permissions", async () => {
     await initJSProjectWithProfile(projRoot, {});
 
     const settings = { resourceName: `notifications${getShortId()}` };
-    await addNotificationChannel(projRoot, settings, 'SMS');
+    await addNotificationChannel(projRoot, settings, "SMS");
     await addFunction(
       projRoot,
       {
-        name: 'testFunction',
-        functionTemplate: 'Hello World',
+        name: "testFunction",
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['notifications'],
+          permissions: ["notifications"],
           resources: [settings.resourceName],
-          choices: ['auth', 'analytics', 'notifications'],
-          operations: ['create', 'read'],
+          choices: ["auth", "analytics", "notifications"],
+          operations: ["create", "read"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
     await amplifyPushUpdate(projRoot);
   });

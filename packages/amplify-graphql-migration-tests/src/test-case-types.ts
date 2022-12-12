@@ -1,5 +1,5 @@
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ITransformer } from 'graphql-transformer-core';
+import { TransformerPluginProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { ITransformer } from "graphql-transformer-core";
 
 // Defines a single test input
 type TestName = string;

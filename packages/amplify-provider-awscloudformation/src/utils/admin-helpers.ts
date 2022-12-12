@@ -1,14 +1,10 @@
-import {
-  stateManager, $TSContext, AmplifyError,
-} from 'amplify-cli-core';
-import aws from 'aws-sdk';
-import _ from 'lodash';
-import fetch from 'node-fetch';
-import proxyAgent from 'proxy-agent';
-import { adminLoginFlow } from '../admin-login';
-import {
-  AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken,
-} from './auth-types';
+import { stateManager, $TSContext, AmplifyError } from "amplify-cli-core";
+import aws from "aws-sdk";
+import _ from "lodash";
+import fetch from "node-fetch";
+import proxyAgent from "proxy-agent";
+import { adminLoginFlow } from "../admin-login";
+import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from "./auth-types";
 
 /**
  *
@@ -23,7 +19,7 @@ export const adminVerifyUrl = (appId: string, envName: string, region: string): 
  */
 export function doAdminTokensExist(appId: string): boolean {
   if (!appId) {
-    throw new AmplifyError('AmplifyStudioError', {
+    throw new AmplifyError("AmplifyStudioError", {
       message: `Failed to check if admin credentials exist: appId is undefined`,
     });
   }
@@ -35,15 +31,15 @@ export function doAdminTokensExist(appId: string): boolean {
  */
 export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
-    throw new AmplifyError('AmplifyStudioError', {
+    throw new AmplifyError("AmplifyStudioError", {
       message: `Failed to check if Amplify Studio is enabled: appId is undefined`,
     });
   }
-  let appState = await getAdminAppState(appId, 'us-east-1');
-  if (appState.appId && appState.region && appState.region !== 'us-east-1') {
+  let appState = await getAdminAppState(appId, "us-east-1");
+  if (appState.appId && appState.region && appState.region !== "us-east-1") {
     appState = await getAdminAppState(appId, appState.region);
   }
-  const userPoolID = appState.loginAuthConfig ? JSON.parse(appState.loginAuthConfig).aws_user_pools_id : '';
+  const userPoolID = appState.loginAuthConfig ? JSON.parse(appState.loginAuthConfig).aws_user_pools_id : "";
   return { isAdminApp: !!appState.appId, region: appState.region, userPoolID };
 }
 
@@ -77,7 +73,7 @@ async function getAdminAppState(appId: string, region: string) {
 
 async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: string, region: string): Promise<AwsSdkConfig> {
   const cognitoIdentity = new aws.CognitoIdentity({ region });
-  const login = idToken.payload.iss.replace('https://', '');
+  const login = idToken.payload.iss.replace("https://", "");
   const { Credentials } = await cognitoIdentity
     .getCredentialsForIdentity({
       IdentityId: identityId,
@@ -100,8 +96,8 @@ async function getAdminStsCredentials(idToken: CognitoIdToken, region: string): 
   const sts = new aws.STS();
   const { Credentials } = await sts
     .assumeRole({
-      RoleArn: idToken.payload['cognito:preferred_role'],
-      RoleSessionName: 'amplifyadmin',
+      RoleArn: idToken.payload["cognito:preferred_role"],
+      RoleSessionName: "amplifyadmin",
     })
     .promise();
 
@@ -135,7 +131,7 @@ async function getRefreshedTokens(context: $TSContext, appId: string) {
 }
 
 function isJwtExpired(token: CognitoAccessToken | CognitoIdToken) {
-  const expiration = _.get(token, ['payload', 'exp'], 0);
+  const expiration = _.get(token, ["payload", "exp"], 0);
   const secSinceEpoch = Math.round(new Date().getTime() / 1000);
   return secSinceEpoch >= expiration - 60;
 }
@@ -143,7 +139,7 @@ function isJwtExpired(token: CognitoAccessToken | CognitoIdToken) {
 async function refreshJWTs(authConfig: AdminAuthConfig) {
   const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
   return await CognitoISP.initiateAuth({
-    AuthFlow: 'REFRESH_TOKEN',
+    AuthFlow: "REFRESH_TOKEN",
     AuthParameters: {
       REFRESH_TOKEN: authConfig.refreshToken.token,
     },
@@ -157,72 +153,72 @@ export const adminBackendMap: {
     appStateUrl: string;
   };
 } = {
-  'ap-northeast-1': {
-    amplifyAdminUrl: 'https://ap-northeast-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.ap-northeast-1.appstate.amplifyapp.com',
+  "ap-northeast-1": {
+    amplifyAdminUrl: "https://ap-northeast-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.ap-northeast-1.appstate.amplifyapp.com",
   },
-  'ap-northeast-2': {
-    amplifyAdminUrl: 'https://ap-northeast-2.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.ap-northeast-2.appstate.amplifyapp.com',
+  "ap-northeast-2": {
+    amplifyAdminUrl: "https://ap-northeast-2.admin.amplifyapp.com",
+    appStateUrl: "https://prod.ap-northeast-2.appstate.amplifyapp.com",
   },
-  'ap-south-1': {
-    amplifyAdminUrl: 'https://ap-south-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.ap-south-1.appstate.amplifyapp.com',
+  "ap-south-1": {
+    amplifyAdminUrl: "https://ap-south-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.ap-south-1.appstate.amplifyapp.com",
   },
-  'ap-southeast-1': {
-    amplifyAdminUrl: 'https://ap-southeast-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.ap-southeast-1.appstate.amplifyapp.com',
+  "ap-southeast-1": {
+    amplifyAdminUrl: "https://ap-southeast-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.ap-southeast-1.appstate.amplifyapp.com",
   },
-  'ap-southeast-2': {
-    amplifyAdminUrl: 'https://ap-southeast-2.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.ap-southeast-2.appstate.amplifyapp.com',
+  "ap-southeast-2": {
+    amplifyAdminUrl: "https://ap-southeast-2.admin.amplifyapp.com",
+    appStateUrl: "https://prod.ap-southeast-2.appstate.amplifyapp.com",
   },
-  'ca-central-1': {
-    amplifyAdminUrl: 'https://ca-central-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.ca-central-1.appstate.amplifyapp.com',
+  "ca-central-1": {
+    amplifyAdminUrl: "https://ca-central-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.ca-central-1.appstate.amplifyapp.com",
   },
-  'eu-central-1': {
-    amplifyAdminUrl: 'https://eu-central-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.eu-central-1.appstate.amplifyapp.com',
+  "eu-central-1": {
+    amplifyAdminUrl: "https://eu-central-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.eu-central-1.appstate.amplifyapp.com",
   },
-  'eu-north-1': {
-    amplifyAdminUrl: 'https://eu-north-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.eu-north-1.appstate.amplifyapp.com',
+  "eu-north-1": {
+    amplifyAdminUrl: "https://eu-north-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.eu-north-1.appstate.amplifyapp.com",
   },
-  'eu-west-1': {
-    amplifyAdminUrl: 'https://eu-west-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.eu-west-1.appstate.amplifyapp.com',
+  "eu-west-1": {
+    amplifyAdminUrl: "https://eu-west-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.eu-west-1.appstate.amplifyapp.com",
   },
-  'eu-west-2': {
-    amplifyAdminUrl: 'https://eu-west-2.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.eu-west-2.appstate.amplifyapp.com',
+  "eu-west-2": {
+    amplifyAdminUrl: "https://eu-west-2.admin.amplifyapp.com",
+    appStateUrl: "https://prod.eu-west-2.appstate.amplifyapp.com",
   },
-  'eu-west-3': {
-    amplifyAdminUrl: 'https://eu-west-3.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.eu-west-3.appstate.amplifyapp.com',
+  "eu-west-3": {
+    amplifyAdminUrl: "https://eu-west-3.admin.amplifyapp.com",
+    appStateUrl: "https://prod.eu-west-3.appstate.amplifyapp.com",
   },
-  'me-south-1': {
-    amplifyAdminUrl: 'https://me-south-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.me-south-1.appstate.amplifyapp.com',
+  "me-south-1": {
+    amplifyAdminUrl: "https://me-south-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.me-south-1.appstate.amplifyapp.com",
   },
-  'sa-east-1': {
-    amplifyAdminUrl: 'https://sa-east-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.sa-east-1.appstate.amplifyapp.com',
+  "sa-east-1": {
+    amplifyAdminUrl: "https://sa-east-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.sa-east-1.appstate.amplifyapp.com",
   },
-  'us-east-1': {
-    amplifyAdminUrl: 'https://us-east-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.us-east-1.appstate.amplifyapp.com',
+  "us-east-1": {
+    amplifyAdminUrl: "https://us-east-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.us-east-1.appstate.amplifyapp.com",
   },
-  'us-east-2': {
-    amplifyAdminUrl: 'https://us-east-2.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.us-east-2.appstate.amplifyapp.com',
+  "us-east-2": {
+    amplifyAdminUrl: "https://us-east-2.admin.amplifyapp.com",
+    appStateUrl: "https://prod.us-east-2.appstate.amplifyapp.com",
   },
-  'us-west-1': {
-    amplifyAdminUrl: 'https://us-west-1.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.us-west-1.appstate.amplifyapp.com',
+  "us-west-1": {
+    amplifyAdminUrl: "https://us-west-1.admin.amplifyapp.com",
+    appStateUrl: "https://prod.us-west-1.appstate.amplifyapp.com",
   },
-  'us-west-2': {
-    amplifyAdminUrl: 'https://us-west-2.admin.amplifyapp.com',
-    appStateUrl: 'https://prod.us-west-2.appstate.amplifyapp.com',
+  "us-west-2": {
+    amplifyAdminUrl: "https://us-west-2.admin.amplifyapp.com",
+    appStateUrl: "https://prod.us-west-2.appstate.amplifyapp.com",
   },
 };

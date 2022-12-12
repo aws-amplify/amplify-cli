@@ -1,10 +1,10 @@
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import ora from 'ora';
-import { LayerCfnLogicalNamePrefix } from './constants';
+import { $TSContext, exitOnNextTick } from "amplify-cli-core";
+import ora from "ora";
+import { LayerCfnLogicalNamePrefix } from "./constants";
 // eslint-disable-next-line import/no-cycle
-import { isMultiEnvLayer } from './layerHelpers';
-import { LegacyPermissionEnum } from './layerMigrationUtils';
-import { LayerVersionMetadata, PermissionEnum } from './layerParams';
+import { isMultiEnvLayer } from "./layerHelpers";
+import { LegacyPermissionEnum } from "./layerMigrationUtils";
+import { LayerVersionMetadata, PermissionEnum } from "./layerParams";
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 export class LayerCloudState {
@@ -24,7 +24,7 @@ export class LayerCloudState {
   }
 
   private async loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-    const spinner = ora('Loading layer data from the cloud...').start();
+    const spinner = ora("Loading layer data from the cloud...").start();
     try {
       const { envName }: { envName: string } = context.amplify.getEnvInfo();
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -34,7 +34,7 @@ export class LayerCloudState {
       const stackList = await cfnClient.listStackResources();
       const layerStacks = stackList?.StackResourceSummaries?.filter(
         // do this because cdk does some rearranging of resources
-        stack => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
+        (stack) => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === "AWS::CloudFormation::Stack"
       );
       let detailedLayerStack;
 
@@ -47,26 +47,26 @@ export class LayerCloudState {
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
-        detailedLayerStack.forEach(stack => {
-          if (stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
+        detailedLayerStack.forEach((stack) => {
+          if (stack.ResourceType === "AWS::Lambda::LayerVersion" && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
             // eslint-disable-next-line no-param-reassign
             layerVersion.LogicalName = stack.LogicalResourceId;
-            layerLogicalIdSuffix = stack.LogicalResourceId.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
+            layerLogicalIdSuffix = stack.LogicalResourceId.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, "");
           }
         });
 
-        detailedLayerStack.forEach(stack => {
+        detailedLayerStack.forEach((stack) => {
           if (
-            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission'
-            && stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
+            stack.ResourceType === "AWS::Lambda::LayerVersionPermission" &&
+            stack.PhysicalResourceId.split("#")[0] === layerVersion.LayerVersionArn
           ) {
             // eslint-disable-next-line no-param-reassign
             layerVersion.permissions = layerVersion.permissions || [];
 
             const permissionTypeString = stack.LogicalResourceId.replace(
               LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission,
-              '',
-            ).replace(layerLogicalIdSuffix, '');
+              ""
+            ).replace(layerLogicalIdSuffix, "");
 
             const accountIds = [];
             const orgIds = [];
@@ -75,15 +75,15 @@ export class LayerCloudState {
             } else if (permissionTypeString === PermissionEnum.Public || permissionTypeString.startsWith(LegacyPermissionEnum.Public)) {
               layerVersion.permissions.push({ type: PermissionEnum.Public });
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsAccounts)) {
-              accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, '').replace(`Legacy${layerVersion.Version}`, ''));
+              accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, "").replace(`Legacy${layerVersion.Version}`, ""));
             } else if (permissionTypeString.startsWith(LegacyPermissionEnum.AwsAccounts)) {
-              accountIds.push(permissionTypeString.replace(LegacyPermissionEnum.AwsAccounts, '').substring(0, 12));
+              accountIds.push(permissionTypeString.replace(LegacyPermissionEnum.AwsAccounts, "").substring(0, 12));
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsOrg)) {
-              const orgId = permissionTypeString.replace(`${PermissionEnum.AwsOrg}o`, 'o-').replace(`Legacy${layerVersion.Version}`, '');
+              const orgId = permissionTypeString.replace(`${PermissionEnum.AwsOrg}o`, "o-").replace(`Legacy${layerVersion.Version}`, "");
               orgIds.push(orgId);
             } else if (permissionTypeString.startsWith(LegacyPermissionEnum.AwsOrg)) {
               const suffix = `${layerVersion.Version}`;
-              const orgId = permissionTypeString.replace(`${LegacyPermissionEnum.AwsOrg}o`, 'o-').slice(0, -1 * suffix.length);
+              const orgId = permissionTypeString.replace(`${LegacyPermissionEnum.AwsOrg}o`, "o-").slice(0, -1 * suffix.length);
               orgIds.push(orgId);
             }
 
@@ -104,7 +104,7 @@ export class LayerCloudState {
         });
 
         // eslint-disable-next-line no-param-reassign
-        layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
+        layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === "LambdaLayer";
       });
       this.layerVersionsMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
       this.latestVersionLogicalId = this.layerVersionsMetadata[0].LogicalName;

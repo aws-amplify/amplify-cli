@@ -1,18 +1,18 @@
-import { $TSAny, $TSContext, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
-import * as os from 'os';
-import * as path from 'path';
-import { getCfnFiles } from './push-resources';
+import { $TSAny, $TSContext, readCFNTemplate, writeCFNTemplate } from "amplify-cli-core";
+import * as os from "os";
+import * as path from "path";
+import { getCfnFiles } from "./push-resources";
 
 enum DeploymentTypes {
-  AMPLIFY_CLI = 'Amplify',
-  AMPLIFY_ADMIN = 'AmplifyAdmin',
+  AMPLIFY_CLI = "Amplify",
+  AMPLIFY_ADMIN = "AmplifyAdmin",
 }
 
 enum SupportedPlatforms {
-  WINDOWS = 'Windows',
-  MAC = 'Mac',
-  LINUX = 'Linux',
-  OTHER = 'Other',
+  WINDOWS = "Windows",
+  MAC = "Mac",
+  LINUX = "Linux",
+  OTHER = "Other",
 }
 
 type TemplateDescription = {
@@ -42,7 +42,7 @@ export async function setDefaultTemplateDescription(
   category: string,
   resourceName: string,
   service: string,
-  cfnFilePath: string,
+  cfnFilePath: string
 ) {
   const { templateFormat, cfnTemplate } = readCFNTemplate(cfnFilePath);
 
@@ -62,11 +62,11 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
 
   const platform = os.platform();
 
-  if (platform == 'darwin') {
+  if (platform == "darwin") {
     platformDescription = SupportedPlatforms.MAC;
-  } else if (platform == 'win32') {
+  } else if (platform == "win32") {
     platformDescription = SupportedPlatforms.WINDOWS;
-  } else if (platform == 'linux') {
+  } else if (platform == "linux") {
     platformDescription = SupportedPlatforms.LINUX;
   } else {
     platformDescription = SupportedPlatforms.OTHER;

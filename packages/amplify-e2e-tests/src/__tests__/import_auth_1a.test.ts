@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from "amplify-cli-core";
 import {
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addAuthUserPoolOnlyWithOAuth,
@@ -11,9 +11,9 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import * as path from "path";
 import {
   AuthProjectDetails,
   createUserPoolOnlyWithOAuthSettings,
@@ -28,15 +28,15 @@ import {
   importUserPoolOnly,
   readRootStack,
   removeImportedAuthWithDefault,
-} from '../import-helpers';
-import { getCognitoResourceName } from '../schema-api-directives/authHelper';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
+} from "../import-helpers";
+import { getCognitoResourceName } from "../schema-api-directives/authHelper";
+import { randomizedFunctionName } from "../schema-api-directives/functionTester";
 
-describe('auth import userpool only', () => {
+describe("auth import userpool only", () => {
   // eslint-disable-next-line spellcheck/spell-checker
-  const projectPrefix = 'auimpup';
+  const projectPrefix = "auimpup";
   // eslint-disable-next-line spellcheck/spell-checker
-  const ogProjectPrefix = 'ogauimpup';
+  const ogProjectPrefix = "ogauimpup";
 
   const projectSettings = {
     name: projectPrefix,
@@ -48,7 +48,7 @@ describe('auth import userpool only', () => {
 
   const dummyOGProjectSettings = {
     // eslint-disable-next-line spellcheck/spell-checker
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the user pool to import by other test projects
@@ -110,17 +110,17 @@ describe('auth import userpool only', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('status should reflect correct values for imported auth', async () => {
+  it("status should reflect correct values for imported auth", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     let projectDetails = getAuthProjectDetails(projectRoot);
 
     expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
-    await amplifyStatus(projectRoot, 'Import');
+    await amplifyStatus(projectRoot, "Import");
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
+    await amplifyStatus(projectRoot, "No Change");
 
     expectLocalAndCloudMetaFilesMatching(projectRoot);
 
@@ -130,7 +130,7 @@ describe('auth import userpool only', () => {
 
     await removeImportedAuthWithDefault(projectRoot);
     // eslint-disable-next-line spellcheck/spell-checker
-    await amplifyStatus(projectRoot, 'Unlink');
+    await amplifyStatus(projectRoot, "Unlink");
 
     await amplifyPushAuth(projectRoot);
 
@@ -139,37 +139,37 @@ describe('auth import userpool only', () => {
     expectLocalTeamInfoHasNoCategories(projectRoot);
   });
 
-  it('imported auth with graphql api and cognito should push', async () => {
+  it("imported auth with graphql api and cognito should push", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }); // space at to make sure its not web client
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" }); // space at to make sure its not web client
     await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot, { transformerVersion: 1 });
     await amplifyPush(projectRoot);
 
     expectApiHasCorrectAuthConfig(projectRoot, projectPrefix, ogProjectDetails.meta.UserPoolId);
   });
 
-  it('imported auth with function and crud on auth should push', async () => {
+  it("imported auth with function and crud on auth should push", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     // eslint-disable-next-line spellcheck/spell-checker
-    const functionName = randomizedFunctionName('authimpfunc');
+    const functionName = randomizedFunctionName("authimpfunc");
     const authResourceName = getCognitoResourceName(projectRoot);
 
     await addFunction(
       projectRoot,
       {
         name: functionName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['auth'],
-          choices: ['auth'],
+          permissions: ["auth"],
+          choices: ["auth"],
           resources: [authResourceName],
           resourceChoices: [authResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
+          operations: ["create", "read", "update", "delete"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projectRoot);
@@ -177,9 +177,9 @@ describe('auth import userpool only', () => {
     const projectDetails = getAuthProjectDetails(projectRoot);
 
     // Verify that index.js gets the userpool env var name injected
-    const amplifyBackendDirPath = path.join(projectRoot, 'amplify', 'backend');
-    const functionFilePath = path.join(amplifyBackendDirPath, 'function', functionName);
-    const amplifyFunctionIndexFilePath = path.join(functionFilePath, 'src', 'index.js');
+    const amplifyBackendDirPath = path.join(projectRoot, "amplify", "backend");
+    const functionFilePath = path.join(amplifyBackendDirPath, "function", functionName);
+    const amplifyFunctionIndexFilePath = path.join(functionFilePath, "src", "index.js");
     const cognitoResourceNameUpperCase = projectDetails.authResourceName.toUpperCase();
     const userPoolIDEnvVarName = `AUTH_${cognitoResourceNameUpperCase}_USERPOOLID`;
 
@@ -198,12 +198,12 @@ describe('auth import userpool only', () => {
     const functionStackFilePath = path.join(functionFilePath, `${functionName}-cloudformation-template.json`);
     const functionStack = JSONUtilities.readJson<$TSObject>(functionStackFilePath);
     expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[userPoolIDEnvVarName].Ref).toEqual(
-      authParameterName,
+      authParameterName
     );
 
     // Verify if generated policy has the userpool id as resource
-    expect(functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0]['Fn::Join'][1][5]).toEqual(
-      projectDetails.meta.UserPoolId,
+    expect(functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0]["Fn::Join"][1][5]).toEqual(
+      projectDetails.meta.UserPoolId
     );
   });
 });

@@ -1,11 +1,11 @@
-import { lambdasWithApiDependency } from '../../../../provider-utils/awscloudformation/utils/getDependentFunction';
-import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
-import { $TSContext } from 'amplify-cli-core';
+import { lambdasWithApiDependency } from "../../../../provider-utils/awscloudformation/utils/getDependentFunction";
+import { loadFunctionParameters } from "../../../../provider-utils/awscloudformation/utils/loadFunctionParameters";
+import { $TSContext } from "amplify-cli-core";
 
-jest.mock('fs-extra');
-jest.mock('../../../../provider-utils/awscloudformation/utils/loadFunctionParameters');
-jest.mock('path');
-jest.mock('amplify-cli-core', () => ({
+jest.mock("fs-extra");
+jest.mock("../../../../provider-utils/awscloudformation/utils/loadFunctionParameters");
+jest.mock("path");
+jest.mock("amplify-cli-core", () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),
@@ -20,92 +20,92 @@ const contextStub = {
 
 const allResources = [
   {
-    service: 'AppSync',
-    providerPlugin: 'awscloudformation',
+    service: "AppSync",
+    providerPlugin: "awscloudformation",
   },
   {
     build: true,
-    providerPlugin: 'awscloudformation',
-    service: 'Lambda',
-    resourceName: 'fn1',
+    providerPlugin: "awscloudformation",
+    service: "Lambda",
+    resourceName: "fn1",
   },
   {
     build: true,
-    providerPlugin: 'awscloudformation',
-    service: 'Lambda',
+    providerPlugin: "awscloudformation",
+    service: "Lambda",
     dependsOn: [],
-    resourceName: 'fn1',
+    resourceName: "fn1",
   },
   {
     build: true,
-    providerPlugin: 'awscloudformation',
-    service: 'Lambda',
-    resourceName: 'fn2',
+    providerPlugin: "awscloudformation",
+    service: "Lambda",
+    resourceName: "fn2",
     dependsOn: [
       {
-        category: 'api',
-        resourceName: 'mock_api',
-        attributes: ['GraphQLAPIIdOutput'],
+        category: "api",
+        resourceName: "mock_api",
+        attributes: ["GraphQLAPIIdOutput"],
       },
     ],
   },
   {
     build: true,
-    providerPlugin: 'awscloudformation',
-    service: 'Lambda',
-    resourceName: 'fn3',
+    providerPlugin: "awscloudformation",
+    service: "Lambda",
+    resourceName: "fn3",
     dependsOn: [
       {
-        category: 'api',
-        resourceName: 'mock_api',
-        attributes: ['GraphQLAPIIdOutput'],
+        category: "api",
+        resourceName: "mock_api",
+        attributes: ["GraphQLAPIIdOutput"],
       },
     ],
   },
 ];
-const backendDir = 'randomPath';
+const backendDir = "randomPath";
 const loadResourceParameters_mock = loadFunctionParameters as jest.MockedFunction<typeof loadFunctionParameters>;
 
-test('get dependent functions', async () => {
+test("get dependent functions", async () => {
   jest.clearAllMocks();
-  const modelsDeleted = ['model3', 'model2'];
-  const FunctionMetaExpected = ['fn2', 'fn3'];
+  const modelsDeleted = ["model3", "model2"];
+  const FunctionMetaExpected = ["fn2", "fn3"];
   loadResourceParameters_mock
     .mockReturnValueOnce({
       permissions: {
         storage: {
-          model1: ['create'],
-          model2: ['create'],
-          model3: ['create'],
+          model1: ["create"],
+          model2: ["create"],
+          model3: ["create"],
         },
       },
     })
     .mockReturnValueOnce({
       permissions: {
         storage: {
-          model3: ['create'],
+          model3: ["create"],
         },
       },
     });
-  const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
-  expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
+  const fnMetaToBeUpdated = await lambdasWithApiDependency(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted);
+  expect(fnMetaToBeUpdated.map((resource) => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });
 
-test('get dependent functions with empty permissions', async () => {
+test("get dependent functions with empty permissions", async () => {
   jest.clearAllMocks();
-  const modelsDeleted = ['model3'];
-  const FunctionMetaExpected = ['fn2'];
+  const modelsDeleted = ["model3"];
+  const FunctionMetaExpected = ["fn2"];
   loadResourceParameters_mock
     .mockReturnValueOnce({
       permissions: {
         storage: {
-          model1: ['create'],
-          model2: ['create'],
-          model3: ['create'],
+          model1: ["create"],
+          model2: ["create"],
+          model3: ["create"],
         },
       },
     })
     .mockReturnValueOnce({});
-  const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
-  expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
+  const fnMetaToBeUpdated = await lambdasWithApiDependency(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted);
+  expect(fnMetaToBeUpdated.map((resource) => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });

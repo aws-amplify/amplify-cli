@@ -1,8 +1,8 @@
-import { stateManager, open, $TSContext } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import chalk from 'chalk';
+import { stateManager, open, $TSContext } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import chalk from "chalk";
 
-const providerName = 'awscloudformation';
+const providerName = "awscloudformation";
 
 /**
  * Entry point for console command
@@ -23,8 +23,8 @@ export const run = async (context: $TSContext): Promise<void> => {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
       if (await providerPlugin.isAmplifyAdminApp(AmplifyAppId)) {
-        const choice = await prompter.pick('Which site do you want to open?', ['Amplify Studio', 'AWS console']);
-        if (choice === 'Amplify Studio') {
+        const choice = await prompter.pick("Which site do you want to open?", ["Amplify Studio", "AWS console"]);
+        if (choice === "Amplify Studio") {
           const baseUrl = providerPlugin.adminBackendMap[Region].amplifyAdminUrl;
           consoleUrl = constructAdminURL(baseUrl, AmplifyAppId, envName);
         }
@@ -50,6 +50,6 @@ const constructStatusURL = (region: string, appId: string, envName: string): str
 };
 
 const getDefaultURL = (): string => {
-  const prodURL = 'https://console.aws.amazon.com/amplify/home#/create';
+  const prodURL = "https://console.aws.amazon.com/amplify/home#/create";
   return prodURL;
 };

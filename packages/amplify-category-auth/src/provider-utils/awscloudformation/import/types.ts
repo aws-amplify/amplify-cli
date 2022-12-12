@@ -1,27 +1,27 @@
-import { $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject } from "amplify-cli-core";
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
   UserPoolClientType,
   UserPoolType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { CognitoIdentityProvider, IdentityPool } from "aws-sdk/clients/cognitoidentity";
+import { ICognitoUserPoolService, IIdentityPoolService } from "amplify-util-import";
 
-export type AuthSelections = 'userPoolOnly' | 'identityPoolAndUserPool';
+export type AuthSelections = "userPoolOnly" | "identityPoolAndUserPool";
 
 // parameters.json
 export type ResourceParameters = {
   authSelections: AuthSelections;
   resourceName: string;
-  serviceType: 'imported'; // string literal, not changing for import
+  serviceType: "imported"; // string literal, not changing for import
   region: string;
 };
 
 // Persisted into amplify-meta
 export type BackendConfiguration = {
-  service: 'Cognito'; // string literal for this category
-  serviceType: 'imported'; // string literal, not changing for import
+  service: "Cognito"; // string literal for this category
+  serviceType: "imported"; // string literal, not changing for import
   providerPlugin: string;
   dependsOn: $TSObject[];
   customAuth: boolean;
@@ -153,7 +153,7 @@ export interface ProviderUtils {
     category: string,
     resourceName: string,
     privateParams: $TSObject,
-    envSpecificParams: string[],
+    envSpecificParams: string[]
   ): void;
   loadResourceParameters(context: $TSContext, category: string, resourceName: string): Record<string, any>;
 }

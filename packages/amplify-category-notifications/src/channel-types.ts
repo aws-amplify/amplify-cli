@@ -1,17 +1,17 @@
 /**
  * Channel Action handler API
  */
-import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from 'amplify-cli-core';
-import { INotificationsResourceBackendConfig } from './notifications-backend-cfg-types';
+import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from "amplify-cli-core";
+import { INotificationsResourceBackendConfig } from "./notifications-backend-cfg-types";
 
 /**
  * Actions performed on a Notifications channel (Pinpoint)
  */
 export enum ChannelAction {
-  ENABLE = 'enable',
-  DISABLE = 'disable',
-  CONFIGURE = 'configure',
-  PULL = 'pull'
+  ENABLE = "enable",
+  DISABLE = "disable",
+  CONFIGURE = "configure",
+  PULL = "pull",
 }
 
 /**
@@ -20,27 +20,27 @@ export enum ChannelAction {
  * DEFERRED deployment( and rollback ) for SDK deployed resources.
  */
 export enum ChannelConfigDeploymentType {
-  INLINE = 'INLINE', // channel config is deployed as soon as its configured
-  DEFERRED = 'DEFERRED', // channel config is deployed only on amplify-push
+  INLINE = "INLINE", // channel config is deployed as soon as its configured
+  DEFERRED = "DEFERRED", // channel config is deployed only on amplify-push
 }
 
 /**
  * Response structure for a Notifications channel API
  */
 export interface IChannelAPIResponse {
-  action: ChannelAction,
-  channel: string,
-  response: IPluginCapabilityAPIResponse,
-  output?: $TSAny, // Channel API response
-  deploymentType: ChannelConfigDeploymentType,
+  action: ChannelAction;
+  channel: string;
+  response: IPluginCapabilityAPIResponse;
+  output?: $TSAny; // Channel API response
+  deploymentType: ChannelConfigDeploymentType;
 }
 
 /**
  * Notification channel names classified by availability (enabled and disabled)
  */
 export interface IChannelAvailability {
-  enabledChannels: Array<string>,
-  disabledChannels: Array<string>,
+  enabledChannels: Array<string>;
+  disabledChannels: Array<string>;
 }
 
 /**
@@ -52,36 +52,36 @@ export interface IChannelAvailability {
  * @param deploymentType - INLINE or DEFERRED
  */
 export interface IChannelViewInfo {
-  channelName: string,
-  viewName : string,
-  help: string,
-  module: string,
-  deploymentType: ChannelConfigDeploymentType,
+  channelName: string;
+  viewName: string;
+  help: string;
+  module: string;
+  deploymentType: ChannelConfigDeploymentType;
 }
 
 /**
  * Notifications resource config and channel availability
  */
 export interface INotificationsConfigChannelAvailability {
-  config: INotificationsResourceBackendConfig,
-  channels: IChannelAvailability
+  config: INotificationsResourceBackendConfig;
+  channels: IChannelAvailability;
 }
 
 /**
  * local and deployed backend configs for notifications
  */
 export interface INotificationsConfigStatus {
-  local: INotificationsConfigChannelAvailability,
-  deployed: INotificationsConfigChannelAvailability
-  appInitialized: false
+  local: INotificationsConfigChannelAvailability;
+  deployed: INotificationsConfigChannelAvailability;
+  appInitialized: false;
 }
 
 /**
  * Notifications Channel API function signatures
  */
 export type NotificationsChannelActionHandler = {
-  description: 'Notifications-API: NotificationsChannel API Handler function';
-  (context: $TSContext, pinpointAppName?: string): Promise<IChannelAPIResponse|undefined>;
+  description: "Notifications-API: NotificationsChannel API Handler function";
+  (context: $TSContext, pinpointAppName?: string): Promise<IChannelAPIResponse | undefined>;
 };
 
 /**

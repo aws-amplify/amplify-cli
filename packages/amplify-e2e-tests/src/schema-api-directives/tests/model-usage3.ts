@@ -23,19 +23,19 @@ mutation CreatePost(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    title: 'title1',
-    tags: ['tag1'],
+    id: "1",
+    title: "title1",
+    tags: ["tag1"],
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: '1',
-      title: 'title1',
-      tags: ['tag1'],
-      createdOn: '<check-defined>',
-      updatedOn: '<check-defined>',
+      id: "1",
+      title: "title1",
+      tags: ["tag1"],
+      createdOn: "<check-defined>",
+      updatedOn: "<check-defined>",
     },
   },
 };
@@ -55,19 +55,19 @@ export const mutation2 = `
 }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
-    title: 'title1 updated',
-    tags: ['tag1', 'new-tag'],
+    id: "1",
+    title: "title1 updated",
+    tags: ["tag1", "new-tag"],
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updatePost: {
-      id: '1',
-      title: 'title1 updated',
-      tags: ['tag1', 'new-tag'],
-      createdOn: '<check-defined>',
-      updatedOn: '<check-defined>',
+      id: "1",
+      title: "title1 updated",
+      tags: ["tag1", "new-tag"],
+      createdOn: "<check-defined>",
+      updatedOn: "<check-defined>",
     },
   },
 };
@@ -86,11 +86,11 @@ query GetPost{
 export const expected_result_query = {
   data: {
     getPost: {
-      id: '1',
-      title: 'title1 updated',
-      tags: ['tag1', 'new-tag'],
-      createdOn: '<check-defined>',
-      updatedOn: '<check-defined>',
+      id: "1",
+      title: "title1 updated",
+      tags: ["tag1", "new-tag"],
+      createdOn: "<check-defined>",
+      updatedOn: "<check-defined>",
     },
   },
 };

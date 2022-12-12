@@ -32,10 +32,10 @@ mutation CreateTodo {
 export const expected_result_mutation1 = {
   data: {
     createTodo: {
-      id: '1',
-      owner: 'user1',
-      updatedAt: '2020-01-01T01:05:49.129Z',
-      content: 'todo1 content',
+      id: "1",
+      owner: "user1",
+      updatedAt: "2020-01-01T01:05:49.129Z",
+      content: "todo1 content",
     },
   },
 };
@@ -57,10 +57,10 @@ mutation UpdateTodo {
 export const expected_result_mutation2 = {
   data: {
     updateTodo: {
-      id: '1',
-      owner: 'user1',
-      updatedAt: '2020-05-20T01:05:49.129Z',
-      content: 'todo1 content updated',
+      id: "1",
+      owner: "user1",
+      updatedAt: "2020-05-20T01:05:49.129Z",
+      content: "todo1 content updated",
     },
   },
 };

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 export interface GraphQLLocation {
   line: number;
@@ -23,7 +23,7 @@ export class GraphQLClient {
         query,
         variables,
       },
-      { headers: this.headers },
+      { headers: this.headers }
     );
     return axRes.data;
   }

@@ -1,9 +1,9 @@
-import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-types/types/dynamoDb/table';
-import { DynamoDB, IntrinsicFunction } from 'cloudform';
+import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from "cloudform-types/types/dynamoDb/table";
+import { DynamoDB, IntrinsicFunction } from "cloudform";
 
-import _ from 'lodash';
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
-import { GSIRecord } from '../utils/amplify-resource-state-utils';
+import _ from "lodash";
+import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from "amplify-cli-core";
+import { GSIRecord } from "../utils/amplify-resource-state-utils";
 
 export const MAX_GSI_PER_TABLE = 20;
 /**
@@ -34,7 +34,7 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
     const existingAttrDefinition = table.Properties.AttributeDefinitions;
     assertNotIntrinsicFunction(existingAttrDefinition);
 
-    const attributeDefinition = _.filter(existingAttrDefinition, defs => attributesUsedInKey.includes(defs.AttributeName));
+    const attributeDefinition = _.filter(existingAttrDefinition, (defs) => attributesUsedInKey.includes(defs.AttributeName));
 
     return { gsi: addedGSI, attributeDefinition };
   }
@@ -54,8 +54,8 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   const existingIndices = getExistingIndexNames(table);
 
   if (existingIndices.length + 1 > MAX_GSI_PER_TABLE) {
-    throw new AmplifyError('ConfigurationError', {
-      message: `DynamoDB ${table.Properties.TableName || '{UnNamedTable}'} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
+    throw new AmplifyError("ConfigurationError", {
+      message: `DynamoDB ${table.Properties.TableName || "{UnNamedTable}"} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
     });
   }
 
@@ -63,7 +63,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   assertNotIntrinsicFunction(indexName);
 
   if (existingIndices.includes(indexName)) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError("ConfigurationError", {
       message: `An index with name ${indexName} already exists`,
     });
   }
@@ -73,7 +73,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   updatedTable.Properties.GlobalSecondaryIndexes = gsis;
 
   const attrDefs = (updatedTable.Properties.AttributeDefinitions ?? []) as AttributeDefinition[];
-  updatedTable.Properties.AttributeDefinitions = _.unionBy(attrDefs, index.attributeDefinition, 'AttributeName');
+  updatedTable.Properties.AttributeDefinitions = _.unionBy(attrDefs, index.attributeDefinition, "AttributeName");
 
   return updatedTable;
 };
@@ -89,16 +89,16 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
   assertNotIntrinsicFunction(gsis);
 
   if (!gsis || gsis.length === 0) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError("ConfigurationError", {
       message: `No GSIs are present in the table`,
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
-  const indexNames = gsis.map(g => g.IndexName);
+  const indexNames = gsis.map((g) => g.IndexName);
   if (!indexNames.includes(indexName)) {
-    throw new AmplifyError('ConfigurationError', {
-      message: `Table ${table.Properties.TableName || '{UnnamedTable}'} does not contain GSI ${indexName}`,
+    throw new AmplifyError("ConfigurationError", {
+      message: `Table ${table.Properties.TableName || "{UnnamedTable}"} does not contain GSI ${indexName}`,
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
@@ -114,7 +114,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
   }, []);
 
   // Add the KeySchema property on table to the currentKeySchemas
-  const currentKeySchemas = _.union(gsiKeySchemas, updatedTable?.Properties?.KeySchema as Array<KeySchema> || []);
+  const currentKeySchemas = _.union(gsiKeySchemas, (updatedTable?.Properties?.KeySchema as Array<KeySchema>) || []);
 
   // Remove the property as it does not have any child
   if (gsis.length == 0) {
@@ -127,8 +127,8 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
     const removedKeySchema = removedIndex.KeySchema;
     assertNotIntrinsicFunction(removedKeySchema);
 
-    const attrToRemove = _.differenceBy(removedKeySchema, currentKeySchemas, 'AttributeName');
-    _.pullAllBy(attrDefs, attrToRemove, 'AttributeName');
+    const attrToRemove = _.differenceBy(removedKeySchema, currentKeySchemas, "AttributeName");
+    _.pullAllBy(attrDefs, attrToRemove, "AttributeName");
   }
 
   return updatedTable;
@@ -139,8 +139,8 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
  */
 export function assertNotIntrinsicFunction<A>(x: A[] | A | IntrinsicFunction): asserts x is A[] | A {
   if (x instanceof IntrinsicFunction) {
-    throw new AmplifyError('ConfigurationError', {
-      message: 'Intrinsic functions are not supported in KeySchema and GlobalSecondaryIndex',
+    throw new AmplifyError("ConfigurationError", {
+      message: "Intrinsic functions are not supported in KeySchema and GlobalSecondaryIndex",
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }

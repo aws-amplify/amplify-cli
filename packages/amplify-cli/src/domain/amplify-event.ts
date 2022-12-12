@@ -3,17 +3,17 @@
  * amplify events enum type
  */
 export enum AmplifyEvent {
-  PreInit = 'PreInit',
-  PostInit = 'PostInit',
-  PreExport = 'PreExport',
-  PrePush = 'PrePush',
-  PostPush = 'PostPush',
-  PrePull = 'PrePull',
-  PostPull = 'PostPull',
-  PostEnvAdd = 'PostEnvAdd',
-  PreCodegenModels = 'PreCodegenModels',
-  PostCodegenModels = 'PostCodegenModels',
-  InternalOnlyPostEnvRemove = 'InternalOnlyPostEnvRemove',
+  PreInit = "PreInit",
+  PostInit = "PostInit",
+  PreExport = "PreExport",
+  PrePush = "PrePush",
+  PostPush = "PostPush",
+  PrePull = "PrePull",
+  PostPull = "PostPull",
+  PostEnvAdd = "PostEnvAdd",
+  PreCodegenModels = "PreCodegenModels",
+  PostCodegenModels = "PostCodegenModels",
+  InternalOnlyPostEnvRemove = "InternalOnlyPostEnvRemove",
 }
 
 export class AmplifyEventData {}

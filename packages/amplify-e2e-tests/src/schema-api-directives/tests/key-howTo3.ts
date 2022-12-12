@@ -100,10 +100,10 @@ export const expected_result_query1 = {
     listItems: {
       items: [
         {
-          orderId: 'order1',
-          status: 'IN_TRANSIT',
-          createdAt: '2019-01-02T01:05:49.129Z',
-          name: 'item2',
+          orderId: "order1",
+          status: "IN_TRANSIT",
+          createdAt: "2019-01-02T01:05:49.129Z",
+          name: "item2",
         },
       ],
     },
@@ -128,10 +128,10 @@ export const expected_result_query2 = {
     itemsByStatus: {
       items: [
         {
-          orderId: 'order1',
-          status: 'PENDING',
-          createdAt: '2019-01-03T01:05:49.129Z',
-          name: 'item3',
+          orderId: "order1",
+          status: "PENDING",
+          createdAt: "2019-01-03T01:05:49.129Z",
+          name: "item3",
         },
       ],
       nextToken: null,

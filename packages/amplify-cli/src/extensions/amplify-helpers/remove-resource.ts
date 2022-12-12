@@ -5,19 +5,19 @@ import {
   promptConfirmationRemove,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import * as inquirer from 'inquirer';
-import _ from 'lodash';
-import { removeResourceParameters } from './envResourceParams';
-import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import * as inquirer from "inquirer";
+import _ from "lodash";
+import { removeResourceParameters } from "./envResourceParams";
+import { updateBackendConfigAfterResourceRemove } from "./update-backend-config";
 
 export async function forceRemoveResource(context: $TSContext, category: string, resourceName: string, resourceDir: string) {
   const amplifyMeta = stateManager.getMeta();
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
-    printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
+    printer.error("No resources added for this category");
+    await context.usageData.emitError(new ResourceDoesNotExistError("No resources added for this category"));
     exitOnNextTick(1);
   }
 
@@ -27,7 +27,7 @@ export async function forceRemoveResource(context: $TSContext, category: string,
   try {
     response = await deleteResourceFiles(context, category, resourceName, resourceDir, true);
   } catch (e) {
-    printer.error('Unable to force removal of resource: error deleting files');
+    printer.error("Unable to force removal of resource: error deleting files");
   }
 
   return response;
@@ -42,21 +42,21 @@ export async function removeResource(
     serviceSuffix?: { [serviceName: string]: string };
     serviceDeletionInfo?: { [serviceName: string]: string };
   } = { headless: false },
-  resourceNameCallback?: (resourceName: string) => Promise<void>,
+  resourceNameCallback?: (resourceName: string) => Promise<void>
 ) {
   const amplifyMeta = stateManager.getMeta();
 
   if (
     !amplifyMeta[category] ||
-    Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
+    Object.keys(amplifyMeta[category]).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
-    printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
+    printer.error("No resources added for this category");
+    await context.usageData.emitError(new ResourceDoesNotExistError("No resources added for this category"));
     exitOnNextTick(1);
   }
 
   let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
-    r => amplifyMeta[category][r].mobileHubMigrated !== true,
+    (r) => amplifyMeta[category][r].mobileHubMigrated !== true
   );
 
   if (resourceName) {
@@ -68,17 +68,17 @@ export async function removeResource(
     }
   } else {
     if (options.serviceSuffix) {
-      enabledCategoryResources = enabledCategoryResources.map(resource => {
-        const service = _.get(amplifyMeta, [category, resource, 'service']);
-        const suffix = _.get(options, ['serviceSuffix', service], '');
+      enabledCategoryResources = enabledCategoryResources.map((resource) => {
+        const service = _.get(amplifyMeta, [category, resource, "service"]);
+        const suffix = _.get(options, ["serviceSuffix", service], "");
         return { name: `${resource} ${suffix}`, value: resource };
       });
     }
     const question = [
       {
-        name: 'resource',
-        message: 'Choose the resource you would want to remove',
-        type: 'list',
+        name: "resource",
+        message: "Choose the resource you would want to remove",
+        type: "list",
         choices: enabledCategoryResources,
       },
     ];
@@ -95,8 +95,8 @@ export async function removeResource(
 
   if (options.headless !== true) {
     printer.blankLine();
-    const service = _.get(amplifyMeta, [category, resourceName, 'service']);
-    const serviceType = _.get(amplifyMeta, [category, resourceName, 'serviceType']);
+    const service = _.get(amplifyMeta, [category, resourceName, "service"]);
+    const serviceType = _.get(amplifyMeta, [category, resourceName, "serviceType"]);
 
     if (options?.serviceDeletionInfo?.[service]) {
       printer.info(options.serviceDeletionInfo[service]);
@@ -115,7 +115,7 @@ export async function removeResource(
     if (err.stack) {
       printer.info(err.stack);
     }
-    printer.error('An error occurred when removing the resources from the local directory');
+    printer.error("An error occurred when removing the resources from the local directory");
     await context.usageData.emitError(err);
     process.exitCode = 1;
   }
@@ -125,13 +125,13 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   const amplifyMeta = stateManager.getMeta();
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
-    allResources.forEach(resourceItem => {
+    allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach(dependsOnItem => {
+        resourceItem.dependsOn.forEach((dependsOnItem) => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
-            printer.error('Resource cannot be removed because it has a dependency on another resource');
+            printer.error("Resource cannot be removed because it has a dependency on another resource");
             printer.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);
-            const error = new Error('Resource cannot be removed because it has a dependency on another resource');
+            const error = new Error("Resource cannot be removed because it has a dependency on another resource");
             error.stack = undefined;
             throw error;
           }
@@ -156,6 +156,6 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   removeResourceParameters(context, category, resourceName);
   updateBackendConfigAfterResourceRemove(category, resourceName);
 
-  printer.success('Successfully removed resource');
+  printer.success("Successfully removed resource");
   return resourceValues;
 };

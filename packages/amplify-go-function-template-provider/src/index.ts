@@ -1,12 +1,12 @@
-import { FunctionTemplateContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionTemplateContributorFactory } from "amplify-function-plugin-interface";
 
-import { provideHelloWorld } from './providers/helloWorldProvider';
+import { provideHelloWorld } from "./providers/helloWorldProvider";
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       switch (request.selection) {
-        case 'hello-world': {
+        case "hello-world": {
           return provideHelloWorld();
         }
         default: {

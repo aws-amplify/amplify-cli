@@ -1,7 +1,7 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
-import { JSONUtilities } from 'amplify-cli-core';
-import type { Template } from 'cloudform-types';
-import { AmplifyAuthCognitoStack, AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
+import { ISynthesisSession, Stack, LegacyStackSynthesizer } from "@aws-cdk/core";
+import { JSONUtilities } from "amplify-cli-core";
+import type { Template } from "cloudform-types";
+import { AmplifyAuthCognitoStack, AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from "./index";
 
 /**
  * Amplify Stack Synthesizer for Auth Category
@@ -12,9 +12,9 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
 
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (
-      stack instanceof AmplifyAuthCognitoStack
-      || stack instanceof AmplifyUserPoolGroupStack
-      || stack instanceof AmplifyUserPoolGroupStackOutputs
+      stack instanceof AmplifyAuthCognitoStack ||
+      stack instanceof AmplifyUserPoolGroupStack ||
+      stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;
@@ -22,7 +22,7 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
       this.setStackAsset(templateName, template);
     } else {
       throw new Error(
-        'Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack',
+        "Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack"
       );
     }
   }

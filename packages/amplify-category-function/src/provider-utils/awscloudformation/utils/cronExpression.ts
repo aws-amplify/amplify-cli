@@ -2,7 +2,7 @@
 AWS Cron Expression generator
 */
 
-import { TreeSet } from 'jstreemap';
+import { TreeSet } from "jstreemap";
 const SECOND = 0;
 const MINUTE = 1;
 const HOUR = 2;
@@ -15,26 +15,26 @@ const NO_SPEC_INT = 98; // '?'
 const monthMap = new Map();
 const dayMap = new Map();
 
-monthMap.set('JAN', 0);
-monthMap.set('FEB', 1);
-monthMap.set('MAR', 2);
-monthMap.set('APR', 3);
-monthMap.set('MAY', 4);
-monthMap.set('JUN', 5);
-monthMap.set('JUL', 6);
-monthMap.set('AUG', 7);
-monthMap.set('SEP', 8);
-monthMap.set('OCT', 9);
-monthMap.set('NOV', 10);
-monthMap.set('DEC', 11);
+monthMap.set("JAN", 0);
+monthMap.set("FEB", 1);
+monthMap.set("MAR", 2);
+monthMap.set("APR", 3);
+monthMap.set("MAY", 4);
+monthMap.set("JUN", 5);
+monthMap.set("JUL", 6);
+monthMap.set("AUG", 7);
+monthMap.set("SEP", 8);
+monthMap.set("OCT", 9);
+monthMap.set("NOV", 10);
+monthMap.set("DEC", 11);
 
-dayMap.set('SUN', 1);
-dayMap.set('MON', 2);
-dayMap.set('TUE', 3);
-dayMap.set('WED', 4);
-dayMap.set('THU', 5);
-dayMap.set('FRI', 6);
-dayMap.set('SAT', 7);
+dayMap.set("SUN", 1);
+dayMap.set("MON", 2);
+dayMap.set("TUE", 3);
+dayMap.set("WED", 4);
+dayMap.set("THU", 5);
+dayMap.set("FRI", 6);
+dayMap.set("SAT", 7);
 
 export class CronExpression {
   private cronExpression: string = null;
@@ -59,17 +59,17 @@ export class CronExpression {
 
   constructor(cronExpression: string) {
     if (cronExpression === null) {
-      throw new Error('cronExpression cannot be null');
+      throw new Error("cronExpression cannot be null");
     }
     this.cronExpression = cronExpression;
     this.buildExpressionSecondOptional(this.cronExpression.toUpperCase());
   }
 
-  private buildExpressionSecondOptional = function(cronExpression: string): void {
+  private buildExpressionSecondOptional = function (cronExpression: string): void {
     let parsesWithMissingSeconds = false;
     try {
       //assume the expression doesn't contain seconds
-      this.buildExpression('0 ' + cronExpression);
+      this.buildExpression("0 " + cronExpression);
       parsesWithMissingSeconds = true;
     } catch (e) {}
     let parsesWithOriginal = false;
@@ -84,16 +84,16 @@ export class CronExpression {
         throw new Error(e);
       } else {
         this.resetState();
-        this.buildExpression('0 ' + cronExpression);
+        this.buildExpression("0 " + cronExpression);
       }
     }
 
     if (parsesWithMissingSeconds && parsesWithOriginal) {
-      throw new Error('Ambiguous cron expression' + String(-1));
+      throw new Error("Ambiguous cron expression" + String(-1));
     }
   };
 
-  buildExpression = function(cronExpression: string): void {
+  buildExpression = function (cronExpression: string): void {
     this.expressionParsed = true;
     try {
       if (this.seconds === null) {
@@ -120,12 +120,12 @@ export class CronExpression {
 
       let exprOn = SECOND;
 
-      const exprsTok: string[] = cronExpression.split(' ');
+      const exprsTok: string[] = cronExpression.split(" ");
       let len_exprsTok = 0;
       while (len_exprsTok <= exprsTok.length - 1 && exprOn <= YEAR) {
         if (exprsTok[len_exprsTok] != undefined) {
           const expr: string = exprsTok[len_exprsTok].trim();
-          const vTok: string[] = expr.split(',');
+          const vTok: string[] = expr.split(",");
           let len_vTok = 0;
           while (len_vTok <= vTok.length - 1) {
             if (vTok[len_vTok] != undefined) {
@@ -140,11 +140,11 @@ export class CronExpression {
       }
 
       if (exprOn <= DAY_OF_WEEK) {
-        throw new Error('Unexpected end of expression.');
+        throw new Error("Unexpected end of expression.");
       }
 
       if (exprOn <= YEAR) {
-        this.storeExpressionVals(0, '*', YEAR);
+        this.storeExpressionVals(0, "*", YEAR);
       }
       const dow: TreeSet<number> = this.getSet(DAY_OF_WEEK);
 
@@ -159,21 +159,21 @@ export class CronExpression {
       } else if (dayOfWSpec && !dayOfMSpec) {
         // skip
       } else {
-        throw new Error('Specifying both a day-of-week AND a day-of-month parameter is not supported.');
+        throw new Error("Specifying both a day-of-week AND a day-of-month parameter is not supported.");
       }
     } catch (e) {
       throw new Error(e);
     }
   };
 
-  storeExpressionVals = function(pos: number, s: string, type: number): number {
+  storeExpressionVals = function (pos: number, s: string, type: number): number {
     let incr = 0;
     let i: number = this.skipWhiteSpace(pos, s);
     if (i >= s.length) {
       return i;
     }
     let c: string = s.charAt(i);
-    if (c >= 'A' && c <= 'Z' && !(s === 'L') && !(s === 'LW')) {
+    if (c >= "A" && c <= "Z" && !(s === "L") && !(s === "LW")) {
       let sub: string = s.substring(i, i + 3);
       let sVal = -1;
       let eVal = -1;
@@ -184,7 +184,7 @@ export class CronExpression {
         }
         if (s.length > i + 3) {
           c = s.charAt(i + 3);
-          if (c === '-') {
+          if (c === "-") {
             i += 4;
             sub = s.substring(i, i + 3);
             eVal = this.getMonthNumber(sub) + 1;
@@ -200,7 +200,7 @@ export class CronExpression {
         }
         if (s.length > i + 3) {
           c = s.charAt(i + 3);
-          if (c === '-') {
+          if (c === "-") {
             i += 4;
             sub = s.substring(i, i + 3);
             eVal = this.getDayOfWeekNumber(sub);
@@ -208,9 +208,9 @@ export class CronExpression {
               throw new Error("Invalid Day-of-Week value: '" + sub + "'" + String(i));
             }
             if (sVal > eVal) {
-              throw new Error('Invalid Day-of-Week sequence: ' + String(sVal) + ' > ' + String(eVal) + String(i));
+              throw new Error("Invalid Day-of-Week sequence: " + String(sVal) + " > " + String(eVal) + String(i));
             }
-          } else if (c === '#') {
+          } else if (c === "#") {
             try {
               i += 4;
               this.nthdayOfWeek = Number(s.substring(i));
@@ -220,7 +220,7 @@ export class CronExpression {
             } catch (e) {
               throw new Error("A numeric value between 1 and 5 must follow the '#' option" + String(i));
             }
-          } else if (c === 'L') {
+          } else if (c === "L") {
             this.lastdayOfWeek = true;
             i = i + 1;
           }
@@ -235,9 +235,9 @@ export class CronExpression {
       return i + 3;
     }
 
-    if (c === '?') {
+    if (c === "?") {
       i++;
-      if (i + 1 < s.length && s.charAt(i) != ' ' && s.charAt(i + 1) != '\t') {
+      if (i + 1 < s.length && s.charAt(i) != " " && s.charAt(i + 1) != "\t") {
         throw new Error("Illegal character after '?': " + s.charAt(i) + String(i));
       }
       if (type != DAY_OF_WEEK && type != DAY_OF_MONTH) {
@@ -254,21 +254,21 @@ export class CronExpression {
       return i;
     }
 
-    if (c === '*' || c === '/') {
-      if (c === '*' && i + 1 >= s.length) {
+    if (c === "*" || c === "/") {
+      if (c === "*" && i + 1 >= s.length) {
         this.addToSet(ALL_SPEC_INT, -1, incr, type);
         return i + 1;
-      } else if (c === '/' && (i + 1 >= s.length || s.charAt(i + 1) === ' ' || s.charAt(i + 1) === '\t')) {
+      } else if (c === "/" && (i + 1 >= s.length || s.charAt(i + 1) === " " || s.charAt(i + 1) === "\t")) {
         throw new Error("'/' must be followed by an integer." + String(i));
-      } else if (c === '*') {
+      } else if (c === "*") {
         i++;
       }
       c = s.charAt(i);
-      if (c === '/') {
+      if (c === "/") {
         // is an increment specified?
         i++;
         if (i >= s.length) {
-          throw new Error('Unexpected end of string.' + String(i));
+          throw new Error("Unexpected end of string." + String(i));
         }
 
         incr = this.getNumericValue(s, i);
@@ -278,15 +278,15 @@ export class CronExpression {
           i++;
         }
         if (incr > 59 && (type === SECOND || type === MINUTE)) {
-          throw new Error('Increment > 60 : ' + incr + i);
+          throw new Error("Increment > 60 : " + incr + i);
         } else if (incr > 23 && type === HOUR) {
-          throw new Error('Increment > 24 : ' + incr + i);
+          throw new Error("Increment > 24 : " + incr + i);
         } else if (incr > 31 && type === DAY_OF_MONTH) {
-          throw new Error('Increment > 31 : ' + incr + i);
+          throw new Error("Increment > 31 : " + incr + i);
         } else if (incr > 7 && type === DAY_OF_WEEK) {
-          throw new Error('Increment > 7 : ' + incr + i);
+          throw new Error("Increment > 7 : " + incr + i);
         } else if (incr > 12 && type === MONTH) {
-          throw new Error('Increment > 12 : ' + incr + i);
+          throw new Error("Increment > 12 : " + incr + i);
         }
       } else {
         incr = 1;
@@ -294,7 +294,7 @@ export class CronExpression {
 
       this.addToSet(ALL_SPEC_INT, -1, incr, type);
       return i;
-    } else if (c === 'L') {
+    } else if (c === "L") {
       i++;
       if (type === DAY_OF_MONTH) {
         this.lastdayOfMonth = true;
@@ -304,20 +304,20 @@ export class CronExpression {
       }
       if (type === DAY_OF_MONTH && s.length > i) {
         c = s.charAt(i);
-        if (c === 'W') {
+        if (c === "W") {
           this.nearestWeekday = true;
           i++;
         }
       }
       return i;
-    } else if (c >= '0' && c <= '9') {
+    } else if (c >= "0" && c <= "9") {
       let val = Number(c.valueOf());
       i++;
       if (i >= s.length) {
         this.addToSet(val, -1, -1, type);
       } else {
         c = s.charAt(i);
-        if (c >= '0' && c <= '9') {
+        if (c >= "0" && c <= "9") {
           const vs: [number, number] = this.getValue(val, s, i);
           val = vs[1];
           i = vs[0];
@@ -326,19 +326,19 @@ export class CronExpression {
         return i;
       }
     } else {
-      throw new Error('Unexpected character: ' + c + i);
+      throw new Error("Unexpected character: " + c + i);
     }
 
     return i;
   };
 
-  skipWhiteSpace = function(i: number, s: string): number {
-    for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {}
+  skipWhiteSpace = function (i: number, s: string): number {
+    for (; i < s.length && (s.charAt(i) === " " || s.charAt(i) === "\t"); i++) {}
 
     return i;
   };
 
-  getMonthNumber = function(s: string): number {
+  getMonthNumber = function (s: string): number {
     const integer: number = monthMap.get(s);
 
     if (integer === undefined) {
@@ -348,7 +348,7 @@ export class CronExpression {
     return integer;
   };
 
-  getDayOfWeekNumber = function(s: string): number {
+  getDayOfWeekNumber = function (s: string): number {
     const integer: number = dayMap.get(s);
 
     if (integer === undefined) {
@@ -357,28 +357,28 @@ export class CronExpression {
 
     return integer;
   };
-  addToSet = function(val: number, end: number, incr: number, type: number) {
+  addToSet = function (val: number, end: number, incr: number, type: number) {
     const set = this.getSet(type);
 
     if (type === SECOND || type === MINUTE) {
       if ((val < 0 || val > 59 || end > 59) && val != ALL_SPEC_INT) {
-        throw new Error('Minute and Second values must be between 0 and 59' + String(-1));
+        throw new Error("Minute and Second values must be between 0 and 59" + String(-1));
       }
     } else if (type === HOUR) {
       if ((val < 0 || val > 23 || end > 23) && val != ALL_SPEC_INT) {
-        throw new Error('Hour values must be between 0 and 23' + String(-1));
+        throw new Error("Hour values must be between 0 and 23" + String(-1));
       }
     } else if (type === DAY_OF_MONTH) {
       if ((val < 1 || val > 31 || end > 31) && val != ALL_SPEC_INT && val != NO_SPEC_INT) {
-        throw new Error('Day of month values must be between 1 and 31' + String(-1));
+        throw new Error("Day of month values must be between 1 and 31" + String(-1));
       }
     } else if (type === MONTH) {
       if ((val < 1 || val > 12 || end > 12) && val != ALL_SPEC_INT) {
-        throw new Error('Month values must be between 1 and 12' + String(-1));
+        throw new Error("Month values must be between 1 and 12" + String(-1));
       }
     } else if (type === DAY_OF_WEEK) {
       if ((val === 0 || val > 7 || end > 7) && val != ALL_SPEC_INT && val != NO_SPEC_INT) {
-        throw new Error('Day-of-Week values must be between 1 and 7' + String(-1));
+        throw new Error("Day-of-Week values must be between 1 and 7" + String(-1));
       }
     }
 
@@ -448,7 +448,7 @@ export class CronExpression {
     }
   };
 
-  getSet = function(type: number) {
+  getSet = function (type: number) {
     switch (type) {
       case SECOND:
         return this.seconds;
@@ -468,10 +468,10 @@ export class CronExpression {
   };
 
   // get the string value
-  getValue = function(v: number, s: string, i: number) {
+  getValue = function (v: number, s: string, i: number) {
     let c: string = s.charAt(i);
     let s1 = String(v);
-    while (c >= '0' && c <= '9') {
+    while (c >= "0" && c <= "9") {
       s1 = s1.concat(c);
       i++;
       if (i >= s.length) {
@@ -485,17 +485,17 @@ export class CronExpression {
     return val;
   };
 
-  getNumericValue = function(s: string, i: number): number {
+  getNumericValue = function (s: string, i: number): number {
     const endOfVal = this.findNextWhiteSpace(i, s);
     const val: string = s.substring(i, endOfVal);
     return Number(val);
   };
 
-  findNextWhiteSpace = function(i: number, s: string) {
-    for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {}
+  findNextWhiteSpace = function (i: number, s: string) {
+    for (; i < s.length && (s.charAt(i) != " " || s.charAt(i) != "\t"); i++) {}
     return i;
   };
-  checkNext = function(pos: number, s: string, val: number, type: number): number {
+  checkNext = function (pos: number, s: string, val: number, type: number): number {
     let end = -1;
     let i = pos;
 
@@ -506,11 +506,11 @@ export class CronExpression {
 
     let c: string = s.charAt(pos);
 
-    if (c === 'L') {
+    if (c === "L") {
       if (type === DAY_OF_WEEK) {
         this.lastdayOfWeek = true;
       } else {
-        throw new Error("'L' option is not valid here. (pos=" + i + ')' + i);
+        throw new Error("'L' option is not valid here. (pos=" + i + ")" + i);
       }
       const set = this.getSet(type);
       set.add(val);
@@ -518,11 +518,11 @@ export class CronExpression {
       return i;
     }
 
-    if (c === 'W') {
+    if (c === "W") {
       if (type === DAY_OF_MONTH) {
         this.nearestWeekday = true;
       } else {
-        throw new Error("'W' option is not valid here. (pos=" + i + ')' + i);
+        throw new Error("'W' option is not valid here. (pos=" + i + ")" + i);
       }
       const set = this.getSet(type);
       set.add(val);
@@ -530,9 +530,9 @@ export class CronExpression {
       return i;
     }
 
-    if (c === '#') {
+    if (c === "#") {
       if (type != DAY_OF_WEEK) {
-        throw new Error("'#' option is not valid here. (pos=" + i + ')' + i);
+        throw new Error("'#' option is not valid here. (pos=" + i + ")" + i);
       }
       i++;
       try {
@@ -550,7 +550,7 @@ export class CronExpression {
       return i;
     }
 
-    if (c === '-') {
+    if (c === "-") {
       i++;
       c = s.charAt(i);
       const v = Number(c);
@@ -561,13 +561,13 @@ export class CronExpression {
         return i;
       }
       c = s.charAt(i);
-      if (c >= '0' && c <= '9') {
+      if (c >= "0" && c <= "9") {
         const vs: [number, number] = this.getValue(v, s, i);
         const v1 = vs[1];
         end = v1;
         i = vs[0];
       }
-      if (i < s.length && (c = s.charAt(i)) === '/') {
+      if (i < s.length && (c = s.charAt(i)) === "/") {
         i++;
         c = s.charAt(i);
         const v2 = Number(c);
@@ -577,7 +577,7 @@ export class CronExpression {
           return i;
         }
         c = s.charAt(i);
-        if (c >= '0' && c <= '9') {
+        if (c >= "0" && c <= "9") {
           const vs: [number, number] = this.getValue(v2, s, i);
           const v3 = vs[1];
           this.addToSet(val, end, v3, type);
@@ -593,7 +593,7 @@ export class CronExpression {
       }
     }
 
-    if (c === '/') {
+    if (c === "/") {
       i++;
       c = s.charAt(i);
       const v2 = Number(c);
@@ -603,7 +603,7 @@ export class CronExpression {
         return i;
       }
       c = s.charAt(i);
-      if (c >= '0' && c <= '9') {
+      if (c >= "0" && c <= "9") {
         const vs: [number, number] = this.getValue(v2, s, i);
         const v3 = vs[1];
         this.addToSet(val, end, v3, type);
@@ -619,7 +619,7 @@ export class CronExpression {
     return i;
   };
 
-  resetState = function() {
+  resetState = function () {
     // reset internal state
     this.expressionParsed = false;
 

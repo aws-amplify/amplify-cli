@@ -1,10 +1,10 @@
-import * as fs from 'fs-extra';
-import { v4 as uuid } from 'uuid';
-import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import * as fs from "fs-extra";
+import { v4 as uuid } from "uuid";
+import _ from "lodash";
+import { JSONUtilities } from "amplify-cli-core";
 
-import { Context } from '../domain/context';
-import { getPath } from './getPath';
+import { Context } from "../domain/context";
+import { getPath } from "./getPath";
 
 export function init(context: Context) {
   const configPath = getPath(context);
@@ -14,7 +14,7 @@ export function init(context: Context) {
       Config.Instance.setValues(savedConfig);
       return getConfig();
     } catch (ex) {
-      context.print.warning('Corrupted Config generating new config');
+      context.print.warning("Corrupted Config generating new config");
     }
   }
   write(context, Config.Instance);

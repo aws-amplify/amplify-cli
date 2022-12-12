@@ -14,41 +14,38 @@ import {
   getTransformConfig,
   initJSProjectWithProfile,
   setCustomRolesConfig,
-  updateApiSchema
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  existsSync,
-  readFileSync
-} from 'fs';
-import _ from 'lodash';
-import * as path from 'path';
+  updateApiSchema,
+} from "@aws-amplify/amplify-e2e-core";
+import { existsSync, readFileSync } from "fs";
+import _ from "lodash";
+import * as path from "path";
 
-const providerName = 'awscloudformation';
+const providerName = "awscloudformation";
 
 // to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 // to deal with subscriptions in node env
-(global as any).WebSocket = require('ws');
+(global as any).WebSocket = require("ws");
 
-describe('amplify add api (GraphQL)', () => {
+describe("amplify add api (GraphQL)", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('graphql-api');
+    projRoot = await createNewProjectDir("graphql-api");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a datastore enabled project and then remove datastore config in update', async () => {
-    const name = 'withoutdatastore';
+  it("init a datastore enabled project and then remove datastore config in update", async () => {
+    const name = "withoutdatastore";
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await updateApiSchema(projRoot, name, "simple_model.graphql");
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -74,31 +71,31 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfigWithDS).toBeDefined();
     expect(transformConfigWithDS.ResolverConfig).toBeDefined();
     expect(transformConfigWithDS.ResolverConfig.project).toBeDefined();
-    expect(transformConfigWithDS.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
-    expect(transformConfigWithDS.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfigWithDS.ResolverConfig.project.ConflictHandler).toEqual("AUTOMERGE");
+    expect(transformConfigWithDS.ResolverConfig.project.ConflictDetection).toEqual("VERSION");
   });
 
-  it('init a project and add custom iam roles - local test with gql v2', async () => {
-    const name = 'customadminroles';
+  it("init a project and add custom iam roles - local test with gql v2", async () => {
+    const name = "customadminroles";
     await initJSProjectWithProfile(projRoot, { name });
-    await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
-    updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
+    await addApi(projRoot, { transformerVersion: 2, IAM: {}, "Amazon Cognito User Pool": {} });
+    updateApiSchema(projRoot, name, "cognito_simple_model.graphql");
     await apiGqlCompile(projRoot);
     const createResolver = path.join(
       projRoot,
-      'amplify',
-      'backend',
-      'api',
+      "amplify",
+      "backend",
+      "api",
       name,
-      'build',
-      'resolvers',
-      'Mutation.createTodo.auth.1.req.vtl',
+      "build",
+      "resolvers",
+      "Mutation.createTodo.auth.1.req.vtl"
     );
     const beforeAdminConfig = readFileSync(createResolver).toString();
     expect(beforeAdminConfig).toMatchSnapshot();
 
     const customRolesConfig = {
-      adminRoleNames: ['myAdminRoleName'],
+      adminRoleNames: ["myAdminRoleName"],
     };
     setCustomRolesConfig(projRoot, name, customRolesConfig);
     await apiGqlCompile(projRoot);
@@ -107,28 +104,28 @@ describe('amplify add api (GraphQL)', () => {
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
   });
 
-  it('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
-    const name = 'customadminroles';
+  it("init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled", async () => {
+    const name = "customadminroles";
     await initJSProjectWithProfile(projRoot, { name });
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useSubUsernameForDefaultIdentityClaim', false);
-    await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
-    updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
+    await addFeatureFlag(projRoot, "graphqltransformer", "useSubUsernameForDefaultIdentityClaim", false);
+    await addApi(projRoot, { transformerVersion: 2, IAM: {}, "Amazon Cognito User Pool": {} });
+    updateApiSchema(projRoot, name, "cognito_simple_model.graphql");
     await apiGqlCompile(projRoot);
     const createResolver = path.join(
       projRoot,
-      'amplify',
-      'backend',
-      'api',
+      "amplify",
+      "backend",
+      "api",
       name,
-      'build',
-      'resolvers',
-      'Mutation.createTodo.auth.1.req.vtl',
+      "build",
+      "resolvers",
+      "Mutation.createTodo.auth.1.req.vtl"
     );
     const beforeAdminConfig = readFileSync(createResolver).toString();
     expect(beforeAdminConfig).toMatchSnapshot();
 
     const customRolesConfig = {
-      adminRoleNames: ['myAdminRoleName'],
+      adminRoleNames: ["myAdminRoleName"],
     };
     setCustomRolesConfig(projRoot, name, customRolesConfig);
     await apiGqlCompile(projRoot);

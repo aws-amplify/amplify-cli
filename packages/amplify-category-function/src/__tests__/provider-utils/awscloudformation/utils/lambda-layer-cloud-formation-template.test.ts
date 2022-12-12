@@ -1,38 +1,38 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
-import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
-import { generateLayerCfnObj } from '../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template';
-import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { pathManager, stateManager } from "amplify-cli-core";
+import { ServiceName } from "../../../../provider-utils/awscloudformation/utils/constants";
+import { generateLayerCfnObj } from "../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template";
+import { isMultiEnvLayer } from "../../../../provider-utils/awscloudformation/utils/layerHelpers";
 import {
   LayerParameters,
   LayerPermission,
   LayerVersionCfnMetadata,
   PermissionEnum,
-} from '../../../../provider-utils/awscloudformation/utils/layerParams';
+} from "../../../../provider-utils/awscloudformation/utils/layerParams";
 
-jest.mock('amplify-cli-core');
+jest.mock("amplify-cli-core");
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
-pathManager_mock.getResourceDirectoryPath.mockReturnValue('fakeProject/amplify/backend/myLayer/');
-stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'mock' });
+pathManager_mock.getResourceDirectoryPath.mockReturnValue("fakeProject/amplify/backend/myLayer/");
+stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: "mock" });
 
-jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
+jest.mock("../../../../provider-utils/awscloudformation/utils/layerHelpers");
 const isMultiEnvLayer_mock = isMultiEnvLayer as jest.MockedFunction<typeof isMultiEnvLayer>;
 isMultiEnvLayer_mock.mockImplementation(jest.fn(() => true));
 
 const parameters_stub: LayerParameters = {
   build: true,
-  layerName: 'myLayer',
+  layerName: "myLayer",
   permissions: [{ type: PermissionEnum.Private }],
   providerContext: {
-    provider: 'awscloudformation',
-    projectName: 'project',
+    provider: "awscloudformation",
+    projectName: "project",
     service: ServiceName.LambdaLayer,
   },
   runtimes: [
     {
-      name: 'NodeJS',
-      value: 'nodejs',
-      cloudTemplateValues: ['nodejs14x'],
+      name: "NodeJS",
+      value: "nodejs",
+      cloudTemplateValues: ["nodejs14x"],
     },
   ],
 };
@@ -41,20 +41,20 @@ const parameters_stub: LayerParameters = {
 function validateParameters(layerCfn) {
   expect(layerCfn.Parameters).toStrictEqual({
     env: {
-      Type: 'String',
+      Type: "String",
     },
     deploymentBucketName: {
-      Type: 'String',
+      Type: "String",
     },
     s3Key: {
-      Type: 'String',
+      Type: "String",
     },
     description: {
-      Type: 'String',
-      Default: '',
+      Type: "String",
+      Default: "",
     },
     runtimes: {
-      Type: 'List<String>',
+      Type: "List<String>",
     },
   });
 }
@@ -63,14 +63,14 @@ function validateOutput(layerCfn) {
   expect(layerCfn.Outputs.Arn.Value).toBeDefined();
 }
 
-describe('test layer CFN generation functions', () => {
+describe("test layer CFN generation functions", () => {
   beforeAll(() => {
-    jest.mock('amplify-cli-core', () => ({
+    jest.mock("amplify-cli-core", () => ({
       stateManager: {
-        getLocalEnvInfo: jest.fn().mockReturnValue('testenv'),
+        getLocalEnvInfo: jest.fn().mockReturnValue("testenv"),
       },
       pathManager: {
-        getBackendDirPath: jest.fn().mockReturnValue('..'),
+        getBackendDirPath: jest.fn().mockReturnValue(".."),
       },
       JSONUtilities: {
         readJson: jest.fn().mockReturnValue([]),
@@ -78,7 +78,7 @@ describe('test layer CFN generation functions', () => {
     }));
   });
 
-  it('should generate the expected CFN for a newly created LL resource', () => {
+  it("should generate the expected CFN for a newly created LL resource", () => {
     const layerCfn = generateLayerCfnObj(true, parameters_stub);
     validateParameters(layerCfn);
     validateOutput(layerCfn);
@@ -86,38 +86,38 @@ describe('test layer CFN generation functions', () => {
   });
 
   const fakeLayerCfnMeta: LayerVersionCfnMetadata = {
-    CompatibleRuntimes: ['nodejs14x'],
-    Description: 'description',
-    LayerVersionArn: 'fakeArn:1',
-    LogicalName: 'fakeLayer12345',
+    CompatibleRuntimes: ["nodejs14x"],
+    Description: "description",
+    LayerVersionArn: "fakeArn:1",
+    LogicalName: "fakeLayer12345",
     Version: 1,
     Content: {
-      S3Key: 's3key',
-      S3Bucket: 's3bucket',
+      S3Key: "s3key",
+      S3Bucket: "s3bucket",
     },
     legacyLayer: false,
     permissions: [{ type: PermissionEnum.Private }],
   };
 
-  it('should generate the expected CFN for an existing LL resource', () => {
+  it("should generate the expected CFN for an existing LL resource", () => {
     const layerCfn = generateLayerCfnObj(false, parameters_stub, [fakeLayerCfnMeta]);
     validateParameters(layerCfn);
     validateOutput(layerCfn);
     expect(Object.keys(layerCfn.Resources).length).toBe(2); // 1 LayerVersion, 1 LayerVersionPermission
   });
 
-  it('should generate the expected CFN for an existing LL resource and new version', () => {
+  it("should generate the expected CFN for an existing LL resource and new version", () => {
     const layerCfn = generateLayerCfnObj(true, parameters_stub, [fakeLayerCfnMeta]);
     validateParameters(layerCfn);
     validateOutput(layerCfn);
     expect(Object.keys(layerCfn.Resources).length).toBe(4); // 2 LayerVersions, 2 LayerVersionPermissions
   });
 
-  it('should generate the expected CFN for an existing LL version and new version with complex permissions', () => {
+  it("should generate the expected CFN for an existing LL version and new version with complex permissions", () => {
     let permissions: LayerPermission[] = [
       { type: PermissionEnum.Private },
-      { type: PermissionEnum.AwsAccounts, accounts: ['123456789012', '098765432112'] },
-      { type: PermissionEnum.AwsOrg, orgs: ['o-123456789012', 'o-098765432112'] },
+      { type: PermissionEnum.AwsAccounts, accounts: ["123456789012", "098765432112"] },
+      { type: PermissionEnum.AwsOrg, orgs: ["o-123456789012", "o-098765432112"] },
     ];
     fakeLayerCfnMeta.permissions = permissions;
     parameters_stub.permissions = permissions;
@@ -127,12 +127,12 @@ describe('test layer CFN generation functions', () => {
     expect(Object.keys(layerCfn.Resources).length).toBe(12); // 2 LayerVersions, 10 LayerVersionPermissions
   });
 
-  it('should generate the expected CFN for an existing LL version and new version with public permission', () => {
+  it("should generate the expected CFN for an existing LL version and new version with public permission", () => {
     // Public should override other permissions
     let permissions: LayerPermission[] = [
       { type: PermissionEnum.Private },
-      { type: PermissionEnum.AwsAccounts, accounts: ['123456789012', '098765432112'] },
-      { type: PermissionEnum.AwsOrg, orgs: ['o-123456789012', 'o-098765432112'] },
+      { type: PermissionEnum.AwsAccounts, accounts: ["123456789012", "098765432112"] },
+      { type: PermissionEnum.AwsOrg, orgs: ["o-123456789012", "o-098765432112"] },
       { type: PermissionEnum.Public },
     ];
     fakeLayerCfnMeta.permissions = permissions;

@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import * as path from "path";
 import {
   deleteProject,
   amplifyOverrideRoot,
@@ -7,16 +7,16 @@ import {
   deleteProjectDir,
   getProjectMeta,
   amplifyPushOverride,
-} from '@aws-amplify/amplify-e2e-core';
-import { JSONUtilities } from 'amplify-cli-core';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from '../../../migration-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { JSONUtilities } from "amplify-cli-core";
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from "../../../migration-helpers";
 
-describe('amplify init', () => {
+describe("amplify init", () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: 'unintialized' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: "unintialized" };
+    const migrateToVersion = { v: "unintialized" };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
@@ -24,7 +24,7 @@ describe('amplify init', () => {
   });
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('init');
+    projRoot = await createNewProjectDir("init");
   });
 
   afterEach(async () => {
@@ -32,22 +32,22 @@ describe('amplify init', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('should init the project and override root and push', async () => {
+  it("should init the project and override root and push", async () => {
     await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     // turn ON feature flag
-    const cliJsonPath = path.join(projRoot, 'amplify', 'cli.json');
+    const cliJsonPath = path.join(projRoot, "amplify", "cli.json");
     const cliJSON = JSONUtilities.readJson(cliJsonPath);
     const modifiedCliJson = Object.assign(cliJSON, { overrides: { project: true } });
     JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
     // override new env
     await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', '..', '..', 'amplify-e2e-tests', 'overrides', 'override-root.ts');
-    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
+    const srcOverrideFilePath = path.join(__dirname, "..", "..", "..", "..", "..", "amplify-e2e-tests", "overrides", "override-root.ts");
+    const destOverrideFilePath = path.join(projRoot, "amplify", "backend", "awscloudformation", "override.ts");
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot, true);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
-    expect(newEnvMeta.AuthRoleName).toContain('mockRole');
+    expect(newEnvMeta.AuthRoleName).toContain("mockRole");
   });
 });

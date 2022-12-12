@@ -11,15 +11,13 @@ import {
   initJSProjectWithProfile,
   removeHeadlessStorage,
   updateHeadlessStorage,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  AddStorageRequest, CrudOperation, RemoveStorageRequest, UpdateStorageRequest,
-} from 'amplify-headless-interface';
-import { v4 as uuid } from 'uuid';
+} from "@aws-amplify/amplify-e2e-core";
+import { AddStorageRequest, CrudOperation, RemoveStorageRequest, UpdateStorageRequest } from "amplify-headless-interface";
+import { v4 as uuid } from "uuid";
 
 async function validateS3Bucket(projRoot: string) {
   const meta = getProjectMeta(projRoot);
-  const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+  const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
   expect(bucketName).toBeDefined();
   expect(region).toBeDefined();
@@ -28,10 +26,10 @@ async function validateS3Bucket(projRoot: string) {
   expect(bucketExists).toMatchObject({});
 }
 
-describe('amplify add/update storage(S3) headlessly', () => {
+describe("amplify add/update storage(S3) headlessly", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('s3-test');
+    projRoot = await createNewProjectDir("s3-test");
   });
 
   afterEach(async () => {
@@ -39,15 +37,15 @@ describe('amplify add/update storage(S3) headlessly', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add/update/remove S3 headlessly', async () => {
-    const [shortId] = uuid().split('-');
-    const resourceName = 'headlessTest1';
+  it("init a project and add/update/remove S3 headlessly", async () => {
+    const [shortId] = uuid().split("-");
+    const resourceName = "headlessTest1";
     const bucketName = `storageintegtest${shortId}`;
 
     const addStorageRequest = {
       version: 1,
       serviceConfiguration: {
-        serviceName: 'S3',
+        serviceName: "S3",
         permissions: {
           auth: [CrudOperation.CREATE_AND_UPDATE, CrudOperation.DELETE, CrudOperation.READ],
         },
@@ -59,7 +57,7 @@ describe('amplify add/update storage(S3) headlessly', () => {
     const updateStorageRequest = {
       version: 1,
       serviceModification: {
-        serviceName: 'S3',
+        serviceName: "S3",
         permissions: {
           auth: [CrudOperation.READ],
         },
@@ -77,16 +75,16 @@ describe('amplify add/update storage(S3) headlessly', () => {
     await validateS3Bucket(projRoot);
   });
 
-  it('init a project and headlessly add/update/remove S3 with Lambda trigger', async () => {
-    const [shortId] = uuid().split('-');
-    const resourceName = 'headlessTest2';
+  it("init a project and headlessly add/update/remove S3 with Lambda trigger", async () => {
+    const [shortId] = uuid().split("-");
+    const resourceName = "headlessTest2";
     const bucketName = `storageintegtest${shortId}`;
     const lambdaTriggerName = `lambdaTrigger${shortId}`;
 
     const addStorageRequest = {
       version: 1,
       serviceConfiguration: {
-        serviceName: 'S3',
+        serviceName: "S3",
         permissions: {
           auth: [CrudOperation.CREATE_AND_UPDATE, CrudOperation.READ],
           guest: [CrudOperation.READ],
@@ -98,7 +96,7 @@ describe('amplify add/update storage(S3) headlessly', () => {
         bucketName,
         resourceName,
         lambdaTrigger: {
-          mode: 'new',
+          mode: "new",
           name: lambdaTriggerName,
         },
       },
@@ -107,7 +105,7 @@ describe('amplify add/update storage(S3) headlessly', () => {
     const updateStorageRequest = {
       version: 1,
       serviceModification: {
-        serviceName: 'S3',
+        serviceName: "S3",
         permissions: {
           auth: [CrudOperation.READ],
           groups: {
@@ -117,7 +115,7 @@ describe('amplify add/update storage(S3) headlessly', () => {
         },
         resourceName,
         lambdaTrigger: {
-          mode: 'existing',
+          mode: "existing",
           name: lambdaTriggerName,
         },
       },
@@ -126,7 +124,7 @@ describe('amplify add/update storage(S3) headlessly', () => {
     const removeStorageRequest = {
       version: 1,
       serviceConfiguration: {
-        serviceName: 'S3',
+        serviceName: "S3",
         resourceName,
       },
     };

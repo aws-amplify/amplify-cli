@@ -1,7 +1,7 @@
-import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { IS3Service } from 'amplify-util-import';
-import S3, { Bucket } from 'aws-sdk/clients/s3';
-import { loadConfiguration } from '../configuration-manager';
+import { $TSAny, $TSContext, AmplifyFault } from "amplify-cli-core";
+import { IS3Service } from "amplify-util-import";
+import S3, { Bucket } from "aws-sdk/clients/s3";
+import { loadConfiguration } from "../configuration-manager";
 
 export const createS3Service = async (context: $TSContext, options: $TSAny): Promise<S3Service> => {
   let credentials = {};
@@ -44,12 +44,16 @@ export class S3Service implements IS3Service {
       // If the return object has no keys then it means successful empty object was returned.
       return Object.keys(response).length === 0;
     } catch (error) {
-      if (error.code === 'NotFound') {
+      if (error.code === "NotFound") {
         return false;
       }
-      throw new AmplifyFault('UnknownFault', {
-        message: error.message,
-      }, error);
+      throw new AmplifyFault(
+        "UnknownFault",
+        {
+          message: error.message,
+        },
+        error
+      );
     }
   }
 
@@ -62,8 +66,8 @@ export class S3Service implements IS3Service {
     // For us-east-1 buckets the LocationConstraint is always empty, we have to return a
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
-    if (response.LocationConstraint === undefined || response.LocationConstraint === '' || response.LocationConstraint === null) {
-      return 'us-east-1';
+    if (response.LocationConstraint === undefined || response.LocationConstraint === "" || response.LocationConstraint === null) {
+      return "us-east-1";
     }
     return response.LocationConstraint;
   }

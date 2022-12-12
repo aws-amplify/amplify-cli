@@ -1,39 +1,39 @@
-import { getFrontendPlugins } from '../../../extensions/amplify-helpers/get-frontend-plugins';
+import { getFrontendPlugins } from "../../../extensions/amplify-helpers/get-frontend-plugins";
 
-describe('get-frontend-plugins', () => {
-  it('returns map of frontend plugins when frontend plugin exists', () => {
+describe("get-frontend-plugins", () => {
+  it("returns map of frontend plugins when frontend plugin exists", () => {
     const context = {
       runtime: {
         plugins: [
           {
-            name: 'amplify-frontend-javascript',
-            pluginType: 'frontend',
-            pluginName: 'javascript',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-javascript',
+            name: "amplify-frontend-javascript",
+            pluginType: "frontend",
+            pluginName: "javascript",
+            directory: "/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-javascript",
           },
           {
-            name: 'amplify-frontend-flutter',
-            pluginType: 'frontend',
-            pluginName: 'flutter',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter',
+            name: "amplify-frontend-flutter",
+            pluginType: "frontend",
+            pluginName: "flutter",
+            directory: "/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter",
           },
           {
-            name: '@aws-amplify/amplify-category-auth',
-            pluginType: 'category',
-            pluginName: 'auth',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth',
+            name: "@aws-amplify/amplify-category-auth",
+            pluginType: "category",
+            pluginName: "auth",
+            directory: "/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth",
           },
         ],
       },
     };
     const plugins = getFrontendPlugins(context as any);
     expect(plugins).toEqual({
-      javascript: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-javascript',
-      flutter: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter',
+      javascript: "/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-javascript",
+      flutter: "/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter",
     });
   });
 
-  it('throw error when no frontend plugin exists', () => {
+  it("throw error when no frontend plugin exists", () => {
     const context = {
       print: {
         info: jest.fn(),
@@ -42,10 +42,10 @@ describe('get-frontend-plugins', () => {
       runtime: {
         plugins: [
           {
-            name: '@aws-amplify/amplify-category-auth',
-            pluginType: 'category',
-            pluginName: 'auth',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth',
+            name: "@aws-amplify/amplify-category-auth",
+            pluginType: "category",
+            pluginName: "auth",
+            directory: "/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth",
           },
         ],
       },

@@ -9,7 +9,7 @@ import {
   getAppId,
   initJSProjectWithProfile,
   addS3StorageWithSettings,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   AuthProjectDetails,
   createIDPAndUserPoolWithOAuthSettings,
@@ -21,13 +21,13 @@ import {
   getShortId,
   headlessPull,
   importIdentityPoolAndUserPool,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('auth import identity pool and userpool', () => {
-  const projectPrefix = 'auimpidup';
-  const ogProjectPrefix = 'ogauimpidup';
+describe("auth import identity pool and userpool", () => {
+  const projectPrefix = "auimpidup";
+  const ogProjectPrefix = "ogauimpidup";
 
   const projectSettings = {
     name: projectPrefix,
@@ -38,7 +38,7 @@ describe('auth import identity pool and userpool', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog2',
+    name: "dummyog2",
   };
 
   // OG is the CLI project that creates the user pool to import by other test projects
@@ -102,13 +102,13 @@ describe('auth import identity pool and userpool', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('auth headless pull successful', async () => {
+  it("auth headless pull successful", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
 
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     await amplifyPushAuth(projectRoot);
 
@@ -120,12 +120,12 @@ describe('auth import identity pool and userpool', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('authidp-pull');
+      projectRootPull = await createNewProjectDir("authidp-pull");
 
-      const envName = 'integtest';
+      const envName = "integtest";
       const providersParam = {
         awscloudformation: {
-          configLevel: 'project',
+          configLevel: "project",
           useProfile: true,
           profileName,
         },
@@ -142,7 +142,7 @@ describe('auth import identity pool and userpool', () => {
 
       await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
 
-      await amplifyStatus(projectRoot, 'No Change');
+      await amplifyStatus(projectRoot, "No Change");
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
@@ -152,12 +152,12 @@ describe('auth import identity pool and userpool', () => {
     }
   });
 
-  it('auth import, storage auth/guest access, push successful', async () => {
+  it("auth import, storage auth/guest access, push successful", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
     await addS3StorageWithSettings(projectRoot, {});
     await amplifyPushAuth(projectRoot);
 
-    await amplifyStatus(projectRoot, 'No Change');
+    await amplifyStatus(projectRoot, "No Change");
   });
 });

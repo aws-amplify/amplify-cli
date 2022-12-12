@@ -1,15 +1,15 @@
 //special handling needed to test prediction
 //This test will faile due to a possible AppSync bug, see details below the test code
-import path from 'path';
-import fs from 'fs-extra';
-import aws from 'aws-sdk';
-import gql from 'graphql-tag';
-import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import path from "path";
+import fs from "fs-extra";
+import aws from "aws-sdk";
+import gql from "graphql-tag";
+import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from "@aws-amplify/amplify-e2e-core";
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-import { updateSchemaInTestProject } from '../common';
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from "../authHelper";
+import { updateSchemaInTestProject } from "../common";
 
-const imageKey = 'public/myimage.jpg';
+const imageKey = "public/myimage.jpg";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir);
@@ -28,7 +28,7 @@ export async function runTest(projectDir: string, testModule: any) {
   try {
     const result = await appSyncClient.query({
       query: gql(query),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(result).toBeDefined();
@@ -41,7 +41,7 @@ export async function runTest(projectDir: string, testModule: any) {
 }
 
 async function uploadImageFile(projectDir: string) {
-  const imageFilePath = path.join(__dirname, 'predictions-usage-image.jpg');
+  const imageFilePath = path.join(__dirname, "predictions-usage-image.jpg");
   const s3Client = new aws.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -51,7 +51,7 @@ async function uploadImageFile(projectDir: string) {
 
   const amplifyMeta = getBackendAmplifyMeta(projectDir);
   const storageResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
-    return amplifyMeta.storage[key].service === 'S3';
+    return amplifyMeta.storage[key].service === "S3";
   }) as any;
 
   const bucketName = amplifyMeta.storage[storageResourceName].output.BucketName;
@@ -61,8 +61,8 @@ async function uploadImageFile(projectDir: string) {
     Bucket: bucketName,
     Key: imageKey,
     Body: fileStream,
-    ContentType: 'image/jpeg',
-    ACL: 'public-read',
+    ContentType: "image/jpeg",
+    ACL: "public-read",
   };
   await s3Client.upload(uploadParams).promise();
 }

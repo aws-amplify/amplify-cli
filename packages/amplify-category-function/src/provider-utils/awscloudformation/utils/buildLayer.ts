@@ -1,10 +1,10 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager, BuildRequest, BuildType } from 'amplify-function-plugin-interface';
-import * as path from 'path';
-import { categoryName } from '../../../constants';
-import { BuildRequestMeta } from './buildFunction';
-import { ServiceName } from './constants';
-import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
+import { $TSContext, pathManager } from "amplify-cli-core";
+import { FunctionRuntimeLifecycleManager, BuildRequest, BuildType } from "amplify-function-plugin-interface";
+import * as path from "path";
+import { categoryName } from "../../../constants";
+import { BuildRequestMeta } from "./buildFunction";
+import { ServiceName } from "./constants";
+import { LayerConfiguration, loadLayerConfigurationFile } from "./layerConfiguration";
 
 export const buildLayer = async (context: $TSContext, { resourceName, lastBuildTimestamp }: BuildRequestMeta) => {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(resourceName);
@@ -14,11 +14,11 @@ export const buildLayer = async (context: $TSContext, { resourceName, lastBuildT
   let rebuilt = false;
 
   for (const runtime of runtimes) {
-    const layerCodePath = path.join(resourcePath, 'lib', runtime.layerExecutablePath);
+    const layerCodePath = path.join(resourcePath, "lib", runtime.layerExecutablePath);
 
     const runtimePlugin: FunctionRuntimeLifecycleManager = (await context.amplify.loadRuntimePlugin(
       context,
-      runtime.runtimePluginId,
+      runtime.runtimePluginId
     )) as FunctionRuntimeLifecycleManager;
 
     const depCheck = await runtimePlugin.checkDependencies(runtime.value);

@@ -1,17 +1,15 @@
-import * as fs from 'fs-extra';
-import { join } from 'path';
-import sequential from 'promise-sequential';
-import {
-  CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
-} from 'amplify-cli-core';
-import _ from 'lodash';
-import { printer, prompter } from 'amplify-prompts';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
-import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
-import { initializeEnv } from '../initialize-env';
-import { DebugConfig } from '../app-config/debug-config';
+import * as fs from "fs-extra";
+import { join } from "path";
+import sequential from "promise-sequential";
+import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny } from "amplify-cli-core";
+import _ from "lodash";
+import { printer, prompter } from "amplify-prompts";
+import { getFrontendPlugins } from "../extensions/amplify-helpers/get-frontend-plugins";
+import { getProviderPlugins } from "../extensions/amplify-helpers/get-provider-plugins";
+import { insertAmplifyIgnore } from "../extensions/amplify-helpers/git-manager";
+import { writeReadMeFile } from "../extensions/amplify-helpers/docs-manager";
+import { initializeEnv } from "../initialize-env";
+import { DebugConfig } from "../app-config/debug-config";
 
 /**
  * Executes after headless init
@@ -66,7 +64,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
-    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
+    const result = await prompter.yesOrNo("Help improve Amplify CLI by sharing non sensitive configurations on failures", false);
     const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
     DebugConfig.Instance.setAndWriteShareProject(actualResult);
   }
@@ -94,9 +92,9 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
   const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
 
   if (!appId) {
-    printer.warn('The maximum number of apps that you can create with Amplify in this region has likely been reached:');
-    printer.info('For more information on Amplify Service Quotas, see:');
-    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify');
+    printer.warn("The maximum number of apps that you can create with Amplify in this region has likely been reached:");
+    printer.info("For more information on Amplify Service Quotas, see:");
+    printer.info("https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify");
     printer.blankLine();
   }
 };
@@ -123,17 +121,17 @@ const generateLocalTagsFile = (context: $TSContext): void => {
     // Preserve existing tags if present
     const tags = stateManager.getProjectTags(projectPath);
 
-    if (!tags.find(t => t.Key === 'user:Stack')) {
+    if (!tags.find((t) => t.Key === "user:Stack")) {
       tags.push({
-        Key: 'user:Stack',
-        Value: '{project-env}',
+        Key: "user:Stack",
+        Value: "{project-env}",
       });
     }
 
-    if (!tags.find(t => t.Key === 'user:Application')) {
+    if (!tags.find((t) => t.Key === "user:Application")) {
       tags.push({
-        Key: 'user:Application',
-        Value: '{project-name}',
+        Key: "user:Application",
+        Value: "{project-name}",
       });
     }
 
@@ -216,25 +214,25 @@ const generateReadMeFile = (context: $TSContext): void => {
 
 const generateHooksSampleDirectory = (context: $TSContext): void => {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sample-hooks');
+  const sampleHookScriptsDirPath = join(__dirname, "..", "..", "resources", "sample-hooks");
 
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 };
 
 const printWelcomeMessage = (context: $TSContext): void => {
-  context.print.info('');
-  context.print.success('Your project has been successfully initialized and connected to the cloud!');
-  context.print.info('');
-  context.print.success('Some next steps:');
-  context.print.info('"amplify status" will show you what you\'ve added already and if it\'s locally configured or deployed');
+  context.print.info("");
+  context.print.success("Your project has been successfully initialized and connected to the cloud!");
+  context.print.info("");
+  context.print.success("Some next steps:");
+  context.print.info("\"amplify status\" will show you what you've added already and if it's locally configured or deployed");
   context.print.info('"amplify add <category>" will allow you to add features like user login or a backend API');
   context.print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
   context.print.info('"amplify console" to open the Amplify Console and view your project status');
   context.print.info(
-    '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+    '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
   );
-  context.print.info('');
-  context.print.success('Pro tip:');
+  context.print.info("");
+  context.print.success("Pro tip:");
   context.print.info('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything');
-  context.print.info('');
+  context.print.info("");
 };

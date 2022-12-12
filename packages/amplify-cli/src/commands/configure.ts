@@ -1,23 +1,23 @@
-import { $TSContext } from 'amplify-cli-core';
-import { analyzeProject } from '../config-steps/c0-analyzeProject';
-import { configFrontendHandler } from '../config-steps/c1-configFrontend';
-import { configProviders } from '../config-steps/c2-configProviders';
-import { configureNewUser } from '../configure-new-user';
-import { onFailure } from '../config-steps/c9-onFailure';
-import { onSuccess } from '../config-steps/c9-onSuccess';
-import { normalizeInputParams } from '../input-params-manager';
-import { write } from '../app-config';
-import { Context } from '../domain/context';
+import { $TSContext } from "amplify-cli-core";
+import { analyzeProject } from "../config-steps/c0-analyzeProject";
+import { configFrontendHandler } from "../config-steps/c1-configFrontend";
+import { configProviders } from "../config-steps/c2-configProviders";
+import { configureNewUser } from "../configure-new-user";
+import { onFailure } from "../config-steps/c9-onFailure";
+import { onSuccess } from "../config-steps/c9-onSuccess";
+import { normalizeInputParams } from "../input-params-manager";
+import { write } from "../app-config";
+import { Context } from "../domain/context";
 
 export const run = async (context: Context) => {
-  if (context.parameters.options['usage-data-off']) {
+  if (context.parameters.options["usage-data-off"]) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: false } });
-    context.print.success('Usage Data has been turned off');
+    context.print.success("Usage Data has been turned off");
     return;
   }
-  if (context.parameters.options['usage-data-on']) {
+  if (context.parameters.options["usage-data-on"]) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: true } });
-    context.print.success('Usage Data has been turned on');
+    context.print.success("Usage Data has been turned on");
     return;
   }
 
@@ -27,7 +27,7 @@ export const run = async (context: Context) => {
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
       await providerPlugin.adminLoginFlow(context, appId, envName);
     } catch (e) {
-      context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+      context.print.error(`Failed to authenticate: ${e.message || "Unknown error occurred."}`);
       await context.usageData.emitError(e);
       process.exit(1);
     }
@@ -38,7 +38,7 @@ export const run = async (context: Context) => {
     await configureNewUser(context);
   }
 
-  if (context.parameters.first === 'project') {
+  if (context.parameters.first === "project") {
     constructExeInfo(context);
 
     try {
@@ -56,5 +56,5 @@ export const run = async (context: Context) => {
 
 function constructExeInfo(context: Context) {
   context.exeInfo = context.amplify.getProjectDetails();
-  context.exeInfo.inputParams = normalizeInputParams((context as unknown) as $TSContext);
+  context.exeInfo.inputParams = normalizeInputParams(context as unknown as $TSContext);
 }

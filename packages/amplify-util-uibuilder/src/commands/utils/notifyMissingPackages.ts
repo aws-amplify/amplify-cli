@@ -1,13 +1,11 @@
-import {
-  pathManager, JSONUtilities, $TSContext, $TSAny,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import fs from 'fs-extra';
-import path from 'path';
-import rangeSubset from 'semver/ranges/subset';
-import { RequiredDependency } from '@aws-amplify/codegen-ui';
-import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react';
-import { extractArgs } from './extractArgs';
+import { pathManager, JSONUtilities, $TSContext, $TSAny } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import fs from "fs-extra";
+import path from "path";
+import rangeSubset from "semver/ranges/subset";
+import { RequiredDependency } from "@aws-amplify/codegen-ui";
+import { ReactRequiredDependencyProvider } from "@aws-amplify/codegen-ui-react";
+import { extractArgs } from "./extractArgs";
 
 const getRequiredDependencies = (): RequiredDependency[] => new ReactRequiredDependencyProvider().getRequiredDependencies();
 
@@ -19,13 +17,13 @@ export const notifyMissingPackages = (context: $TSContext): void => {
   const args = extractArgs(context);
   const localEnvFilePath = args.localEnvFilePath ?? pathManager.getLocalEnvFilePath();
   if (!fs.existsSync(localEnvFilePath)) {
-    printer.debug('localEnvFilePath could not be determined - skipping dependency notification.');
+    printer.debug("localEnvFilePath could not be determined - skipping dependency notification.");
     return;
   }
   const localEnvJson = JSONUtilities.readJson(localEnvFilePath);
-  const packageJsonPath = path.join((localEnvJson as $TSAny).projectPath, 'package.json');
+  const packageJsonPath = path.join((localEnvJson as $TSAny).projectPath, "package.json");
   if (!fs.existsSync(packageJsonPath)) {
-    printer.debug('package.json file not found - skipping dependency notification.');
+    printer.debug("package.json file not found - skipping dependency notification.");
     return;
   }
   const packageJson = JSONUtilities.readJson(packageJsonPath) as { dependencies: { [key: string]: string } };
@@ -33,7 +31,7 @@ export const notifyMissingPackages = (context: $TSContext): void => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(dependency.dependencyName);
     if (!packageIsInstalled) {
       printer.warn(
-        `UIBuilder components require "${dependency.dependencyName}" that is not in your package.json. Run \`npm install "${dependency.dependencyName}@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`,
+        `UIBuilder components require "${dependency.dependencyName}" that is not in your package.json. Run \`npm install "${dependency.dependencyName}@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`
       );
     } else if (!rangeSubset(packageJson.dependencies[dependency.dependencyName], dependency.supportedSemVerPattern)) {
       printer.warn(
@@ -41,7 +39,7 @@ export const notifyMissingPackages = (context: $TSContext): void => {
           dependency.dependencyName
         }". You currently are on version "${packageJson.dependencies[dependency.dependencyName]}". Run \`npm install "${
           dependency.dependencyName
-        }@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`,
+        }@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`
       );
     }
   });

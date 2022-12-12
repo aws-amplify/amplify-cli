@@ -1,9 +1,9 @@
-import { $TSAny, AmplifyFault } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { getProjectConfig } from './get-project-config';
-import { getAllCategoryPluginInfo } from './get-all-category-pluginInfos';
-import { getProviderPlugins } from './get-provider-plugins';
-import { raiseInternalOnlyPostEnvRemoveEvent } from '../../execution-manager';
+import { $TSAny, AmplifyFault } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { getProjectConfig } from "./get-project-config";
+import { getAllCategoryPluginInfo } from "./get-all-category-pluginInfos";
+import { getProviderPlugins } from "./get-provider-plugins";
+import { raiseInternalOnlyPostEnvRemoveEvent } from "../../execution-manager";
 
 /**
  * Removes an Amplify App env and all associated resources from the cloud
@@ -32,10 +32,14 @@ export const removeEnvFromCloud = async (context, envName, deleteS3): Promise<vo
     await Promise.all(providerPromises);
     await raiseInternalOnlyPostEnvRemoveEvent(context, envName);
   } catch (ex) {
-    if (ex?.name !== 'BucketNotFoundError') {
-      throw new AmplifyFault('BackendDeleteFault', {
-        message: `Error occurred while deleting env: ${envName}.`,
-      }, ex);
+    if (ex?.name !== "BucketNotFoundError") {
+      throw new AmplifyFault(
+        "BackendDeleteFault",
+        {
+          message: `Error occurred while deleting env: ${envName}.`,
+        },
+        ex
+      );
     }
   }
 };

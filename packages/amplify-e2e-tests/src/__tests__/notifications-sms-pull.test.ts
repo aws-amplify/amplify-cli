@@ -7,14 +7,12 @@ import {
   getAppId,
   initJSProjectWithProfile,
   removeAllNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  getShortId,
-} from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { getShortId } from "../import-helpers";
 
-describe('notification category pull test', () => {
-  const testChannel = 'SMS';
-  const testChannelSelection = 'SMS';
+describe("notification category pull test", () => {
+  const testChannel = "SMS";
+  const testChannelSelection = "SMS";
   const projectPrefix = `notification${testChannel}`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -43,7 +41,7 @@ describe('notification category pull test', () => {
 
     await removeAllNotificationChannel(projectRoot);
 
-    const projectRootPull = await createNewProjectDir('removed-notifications-pull');
+    const projectRootPull = await createNewProjectDir("removed-notifications-pull");
     try {
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
     } finally {

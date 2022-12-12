@@ -1,12 +1,12 @@
-import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as discovery from '@aws-cdk/aws-servicediscovery';
-import * as cdk from '@aws-cdk/core';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { $TSAny } from 'amplify-cli-core';
+import * as apigw2 from "@aws-cdk/aws-apigatewayv2";
+import * as ec2 from "@aws-cdk/aws-ec2";
+import * as ecs from "@aws-cdk/aws-ecs";
+import * as discovery from "@aws-cdk/aws-servicediscovery";
+import * as cdk from "@aws-cdk/core";
+import { prepareApp } from "@aws-cdk/core/lib/private/prepare-app";
+import { $TSAny } from "amplify-cli-core";
 
-export const RESOURCE_TAG = 'amplify-env';
+export const RESOURCE_TAG = "amplify-env";
 
 type NetworkStackProps = Readonly<{
   stackName: string;
@@ -16,7 +16,7 @@ type NetworkStackProps = Readonly<{
   subnetCidrs: ReadonlyMap<string, string>;
 }>;
 
-export const NETWORK_STACK_LOGICAL_ID = 'NetworkStack';
+export const NETWORK_STACK_LOGICAL_ID = "NetworkStack";
 
 /**
  * Class to generate Network Stack for Amplify API Containers
@@ -25,9 +25,7 @@ export class NetworkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: NetworkStackProps) {
     super(scope, id);
 
-    const {
-      stackName, vpcId = '', vpcName, internetGatewayId = '', subnetCidrs = new Map<string, string>(),
-    } = props;
+    const { stackName, vpcId = "", vpcName, internetGatewayId = "", subnetCidrs = new Map<string, string>() } = props;
 
     const { outputVpc, outputIgw, vpcCidrBlock } = createVpc(this, vpcId, vpcName, internetGatewayId);
 
@@ -43,20 +41,20 @@ export class NetworkStack extends cdk.Stack {
     const cfn = this._toCloudFormation();
 
     return cfn;
-  }
+  };
 }
 
 const createVpc = (scope: cdk.Construct, vpcId: string, vpcName: string, internetGatewayId: string): $TSAny => {
-  const vpcCidrBlock = '10.0.0.0/16';
-  const condition = new cdk.CfnCondition(scope, 'UseNewVpcCondition', {
-    expression: cdk.Fn.conditionAnd(cdk.Fn.conditionEquals(vpcId, ''), cdk.Fn.conditionEquals(internetGatewayId, '')),
+  const vpcCidrBlock = "10.0.0.0/16";
+  const condition = new cdk.CfnCondition(scope, "UseNewVpcCondition", {
+    expression: cdk.Fn.conditionAnd(cdk.Fn.conditionEquals(vpcId, ""), cdk.Fn.conditionEquals(internetGatewayId, "")),
   });
 
   const vpc = new ec2.Vpc(scope, vpcName, {
     cidr: vpcCidrBlock,
     subnetConfiguration: [],
   });
-  (vpc.node.defaultChild as ec2.CfnVPC).tags.setTag('Name', vpcName);
+  (vpc.node.defaultChild as ec2.CfnVPC).tags.setTag("Name", vpcName);
 
   const cfnVpc = <ec2.CfnVPC>vpc.node.defaultChild;
   cfnVpc.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
@@ -64,26 +62,26 @@ const createVpc = (scope: cdk.Construct, vpcId: string, vpcName: string, interne
 
   const outputVpc = cdk.Fn.conditionIf(condition.logicalId, vpc.vpcId, vpcId);
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'VpcId', {
+  new cdk.CfnOutput(scope, "VpcId", {
     value: outputVpc as $TSAny,
   });
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'VpcCidrBlock', {
+  new cdk.CfnOutput(scope, "VpcCidrBlock", {
     value: vpcCidrBlock as $TSAny,
   });
 
-  const igw = new ec2.CfnInternetGateway(scope, 'InternetGateway');
-  igw.tags.setTag('Name', `${scope.node.id}/${igw.logicalId}`);
+  const igw = new ec2.CfnInternetGateway(scope, "InternetGateway");
+  igw.tags.setTag("Name", `${scope.node.id}/${igw.logicalId}`);
   igw.cfnOptions.condition = condition;
   igw.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
 
   const outputIgw = cdk.Fn.conditionIf(condition.logicalId, igw.ref, internetGatewayId);
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'Igw', {
+  new cdk.CfnOutput(scope, "Igw", {
     value: outputIgw as $TSAny,
   });
 
-  const att = new ec2.CfnVPCGatewayAttachment(scope, 'VPCGatewayAttachment', {
+  const att = new ec2.CfnVPCGatewayAttachment(scope, "VPCGatewayAttachment", {
     vpcId: vpc.vpcId,
     internetGatewayId: igw.ref,
   });
@@ -97,37 +95,39 @@ const createVpc = (scope: cdk.Construct, vpcId: string, vpcName: string, interne
   };
 };
 
-const createAmplifyEnv = (scope: cdk.Construct,
+const createAmplifyEnv = (
+  scope: cdk.Construct,
   envName: string,
   vpcId: string,
   vpcCidrBlock: string,
   igwId: string,
-  subnetCidrs: ReadonlyMap<string, string>): $TSAny => {
+  subnetCidrs: ReadonlyMap<string, string>
+): $TSAny => {
   const availabilityZones = [];
 
-  const azSubnetMap = new cdk.CfnMapping(scope, 'AzsMap');
+  const azSubnetMap = new cdk.CfnMapping(scope, "AzsMap");
   subnetCidrs.forEach((cidr, az) => {
     availabilityZones.push(az);
-    azSubnetMap.setValue(az, 'SubnetCidrBlock', cidr);
+    azSubnetMap.setValue(az, "SubnetCidrBlock", cidr);
   });
 
-  const vpc = ec2.Vpc.fromVpcAttributes(scope, 'vpc', { vpcId, availabilityZones });
+  const vpc = ec2.Vpc.fromVpcAttributes(scope, "vpc", { vpcId, availabilityZones });
 
-  const cluster = new ecs.CfnCluster(scope, 'Cluster');
+  const cluster = new ecs.CfnCluster(scope, "Cluster");
 
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'ClusterName', {
+  new cdk.CfnOutput(scope, "ClusterName", {
     value: cdk.Fn.ref(cluster.logicalId),
   });
 
   const subnets: ec2.ISubnet[] = [];
 
   // eslint-disable-next-line spellcheck/spell-checker
-  const pubNacl = new ec2.NetworkAcl(scope, 'Nacl', {
+  const pubNacl = new ec2.NetworkAcl(scope, "Nacl", {
     vpc,
   });
   // eslint-disable-next-line spellcheck/spell-checker
-  pubNacl.addEntry('Egress', {
+  pubNacl.addEntry("Egress", {
     // eslint-disable-next-line spellcheck/spell-checker
     cidr: ec2.AclCidr.anyIpv4(),
     ruleNumber: 100,
@@ -159,9 +159,9 @@ const createAmplifyEnv = (scope: cdk.Construct,
   Array.from(subnetCidrs.keys())
     .sort()
     .forEach((az, i) => {
-      const [, , azId] = az.split('-');
+      const [, , azId] = az.split("-");
 
-      const cidr = azSubnetMap.findInMap(az, 'SubnetCidrBlock');
+      const cidr = azSubnetMap.findInMap(az, "SubnetCidrBlock");
 
       // eslint-disable-next-line spellcheck/spell-checker
       pubNacl.addEntry(`IngressEnv${azId}`, {
@@ -189,12 +189,12 @@ const createAmplifyEnv = (scope: cdk.Construct,
       // eslint-disable-next-line no-new
       new ec2.CfnRoute(scope, `DefaultRoute${azId}`, {
         routeTableId: publicSubnet.routeTable.routeTableId,
-        destinationCidrBlock: '0.0.0.0/0',
+        destinationCidrBlock: "0.0.0.0/0",
         gatewayId: igwId,
       });
 
       // eslint-disable-next-line spellcheck/spell-checker
-      publicSubnet.associateNetworkAcl('', pubNacl);
+      publicSubnet.associateNetworkAcl("", pubNacl);
 
       subnets.push(publicSubnet);
     });
@@ -202,23 +202,23 @@ const createAmplifyEnv = (scope: cdk.Construct,
   const subnetIds = subnets.map(({ subnetId }) => subnetId);
 
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'SubnetIds', {
-    value: subnetIds.join(','),
+  new cdk.CfnOutput(scope, "SubnetIds", {
+    value: subnetIds.join(","),
   });
 
-  const vpcLink = new apigw2.CfnVpcLink(scope, 'VpcLink', {
+  const vpcLink = new apigw2.CfnVpcLink(scope, "VpcLink", {
     name: `${envName}VpcLink`,
     subnetIds,
   });
 
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'VpcLinkId', { value: cdk.Fn.ref(vpcLink.logicalId) });
+  new cdk.CfnOutput(scope, "VpcLinkId", { value: cdk.Fn.ref(vpcLink.logicalId) });
 
-  const namespace = new discovery.PrivateDnsNamespace(scope, 'Namespace', {
+  const namespace = new discovery.PrivateDnsNamespace(scope, "Namespace", {
     vpc,
-    name: cdk.Fn.join('-', [envName, vpc.vpcId]),
+    name: cdk.Fn.join("-", [envName, vpc.vpcId]),
   });
 
   // eslint-disable-next-line no-new
-  new cdk.CfnOutput(scope, 'CloudMapNamespaceId', { value: namespace.namespaceId });
+  new cdk.CfnOutput(scope, "CloudMapNamespaceId", { value: namespace.namespaceId });
 };

@@ -1,14 +1,10 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import {
-  getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig,
-} from '@aws-amplify/amplify-e2e-core';
-import { AuthParameters } from '@aws-amplify/amplify-category-auth';
+import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from "@aws-amplify/amplify-e2e-core";
+import { AuthParameters } from "@aws-amplify/amplify-category-auth";
 // eslint-disable-next-line import/no-cycle
-import { $TSAny } from 'amplify-cli-core';
-import {
-  AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails,
-} from '.';
-import { getAWSExports } from '../aws-exports/awsExports';
+import { $TSAny } from "amplify-cli-core";
+import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from ".";
+import { getAWSExports } from "../aws-exports/awsExports";
 
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails): void => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
@@ -23,7 +19,7 @@ export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails
 
     expect(projectDetails.meta.OAuthMetadata.AllowedOAuthFlows).toEqual(ogProjectDetails.meta.OAuthMetadata.AllowedOAuthFlows);
     expect(projectDetails.meta.OAuthMetadata.AllowedOAuthScopes.sort()).toEqual(
-      ogProjectDetails.meta.OAuthMetadata.AllowedOAuthScopes.sort(),
+      ogProjectDetails.meta.OAuthMetadata.AllowedOAuthScopes.sort()
     );
     expect(projectDetails.meta.OAuthMetadata.CallbackURLs).toEqual(ogProjectDetails.meta.OAuthMetadata.CallbackURLs);
     expect(projectDetails.meta.OAuthMetadata.LogoutURLs).toEqual(ogProjectDetails.meta.OAuthMetadata.LogoutURLs);
@@ -46,12 +42,12 @@ export const expectAuthLocalAndOGMetaFilesOutputMatching = (projectRoot: string,
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
   const authMeta = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => meta.auth[key])[0];
+    .filter((key) => meta.auth[key].service === "Cognito")
+    .map((key) => meta.auth[key])[0];
 
   const ogAuthMeta = Object.keys(ogMeta.auth)
-    .filter(key => ogMeta.auth[key].service === 'Cognito')
-    .map(key => ogMeta.auth[key])[0];
+    .filter((key) => ogMeta.auth[key].service === "Cognito")
+    .map((key) => ogMeta.auth[key])[0];
 
   expect(authMeta.output.AppClientID).toEqual(ogAuthMeta.output.AppClientID);
   expect(authMeta.output.AppClientIDWeb).toEqual(ogAuthMeta.output.AppClientIDWeb);
@@ -82,7 +78,7 @@ export const expectApiHasCorrectAuthConfig = (projectRoot: string, __: string, u
 
   expect(authConfig).toBeDefined();
 
-  expect(authConfig.defaultAuthentication?.authenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
+  expect(authConfig.defaultAuthentication?.authenticationType).toEqual("AMAZON_COGNITO_USER_POOLS");
   expect(authConfig.defaultAuthentication?.userPoolConfig?.userPoolId).toEqual(userPoolId);
 
   const rootStack = readRootStack(projectRoot);
@@ -99,8 +95,8 @@ export const expectLocalAndPulledBackendConfigMatching = (projectRoot: string, p
 };
 
 export const expectLocalAndPulledBackendAmplifyMetaMatching = (projectRoot: string, projectRootPull: string): void => {
-  const amplifyMeta = deepRemoveObjectKey(getBackendAmplifyMeta(projectRoot), 'lastPushTimeStamp');
-  const amplifyMetaPull = deepRemoveObjectKey(getBackendAmplifyMeta(projectRootPull), 'lastPushTimeStamp');
+  const amplifyMeta = deepRemoveObjectKey(getBackendAmplifyMeta(projectRoot), "lastPushTimeStamp");
+  const amplifyMetaPull = deepRemoveObjectKey(getBackendAmplifyMeta(projectRootPull), "lastPushTimeStamp");
 
   expect(amplifyMeta).toMatchObject(amplifyMetaPull);
 };
@@ -144,19 +140,20 @@ export const expectS3LocalAndOGMetaFilesOutputMatching = (projectRoot: string, o
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
   const storageMeta = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => meta.storage[key])[0];
+    .filter((key) => meta.storage[key].service === "S3")
+    .map((key) => meta.storage[key])[0];
 
   const ogStorageMeta = Object.keys(ogMeta.storage)
-    .filter(key => ogMeta.storage[key].service === 'S3')
-    .map(key => ogMeta.storage[key])[0];
+    .filter((key) => ogMeta.storage[key].service === "S3")
+    .map((key) => ogMeta.storage[key])[0];
 
   expect(storageMeta.output.BucketName).toEqual(ogStorageMeta.output.BucketName);
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);
 };
 
 export const expectDynamoDBProjectDetailsMatch = (
-  projectDetails: DynamoDBProjectDetails, ogProjectDetails: DynamoDBProjectDetails,
+  projectDetails: DynamoDBProjectDetails,
+  ogProjectDetails: DynamoDBProjectDetails
 ): void => {
   expect(projectDetails.meta.Name).toEqual(ogProjectDetails.meta.Name);
   expect(projectDetails.meta.Region).toEqual(ogProjectDetails.meta.Region);
@@ -182,12 +179,12 @@ export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: str
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
   const storageMeta = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => meta.storage[key])[0];
+    .filter((key) => meta.storage[key].service === "DynamoDB")
+    .map((key) => meta.storage[key])[0];
 
   const ogStorageMeta = Object.keys(ogMeta.storage)
-    .filter(key => ogMeta.storage[key].service === 'DynamoDB')
-    .map(key => ogMeta.storage[key])[0];
+    .filter((key) => ogMeta.storage[key].service === "DynamoDB")
+    .map((key) => ogMeta.storage[key])[0];
 
   expect(storageMeta.output.Name).toEqual(ogStorageMeta.output.Name);
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);
@@ -209,8 +206,8 @@ export const expectAuthParametersMatch = (authParameters: AuthParameters, ogAuth
 };
 
 const deepRemoveObjectKey = (obj: $TSAny, key: string): $TSAny => {
-  Object.keys(obj).forEach(objKey => {
-    if (typeof obj[objKey] === 'object') {
+  Object.keys(obj).forEach((objKey) => {
+    if (typeof obj[objKey] === "object") {
       // eslint-disable-next-line no-param-reassign
       obj[objKey] = deepRemoveObjectKey(obj[objKey], key);
     } else if (objKey === key) {

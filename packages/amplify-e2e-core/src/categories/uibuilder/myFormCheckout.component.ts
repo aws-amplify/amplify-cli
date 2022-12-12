@@ -1,34 +1,34 @@
-import { AmplifyUIBuilder } from 'aws-sdk';
+import { AmplifyUIBuilder } from "aws-sdk";
 
 // FormCheckout used from AmplifyUIKit
 // Source: https://www.figma.com/community/file/1047600760128127424
 
 export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
-  name: 'FormCheckout',
-  componentType: 'Flex',
-  schemaVersion: '1.0',
-  sourceId: '2976:7004',
+  name: "FormCheckout",
+  componentType: "Flex",
+  schemaVersion: "1.0",
+  sourceId: "2976:7004",
   overrides: {},
   bindingProperties: {},
   variants: [],
   properties: {
     gap: {
-      value: '24px',
+      value: "24px",
     },
     direction: {
-      value: 'row',
+      value: "row",
     },
     width: {
-      value: '1160px',
+      value: "1160px",
     },
     alignItems: {
-      value: 'flex-start',
+      value: "flex-start",
     },
     position: {
-      value: 'relative',
+      value: "relative",
     },
     padding: {
-      value: '0px 0px 0px 0px',
+      value: "0px 0px 0px 0px",
     },
   },
   children: [
@@ -40,221 +40,221 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Info',
+                  name: "Info",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Info',
+                      value: "Info",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '20px',
+                      value: "20px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFielduue',
+                  name: "TextFielduue",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFieldpaz',
+                  name: "TextFieldpaz",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
               ],
-              componentType: 'Flex',
+              componentType: "Flex",
               events: {},
-              name: 'Frame 406',
+              name: "Frame 406",
               properties: {
                 gap: {
-                  value: '24px',
+                  value: "24px",
                 },
                 direction: {
-                  value: 'column',
+                  value: "column",
                 },
                 shrink: {
-                  value: '0',
+                  value: "0",
                 },
                 alignSelf: {
-                  value: 'stretch',
+                  value: "stretch",
                 },
                 objectFit: {
-                  value: 'cover',
+                  value: "cover",
                 },
                 position: {
-                  value: 'relative',
+                  value: "relative",
                 },
                 padding: {
-                  value: '0px 32px 0px 32px',
+                  value: "0px 32px 0px 32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Dividercih',
+              name: "Dividercih",
               properties: {
                 height: {
-                  value: '1px',
+                  value: "1px",
                 },
                 shrink: {
-                  value: '0',
+                  value: "0",
                 },
                 alignSelf: {
-                  value: 'stretch',
+                  value: "stretch",
                 },
                 objectFit: {
-                  value: 'cover',
+                  value: "cover",
                 },
                 position: {
-                  value: 'relative',
+                  value: "relative",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
@@ -262,276 +262,276 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Shippingief',
+                  name: "Shippingief",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Shipping',
+                      value: "Shipping",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '20px',
+                      value: "20px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFieldcve',
+                  name: "TextFieldcve",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFieldaab',
+                  name: "TextFieldaab",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFieldolo',
+                  name: "TextFieldolo",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
               ],
-              componentType: 'Flex',
+              componentType: "Flex",
               events: {},
-              name: 'Frame 409',
+              name: "Frame 409",
               properties: {
                 gap: {
-                  value: '24px',
+                  value: "24px",
                 },
                 direction: {
-                  value: 'column',
+                  value: "column",
                 },
                 shrink: {
-                  value: '0',
+                  value: "0",
                 },
                 alignSelf: {
-                  value: 'stretch',
+                  value: "stretch",
                 },
                 objectFit: {
-                  value: 'cover',
+                  value: "cover",
                 },
                 position: {
-                  value: 'relative',
+                  value: "relative",
                 },
                 padding: {
-                  value: '0px 32px 0px 32px',
+                  value: "0px 32px 0px 32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Divideryjw',
+              name: "Divideryjw",
               properties: {
                 height: {
-                  value: '1px',
+                  value: "1px",
                 },
                 shrink: {
-                  value: '0',
+                  value: "0",
                 },
                 alignSelf: {
-                  value: 'stretch',
+                  value: "stretch",
                 },
                 objectFit: {
-                  value: 'cover',
+                  value: "cover",
                 },
                 position: {
-                  value: 'relative',
+                  value: "relative",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
@@ -539,161 +539,161 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Card info',
+                  name: "Card info",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Card info',
+                      value: "Card info",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '20px',
+                      value: "20px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFieldqkb',
+                  name: "TextFieldqkb",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'TextField',
+                  componentType: "TextField",
                   events: {},
-                  name: 'TextFielduma',
+                  name: "TextFielduma",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '12px',
+                      value: "12px",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     label: {
-                      value: 'Label',
+                      value: "Label",
                     },
                     placeholder: {
-                      value: 'Placeholder',
+                      value: "Placeholder",
                     },
                     size: {
-                      value: 'large',
+                      value: "large",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
@@ -701,250 +701,250 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
                   children: [
                     {
                       children: [],
-                      componentType: 'SelectField',
+                      componentType: "SelectField",
                       events: {},
-                      name: 'SelectFieldsqd',
+                      name: "SelectFieldsqd",
                       properties: {
                         display: {
-                          value: 'flex',
+                          value: "flex",
                         },
                         gap: {
-                          value: '12px',
+                          value: "12px",
                         },
                         direction: {
-                          value: 'column',
+                          value: "column",
                         },
                         width: {
-                          value: '289.5px',
+                          value: "289.5px",
                         },
                         justifyContent: {
-                          value: 'center',
+                          value: "center",
                         },
                         grow: {
-                          value: '1',
+                          value: "1",
                         },
                         basis: {
-                          value: '289.5px',
+                          value: "289.5px",
                         },
                         height: {
-                          value: '88px',
+                          value: "88px",
                         },
                         position: {
-                          value: 'relative',
+                          value: "relative",
                         },
                         padding: {
-                          value: '0px 0px 0px 0px',
+                          value: "0px 0px 0px 0px",
                         },
                         label: {
-                          value: 'Label',
+                          value: "Label",
                         },
                         placeholder: {
-                          value: 'Placeholder',
+                          value: "Placeholder",
                         },
                         size: {
-                          value: 'large',
+                          value: "large",
                         },
                         isDisabled: {
-                          type: 'boolean',
-                          value: 'false',
+                          type: "boolean",
+                          value: "false",
                         },
                         labelHidden: {
-                          type: 'boolean',
-                          value: 'false',
+                          type: "boolean",
+                          value: "false",
                         },
                         variation: {
-                          value: 'default',
+                          value: "default",
                         },
                       },
                     },
                     {
                       children: [],
-                      componentType: 'SelectField',
+                      componentType: "SelectField",
                       events: {},
-                      name: 'SelectFieldyiz',
+                      name: "SelectFieldyiz",
                       properties: {
                         display: {
-                          value: 'flex',
+                          value: "flex",
                         },
                         gap: {
-                          value: '12px',
+                          value: "12px",
                         },
                         direction: {
-                          value: 'column',
+                          value: "column",
                         },
                         width: {
-                          value: '289.5px',
+                          value: "289.5px",
                         },
                         justifyContent: {
-                          value: 'center',
+                          value: "center",
                         },
                         grow: {
-                          value: '1',
+                          value: "1",
                         },
                         basis: {
-                          value: '289.5px',
+                          value: "289.5px",
                         },
                         height: {
-                          value: '88px',
+                          value: "88px",
                         },
                         position: {
-                          value: 'relative',
+                          value: "relative",
                         },
                         padding: {
-                          value: '0px 0px 0px 0px',
+                          value: "0px 0px 0px 0px",
                         },
                         label: {
-                          value: 'Label',
+                          value: "Label",
                         },
                         placeholder: {
-                          value: 'Placeholder',
+                          value: "Placeholder",
                         },
                         size: {
-                          value: 'large',
+                          value: "large",
                         },
                         isDisabled: {
-                          type: 'boolean',
-                          value: 'false',
+                          type: "boolean",
+                          value: "false",
                         },
                         labelHidden: {
-                          type: 'boolean',
-                          value: 'false',
+                          type: "boolean",
+                          value: "false",
                         },
                         variation: {
-                          value: 'default',
+                          value: "default",
                         },
                       },
                     },
                   ],
-                  componentType: 'Flex',
+                  componentType: "Flex",
                   events: {},
-                  name: 'Frame 410',
+                  name: "Frame 410",
                   properties: {
                     gap: {
-                      value: '24px',
+                      value: "24px",
                     },
                     direction: {
-                      value: 'row',
+                      value: "row",
                     },
                     alignItems: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     shrink: {
-                      value: '0',
+                      value: "0",
                     },
                     alignSelf: {
-                      value: 'stretch',
+                      value: "stretch",
                     },
                     objectFit: {
-                      value: 'cover',
+                      value: "cover",
                     },
                     position: {
-                      value: 'relative',
+                      value: "relative",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                   },
                 },
               ],
-              componentType: 'Flex',
+              componentType: "Flex",
               events: {},
-              name: 'Frame 313aok',
+              name: "Frame 313aok",
               properties: {
                 gap: {
-                  value: '24px',
+                  value: "24px",
                 },
                 direction: {
-                  value: 'column',
+                  value: "column",
                 },
                 shrink: {
-                  value: '0',
+                  value: "0",
                 },
                 alignSelf: {
-                  value: 'stretch',
+                  value: "stretch",
                 },
                 objectFit: {
-                  value: 'cover',
+                  value: "cover",
                 },
                 position: {
-                  value: 'relative',
+                  value: "relative",
                 },
                 padding: {
-                  value: '0px 32px 0px 32px',
+                  value: "0px 32px 0px 32px",
                 },
               },
             },
           ],
-          componentType: 'Flex',
+          componentType: "Flex",
           events: {},
-          name: 'Frame 313',
+          name: "Frame 313",
           properties: {
             gap: {
-              value: '32px',
+              value: "32px",
             },
             direction: {
-              value: 'column',
+              value: "column",
             },
             width: {
-              value: '667px',
+              value: "667px",
             },
             justifyContent: {
-              value: 'center',
+              value: "center",
             },
             alignItems: {
-              value: 'center',
+              value: "center",
             },
             grow: {
-              value: '1',
+              value: "1",
             },
             basis: {
-              value: '667px',
+              value: "667px",
             },
             height: {
-              value: '1086px',
+              value: "1086px",
             },
             position: {
-              value: 'relative',
+              value: "relative",
             },
             padding: {
-              value: '0px 0px 0px 0px',
+              value: "0px 0px 0px 0px",
             },
           },
         },
       ],
-      componentType: 'Flex',
+      componentType: "Flex",
       events: {},
-      name: 'Frame 411',
+      name: "Frame 411",
       properties: {
         gap: {
-          value: '0',
+          value: "0",
         },
         direction: {
-          value: 'row',
+          value: "row",
         },
         width: {
-          value: '667px',
+          value: "667px",
         },
         alignItems: {
-          value: 'flex-start',
+          value: "flex-start",
         },
         grow: {
-          value: '1',
+          value: "1",
         },
         basis: {
-          value: '667px',
+          value: "667px",
         },
         height: {
-          value: '1150px',
+          value: "1150px",
         },
         position: {
-          value: 'relative',
+          value: "relative",
         },
         padding: {
-          value: '32px 0px 32px 0px',
+          value: "32px 0px 32px 0px",
         },
         backgroundColor: {
-          value: 'rgba(255,255,255,1)',
+          value: "rgba(255,255,255,1)",
         },
       },
     },
@@ -956,489 +956,489 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Image',
+                  componentType: "Image",
                   events: {},
-                  name: 'imagezgw',
+                  name: "imagezgw",
                   properties: {
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '5.45%',
+                      value: "5.45%",
                     },
                     height: {
-                      value: '94.55%',
+                      value: "94.55%",
                     },
                     left: {
-                      value: '0%',
+                      value: "0%",
                     },
                     right: {
-                      value: '78.02%',
+                      value: "78.02%",
                     },
                     width: {
-                      value: '21.98%',
+                      value: "21.98%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Order Summarypmw',
+                  name: "Order Summarypmw",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Order Summary',
+                      value: "Order Summary",
                     },
                     fontWeight: {
-                      value: '700',
+                      value: "700",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '81.45%',
+                      value: "81.45%",
                     },
                     bottom: {
-                      value: '1.09%',
+                      value: "1.09%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '39.51%',
+                      value: "39.51%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Blackuxo',
+                  name: "Blackuxo",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Black',
+                      value: "Black",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(92,102,112,1)',
+                      value: "rgba(92,102,112,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '23.27%',
+                      value: "23.27%",
                     },
                     bottom: {
-                      value: '59.27%',
+                      value: "59.27%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '59.75%',
+                      value: "59.75%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Basic Teerhr',
+                  name: "Basic Teerhr",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Basic Tee',
+                      value: "Basic Tee",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '82.55%',
+                      value: "82.55%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '51.85%',
+                      value: "51.85%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Largeepk',
+                  name: "Largeepk",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Large',
+                      value: "Large",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(92,102,112,1)',
+                      value: "rgba(92,102,112,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '46.55%',
+                      value: "46.55%",
                     },
                     bottom: {
-                      value: '36%',
+                      value: "36%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '59.26%',
+                      value: "59.26%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'MyIcon',
+                  componentType: "MyIcon",
                   events: {},
-                  name: 'MyIconseb',
+                  name: "MyIconseb",
                   properties: {
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '82.55%',
+                      value: "82.55%",
                     },
                     left: {
-                      value: '94.07%',
+                      value: "94.07%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     overflow: {
-                      value: 'hidden',
+                      value: "hidden",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     type: {
-                      value: 'delete',
+                      value: "delete",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'SelectField',
+                  componentType: "SelectField",
                   events: {},
-                  name: 'SelectFieldlwa',
+                  name: "SelectFieldlwa",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '8px',
+                      value: "8px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '73.09%',
+                      value: "73.09%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '84.2%',
+                      value: "84.2%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     width: {
-                      value: '64px',
+                      value: "64px",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     placeholder: {
-                      value: '',
+                      value: "",
                     },
                     size: {
-                      value: 'small',
+                      value: "small",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'true',
+                      type: "boolean",
+                      value: "true",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 314',
+              name: "Group 314",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '137.5px',
+                  value: "137.5px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '194px',
+                  value: "194px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Dividercmh',
+              name: "Dividercmh",
               properties: {
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '41.66%',
+                  value: "41.66%",
                 },
                 bottom: {
-                  value: '58.23%',
+                  value: "58.23%",
                 },
                 left: {
-                  value: '0%',
+                  value: "0%",
                 },
                 right: {
-                  value: '0%',
+                  value: "0%",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Dividerhrv',
+              name: "Dividerhrv",
               properties: {
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '18.53%',
+                  value: "18.53%",
                 },
                 bottom: {
-                  value: '81.36%',
+                  value: "81.36%",
                 },
                 left: {
-                  value: '0%',
+                  value: "0%",
                 },
                 right: {
-                  value: '0%',
+                  value: "0%",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Dividertnw',
+              name: "Dividertnw",
               properties: {
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '8.29%',
+                  value: "8.29%",
                 },
                 bottom: {
-                  value: '91.6%',
+                  value: "91.6%",
                 },
                 left: {
-                  value: '0%',
+                  value: "0%",
                 },
                 right: {
-                  value: '0%',
+                  value: "0%",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
@@ -1446,425 +1446,425 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Image',
+                  componentType: "Image",
                   events: {},
-                  name: 'imagecsx',
+                  name: "imagecsx",
                   properties: {
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '5.45%',
+                      value: "5.45%",
                     },
                     height: {
-                      value: '94.55%',
+                      value: "94.55%",
                     },
                     left: {
-                      value: '0%',
+                      value: "0%",
                     },
                     right: {
-                      value: '78.02%',
+                      value: "78.02%",
                     },
                     width: {
-                      value: '21.98%',
+                      value: "21.98%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Order Summaryjbn',
+                  name: "Order Summaryjbn",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Order Summary',
+                      value: "Order Summary",
                     },
                     fontWeight: {
-                      value: '700',
+                      value: "700",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '81.45%',
+                      value: "81.45%",
                     },
                     bottom: {
-                      value: '1.09%',
+                      value: "1.09%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '39.51%',
+                      value: "39.51%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Blacktbv',
+                  name: "Blacktbv",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Black',
+                      value: "Black",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(92,102,112,1)',
+                      value: "rgba(92,102,112,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '23.27%',
+                      value: "23.27%",
                     },
                     bottom: {
-                      value: '59.27%',
+                      value: "59.27%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '59.75%',
+                      value: "59.75%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Basic Teevzg',
+                  name: "Basic Teevzg",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Basic Tee',
+                      value: "Basic Tee",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '82.55%',
+                      value: "82.55%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '51.85%',
+                      value: "51.85%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Largetef',
+                  name: "Largetef",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Large',
+                      value: "Large",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(92,102,112,1)',
+                      value: "rgba(92,102,112,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '46.55%',
+                      value: "46.55%",
                     },
                     bottom: {
-                      value: '36%',
+                      value: "36%",
                     },
                     left: {
-                      value: '29.88%',
+                      value: "29.88%",
                     },
                     right: {
-                      value: '59.26%',
+                      value: "59.26%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'MyIcon',
+                  componentType: "MyIcon",
                   events: {},
-                  name: 'MyIcongbb',
+                  name: "MyIcongbb",
                   properties: {
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '82.55%',
+                      value: "82.55%",
                     },
                     left: {
-                      value: '94.07%',
+                      value: "94.07%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     overflow: {
-                      value: 'hidden',
+                      value: "hidden",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     type: {
-                      value: 'delete',
+                      value: "delete",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'SelectField',
+                  componentType: "SelectField",
                   events: {},
-                  name: 'SelectFieldhqm',
+                  name: "SelectFieldhqm",
                   properties: {
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     gap: {
-                      value: '8px',
+                      value: "8px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '73.09%',
+                      value: "73.09%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '84.2%',
+                      value: "84.2%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     width: {
-                      value: '64px',
+                      value: "64px",
                     },
                     justifyContent: {
-                      value: 'center',
+                      value: "center",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     placeholder: {
-                      value: '',
+                      value: "",
                     },
                     size: {
-                      value: 'small',
+                      value: "small",
                     },
                     isDisabled: {
-                      type: 'boolean',
-                      value: 'false',
+                      type: "boolean",
+                      value: "false",
                     },
                     labelHidden: {
-                      type: 'boolean',
-                      value: 'true',
+                      type: "boolean",
+                      value: "true",
                     },
                     variation: {
-                      value: 'default',
+                      value: "default",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 315',
+              name: "Group 315",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '137.5px',
+                  value: "137.5px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '395px',
+                  value: "395px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Dividerrqr',
+              name: "Dividerrqr",
               properties: {
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '64.79%',
+                  value: "64.79%",
                 },
                 bottom: {
-                  value: '35.1%',
+                  value: "35.1%",
                 },
                 left: {
-                  value: '0%',
+                  value: "0%",
                 },
                 right: {
-                  value: '0%',
+                  value: "0%",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
@@ -1872,150 +1872,150 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Subtotal',
+                  name: "Subtotal",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Subtotal',
+                      value: "Subtotal",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(48,64,80,1)',
+                      value: "rgba(48,64,80,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '0%',
+                      value: "0%",
                     },
                     right: {
-                      value: '80.8%',
+                      value: "80.8%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: '$320.00',
+                  name: "$320.00",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: '$320.00',
+                      value: "$320.00",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'right',
+                      value: "right",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '83.95%',
+                      value: "83.95%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 316',
+              name: "Group 316",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '24px',
+                  value: "24px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '596px',
+                  value: "596px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
@@ -2023,150 +2023,150 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Shippingzax',
+                  name: "Shippingzax",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Shipping',
+                      value: "Shipping",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(48,64,80,1)',
+                      value: "rgba(48,64,80,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '0%',
+                      value: "0%",
                     },
                     right: {
-                      value: '80.21%',
+                      value: "80.21%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: '$15.00',
+                  name: "$15.00",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: '$15.00',
+                      value: "$15.00",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'right',
+                      value: "right",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '87.16%',
+                      value: "87.16%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 317',
+              name: "Group 317",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '24px',
+                  value: "24px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '636px',
+                  value: "636px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
@@ -2174,182 +2174,182 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Taxes',
+                  name: "Taxes",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Taxes',
+                      value: "Taxes",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(48,64,80,1)',
+                      value: "rgba(48,64,80,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '0%',
+                      value: "0%",
                     },
                     right: {
-                      value: '86.71%',
+                      value: "86.71%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: '$26.80',
+                  name: "$26.80",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: '$26.80',
+                      value: "$26.80",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'right',
+                      value: "right",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     letterSpacing: {
-                      value: '0.01px',
+                      value: "0.01px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '86.42%',
+                      value: "86.42%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 318',
+              name: "Group 318",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '24px',
+                  value: "24px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '676px',
+                  value: "676px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Divideretf',
+              name: "Divideretf",
               properties: {
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '82.39%',
+                  value: "82.39%",
                 },
                 bottom: {
-                  value: '17.49%',
+                  value: "17.49%",
                 },
                 left: {
-                  value: '6.82%',
+                  value: "6.82%",
                 },
                 right: {
-                  value: '6.82%',
+                  value: "6.82%",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
@@ -2357,242 +2357,242 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Total',
+                  name: "Total",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Total',
+                      value: "Total",
                     },
                     fontWeight: {
-                      value: '700',
+                      value: "700",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '0%',
+                      value: "0%",
                     },
                     right: {
-                      value: '87.6%',
+                      value: "87.6%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: '$361.80',
+                  name: "$361.80",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: '$361.80',
+                      value: "$361.80",
                     },
                     fontWeight: {
-                      value: '700',
+                      value: "700",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '24px',
+                      value: "24px",
                     },
                     textAlign: {
-                      value: 'right',
+                      value: "right",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '0%',
+                      value: "0%",
                     },
                     left: {
-                      value: '83.95%',
+                      value: "83.95%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 319',
+              name: "Group 319",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '24px',
+                  value: "24px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '733px',
+                  value: "733px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Divider',
+              componentType: "Divider",
               events: {},
-              name: 'Divideruce',
+              name: "Divideruce",
               properties: {
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '90.79%',
+                  value: "90.79%",
                 },
                 bottom: {
-                  value: '9.09%',
+                  value: "9.09%",
                 },
                 left: {
-                  value: '0%',
+                  value: "0%",
                 },
                 right: {
-                  value: '0%',
+                  value: "0%",
                 },
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 size: {
-                  value: 'small',
+                  value: "small",
                 },
                 orientation: {
-                  value: 'horizontal',
+                  value: "horizontal",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Button',
+              componentType: "Button",
               events: {},
-              name: 'Button',
+              name: "Button",
               properties: {
                 display: {
-                  value: 'flex',
+                  value: "flex",
                 },
                 gap: {
-                  value: '0',
+                  value: "0",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '94.71%',
+                  value: "94.71%",
                 },
                 bottom: {
-                  value: '0%',
+                  value: "0%",
                 },
                 left: {
-                  value: '6.82%',
+                  value: "6.82%",
                 },
                 right: {
-                  value: '6.82%',
+                  value: "6.82%",
                 },
                 direction: {
-                  value: 'row',
+                  value: "row",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 justifyContent: {
-                  value: 'center',
+                  value: "center",
                 },
                 alignItems: {
-                  value: 'center',
+                  value: "center",
                 },
                 border: {
-                  value: '1px SOLID rgba(0,0,0,0)',
+                  value: "1px SOLID rgba(0,0,0,0)",
                 },
                 borderRadius: {
-                  value: '4px',
+                  value: "4px",
                 },
                 padding: {
-                  value: '7px 15px 7px 15px',
+                  value: "7px 15px 7px 15px",
                 },
                 backgroundColor: {
-                  value: 'rgba(4,125,149,1)',
+                  value: "rgba(4,125,149,1)",
                 },
                 label: {
-                  value: 'Place Order',
+                  value: "Place Order",
                 },
                 size: {
-                  value: 'large',
+                  value: "large",
                 },
                 isDisabled: {
-                  type: 'boolean',
-                  value: 'false',
+                  type: "boolean",
+                  value: "false",
                 },
                 variation: {
-                  value: 'primary',
+                  value: "primary",
                 },
               },
             },
@@ -2600,303 +2600,303 @@ export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
               children: [
                 {
                   children: [],
-                  componentType: 'MyIcon',
+                  componentType: "MyIcon",
                   events: {},
-                  name: 'MyIconfhn',
+                  name: "MyIconfhn",
                   properties: {
                     width: {
-                      value: '24px',
+                      value: "24px",
                     },
                     height: {
-                      value: '24px',
+                      value: "24px",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0px',
+                      value: "0px",
                     },
                     left: {
-                      value: '0px',
+                      value: "0px",
                     },
                     overflow: {
-                      value: 'hidden',
+                      value: "hidden",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     type: {
-                      value: 'shopping_bag',
+                      value: "shopping_bag",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: 'Cart (2)',
+                  name: "Cart (2)",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: 'Cart (2)',
+                      value: "Cart (2)",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '20px',
+                      value: "20px",
                     },
                     textAlign: {
-                      value: 'left',
+                      value: "left",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '16.67%',
+                      value: "16.67%",
                     },
                     left: {
-                      value: '9.88%',
+                      value: "9.88%",
                     },
                     right: {
-                      value: '74.57%',
+                      value: "74.57%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
                 {
                   children: [],
-                  componentType: 'Text',
+                  componentType: "Text",
                   events: {},
-                  name: '$101.70',
+                  name: "$101.70",
                   properties: {
                     fontFamily: {
-                      value: 'Inter',
+                      value: "Inter",
                     },
                     fontSize: {
-                      value: '16px',
+                      value: "16px",
                     },
                     label: {
-                      value: '$101.70',
+                      value: "$101.70",
                     },
                     fontWeight: {
-                      value: '400',
+                      value: "400",
                     },
                     color: {
-                      value: 'rgba(13,26,38,1)',
+                      value: "rgba(13,26,38,1)",
                     },
                     lineHeight: {
-                      value: '20px',
+                      value: "20px",
                     },
                     textAlign: {
-                      value: 'right',
+                      value: "right",
                     },
                     display: {
-                      value: 'flex',
+                      value: "flex",
                     },
                     direction: {
-                      value: 'column',
+                      value: "column",
                     },
                     justifyContent: {
-                      value: 'flex-start',
+                      value: "flex-start",
                     },
                     position: {
-                      value: 'absolute',
+                      value: "absolute",
                     },
                     top: {
-                      value: '0%',
+                      value: "0%",
                     },
                     bottom: {
-                      value: '16.67%',
+                      value: "16.67%",
                     },
                     left: {
-                      value: '84.44%',
+                      value: "84.44%",
                     },
                     right: {
-                      value: '0%',
+                      value: "0%",
                     },
                     padding: {
-                      value: '0px 0px 0px 0px',
+                      value: "0px 0px 0px 0px",
                     },
                     whiteSpace: {
-                      value: 'pre-wrap',
+                      value: "pre-wrap",
                     },
                   },
                 },
               ],
-              componentType: 'View',
+              componentType: "View",
               events: {},
-              name: 'Group 313',
+              name: "Group 313",
               properties: {
                 padding: {
-                  value: '0px 0px 0px 0px',
+                  value: "0px 0px 0px 0px",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 height: {
-                  value: '24px',
+                  value: "24px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '105px',
+                  value: "105px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
               },
             },
             {
               children: [],
-              componentType: 'Badge',
+              componentType: "Badge",
               events: {},
-              name: 'Badge',
+              name: "Badge",
               properties: {
                 display: {
-                  value: 'flex',
+                  value: "flex",
                 },
                 gap: {
-                  value: '10px',
+                  value: "10px",
                 },
                 position: {
-                  value: 'absolute',
+                  value: "absolute",
                 },
                 top: {
-                  value: '0px',
+                  value: "0px",
                 },
                 left: {
-                  value: '32px',
+                  value: "32px",
                 },
                 direction: {
-                  value: 'column',
+                  value: "column",
                 },
                 width: {
-                  value: '405px',
+                  value: "405px",
                 },
                 justifyContent: {
-                  value: 'flex-start',
+                  value: "flex-start",
                 },
                 alignItems: {
-                  value: 'center',
+                  value: "center",
                 },
                 borderRadius: {
-                  value: '99px',
+                  value: "99px",
                 },
                 padding: {
-                  value: '8px 12px 8px 12px',
+                  value: "8px 12px 8px 12px",
                 },
                 backgroundColor: {
-                  value: 'rgba(214,245,219,1)',
+                  value: "rgba(214,245,219,1)",
                 },
                 label: {
-                  value: 'Discount - 10% off',
+                  value: "Discount - 10% off",
                 },
                 color: {
-                  value: 'rgba(54,94,61,1)',
+                  value: "rgba(54,94,61,1)",
                 },
                 fontFamily: {
-                  value: 'Inter',
+                  value: "Inter",
                 },
                 fontWeight: {
-                  value: '700',
+                  value: "700",
                 },
                 fontSize: {
-                  value: '14px',
+                  value: "14px",
                 },
                 textAlign: {
-                  value: 'left',
+                  value: "left",
                 },
                 lineHeight: {
-                  value: '14px',
+                  value: "14px",
                 },
                 size: {
-                  value: 'default',
+                  value: "default",
                 },
                 variation: {
-                  value: 'success',
+                  value: "success",
                 },
               },
             },
           ],
-          componentType: 'Flex',
+          componentType: "Flex",
           events: {},
-          name: 'Group 320',
+          name: "Group 320",
           properties: {
             padding: {
-              value: '0px 0px 0px 0px',
+              value: "0px 0px 0px 0px",
             },
             width: {
-              value: '469px',
+              value: "469px",
             },
             height: {
-              value: '869px',
+              value: "869px",
             },
             shrink: {
-              value: '0',
+              value: "0",
             },
             position: {
-              value: 'relative',
+              value: "relative",
             },
           },
         },
       ],
-      componentType: 'Flex',
+      componentType: "Flex",
       events: {},
-      name: 'Frame 412',
+      name: "Frame 412",
       properties: {
         gap: {
-          value: '10px',
+          value: "10px",
         },
         direction: {
-          value: 'row',
+          value: "row",
         },
         width: {
-          value: 'fit-content',
+          value: "fit-content",
         },
         alignItems: {
-          value: 'flex-start',
+          value: "flex-start",
         },
         shrink: {
-          value: '0',
+          value: "0",
         },
         height: {
-          value: '933px',
+          value: "933px",
         },
         position: {
-          value: 'relative',
+          value: "relative",
         },
         padding: {
-          value: '32px 0px 32px 0px',
+          value: "32px 0px 32px 0px",
         },
         backgroundColor: {
-          value: 'rgba(255,255,255,1)',
+          value: "rgba(255,255,255,1)",
         },
       },
     },

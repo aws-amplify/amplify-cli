@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import { $TSObject } from '..';
+import _ from "lodash";
+import { $TSObject } from "..";
 
 export const recursiveOmit = (obj: $TSObject, path: Array<string>): void => {
   if (path.length === 0) return;

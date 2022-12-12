@@ -1,4 +1,4 @@
-import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Bucket } from './aws-matchers';
+import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Bucket } from "./aws-matchers";
 
 expect.extend({ toBeIAMRoleWithArn });
 expect.extend({ toHaveValidPolicyConditionMatchingIdpId });

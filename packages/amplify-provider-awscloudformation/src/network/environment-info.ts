@@ -1,8 +1,8 @@
-import { AmplifyError, JSONUtilities } from 'amplify-cli-core';
-import { EC2 } from 'aws-sdk';
-import { Netmask } from 'netmask';
-import { loadConfiguration } from '../configuration-manager';
-import { RESOURCE_TAG } from './stack';
+import { AmplifyError, JSONUtilities } from "amplify-cli-core";
+import { EC2 } from "aws-sdk";
+import { Netmask } from "netmask";
+import { loadConfiguration } from "../configuration-manager";
+import { RESOURCE_TAG } from "./stack";
 
 const SUBNETS = 3;
 type GetEnvironmentNetworkInfoParams = {
@@ -17,11 +17,9 @@ type GetEnvironmentNetworkInfoParams = {
  *
  */
 export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentNetworkInfoParams) {
-  const {
-    stackName, vpcName, vpcCidr, subnetsCount = SUBNETS, subnetMask,
-  } = params;
+  const { stackName, vpcName, vpcCidr, subnetsCount = SUBNETS, subnetMask } = params;
 
-  const [, vpcMask] = vpcCidr.split('/');
+  const [, vpcMask] = vpcCidr.split("/");
 
   let cred = {};
   try {
@@ -38,14 +36,17 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     const subnets = subnetsCount;
     const AZs = AvailabilityZones.length;
 
-    throw new AmplifyError('ConfigurationError', {
-      message: `The requested number of subnets exceeds the number of AZs for the region. ${JSONUtilities.stringify({ subnets, azs: AZs })}`,
+    throw new AmplifyError("ConfigurationError", {
+      message: `The requested number of subnets exceeds the number of AZs for the region. ${JSONUtilities.stringify({
+        subnets,
+        azs: AZs,
+      })}`,
     });
   }
 
   const { Vpcs } = await ec2
     .describeVpcs({
-      Filters: [{ Name: 'tag:Name', Values: [vpcName] }],
+      Filters: [{ Name: "tag:Name", Values: [vpcName] }],
     })
     .promise();
 
@@ -63,8 +64,8 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   const { VpcId: vpcId } = vpc;
 
   if (vpcId && !vpc.CidrBlock.endsWith(vpcMask)) {
-    throw new AmplifyError('ConfigurationError', {
-      message: 'Not the right mask',
+    throw new AmplifyError("ConfigurationError", {
+      message: "Not the right mask",
     });
   }
 
@@ -72,26 +73,26 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     .describeInternetGateways({
       Filters: [
         {
-          Name: 'attachment.vpc-id',
+          Name: "attachment.vpc-id",
           Values: [vpcId],
         },
         {
-          Name: 'attachment.state',
-          Values: ['available'],
+          Name: "attachment.state",
+          Values: ["available"],
         },
       ],
     })
     .promise();
 
   if (vpcId && InternetGateways.length === 0) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError("ConfigurationError", {
       message: `No attached and available Internet Gateway in VPC ${vpcId}`,
     });
   }
 
   const [{ InternetGatewayId: internetGatewayId = undefined } = {}] = InternetGateways;
 
-  const { Subnets } = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
+  const { Subnets } = await ec2.describeSubnets({ Filters: [{ Name: "vpc-id", Values: [vpcId] }] }).promise();
 
   const availabilityZonesIterator = new (class implements IterableIterator<string> {
     private iter = 0;
@@ -125,7 +126,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
 
   if (envCidrs.size < subnetsCount) {
     const vpcBlock = new Netmask(vpc.CidrBlock || vpcCidr);
-    const [, vpcMask] = vpcBlock.toString().split('/');
+    const [, vpcMask] = vpcBlock.toString().split("/");
 
     let subnetBlock = new Netmask(vpcBlock.toString().replace(vpcMask, subnetMask));
 
@@ -144,8 +145,8 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   }
 
   if (envCidrs.size < subnetsCount) {
-    throw new AmplifyError('ConfigurationError', {
-      message: 'Not enough CIDRs available in VPC',
+    throw new AmplifyError("ConfigurationError", {
+      message: "Not enough CIDRs available in VPC",
     });
   }
 

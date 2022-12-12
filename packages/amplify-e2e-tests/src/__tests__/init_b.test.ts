@@ -8,12 +8,12 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify init b', () => {
+describe("amplify init b", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('init');
+    projRoot = await createNewProjectDir("init");
   });
 
   afterEach(async () => {
@@ -21,20 +21,18 @@ describe('amplify init b', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('should init the project and create new env', async () => {
+  it("should init the project and create new env", async () => {
     await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const {
-      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
-    } = meta;
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // init new env
-    await initNewEnvWithProfile(projRoot, { envName: 'foo' });
+    await initNewEnvWithProfile(projRoot, { envName: "foo" });
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
 
     const {

@@ -19,7 +19,7 @@ export interface AppSyncServiceConfiguration {
   /**
    * The service name of the resource provider.
    */
-  serviceName: 'AppSync';
+  serviceName: "AppSync";
   /**
    * The name of the API that will be created.
    */
@@ -78,14 +78,14 @@ export interface PerModelResolutionstrategy {
  * Resolution strategies provided by AppSync. See https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html for details.
  */
 export interface PredefinedResolutionStrategy {
-  type: 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'NONE';
+  type: "OPTIMISTIC_CONCURRENCY" | "AUTOMERGE" | "NONE";
 }
 
 /**
  * Resolution strategy using a custom lambda function.
  */
 export interface LambdaResolutionStrategy {
-  type: 'LAMBDA';
+  type: "LAMBDA";
   /**
    * The lambda function used to resolve conflicts.
    */
@@ -98,14 +98,14 @@ export type LambdaConflictResolver = NewLambdaConflictResolver | ExistingLambdaC
  * Defines a new lambda conflict resolver. Using this resolver type will create a new lambda function with boilerplate resolver logic.
  */
 export interface NewLambdaConflictResolver {
-  type: 'NEW';
+  type: "NEW";
 }
 
 /**
  * Defines an lambda conflict resolver that uses an existing lambda function.
  */
 export interface ExistingLambdaConflictResolver {
-  type: 'EXISTING';
+  type: "EXISTING";
   /**
    * The name of the lambda function (this must be a lambda function that exists in the Amplify project).
    */
@@ -133,7 +133,7 @@ export type AppSyncAuthType =
  * Specifies that the AppSync API should be secured using an API key.
  */
 export interface AppSyncAPIKeyAuthType {
-  mode: 'API_KEY';
+  mode: "API_KEY";
   expirationTime?: number;
   apiKeyExpirationDate?: Date;
   keyDescription?: string;
@@ -150,14 +150,14 @@ export interface AppSyncAPIKeyExpiration {
  * Specifies that the AppSync API should be secured using AWS IAM.
  */
 export interface AppSyncAWSIAMAuthType {
-  mode: 'AWS_IAM';
+  mode: "AWS_IAM";
 }
 
 /**
  * Specifies that the AppSync API should be secured using Cognito.
  */
 export interface AppSyncCognitoUserPoolsAuthType {
-  mode: 'AMAZON_COGNITO_USER_POOLS';
+  mode: "AMAZON_COGNITO_USER_POOLS";
   /**
    * The user pool that will be used to authenticate requests.
    */
@@ -168,7 +168,7 @@ export interface AppSyncCognitoUserPoolsAuthType {
  * Specifies that the AppSync API should be secured using OpenID.
  */
 export interface AppSyncOpenIDConnectAuthType {
-  mode: 'OPENID_CONNECT';
+  mode: "OPENID_CONNECT";
   openIDProviderName: string;
   openIDIssuerURL: string;
   openIDClientID: string;
@@ -179,8 +179,8 @@ export interface AppSyncOpenIDConnectAuthType {
 /**
  * Specifies that the AppSync API should be secured using Lambda.
  */
- export interface AppSyncLambdaAuthType {
-  mode: 'AWS_LAMBDA';
+export interface AppSyncLambdaAuthType {
+  mode: "AWS_LAMBDA";
   lambdaFunction: string;
   ttlSeconds?: string;
 }

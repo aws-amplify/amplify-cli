@@ -1,6 +1,6 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { run as cloneComponentsFromEnv } from '../commands/cloneComponentsFromEnv';
+import { $TSContext } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { run as cloneComponentsFromEnv } from "../commands/cloneComponentsFromEnv";
 
 /**
  *

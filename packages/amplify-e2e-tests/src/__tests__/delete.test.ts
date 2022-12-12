@@ -1,4 +1,4 @@
-import { S3, Amplify } from 'aws-sdk';
+import { S3, Amplify } from "aws-sdk";
 import {
   addPinpointAnalytics,
   addApiWithoutSchema,
@@ -23,39 +23,39 @@ import {
   getS3StorageBucketName,
   pinpointAppExist,
   pushToCloud,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
-import { addCodegen } from '../codegen/add';
-import { getAWSExportsPath } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import _ from "lodash";
+import { addEnvironment, checkoutEnvironment, removeEnvironment } from "../environment/env";
+import { addCodegen } from "../codegen/add";
+import { getAWSExportsPath } from "../aws-exports/awsExports";
 
-describe('amplify delete', () => {
+describe("amplify delete", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('delete');
+    projRoot = await createNewProjectDir("delete");
   });
 
   afterEach(() => {
     deleteProjectDir(projRoot);
   });
 
-  it('should delete resources javascript', async () => {
+  it("should delete resources javascript", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await testDeletion(projRoot, {});
   });
 
-  it('should delete resources ios', async () => {
+  it("should delete resources ios", async () => {
     await initIosProjectWithProfile(projRoot, {});
     await testDeletion(projRoot, { ios: true });
   });
 
-  it('should delete resources android', async () => {
+  it("should delete resources android", async () => {
     await initAndroidProjectWithProfile(projRoot, {});
     await testDeletion(projRoot, { android: true });
   });
 
-  it('should delete pinpoint project', async () => {
+  it("should delete pinpoint project", async () => {
     await initProjectForPinpoint(projRoot);
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
     await pushToCloud(projRoot);
@@ -69,20 +69,20 @@ describe('amplify delete', () => {
     expect(pinpointAppExists).toBeFalsy();
   });
 
-  it('should remove enviroment', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'testdev' });
-    await addEnvironment(projRoot, { envName: 'testprod' });
+  it("should remove enviroment", async () => {
+    await initJSProjectWithProfile(projRoot, { envName: "testdev" });
+    await addEnvironment(projRoot, { envName: "testprod" });
     const amplifyMeta = getProjectMeta(projRoot);
     const meta = amplifyMeta.providers.awscloudformation;
     const deploymentBucketName1 = meta.DeploymentBucketName;
     expect(await bucketExists(deploymentBucketName1)).toBe(true);
-    await checkoutEnvironment(projRoot, { envName: 'testdev' });
-    await removeEnvironment(projRoot, { envName: 'testprod' });
+    await checkoutEnvironment(projRoot, { envName: "testdev" });
+    await removeEnvironment(projRoot, { envName: "testprod" });
     expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
     await deleteProject(projRoot);
   });
 
-  it('should delete bucket', async () => {
+  it("should delete bucket", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3(projRoot, {});
@@ -94,7 +94,7 @@ describe('amplify delete', () => {
     expect(await bucketNotExists(bucketName)).toBe(true);
   });
 
-  it('should try deleting unavailable bucket but not fail', async () => {
+  it("should try deleting unavailable bucket but not fail", async () => {
     await initJSProjectWithProfile(projRoot, {});
     const amplifyMeta = getProjectMeta(projRoot);
     const meta = amplifyMeta.providers.awscloudformation;
@@ -111,7 +111,7 @@ async function testDeletion(projRoot: string, settings: { ios?: boolean; android
   const deploymentBucketName1 = meta.DeploymentBucketName;
   expect(meta.Region).toBeDefined();
   const { AuthRoleName, UnauthRoleName } = meta;
-  await addEnvironment(projRoot, { envName: 'test' });
+  await addEnvironment(projRoot, { envName: "test" });
   await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
   await addCodegen(projRoot, settings);
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
@@ -140,10 +140,10 @@ async function putFiles(bucket: string, count = 1001) {
   const s3 = new S3();
   const s3Params = [...Array(count)].map((_, num) => ({
     Bucket: bucket,
-    Body: 'dummy body',
+    Body: "dummy body",
     Key: `${num}.txt`,
   }));
-  await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
+  await Promise.all(s3Params.map((p) => s3.putObject(p).promise()));
 }
 
 async function bucketExists(bucket: string) {

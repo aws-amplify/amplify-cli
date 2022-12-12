@@ -5,7 +5,7 @@ export interface S3ServiceConfigurationBase {
   /**
    * Descriminant used to determine the service config type
    */
-  serviceName: 'S3';
+  serviceName: "S3";
 }
 
 /**
@@ -42,12 +42,12 @@ export interface PermissionGroups {
  * Lambda function that runs on bucket change
  */
 export interface LambdaTriggerConfig {
-  mode: 'new' | 'existing';
+  mode: "new" | "existing";
   name: string;
 }
 
 export enum CrudOperation {
-  CREATE_AND_UPDATE = 'CREATE_AND_UPDATE',
-  READ = 'READ',
-  DELETE = 'DELETE',
+  CREATE_AND_UPDATE = "CREATE_AND_UPDATE",
+  READ = "READ",
+  DELETE = "DELETE",
 }

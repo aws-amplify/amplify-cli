@@ -14,19 +14,19 @@ export const v1toV2Upgrade = (payload: any) => {
   }
   // payload has pwRecoveryConfig
   switch (pwRecoveryConfig.deliveryMethod) {
-    case 'EMAIL':
+    case "EMAIL":
       userPoolConfig.autoVerifiedAttributes = [
         {
-          type: 'EMAIL',
+          type: "EMAIL",
           verificationMessage: pwRecoveryConfig.emailMessage,
           verificationSubject: pwRecoveryConfig.emailSubject,
         },
       ];
       break;
-    case 'SMS':
+    case "SMS":
       userPoolConfig.autoVerifiedAttributes = [
         {
-          type: 'PHONE_NUMBER',
+          type: "PHONE_NUMBER",
           verificationMessage: pwRecoveryConfig.smsMessage,
         },
       ];

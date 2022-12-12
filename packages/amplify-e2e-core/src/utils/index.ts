@@ -1,39 +1,39 @@
 /* eslint-disable import/no-cycle */
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as rimraf from 'rimraf';
-import { config } from 'dotenv';
-import execa from 'execa';
-import { v4 as uuid } from 'uuid';
-import { getLayerDirectoryName, LayerDirectoryType } from '..';
+import * as path from "path";
+import * as fs from "fs-extra";
+import * as rimraf from "rimraf";
+import { config } from "dotenv";
+import execa from "execa";
+import { v4 as uuid } from "uuid";
+import { getLayerDirectoryName, LayerDirectoryType } from "..";
 
-export * from './add-circleci-tags';
-export * from './api';
-export * from './appsync';
-export * from './envVars';
-export * from './getAppId';
-export * from './headless';
-export * from './nexpect';
-export * from './pinpoint';
-export * from './projectMeta';
-export * from './readJsonFile';
-export * from './request';
-export * from './retrier';
-export * from './sdk-calls';
-export * from './selectors';
-export * from './sleep';
-export * from './transformConfig';
-export * from './admin-ui';
-export * from './hooks';
-export * from './git-operations';
+export * from "./add-circleci-tags";
+export * from "./api";
+export * from "./appsync";
+export * from "./envVars";
+export * from "./getAppId";
+export * from "./headless";
+export * from "./nexpect";
+export * from "./pinpoint";
+export * from "./projectMeta";
+export * from "./readJsonFile";
+export * from "./request";
+export * from "./retrier";
+export * from "./sdk-calls";
+export * from "./selectors";
+export * from "./sleep";
+export * from "./transformConfig";
+export * from "./admin-ui";
+export * from "./hooks";
+export * from "./git-operations";
 
 /**
  * Whether the current environment is CircleCI or not
  */
-export const isCI = (): boolean => JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false');
+export const isCI = (): boolean => JSON.parse(process.env.CI || "false") && JSON.parse(process.env.CIRCLECI || "false");
 
 // eslint-disable-next-line spellcheck/spell-checker
-export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
+export const TEST_PROFILE_NAME = isCI() ? "amplify-integ-test-user" : "default";
 
 // run dotenv config to update env variable
 config();
@@ -49,7 +49,7 @@ export const deleteProjectDir = (root: string): void => {
  * delete <project-root>/amplify directory
  */
 export const deleteAmplifyDir = (root: string): void => {
-  rimraf.sync(path.join(root, 'amplify'));
+  rimraf.sync(path.join(root, "amplify"));
 };
 
 /**
@@ -57,23 +57,23 @@ export const deleteAmplifyDir = (root: string): void => {
  */
 export const loadFunctionTestFile = (fileName: string): string => {
   const functionPath = getTestFileNamePath(fileName);
-  return fs.readFileSync(functionPath, 'utf-8').toString();
+  return fs.readFileSync(functionPath, "utf-8").toString();
 };
 
 /**
  * install and save node dependencies
  */
 export const addNodeDependencies = (root: string, functionName: string, dependencies: string[]): void => {
-  const indexPath = path.join(getPathToFunction(root, functionName), 'src');
-  execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
+  const indexPath = path.join(getPathToFunction(root, functionName), "src");
+  execa.commandSync(`yarn add ${dependencies.join(" ")}`, { cwd: indexPath });
 };
 
 /**
  * copy node function code from source to target
  */
-export const overrideFunctionCodeNode = (root: string, functionName: string, sourceFileName: string, targetFileName = 'index.js'): void => {
+export const overrideFunctionCodeNode = (root: string, functionName: string, sourceFileName: string, targetFileName = "index.js"): void => {
   const sourcePath = getTestFileNamePath(sourceFileName);
-  const targetPath = path.join(getPathToFunction(root, functionName), 'src', targetFileName);
+  const targetPath = path.join(getPathToFunction(root, functionName), "src", targetFileName);
 
   fs.copySync(sourcePath, targetPath);
 };
@@ -85,10 +85,10 @@ export const overrideFunctionCodePython = (
   root: string,
   functionName: string,
   sourceFileName: string,
-  targetFileName = 'index.py',
+  targetFileName = "index.py"
 ): void => {
   const sourcePath = getTestFileNamePath(sourceFileName);
-  const targetPath = path.join(getPathToFunction(root, functionName), 'lib', 'python', targetFileName);
+  const targetPath = path.join(getPathToFunction(root, functionName), "lib", "python", targetFileName);
 
   fs.copySync(sourcePath, targetPath);
 };
@@ -96,8 +96,8 @@ export const overrideFunctionCodePython = (
 /**
  * overwrite node function /src
  */
-export const overrideFunctionSrcNode = (root: string, functionName: string, content: string, targetFileName = 'index.js'): void => {
-  const dirPath = path.join(getPathToFunction(root, functionName), 'src');
+export const overrideFunctionSrcNode = (root: string, functionName: string, content: string, targetFileName = "index.js"): void => {
+  const dirPath = path.join(getPathToFunction(root, functionName), "src");
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
@@ -107,8 +107,8 @@ export const overrideFunctionSrcNode = (root: string, functionName: string, cont
 /**
  * overwrite node function /src
  */
-export const overrideFunctionSrcPython = (root: string, functionName: string, content: string, targetFileName = 'index.py'): void => {
-  const dirPath = path.join(getPathToFunction(root, functionName), 'src');
+export const overrideFunctionSrcPython = (root: string, functionName: string, content: string, targetFileName = "index.py"): void => {
+  const dirPath = path.join(getPathToFunction(root, functionName), "src");
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
@@ -123,9 +123,9 @@ export const overrideLayerCodeNode = (
   projectName: string,
   layerName: string,
   content: string,
-  targetFileName = 'index.js',
+  targetFileName = "index.js"
 ): void => {
-  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'nodejs');
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), "lib", "nodejs");
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
@@ -140,9 +140,9 @@ export const overrideLayerCodePython = (
   projectName: string,
   layerName: string,
   content: string,
-  targetFileName = 'index.py',
+  targetFileName = "index.py"
 ): void => {
-  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'python');
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), "lib", "python");
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
@@ -153,7 +153,7 @@ export const overrideLayerCodePython = (
  * write target file to layer resource's opt/<targetFileName>
  */
 export const addOptFile = (root: string, projectName: string, layerName: string, content: string, targetFileName: string): void => {
-  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'opt');
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), "opt");
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
@@ -163,18 +163,20 @@ export const addOptFile = (root: string, projectName: string, layerName: string,
 /**
  * get node function source file
  */
-export const getFunctionSrcNode = (root: string, functionName: string, fileName = 'index.js'): string => {
-  const indexPath = path.join(getPathToFunction(root, functionName), 'src', fileName);
+export const getFunctionSrcNode = (root: string, functionName: string, fileName = "index.js"): string => {
+  const indexPath = path.join(getPathToFunction(root, functionName), "src", fileName);
 
   return fs.readFileSync(indexPath).toString();
 };
 
-const getTestFileNamePath = (fileName: string): string => path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
-const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
-const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string => path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
+const getTestFileNamePath = (fileName: string): string =>
+  path.join(__dirname, "..", "..", "..", "amplify-e2e-tests", "functions", fileName);
+const getPathToFunction = (root: string, funcName: string): string => path.join(root, "amplify", "backend", "function", funcName);
+const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string =>
+  path.join(root, "amplify", "backend", "function", getLayerDirectoryName(layerProjectName));
 
 /**
  * Generate short v4 UUID
  * @returns short UUID
  */
-export const generateRandomShortId = (): string => uuid().split('-')[0];
+export const generateRandomShortId = (): string => uuid().split("-")[0];

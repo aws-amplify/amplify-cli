@@ -1,5 +1,5 @@
-import Ajv from 'ajv';
-import { JSONSchema7 } from 'json-schema';
+import Ajv from "ajv";
+import { JSONSchema7 } from "json-schema";
 
 /**
  * Validates input data against the provided JSON-schemas and performs version upgrades as specified by the versionUpgradePipeline
@@ -25,7 +25,7 @@ export class HeadlessInputValidator {
   }
 
   private async checkAgainstSchema(data: any): Promise<number> {
-    if (!data || !data.version || typeof data.version !== 'number') {
+    if (!data || !data.version || typeof data.version !== "number") {
       throw new Error('data does not have a top level "version" field');
     }
     const version = data.version;
@@ -58,9 +58,7 @@ export class HeadlessInputValidator {
 /**
  * Function that takes a version number and returns a root schema and any dependency schemas for that schema version
  */
-export type VersionedSchemaSupplier = (
-  version: number,
-) => Promise<{
+export type VersionedSchemaSupplier = (version: number) => Promise<{
   readonly rootSchema: JSONSchema7;
   readonly dependencySchemas?: JSONSchema7[];
 } | void>;

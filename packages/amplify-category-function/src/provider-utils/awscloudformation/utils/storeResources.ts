@@ -1,37 +1,34 @@
 /* eslint-disable import/no-cycle */
-import {
-  $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import * as path from 'path';
-import { categoryName } from '../../../constants';
-import {
-  cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName,
-} from './constants';
-import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
-import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
-import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
-import { isFunctionPushed } from './funcionStateUtils';
-import { hasExistingSecrets, hasSetSecrets } from '../secrets/secretDeltaUtilities';
-import { LayerCloudState } from './layerCloudState';
-import { isNewVersion, loadPreviousLayerHash } from './layerHelpers';
-import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions } from './layerConfiguration';
-import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
-import { saveEnvironmentVariables } from './environmentVariablesHelper';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from "amplify-cli-core";
+import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from "amplify-function-plugin-interface";
+import * as fs from "fs-extra";
+import _ from "lodash";
+import * as path from "path";
+import { categoryName } from "../../../constants";
+import { cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName } from "./constants";
+import { generateLayerCfnObj } from "./lambda-layer-cloudformation-template";
+import { convertLambdaLayerMetaToLayerCFNArray } from "./layerArnConverter";
+import { FunctionSecretsStateManager } from "../secrets/functionSecretsStateManager";
+import { isFunctionPushed } from "./funcionStateUtils";
+import { hasExistingSecrets, hasSetSecrets } from "../secrets/secretDeltaUtilities";
+import { LayerCloudState } from "./layerCloudState";
+import { isNewVersion, loadPreviousLayerHash } from "./layerHelpers";
+import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions } from "./layerConfiguration";
+import { LayerParameters, LayerRuntime, LayerVersionMetadata } from "./layerParams";
+import { saveEnvironmentVariables } from "./environmentVariablesHelper";
 
 /**
  * handling both FunctionParameters and FunctionTriggerParameters here is a hack
  * ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
  */
 export const createFunctionResources = async (
-  context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters,
+  context: $TSContext,
+  parameters: FunctionParameters | FunctionTriggerParameters
 ): Promise<void> => {
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
     parameters.resourceName || parameters.functionName,
-    translateFuncParamsToResourceOpts(parameters),
+    translateFuncParamsToResourceOpts(parameters)
   );
 
   // copy template, CFN and parameter files
@@ -66,7 +63,7 @@ const defaultOpts = {
 export const updateLayerArtifacts = async (
   context: $TSContext,
   parameters: LayerParameters,
-  options: Partial<typeof defaultOpts> = {},
+  options: Partial<typeof defaultOpts> = {}
 ): Promise<boolean> => {
   // eslint-disable-next-line no-param-reassign
   options = _.assign(defaultOpts, options);
@@ -108,10 +105,10 @@ export const saveMutableState = async (
     | Partial<
         Pick<
           FunctionParameters,
-          'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName' | 'secretDeltas' | 'environmentVariables'
+          "mutableParametersState" | "resourceName" | "lambdaLayers" | "functionName" | "secretDeltas" | "environmentVariables"
         >
       >
-    | FunctionTriggerParameters,
+    | FunctionTriggerParameters
 ): Promise<void> => {
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
   saveEnvironmentVariables(parameters.resourceName, parameters.environmentVariables);
@@ -123,9 +120,9 @@ export const saveMutableState = async (
  */
 export const saveCFNParameters = (
   // eslint-disable-next-line spellcheck/spell-checker
-  parameters: Partial<Pick<FunctionParameters, 'cloudwatchRule' | 'resourceName'>> | FunctionTriggerParameters,
+  parameters: Partial<Pick<FunctionParameters, "cloudwatchRule" | "resourceName">> | FunctionTriggerParameters
 ): void => {
-  if ('trigger' in parameters) {
+  if ("trigger" in parameters) {
     const params = {
       modules: parameters.modules.join(),
       resourceName: parameters.resourceName,
@@ -133,7 +130,7 @@ export const saveCFNParameters = (
     createParametersFile(params, parameters.resourceName, parametersFileName);
   }
   // eslint-disable-next-line spellcheck/spell-checker
-  if ('cloudwatchRule' in parameters) {
+  if ("cloudwatchRule" in parameters) {
     const params = {
       // eslint-disable-next-line spellcheck/spell-checker
       CloudWatchRule: parameters.cloudwatchRule,
@@ -143,12 +140,13 @@ export const saveCFNParameters = (
 };
 
 const syncSecrets = async (
-  context: $TSContext, parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>,
+  context: $TSContext,
+  parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>
 ): Promise<void> => {
-  if ('secretDeltas' in parameters) {
+  if ("secretDeltas" in parameters) {
     const doConfirm = hasSetSecrets(parameters.secretDeltas) && isFunctionPushed(parameters.resourceName);
     const confirmed = doConfirm
-      ? await context.amplify.confirmPrompt('This will immediately update secret values in the cloud. Do you want to continue?', true)
+      ? await context.amplify.confirmPrompt("This will immediately update secret values in the cloud. Do you want to continue?", true)
       : true;
     if (confirmed) {
       const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context);
@@ -156,9 +154,9 @@ const syncSecrets = async (
     }
 
     if (hasExistingSecrets(parameters.secretDeltas)) {
-      context.print.info('Use the AWS SSM GetParameter API to retrieve secrets in your Lambda function.');
+      context.print.info("Use the AWS SSM GetParameter API to retrieve secrets in your Lambda function.");
       context.print.info(
-        'More information can be found here: https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameter.html',
+        "More information can be found here: https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameter.html"
       );
     }
   }
@@ -200,44 +198,44 @@ const saveLayerDescription = (layerName: string, description?: string): boolean 
 const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters): void => {
   // copy function template files
   const destDir = pathManager.getBackendDirPath();
-  const copyJobs = parameters.functionTemplate.sourceFiles.map(file => ({
+  const copyJobs = parameters.functionTemplate.sourceFiles.map((file) => ({
     dir: parameters.functionTemplate.sourceRoot,
     template: file,
     target: path.join(
       destDir,
       categoryName,
       parameters.resourceName,
-      _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')),
+      _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, ""))
     ),
   }));
 
   // this is a hack to reuse some old code
   let templateParams: $TSAny = parameters;
-  if ('trigger' in parameters) {
+  if ("trigger" in parameters) {
     const triggerEnvs = context.amplify.loadEnvResourceParameters(context, categoryName, parameters.resourceName);
     // eslint-disable-next-line no-param-reassign
     parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
 
-    parameters.triggerEnvs.forEach(c => {
+    parameters.triggerEnvs.forEach((c) => {
       triggerEnvs[c.key] = c.value;
     });
     templateParams = _.assign(templateParams, triggerEnvs);
   }
   templateParams = _.assign(templateParams, {
-    enableCors: process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER === 'true',
+    enableCors: process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER === "true",
   });
 
   context.amplify.copyBatch(context, copyJobs, templateParams, false);
 
   // copy cloud resource template
   const cloudTemplateJob = {
-    dir: '',
+    dir: "",
     template: parameters.cloudResourceTemplatePath,
     target: path.join(destDir, categoryName, parameters.resourceName, `${parameters.resourceName}-cloudformation-template.json`),
   };
 
   const copyJobParams: $TSAny = parameters;
-  if ('lambdaLayers' in parameters) {
+  if ("lambdaLayers" in parameters) {
     const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
     copyJobParams.lambdaLayersCFNArray = layerCFNValues;
   }
@@ -250,18 +248,20 @@ const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters |
 export const ensureLayerFolders = (parameters: LayerParameters): string => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
-  fs.ensureDirSync(path.join(layerDirPath, 'opt'));
-  parameters.runtimes.forEach(runtime => ensureLayerRuntimeFolder(layerDirPath, runtime));
+  fs.ensureDirSync(path.join(layerDirPath, "opt"));
+  parameters.runtimes.forEach((runtime) => ensureLayerRuntimeFolder(layerDirPath, runtime));
   return layerDirPath;
 };
 
 // Default files are only created if the path does not exist
 const ensureLayerRuntimeFolder = (layerDirPath: string, runtime: LayerRuntime): void => {
-  const runtimeDirPath = path.join(layerDirPath, 'lib', runtime.layerExecutablePath);
+  const runtimeDirPath = path.join(layerDirPath, "lib", runtime.layerExecutablePath);
   if (!fs.pathExistsSync(runtimeDirPath)) {
     fs.ensureDirSync(runtimeDirPath);
-    fs.writeFileSync(path.join(runtimeDirPath, 'README.txt'), 'Replace this file with your layer files');
-    (runtime.layerDefaultFiles || []).forEach(defaultFile => fs.writeFileSync(path.join(layerDirPath, 'lib', defaultFile.path, defaultFile.filename), defaultFile.content));
+    fs.writeFileSync(path.join(runtimeDirPath, "README.txt"), "Replace this file with your layer files");
+    (runtime.layerDefaultFiles || []).forEach((defaultFile) =>
+      fs.writeFileSync(path.join(layerDirPath, "lib", defaultFile.path, defaultFile.filename), defaultFile.content)
+    );
   }
 };
 
@@ -342,12 +342,12 @@ export const createParametersFile = (parameters: $TSObject, resourceName: string
 };
 
 const buildParametersFileObj = (
-  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'lambdaLayers'>> | FunctionTriggerParameters,
+  parameters: Partial<Pick<FunctionParameters, "mutableParametersState" | "lambdaLayers">> | FunctionTriggerParameters
 ): $TSAny => {
-  if ('trigger' in parameters) {
-    return _.omit(parameters, ['functionTemplate', 'cloudResourceTemplatePath']);
+  if ("trigger" in parameters) {
+    return _.omit(parameters, ["functionTemplate", "cloudResourceTemplatePath"]);
   }
-  return { ...parameters.mutableParametersState, ..._.pick(parameters, ['lambdaLayers']) };
+  return { ...parameters.mutableParametersState, ..._.pick(parameters, ["lambdaLayers"]) };
 };
 
 const translateFuncParamsToResourceOpts = (params: FunctionParameters | FunctionTriggerParameters): $TSAny => {
@@ -356,25 +356,25 @@ const translateFuncParamsToResourceOpts = (params: FunctionParameters | Function
     providerPlugin: provider,
     service: ServiceName.LambdaFunction,
   };
-  if (!('trigger' in params)) {
+  if (!("trigger" in params)) {
     result.dependsOn = params.dependsOn;
   }
   return result;
 };
 
 const createBreadcrumbs = (params: FunctionParameters | FunctionTriggerParameters): FunctionBreadcrumbs => {
-  if ('trigger' in params) {
+  if ("trigger" in params) {
     return {
-      pluginId: 'amplify-nodejs-function-runtime-provider',
-      functionRuntime: 'nodejs',
+      pluginId: "amplify-nodejs-function-runtime-provider",
+      functionRuntime: "nodejs",
       useLegacyBuild: true,
-      defaultEditorFile: 'src/index.js',
+      defaultEditorFile: "src/index.js",
     };
   }
   return {
     pluginId: params.runtimePluginId,
     functionRuntime: params.runtime.value,
-    useLegacyBuild: params.runtime.value === 'nodejs', // so we can update node builds in the future
+    useLegacyBuild: params.runtime.value === "nodejs", // so we can update node builds in the future
     defaultEditorFile: params.functionTemplate.defaultEditorFile,
   };
 };
@@ -383,7 +383,7 @@ const saveCFNFileWithLayerVersion = (
   layerDirPath: string,
   parameters: LayerParameters,
   _isNewVersion: boolean,
-  layerVersionList: LayerVersionMetadata[],
+  layerVersionList: LayerVersionMetadata[]
 ): $TSAny => {
   const cfnTemplate = generateLayerCfnObj(_isNewVersion, parameters, layerVersionList);
 

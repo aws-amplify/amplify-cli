@@ -1,15 +1,15 @@
-import assert from 'assert';
-import { $TSObject } from 'amplify-cli-core';
+import assert from "assert";
+import { $TSObject } from "amplify-cli-core";
 
 export const pagedAWSCall = async <TAPIResult, TData, TNextToken, TParams = $TSObject>(
   action: (params: TParams, nextToken?: TNextToken) => Promise<TAPIResult>,
   params: TParams,
   accessor: (result?: TAPIResult) => TData[],
-  getNextToken: (serviceResponse: TAPIResult, result: TData[]) => Promise<TNextToken | undefined>,
+  getNextToken: (serviceResponse: TAPIResult, result: TData[]) => Promise<TNextToken | undefined>
 ): Promise<TData[]> => {
-  assert(action, 'missing argument: action');
-  assert(accessor, 'missing argument: accessor');
-  assert(getNextToken, 'missing argument: getNextToken');
+  assert(action, "missing argument: action");
+  assert(accessor, "missing argument: accessor");
+  assert(getNextToken, "missing argument: getNextToken");
 
   let result: TData[] = [];
   let response: TAPIResult;

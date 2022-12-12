@@ -1,12 +1,10 @@
-import { isCI } from 'amplify-cli-core';
-import { IFlowReport } from 'amplify-cli-shared-interfaces';
-import * as os from 'os';
-import { Input } from '../input';
-import {
-  InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath,
-} from './UsageDataTypes';
-import { SerializableError } from './SerializableError';
-import { getLatestPayloadVersion } from './VersionManager';
+import { isCI } from "amplify-cli-core";
+import { IFlowReport } from "amplify-cli-shared-interfaces";
+import * as os from "os";
+import { Input } from "../input";
+import { InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from "./UsageDataTypes";
+import { SerializableError } from "./SerializableError";
+import { getLatestPayloadVersion } from "./VersionManager";
 
 /**
  * Metadata that is sent to the usage data endpoint
@@ -42,7 +40,7 @@ export class UsageDataPayload implements IUsageDataPayload {
     project: ProjectSettings,
     inputOptions: InputOptions,
     codePathDurations: Partial<Record<TimedCodePath, number>>,
-    flowReport: IFlowReport,
+    flowReport: IFlowReport
   ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;

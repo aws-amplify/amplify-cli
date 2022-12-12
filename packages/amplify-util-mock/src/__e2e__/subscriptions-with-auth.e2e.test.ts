@@ -1,16 +1,16 @@
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import AWS = require('aws-sdk');
-import gql from 'graphql-tag';
-import 'isomorphic-fetch';
-import { GraphQLClient } from './utils/graphql-client';
+import { ModelAuthTransformer } from "graphql-auth-transformer";
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
+import { FeatureFlagProvider, GraphQLTransform } from "graphql-transformer-core";
+import { deploy, launchDDBLocal, terminateDDB } from "./utils/index";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+import { signUpAddToGroupAndGetJwtToken } from "./utils/cognito-utils";
+import AWS = require("aws-sdk");
+import gql from "graphql-tag";
+import "isomorphic-fetch";
+import { GraphQLClient } from "./utils/graphql-client";
 
 // to deal with subscriptions in node env
-(global as any).WebSocket = require('ws');
+(global as any).WebSocket = require("ws");
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
@@ -30,7 +30,7 @@ let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
-const AWS_REGION = 'my-local-2';
+const AWS_REGION = "my-local-2";
 
 let APPSYNC_CLIENT_1: AWSAppSyncClient<any> = undefined;
 let APPSYNC_CLIENT_2: AWSAppSyncClient<any> = undefined;
@@ -40,15 +40,15 @@ let GRAPHQL_CLIENT_1: GraphQLClient = undefined;
 let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
 let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
 
-const USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = "fake_user_pool";
 
-const USERNAME1 = 'user1@domain.com';
-const USERNAME2 = 'user2@domain.com';
-const USERNAME3 = 'user3@domain.com';
+const USERNAME1 = "user1@domain.com";
+const USERNAME2 = "user2@domain.com";
+const USERNAME3 = "user3@domain.com";
 
-const INSTRUCTOR_GROUP_NAME = 'Instructor';
-const ADMIN_GROUP_NAME = 'Admin';
-const MEMBER_GROUP_NAME = 'Member';
+const INSTRUCTOR_GROUP_NAME = "Instructor";
+const ADMIN_GROUP_NAME = "Admin";
+const MEMBER_GROUP_NAME = "Member";
 
 /**
  * Interface Inputs
@@ -124,14 +124,14 @@ beforeAll(async () => {
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+            authenticationType: "AMAZON_COGNITO_USER_POOLS",
           },
           additionalAuthenticationProviders: [],
         },
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === "improvePluralization" ? true : false),
     } as FeatureFlagProvider,
   });
 
@@ -144,7 +144,7 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = server.url + "/graphql";
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     // Configure Amplify, create users, and sign in.
@@ -154,7 +154,7 @@ beforeAll(async () => {
       region: AWS_REGION,
       disableOffline: true,
       offlineConfig: {
-        keyPrefix: 'userPools',
+        keyPrefix: "userPools",
       },
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
@@ -170,7 +170,7 @@ beforeAll(async () => {
       region: AWS_REGION,
       disableOffline: true,
       offlineConfig: {
-        keyPrefix: 'userPools',
+        keyPrefix: "userPools",
       },
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
@@ -186,7 +186,7 @@ beforeAll(async () => {
       region: AWS_REGION,
       disableOffline: true,
       offlineConfig: {
-        keyPrefix: 'userPools',
+        keyPrefix: "userPools",
       },
       auth: {
         type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
@@ -199,7 +199,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise(res => setTimeout(res, PROPAGATAION_DELAY));
+    await new Promise((res) => setTimeout(res, PROPAGATAION_DELAY));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -221,7 +221,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('that only authorized members are allowed to view subscriptions', async () => {
+test("that only authorized members are allowed to view subscriptions", async () => {
   // subscribe to create students as user 2
   const observer = APPSYNC_CLIENT_2.subscribe({
     query: gql`
@@ -241,25 +241,25 @@ test('that only authorized members are allowed to view subscriptions', async () 
     const subscription = observer.subscribe((event: any) => {
       const student = event.data.onCreateStudent;
       subscription.unsubscribe();
-      expect(student.name).toEqual('student1');
-      expect(student.email).toEqual('student1@domain.com');
+      expect(student.name).toEqual("student1");
+      expect(student.email).toEqual("student1@domain.com");
       expect(student.ssn).toBeNull();
       resolve(undefined);
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createStudent(GRAPHQL_CLIENT_1, {
-    name: 'student1',
-    email: 'student1@domain.com',
-    ssn: 'AAA-01-SSSS',
+    name: "student1",
+    email: "student1@domain.com",
+    ssn: "AAA-01-SSSS",
   });
 
   return subscriptionPromise;
 });
 
-test('a subscription on update', async () => {
+test("a subscription on update", async () => {
   // susbcribe to update students as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -279,35 +279,35 @@ test('a subscription on update', async () => {
       const student = event.data.onUpdateStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student3ID);
-      expect(student.name).toEqual('student3');
-      expect(student.email).toEqual('emailChanged@domain.com');
+      expect(student.name).toEqual("student3");
+      expect(student.email).toEqual("emailChanged@domain.com");
       expect(student.ssn).toBeNull();
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
-    name: 'student3',
-    email: 'changeThisEmail@domain.com',
-    ssn: 'CCC-01-SNSN',
+    name: "student3",
+    email: "changeThisEmail@domain.com",
+    ssn: "CCC-01-SNSN",
   });
 
   expect(student3.data.createStudent).toBeDefined();
   const student3ID = student3.data.createStudent.id;
-  expect(student3.data.createStudent.name).toEqual('student3');
-  expect(student3.data.createStudent.email).toEqual('changeThisEmail@domain.com');
+  expect(student3.data.createStudent.name).toEqual("student3");
+  expect(student3.data.createStudent.email).toEqual("changeThisEmail@domain.com");
   expect(student3.data.createStudent.ssn).toBeNull();
 
   await updateStudent(GRAPHQL_CLIENT_1, {
     id: student3ID,
-    email: 'emailChanged@domain.com',
+    email: "emailChanged@domain.com",
   });
 
   return subscriptionPromise;
 });
 
-test('a subscription on delete', async () => {
+test("a subscription on delete", async () => {
   // subscribe to onDelete as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -327,23 +327,23 @@ test('a subscription on delete', async () => {
       const student = event.data.onDeleteStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student4ID);
-      expect(student.name).toEqual('student4');
-      expect(student.email).toEqual('plsDelete@domain.com');
+      expect(student.name).toEqual("student4");
+      expect(student.email).toEqual("plsDelete@domain.com");
       expect(student.ssn).toBeNull();
       resolve(undefined);
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
-    name: 'student4',
-    email: 'plsDelete@domain.com',
-    ssn: 'DDD-02-SNSN',
+    name: "student4",
+    email: "plsDelete@domain.com",
+    ssn: "DDD-02-SNSN",
   });
   expect(student4).toBeDefined();
   const student4ID = student4.data.createStudent.id;
-  expect(student4.data.createStudent.email).toEqual('plsDelete@domain.com');
+  expect(student4.data.createStudent.email).toEqual("plsDelete@domain.com");
   expect(student4.data.createStudent.ssn).toBeNull();
 
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
@@ -351,12 +351,12 @@ test('a subscription on delete', async () => {
   return subscriptionPromise;
 });
 
-test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
-  const memberID = '001';
-  const memberName = 'username00';
+test("that group is only allowed to listen to subscriptions and listen to onCreate", async () => {
+  const memberID = "001";
+  const memberName = "username00";
   // test that a user that only read can't mutate
-  const result = await createMember(GRAPHQL_CLIENT_2, { id: '001', name: 'notUser' });
-  expect(result.errors[0].message === 'Unauthorized');
+  const result = await createMember(GRAPHQL_CLIENT_2, { id: "001", name: "notUser" });
+  expect(result.errors[0].message === "Unauthorized");
 
   // though they should see when a new member is created
   const subscriptionPromise = new Promise((resolve, _) => {
@@ -382,16 +382,16 @@ test('that group is only allowed to listen to subscriptions and listen to onCrea
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 
   return subscriptionPromise;
 });
 
-test('authorized group is allowed to listen to onUpdate', async () => {
-  const memberID = '001';
-  const memberName = 'newUsername';
+test("authorized group is allowed to listen to onUpdate", async () => {
+  const memberID = "001";
+  const memberName = "newUsername";
 
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -416,16 +416,16 @@ test('authorized group is allowed to listen to onUpdate', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 
   return subscriptionPromise;
 });
 
-test('authoirzed group is allowed to listen to onDelete', async () => {
-  const memberID = '001';
-  const memberName = 'newUsername';
+test("authoirzed group is allowed to listen to onDelete", async () => {
+  const memberID = "001";
+  const memberName = "newUsername";
 
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -450,7 +450,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
 
@@ -458,7 +458,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('subscription onCreatePost with ownerField', async () => {
+test("subscription onCreatePost with ownerField", async () => {
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_1.subscribe({
       query: gql`
@@ -473,16 +473,16 @@ test('subscription onCreatePost with ownerField', async () => {
     const subscription = observer.subscribe((event: any) => {
       const post = event.data.onCreatePost;
       subscription.unsubscribe();
-      expect(post.title).toEqual('someTitle');
+      expect(post.title).toEqual("someTitle");
       expect(post.postOwner).toEqual(USERNAME1);
       resolve(undefined);
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createPost(GRAPHQL_CLIENT_1, {
-    title: 'someTitle',
+    title: "someTitle",
     postOwner: USERNAME1,
   });
 
@@ -502,13 +502,10 @@ async function createStudent(client: GraphQLClient, input: CreateStudentInput) {
       }
     }
   `;
-  
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -524,12 +521,9 @@ async function createMember(client: GraphQLClient, input: MemberInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -545,12 +539,9 @@ async function updateMember(client: GraphQLClient, input: MemberInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -566,12 +557,9 @@ async function deleteMember(client: GraphQLClient, input: MemberInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -588,12 +576,9 @@ async function updateStudent(client: GraphQLClient, input: UpdateStudentInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -610,12 +595,9 @@ async function deleteStudent(client: GraphQLClient, input: DeleteTypeInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -630,11 +612,8 @@ async function createPost(client: GraphQLClient, input: CreatePostInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }

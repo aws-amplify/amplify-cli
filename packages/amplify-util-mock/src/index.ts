@@ -1,1 +1,1 @@
-export * from './amplify-plugin-index';
+export * from "./amplify-plugin-index";

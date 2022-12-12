@@ -1,8 +1,8 @@
-import { getSummaryTableData, getResourceDiffs } from './resource-status-data';
-import * as resourceStatus from './resource-status-diff';
-import { getEnvInfo } from './get-env-info';
-import { print } from './print';
-import chalk from 'chalk';
+import { getSummaryTableData, getResourceDiffs } from "./resource-status-data";
+import * as resourceStatus from "./resource-status-diff";
+import { getEnvInfo } from "./get-env-info";
+import { print } from "./print";
+import chalk from "chalk";
 //view: displays resource-diff (cloudformation-diff, input parameters (pending))
 export async function viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated }) {
   const resourceDiffs = await getResourceDiffs(resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated);
@@ -24,7 +24,7 @@ export async function viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDel
 export function viewEnvInfo() {
   const { envName } = getEnvInfo();
   print.info(`
-    ${chalk.green('Current Environment')}: ${envName}
+    ${chalk.green("Current Environment")}: ${envName}
     `);
 }
 
@@ -32,5 +32,5 @@ export function viewEnvInfo() {
 export function viewSummaryTable(resourceStateData) {
   const tableOptions = getSummaryTableData(resourceStateData);
   const { table } = print;
-  table(tableOptions, { format: 'lean' });
+  table(tableOptions, { format: "lean" });
 }

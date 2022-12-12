@@ -1,5 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { extractArgs } from './extractArgs';
+import { $TSContext, stateManager } from "amplify-cli-core";
+import { extractArgs } from "./extractArgs";
 
 /**
  * Get's the environment name from the given name or the context
@@ -25,7 +25,7 @@ export const getAppId = (context: $TSContext, appId?: string): string => {
 
   if (!resolvedAppId) {
     throw new Error(
-      'Unable to sync Studio components since appId could not be determined. This can happen when you hit the soft limit of number of apps that you can have in Amplify console.',
+      "Unable to sync Studio components since appId could not be determined. This can happen when you hit the soft limit of number of apps that you can have in Amplify console."
     );
   }
   return resolvedAppId;

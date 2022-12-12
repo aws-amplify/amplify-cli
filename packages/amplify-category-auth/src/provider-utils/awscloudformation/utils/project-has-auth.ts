@@ -1,6 +1,6 @@
-import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { messages } from '../assets/string-maps';
+import { $TSContext, $TSObject, stateManager } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import { messages } from "../assets/string-maps";
 
 /**
  * Checks if auth already exists in the project and prints a warning if so.
@@ -13,10 +13,10 @@ export const projectHasAuth = (context: $TSContext): boolean => {
   if (existingAuthResources.length > 0) {
     if (checkAuthIsImported(existingAuthResources)) {
       // determine which command will make the help message useful, defaults to 'import'
-      const commandVerb = context?.input?.command && context.input.command !== 'update' ? context.input.command : 'import';
+      const commandVerb = context?.input?.command && context.input.command !== "update" ? context.input.command : "import";
       printer.warn(
-        'Auth has already been imported to this project and cannot be modified from the CLI. ' +
-          `To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify ${commandVerb} auth".`,
+        "Auth has already been imported to this project and cannot be modified from the CLI. " +
+          `To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify ${commandVerb} auth".`
       );
     } else {
       printer.warn(messages.authExists);
@@ -27,5 +27,5 @@ export const projectHasAuth = (context: $TSContext): boolean => {
 };
 
 const checkAuthIsImported = (authResources: [string, $TSObject][]): boolean => {
-  return authResources.filter(([_, resource]) => resource?.serviceType === 'imported').length > 0;
+  return authResources.filter(([_, resource]) => resource?.serviceType === "imported").length > 0;
 };

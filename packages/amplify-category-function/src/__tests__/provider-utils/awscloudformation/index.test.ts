@@ -1,45 +1,45 @@
-import { openConsole, isMockable } from '../../../provider-utils/awscloudformation';
-import { ServiceName } from '../../../provider-utils/awscloudformation/utils/constants';
-import { open, $TSContext, stateManager } from 'amplify-cli-core';
-import { buildFunction } from '../../../provider-utils/awscloudformation/utils/buildFunction';
-import { getBuilder } from '../../..';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { openConsole, isMockable } from "../../../provider-utils/awscloudformation";
+import { ServiceName } from "../../../provider-utils/awscloudformation/utils/constants";
+import { open, $TSContext, stateManager } from "amplify-cli-core";
+import { buildFunction } from "../../../provider-utils/awscloudformation/utils/buildFunction";
+import { getBuilder } from "../../..";
+import { BuildType } from "amplify-function-plugin-interface";
 
-jest.mock('amplify-cli-core');
+jest.mock("amplify-cli-core");
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({
   providers: {
     awscloudformation: {
-      Region: 'myMockRegion',
+      Region: "myMockRegion",
     },
   },
   function: {
     testFunc: {
-      lastBuildTimeStamp: 'lastBuildTimeStamp',
-      lastDevBuildTimeStamp: 'lastDevBuildTimeStamp',
+      lastBuildTimeStamp: "lastBuildTimeStamp",
+      lastDevBuildTimeStamp: "lastDevBuildTimeStamp",
     },
   },
 });
-jest.mock('open');
+jest.mock("open");
 
-jest.mock('../../../provider-utils/awscloudformation/utils/buildFunction', () => ({
+jest.mock("../../../provider-utils/awscloudformation/utils/buildFunction", () => ({
   buildFunction: jest.fn(),
   buildTypeKeyMap: {
-    PROD: 'lastBuildTimeStamp',
-    DEV: 'lastDevBuildTimeStamp',
+    PROD: "lastBuildTimeStamp",
+    DEV: "lastDevBuildTimeStamp",
   },
 }));
 const buildFunction_mock = buildFunction as jest.MockedFunction<typeof buildFunction>;
 
-describe('awscloudformation function provider', () => {
+describe("awscloudformation function provider", () => {
   beforeEach(() => jest.clearAllMocks());
-  it('opens the correct service console', () => {
+  it("opens the correct service console", () => {
     const contextStub = {
       amplify: {
         getProjectMeta: () => ({
           providers: {
             awscloudformation: {
-              Region: 'myMockRegion',
+              Region: "myMockRegion",
             },
           },
         }),
@@ -57,25 +57,25 @@ describe('awscloudformation function provider', () => {
     expect(openMock.mock.calls[0][0]).toMatchSnapshot();
   });
 
-  it('cannot mock lambda layers', () => {
+  it("cannot mock lambda layers", () => {
     const isLayerMockable = isMockable(ServiceName.LambdaLayer);
     expect(isLayerMockable.isMockable).toBe(false);
   });
 
-  it('can mock lambda functions', () => {
+  it("can mock lambda functions", () => {
     const isFunctionMockable = isMockable(ServiceName.LambdaFunction);
     expect(isFunctionMockable.isMockable).toBe(true);
   });
 
-  it('passes correct build timestamp to buildFunction', async () => {
-    const prodBuilder = await getBuilder({} as $TSContext, 'testFunc', BuildType.PROD);
+  it("passes correct build timestamp to buildFunction", async () => {
+    const prodBuilder = await getBuilder({} as $TSContext, "testFunc", BuildType.PROD);
     await prodBuilder();
-    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimestamp).toEqual('lastBuildTimeStamp');
+    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimestamp).toEqual("lastBuildTimeStamp");
 
     buildFunction_mock.mockClear();
 
-    const devBuilder = await getBuilder({} as $TSContext, 'testFunc', BuildType.DEV);
+    const devBuilder = await getBuilder({} as $TSContext, "testFunc", BuildType.DEV);
     await devBuilder();
-    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimestamp).toEqual('lastDevBuildTimeStamp');
+    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimestamp).toEqual("lastDevBuildTimeStamp");
   });
 });

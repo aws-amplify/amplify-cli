@@ -1,16 +1,16 @@
-import winston, { Logger, format } from 'winston';
-import * as os from 'os';
-import winstonDailyRotateFile from 'winston-daily-rotate-file';
-import { constants } from './constants';
-import { IAmplifyLogger } from './IAmplifyLogger';
-import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from './getLogFilePath';
-import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
+import winston, { Logger, format } from "winston";
+import * as os from "os";
+import winstonDailyRotateFile from "winston-daily-rotate-file";
+import { constants } from "./constants";
+import { IAmplifyLogger } from "./IAmplifyLogger";
+import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from "./getLogFilePath";
+import { LocalProjectData, LogPayload, LogErrorPayload } from "./Types";
 const { combine, timestamp, splat, printf } = format;
 export class AmplifyLogger implements IAmplifyLogger {
   logger: Logger;
   loggerFormat: winston.Logform.Format;
   localProjectData!: LocalProjectData;
-  disabledAmplifyLogging: boolean = process.env.AMPLIFY_CLI_DISABLE_LOGGING === 'true';
+  disabledAmplifyLogging: boolean = process.env.AMPLIFY_CLI_DISABLE_LOGGING === "true";
   constructor() {
     this.logger = winston.createLogger();
     this.loggerFormat = combine(timestamp(), splat(), printf(this.formatter));
@@ -23,13 +23,13 @@ export class AmplifyLogger implements IAmplifyLogger {
           maxFiles: constants.MAX_FILE_DAYS,
           handleExceptions: false,
           format: this.loggerFormat,
-        }),
+        })
       );
     } else {
       this.logger.add(
         new winston.transports.Console({
           silent: true,
-        }),
+        })
       );
     }
   }
@@ -40,7 +40,7 @@ export class AmplifyLogger implements IAmplifyLogger {
 
   private formatter(info: winston.Logform.TransformableInfo): string {
     const format = `${info.timestamp}|${info.level} : ${info.message}`;
-    if (info.level === 'error') {
+    if (info.level === "error") {
       return `${format}${os.EOL}${info.error}`;
     }
 
@@ -57,7 +57,7 @@ export class AmplifyLogger implements IAmplifyLogger {
           maxFiles: constants.MAX_FILE_DAYS,
           handleExceptions: false,
           format: this.loggerFormat,
-        }),
+        })
       );
     }
   }

@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   AuthProjectDetails,
   createIDPAndUserPoolWithOAuthSettings,
@@ -22,13 +22,13 @@ import {
   getShortId,
   headlessPullExpectError,
   importIdentityPoolAndUserPool,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('auth import identity pool and userpool', () => {
-  const projectPrefix = 'auimpidup';
-  const ogProjectPrefix = 'ogauimpidup';
+describe("auth import identity pool and userpool", () => {
+  const projectPrefix = "auimpidup";
+  const ogProjectPrefix = "ogauimpidup";
 
   const projectSettings = {
     name: projectPrefix,
@@ -39,7 +39,7 @@ describe('auth import identity pool and userpool', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog2',
+    name: "dummyog2",
   };
 
   // OG is the CLI project that creates the user pool to import by other test projects
@@ -103,27 +103,27 @@ describe('auth import identity pool and userpool', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('auth import identitypool and userpool', async () => {
+  it("auth import identitypool and userpool", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     let projectDetails = getAuthProjectDetails(projectRoot);
 
     expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
-    await amplifyStatus(projectRoot, 'Import');
+    await amplifyStatus(projectRoot, "Import");
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
+    await amplifyStatus(projectRoot, "No Change");
 
     expectLocalAndCloudMetaFilesMatching(projectRoot);
   });
 
-  it('auth pull into empty directory', async () => {
+  it("auth pull into empty directory", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     await amplifyPushAuth(projectRoot);
 
@@ -133,7 +133,7 @@ describe('auth import identity pool and userpool', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('authidp-pull');
+      projectRootPull = await createNewProjectDir("authidp-pull");
 
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
@@ -145,13 +145,13 @@ describe('auth import identity pool and userpool', () => {
     }
   });
 
-  it('auth headless pull missing parameters', async () => {
+  it("auth headless pull missing parameters", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
 
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: "_app_client ", web: "_app_clientWeb" });
 
     await amplifyPushAuth(projectRoot);
 
@@ -161,12 +161,12 @@ describe('auth import identity pool and userpool', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('authidp-pull');
+      projectRootPull = await createNewProjectDir("authidp-pull");
 
-      const envName = 'integtest';
+      const envName = "integtest";
       const providersParam = {
         awscloudformation: {
-          configLevel: 'project',
+          configLevel: "project",
           useProfile: true,
           profileName,
         },
@@ -177,10 +177,10 @@ describe('auth import identity pool and userpool', () => {
           projectRootPull,
           { envName, appId },
           providersParam,
-          'Error: auth headless is missing the following inputParams userPoolId, webClientId, nativeClientId, identityPoolId',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
+          "Error: auth headless is missing the following inputParams userPoolId, webClientId, nativeClientId, identityPoolId",
+          {}
+        )
+      ).rejects.toThrowError("Process exited with non zero exit code 1");
     } finally {
       deleteProjectDir(projectRootPull);
     }

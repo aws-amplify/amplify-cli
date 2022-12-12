@@ -1,27 +1,27 @@
-import { stateManager, pathManager } from 'amplify-cli-core';
-import { readProjectSchema } from 'graphql-transformer-core';
+import { stateManager, pathManager } from "amplify-cli-core";
+import { readProjectSchema } from "graphql-transformer-core";
 
-jest.mock('amplify-category-hosting');
-jest.mock('amplify-cli-core');
-jest.mock('graphql-transformer-core', () => ({
-  readProjectSchema: jest.fn(async (__: string) => ''),
+jest.mock("amplify-category-hosting");
+jest.mock("amplify-cli-core");
+jest.mock("graphql-transformer-core", () => ({
+  readProjectSchema: jest.fn(async (__: string) => ""),
 }));
-jest.mock('../../extensions/amplify-helpers/show-auth-acm', () => ({
+jest.mock("../../extensions/amplify-helpers/show-auth-acm", () => ({
   showACM: jest.fn(),
 }));
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-pathManagerMock.getBackendDirPath.mockReturnValue('testBackendDirPath');
+pathManagerMock.getBackendDirPath.mockReturnValue("testBackendDirPath");
 
-const testApiName = 'testApiName';
+const testApiName = "testApiName";
 const mockGraphQLAPIMeta = {
   providers: {
     awscloudformation: {
-      Region: 'myMockRegion',
+      Region: "myMockRegion",
     },
   },
   api: {
     [testApiName]: {
-      service: 'AppSync',
+      service: "AppSync",
     },
   },
 };
@@ -31,22 +31,22 @@ stateManagerMock.getMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta
 
 const readProjectSchemaMock = readProjectSchema as jest.MockedFunction<typeof readProjectSchema>;
 
-describe('amplify status:', () => {
+describe("amplify status:", () => {
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-  const { run } = require('../../commands/status');
+  const { run } = require("../../commands/status");
   const runStatusCmd = run;
   const statusPluginInfo = `${process.cwd()}/../amplify-console-hosting`;
-  const mockPath = './help';
+  const mockPath = "./help";
 
   afterAll(() => {
     jest.clearAllMocks();
   });
 
-  it('status run method should exist', () => {
+  it("status run method should exist", () => {
     expect(runStatusCmd).toBeDefined();
   });
 
-  it('status run method should call context.amplify.showStatusTable', async () => {
+  it("status run method should call context.amplify.showStatusTable", async () => {
     const mockContextNoCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
@@ -57,7 +57,7 @@ describe('amplify status:', () => {
       },
       parameters: {
         input: {
-          command: 'status',
+          command: "status",
           subCommands: [],
           options: {
             verbose: true,
@@ -69,7 +69,7 @@ describe('amplify status:', () => {
     expect(mockContextNoCLArgs.amplify.showStatusTable).toBeCalled();
   });
 
-  it('status -v run method should call context.amplify.showStatusTable', async () => {
+  it("status -v run method should call context.amplify.showStatusTable", async () => {
     const mockContextWithVerboseOptionAndCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
@@ -79,7 +79,7 @@ describe('amplify status:', () => {
         pathManager: pathManagerMock,
       },
       input: {
-        command: 'status',
+        command: "status",
         options: {
           verbose: true,
         },
@@ -89,7 +89,7 @@ describe('amplify status:', () => {
     expect(mockContextWithVerboseOptionAndCLArgs.amplify.showStatusTable).toBeCalled();
   });
 
-  it('status -v <category>* run method should call context.amplify.showStatusTable', async () => {
+  it("status -v <category>* run method should call context.amplify.showStatusTable", async () => {
     const mockContextWithVerboseOptionWithCategoriesAndCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
@@ -99,7 +99,7 @@ describe('amplify status:', () => {
         pathManager: pathManagerMock,
       },
       input: {
-        command: 'status',
+        command: "status",
         options: {
           verbose: true,
           api: true,
@@ -112,7 +112,7 @@ describe('amplify status:', () => {
     expect(mockContextWithVerboseOptionWithCategoriesAndCLArgs.amplify.showStatusTable).toBeCalled();
   });
 
-  it('status help run method should call ViewResourceTableParams.getStyledHelp', async () => {
+  it("status help run method should call ViewResourceTableParams.getStyledHelp", async () => {
     const mockContextWithHelpSubcommandAndCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
@@ -122,18 +122,18 @@ describe('amplify status:', () => {
         pathManager: pathManagerMock,
       },
       input: {
-        command: 'status',
-        subCommands: ['help'],
+        command: "status",
+        subCommands: ["help"],
       },
     };
     runStatusCmd(mockContextWithHelpSubcommandAndCLArgs);
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
 
-  it('status api -acm Table run method should call readProjectSchema', async () => {
+  it("status api -acm Table run method should call readProjectSchema", async () => {
     const mockContextWithVerboseOptionAndCLArgs = {
       amplify: {
-        getProviderPlugins: jest.fn().mockReturnValue({ awscloudformation: '../../__mocks__/faked-plugin' }),
+        getProviderPlugins: jest.fn().mockReturnValue({ awscloudformation: "../../__mocks__/faked-plugin" }),
         showStatusTable: jest.fn(),
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
@@ -141,16 +141,16 @@ describe('amplify status:', () => {
         pathManager: pathManagerMock,
       },
       input: {
-        command: 'status',
+        command: "status",
         options: {
           verbose: true,
           api: true,
-          acm: 'Team',
+          acm: "Team",
         },
       },
     };
 
-    jest.mock('../../../__mocks__/faked-plugin', () => ({
+    jest.mock("../../../__mocks__/faked-plugin", () => ({
       compileSchema: jest.fn().mockReturnValue(Promise.resolve({})),
     }));
 

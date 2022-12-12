@@ -1,12 +1,19 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag,
-  addApiWithoutSchema, updateApiSchema, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPush,
+  amplifyPushUpdate,
+  addFeatureFlag,
+  addApiWithoutSchema,
+  updateApiSchema,
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify add api', () => {
+describe("amplify add api", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('api-key-migration-4');
+    projRoot = await createNewProjectDir("api-key-migration-4");
   });
 
   afterEach(async () => {
@@ -14,13 +21,13 @@ describe('amplify add api', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init project, allow updated two types with new GSIs', async () => {
-    const projectName = 'twotableupdategsi';
-    const initialSchema = 'migrations_key/two_key_model_schema.graphql';
-    const nextSchema = 'migrations_key/four_key_model_schema.graphql';
+  it("init project, allow updated two types with new GSIs", async () => {
+    const projectName = "twotableupdategsi";
+    const initialSchema = "migrations_key/two_key_model_schema.graphql";
+    const nextSchema = "migrations_key/four_key_model_schema.graphql";
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+    addFeatureFlag(projRoot, "graphqltransformer", "enableiterativegsiupdates", false);
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
@@ -30,13 +37,13 @@ describe('amplify add api', () => {
     await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
   });
 
-  it('init project, run valid migration adding a GSI', async () => {
-    const projectName = 'validaddinggsi';
-    const initialSchema = 'migrations_key/initial_schema.graphql';
-    const nextSchema1 = 'migrations_key/add_gsi.graphql';
+  it("init project, run valid migration adding a GSI", async () => {
+    const projectName = "validaddinggsi";
+    const initialSchema = "migrations_key/initial_schema.graphql";
+    const nextSchema1 = "migrations_key/add_gsi.graphql";
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+    addFeatureFlag(projRoot, "graphqltransformer", "enableiterativegsiupdates", false);
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);

@@ -1,35 +1,35 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 import {
   validateAddStorageRequest,
   validateImportStorageRequest,
   validateRemoveStorageRequest,
   validateUpdateStorageRequest,
-} from 'amplify-util-headless-input';
-import * as path from 'path';
-import sequential from 'promise-sequential';
-import { categoryName } from './constants';
-import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
-import { DDBStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
-import { transformS3ResourceStack } from './provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
-import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
+} from "amplify-util-headless-input";
+import * as path from "path";
+import sequential from "promise-sequential";
+import { categoryName } from "./constants";
+import { updateConfigOnEnvInit } from "./provider-utils/awscloudformation";
+import { DDBStackTransform } from "./provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform";
+import { transformS3ResourceStack } from "./provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform";
+import { getAllDefaults } from "./provider-utils/awscloudformation/default-values/s3-defaults";
 import {
   S3AccessType,
   S3PermissionType,
   S3UserInputs,
-} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
-import { DynamoDBInputState } from './provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
+} from "./provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types";
+import { DynamoDBInputState } from "./provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state";
 import {
   headlessAddStorage,
   headlessImportStorage,
   headlessRemoveStorage,
   headlessUpdateStorage,
-} from './provider-utils/awscloudformation/storage-configuration-helpers';
-export { categoryName as category } from './constants';
+} from "./provider-utils/awscloudformation/storage-configuration-helpers";
+export { categoryName as category } from "./constants";
 export {
   S3UserInputs,
   S3UserInputTriggerFunctionParams,
-} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
+} from "./provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types";
 //S3-Control-API used by Predictions
 export {
   s3AddStorageLambdaTrigger,
@@ -39,7 +39,7 @@ export {
   s3RegisterAdminTrigger,
   s3RemoveAdminLambdaTrigger,
   s3RemoveStorageLambdaTrigger,
-} from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
+} from "./provider-utils/awscloudformation/service-walkthroughs/s3-resource-api";
 
 export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {
   const defaultS3UserInputs = getAllDefaults(project, shortId);
@@ -68,7 +68,7 @@ export async function add(context: any, providerName: any, service: any) {
   const providerController = require(`./provider-utils/${providerName}`);
 
   if (!providerController) {
-    printer.error('Provider not configured for this category');
+    printer.error("Provider not configured for this category");
     return;
   }
 
@@ -83,9 +83,9 @@ export async function migrateStorageCategory(context: any) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises: any = [];
 
-  Object.keys(amplifyMeta).forEach(categoryName => {
+  Object.keys(amplifyMeta).forEach((categoryName) => {
     if (categoryName === AmplifyCategories.STORAGE) {
-      Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+      Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
         try {
           const providerController = require(`./provider-utils/${amplifyMeta[AmplifyCategories.STORAGE][resourceName].providerPlugin}`);
 
@@ -95,8 +95,8 @@ export async function migrateStorageCategory(context: any) {
                 context,
                 projectPath,
                 amplifyMeta[AmplifyCategories.STORAGE][resourceName].service,
-                resourceName,
-              ),
+                resourceName
+              )
             );
           } else {
             printer.error(`Provider not configured for ${AmplifyCategories.STORAGE}: ${resourceName}`);
@@ -138,11 +138,11 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
   for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
       const providerPlugin =
-        'providerPlugin' in resourceOpsMapping[resourceName]
+        "providerPlugin" in resourceOpsMapping[resourceName]
           ? resourceOpsMapping[resourceName].providerPlugin
           : amplifyMeta[storageCategory][resourceName].providerPlugin;
       const service =
-        'service' in resourceOpsMapping[resourceName]
+        "service" in resourceOpsMapping[resourceName]
           ? resourceOpsMapping[resourceName].service
           : amplifyMeta[storageCategory][resourceName].service;
 
@@ -151,7 +151,7 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
         const { policy, attributes } = await providerController.getPermissionPolicies(
           service,
           resourceName,
-          resourceOpsMapping[resourceName],
+          resourceOpsMapping[resourceName]
         );
         if (Array.isArray(policy)) {
           permissionPolicies.push(...policy);
@@ -172,9 +172,9 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
 }
 
 export async function executeAmplifyCommand(context: any) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
 
-  if (context.input.command === 'help') {
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, AmplifyCategories.STORAGE);
   } else {
     commandPath = path.join(commandPath, AmplifyCategories.STORAGE, context.input.command);
@@ -188,16 +188,16 @@ export async function executeAmplifyCommand(context: any) {
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
-    case 'add':
+    case "add":
       await headlessAddStorage(context, await validateAddStorageRequest(headlessPayload));
       break;
-    case 'update':
+    case "update":
       await headlessUpdateStorage(context, await validateUpdateStorageRequest(headlessPayload));
       break;
-    case 'remove':
+    case "remove":
       await headlessRemoveStorage(context, await validateRemoveStorageRequest(headlessPayload));
       break;
-    case 'import':
+    case "import":
       await headlessImportStorage(context, await validateImportStorageRequest(headlessPayload));
       break;
     default:
@@ -212,7 +212,7 @@ export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
 
 export async function initEnv(context: any) {
   const { resourcesToBeSynced, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.STORAGE);
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === "pull" || (context.input.command === "env" && context.input.subCommands[0] === "pull");
   let toBeSynced = [];
 
   if (resourcesToBeSynced && resourcesToBeSynced.length > 0) {
@@ -220,7 +220,7 @@ export async function initEnv(context: any) {
   }
 
   toBeSynced
-    .filter((storageResource: any) => storageResource.sync === 'unlink')
+    .filter((storageResource: any) => storageResource.sync === "unlink")
     .forEach((storageResource: any) => {
       context.amplify.removeResourceParameters(context, AmplifyCategories.STORAGE, storageResource.resourceName);
     });
@@ -239,7 +239,7 @@ export async function initEnv(context: any) {
     tasks.push(...allResources);
   }
 
-  const storageTasks = tasks.map(storageResource => {
+  const storageTasks = tasks.map((storageResource) => {
     const { resourceName, service } = storageResource;
 
     return async () => {

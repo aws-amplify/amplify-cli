@@ -1,14 +1,14 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
-import { DynamoDB, IntrinsicFunction } from 'cloudform';
+import { DynamoDB, IntrinsicFunction } from "cloudform";
 
-import { GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-import { diff as getDiffs } from 'deep-diff';
+import { GlobalSecondaryIndex } from "cloudform-types/types/dynamoDb/table";
+import { diff as getDiffs } from "deep-diff";
 
 export enum GSIChange {
-  Add = 'ADD',
-  Update = 'UPDATE',
-  Delete = 'DELETE',
+  Add = "ADD",
+  Update = "UPDATE",
+  Delete = "DELETE",
 }
 
 export type IndexChange = {
@@ -44,12 +44,12 @@ export const getGSIDiffs = (current: DynamoDB.Table, next: DynamoDB.Table): Inde
  */
 export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], nextIndexes: GlobalSecondaryIndex[]): IndexChange[] => {
   // Create  Record<IndexName, Index>
-  const currentIndexByIndexName = _.keyBy(currentIndexes, 'IndexName');
+  const currentIndexByIndexName = _.keyBy(currentIndexes, "IndexName");
   // create an array of indexes
   const currentIndexNames = Object.keys(currentIndexByIndexName);
 
   // Create  Record<IndexName, Index>
-  const nextIndexByIndexName = _.keyBy(nextIndexes, 'IndexName');
+  const nextIndexByIndexName = _.keyBy(nextIndexes, "IndexName");
   // create an array of indexes
   const nextIndexNames = Object.keys(nextIndexByIndexName);
 
@@ -57,24 +57,24 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
   const addedOrRemovedIndexNames = _.xor(currentIndexNames, nextIndexNames);
 
   // Partition them as added/removed indexes
-  const [indexToRemove, indexToAdd] = _.partition(addedOrRemovedIndexNames, indexName => currentIndexNames.includes(indexName));
+  const [indexToRemove, indexToAdd] = _.partition(addedOrRemovedIndexNames, (indexName) => currentIndexNames.includes(indexName));
 
   // Get all the indexes that are in both current and next indexes
   const possiblyModifiedIndexNames = _.xor([...currentIndexNames, ...nextIndexNames], addedOrRemovedIndexNames);
 
   const modifiedIndexes = possiblyModifiedIndexNames
-    .filter(indexName => isIndexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
-    .map(indexName => ({
+    .filter((indexName) => isIndexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
+    .map((indexName) => ({
       type: GSIChange.Update,
       indexName,
     }));
 
   return [
-    ...indexToRemove.map(idx => ({
+    ...indexToRemove.map((idx) => ({
       type: GSIChange.Delete,
       indexName: idx,
     })),
-    ...indexToAdd.map(idx => ({
+    ...indexToAdd.map((idx) => ({
       type: GSIChange.Add,
       indexName: idx,
     })),
@@ -92,17 +92,17 @@ export const isIndexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: G
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
     return;
   }
-  return diffs?.some(diff => {
+  return diffs?.some((diff) => {
     const leaf = diff.path?.slice(-1)[0];
     return [
-      'IndexName',
-      'KeySchema',
-      'AttributeName',
-      'AttributeType',
-      'KeyType',
-      'NonKeyAttributes',
-      'Projection',
-      'ProjectionType',
+      "IndexName",
+      "KeySchema",
+      "AttributeName",
+      "AttributeType",
+      "KeyType",
+      "NonKeyAttributes",
+      "Projection",
+      "ProjectionType",
     ].includes(leaf);
   });
 };

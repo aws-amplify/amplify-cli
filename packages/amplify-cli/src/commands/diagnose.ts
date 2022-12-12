@@ -1,23 +1,21 @@
-import {
-  stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError,
-} from 'amplify-cli-core';
-import archiver from 'archiver';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import fetch from 'node-fetch';
-import { Redactor, stringMasker } from 'amplify-cli-logger';
-import columnify from 'columnify';
-import * as _ from 'lodash';
-import os from 'os';
-import { v4 } from 'uuid';
-import { prompter, printer } from 'amplify-prompts';
-import { collectFiles } from './helpers/collect-files';
-import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
-import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-import { DebugConfig } from '../app-config/debug-config';
-import { isHeadlessCommand } from '../utils/headless-input-utils';
-import { Context } from '../domain/context';
-import { reporterEndpoint } from './helpers/reporter-apis';
+import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from "amplify-cli-core";
+import archiver from "archiver";
+import * as fs from "fs-extra";
+import * as path from "path";
+import fetch from "node-fetch";
+import { Redactor, stringMasker } from "amplify-cli-logger";
+import columnify from "columnify";
+import * as _ from "lodash";
+import os from "os";
+import { v4 } from "uuid";
+import { prompter, printer } from "amplify-prompts";
+import { collectFiles } from "./helpers/collect-files";
+import { encryptBuffer, encryptKey, createHashedIdentifier } from "./helpers/encryption-helpers";
+import { UsageDataPayload } from "../domain/amplify-usageData/UsageDataPayload";
+import { DebugConfig } from "../app-config/debug-config";
+import { isHeadlessCommand } from "../utils/headless-input-utils";
+import { Context } from "../domain/context";
+import { reporterEndpoint } from "./helpers/reporter-apis";
 
 /**
  * Prompts if there is a failure in the CLI
@@ -31,13 +29,13 @@ export const reportError = async (context: Context, error: Error | undefined): P
   if (!rootPath) {
     return;
   }
-  const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
+  const isHeadless = isHeadlessCommand(context) || _.get(context, ["input", "options", "yes"], false);
 
   // if it's headless or already has been prompted earlier don't prompt just check the config
   if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
     sendReport = await prompter.yesOrNo(
-      'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
-      false,
+      "An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ",
+      false
     );
     if (sendReport) {
       showLearnMore(true);
@@ -59,9 +57,9 @@ export const reportError = async (context: Context, error: Error | undefined): P
  * @param error if invoked due to an error
  */
 export const run = async (context: Context, error: Error | undefined = undefined): Promise<void> => {
-  const skipPrompts = _.get(context, ['input', 'options', 'send-report'], false);
-  const turnOff = _.get(context, ['input', 'options', 'auto-send-off'], false);
-  const turnOn = _.get(context, ['input', 'options', 'auto-send-on'], false);
+  const skipPrompts = _.get(context, ["input", "options", "send-report"], false);
+  const turnOff = _.get(context, ["input", "options", "auto-send-off"], false);
+  const turnOn = _.get(context, ["input", "options", "auto-send-on"], false);
   if (turnOff) {
     DebugConfig.Instance.setAndWriteShareProject(false);
     return;
@@ -77,25 +75,25 @@ export const run = async (context: Context, error: Error | undefined = undefined
 
 const showLearnMore = (showOptOut: boolean): void => {
   printer.blankLine();
-  printer.info('Learn more at https://docs.amplify.aws/cli/reference/diagnose/');
+  printer.info("Learn more at https://docs.amplify.aws/cli/reference/diagnose/");
   if (showOptOut) {
     printer.blankLine();
     printer.info(
-      'This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'',
+      "This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running 'amplify diagnose --auto-send-off'"
     );
   }
 };
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
-  const choices = ['Generate report', 'Nothing'];
+  const choices = ["Generate report", "Nothing"];
   if (!skipPrompts) {
-    const diagnoseAction = await prompter.pick('What would you like to do?', choices);
+    const diagnoseAction = await prompter.pick("What would you like to do?", choices);
     if (diagnoseAction !== choices[0]) {
       return;
     }
   }
   try {
-    spinner.start('Creating Zip');
+    spinner.start("Creating Zip");
     const fileDestination = await createZip(context, error);
     spinner.stop();
     printer.blankLine();
@@ -103,12 +101,12 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     printer.blankLine();
     let canSendReport = true;
     if (!skipPrompts) {
-      canSendReport = await prompter.yesOrNo('Send Report', false);
+      canSendReport = await prompter.yesOrNo("Send Report", false);
     }
     if (canSendReport) {
-      spinner.start('Sending zip');
+      spinner.start("Sending zip");
       const projectId = await sendReport(context, fileDestination);
-      spinner.succeed('Done');
+      spinner.succeed("Done");
       printer.blankLine();
       printer.info(`Project Identifier: ${projectId}`);
       printer.blankLine();
@@ -129,7 +127,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   const backend = stateManager.getBackendConfig(rootPath);
   const resources: { category: string; resourceName: string; service: string }[] = [];
   const categoryResources = Object.keys(backend).reduce((array, key) => {
-    Object.keys(backend[key]).forEach(resourceKey => {
+    Object.keys(backend[key]).forEach((resourceKey) => {
       array.push({
         category: key,
         resourceName: resourceKey,
@@ -140,18 +138,18 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
     return array;
   }, resources);
   const filePaths = collectFiles(categoryResources, rootPath);
-  const zipper = archiver.create('zip');
-  filePaths.forEach(file => {
+  const zipper = archiver.create("zip");
+  filePaths.forEach((file) => {
     zipper.append(
-      file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: 'utf-8' })) : fs.readFileSync(file.filePath, { encoding: 'utf-8' }),
+      file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: "utf-8" })) : fs.readFileSync(file.filePath, { encoding: "utf-8" }),
       {
         name: path.relative(rootPath, file.filePath),
-      },
+      }
     );
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
-    const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
-    const events = context.exeInfo.cloudformationEvents.map(r => ({
+    const COLUMNS = ["ResourceStatus", "LogicalResourceId", "ResourceType", "Timestamp", "ResourceStatusReason"];
+    const events = context.exeInfo.cloudformationEvents.map((r) => ({
       ...r,
       LogicalResourceId: stringMasker(r.LogicalResourceId),
     }));
@@ -160,13 +158,13 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
       showHeaders: false,
     });
     zipper.append(cloudformation, {
-      name: 'cloudformation_log.txt',
+      name: "cloudformation_log.txt",
     });
   }
 
   if (error) {
     zipper.append(JSON.stringify(error, null, 4), {
-      name: 'error.json',
+      name: "error.json",
     });
   }
   const { projectName } = stateManager.getProjectConfig();
@@ -179,8 +177,8 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   await zipper.finalize();
 
   return new Promise((resolve, reject) => {
-    output.on('close', () => resolve(fileDestination));
-    output.on('error', err => {
+    output.on("close", () => resolve(fileDestination));
+    output.on("error", (err) => {
       reject(err);
     });
   });
@@ -188,7 +186,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
 
 const sendReport = async (context: Context, fileDestination): Promise<string> => {
   const ids = hashedProjectIdentifiers();
-  const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload(null, '');
+  const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload(null, "");
 
   await sendFile(fileDestination, {
     ...ids,
@@ -211,7 +209,7 @@ const sendFile = async (
     installationUuid: string;
     amplifyCliVersion: string;
     nodeVersion: string;
-  },
+  }
 ): Promise<void> => {
   const report = reporterEndpoint();
   const stream = fs.readFileSync(zipPath);
@@ -220,10 +218,10 @@ const sendFile = async (
   const key = await encryptKey(passKey);
   const data = JSON.stringify({ ...metaData, key, encryptedFile: cipherTextBlob });
   const response = await fetch(report, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'content-type': 'application/json',
-      'content-length': data.length.toString(),
+      "content-type": "application/json",
+      "content-length": data.length.toString(),
     },
     body: data,
   });
@@ -241,5 +239,5 @@ const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIden
 
 const getAppId = (): string => {
   const meta = stateManager.getMeta();
-  return _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
+  return _.get(meta, ["providers", "awscloudformation", "AmplifyAppId"]);
 };

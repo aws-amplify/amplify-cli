@@ -23,29 +23,29 @@ import {
   initJSProjectWithProfile,
   nonInteractiveInitAttach,
   nonInteractivePullAttach,
-} from '@aws-amplify/amplify-e2e-core';
-import { S3 } from 'aws-sdk';
-import { getShortId, importS3 } from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { S3 } from "aws-sdk";
+import { getShortId, importS3 } from "../import-helpers";
 
-describe('attach amplify to git-cloned project', () => {
-  const envName = 'test';
+describe("attach amplify to git-cloned project", () => {
+  const envName = "test";
   let projRoot: string;
   const s3Client = new S3();
   const importBucketName = `git-clone-test-bucket-${getShortId()}`;
   beforeAll(async () => {
     await s3Client.createBucket({ Bucket: importBucketName }).promise();
-    projRoot = await createNewProjectDir('clone-test');
+    projRoot = await createNewProjectDir("clone-test");
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         environmentVariables: {
-          key: 'FOO_BAR',
-          value: 'fooBar',
+          key: "FOO_BAR",
+          value: "fooBar",
         },
       },
-      'nodejs',
+      "nodejs"
     );
     await addAuthWithMaxOptions(projRoot, {});
     await importS3(projRoot, importBucketName);
@@ -63,7 +63,7 @@ describe('attach amplify to git-cloned project', () => {
     }
   });
 
-  test('headless init can be used to attach existing environment', async () => {
+  test("headless init can be used to attach existing environment", async () => {
     const { projectName } = getProjectConfig(projRoot);
     const preCleanTpi = getTeamProviderInfo(projRoot);
     const importBucketRegion = (Object.values(preCleanTpi[envName].categories.storage)[0] as any).region;
@@ -85,7 +85,7 @@ describe('attach amplify to git-cloned project', () => {
     expect(getTeamProviderInfo(projRoot)).toEqual(preCleanTpi);
   });
 
-  test('headless pull can be used to attach existing environment', async () => {
+  test("headless pull can be used to attach existing environment", async () => {
     const { projectName } = getProjectConfig(projRoot);
     const preCleanTpi = getTeamProviderInfo(projRoot);
     const importBucketRegion = (Object.values(preCleanTpi[envName].categories.storage)[0] as any).region;

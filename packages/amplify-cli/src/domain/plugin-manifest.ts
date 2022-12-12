@@ -1,4 +1,4 @@
-import { AmplifyEvent } from './amplify-event';
+import { AmplifyEvent } from "./amplify-event";
 
 export class PluginManifest {
   constructor(
@@ -11,6 +11,6 @@ export class PluginManifest {
       [key: string]: string;
     },
     public services?: string[],
-    public eventHandlers?: AmplifyEvent[],
+    public eventHandlers?: AmplifyEvent[]
   ) {}
 }

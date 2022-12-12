@@ -1,5 +1,5 @@
-import { JavaInteger } from './integer';
-import { toJSON } from './to-json';
+import { JavaInteger } from "./integer";
+import { toJSON } from "./to-json";
 
 export class JavaArray extends Array<any> {
   private mapper: Function;
@@ -24,7 +24,7 @@ export class JavaArray extends Array<any> {
   }
 
   addAll(value) {
-    value.forEach(val => this.push(this.mapper(val)));
+    value.forEach((val) => this.push(this.mapper(val)));
   }
 
   clear() {
@@ -37,7 +37,7 @@ export class JavaArray extends Array<any> {
   }
 
   containsAll(value = []) {
-    return value.every(v => this.contains(v));
+    return value.every((v) => this.contains(v));
   }
 
   isEmpty() {
@@ -52,11 +52,11 @@ export class JavaArray extends Array<any> {
 
   removeAll(value) {
     const self = this;
-    value.forEach(val => self.remove(val));
+    value.forEach((val) => self.remove(val));
   }
 
   retainAll() {
-    throw new Error('no support for retain all');
+    throw new Error("no support for retain all");
   }
 
   size() {

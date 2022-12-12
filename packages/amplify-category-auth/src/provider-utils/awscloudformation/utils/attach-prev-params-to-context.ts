@@ -1,5 +1,5 @@
-import { getAuthResourceName } from '../../../utils/getAuthResourceName';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { getAuthResourceName } from "../../../utils/getAuthResourceName";
+import { AuthInputState } from "../auth-inputs-manager/auth-input-state";
 
 /**
  * Some existing code relies on the existing auth parameters being attached to context.updatingAuth

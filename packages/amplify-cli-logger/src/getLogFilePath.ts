@@ -1,6 +1,6 @@
-import path from 'path';
-import { constants } from './constants';
-import { getLogDirectory, getLocalLogFileDirectory } from './baseLogFilePath';
+import path from "path";
+import { constants } from "./constants";
+import { getLogDirectory, getLocalLogFileDirectory } from "./baseLogFilePath";
 
 export function getLogFilePath(): string {
   return path.join(getLogDirectory(), constants.LOG_FILENAME);

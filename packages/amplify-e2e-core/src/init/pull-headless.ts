@@ -1,15 +1,13 @@
-import execa from 'execa';
-import { EOL } from 'os';
+import execa from "execa";
+import { EOL } from "os";
 // eslint-disable-next-line import/no-cycle
-import {
-  nspawn as spawn, getCLIPath, getAwsProviderConfig,
-} from '..';
-import { CategoriesConfig } from './headless-types';
+import { nspawn as spawn, getCLIPath, getAwsProviderConfig } from "..";
+import { CategoriesConfig } from "./headless-types";
 
 const defaultSettings = {
   name: EOL,
   // eslint-disable-next-line spellcheck/spell-checker
-  envName: 'integtest',
+  envName: "integtest",
   editor: EOL,
   appType: EOL,
   framework: EOL,
@@ -19,7 +17,7 @@ const defaultSettings = {
   startCmd: EOL,
   useProfile: EOL,
   profileName: EOL,
-  appId: '',
+  appId: "",
 };
 
 /**
@@ -27,28 +25,28 @@ const defaultSettings = {
  */
 export const pullProject = (cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> => {
   const s = { ...defaultSettings, ...settings };
-  return spawn(getCLIPath(), ['pull', '--appId', s.appId, '--envName', s.envName], { cwd, stripColors: true })
-    .wait('Select the authentication method you want to use:')
+  return spawn(getCLIPath(), ["pull", "--appId", s.appId, "--envName", s.envName], { cwd, stripColors: true })
+    .wait("Select the authentication method you want to use:")
     .sendLine(s.useProfile)
-    .wait('Please choose the profile you want to use')
+    .wait("Please choose the profile you want to use")
     .sendLine(s.profileName)
-    .wait('Choose your default editor:')
+    .wait("Choose your default editor:")
     .sendLine(s.editor)
     .wait("Choose the type of app that you're building")
     .sendLine(s.appType)
-    .wait('What javascript framework are you using')
+    .wait("What javascript framework are you using")
     .sendLine(s.framework)
-    .wait('Source Directory Path:')
+    .wait("Source Directory Path:")
     .sendLine(s.srcDir)
-    .wait('Distribution Directory Path:')
+    .wait("Distribution Directory Path:")
     .sendLine(s.distDir)
-    .wait('Build Command:')
+    .wait("Build Command:")
     .sendLine(s.buildCmd)
-    .wait('Start Command:')
+    .wait("Start Command:")
     .sendCarriageReturn()
-    .wait('Do you plan on modifying this backend?')
+    .wait("Do you plan on modifying this backend?")
     .sendConfirmNo()
-    .wait('Added backend environment config object to your project.')
+    .wait("Added backend environment config object to your project.")
     .runAsync();
 };
 
@@ -59,20 +57,20 @@ export const nonInteractivePullAttach = async (
   projRoot: string,
   amplifyPullConfig: AmplifyPullConfig,
   categoriesConfig?: CategoriesConfig,
-  awsProviderConfig = getAwsProviderConfig(),
+  awsProviderConfig = getAwsProviderConfig()
 ): Promise<void> => {
   const args = [
-    'pull',
-    '--yes',
-    '--amplify',
+    "pull",
+    "--yes",
+    "--amplify",
     JSON.stringify(amplifyPullConfig),
-    '--providers',
+    "--providers",
     JSON.stringify({
       awscloudformation: awsProviderConfig,
     }),
   ];
   if (categoriesConfig) {
-    args.push('--categories', JSON.stringify(categoriesConfig));
+    args.push("--categories", JSON.stringify(categoriesConfig));
   }
   await execa(getCLIPath(), args, { cwd: projRoot });
 };
@@ -81,10 +79,10 @@ export const nonInteractivePullAttach = async (
  * Shape of `--amplify` parameter for pull
  */
 export type AmplifyPullConfig = {
-  projectName: string,
-  envName: string,
-  appId: string,
-  defaultEditor: string,
+  projectName: string;
+  envName: string;
+  appId: string;
+  defaultEditor: string;
 };
 
 /**
@@ -94,5 +92,5 @@ export const getAmplifyPullConfig = (projectName: string, envName: string, appId
   projectName,
   envName,
   appId,
-  defaultEditor: 'code',
+  defaultEditor: "code",
 });

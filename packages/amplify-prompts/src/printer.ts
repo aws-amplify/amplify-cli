@@ -1,6 +1,6 @@
-import chalk from 'chalk';
-import os from 'os';
-import { isDebug, isHeadless, isSilent } from './flags';
+import chalk from "chalk";
+import os from "os";
+import { isDebug, isHeadless, isSilent } from "./flags";
 
 /**
  * Provides methods for printing lines to a writeable stream (stdout by default)
@@ -14,7 +14,7 @@ export class AmplifyPrinter implements Printer {
     }
   };
 
-  info = (line: string, color: Color = 'reset'): void => {
+  info = (line: string, color: Color = "reset"): void => {
     this.writeSilenceableLine(chalk[color](line));
   };
 
@@ -23,15 +23,15 @@ export class AmplifyPrinter implements Printer {
   };
 
   success = (line: string): void => {
-    this.writeSilenceableLine(`${isHeadless ? '' : '✅ '}${chalk.green(line)}`);
+    this.writeSilenceableLine(`${isHeadless ? "" : "✅ "}${chalk.green(line)}`);
   };
 
   warn = (line: string): void => {
-    this.writeLine(`${isHeadless ? '' : '⚠️ '}${chalk.yellow(line)}`);
+    this.writeLine(`${isHeadless ? "" : "⚠️ "}${chalk.yellow(line)}`);
   };
 
   error = (line: string): void => {
-    this.writeLine(`${isHeadless ? '' : '🛑 '}${chalk.red(line)}`);
+    this.writeLine(`${isHeadless ? "" : "🛑 "}${chalk.red(line)}`);
   };
 
   private writeSilenceableLine = (line?: string): void => {
@@ -40,7 +40,7 @@ export class AmplifyPrinter implements Printer {
     }
   };
 
-  private writeLine = (line = ''): void => {
+  private writeLine = (line = ""): void => {
     this.outputStream.write(`${line}${os.EOL}`);
   };
 }
@@ -62,4 +62,4 @@ export type Printer = {
   error: (line: string) => void;
 };
 
-type Color = 'green' | 'blue' | 'yellow' | 'red' | 'reset';
+type Color = "green" | "blue" | "yellow" | "red" | "reset";

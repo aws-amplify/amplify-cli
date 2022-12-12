@@ -1,5 +1,5 @@
-import { JWTToken, IAMToken } from '../auth-helpers/helpers';
-import { AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
+import { JWTToken, IAMToken } from "../auth-helpers/helpers";
+import { AmplifyAppSyncSimulatorAuthenticationType } from "../../type-definition";
 
 export type AppSyncGraphQLExecutionContext = {
   readonly sourceIp?: string;
@@ -9,4 +9,4 @@ export type AppSyncGraphQLExecutionContext = {
   appsyncErrors?: Error[];
   requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
 };
-export * from './subscriptions-filter';
+export * from "./subscriptions-filter";

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from "amplify-cli-core";
 
 export function getCategoryPluginInfo(context: $TSContext, category: string, service?: string) {
   let categoryPluginInfo;
@@ -7,7 +7,7 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
 
   if (pluginInfosForCategory?.length > 0) {
     if (service) {
-      const pluginInfosForCategoryAndService = pluginInfosForCategory.filter(pluginInfo => {
+      const pluginInfosForCategoryAndService = pluginInfosForCategory.filter((pluginInfo) => {
         return pluginInfo.manifest.services && pluginInfo.manifest.services.includes(service);
       });
 
@@ -17,7 +17,7 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
         categoryPluginInfo = pluginInfosForCategory[0];
       }
     } else {
-      const overidedPlugin = pluginInfosForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
+      const overidedPlugin = pluginInfosForCategory.find((plugin) => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
       if (overidedPlugin !== undefined) {
         return overidedPlugin;
       }

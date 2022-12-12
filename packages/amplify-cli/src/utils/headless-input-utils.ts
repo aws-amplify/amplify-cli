@@ -1,7 +1,7 @@
-import readline from 'readline';
-import { Context } from '../domain/context';
-import { normalizeInputParams } from '../input-params-manager';
-import { $TSContext } from 'amplify-cli-core';
+import readline from "readline";
+import { Context } from "../domain/context";
+import { normalizeInputParams } from "../input-params-manager";
+import { $TSContext } from "amplify-cli-core";
 
 const headlessPayloadReadTimeoutMillis = 2000;
 
@@ -26,8 +26,8 @@ export const readHeadlessPayload = async (): Promise<string> => {
 
   // resolves a promise on the 'line' event
   return new Promise((resolve, reject) => {
-    rl.on('line', line => resolve(line));
-    rl.on('close', () => reject(new Error('No input received on stdin')));
+    rl.on("line", (line) => resolve(line));
+    rl.on("close", () => reject(new Error("No input received on stdin")));
   });
 };
 

@@ -12,7 +12,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   createDynamoDBSettings,
   expectDynamoDBLocalAndOGMetaFilesOutputMatching,
@@ -22,13 +22,13 @@ import {
   getShortId,
   headlessPull,
   importDynamoDBTable,
-} from '../import-helpers';
+} from "../import-helpers";
 
-const profileName = 'amplify-integ-test-user';
+const profileName = "amplify-integ-test-user";
 
-describe('dynamodb import 2c', () => {
-  const projectPrefix = 'ddbimp';
-  const ogProjectPrefix = 'ogddbimp';
+describe("dynamodb import 2c", () => {
+  const projectPrefix = "ddbimp";
+  const ogProjectPrefix = "ogddbimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -39,7 +39,7 @@ describe('dynamodb import 2c', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the dynamodb tables to import by other test projects
@@ -100,7 +100,7 @@ describe('dynamodb import 2c', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('dynamodb headless pull successful', async () => {
+  it("dynamodb headless pull successful", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -118,12 +118,12 @@ describe('dynamodb import 2c', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('ddbimport-pull');
+      projectRootPull = await createNewProjectDir("ddbimport-pull");
 
-      const envName = 'integtest';
+      const envName = "integtest";
       const providersParam = {
         awscloudformation: {
-          configLevel: 'project',
+          configLevel: "project",
           useProfile: true,
           profileName,
         },
@@ -140,7 +140,7 @@ describe('dynamodb import 2c', () => {
 
       await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
 
-      await amplifyStatus(projectRoot, 'No Change');
+      await amplifyStatus(projectRoot, "No Change");
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);

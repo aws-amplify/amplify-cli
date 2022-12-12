@@ -24,8 +24,8 @@ mutation Create {
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: '1',
-      title: 'Conflict detection in the cloud!',
+      id: "1",
+      title: "Conflict detection in the cloud!",
       version: 1,
     },
   },
@@ -41,13 +41,13 @@ mutation Update($postId: ID!) {
 }
 `;
 export const input_mutation2 = {
-  postId: '1',
+  postId: "1",
 };
 export const expected_result_mutation2 = {
   data: {
     updatePost: {
-      id: '1',
-      title: 'Conflict detection in the cloud is great!',
+      id: "1",
+      title: "Conflict detection in the cloud is great!",
       version: 2,
     },
   },
@@ -63,13 +63,13 @@ mutation Delete($postId: ID!) {
 }
 `;
 export const input_mutation3 = {
-  postId: '1',
+  postId: "1",
 };
 export const expected_result_mutation3 = {
   data: {
     deletePost: {
-      id: '1',
-      title: 'Conflict detection in the cloud is great!',
+      id: "1",
+      title: "Conflict detection in the cloud is great!",
       version: 2,
     },
   },

@@ -1,63 +1,66 @@
-import { hashLayerResource } from 'amplify-category-function';
-import { AmplifyException, stateManager } from 'amplify-cli-core';
-import { hashElement } from 'folder-hash';
-import * as fs from 'fs-extra';
+import { hashLayerResource } from "amplify-category-function";
+import { AmplifyException, stateManager } from "amplify-cli-core";
+import { hashElement } from "folder-hash";
+import * as fs from "fs-extra";
 import {
-  CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
-} from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
-import { print } from '../../../extensions/amplify-helpers/print';
-import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
+  CLOUD_INITIALIZED,
+  CLOUD_NOT_INITIALIZED,
+  getCloudInitStatus,
+  NON_AMPLIFY_PROJECT,
+} from "../../../extensions/amplify-helpers/get-cloud-init-status";
+import { getEnvInfo } from "../../../extensions/amplify-helpers/get-env-info";
+import { print } from "../../../extensions/amplify-helpers/print";
+import { getHashForResourceDir, getResourceStatus, showResourceTable } from "../../../extensions/amplify-helpers/resource-status";
 
-const sampleHash1 = 'testHash1';
-const sampleHash2 = 'testHash2';
+const sampleHash1 = "testHash1";
+const sampleHash2 = "testHash2";
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
-jest.mock('folder-hash', () => ({
+jest.mock("folder-hash", () => ({
   hashElement: jest.fn().mockImplementation(async () => ({
     hash: sampleHash1,
   })),
 }));
 
-jest.mock('chalk', () => ({
-  green: jest.fn().mockImplementation(input => input),
-  yellow: jest.fn().mockImplementation(input => input),
-  red: jest.fn().mockImplementation(input => input),
-  blue: jest.fn().mockImplementation(input => input),
-  gray: jest.fn().mockImplementation(input => input),
-  grey: jest.fn().mockImplementation(input => input),
-  bgRgb: jest.fn().mockImplementation(input => input),
-  blueBright: jest.fn().mockImplementation(input => input),
-  greenBright: jest.fn().mockImplementation(input => input),
+jest.mock("chalk", () => ({
+  green: jest.fn().mockImplementation((input) => input),
+  yellow: jest.fn().mockImplementation((input) => input),
+  red: jest.fn().mockImplementation((input) => input),
+  blue: jest.fn().mockImplementation((input) => input),
+  gray: jest.fn().mockImplementation((input) => input),
+  grey: jest.fn().mockImplementation((input) => input),
+  bgRgb: jest.fn().mockImplementation((input) => input),
+  blueBright: jest.fn().mockImplementation((input) => input),
+  greenBright: jest.fn().mockImplementation((input) => input),
 }));
 
-jest.mock('../../../extensions/amplify-helpers/print', () => ({
+jest.mock("../../../extensions/amplify-helpers/print", () => ({
   print: {
     info: jest.fn(),
     table: jest.fn(),
   },
 }));
 
-jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
+jest.mock("../../../extensions/amplify-helpers/get-env-info", () => ({
   getEnvInfo: jest.fn(),
 }));
 
-jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
-  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
+jest.mock("../../../extensions/amplify-helpers/get-cloud-init-status", () => ({
+  ...(jest.requireActual("../../../extensions/amplify-helpers/get-cloud-init-status") as Record<string, never>),
   getCloudInitStatus: jest.fn(),
 }));
 
-jest.mock('../../../extensions/amplify-helpers/root-stack-status', () => ({
+jest.mock("../../../extensions/amplify-helpers/root-stack-status", () => ({
   isRootStackModifiedSinceLastPush: jest.fn().mockResolvedValue(false),
 }));
 
-const backendDirPathStub = 'backendDirPath';
-const currentBackendDirPathStub = 'currentBackendDirPathStub';
-const projectRootPath = 'projectRootPath';
+const backendDirPathStub = "backendDirPath";
+const currentBackendDirPathStub = "currentBackendDirPathStub";
+const projectRootPath = "projectRootPath";
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
+jest.mock("amplify-cli-core", () => ({
+  ...(jest.requireActual("amplify-cli-core") as Record<string, never>),
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),
@@ -77,28 +80,28 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-jest.mock('amplify-category-function', () => ({
-  ...(jest.requireActual('amplify-category-function') as Record<string, never>),
+jest.mock("amplify-category-function", () => ({
+  ...(jest.requireActual("amplify-category-function") as Record<string, never>),
   hashLayerResource: jest.fn(),
 }));
 
 const mockProjectConfig = {
-  projectName: 'mockProjectName',
-  version: '2.0',
-  frontend: 'javascript',
+  projectName: "mockProjectName",
+  version: "2.0",
+  frontend: "javascript",
   javascript: {
-    framework: 'none',
+    framework: "none",
     config: {
-      SourceDir: 'src',
-      DistributionDir: 'dist',
-      BuildCommand: 'npm run-script build',
-      StartCommand: 'npm run-script start',
+      SourceDir: "src",
+      DistributionDir: "dist",
+      BuildCommand: "npm run-script build",
+      StartCommand: "npm run-script start",
     },
   },
-  providers: ['awscloudformation'],
+  providers: ["awscloudformation"],
 };
 
-describe('resource-status', () => {
+describe("resource-status", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     stateManagerMock.getCurrentMeta.mockReturnValue({});
@@ -113,23 +116,23 @@ describe('resource-status', () => {
     stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
-    (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });
+    (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: "test" });
     (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockImplementation(() => CLOUD_INITIALIZED);
     const hashLayerResourceMock = hashLayerResource as jest.MockedFunction<typeof hashLayerResource>;
     hashLayerResourceMock.mockClear();
   });
 
-  describe('getHashForResourceDir', () => {
-    it('returns hash excludes dot files, node_modules, test_coverage, dist and build directories', async () => {
-      const testDirName = 'test';
-      const files = ['resource.js'];
+  describe("getHashForResourceDir", () => {
+    it("returns hash excludes dot files, node_modules, test_coverage, dist and build directories", async () => {
+      const testDirName = "test";
+      const files = ["resource.js"];
       const hash = await getHashForResourceDir(testDirName, files);
 
       const expected = sampleHash1;
       expect(hash).toBe(expected);
 
       expect(hashElement).toBeCalledWith(testDirName, {
-        folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
+        folders: { exclude: [".*", "node_modules", "test_coverage", "dist", "build"] },
         files: {
           include: files,
         },
@@ -137,14 +140,14 @@ describe('resource-status', () => {
     });
   });
 
-  describe('getResourceStatus', () => {
-    it('returns empty arrays excluding allResources when immediately after initialized', async () => {
+  describe("getResourceStatus", () => {
+    it("returns empty arrays excluding allResources when immediately after initialized", async () => {
       const status = await getResourceStatus();
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
         ],
         resourcesToBeCreated: [],
@@ -156,14 +159,14 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns resourcesToBeCreated including it when resources only exists on local metadata', async () => {
+    it("returns resourcesToBeCreated including it when resources only exists on local metadata", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         function: {
           lambda1: {
-            service: 'Lambda',
+            service: "Lambda",
           },
         },
       });
@@ -171,20 +174,20 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
           {
-            category: 'function',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            resourceName: "lambda1",
+            service: "Lambda",
           },
         ],
         resourcesToBeCreated: [
           {
-            category: 'function',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            resourceName: "lambda1",
+            service: "Lambda",
           },
         ],
         resourcesToBeDeleted: [],
@@ -195,59 +198,59 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns resourcesToBeCreated including it and dependencies resources and when resources only exists on local metadata', async () => {
+    it("returns resourcesToBeCreated including it and dependencies resources and when resources only exists on local metadata", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         function: {
           lambda1: {
-            service: 'Lambda',
+            service: "Lambda",
             dependsOn: [
               {
-                category: 'storage',
-                resourceName: 's3Bucket',
+                category: "storage",
+                resourceName: "s3Bucket",
               },
             ],
           },
         },
         storage: {
           s3Bucket: {
-            service: 'S3',
+            service: "S3",
           },
         },
       });
-      const status = await getResourceStatus('function');
+      const status = await getResourceStatus("function");
       expect(status).toEqual({
         allResources: [
           {
-            category: 'function',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            resourceName: "lambda1",
+            service: "Lambda",
             dependsOn: [
               {
-                category: 'storage',
-                resourceName: 's3Bucket',
+                category: "storage",
+                resourceName: "s3Bucket",
               },
             ],
           },
         ],
         resourcesToBeCreated: [
           {
-            category: 'function',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            resourceName: "lambda1",
+            service: "Lambda",
             dependsOn: [
               {
-                category: 'storage',
-                resourceName: 's3Bucket',
+                category: "storage",
+                resourceName: "s3Bucket",
               },
             ],
           },
           {
-            category: 'storage',
-            resourceName: 's3Bucket',
-            service: 'S3',
+            category: "storage",
+            resourceName: "s3Bucket",
+            service: "S3",
           },
         ],
         resourcesToBeDeleted: [],
@@ -258,7 +261,7 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns resourcesToBeDeleted including it when resources only exists on current cloud', async () => {
+    it("returns resourcesToBeDeleted including it when resources only exists on current cloud", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
@@ -270,7 +273,7 @@ describe('resource-status', () => {
         },
         function: {
           lambda1: {
-            service: 'Lambda',
+            service: "Lambda",
           },
         },
       });
@@ -278,16 +281,16 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
         ],
         resourcesToBeCreated: [],
         resourcesToBeDeleted: [
           {
-            category: 'function',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            resourceName: "lambda1",
+            service: "Lambda",
           },
         ],
         resourcesToBeSynced: [],
@@ -297,16 +300,16 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns marked resource as sync import including in resourcesToBeSynced when imported resource only exists on local metadata', async () => {
+    it("returns marked resource as sync import including in resourcesToBeSynced when imported resource only exists on local metadata", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         auth: {
           authResourceName: {
-            service: 'Cognito',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "Cognito",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -320,28 +323,28 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
           {
-            category: 'auth',
-            providerPlugin: 'awscloudformation',
-            resourceName: 'authResourceName',
-            service: 'Cognito',
-            serviceType: 'imported',
-            sync: 'import',
+            category: "auth",
+            providerPlugin: "awscloudformation",
+            resourceName: "authResourceName",
+            service: "Cognito",
+            serviceType: "imported",
+            sync: "import",
           },
         ],
         resourcesToBeCreated: [],
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [
           {
-            category: 'auth',
-            providerPlugin: 'awscloudformation',
-            resourceName: 'authResourceName',
-            service: 'Cognito',
-            serviceType: 'imported',
-            sync: 'import',
+            category: "auth",
+            providerPlugin: "awscloudformation",
+            resourceName: "authResourceName",
+            service: "Cognito",
+            serviceType: "imported",
+            sync: "import",
           },
         ],
         resourcesToBeUpdated: [],
@@ -350,7 +353,7 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns marked resource as sync unlink including in resourcesToBeSynced when imported resource only exists on current cloud', async () => {
+    it("returns marked resource as sync unlink including in resourcesToBeSynced when imported resource only exists on current cloud", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
@@ -362,9 +365,9 @@ describe('resource-status', () => {
         },
         auth: {
           authResourceName: {
-            service: 'Cognito',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "Cognito",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -373,20 +376,20 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
         ],
         resourcesToBeCreated: [],
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [
           {
-            category: 'auth',
-            providerPlugin: 'awscloudformation',
-            resourceName: 'authResourceName',
-            service: 'Cognito',
-            serviceType: 'imported',
-            sync: 'unlink',
+            category: "auth",
+            providerPlugin: "awscloudformation",
+            resourceName: "authResourceName",
+            service: "Cognito",
+            serviceType: "imported",
+            sync: "unlink",
           },
         ],
         resourcesToBeUpdated: [],
@@ -395,16 +398,16 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns marked resource as sync refresh including in resourcesToBeSynced when imported resource both exists on local and current cloud', async () => {
+    it("returns marked resource as sync refresh including in resourcesToBeSynced when imported resource both exists on local and current cloud", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         auth: {
           authResourceName: {
-            service: 'Cognito',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "Cognito",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -414,9 +417,9 @@ describe('resource-status', () => {
         },
         auth: {
           authResourceName: {
-            service: 'Cognito',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "Cognito",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -425,28 +428,28 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
           {
-            category: 'auth',
-            providerPlugin: 'awscloudformation',
-            resourceName: 'authResourceName',
-            service: 'Cognito',
-            serviceType: 'imported',
-            sync: 'refresh',
+            category: "auth",
+            providerPlugin: "awscloudformation",
+            resourceName: "authResourceName",
+            service: "Cognito",
+            serviceType: "imported",
+            sync: "refresh",
           },
         ],
         resourcesToBeCreated: [],
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [
           {
-            category: 'auth',
-            providerPlugin: 'awscloudformation',
-            resourceName: 'authResourceName',
-            service: 'Cognito',
-            serviceType: 'imported',
-            sync: 'refresh',
+            category: "auth",
+            providerPlugin: "awscloudformation",
+            resourceName: "authResourceName",
+            service: "Cognito",
+            serviceType: "imported",
+            sync: "refresh",
           },
         ],
         resourcesToBeUpdated: [],
@@ -455,15 +458,15 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns resourcesToBeUpdated including updated resource when updated resources exists on local metadata', async () => {
+    it("returns resourcesToBeUpdated including updated resource when updated resources exists on local metadata", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         function: {
           lambda1: {
-            service: 'Lambda',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
+            service: "Lambda",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
           },
         },
       });
@@ -473,8 +476,8 @@ describe('resource-status', () => {
         },
         function: {
           lambda1: {
-            service: 'Lambda',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
+            service: "Lambda",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
           },
         },
       });
@@ -493,14 +496,14 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
           {
-            category: 'function',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
+            resourceName: "lambda1",
+            service: "Lambda",
           },
         ],
         resourcesToBeCreated: [],
@@ -508,10 +511,10 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [
           {
-            category: 'function',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
-            resourceName: 'lambda1',
-            service: 'Lambda',
+            category: "function",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
+            resourceName: "lambda1",
+            service: "Lambda",
           },
         ],
         tagsUpdated: false,
@@ -519,15 +522,15 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns resourcesToBeUpdated including updated lambda layer resources when updated lambda layer resources exists on local metadata', async () => {
+    it("returns resourcesToBeUpdated including updated lambda layer resources when updated lambda layer resources exists on local metadata", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         function: {
           lambdaLayer1: {
-            service: 'LambdaLayer',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
+            service: "LambdaLayer",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
           },
         },
       });
@@ -537,28 +540,28 @@ describe('resource-status', () => {
         },
         function: {
           lambdaLayer1: {
-            service: 'LambdaLayer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
+            service: "LambdaLayer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
           },
         },
       });
 
       const hashLayerResourceMock = hashLayerResource as jest.MockedFunction<typeof hashLayerResource>;
-      hashLayerResourceMock.mockResolvedValueOnce('hash_one');
-      hashLayerResourceMock.mockResolvedValueOnce('hash_two');
+      hashLayerResourceMock.mockResolvedValueOnce("hash_one");
+      hashLayerResourceMock.mockResolvedValueOnce("hash_two");
 
       const status = await getResourceStatus();
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
           {
-            category: 'function',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
-            resourceName: 'lambdaLayer1',
-            service: 'LambdaLayer',
+            category: "function",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
+            resourceName: "lambdaLayer1",
+            service: "LambdaLayer",
           },
         ],
         resourcesToBeCreated: [],
@@ -566,10 +569,10 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [
           {
-            category: 'function',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
-            resourceName: 'lambdaLayer1',
-            service: 'LambdaLayer',
+            category: "function",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
+            resourceName: "lambdaLayer1",
+            service: "LambdaLayer",
           },
         ],
         tagsUpdated: false,
@@ -577,15 +580,15 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns resourcesToBeUpdated including updated hosting resources on ECS when updated docker files', async () => {
+    it("returns resourcesToBeUpdated including updated hosting resources on ECS when updated docker files", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         hosting: {
           site: {
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
           },
         },
       });
@@ -595,9 +598,9 @@ describe('resource-status', () => {
         },
         hosting: {
           site: {
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
-            lastPushDirHash: '83Bhmmec48dILMj3mi2T25B4700=',
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
+            lastPushDirHash: "83Bhmmec48dILMj3mi2T25B4700=",
           },
         },
       });
@@ -607,14 +610,14 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
           {
-            category: 'hosting',
-            resourceName: 'site',
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
+            category: "hosting",
+            resourceName: "site",
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
           },
         ],
         resourcesToBeCreated: [],
@@ -622,10 +625,10 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [
           {
-            category: 'hosting',
-            resourceName: 'site',
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
+            category: "hosting",
+            resourceName: "site",
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
           },
         ],
         tagsUpdated: false,
@@ -633,16 +636,16 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns filtered resources when specify providerName parameter', async () => {
+    it("returns filtered resources when specify providerName parameter", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         hosting: {
           site: {
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
-            providerPlugin: 'awscloudformation',
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -652,24 +655,24 @@ describe('resource-status', () => {
         },
         hosting: {
           site: {
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
-            lastPushDirHash: '83Bhmmec48dILMj3mi2T25B4700=',
-            providerPlugin: 'awscloudformation',
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
+            lastPushDirHash: "83Bhmmec48dILMj3mi2T25B4700=",
+            providerPlugin: "awscloudformation",
           },
         },
       });
 
-      const status = await getResourceStatus(undefined, undefined, 'awscloudformation');
+      const status = await getResourceStatus(undefined, undefined, "awscloudformation");
 
       expect(status).toEqual({
         allResources: [
           {
-            category: 'hosting',
-            resourceName: 'site',
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
-            providerPlugin: 'awscloudformation',
+            category: "hosting",
+            resourceName: "site",
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
+            providerPlugin: "awscloudformation",
           },
         ],
         resourcesToBeCreated: [],
@@ -677,11 +680,11 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [
           {
-            category: 'hosting',
-            resourceName: 'site',
-            service: 'ElasticContainer',
-            lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
-            providerPlugin: 'awscloudformation',
+            category: "hosting",
+            resourceName: "site",
+            service: "ElasticContainer",
+            lastPushTimeStamp: "2021-07-12T00:39:17.966Z",
+            providerPlugin: "awscloudformation",
           },
         ],
         tagsUpdated: false,
@@ -689,17 +692,17 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns tagsUpdated is true when updated tag exists', async () => {
+    it("returns tagsUpdated is true when updated tag exists", async () => {
       stateManagerMock.getProjectTags.mockReturnValue([
         {
-          Key: 'Key1',
-          Value: 'ValueA',
+          Key: "Key1",
+          Value: "ValueA",
         },
       ]);
       stateManagerMock.getCurrentProjectTags.mockReturnValue([
         {
-          Key: 'Key1',
-          Value: 'ValueB',
+          Key: "Key1",
+          Value: "ValueB",
         },
       ]);
 
@@ -707,8 +710,8 @@ describe('resource-status', () => {
       expect(status).toEqual({
         allResources: [
           {
-            category: 'providers',
-            resourceName: 'awscloudformation',
+            category: "providers",
+            resourceName: "awscloudformation",
           },
         ],
         resourcesToBeCreated: [],
@@ -720,7 +723,7 @@ describe('resource-status', () => {
       });
     });
 
-    it('returns empty arrays when non initialized', async () => {
+    it("returns empty arrays when non initialized", async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(CLOUD_NOT_INITIALIZED);
 
       const status = await getResourceStatus();
@@ -735,48 +738,48 @@ describe('resource-status', () => {
       });
     });
 
-    it('throws an error when non amplify project', async () => {
+    it("throws an error when non amplify project", async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
       // eslint-disable-next-line jest/valid-expect
-      await expect(getResourceStatus()).rejects.toThrow('No Amplify backend project files detected within this folder.');
+      await expect(getResourceStatus()).rejects.toThrow("No Amplify backend project files detected within this folder.");
     });
   });
 
-  describe('showResourceTable', () => {
-    it('returns false and print empty markdown table format when no changed resources exists', async () => {
+  describe("showResourceTable", () => {
+    it("returns false and print empty markdown table format when no changed resources exists", async () => {
       const hasChanges = await showResourceTable();
       expect(hasChanges).toBe(false);
-      expect(print.table).toBeCalledWith([['Category', 'Resource name', 'Operation', 'Provider plugin']], { format: 'lean' });
+      expect(print.table).toBeCalledWith([["Category", "Resource name", "Operation", "Provider plugin"]], { format: "lean" });
     });
 
-    it('returns true and print resources as lean table format when any changed resources exists', async () => {
+    it("returns true and print resources as lean table format when any changed resources exists", async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
         },
         function: {
           lambda1: {
-            service: 'Lambda',
-            providerPlugin: 'awscloudformation',
+            service: "Lambda",
+            providerPlugin: "awscloudformation",
           },
           lambda2: {
-            service: 'Lambda',
-            providerPlugin: 'awscloudformation',
-            lastPushTimeStamp: '2021-07-12T00:41:17.966Z',
+            service: "Lambda",
+            providerPlugin: "awscloudformation",
+            lastPushTimeStamp: "2021-07-12T00:41:17.966Z",
           },
         },
         auth: {
           authResourceName: {
-            service: 'Cognito',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "Cognito",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
         storage: {
           s3Bucket: {
-            service: 'S3',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "S3",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -786,26 +789,26 @@ describe('resource-status', () => {
         },
         function: {
           lambda2: {
-            service: 'Lambda',
-            providerPlugin: 'awscloudformation',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
+            service: "Lambda",
+            providerPlugin: "awscloudformation",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
           },
           lambda3: {
-            service: 'Lambda',
-            providerPlugin: 'awscloudformation',
-            lastPushTimeStamp: '2021-07-12T00:40:17.966Z',
+            service: "Lambda",
+            providerPlugin: "awscloudformation",
+            lastPushTimeStamp: "2021-07-12T00:40:17.966Z",
           },
         },
         storage: {
           s3Bucket: {
-            service: 'S3',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "S3",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
           testTable: {
-            service: 'DynamoDB',
-            serviceType: 'imported',
-            providerPlugin: 'awscloudformation',
+            service: "DynamoDB",
+            serviceType: "imported",
+            providerPlugin: "awscloudformation",
           },
         },
       });
@@ -827,15 +830,15 @@ describe('resource-status', () => {
     `);
       expect(print.table).toBeCalledWith(
         [
-          ['Category', 'Resource name', 'Operation', 'Provider plugin'],
-          ['Function', 'lambda1', 'Create', 'awscloudformation'],
-          ['Function', 'lambda2', 'Update', 'awscloudformation'],
-          ['Auth', 'authResourceName', 'Import', 'awscloudformation'],
-          ['Storage', 's3Bucket', 'No Change', 'awscloudformation'],
-          ['Storage', 'testTable', 'Unlink', 'awscloudformation'],
-          ['Function', 'lambda3', 'Delete', 'awscloudformation'],
+          ["Category", "Resource name", "Operation", "Provider plugin"],
+          ["Function", "lambda1", "Create", "awscloudformation"],
+          ["Function", "lambda2", "Update", "awscloudformation"],
+          ["Auth", "authResourceName", "Import", "awscloudformation"],
+          ["Storage", "s3Bucket", "No Change", "awscloudformation"],
+          ["Storage", "testTable", "Unlink", "awscloudformation"],
+          ["Function", "lambda3", "Delete", "awscloudformation"],
         ],
-        { format: 'lean' },
+        { format: "lean" }
       );
     });
   });

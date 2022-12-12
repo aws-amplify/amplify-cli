@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as jsonReader from 'hjson';
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as jsonReader from "hjson";
 
 /**
  * Wrappers around reading and writing JSON strings
@@ -11,7 +11,7 @@ export class JSONUtilities {
     options?: {
       throwIfNotExist?: boolean;
       preserveComments?: boolean;
-    },
+    }
   ): T | undefined => {
     if (!fileName) {
       throw new Error(`'fileName' argument missing`);
@@ -31,7 +31,7 @@ export class JSONUtilities {
       }
     }
 
-    const content = fs.readFileSync(fileName, 'utf8');
+    const content = fs.readFileSync(fileName, "utf8");
 
     const data = JSONUtilities.parse<T>(content, {
       preserveComments: mergedOptions.preserveComments,
@@ -48,7 +48,7 @@ export class JSONUtilities {
       minify?: boolean;
       secureFile?: boolean;
       orderedKeys?: boolean; // if true, will print object keys in alphabetical order
-    },
+    }
   ): void => {
     if (!fileName) {
       throw new Error(`'fileName' argument missing`);
@@ -73,7 +73,7 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    const writeFileOptions: { encoding: string; mode?: number } = { encoding: 'utf8', mode: options?.mode };
+    const writeFileOptions: { encoding: string; mode?: number } = { encoding: "utf8", mode: options?.mode };
     if (mergedOptions.secureFile) {
       writeFileOptions.mode = 0o600;
     }
@@ -85,9 +85,9 @@ export class JSONUtilities {
     jsonString: string,
     options?: {
       preserveComments?: boolean;
-    },
+    }
   ): T => {
-    if (jsonString === undefined || (typeof jsonString === 'string' && jsonString.trim().length === 0)) {
+    if (jsonString === undefined || (typeof jsonString === "string" && jsonString.trim().length === 0)) {
       throw new Error("'jsonString' argument missing or empty");
     }
 
@@ -100,7 +100,7 @@ export class JSONUtilities {
 
     // By type definition we don't allow any value other than string, but to preserve JSON.parse behavior,
     // which is against the MDN docs we support handling of non-string types like boolean and number.
-    if (typeof jsonString === 'string') {
+    if (typeof jsonString === "string") {
       let cleanString = jsonString;
 
       // Strip BOM if input has it
@@ -112,7 +112,7 @@ export class JSONUtilities {
         keepWsc: mergedOptions.preserveComments,
       });
     } else {
-      return (jsonString as unknown) as T;
+      return jsonString as unknown as T;
     }
 
     return data as T;
@@ -123,7 +123,7 @@ export class JSONUtilities {
     options?: {
       minify?: boolean;
       orderedKeys?: boolean; // if true, will print object keys in alphabetical order
-    },
+    }
   ): string | undefined => {
     if (!data) {
       throw new Error("'data' argument missing");
@@ -135,14 +135,17 @@ export class JSONUtilities {
       ...options,
     };
 
-    let jsonString = '';
+    let jsonString = "";
 
     let sortKeys;
 
     if (mergedOptions.orderedKeys) {
       const allKeys: string[] = [];
       // using JSON.stringify to walk the object and push all keys onto a list
-      JSON.stringify(data, (k, v) => { allKeys.push(k); return v; });
+      JSON.stringify(data, (k, v) => {
+        allKeys.push(k);
+        return v;
+      });
       sortKeys = allKeys.sort();
     }
 

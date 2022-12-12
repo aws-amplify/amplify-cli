@@ -1,25 +1,25 @@
-import path from 'path';
-import fs from 'fs-extra';
-import execa from 'execa';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { executableName } from '../constants';
+import path from "path";
+import fs from "fs-extra";
+import execa from "execa";
+import { InvocationRequest } from "amplify-function-plugin-interface";
+import { executableName } from "../constants";
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {
-  const sourcePath = path.join(request.srcRoot, 'src');
+  const sourcePath = path.join(request.srcRoot, "src");
   let result: execa.ExecaSyncReturnValue<string>;
-  let tempDir = '';
-  let eventFile = '';
+  let tempDir = "";
+  let eventFile = "";
   try {
-    tempDir = fs.mkdtempSync(path.join(request.srcRoot, 'amplify'));
-    eventFile = path.join(tempDir, 'event.json');
+    tempDir = fs.mkdtempSync(path.join(request.srcRoot, "amplify"));
+    eventFile = path.join(tempDir, "event.json");
     fs.writeFileSync(eventFile, request.event);
     const execPromise = execa(
       executableName,
-      ['lambda-test-tool-3.1', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
+      ["lambda-test-tool-3.1", "--no-ui", "--function-handler", request.handler, "--payload", eventFile, "--pause-exit", "false"],
       {
         cwd: sourcePath,
         env: request.envVars,
-      },
+      }
     );
     execPromise.stderr?.pipe(process.stderr);
     execPromise.stdout?.pipe(process.stdout);
@@ -37,7 +37,7 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
   }
 
   const { stdout } = result;
-  const lines = stdout.split('\n');
+  const lines = stdout.split("\n");
   const lastLine = lines[lines.length - 1];
   let output = lastLine;
   try {

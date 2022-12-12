@@ -1,38 +1,38 @@
 /* These tests test the DDBStackTransform and run the cdk builder tool which is used within this file */
 
-import { $TSContext } from 'amplify-cli-core';
-import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
+import { $TSContext } from "amplify-cli-core";
+import { DDBStackTransform } from "../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform";
 import {
   DynamoDBCLIInputs,
   FieldType,
-} from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
-import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
+} from "../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types";
+import { DynamoDBInputState } from "../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state";
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   buildOverrideDir: jest.fn().mockResolvedValue(false),
   JSONUtilities: {
     writeJson: jest.fn(),
     readJson: jest.fn(),
   },
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('mockbackendpath'),
-    getResourceDirectoryPath: jest.fn().mockReturnValue('mockresourcepath'),
+    getBackendDirPath: jest.fn().mockReturnValue("mockbackendpath"),
+    getResourceDirectoryPath: jest.fn().mockReturnValue("mockresourcepath"),
   },
 }));
-jest.mock('fs-extra', () => ({
+jest.mock("fs-extra", () => ({
   readFileSync: () => jest.fn().mockReturnValue('{ "Cognito": { "provider": "aws"}}'),
   existsSync: () => jest.fn().mockReturnValue(true),
   ensureDirSync: jest.fn().mockReturnValue(true),
 }));
 
-jest.mock('path', () => ({
-  join: jest.fn().mockReturnValue('mockjoinedpath'),
-  resolve: jest.fn().mockReturnValue('mockjoinedpath'),
+jest.mock("path", () => ({
+  join: jest.fn().mockReturnValue("mockjoinedpath"),
+  resolve: jest.fn().mockReturnValue("mockjoinedpath"),
 }));
 
-jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
+jest.mock("../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state");
 
-describe('Test DDB transform generates correct CFN template', () => {
+describe("Test DDB transform generates correct CFN template", () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
@@ -54,31 +54,31 @@ describe('Test DDB transform generates correct CFN template', () => {
     jest.clearAllMocks();
   });
 
-  it('Generated ddb template with all CLI configurations set with no overrides', async () => {
-    const resourceName = 'mockResource';
+  it("Generated ddb template with all CLI configurations set with no overrides", async () => {
+    const resourceName = "mockResource";
     const cliInputsJSON: DynamoDBCLIInputs = {
       resourceName: resourceName,
-      tableName: 'mocktablename',
+      tableName: "mocktablename",
       partitionKey: {
-        fieldName: 'id',
+        fieldName: "id",
         fieldType: FieldType.string,
       },
       sortKey: {
-        fieldName: 'name',
+        fieldName: "name",
         fieldType: FieldType.number,
       },
       gsi: [
         {
-          name: 'gsiname',
+          name: "gsiname",
           partitionKey: {
-            fieldName: 'name',
+            fieldName: "name",
             fieldType: FieldType.number,
           },
         },
         {
-          name: 'updategsiname',
+          name: "updategsiname",
           partitionKey: {
-            fieldName: 'col',
+            fieldName: "col",
             fieldType: FieldType.string,
           },
         },
@@ -86,7 +86,7 @@ describe('Test DDB transform generates correct CFN template', () => {
       triggerFunctions: [],
     };
 
-    jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => cliInputsJSON);
+    jest.spyOn(DynamoDBInputState.prototype, "getCliInputPayload").mockImplementation(() => cliInputsJSON);
     const ddbTransform = new DDBStackTransform(mockContext, resourceName);
     await ddbTransform.transform();
     expect(ddbTransform._cfn).toMatchSnapshot();

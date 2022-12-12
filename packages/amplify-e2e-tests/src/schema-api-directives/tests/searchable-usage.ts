@@ -1,21 +1,21 @@
-import { addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addApi, amplifyPush } from "@aws-amplify/amplify-e2e-core";
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from "../authHelper";
 
-import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
+import { updateSchemaInTestProject, testMutations, testQueries } from "../common";
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);
-  await new Promise<void>(res => setTimeout(() => res(), 60000));
+  await new Promise<void>((res) => setTimeout(() => res(), 60000));
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);
   const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
 
   await testMutations(testModule, appSyncClient);
-  await new Promise<void>(res => setTimeout(() => res(), 60000));
+  await new Promise<void>((res) => setTimeout(() => res(), 60000));
   await testQueries(testModule, appSyncClient);
 }
 
@@ -44,10 +44,10 @@ mutation CreatePost {
 export const expected_result_mutation = {
   data: {
     createPost: {
-      id: '<check-defined>',
-      title: 'Stream me to Elasticsearch!',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      id: "<check-defined>",
+      title: "Stream me to Elasticsearch!",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
       upvotes: null,
     },
   },
@@ -70,8 +70,8 @@ export const expected_result_query1 = {
     searchPosts: {
       items: [
         {
-          id: '<check-defined>',
-          title: 'Stream me to Elasticsearch!',
+          id: "<check-defined>",
+          title: "Stream me to Elasticsearch!",
         },
       ],
     },

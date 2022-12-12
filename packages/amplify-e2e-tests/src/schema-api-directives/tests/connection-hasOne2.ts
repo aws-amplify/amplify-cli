@@ -42,11 +42,11 @@ mutation CreateProject {
 export const expected_result_mutation2 = {
   data: {
     createProject: {
-      id: '1',
-      name: 'New Project',
+      id: "1",
+      name: "New Project",
       team: {
-        id: 'a-team-id',
-        name: 'a-team',
+        id: "a-team-id",
+        name: "a-team",
       },
     },
   },

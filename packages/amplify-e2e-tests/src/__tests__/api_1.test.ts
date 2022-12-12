@@ -17,11 +17,11 @@ import {
   getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import path from 'path';
-import { existsSync } from 'fs';
+} from "@aws-amplify/amplify-e2e-core";
+import path from "path";
+import { existsSync } from "fs";
 
-describe('amplify add api (GraphQL)', () => {
+describe("amplify add api (GraphQL)", () => {
   let projRoot: string;
   let projFolderName: string;
   beforeEach(async () => {
@@ -30,19 +30,19 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add the simple_model api', async () => {
-    const envName = 'devtest';
+  it("init a project and add the simple_model api", async () => {
+    const envName = "devtest";
     const projName = `simplemodel${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await updateApiSchema(projRoot, projName, "simple_model.graphql");
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -69,12 +69,12 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-  it('init a project then add and remove api', async () => {
-    const envName = 'devtest';
+  it("init a project then add and remove api", async () => {
+    const envName = "devtest";
     const projName = `simplemodel${generateRandomShortId()}`;
     await initIosProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await updateApiSchema(projRoot, projName, "simple_model.graphql");
     await amplifyPush(projRoot);
 
     let meta = getProjectMeta(projRoot);
@@ -90,17 +90,17 @@ describe('amplify add api (GraphQL)', () => {
     meta = getProjectMeta(projRoot);
     expect(meta.api[projName]).toBeUndefined();
     const awsConfig: any = getAwsIOSConfig(projRoot);
-    expect('AppSync' in awsConfig).toBe(false);
+    expect("AppSync" in awsConfig).toBe(false);
     const amplifyConfig: any = getAmplifyIOSConfig(projRoot);
-    expect('api' in amplifyConfig).toBe(false);
+    expect("api" in amplifyConfig).toBe(false);
   });
 
-  it('init a Flutter project and add the simple_model api', async () => {
-    const envName = 'devtest';
+  it("init a Flutter project and add the simple_model api", async () => {
+    const envName = "devtest";
     const projName = `simplemodel${generateRandomShortId()}`;
     await initFlutterProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await updateApiSchema(projRoot, projName, "simple_model.graphql");
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -128,10 +128,10 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-  it('init a project with a simple model and then migrates the api', async () => {
+  it("init a project with a simple model and then migrates the api", async () => {
     const projectName = `blogapp${generateRandomShortId()}`;
-    const initialSchema = 'initial_key_blog.graphql';
-    const nextSchema = 'next_key_blog.graphql';
+    const initialSchema = "initial_key_blog.graphql";
+    const nextSchema = "next_key_blog.graphql";
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);

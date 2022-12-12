@@ -1,12 +1,21 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth, createNewProjectDir, deleteProjectDir, getCollection, addConvert, addInterpret, addIdentifyCollection, addAuthWithDefault,
-} from '@aws-amplify/amplify-e2e-core';
-import { getAWSExports } from '../aws-exports/awsExports';
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProjectDir,
+  getCollection,
+  addConvert,
+  addInterpret,
+  addIdentifyCollection,
+  addAuthWithDefault,
+} from "@aws-amplify/amplify-e2e-core";
+import { getAWSExports } from "../aws-exports/awsExports";
 
-describe('amplify add predictions', () => {
+describe("amplify add predictions", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('predictions');
+    projRoot = await createNewProjectDir("predictions");
   });
 
   afterEach(async () => {
@@ -14,7 +23,7 @@ describe('amplify add predictions', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with convert subcategory translate text', async () => {
+  it("init a project with convert subcategory translate text", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addConvert(projRoot, {});
@@ -25,10 +34,10 @@ describe('amplify add predictions', () => {
     const { type } = awsExports.predictions.interpret.interpretText.defaults;
     expect(sourceLanguage).toBeDefined();
     expect(targetLanguage).toBeDefined();
-    expect(type).toEqual('ALL');
+    expect(type).toEqual("ALL");
   });
 
-  it('init a project with identify sub category identifyEntities with collection config', async () => {
+  it("init a project with identify sub category identifyEntities with collection config", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addIdentifyCollection(projRoot, {});
@@ -40,6 +49,6 @@ describe('amplify add predictions', () => {
     expect(maxFaces).toEqual(50);
     expect(celebrityDetectionEnabled).toBeTruthy();
     const cID = await getCollection(collectionID, region);
-    expect(cID.CollectionARN.split('/').pop()).toEqual(collectionID);
+    expect(cID.CollectionARN.split("/").pop()).toEqual(collectionID);
   });
 });

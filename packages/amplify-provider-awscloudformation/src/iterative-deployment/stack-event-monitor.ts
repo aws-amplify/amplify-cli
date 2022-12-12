@@ -1,7 +1,7 @@
-import { StackEvent } from 'aws-sdk/clients/cloudformation';
-import * as aws from 'aws-sdk';
-import { AmplifyFault } from 'amplify-cli-core';
-import { fileLogger, Logger } from '../utils/aws-logger';
+import { StackEvent } from "aws-sdk/clients/cloudformation";
+import * as aws from "aws-sdk";
+import { AmplifyFault } from "amplify-cli-core";
+import { fileLogger, Logger } from "../utils/aws-logger";
 
 export interface StackEventMonitorOptions {
   pollDelay: number;
@@ -35,10 +35,10 @@ export class StackEventMonitor {
     private stackName: string,
     private printerFn: () => void,
     private addEventActivity: (event) => void,
-    options?: StackEventMonitor,
+    options?: StackEventMonitor
   ) {
     this.options = { pollDelay: 5_000, ...options };
-    this.logger = fileLogger('stack-event-monitor');
+    this.logger = fileLogger("stack-event-monitor");
     this.printerFn = printerFn;
   }
 
@@ -125,7 +125,7 @@ export class StackEventMonitor {
             break;
           }
 
-          if (event.ResourceType === 'AWS::CloudFormation::Stack') {
+          if (event.ResourceType === "AWS::CloudFormation::Stack") {
             this.processNestedStack(event);
             // Don't render info about the stack itself
             continue;
@@ -142,14 +142,18 @@ export class StackEventMonitor {
         }
       }
     } catch (e) {
-      this.logger('readNewEvents', [])(e);
-      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+      this.logger("readNewEvents", [])(e);
+      if (e.code === "ValidationError" && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
-      if (e.code !== 'Throttling') {
-        throw new AmplifyFault('NotImplementedFault', {
-          message: e.message,
-        }, e);
+      if (e.code !== "Throttling") {
+        throw new AmplifyFault(
+          "NotImplementedFault",
+          {
+            message: e.message,
+          },
+          e
+        );
       }
     }
 
@@ -160,10 +164,10 @@ export class StackEventMonitor {
   }
 
   private processNestedStack(event: StackEvent): void {
-    if (event.ResourceType === 'AWS::CloudFormation::Stack') {
+    if (event.ResourceType === "AWS::CloudFormation::Stack") {
       const physicalResourceId = event.PhysicalResourceId!;
       const idx = this.stacksBeingMonitored.indexOf(physicalResourceId);
-      if (idx >= 0 && event.ResourceStatus!.endsWith('_COMPLETE') && physicalResourceId !== this.stackName) {
+      if (idx >= 0 && event.ResourceStatus!.endsWith("_COMPLETE") && physicalResourceId !== this.stackName) {
         this.stacksBeingMonitored.splice(idx, 1);
         this.completedStacks.add(physicalResourceId);
       } else if (!this.completedStacks.has(physicalResourceId)) {

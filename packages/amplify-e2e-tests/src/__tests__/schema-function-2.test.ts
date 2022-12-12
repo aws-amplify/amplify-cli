@@ -1,13 +1,11 @@
-import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api directives @function', () => {
+describe("api directives @function", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('function');
+    projectDir = await createNewProjectDir("function");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -16,13 +14,13 @@ describe('api directives @function', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('function differentRegion', async () => {
-    const testresult = await testSchema(projectDir, 'function', 'differentRegion');
+  it("function differentRegion", async () => {
+    const testresult = await testSchema(projectDir, "function", "differentRegion");
     expect(testresult).toBeTruthy();
   });
 
-  it('function chaining', async () => {
-    const testresult = await testSchema(projectDir, 'function', 'chaining');
+  it("function chaining", async () => {
+    const testresult = await testSchema(projectDir, "function", "chaining");
     expect(testresult).toBeTruthy();
   });
 });

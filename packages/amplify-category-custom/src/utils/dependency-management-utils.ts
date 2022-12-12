@@ -1,15 +1,15 @@
-import * as cdk from '@aws-cdk/core';
-import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import { glob } from 'glob';
-import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
-import _ from 'lodash';
-import * as path from 'path';
-import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
-const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json';
+import * as cdk from "@aws-cdk/core";
+import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import { glob } from "glob";
+import inquirer, { CheckboxQuestion, DistinctChoice } from "inquirer";
+import _ from "lodash";
+import * as path from "path";
+import { categoryName, customResourceCFNFilenameSuffix } from "../utils/constants";
+const AUTH_TRIGGER_TEMPLATE = "auth-trigger-cloudformation-template.json";
 
-const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
+const cfnTemplateGlobPattern = "*template*.+(yaml|yml|json)";
 export interface AmplifyDependentResourceDefinition {
   resourceName: string;
   category: string;
@@ -18,7 +18,7 @@ export interface AmplifyDependentResourceDefinition {
 
 export function getResourceCfnOutputAttributes(category: string, resourceName: string): [string?] {
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
-  const resourceBuildDir = path.join(resourceDir, 'build');
+  const resourceBuildDir = path.join(resourceDir, "build");
   let cfnFilePath;
 
   /**
@@ -65,7 +65,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
       const outputsWithoutConditions: any = {};
 
       for (const key in allOutputs) {
-        if (!allOutputs[key]['Condition']) {
+        if (!allOutputs[key]["Condition"]) {
           // Filter out outputs which are conditional to avoid deployment failures
           outputsWithoutConditions[key] = allOutputs[key];
         }
@@ -80,7 +80,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
 
 export function getAllResources() {
   const meta = stateManager.getMeta();
-  const categories = Object.keys(meta).filter(category => category !== 'providers');
+  const categories = Object.keys(meta).filter((category) => category !== "providers");
   const allResources: $TSObject = {};
 
   for (const category of categories) {
@@ -92,7 +92,7 @@ export function getAllResources() {
 
     for (const resourceName of resourcesList) {
       // In case of some resources they are not in the meta file so check for resource existence as well
-      const isMobileHubImportedResource = _.get(meta, [category, resourceName, 'mobileHubMigrated'], false);
+      const isMobileHubImportedResource = _.get(meta, [category, resourceName, "mobileHubMigrated"], false);
       if (isMobileHubImportedResource) {
         continue;
       } else {
@@ -110,7 +110,7 @@ export function getAllResources() {
 
         for (const attribute of resourceCfnOutputAttributes) {
           if (attribute) {
-            allResources[category][resourceName][attribute] = 'string';
+            allResources[category][resourceName][attribute] = "string";
           }
         }
       }
@@ -125,15 +125,15 @@ export function addCDKResourceDependency(
   stack: cdk.Stack,
   category: string,
   resourceName: string,
-  dependentResources: AmplifyDependentResourceDefinition[],
+  dependentResources: AmplifyDependentResourceDefinition[]
 ) {
   const dependsOn: AmplifyDependentResourceDefinition[] = [];
   const dependentParameters: any = {};
 
-  dependentResources.forEach(resource => {
+  dependentResources.forEach((resource) => {
     const attributeList = getResourceCfnOutputAttributes(resource.category, resource.resourceName);
 
-    attributeList.forEach(attr => {
+    attributeList.forEach((attr) => {
       if (!dependentParameters[`${resource.category}`]) {
         dependentParameters[`${resource.category}`] = {};
       }
@@ -145,7 +145,7 @@ export function addCDKResourceDependency(
       dependentParameters[`${resource.category}`][`${resource.resourceName}`][`${attr}`] = parameterName;
 
       new cdk.CfnParameter(stack, parameterName, {
-        type: 'String',
+        type: "String",
       });
     });
     if (attributeList.length > 0) {
@@ -180,10 +180,10 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   const selectResourcesInCategory = (
     choices: DistinctChoice<any>[],
     currentResourceDependencyMap: $TSObject,
-    category: string,
+    category: string
   ): CheckboxQuestion => ({
-    type: 'checkbox',
-    name: 'resources',
+    type: "checkbox",
+    name: "resources",
     message: `${_.capitalize(category)} has ${
       choices.length
     } resources in this project. Select the one you would like your custom resource to access`,
@@ -192,11 +192,11 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   });
 
   const selectCategories = (choices: DistinctChoice<any>[], currentCategoryDependencyMap: object): CheckboxQuestion => ({
-    type: 'checkbox',
-    name: 'categories',
-    message: 'Select the categories you want this custom resource to have access to.',
+    type: "checkbox",
+    name: "categories",
+    message: "Select the categories you want this custom resource to have access to.",
     choices,
-    validate: answers => (_.isEmpty(answers) ? 'You must select at least one category' : true),
+    validate: (answers) => (_.isEmpty(answers) ? "You must select at least one category" : true),
     default: Object.keys(currentCategoryDependencyMap),
   });
 
@@ -215,14 +215,14 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   const hasExistingResources = Object.keys(existingDependentResources).length > 0;
 
   if (
-    !(await prompter.yesOrNo('Do you want to access Amplify generated resources in your custom CloudFormation file?', hasExistingResources))
+    !(await prompter.yesOrNo("Do you want to access Amplify generated resources in your custom CloudFormation file?", hasExistingResources))
   ) {
     // Remove all dependencies for the custom resource
-    await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', []);
+    await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, "dependsOn", []);
     return;
   }
 
-  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
+  const categories = Object.keys(amplifyMeta).filter((category) => category !== "providers");
   const categoryQuestion = selectCategories(categories, existingDependentResources);
   const categoryAnswer = await inquirer.prompt(categoryQuestion);
   const selectedCategories = categoryAnswer.categories as string[];
@@ -232,7 +232,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
 
     if (selectedCategory === categoryName) {
-      resourcesList = resourcesList.filter(name => name !== customResourceName);
+      resourcesList = resourcesList.filter((name) => name !== customResourceName);
     }
 
     if (_.isEmpty(resourcesList)) {
@@ -253,7 +253,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
       for (const resourceName of selectedResources) {
         // In case of some resources they are not in the meta file so check for resource existence as well
-        const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
+        const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, "mobileHubMigrated"], false);
         if (isMobileHubImportedResource) {
           printer.warn(`Dependency cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
@@ -304,7 +304,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
   // Update meta and backend-config.json files
 
-  await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', resources);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, "dependsOn", resources);
 
   // Show information on usage
 
@@ -334,7 +334,7 @@ function generateInputParametersForDependencies(resources: AmplifyDependentResou
   for (const resource of resources) {
     for (const attribute of resource.attributes || []) {
       parameters[`${resource.category}${resource.resourceName}${attribute}`] = {
-        Type: 'String',
+        Type: "String",
         Description: `Input parameter describing ${attribute} attribute for ${resource.category}/${resource.resourceName} resource`,
       };
     }

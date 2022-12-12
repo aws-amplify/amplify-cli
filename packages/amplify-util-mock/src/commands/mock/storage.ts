@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
-import { start } from '../../storage';
+import { $TSContext } from "amplify-cli-core";
+import { start } from "../../storage";
 
-export const name = 'storage';
+export const name = "storage";
 
 export const run = async (context: $TSContext) => {
   if (context.parameters.options.help) {

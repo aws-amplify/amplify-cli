@@ -1,9 +1,9 @@
-import fs from 'fs-extra';
-import { EOL } from 'os';
-import path from 'path';
-import { categoryName, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
-import _ from 'lodash';
-import { pathManager } from 'amplify-cli-core';
+import fs from "fs-extra";
+import { EOL } from "os";
+import path from "path";
+import { categoryName, topLevelCommentPrefix, topLevelCommentSuffix } from "../../../constants";
+import _ from "lodash";
+import { pathManager } from "amplify-cli-core";
 /**
  * This is legacy code that has been copied here.
  * In the future we either need to get rid of the top level comment entirely, or create a template hook to modify it
@@ -32,8 +32,8 @@ const updateTopLevelComment = (filePath, newComment) => {
 };
 
 const getSourceFilePath = (resourceDirPath: string): string | undefined => {
-  const appJSFilePath = path.join(resourceDirPath, 'src', 'app.js');
-  const indexJSFilePath = path.join(resourceDirPath, 'src', 'index.js');
+  const appJSFilePath = path.join(resourceDirPath, "src", "app.js");
+  const indexJSFilePath = path.join(resourceDirPath, "src", "index.js");
   return fs.existsSync(appJSFilePath) ? appJSFilePath : fs.existsSync(indexJSFilePath) ? indexJSFilePath : undefined;
 };
 
@@ -42,8 +42,8 @@ export const tryPrependSecretsUsageExample = async (functionName: string, secret
   if (!sourceFilePath) {
     return;
   }
-  const secretsHeader = secretNames?.length > 0 ? secretsUsageTemplate(secretNames) : '';
-  let fileContent = await fs.readFile(sourceFilePath, 'utf8');
+  const secretsHeader = secretNames?.length > 0 ? secretsUsageTemplate(secretNames) : "";
+  let fileContent = await fs.readFile(sourceFilePath, "utf8");
   const match = fileContent.match(secretsUsageRegex);
   if (match?.length > 0) {
     fileContent = fileContent.replace(secretsUsageRegex, secretsHeader);
@@ -71,4 +71,4 @@ const { Parameters } = await (new aws.SSM())
 
 ${secretsUsageFooter}`;
 
-const secretsUsageRegex = new RegExp(`${_.escapeRegExp(secretsUsageHeader)}.+${_.escapeRegExp(secretsUsageFooter)}`, 'sm');
+const secretsUsageRegex = new RegExp(`${_.escapeRegExp(secretsUsageHeader)}.+${_.escapeRegExp(secretsUsageFooter)}`, "sm");

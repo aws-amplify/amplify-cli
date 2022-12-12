@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { $TSAny, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities } from "amplify-cli-core";
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,
@@ -7,20 +7,18 @@ import {
   getBackendAmplifyMeta,
   getProjectMeta,
   getTeamProviderInfo,
-} from '@aws-amplify/amplify-e2e-core';
-import * as aws from 'aws-sdk';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import * as path from 'path';
-import { v4 as uuid } from 'uuid';
+} from "@aws-amplify/amplify-e2e-core";
+import * as aws from "aws-sdk";
+import * as fs from "fs-extra";
+import _ from "lodash";
+import * as path from "path";
+import { v4 as uuid } from "uuid";
 // eslint-disable-next-line import/no-cycle
-import {
-  AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails,
-} from '.';
-import { AppClientSettings, DynamoDBProjectDetails } from './types';
+import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from ".";
+import { AppClientSettings, DynamoDBProjectDetails } from "./types";
 
 export const getShortId = (): string => {
-  const [shortId] = uuid().split('-');
+  const [shortId] = uuid().split("-");
 
   return shortId;
 };
@@ -29,15 +27,15 @@ export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails =
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
   const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
+    .filter((key) => meta.auth[key].service === "Cognito")
+    .map((key) => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   // eslint-disable-next-line spellcheck/spell-checker
-  const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
+  const authTeam = _.get(team, ["integtest", "categories", "auth", authMetaKey]);
   // eslint-disable-next-line spellcheck/spell-checker
-  const providerTeam = _.get(team, ['integtest', 'awscloudformation']);
-  const parameters = readResourceParametersJson(projectRoot, 'auth', authMetaKey);
+  const providerTeam = _.get(team, ["integtest", "awscloudformation"]);
+  const parameters = readResourceParametersJson(projectRoot, "auth", authMetaKey);
 
   const result: AuthProjectDetails = {
     authResourceName: authMetaKey,
@@ -63,7 +61,7 @@ export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails =
     },
   };
 
-  if (result.parameters.authSelections === 'identityPoolAndUserPool') {
+  if (result.parameters.authSelections === "identityPoolAndUserPool") {
     result.meta = {
       ...result.meta,
       IdentityPoolId: authMeta.output.IdentityPoolId,
@@ -96,13 +94,13 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
   const team = getTeamProviderInfo(projectRoot);
 
   const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
+    .filter((key) => meta.auth[key].service === "Cognito")
+    .map((key) => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   // eslint-disable-next-line spellcheck/spell-checker
-  const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
-  const parameters = readResourceParametersJson(projectRoot, 'auth', authMetaKey);
+  const authTeam = _.get(team, ["integtest", "categories", "auth", authMetaKey]);
+  const parameters = readResourceParametersJson(projectRoot, "auth", authMetaKey);
 
   return {
     authResourceName: authMetaKey,
@@ -132,19 +130,20 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
 };
 
 export const readResourceParametersJson = (projectRoot: string, category: string, resourceName: string): $TSObject => {
-  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
-  const parametersFileBuildPath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
+  const parametersFilePath = path.join(projectRoot, "amplify", "backend", category, resourceName, "parameters.json");
+  const parametersFileBuildPath = path.join(projectRoot, "amplify", "backend", category, resourceName, "build", "parameters.json");
 
   if (fs.existsSync(parametersFilePath)) {
     return JSONUtilities.readJson(parametersFilePath);
-  } if (fs.existsSync(parametersFileBuildPath)) {
+  }
+  if (fs.existsSync(parametersFileBuildPath)) {
     return JSONUtilities.readJson(parametersFileBuildPath);
   }
-  throw new Error('parameters.json doesn\'t exist');
+  throw new Error("parameters.json doesn't exist");
 };
 
 export const readRootStack = (projectRoot: string): $TSObject => {
-  const rootStackFilePath = path.join(projectRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'root-cloudformation-stack.json');
+  const rootStackFilePath = path.join(projectRoot, "amplify", "backend", "awscloudformation", "build", "root-cloudformation-stack.json");
   const rootStack = JSONUtilities.readJson(rootStackFilePath);
 
   return rootStack;
@@ -154,11 +153,11 @@ export const getOGStorageProjectDetails = (projectRoot: string): StorageProjectD
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === "S3")
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
-  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+  const parameters = readResourceParametersJson(projectRoot, "storage", storageMetaKey);
 
   return {
     storageResourceName: storageMetaKey,
@@ -177,13 +176,13 @@ export const getStorageProjectDetails = (projectRoot: string): StorageProjectDet
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'S3')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === "S3")
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   // eslint-disable-next-line spellcheck/spell-checker
-  const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
-  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+  const storageTeam = _.get(team, ["integtest", "categories", "storage", storageMetaKey]);
+  const parameters = readResourceParametersJson(projectRoot, "storage", storageMetaKey);
 
   const result: StorageProjectDetails = {
     storageResourceName: storageMetaKey,
@@ -205,7 +204,7 @@ export const getStorageProjectDetails = (projectRoot: string): StorageProjectDet
 
 export const getS3ResourceName = (projectRoot: string): string => {
   const amplifyMeta = getBackendAmplifyMeta(projectRoot);
-  const s3ResourceName = Object.keys(amplifyMeta.storage).find((key: $TSAny) => amplifyMeta.storage[key].service === 'S3') as $TSAny;
+  const s3ResourceName = Object.keys(amplifyMeta.storage).find((key: $TSAny) => amplifyMeta.storage[key].service === "S3") as $TSAny;
   return s3ResourceName;
 };
 
@@ -213,11 +212,11 @@ export const getOGDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjec
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === "DynamoDB")
+    .map((key) => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
-  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+  const parameters = readResourceParametersJson(projectRoot, "storage", storageMetaKey);
 
   return {
     storageResourceName: storageMetaKey,
@@ -242,13 +241,13 @@ export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectD
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter(key => meta.storage[key].service === 'DynamoDB')
-    .map(key => key)[0];
+    .filter((key) => meta.storage[key].service === "DynamoDB")
+    .map((key) => key)[0];
 
   const dynamodbMeta = meta.storage[storageMetaKey];
   // eslint-disable-next-line spellcheck/spell-checker
-  const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
-  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+  const storageTeam = _.get(team, ["integtest", "categories", "storage", storageMetaKey]);
+  const parameters = readResourceParametersJson(projectRoot, "storage", storageMetaKey);
 
   return {
     storageResourceName: storageMetaKey,
@@ -280,9 +279,9 @@ export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectD
 
 export const getDynamoDBResourceName = (projectRoot: string): string => {
   const amplifyMeta = getBackendAmplifyMeta(projectRoot);
-  const dynamoDBResourceName = Object
-    .keys(amplifyMeta.storage)
-    .find((key: $TSAny) => amplifyMeta.storage[key].service === 'DynamoDB') as $TSAny;
+  const dynamoDBResourceName = Object.keys(amplifyMeta.storage).find(
+    (key: $TSAny) => amplifyMeta.storage[key].service === "DynamoDB"
+  ) as $TSAny;
   return dynamoDBResourceName;
 };
 
@@ -292,7 +291,7 @@ const addAppClient = async (
   projectRoot: string,
   clientName: string,
   generateSecret: boolean,
-  settings: AppClientSettings,
+  settings: AppClientSettings
 ) => {
   const projectDetails = getProjectMeta(projectRoot);
   const authDetails = getAuthProjectDetails(projectRoot);
@@ -318,16 +317,15 @@ const addAppClient = async (
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const addAppClientWithSecret = async (
-  profileName: string, projectRoot: string, clientName: string, settings: AppClientSettings,
-) => addAppClient(profileName, projectRoot, clientName, true, settings);
+export const addAppClientWithSecret = async (profileName: string, projectRoot: string, clientName: string, settings: AppClientSettings) =>
+  addAppClient(profileName, projectRoot, clientName, true, settings);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const addAppClientWithoutSecret = async (
   profileName: string,
   projectRoot: string,
   clientName: string,
-  settings: AppClientSettings,
+  settings: AppClientSettings
 ) => addAppClient(profileName, projectRoot, clientName, false, settings);
 
 export const deleteAppClient = async (profileName: string, projectRoot: string, clientId: string): Promise<void> => {
@@ -346,14 +344,14 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
 export const setupOgProjectWithAuth = async (
   ogProjectRoot: string,
   ogProjectSettings: { name: string },
-  withIdentityPool = false,
+  withIdentityPool = false
 ): Promise<AuthProjectDetails> => {
   const ogShortId = getShortId();
   const ogSettings = withIdentityPool
     ? createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId)
     : createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
-  if ('identityPoolName' in ogSettings) {
+  if ("identityPoolName" in ogSettings) {
     await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
   } else {
     await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);

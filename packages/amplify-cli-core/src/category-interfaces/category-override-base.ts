@@ -1,5 +1,5 @@
-import { $TSContext } from '..';
-import { Template } from './amplify-base-cdk-types';
+import { $TSContext } from "..";
+import { Template } from "./amplify-base-cdk-types";
 
 export abstract class AmplifyCategoryTransform {
   resourceName: string;

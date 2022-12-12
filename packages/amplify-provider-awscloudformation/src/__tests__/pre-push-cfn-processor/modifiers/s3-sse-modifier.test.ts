@@ -1,9 +1,9 @@
-import Bucket from 'cloudform-types/types/s3/bucket';
-import _ from 'lodash';
-import { applyS3SSEModification } from '../../../pre-push-cfn-processor/modifiers/s3-sse-modifier';
+import Bucket from "cloudform-types/types/s3/bucket";
+import _ from "lodash";
+import { applyS3SSEModification } from "../../../pre-push-cfn-processor/modifiers/s3-sse-modifier";
 
-describe('applyS3SSEModification', () => {
-  it('does not overwrite existing SSE configuration', async () => {
+describe("applyS3SSEModification", () => {
+  it("does not overwrite existing SSE configuration", async () => {
     const bucketBefore = {
       Properties: {
         BucketEncryption: {},
@@ -16,7 +16,7 @@ describe('applyS3SSEModification', () => {
     expect(result).toStrictEqual(bucketBefore);
   });
 
-  it('assigns config when no Parameters were present before', async () => {
+  it("assigns config when no Parameters were present before", async () => {
     const bucket = {} as Bucket;
 
     const result = await applyS3SSEModification(bucket);

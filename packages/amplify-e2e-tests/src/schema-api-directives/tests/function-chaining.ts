@@ -1,18 +1,18 @@
-import { addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addApi, amplifyPush } from "@aws-amplify/amplify-e2e-core";
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from "../authHelper";
 
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { updateSchemaInTestProject, testQueries } from "../common";
 
-import { addSimpleFunction, updateFunctionNameInSchema } from '../functionTester';
+import { addSimpleFunction, updateFunctionNameInSchema } from "../functionTester";
 
 export async function runTest(projectDir: string, testModule: any) {
-  const function1Name = await addSimpleFunction(projectDir, testModule, 'func1');
-  const function2Name = await addSimpleFunction(projectDir, testModule, 'func2');
+  const function1Name = await addSimpleFunction(projectDir, testModule, "func1");
+  const function2Name = await addSimpleFunction(projectDir, testModule, "func2");
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
-  updateFunctionNameInSchema(projectDir, '<function1-name>', function1Name);
-  updateFunctionNameInSchema(projectDir, '<function2-name>', function2Name);
+  updateFunctionNameInSchema(projectDir, "<function1-name>", function1Name);
+  updateFunctionNameInSchema(projectDir, "<function2-name>", function2Name);
   await amplifyPush(projectDir);
 
   const awsconfig = configureAmplify(projectDir);
@@ -23,7 +23,7 @@ export async function runTest(projectDir: string, testModule: any) {
 }
 
 //schema
-const env = '${env}';
+const env = "${env}";
 export const schema = `
 #error: when type Mutation is the only type in the schema, the following error is received:
 #Resource Name: hcst2d2aj5bzfit67twczmvgkqGraphQLSchema (AWS::AppSync::GraphQLSchema)
@@ -62,6 +62,6 @@ query DoSomeWork {
 `;
 export const expected_result_query = {
   data: {
-    doSomeWork: 'initial mutation message|processed by worker-function|processed by audit function',
+    doSomeWork: "initial mutation message|processed by worker-function|processed by audit function",
   },
 };

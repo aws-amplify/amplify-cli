@@ -1,14 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  $TSContext, AmplifyCategories, AmplifySupportedService, CloudformationProviderFacade,
-} from 'amplify-cli-core';
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, CloudformationProviderFacade } from "amplify-cli-core";
+import aws from "aws-sdk"; // eslint-disable-line import/no-extraneous-dependencies
+import { shouldRenderComponents } from "../commands/utils/shouldRenderComponents";
 
 const awsMock = aws as any;
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock("amplify-cli-core", () => ({
+  ...jest.requireActual("amplify-cli-core"),
   stateManager: {
     getMeta: jest.fn(() => ({
       [AmplifyCategories.API]: {
@@ -31,7 +29,7 @@ CloudformationProviderFacade.isAmplifyAdminApp = jest.fn().mockReturnValue({
   isAdminApp: true,
 });
 
-describe('should render components', () => {
+describe("should render components", () => {
   let context: $TSContext | any;
 
   beforeAll(async () => {
@@ -40,8 +38,8 @@ describe('should render components', () => {
       getMetadata: jest.fn(() => ({
         promise: jest.fn(() => ({
           features: {
-            autoGenerateForms: 'true',
-            autoGenerateViews: 'true',
+            autoGenerateForms: "true",
+            autoGenerateViews: "true",
           },
         })),
       })),
@@ -52,28 +50,28 @@ describe('should render components', () => {
       },
       input: {
         options: {
-          'no-codegen': false,
-          appId: 'testAppId',
-          envName: 'testEnvName',
+          "no-codegen": false,
+          appId: "testAppId",
+          envName: "testEnvName",
         },
       },
       exeInfo: {
         projectConfig: {
-          providers: ['awscloudformation'],
-          frontend: 'javascript',
+          providers: ["awscloudformation"],
+          frontend: "javascript",
           javascript: {
-            framework: 'react',
+            framework: "react",
           },
         },
       },
     };
   });
-  it('works with a valid config', async () => {
+  it("works with a valid config", async () => {
     const shouldIt = await shouldRenderComponents(context);
     expect(shouldIt).toBe(true);
   });
   it("doesn't work if --no-codegen flag is set", async () => {
-    context.input.options['no-codegen'] = true;
+    context.input.options["no-codegen"] = true;
     const shouldIt = await shouldRenderComponents(context);
     expect(shouldIt).toBe(false);
   });
@@ -82,13 +80,13 @@ describe('should render components', () => {
     const shouldIt = await shouldRenderComponents(context);
     expect(shouldIt).toBe(false);
   });
-  it('should return false if frontend is ios', async () => {
-    context.exeInfo.projectConfig.frontend = 'ios';
+  it("should return false if frontend is ios", async () => {
+    context.exeInfo.projectConfig.frontend = "ios";
     const shouldIt = await shouldRenderComponents(context);
     expect(shouldIt).toBe(false);
   });
-  it('should return false if frontend is vue', async () => {
-    context.exeInfo.projectConfig.javascript.framework = 'vue';
+  it("should return false if frontend is vue", async () => {
+    context.exeInfo.projectConfig.javascript.framework = "vue";
     const shouldIt = await shouldRenderComponents(context);
     expect(shouldIt).toBe(false);
   });

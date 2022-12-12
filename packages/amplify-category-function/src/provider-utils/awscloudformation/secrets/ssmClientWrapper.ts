@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, spinner } from 'amplify-cli-core';
-import aws from 'aws-sdk';
+import { $TSAny, $TSContext, spinner } from "amplify-cli-core";
+import aws from "aws-sdk";
 
 /**
  * Wrapper around SSM SDK calls
@@ -48,15 +48,15 @@ export class SSMClientWrapper {
           MaxResults: 10,
           ParameterFilters: [
             {
-              Key: 'Type',
-              Option: 'Equals',
-              Values: ['SecureString'],
+              Key: "Type",
+              Option: "Equals",
+              Values: ["SecureString"],
             },
           ],
           NextToken,
         })
         .promise();
-      accumulator.push(...result.Parameters.map(param => param.Name));
+      accumulator.push(...result.Parameters.map((param) => param.Name));
       NextToken = result.NextToken;
     } while (NextToken);
     return accumulator;
@@ -70,7 +70,7 @@ export class SSMClientWrapper {
       .putParameter({
         Name: secretName,
         Value: secretValue,
-        Type: 'SecureString',
+        Type: "SecureString",
         Overwrite: true,
       })
       .promise();
@@ -85,8 +85,8 @@ export class SSMClientWrapper {
         Name: secretName,
       })
       .promise()
-      .catch(err => {
-        if (err.code !== 'ParameterNotFound') {
+      .catch((err) => {
+        if (err.code !== "ParameterNotFound") {
           // if the value didn't exist in the first place, consider it deleted
           throw err;
         }
@@ -101,7 +101,7 @@ export class SSMClientWrapper {
       await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
     } catch (err) {
       // if the value didn't exist in the first place, consider it deleted
-      if (err.code !== 'ParameterNotFound') {
+      if (err.code !== "ParameterNotFound") {
         throw err;
       }
     }
@@ -111,9 +111,9 @@ export class SSMClientWrapper {
 const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
   try {
     spinner.start();
-    spinner.text = 'Building and packaging resources';
+    spinner.text = "Building and packaging resources";
 
-    const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
+    const { client } = await context.amplify.invokePluginMethod(context, "awscloudformation", undefined, "getConfiguredSSMClient", [
       context,
     ]);
 

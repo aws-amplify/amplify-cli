@@ -7,10 +7,10 @@ import {
   DeploymentStepStatus,
   IDeploymentStateManager,
   JSONUtilities,
-} from 'amplify-cli-core';
-import { DeploymentOp, DeploymentManager } from './deployment-manager';
-import { S3 } from '../aws-utils/aws-s3';
-import { formUserAgentParam } from '../aws-utils/user-agent';
+} from "amplify-cli-core";
+import { DeploymentOp, DeploymentManager } from "./deployment-manager";
+import { S3 } from "../aws-utils/aws-s3";
+import { formUserAgentParam } from "../aws-utils/user-agent";
 
 const prevDeploymentStatus = [
   DeploymentStepStatus.DEPLOYING,
@@ -25,7 +25,7 @@ const loadDeploymentMeta = async (s3: S3, bucketName: string, metaKey: string): 
     return JSONUtilities.parse<DeploymentOp>(metaDeploymentContent);
   }
 
-  throw new AmplifyError('IterativeRollbackError', {
+  throw new AmplifyError("IterativeRollbackError", {
     message: `Could not find deployment meta file: ${metaKey}`,
   });
 };
@@ -50,7 +50,7 @@ export const runIterativeRollback = async (
   context: $TSContext,
   cloudformationMeta: $TSMeta,
   deploymentStateManager: IDeploymentStateManager,
-  eventMap: $TSAny,
+  eventMap: $TSAny
 ): Promise<void> => {
   const deploymentBucket = cloudformationMeta.DeploymentBucketName;
   const deploymentStatus: DeploymentState = deploymentStateManager.getStatus();
@@ -58,14 +58,14 @@ export const runIterativeRollback = async (
 
   const s3 = await S3.getInstance(context);
   const deploymentManager = await DeploymentManager.createInstance(context, deploymentBucket, eventMap, {
-    userAgent: formUserAgentParam(context, 'iterative-rollback'),
+    userAgent: formUserAgentParam(context, "iterative-rollback"),
   });
 
   const rollbackSteps = new Array<DeploymentOp>();
   const stateFiles: string[] = [];
   for (const step of deployedSteps) {
     if (!step.previousMetaKey) {
-      throw new AmplifyError('IterativeRollbackError', {
+      throw new AmplifyError("IterativeRollbackError", {
         message: `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
       });
     }
@@ -77,7 +77,7 @@ export const runIterativeRollback = async (
     }
   }
   if (rollbackSteps.length > 0) {
-    rollbackSteps.forEach(step => {
+    rollbackSteps.forEach((step) => {
       deploymentManager.addRollbackStep(step);
     });
 

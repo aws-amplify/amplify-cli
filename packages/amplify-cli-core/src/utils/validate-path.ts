@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
-import { ExportPathValidationError } from '../errors';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import { ExportPathValidationError } from "../errors";
+import * as path from "path";
 /**
  * Validates whether the path is a directory
  * @throws {ExportPathValidationError} if path not valid

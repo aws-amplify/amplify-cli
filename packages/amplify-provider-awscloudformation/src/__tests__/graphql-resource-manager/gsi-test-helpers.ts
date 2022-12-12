@@ -1,5 +1,5 @@
-import { DynamoDB } from 'cloudform';
-import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
+import { DynamoDB } from "cloudform";
+import { GlobalSecondaryIndex, AttributeDefinition } from "cloudform-types/types/dynamoDb/table";
 
 export type GSIDefinition = {
   indexName: string;
@@ -16,22 +16,22 @@ export type GSIDefinition = {
 };
 
 export const makeTableWithGSI = (props: { gsis?: GSIDefinition[] }): DynamoDB.Table => {
-  const gsis: GlobalSecondaryIndex[] | undefined = props.gsis?.map<GlobalSecondaryIndex>(gsi => {
+  const gsis: GlobalSecondaryIndex[] | undefined = props.gsis?.map<GlobalSecondaryIndex>((gsi) => {
     const index: GlobalSecondaryIndex = {
       IndexName: gsi.indexName,
       Projection: {
-        ProjectionType: 'ALL',
+        ProjectionType: "ALL",
       },
       KeySchema: [
         {
           AttributeName: gsi.attributes.hash.name,
-          KeyType: 'HASH',
+          KeyType: "HASH",
         },
         ...(gsi.attributes.sort
           ? [
               {
                 AttributeName: gsi.attributes.sort.name,
-                KeyType: 'SORT',
+                KeyType: "SORT",
               },
             ]
           : []),
@@ -40,14 +40,14 @@ export const makeTableWithGSI = (props: { gsis?: GSIDefinition[] }): DynamoDB.Ta
     return index;
   });
 
-  const attributeSet = new Set(['id']);
+  const attributeSet = new Set(["id"]);
 
   const attrs = props.gsis?.reduce<AttributeDefinition[]>((acc, gsi) => {
     if (!attributeSet.has(gsi.attributes.hash.name)) {
       attributeSet.add(gsi.attributes.hash.name);
       acc.push({
         AttributeName: gsi.attributes.hash.name,
-        AttributeType: gsi.attributes.hash.type || 'S',
+        AttributeType: gsi.attributes.hash.type || "S",
       });
     }
 
@@ -56,7 +56,7 @@ export const makeTableWithGSI = (props: { gsis?: GSIDefinition[] }): DynamoDB.Ta
 
       acc.push({
         AttributeName: gsi.attributes.sort.name,
-        AttributeType: gsi.attributes.sort.type || 'S',
+        AttributeType: gsi.attributes.sort.type || "S",
       });
     }
 
@@ -64,17 +64,17 @@ export const makeTableWithGSI = (props: { gsis?: GSIDefinition[] }): DynamoDB.Ta
   }, []);
 
   const table: DynamoDB.Table = new DynamoDB.Table({
-    TableName: 'MyTable',
+    TableName: "MyTable",
     KeySchema: [
       {
-        AttributeName: 'id',
-        KeyType: 'HASH',
+        AttributeName: "id",
+        KeyType: "HASH",
       },
     ],
     AttributeDefinitions: [
       {
-        AttributeName: 'id',
-        AttributeType: 'S',
+        AttributeName: "id",
+        AttributeType: "S",
       },
       ...(attrs ?? []),
     ],
@@ -85,7 +85,7 @@ export const makeTableWithGSI = (props: { gsis?: GSIDefinition[] }): DynamoDB.Ta
 
 export const makeTablePairsWithGSI = (
   gis1: GSIDefinition[] | undefined,
-  gis2: GSIDefinition[] | undefined,
+  gis2: GSIDefinition[] | undefined
 ): [DynamoDB.Table, DynamoDB.Table] => {
   return [makeTableWithGSI({ gsis: gis1 }), makeTableWithGSI({ gsis: gis2 })];
 };

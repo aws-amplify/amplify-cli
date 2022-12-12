@@ -5,31 +5,37 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyFault,
+  AmplifySupportedService,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
   stateManager,
-} from 'amplify-cli-core';
+} from "amplify-cli-core";
 /* eslint-disable @typescript-eslint/no-var-requires */
-import ora from 'ora';
-import { printer, prompter } from 'amplify-prompts';
+import ora from "ora";
+import { printer, prompter } from "amplify-prompts";
 import {
   invokeAnalyticsResourceToggleNotificationChannel,
   invokeAnalyticsPinpointHasInAppMessagingPolicy,
-} from './plugin-client-api-analytics';
-import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
+} from "./plugin-client-api-analytics";
+import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from "./channel-types";
 
 import {
   buildPinpointChannelResponseSuccess,
-  getPinpointAppStatusFromMeta, IPinpointAppStatus, IPinpointDeploymentStatus,
-} from './pinpoint-helper';
-import { ChannelType, getChannelViewName, isChannelEnabledNotificationsBackendConfig } from './notifications-backend-cfg-channel-api';
-import { getNotificationsAppMeta } from './notifications-amplify-meta-api';
-import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
+  getPinpointAppStatusFromMeta,
+  IPinpointAppStatus,
+  IPinpointDeploymentStatus,
+} from "./pinpoint-helper";
+import { ChannelType, getChannelViewName, isChannelEnabledNotificationsBackendConfig } from "./notifications-backend-cfg-channel-api";
+import { getNotificationsAppMeta } from "./notifications-amplify-meta-api";
+import { getNotificationsAppConfig } from "./notifications-backend-cfg-api";
 
-const channelName = 'InAppMessaging';
+const channelName = "InAppMessaging";
 const channelViewName = getChannelViewName(channelName);
-const spinner = ora('');
+const spinner = ora("");
 const deploymentType = ChannelConfigDeploymentType.DEFERRED;
 
 const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
@@ -49,7 +55,7 @@ const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
  * Configure Pinpoint with configs and IAM roles
  * @param {*} context amplify cli context
  */
-export const configure = async (context: $TSContext) : Promise<IChannelAPIResponse> => {
+export const configure = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   if (await isChannelEnabledNotificationsBackendConfig(channelName)) {
     printer.info(`The ${channelViewName} channel is currently enabled`);
 
@@ -69,11 +75,12 @@ export const configure = async (context: $TSContext) : Promise<IChannelAPIRespon
  */
 const invokeInlineEnableInAppMessagingChannel = (
   __context: $TSContext,
-  __pinpointAppStatus: IPinpointAppStatus,
+  __pinpointAppStatus: IPinpointAppStatus
 ): IPluginCapabilityAPIResponse => {
-  throw new AmplifyFault('ConfigurationFault', {
-    message: 'Inline enable not supported for In-App Messaging channel.',
-    details: 'Adding In-App Messaging to a project with Analytics or Push Notification enabled is currently not supported. Please refer to this Github issue for updates: https://github.com/aws-amplify/amplify-cli/issues/11087',
+  throw new AmplifyFault("ConfigurationFault", {
+    message: "Inline enable not supported for In-App Messaging channel.",
+    details:
+      "Adding In-App Messaging to a project with Analytics or Push Notification enabled is currently not supported. Please refer to this Github issue for updates: https://github.com/aws-amplify/amplify-cli/issues/11087",
   });
 
   // create IAM role and apply on pinpoint app using sdk
@@ -92,13 +99,16 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
     const envName = stateManager.getCurrentEnvName();
     const notificationsMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta);
     const pinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
-    const enableInAppMsgAPIResponse = pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM
-      || !await invokeAnalyticsPinpointHasInAppMessagingPolicy(context)
-      ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
-      : await invokeAnalyticsResourceToggleNotificationChannel(context,
-        AmplifySupportedService.PINPOINT,
-        NotificationChannels.IN_APP_MSG,
-        true);
+    const enableInAppMsgAPIResponse =
+      pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM ||
+      !(await invokeAnalyticsPinpointHasInAppMessagingPolicy(context))
+        ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
+        : await invokeAnalyticsResourceToggleNotificationChannel(
+            context,
+            AmplifySupportedService.PINPOINT,
+            NotificationChannels.IN_APP_MSG,
+            true
+          );
 
     if (enableInAppMsgAPIResponse.status) {
       spinner.succeed(`The ${getChannelViewName(channelName)} channel has been successfully enabled.`);
@@ -106,7 +116,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
       spinner.fail(`Enable channel error: ${enableInAppMsgAPIResponse.reasonMsg as string}`);
     }
 
-    const enableChannelInAppMsgResponse : IChannelAPIResponse = {
+    const enableChannelInAppMsgResponse: IChannelAPIResponse = {
       action: ChannelAction.ENABLE,
       deploymentType,
       channel: channelName,
@@ -124,18 +134,20 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
  * @param {*} context amplify cli context
  * @returns Analytics API response
  */
-export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> => {
-  spinner.start('Disabling In-App Messaging channel.');
-  const disableInAppMsgResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
+export const disable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
+  spinner.start("Disabling In-App Messaging channel.");
+  const disableInAppMsgResponse = await invokeAnalyticsResourceToggleNotificationChannel(
+    context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
-    false /*disable*/);
+    false /*disable*/
+  );
   if (disableInAppMsgResponse.status) {
     spinner.succeed(`The ${getChannelViewName(channelName)} channel has been disabled.`);
   } else {
-    spinner.fail('Disable channel error');
+    spinner.fail("Disable channel error");
   }
-  const disableChannelInAppMsgResponse : IChannelAPIResponse = {
+  const disableChannelInAppMsgResponse: IChannelAPIResponse = {
     action: ChannelAction.DISABLE,
     deploymentType,
     channel: channelName,
@@ -154,7 +166,7 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
   const currentBackendCfg = stateManager.getCurrentBackendConfig();
   spinner.start(`Retrieving channel information for ${getChannelViewName(channelName)}.`);
   const notificationsMeta = await getNotificationsAppMeta(currentAmplifyMeta);
-  let channelMeta = (notificationsMeta?.output?.channels) ? notificationsMeta.output.channels[channelName] : undefined;
+  let channelMeta = notificationsMeta?.output?.channels ? notificationsMeta.output.channels[channelName] : undefined;
   if (!channelMeta) {
     const backendConfig = await getNotificationsAppConfig(currentBackendCfg);
     if (backendConfig?.channels?.includes(channelName)) {

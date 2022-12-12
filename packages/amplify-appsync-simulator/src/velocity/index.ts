@@ -1,18 +1,18 @@
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
-import { Compile, parse } from 'amplify-velocity-template';
-import { TemplateSentError, create as createUtil, ValidateError } from './util';
-import { map as convertToJavaTypes, map } from './value-mapper/mapper';
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from "../type-definition";
+import { Compile, parse } from "amplify-velocity-template";
+import { TemplateSentError, create as createUtil, ValidateError } from "./util";
+import { map as convertToJavaTypes, map } from "./value-mapper/mapper";
 
-import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncGraphQLExecutionContext } from '../utils';
-import { GraphQLResolveInfo } from 'graphql';
-import { createInfo } from './util/info';
+import { AmplifyAppSyncSimulator } from "..";
+import { AppSyncGraphQLExecutionContext } from "../utils";
+import { GraphQLResolveInfo } from "graphql";
+import { createInfo } from "./util/info";
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
     iss?: string;
     sub?: string;
-    'cognito:username'?: string;
+    "cognito:username"?: string;
   };
   request?: object;
 };
@@ -40,7 +40,7 @@ export class VelocityTemplate {
       });
       this.template = template;
     } catch (e) {
-      const lineDetails = `${e.hash.line}:${e.hash.loc?.first_column ? e.hash.loc.first_column : ''}`;
+      const lineDetails = `${e.hash.line}:${e.hash.loc?.first_column ? e.hash.loc.first_column : ""}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
       const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
@@ -50,7 +50,7 @@ export class VelocityTemplate {
   render(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncGraphQLExecutionContext,
-    info?: GraphQLResolveInfo,
+    info?: GraphQLResolveInfo
   ): { result: any; stash: any; args: any; errors; isReturn: boolean; hadException: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
     let templateResult;
@@ -89,18 +89,18 @@ export class VelocityTemplate {
         return { result: templateResult, stash, args, errors: context.util.errors, isReturn, hadException: false };
       }
       const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;
-      throw new TemplateSentError(errorMessage, 'MappingTemplate', null, null, info);
+      throw new TemplateSentError(errorMessage, "MappingTemplate", null, null, info);
     }
   }
 
   private buildRenderContext(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncGraphQLExecutionContext,
-    info: GraphQLResolveInfo,
+    info: GraphQLResolveInfo
   ): any {
     const { source, arguments: argument, result, stash, prevResult, error } = ctxValues;
     const { jwt, sourceIp, iamToken } = requestContext;
-    const { iss: issuer, sub, 'cognito:username': cognitoUserName, username } = jwt || {};
+    const { iss: issuer, sub, "cognito:username": cognitoUserName, username } = jwt || {};
 
     const util = createUtil([], new Date(Date.now()), info, requestContext);
     const args = convertToJavaTypes(argument);
@@ -118,12 +118,12 @@ export class VelocityTemplate {
         sub,
         issuer,
         sourceIp,
-        'cognito:username': cognitoUserName,
+        "cognito:username": cognitoUserName,
         username: username || cognitoUserName,
         claims: requestContext.jwt,
         ...(this.simulatorContext.appSyncConfig.defaultAuthenticationType.authenticationType ===
         AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS
-          ? { defaultAuthStrategy: 'ALLOW' }
+          ? { defaultAuthStrategy: "ALLOW" }
           : {}),
       });
     } else if (requestContext.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM) {
@@ -152,14 +152,14 @@ export class VelocityTemplate {
       error: error
         ? {
             ...error,
-            type: error.type || error.extensions?.errorType || 'UnknownErrorType',
+            type: error.type || error.extensions?.errorType || "UnknownErrorType",
             message: error.message || `Error: ${error}`,
           }
         : error,
     };
 
-    if (typeof prevResult !== 'undefined') {
-      vtlContext['prev'] = convertToJavaTypes({
+    if (typeof prevResult !== "undefined") {
+      vtlContext["prev"] = convertToJavaTypes({
         result: prevResult,
       });
     }

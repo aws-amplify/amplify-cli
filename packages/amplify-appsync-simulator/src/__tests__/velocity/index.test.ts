@@ -1,12 +1,12 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { AmplifyAppSyncSimulator } from '../..';
-import { AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
-import { VelocityTemplate } from '../../velocity';
-import { JavaArray } from '../../velocity/value-mapper/array';
-import { JavaMap } from '../../velocity/value-mapper/map';
-import { mockInfo } from './util/general-utils.test';
+import { GraphQLResolveInfo } from "graphql";
+import { AmplifyAppSyncSimulator } from "../..";
+import { AmplifyAppSyncSimulatorAuthenticationType } from "../../type-definition";
+import { VelocityTemplate } from "../../velocity";
+import { JavaArray } from "../../velocity/value-mapper/array";
+import { JavaMap } from "../../velocity/value-mapper/map";
+import { mockInfo } from "./util/general-utils.test";
 
-describe('VelocityTemplate', () => {
+describe("VelocityTemplate", () => {
   let content;
   let simulator;
   beforeAll(() => {
@@ -14,13 +14,13 @@ describe('VelocityTemplate', () => {
     simulator = new AmplifyAppSyncSimulator();
   });
 
-  describe('constructor', () => {
-    it('should handle bad template', () => {
+  describe("constructor", () => {
+    it("should handle bad template", () => {
       expect(
         () =>
           new VelocityTemplate(
             {
-              path: 'INLINE_TEMPLATE',
+              path: "INLINE_TEMPLATE",
               content: `{
           "version": "2017-02-28",
           "payload": {
@@ -28,76 +28,76 @@ describe('VelocityTemplate', () => {
           }
         }`,
             },
-            simulator,
-          ),
+            simulator
+          )
       ).toThrowError(
-        'Error:Parse error on INLINE_TEMPLATE:3: \n' +
-          'Lexical error on line 4. Unrecognized text.\n' +
+        "Error:Parse error on INLINE_TEMPLATE:3: \n" +
+          "Lexical error on line 4. Unrecognized text.\n" +
           '...tity": $util.toJson($$context.identity)\n' +
-          '-----------------------^',
+          "-----------------------^"
       );
     });
   });
 
-  describe('#render', () => {
-    describe('#render', () => {
-      it('should handle unknow errors', () => {
+  describe("#render", () => {
+    describe("#render", () => {
+      it("should handle unknow errors", () => {
         const template = new VelocityTemplate(
           {
-            path: 'INLINE_TEMPLATE',
+            path: "INLINE_TEMPLATE",
             content,
           },
-          simulator,
+          simulator
         );
         const info = mockInfo;
         const result = template.render(
           {
-            error: new Error('some unexpected error'),
+            error: new Error("some unexpected error"),
             arguments: {},
             source: {},
           },
           {
-            headers: { Key: 'value' },
+            headers: { Key: "value" },
             requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
           },
-          info,
+          info
         );
         expect(result.errors).toEqual([]);
-        expect(result.result).toEqual('some unexpected error, UnknownErrorType');
+        expect(result.result).toEqual("some unexpected error, UnknownErrorType");
       });
     });
 
-    describe('#render', () => {
-      it('should handle with a not error in error', () => {
+    describe("#render", () => {
+      it("should handle with a not error in error", () => {
         const template = new VelocityTemplate(
           {
-            path: 'INLINE_TEMPLATE',
+            path: "INLINE_TEMPLATE",
             content,
           },
-          simulator,
+          simulator
         );
         const info = mockInfo;
         const result = template.render(
           {
-            error: 'my string as error',
+            error: "my string as error",
             arguments: {},
             source: {},
           },
           {
-            headers: { Key: 'value' },
+            headers: { Key: "value" },
             requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
           },
-          info,
+          info
         );
         expect(result.errors).toEqual([]);
-        expect(result.result).toEqual('Error: my string as error, UnknownErrorType');
+        expect(result.result).toEqual("Error: my string as error, UnknownErrorType");
       });
     });
 
-    it('should handle string comparison', () => {
+    it("should handle string comparison", () => {
       const template = new VelocityTemplate(
         {
-          path: 'INLINE_TEMPLATE',
+          path: "INLINE_TEMPLATE",
           content: `
 #if( $ctx.stash.get("current_user_id")!=$ctx.prev.result.current_user_id)
 "not the same value"
@@ -105,7 +105,7 @@ describe('VelocityTemplate', () => {
 "the same value"
 #end`,
         },
-        simulator,
+        simulator
       );
       const info = mockInfo;
       const result = template.render(
@@ -113,49 +113,49 @@ describe('VelocityTemplate', () => {
           arguments: {},
           source: {},
           stash: {
-            current_user_id: 'someString',
+            current_user_id: "someString",
           },
           prevResult: {
-            current_user_id: 'someString',
+            current_user_id: "someString",
           },
         },
         {
-          headers: { Key: 'value' },
+          headers: { Key: "value" },
           requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
         },
-        info,
+        info
       );
       expect(result.errors).toEqual([]);
-      expect(result.result).toEqual('the same value');
+      expect(result.result).toEqual("the same value");
     });
   });
 
-  describe('buildRenderContext', () => {
-    it('should generate a context ', () => {
+  describe("buildRenderContext", () => {
+    it("should generate a context ", () => {
       const template = new VelocityTemplate(
         {
-          path: 'INLINE_TEMPLATE',
+          path: "INLINE_TEMPLATE",
           content: '$util.toJson("hello world")',
         },
-        simulator,
+        simulator
       );
       const info = {
-        fieldName: 'someField',
+        fieldName: "someField",
         fieldNodes: [
           {
-            kind: 'Field',
+            kind: "Field",
             name: {
-              kind: 'Name',
-              value: 'someField',
+              kind: "Name",
+              value: "someField",
             },
           },
         ],
-        parentType: 'Query',
+        parentType: "Query",
       } as unknown;
-      const buildRenderContext = jest.spyOn(template as any, 'buildRenderContext');
+      const buildRenderContext = jest.spyOn(template as any, "buildRenderContext");
       const values = {
-        array: ['some', 'values'],
-        mapObject: { some: 'value' },
+        array: ["some", "values"],
+        mapObject: { some: "value" },
       };
       template.render(
         {
@@ -165,10 +165,10 @@ describe('VelocityTemplate', () => {
           result: values,
         },
         {
-          headers: { Key: 'value' },
+          headers: { Key: "value" },
           requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
         },
-        info as GraphQLResolveInfo,
+        info as GraphQLResolveInfo
       );
 
       expect(buildRenderContext).toHaveBeenCalled();

@@ -16,17 +16,17 @@ import {
   removeAllNotificationChannel,
   sleep,
   amplifyPushUpdate,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   expectLocalAndPulledAwsExportsMatching,
   expectLocalAndPulledBackendAmplifyMetaMatching,
   expectLocalAndPulledBackendConfigMatching,
   getShortId,
-} from '../import-helpers';
+} from "../import-helpers";
 
-describe('notification category compatibility test', () => {
-  const testChannelSelection = 'SMS';
-  const envName = 'test';
+describe("notification category compatibility test", () => {
+  const testChannelSelection = "SMS";
+  const envName = "test";
   const projectPrefix = `notificationCompatibility`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -106,16 +106,16 @@ describe('notification category compatibility test', () => {
     expect(cloudBackendInAppMsgMeta.Enabled).toBe(false);
 
     // make sure Notifications/Analytics/Auth still show up in status
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // this will remove notifications inline, so both local/cloud will be updated
     await removeAllNotificationChannel(projectRoot);
 
     // analytics/auth should still exist
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // notifications should not exist locally (check the amplify-meta.json file)
     const finalLocalMeta = getBackendAmplifyMeta(projectRoot);

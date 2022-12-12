@@ -1,6 +1,6 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from "amplify-cli-core";
 
-export type AuthFlow = 'admin' | 'profile' | 'accessKeys' | 'general';
+export type AuthFlow = "admin" | "profile" | "accessKeys" | "general";
 export interface AuthFlowConfig extends Partial<AwsSdkConfig> {
   type: AuthFlow;
   appId?: string;
@@ -36,7 +36,7 @@ export interface CognitoAccessToken {
   payload: {
     auth_time: number;
     client_id: string;
-    'cognito:groups': string[];
+    "cognito:groups": string[];
     event_id: string;
     exp: number;
     iat: number;
@@ -54,10 +54,10 @@ export interface CognitoIdToken {
   payload: {
     aud: string;
     auth_time: number;
-    'cognito:groups': string[];
-    'cognito:preferred_role': string;
-    'cognito:roles': string[];
-    'cognito:username': string;
+    "cognito:groups": string[];
+    "cognito:preferred_role": string;
+    "cognito:roles": string[];
+    "cognito:username": string;
     email: string;
     email_verified: boolean;
     event_id: string;

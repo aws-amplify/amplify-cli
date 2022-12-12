@@ -1,4 +1,4 @@
-import { hashElement } from 'folder-hash';
+import { hashElement } from "folder-hash";
 
 // Creates a hash of the context of a directory, excluding any directories in the exclude array
 // dir: string
@@ -10,5 +10,5 @@ export async function hashDir(dir: string, exclude: string[]) {
   const { hash: folderHash } = await hashElement(dir, {
     folders: { exclude: exclude },
   });
-  return Buffer.from(folderHash).toString('hex').substr(0, 20);
+  return Buffer.from(folderHash).toString("hex").substr(0, 20);
 }

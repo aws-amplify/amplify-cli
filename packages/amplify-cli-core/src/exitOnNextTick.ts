@@ -1,4 +1,4 @@
-import { logger } from 'amplify-cli-logger';
+import { logger } from "amplify-cli-logger";
 
 /**
  * closes the logger and exits the process

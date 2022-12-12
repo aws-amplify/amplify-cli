@@ -1,19 +1,19 @@
-import fs from 'fs-extra';
-import { updateCognitoTrackedFiles } from '../../../extensions/amplify-helpers/update-tracked-files';
+import fs from "fs-extra";
+import { updateCognitoTrackedFiles } from "../../../extensions/amplify-helpers/update-tracked-files";
 
-const cloudBackendCfnTemplatePath = '/amplify/#cloud-backend/auth/cognito/build/cognito-cloudformation-template.json';
-const backendCfnTemplatePath = '/amplify/backend/auth/cognito/build/cognito-cloudformation-template.json';
-const cliInputsFile = '/amplify/backend/auth/cognito/cli-inputs.json';
+const cloudBackendCfnTemplatePath = "/amplify/#cloud-backend/auth/cognito/build/cognito-cloudformation-template.json";
+const backendCfnTemplatePath = "/amplify/backend/auth/cognito/build/cognito-cloudformation-template.json";
+const cliInputsFile = "/amplify/backend/auth/cognito/cli-inputs.json";
 
 let cloudBackendExists: boolean;
 let setInCloudBackendDir: boolean;
 
-jest.mock('amplify-cli-core', () => {
-  const { stateManager } = jest.requireActual('amplify-cli-core');
+jest.mock("amplify-cli-core", () => {
+  const { stateManager } = jest.requireActual("amplify-cli-core");
 
   return {
     JSONUtilities: {
-      readJson: jest.fn().mockImplementation(path => {
+      readJson: jest.fn().mockImplementation((path) => {
         const cfnTemplate = {
           Resources: {
             UserPool: {
@@ -25,9 +25,7 @@ jest.mock('amplify-cli-core', () => {
         if ((path === cloudBackendCfnTemplatePath && setInCloudBackendDir) || path === backendCfnTemplatePath) {
           cfnTemplate.Resources.UserPool.Properties = {
             UserAttributeUpdateSettings: {
-              AttributesRequireVerificationBeforeUpdate: [
-                'email',
-              ],
+              AttributesRequireVerificationBeforeUpdate: ["email"],
             },
           };
         }
@@ -36,15 +34,15 @@ jest.mock('amplify-cli-core', () => {
       }),
     },
     pathManager: {
-      getBackendDirPath: jest.fn().mockReturnValue('/amplify/backend'),
-      getCurrentCloudBackendDirPath: jest.fn().mockReturnValue('/amplify/#cloud-backend'),
+      getBackendDirPath: jest.fn().mockReturnValue("/amplify/backend"),
+      getCurrentCloudBackendDirPath: jest.fn().mockReturnValue("/amplify/#cloud-backend"),
     },
     stateManager: {
       ...stateManager,
       getMeta: jest.fn().mockReturnValue({
         auth: {
           cognito: {
-            service: 'Cognito',
+            service: "Cognito",
           },
         },
       }),
@@ -52,12 +50,12 @@ jest.mock('amplify-cli-core', () => {
   };
 });
 
-describe('updateCognitoTrackedFiles', () => {
+describe("updateCognitoTrackedFiles", () => {
   const fsMock = fs as jest.Mocked<typeof fs>;
 
   beforeEach(() => {
-    fsMock.existsSync = jest.fn().mockImplementation(path => {
-      if (path === '/amplify/#cloud-backend') {
+    fsMock.existsSync = jest.fn().mockImplementation((path) => {
+      if (path === "/amplify/#cloud-backend") {
         return cloudBackendExists;
       }
       return true;
@@ -74,37 +72,37 @@ describe('updateCognitoTrackedFiles', () => {
     setInCloudBackendDir = false;
   });
 
-  describe('when backend and cloud backend do not match', () => {
+  describe("when backend and cloud backend do not match", () => {
     beforeEach(() => {
       cloudBackendExists = true;
       setInCloudBackendDir = false;
     });
 
-    it('appends white space', async () => {
+    it("appends white space", async () => {
       await updateCognitoTrackedFiles();
       expect(fsMock.appendFile).toHaveBeenCalledTimes(1);
-      expect(fsMock.appendFile).toBeCalledWith(cliInputsFile, ' ');
+      expect(fsMock.appendFile).toBeCalledWith(cliInputsFile, " ");
     });
   });
 
-  describe('when backend and cloud backend do match', () => {
+  describe("when backend and cloud backend do match", () => {
     beforeEach(() => {
       cloudBackendExists = true;
       setInCloudBackendDir = true;
     });
 
-    it('does not append white space', async () => {
+    it("does not append white space", async () => {
       await updateCognitoTrackedFiles();
       expect(fsMock.appendFile).toHaveBeenCalledTimes(0);
     });
   });
 
-  describe('when cloud backend does not exist', () => {
+  describe("when cloud backend does not exist", () => {
     beforeEach(() => {
       cloudBackendExists = false;
     });
 
-    it('does not append white space', async () => {
+    it("does not append white space", async () => {
       await updateCognitoTrackedFiles();
       expect(fsMock.appendFile).toHaveBeenCalledTimes(0);
     });

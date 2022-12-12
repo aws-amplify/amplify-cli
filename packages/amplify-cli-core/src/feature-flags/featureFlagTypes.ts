@@ -1,5 +1,5 @@
 /* eslint-disable-next-line import/no-cycle */
-import { $TSAny } from '../types';
+import { $TSAny } from "../types";
 
 /**
  * Collection of feature flags input
@@ -19,7 +19,7 @@ export type FeatureFlagConfiguration = {
  *
  * New feature flags should be a boolean
  */
-export type FeatureFlagType = 'boolean' | 'number';
+export type FeatureFlagType = "boolean" | "number";
 
 /**
  * Feature flags are registered in the registerFlags function of the FeatureFlags class
@@ -37,7 +37,7 @@ export type FeatureFlagRegistration = NumberFeatureFlag | BooleanFeatureFlag;
  * @deprecated due to complexity of ignoring an unknown number Feature Flag
  */
 export type NumberFeatureFlag = {
-  type: 'number';
+  type: "number";
   name: string;
   defaultValueForExistingProjects: number;
   defaultValueForNewProjects: number;
@@ -47,7 +47,7 @@ export type NumberFeatureFlag = {
  * Boolean Feature flag registration
  */
 export type BooleanFeatureFlag = {
-  type: 'boolean';
+  type: "boolean";
   name: string;
   defaultValueForExistingProjects: boolean;
   defaultValueForNewProjects: boolean;

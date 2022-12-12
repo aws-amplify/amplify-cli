@@ -1,41 +1,41 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { createInfo } from '../../../velocity/util/info';
+import { GraphQLResolveInfo } from "graphql";
+import { createInfo } from "../../../velocity/util/info";
 
 const stubInfo = {
-  fieldName: 'someField',
+  fieldName: "someField",
   fieldNodes: [
     {
-      kind: 'Field',
+      kind: "Field",
       name: {
-        kind: 'Name',
-        value: 'someField',
+        kind: "Name",
+        value: "someField",
       },
       selectionSet: {
-        kind: 'SelectionSet',
+        kind: "SelectionSet",
         selections: [
           {
-            kind: 'Field',
+            kind: "Field",
             name: {
-              kind: 'Name',
-              value: 'otherField',
+              kind: "Name",
+              value: "otherField",
             },
           },
           {
-            kind: 'Field',
+            kind: "Field",
             alias: {
-              kind: 'Name',
-              value: 'aliasedField',
+              kind: "Name",
+              value: "aliasedField",
             },
             name: {
-              kind: 'Name',
-              value: 'otherField',
+              kind: "Name",
+              value: "otherField",
             },
           },
           {
-            kind: 'FragmentSpread',
+            kind: "FragmentSpread",
             name: {
-              kind: 'Name',
-              value: 'fragment',
+              kind: "Name",
+              value: "fragment",
               loc: {
                 start: 109,
                 end: 117,
@@ -48,86 +48,86 @@ const stubInfo = {
             },
           },
           {
-            kind: 'InlineFragment',
+            kind: "InlineFragment",
             typeCondition: {
-              kind: 'NamedType',
+              kind: "NamedType",
               name: {
-                kind: 'Name',
-                value: 'FragmentType',
+                kind: "Name",
+                value: "FragmentType",
               },
             },
             selectionSet: {
-              kind: 'SelectionSet',
+              kind: "SelectionSet",
               selections: [
                 {
-                  kind: 'Field',
+                  kind: "Field",
                   alias: {
-                    kind: 'Name',
-                    value: 'aliasedInlineFragmentField',
+                    kind: "Name",
+                    value: "aliasedInlineFragmentField",
                   },
                   name: {
-                    kind: 'Name',
-                    value: 'inlineFragmentField',
+                    kind: "Name",
+                    value: "inlineFragmentField",
                   },
                 },
                 {
-                  kind: 'Field',
+                  kind: "Field",
                   name: {
-                    kind: 'Name',
-                    value: 'inlineFragmentField',
+                    kind: "Name",
+                    value: "inlineFragmentField",
                   },
                 },
               ],
             },
           },
           {
-            kind: 'Field',
+            kind: "Field",
             name: {
-              kind: 'Name',
-              value: 'someOtherField',
+              kind: "Name",
+              value: "someOtherField",
             },
             arguments: [
               {
-                kind: 'Argument',
+                kind: "Argument",
                 name: {
-                  kind: 'Name',
-                  value: 'varName',
+                  kind: "Name",
+                  value: "varName",
                 },
                 value: {
-                  kind: 'Variable',
+                  kind: "Variable",
                   name: {
-                    kind: 'Name',
-                    value: 'foo',
+                    kind: "Name",
+                    value: "foo",
                   },
                 },
               },
             ],
             selectionSet: {
-              kind: 'SelectionSet',
+              kind: "SelectionSet",
               selections: [
                 {
-                  kind: 'Field',
+                  kind: "Field",
                   name: {
-                    kind: 'Name',
-                    value: 'subField',
+                    kind: "Name",
+                    value: "subField",
                   },
                 },
                 {
-                  kind: 'Field',
+                  kind: "Field",
                   alias: {
-                    kind: 'Name',
-                    value: 'aliasedSubField',
+                    kind: "Name",
+                    value: "aliasedSubField",
                   },
                   name: {
-                    kind: 'Name',
-                    value: 'subField',
+                    kind: "Name",
+                    value: "subField",
                   },
                 },
                 {
-                  kind: 'FragmentSpread',
+                  kind: "FragmentSpread",
                   name: {
-                    kind: 'Name',
-                    value: 'subfragment',
+                    kind: "Name",
+                    value: "subfragment",
                   },
                 },
               ],
@@ -139,137 +139,137 @@ const stubInfo = {
   ],
   fragments: {
     fragment: {
-      kind: 'FragmentDefinition',
+      kind: "FragmentDefinition",
       name: {
-        kind: 'Name',
-        value: 'fragment',
+        kind: "Name",
+        value: "fragment",
       },
       selectionSet: {
-        kind: 'SelectionSet',
+        kind: "SelectionSet",
         selections: [
           {
-            kind: 'Field',
+            kind: "Field",
             name: {
-              kind: 'Name',
-              value: 'fragmentField',
+              kind: "Name",
+              value: "fragmentField",
             },
           },
           {
-            kind: 'Field',
+            kind: "Field",
             alias: {
-              kind: 'Name',
-              value: 'aliasedFragmentField',
+              kind: "Name",
+              value: "aliasedFragmentField",
             },
             name: {
-              kind: 'Name',
-              value: 'fragmentField',
+              kind: "Name",
+              value: "fragmentField",
             },
           },
         ],
       },
     },
     subfragment: {
-      kind: 'FragmentDefinition',
+      kind: "FragmentDefinition",
       name: {
-        kind: 'Name',
-        value: 'subfragment',
+        kind: "Name",
+        value: "subfragment",
       },
       selectionSet: {
-        kind: 'SelectionSet',
+        kind: "SelectionSet",
         selections: [
           {
-            kind: 'Field',
+            kind: "Field",
             name: {
-              kind: 'Name',
-              value: 'subFragmentField',
+              kind: "Name",
+              value: "subFragmentField",
             },
           },
         ],
       },
     },
   },
-  parentType: 'Query',
+  parentType: "Query",
   variableValues: {
-    foo: 'bar',
+    foo: "bar",
   },
 } as unknown;
 const mockInfo = stubInfo as GraphQLResolveInfo;
 
-it('should generate a valid graphql info object', () => {
+it("should generate a valid graphql info object", () => {
   const info = createInfo(mockInfo);
   expect(info).toEqual({
-    fieldName: 'someField',
+    fieldName: "someField",
     variables: {
-      foo: 'bar',
+      foo: "bar",
     },
-    parentTypeName: 'Query',
+    parentTypeName: "Query",
     selectionSetList: [
-      'otherField',
-      'aliasedField',
-      'fragmentField',
-      'aliasedFragmentField',
-      'aliasedInlineFragmentField',
-      'inlineFragmentField',
-      'someOtherField',
-      'someOtherField/subField',
-      'someOtherField/aliasedSubField',
-      'someOtherField/subFragmentField',
+      "otherField",
+      "aliasedField",
+      "fragmentField",
+      "aliasedFragmentField",
+      "aliasedInlineFragmentField",
+      "inlineFragmentField",
+      "someOtherField",
+      "someOtherField/subField",
+      "someOtherField/aliasedSubField",
+      "someOtherField/subFragmentField",
     ],
     selectionSetGraphQL:
-      '{\n  otherField\n  aliasedField: otherField\n  ...fragment\n  ... on FragmentType {\n    aliasedInlineFragmentField: inlineFragmentField\n    inlineFragmentField\n  }\n  someOtherField(varName: $foo) {\n    subField\n    aliasedSubField: subField\n    ...subfragment\n  }\n}',
+      "{\n  otherField\n  aliasedField: otherField\n  ...fragment\n  ... on FragmentType {\n    aliasedInlineFragmentField: inlineFragmentField\n    inlineFragmentField\n  }\n  someOtherField(varName: $foo) {\n    subField\n    aliasedSubField: subField\n    ...subfragment\n  }\n}",
   });
 });
 
-it('should generate a valid graphql info object with an object param value', () => {
+it("should generate a valid graphql info object with an object param value", () => {
   // @ts-ignore
   const info = createInfo({
-    fieldName: 'someField',
+    fieldName: "someField",
     fieldNodes: [
       {
-        kind: 'Field',
+        kind: "Field",
         name: {
-          kind: 'Name',
-          value: 'someField',
+          kind: "Name",
+          value: "someField",
         },
         arguments: [
           {
-            kind: 'Argument',
+            kind: "Argument",
             name: {
-              kind: 'Name',
-              value: 'param',
+              kind: "Name",
+              value: "param",
             },
             value: {
-              kind: 'ObjectValue',
+              kind: "ObjectValue",
               fields: [
                 {
-                  kind: 'ObjectField',
+                  kind: "ObjectField",
                   name: {
-                    kind: 'Name',
-                    value: 'bazz',
+                    kind: "Name",
+                    value: "bazz",
                   },
                   value: {
-                    kind: 'StringValue',
-                    value: 'buzz',
+                    kind: "StringValue",
+                    value: "buzz",
                   },
                 },
                 {
-                  kind: 'ObjectField',
+                  kind: "ObjectField",
                   name: {
-                    kind: 'Name',
-                    value: 'fizz',
+                    kind: "Name",
+                    value: "fizz",
                   },
                   value: {
-                    kind: 'ObjectValue',
+                    kind: "ObjectValue",
                     fields: [
                       {
-                        kind: 'ObjectField',
+                        kind: "ObjectField",
                         name: {
-                          kind: 'Name',
-                          value: 'fuzz',
+                          kind: "Name",
+                          value: "fuzz",
                         },
                         value: {
-                          kind: 'StringValue',
-                          value: 'fazz',
+                          kind: "StringValue",
+                          value: "fazz",
                         },
                       },
                     ],
@@ -280,13 +280,13 @@ it('should generate a valid graphql info object with an object param value', () 
           },
         ],
         selectionSet: {
-          kind: 'SelectionSet',
+          kind: "SelectionSet",
           selections: [
             {
-              kind: 'Field',
+              kind: "Field",
               name: {
-                kind: 'Name',
-                value: 'otherField',
+                kind: "Name",
+                value: "otherField",
               },
             },
           ],
@@ -294,13 +294,13 @@ it('should generate a valid graphql info object with an object param value', () 
       },
     ],
     // @ts-ignore
-    parentType: 'Query',
+    parentType: "Query",
   });
   expect(info).toEqual({
-    fieldName: 'someField',
+    fieldName: "someField",
     variables: undefined,
-    parentTypeName: 'Query',
-    selectionSetList: ['otherField'],
-    selectionSetGraphQL: '{\n  otherField\n}',
+    parentTypeName: "Query",
+    selectionSetList: ["otherField"],
+    selectionSetGraphQL: "{\n  otherField\n}",
   });
 });

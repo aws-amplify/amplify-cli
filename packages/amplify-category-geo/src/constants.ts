@@ -1,2 +1,2 @@
-export const category = 'geo';
-export const authCategoryName = 'auth';
+export const category = "geo";
+export const authCategoryName = "auth";

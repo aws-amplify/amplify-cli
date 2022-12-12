@@ -1,10 +1,10 @@
-import { join } from 'path';
-import * as execa from 'execa';
-import fs from 'fs-extra';
-import glob from 'glob';
-import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
-import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
-import { pathManager } from 'amplify-cli-core';
+import { join } from "path";
+import * as execa from "execa";
+import fs from "fs-extra";
+import glob from "glob";
+import { packageName, relativeShimJarPath, relativeShimSrcPath } from "./constants";
+import { BuildRequest, BuildResult } from "amplify-function-plugin-interface";
+import { pathManager } from "amplify-cli-core";
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
   const resourceDir = join(request.srcRoot);
@@ -20,17 +20,17 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
 };
 
 const installDependencies = (resourceDir: string) => {
-  runPackageManager(resourceDir, 'build');
+  runPackageManager(resourceDir, "build");
 
   // ensure invoker shim is built
   const packageLibDir = pathManager.getAmplifyPackageLibDirPath(packageName);
   if (!fs.existsSync(join(packageLibDir, relativeShimJarPath))) {
-    runPackageManager(join(packageLibDir, relativeShimSrcPath), 'jar');
+    runPackageManager(join(packageLibDir, relativeShimSrcPath), "jar");
   }
 };
 
 const runPackageManager = (cwd: string, buildArgs: string) => {
-  const packageManager = 'gradle';
+  const packageManager = "gradle";
   const args = [buildArgs];
 
   const result = execa.sync(packageManager, args, {
@@ -51,7 +51,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date) => {
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/*/!(build | dist)/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

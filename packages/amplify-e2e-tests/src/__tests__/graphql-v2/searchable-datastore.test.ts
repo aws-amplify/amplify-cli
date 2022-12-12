@@ -4,14 +4,19 @@ import {
   amplifyPush,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, apiEnableDataStore, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import gql from 'graphql-tag';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+  addApiWithoutSchema,
+  apiEnableDataStore,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
+import gql from "graphql-tag";
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 
-describe('transformer model searchable migration test', () => {
+describe("transformer model searchable migration test", () => {
   let projRoot: string;
   let projectName: string;
   let appSyncClient;
@@ -27,7 +32,7 @@ describe('transformer model searchable migration test', () => {
 
   afterEach(async () => {
     if (process.env.CIRCLECI) {
-      console.log('Skipping cloud deletion since we are in CI, and cleanup script will delete this stack in cleanup step.');
+      console.log("Skipping cloud deletion since we are in CI, and cleanup script will delete this stack in cleanup step.");
       deleteProjectDir(projRoot);
     } else {
       await deleteProject(projRoot);
@@ -35,8 +40,8 @@ describe('transformer model searchable migration test', () => {
     }
   });
 
-  it('migration of searchable directive - search should return expected results', async () => {
-    const v2Schema = 'transformer_migration/searchable-v2.graphql';
+  it("migration of searchable directive - search should return expected results", async () => {
+    const v2Schema = "transformer_migration/searchable-v2.graphql";
 
     await addApiWithoutSchema(projRoot, { apiName: projectName });
     await apiEnableDataStore(projRoot, {});
@@ -44,7 +49,7 @@ describe('transformer model searchable migration test', () => {
     await amplifyPush(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
-    await runAndValidateQuery('test1', 'test1', 10);
+    await runAndValidateQuery("test1", "test1", 10);
   });
 
   const getAppSyncClientFromProj = (projRoot: string) => {
@@ -69,10 +74,10 @@ describe('transformer model searchable migration test', () => {
 
   const runMutation = async (query: string) => {
     try {
-      const q = [query, ...fragments].join('\n');
+      const q = [query, ...fragments].join("\n");
       const response = await appSyncClient.mutate({
         mutation: gql(q),
-        fetchPolicy: 'no-cache',
+        fetchPolicy: "no-cache",
       });
       return response;
     } catch (e) {
@@ -83,10 +88,10 @@ describe('transformer model searchable migration test', () => {
 
   const runQuery = async (query: string) => {
     try {
-      const q = [query, ...fragments].join('\n');
+      const q = [query, ...fragments].join("\n");
       const response = await appSyncClient.query({
         query: gql(q),
-        fetchPolicy: 'no-cache',
+        fetchPolicy: "no-cache",
       });
       return response;
     } catch (e) {
@@ -95,7 +100,8 @@ describe('transformer model searchable migration test', () => {
     }
   };
 
-  const createEntry = async (name: string, description: string, count: number) => await runMutation(getCreateTodosMutation(name, description, count));
+  const createEntry = async (name: string, description: string, count: number) =>
+    await runMutation(getCreateTodosMutation(name, description, count));
 
   const searchTodos = async () => await runQuery(getTodos());
 
@@ -144,7 +150,7 @@ describe('transformer model searchable migration test', () => {
     let searchResponse;
 
     do {
-      await new Promise(r => setTimeout(r, waitInMilliseconds));
+      await new Promise((r) => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();
       currentRetryCount += 1;
       waitInMilliseconds *= 2;

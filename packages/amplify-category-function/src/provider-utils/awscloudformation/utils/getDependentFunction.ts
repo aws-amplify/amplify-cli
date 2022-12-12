@@ -1,23 +1,23 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
-import * as path from 'path';
-import { loadFunctionParameters } from './loadFunctionParameters';
-import { ServiceName } from './constants';
-import { categoryName } from '../../../constants';
+import { $TSContext, $TSObject } from "amplify-cli-core";
+import * as path from "path";
+import { loadFunctionParameters } from "./loadFunctionParameters";
+import { ServiceName } from "./constants";
+import { categoryName } from "../../../constants";
 
 export async function lambdasWithApiDependency(
   context: $TSContext,
   allResources: $TSObject[],
   backendDir: string,
-  modelsDeleted: string[],
+  modelsDeleted: string[]
 ) {
   //get the List of functions dependent on deleted model
   const dependentFunctions = [];
   const lambdaFuncResources = allResources.filter(
-    resource =>
+    (resource) =>
       resource.service === ServiceName.LambdaFunction &&
       resource.mobileHubMigrated !== true &&
       resource.dependsOn !== undefined &&
-      resource.dependsOn.find(val => val.category === 'api'),
+      resource.dependsOn.find((val) => val.category === "api")
   );
 
   // initialize function parameters for update
@@ -27,9 +27,9 @@ export async function lambdasWithApiDependency(
     const selectedCategories = currentParameters.permissions;
     let deletedModelFound: boolean;
 
-    if (typeof selectedCategories === 'object' && selectedCategories !== null) {
+    if (typeof selectedCategories === "object" && selectedCategories !== null) {
       for (const selectedResources of Object.values(selectedCategories)) {
-        deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
+        deletedModelFound = Object.keys(selectedResources).some((r) => modelsDeleted.includes(r));
         if (deletedModelFound) {
           dependentFunctions.push(lambda);
         }

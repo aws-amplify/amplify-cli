@@ -5,23 +5,19 @@ import {
   BuildRequest,
   BuildResult,
   BuildType,
-} from 'amplify-function-plugin-interface';
-import * as which from 'which';
-import execa from 'execa';
-import archiver from 'archiver';
-import fs from 'fs-extra';
-import glob from 'glob';
-import path from 'path';
-import {
-  SemVer, coerce, gte, lt,
-} from 'semver';
-import {
-  BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN,
-} from './constants';
+} from "amplify-function-plugin-interface";
+import * as which from "which";
+import execa from "execa";
+import archiver from "archiver";
+import fs from "fs-extra";
+import glob from "glob";
+import path from "path";
+import { SemVer, coerce, gte, lt } from "semver";
+import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from "./constants";
 
-const executableName = 'go';
-const minimumVersion = <SemVer>coerce('1.0');
-const maximumVersion = <SemVer>coerce('2.0');
+const executableName = "go";
+const minimumVersion = <SemVer>coerce("1.0");
+const maximumVersion = <SemVer>coerce("2.0");
 
 let executablePath: string | null;
 
@@ -30,10 +26,10 @@ export const executeCommand = (
   streamStdio: boolean,
   env: {} = {},
   cwd: string | undefined = undefined,
-  stdioInput: string | undefined = undefined,
+  stdioInput: string | undefined = undefined
 ): string => {
   const output = execa.sync(executableName, args, {
-    stdio: streamStdio === true ? 'inherit' : 'pipe',
+    stdio: streamStdio === true ? "inherit" : "pipe",
     env,
     cwd,
     input: stdioInput,
@@ -62,7 +58,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/${SRC}/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };
@@ -73,7 +69,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
   const buildDir = buildType === BuildType.DEV ? BIN_LOCAL : BIN;
   const outDir = path.join(srcRoot, buildDir);
 
-  const isWindows = process.platform.startsWith('win');
+  const isWindows = process.platform.startsWith("win");
   const executableName = isWindows && buildType === BuildType.DEV ? MAIN_BINARY_WIN : MAIN_BINARY;
   const executablePath = path.join(outDir, executableName);
 
@@ -90,8 +86,8 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
     const envVars: any = {};
 
     if (buildType === BuildType.PROD) {
-      envVars.GOOS = 'linux';
-      envVars.GOARCH = 'amd64';
+      envVars.GOOS = "linux";
+      envVars.GOARCH = "amd64";
     }
 
     if (isWindows) {
@@ -99,9 +95,9 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
     }
 
     // for go@1.16, dependencies must be manually installed
-    executeCommand(['mod', 'tidy', '-v'], true, envVars, srcDir);
+    executeCommand(["mod", "tidy", "-v"], true, envVars, srcDir);
     // Execute the build command, cwd must be the source file directory (Windows requires it)
-    executeCommand(['build', '-o', executablePath, '.'], true, envVars, srcDir);
+    executeCommand(["build", "-o", executablePath, "."], true, envVars, srcDir);
 
     rebuilt = true;
   }
@@ -113,13 +109,13 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
 
 export const getGoVersion = (): SemVer => {
   // Validate go version
-  const versionOutput = executeCommand(['version'], false);
+  const versionOutput = executeCommand(["version"], false);
 
   if (versionOutput) {
-    const parts = versionOutput.split(' ');
+    const parts = versionOutput.split(" ");
 
     // Output: go version go1.14 darwin/amd64
-    if (parts.length !== 4 || !parts[2].startsWith('go') || coerce(parts[2].slice(2)) === null) {
+    if (parts.length !== 4 || !parts[2].startsWith("go") || coerce(parts[2].slice(2)) === null) {
       throw new Error(`Invalid version string: ${versionOutput}`);
     }
 
@@ -161,7 +157,7 @@ export const packageResource = async (request: PackageRequest, context: any): Pr
   // check if repackaging is needed
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
     const packageHash = await context.amplify.hashDir(request.srcRoot, [DIST]);
-    const zipFn = process.platform.startsWith('win') ? winZip : nixZip;
+    const zipFn = process.platform.startsWith("win") ? winZip : nixZip;
     await zipFn(request.srcRoot, request.dstFilename, context.print);
     return { packageHash };
   }
@@ -172,24 +168,24 @@ const winZip = async (src: string, dest: string, print: any) => {
   // get lambda zip tool with the fix of https://go.dev/doc/go-get-install-deprecation
   const version = getGoVersion();
   try {
-    if (gte(version, '1.17')) {
-      await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+    if (gte(version, "1.17")) {
+      await execa(executableName, ["install", "github.com/aws/aws-lambda-go/cmd/build-lambda-zip"]);
     } else {
-      await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+      await execa(executableName, ["get", "-u", "github.com/aws/aws-lambda-go/cmd/build-lambda-zip"]);
     }
   } catch (error: unknown) {
     throw new Error(`Error installing build-lambda-zip: ${error}`);
   }
   const goPath = process.env.GOPATH;
   if (!goPath) {
-    throw new Error('Could not determine GOPATH. Make sure it is set.');
+    throw new Error("Could not determine GOPATH. Make sure it is set.");
   }
-  await execa(path.join(goPath, 'bin', 'build-lambda-zip.exe'), ['-o', dest, path.join(src, BIN, MAIN_BINARY)]);
+  await execa(path.join(goPath, "bin", "build-lambda-zip.exe"), ["-o", dest, path.join(src, BIN, MAIN_BINARY)]);
   const resourceName = src.split(path.sep).pop();
   print.warning(
-    `If the function ${resourceName} depends on assets outside of the go binary, you'll need to manually zip the binary along with the assets using WSL or another shell that generates a *nix-like zip file.`,
+    `If the function ${resourceName} depends on assets outside of the go binary, you'll need to manually zip the binary along with the assets using WSL or another shell that generates a *nix-like zip file.`
   );
-  print.warning('See https://github.com/aws/aws-lambda-go/issues/13#issuecomment-358729411.');
+  print.warning("See https://github.com/aws/aws-lambda-go/issues/13#issuecomment-358729411.");
 };
 
 const nixZip = async (src: string, dest: string): Promise<void> => {
@@ -199,15 +195,15 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
   // zip source and dependencies and write to specified file
   const file = fs.createWriteStream(dest);
   return new Promise<void>((resolve, reject) => {
-    file.on('close', () => {
+    file.on("close", () => {
       resolve();
     });
 
-    file.on('error', err => {
+    file.on("error", (err) => {
       reject(new Error(`Failed to zip with error: [${err}]`));
     });
 
-    const zip = archiver.create('zip', {});
+    const zip = archiver.create("zip", {});
     zip.pipe(file);
 
     // Add the main file and make sure to set 755 as mode so it will be runnable by Lambda
@@ -217,7 +213,7 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
     });
 
     // Add every other files in the out directory
-    zip.glob('**/*', {
+    zip.glob("**/*", {
       cwd: outDir,
       ignore: [mainFile],
     });

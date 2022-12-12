@@ -1,10 +1,10 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as ddb from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
-import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType } from '../service-walkthrough-types/dynamoDB-user-input-types';
+import { AmplifyDDBResourceTemplate } from "@aws-amplify/cli-extensibility-helper";
+import * as ddb from "@aws-cdk/aws-dynamodb";
+import * as cdk from "@aws-cdk/core";
+import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType } from "../service-walkthrough-types/dynamoDB-user-input-types";
 
-const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
-const ROOT_CFN_DESCRIPTION = 'DDB Resource for AWS Amplify CLI';
+const CFN_TEMPLATE_FORMAT_VERSION = "2010-09-09";
+const ROOT_CFN_DESCRIPTION = "DDB Resource for AWS Amplify CLI";
 
 /**
  * Class to generate Amplify DynamoDB resource for storage category
@@ -77,7 +77,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     try {
       if (this._cfnParameterMap.has(logicalId)) {
-        throw new Error('logical Id already Exists');
+        throw new Error("logical Id already Exists");
       }
       this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     } catch (error) {
@@ -94,28 +94,28 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       usedAttributes.push(this._props.partitionKey);
       keySchema.push({
         attributeName: this._props.partitionKey.fieldName,
-        keyType: 'HASH',
+        keyType: "HASH",
       });
     }
     if (this._props.sortKey) {
       usedAttributes.push(this._props.sortKey);
       keySchema.push({
         attributeName: this._props.sortKey.fieldName,
-        keyType: 'RANGE',
+        keyType: "RANGE",
       });
     }
     if (this._props.gsi && this._props.gsi.length > 0) {
-      this._props.gsi.forEach(gsi => {
+      this._props.gsi.forEach((gsi) => {
         const gsiIndex = {
           indexName: gsi.name,
           keySchema: [
             {
               attributeName: gsi.partitionKey.fieldName,
-              keyType: 'HASH',
+              keyType: "HASH",
             },
           ],
           projection: {
-            projectionType: 'ALL',
+            projectionType: "ALL",
           },
           provisionedThroughput: {
             readCapacityUnits: 5,
@@ -123,15 +123,15 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
           },
         };
 
-        if (usedAttributes.findIndex(attr => attr.fieldName === gsi.partitionKey.fieldName) === -1) {
+        if (usedAttributes.findIndex((attr) => attr.fieldName === gsi.partitionKey.fieldName) === -1) {
           usedAttributes.push(gsi.partitionKey);
         }
         if (gsi.sortKey) {
           gsiIndex.keySchema.push({
             attributeName: gsi.sortKey?.fieldName,
-            keyType: 'RANGE',
+            keyType: "RANGE",
           });
-          if (usedAttributes.findIndex(attr => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
+          if (usedAttributes.findIndex((attr) => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
             usedAttributes.push(gsi.sortKey);
           }
         }
@@ -140,16 +140,16 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
     }
 
     const ddbAttrTypeMapping = {
-      string: 'S',
-      number: 'N',
-      binary: 'B',
-      boolean: 'BOOL',
-      list: 'L',
-      map: 'M',
-      null: 'NULL',
-      'string-set': 'SS',
-      'number-set': 'NS',
-      'binary-set': 'BS',
+      string: "S",
+      number: "N",
+      binary: "B",
+      boolean: "BOOL",
+      list: "L",
+      map: "M",
+      null: "NULL",
+      "string-set": "SS",
+      "number-set": "NS",
+      "binary-set": "BS",
     };
 
     const attributeMapping: ddb.CfnTable.AttributeDefinitionProperty[] = [];
@@ -161,11 +161,11 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       });
     });
 
-    this.dynamoDBTable = new ddb.CfnTable(this, 'DynamoDBTable', {
+    this.dynamoDBTable = new ddb.CfnTable(this, "DynamoDBTable", {
       tableName: cdk.Fn.conditionIf(
-        'ShouldNotCreateEnvResources',
-        cdk.Fn.ref('tableName'),
-        cdk.Fn.join('', [cdk.Fn.ref('tableName'), '-', cdk.Fn.ref('env')]),
+        "ShouldNotCreateEnvResources",
+        cdk.Fn.ref("tableName"),
+        cdk.Fn.join("", [cdk.Fn.ref("tableName"), "-", cdk.Fn.ref("env")])
       ).toString(),
       attributeDefinitions: attributeMapping,
       keySchema,
@@ -175,7 +175,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
         writeCapacityUnits: 5,
       },
       streamSpecification: {
-        streamViewType: 'NEW_IMAGE',
+        streamViewType: "NEW_IMAGE",
       },
     });
   };

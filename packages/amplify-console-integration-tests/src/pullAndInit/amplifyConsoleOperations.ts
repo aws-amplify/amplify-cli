@@ -1,7 +1,7 @@
-import { Amplify, CloudFormation } from 'aws-sdk';
-import moment from 'moment';
+import { Amplify, CloudFormation } from "aws-sdk";
+import moment from "moment";
 
-import { getConfigFromProfile } from '../profile-helper';
+import { getConfigFromProfile } from "../profile-helper";
 
 export function getConfiguredAmplifyClient() {
   const config = getConfigFromProfile();
@@ -34,8 +34,8 @@ export async function deleteAmplifyStack(stackName: string, cfnClient?: any) {
 }
 
 async function PaginatedDeleteProjects(amplifyClient: any, token?: any) {
-  const sequential = require('promise-sequential');
-  const maxResults = '25';
+  const sequential = require("promise-sequential");
+  const maxResults = "25";
   const listAppsResult = await amplifyClient
     .listApps({
       maxResults,
@@ -44,7 +44,7 @@ async function PaginatedDeleteProjects(amplifyClient: any, token?: any) {
     .promise();
 
   const deleteTasks = [];
-  listAppsResult.apps.forEach(app => {
+  listAppsResult.apps.forEach((app) => {
     deleteTasks.push(async () => {
       await amplifyClient.deleteApp({ appId: app.appId }).promise();
     });
@@ -55,7 +55,7 @@ async function PaginatedDeleteProjects(amplifyClient: any, token?: any) {
 }
 
 export function generateBackendEnvParams(appId: string, projectName: string, envName: string) {
-  const timeStamp = moment().format('YYMMDDHHmm');
+  const timeStamp = moment().format("YYMMDDHHmm");
   const stackName = `amplify-${projectName}-${envName}-${timeStamp}`;
   const deploymentBucketName = `${stackName}-deployment`;
   return { appId, envName, stackName, deploymentBucketName };

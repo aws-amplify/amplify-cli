@@ -1,16 +1,14 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 
-import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api directives @auth batch 6a', () => {
+describe("api directives @auth batch 6a", () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth6');
+    projectDir = await createNewProjectDir("auth6");
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -19,8 +17,8 @@ describe('api directives @auth batch 6a', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth combiningAuthRules3', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'combiningAuthRules3');
+  it("auth combiningAuthRules3", async () => {
+    const testresult = await testSchema(projectDir, "auth", "combiningAuthRules3");
     expect(testresult).toBeTruthy();
   });
 });

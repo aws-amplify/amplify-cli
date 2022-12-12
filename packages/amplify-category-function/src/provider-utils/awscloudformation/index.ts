@@ -10,29 +10,29 @@ import {
   readCFNTemplate,
   stateManager,
   writeCFNTemplate,
-} from 'amplify-cli-core';
-import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, LambdaLayer } from 'amplify-function-plugin-interface';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import * as path from 'path';
-import { IsMockableResponse } from '../..';
-import { categoryName } from '../../constants';
-import { supportedServices } from '../supported-services';
-import { ServiceConfig } from '../supportedServicesType';
-import { functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
-import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
-import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
-import { loadLayerParametersJson } from './utils/layerConfiguration';
-import { isMultiEnvLayer } from './utils/layerHelpers';
-import { LayerParameters } from './utils/layerParams';
+} from "amplify-cli-core";
+import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, LambdaLayer } from "amplify-function-plugin-interface";
+import * as fs from "fs-extra";
+import _ from "lodash";
+import * as path from "path";
+import { IsMockableResponse } from "../..";
+import { categoryName } from "../../constants";
+import { supportedServices } from "../supported-services";
+import { ServiceConfig } from "../supportedServicesType";
+import { functionParametersFileName, provider, ServiceName, versionHash } from "./utils/constants";
+import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from "./utils/convertLayersTypes";
+import { convertToComplete, isComplete, merge } from "./utils/funcParamsUtils";
+import { loadLayerParametersJson } from "./utils/layerConfiguration";
+import { isMultiEnvLayer } from "./utils/layerHelpers";
+import { LayerParameters } from "./utils/layerParams";
 import {
   createFunctionResources,
   createLayerArtifacts,
   saveCFNParameters,
   saveMutableState,
   updateLayerArtifacts,
-} from './utils/storeResources';
-import { createDefaultCustomPoliciesFile } from 'amplify-cli-core';
+} from "./utils/storeResources";
+import { createDefaultCustomPoliciesFile } from "amplify-cli-core";
 
 /**
  * Entry point for creating a new function
@@ -47,7 +47,7 @@ export async function addResource(
   category: string,
   service: ServiceName,
   options: $TSAny,
-  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
+  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>
 ): Promise<string> {
   // load the service config for this service
   const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
@@ -70,11 +70,11 @@ export async function addFunctionResource(
   category: string,
   service: ServiceName,
   serviceConfig: ServiceConfig<FunctionParameters>,
-  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
+  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters
 ): Promise<string> {
   // Go through the walkthrough if the parameters are incomplete function parameters
   let completeParams: FunctionParameters | FunctionTriggerParameters;
-  if (!parameters || (!isComplete(parameters) && !('trigger' in parameters))) {
+  if (!parameters || (!isComplete(parameters) && !("trigger" in parameters))) {
     // initialize the template parameters
     let funcParams: Partial<FunctionParameters> = {
       providerContext: {
@@ -94,10 +94,10 @@ export async function addFunctionResource(
     funcParams = merge(funcParams, {
       environmentMap: {
         ENV: {
-          Ref: 'env',
+          Ref: "env",
         },
         REGION: {
-          Ref: 'AWS::Region',
+          Ref: "AWS::Region",
         },
       },
     });
@@ -129,15 +129,15 @@ export async function addFunctionResource(
   const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
 
   print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
-  print.info('');
-  print.success('Next steps:');
+  print.info("");
+  print.success("Next steps:");
   print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
   print.info('"amplify function build" builds all of your functions currently in the project');
   print.info('"amplify mock function <functionName>" runs your function locally');
   print.info(`To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
   print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   print.info(
-    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
+    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud'
   );
 
   return completeParams.resourceName;
@@ -147,7 +147,7 @@ export async function addLayerResource(
   context: $TSContext,
   service: ServiceName,
   serviceConfig: ServiceConfig<LayerParameters>,
-  parameters: Partial<LayerParameters> = {},
+  parameters: Partial<LayerParameters> = {}
 ): Promise<string> {
   parameters.providerContext = {
     provider: provider,
@@ -158,7 +158,7 @@ export async function addLayerResource(
   const completeParams = (await serviceConfig.walkthroughs.createWalkthrough(context, parameters)) as LayerParameters;
 
   createLayerArtifacts(context, completeParams);
-  printLayerSuccessMessages(context, completeParams, 'created');
+  printLayerSuccessMessages(context, completeParams, "created");
   return completeParams.layerName;
 }
 
@@ -167,7 +167,7 @@ export async function updateResource(
   category: string,
   service: ServiceName,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
-  resourceToUpdate?: $TSAny,
+  resourceToUpdate?: $TSAny
 ) {
   // load the service config for this service
   const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
@@ -190,21 +190,21 @@ export async function updateFunctionResource(
   category: string,
   service: ServiceName,
   parameters: $TSAny,
-  resourceToUpdate: $TSAny,
+  resourceToUpdate: $TSAny
 ) {
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service] as ServiceConfig<FunctionParameters>;
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
 
-  if (parameters && 'trigger' in parameters) {
+  if (parameters && "trigger" in parameters) {
     const parametersFilePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceToUpdate, functionParametersFileName);
     let previousParameters;
 
     if (fs.existsSync(parametersFilePath)) {
       previousParameters = JSONUtilities.readJson(parametersFilePath);
 
-      if ('trigger' in previousParameters) {
+      if ("trigger" in previousParameters) {
         parameters = _.assign({}, previousParameters, parameters);
 
         if (parameters.triggerEnvs && parameters.triggerEnvs instanceof String) {
@@ -218,7 +218,7 @@ export async function updateFunctionResource(
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
-      context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
+      context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, "dependsOn", parameters.dependsOn);
     }
     await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
@@ -226,7 +226,7 @@ export async function updateFunctionResource(
 
   if (!parameters || (parameters && !parameters.skipEdit)) {
     const breadcrumb = context.amplify.readBreadcrumbs(categoryName, parameters.resourceName);
-    const displayName = 'trigger' in parameters ? parameters.resourceName : undefined;
+    const displayName = "trigger" in parameters ? parameters.resourceName : undefined;
     await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName, false);
   }
 
@@ -237,7 +237,7 @@ export async function updateLayerResource(
   context: $TSContext,
   service: ServiceName,
   serviceConfig: ServiceConfig<LayerParameters>,
-  parameters?: Partial<LayerParameters>,
+  parameters?: Partial<LayerParameters>
 ) {
   if (!serviceConfig) {
     throw new Error(`amplify-category-function is not configured to provide service type ${service}`);
@@ -267,7 +267,7 @@ export async function updateLayerResource(
     generateCfnFile: parameters.selectedVersion !== undefined,
   });
 
-  printLayerSuccessMessages(context, updateWalkthroughResult.parameters, 'updated');
+  printLayerSuccessMessages(context, updateWalkthroughResult.parameters, "updated");
 }
 
 function printLayerSuccessMessages(context: $TSContext, parameters: LayerParameters, action: string): void {
@@ -276,21 +276,21 @@ function printLayerSuccessMessages(context: $TSContext, parameters: LayerParamet
   const relativeDirPath = path.join(PathConstants.AmplifyDirName, PathConstants.BackendDirName, categoryName, layerName);
   print.info(`✅ Lambda layer folders & files ${action}:`);
   print.info(relativeDirPath);
-  print.info('');
-  print.success('Next steps:');
+  print.info("");
+  print.success("Next steps:");
 
   if (parameters.runtimes.length !== 0) {
-    print.info('Move your libraries to the following folder:');
+    print.info("Move your libraries to the following folder:");
     for (const runtime of parameters.runtimes) {
-      const runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
+      const runtimePath = path.join(relativeDirPath, "lib", runtime.layerExecutablePath);
       print.info(`[${runtime.name}]: ${runtimePath}`);
     }
-    print.info('');
+    print.info("");
   }
 
-  print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(path.join(relativeDirPath, 'opt'));
-  print.info('');
+  print.info("Include any files you want to share across runtimes in this folder:");
+  print.info(path.join(relativeDirPath, "opt"));
+  print.info("");
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
 }
@@ -300,12 +300,12 @@ async function openEditor(
   category: string,
   resourceName: string,
   template: Partial<FunctionTemplate>,
-  displayName = 'local',
-  defaultConfirm = true,
+  displayName = "local",
+  defaultConfirm = true
 ) {
   const targetDir = pathManager.getBackendDirPath();
   if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`, defaultConfirm)) {
-    let targetFile = '';
+    let targetFile = "";
 
     // try to load the default editor file from the function template
     if (template) {
@@ -313,7 +313,7 @@ async function openEditor(
         targetFile = template.defaultEditorFile;
       } else if (template.sourceFiles && template.sourceFiles.length > 0) {
         const srcFile = template.sourceFiles[0];
-        targetFile = _.get(template, ['destMap', srcFile], srcFile);
+        targetFile = _.get(template, ["destMap", srcFile], srcFile);
       }
     }
 
@@ -360,7 +360,7 @@ function isInHeadlessMode(context: $TSContext) {
 function getHeadlessParams(context: $TSContext, resourceName: string) {
   const { inputParams = {} } = context.exeInfo;
   return inputParams.categories && inputParams.categories.function && Array.isArray(inputParams.categories.function)
-    ? inputParams.categories.function.find(i => i.resourceName === resourceName) || {}
+    ? inputParams.categories.function.find((i) => i.resourceName === resourceName) || {}
     : {};
 }
 
@@ -368,7 +368,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
   if (service === ServiceName.LambdaFunction) {
     const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
     const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
-    const functionParametersPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, 'function-parameters.json');
+    const functionParametersPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, "function-parameters.json");
     let resourceParams: $TSAny = {};
     const functionParametersExists = fs.existsSync(functionParametersPath);
     if (functionParametersExists) {
@@ -407,7 +407,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
 
     // Since the CFN template and parameters.json are updated on each new layer version which are specific to each env, we need to update
     // the files accordingly to ensure the correct status is shown after env checkout. The restore flag already handles this scenario.
-    if (context.input.command === 'env' && context.input?.subCommands.includes('checkout') && !context.exeInfo?.inputParams?.restore) {
+    if (context.input.command === "env" && context.input?.subCommands.includes("checkout") && !context.exeInfo?.inputParams?.restore) {
       const currentParametersJson =
         stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || undefined;
       if (currentParametersJson) {
@@ -429,19 +429,19 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
   if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
     const parentResourceParams = providerPlugin.loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
     const triggers =
-      typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
-    const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
+      typeof parentResourceParams.triggers === "string" ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
+    const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, "");
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, categoryName, resourceParams.resourceName);
       const categoryPlugin = context.amplify.getCategoryPluginInfo(context, resourceParams.parentStack);
       const triggerPath = path.join(
         categoryPlugin.packageLocation,
-        'provider-utils',
+        "provider-utils",
         `${srvcMetaData.provider}`,
-        'triggers',
-        `${currentTrigger}`,
+        "triggers",
+        `${currentTrigger}`
       );
-      const isEnvCommand = context.input.command === 'env';
+      const isEnvCommand = context.input.command === "env";
 
       if (!isEnvCommand) {
         envParams = await context.amplify.getTriggerEnvInputs(
@@ -449,7 +449,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
           triggerPath,
           currentTrigger,
           triggers[currentTrigger],
-          currentEnvVariables,
+          currentEnvVariables
         );
       } else {
         envParams = currentEnvVariables;
@@ -462,7 +462,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
 export function openConsole(context: $TSContext, service: ServiceName) {
   const amplifyMeta = stateManager.getMeta();
   const region = amplifyMeta.providers[provider].Region;
-  const selection = service === ServiceName.LambdaFunction ? 'functions' : 'layers';
+  const selection = service === ServiceName.LambdaFunction ? "functions" : "layers";
   const url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/${selection}`;
   open(url, { wait: false });
 }
@@ -470,6 +470,6 @@ export function openConsole(context: $TSContext, service: ServiceName) {
 export function isMockable(service: ServiceName): IsMockableResponse {
   return {
     isMockable: service === ServiceName.LambdaFunction,
-    reason: 'Lambda layers cannot be mocked locally', // this will only be shown when isMockable is false
+    reason: "Lambda layers cannot be mocked locally", // this will only be shown when isMockable is false
   };
 }

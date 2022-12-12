@@ -1,28 +1,28 @@
-import * as fs from 'fs-extra';
-import { init } from '../app-config';
-import { Context } from '../domain/context';
-import { Input } from '../domain/input';
+import * as fs from "fs-extra";
+import { init } from "../app-config";
+import { Context } from "../domain/context";
+import { Input } from "../domain/input";
 
-describe('test usageData', () => {
+describe("test usageData", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const mockContext: Context = jest.genMockFromModule('../domain/context');
+  const mockContext: Context = jest.genMockFromModule("../domain/context");
   mockContext.input = new Input([
-    '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
-    '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
-    'status',
+    "/Users/userName/.nvm/versions/node/v8.11.4/bin/node",
+    "/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify",
+    "status",
   ]);
-  mockContext.amplify = jest.genMockFromModule('../domain/amplify-toolkit');
+  mockContext.amplify = jest.genMockFromModule("../domain/amplify-toolkit");
   mockContext.print = {
     warning: jest.fn(),
   };
-  test('case: valid Json', () => {
+  test("case: valid Json", () => {
     (fs.existsSync as any).mockReturnValue(true);
-    const installationUuid = 'testuuid';
+    const installationUuid = "testuuid";
     (fs.readFileSync as any).mockReturnValue(
-      `{"usageDataConfig":{"installationUuid":"${installationUuid}","isUsageTrackingEnabled":true}}`,
+      `{"usageDataConfig":{"installationUuid":"${installationUuid}","isUsageTrackingEnabled":true}}`
     );
 
     const config = init(mockContext);
@@ -30,7 +30,7 @@ describe('test usageData', () => {
     expect(config.usageDataConfig.installationUuid).toEqual(installationUuid);
   });
 
-  test('case: Invalid json', () => {
+  test("case: Invalid json", () => {
     (fs.existsSync as any).mockReturnValue(true);
     (fs.writeFile as any).mockReturnValue();
     (fs.readFileSync as any).mockReturnValue(`{"usageDataConfig":{"installationUuid,"isUsageTrackingEnabled":true}}`);

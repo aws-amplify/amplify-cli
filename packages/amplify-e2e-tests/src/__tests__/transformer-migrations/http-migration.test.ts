@@ -6,10 +6,13 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, createNewProjectDir, deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+  addApiWithoutSchema,
+  updateApiSchema,
+  createNewProjectDir,
+  deleteProjectDir,
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('transformer @http migration test', () => {
+describe("transformer @http migration test", () => {
   let projRoot: string;
   let projectName: string;
 
@@ -25,15 +28,15 @@ describe('transformer @http migration test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('migration of @http schema', async () => {
-    const httpSchema = 'transformer_migration/http.graphql';
+  it("migration of @http schema", async () => {
+    const httpSchema = "transformer_migration/http.graphql";
 
     await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, httpSchema);
     await amplifyPush(projRoot);
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
+    await addFeatureFlag(projRoot, "graphqltransformer", "transformerVersion", 2);
+    await addFeatureFlag(projRoot, "graphqltransformer", "useExperimentalPipelinedTransformer", true);
 
     await updateApiSchema(projRoot, projectName, httpSchema);
     await amplifyPushForce(projRoot);

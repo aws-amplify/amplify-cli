@@ -13,26 +13,26 @@ import {
   initJSProjectWithProfile,
   removeFirstDefaultMap,
   removeFirstDefaultPlaceIndex,
-} from '@aws-amplify/amplify-e2e-core';
-import { existsSync } from 'fs';
-import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import { existsSync } from "fs";
+import path from "path";
+import { getAWSExports } from "../aws-exports/awsExports";
 
-describe('amplify geo remove', () => {
+describe("amplify geo remove", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('geo-remove-test');
+    projRoot = await createNewProjectDir("geo-remove-test");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config and multiple map resources, then remove the default map', async () => {
+  it("init a project with default auth config and multiple map resources, then remove the default map", async () => {
     const [map1Id, map2Id, map3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
@@ -59,7 +59,7 @@ describe('amplify geo remove', () => {
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
-  it('init a project with default auth config and multiple index resources, then remove the default index', async () => {
+  it("init a project with default auth config and multiple index resources, then remove the default index", async () => {
     const [index1Id, index2Id, index3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);

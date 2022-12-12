@@ -9,21 +9,22 @@ import {
   getProjectMeta,
   getUserPool,
   getMFAConfiguration,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 import {
   // eslint-disable-next-line spellcheck/spell-checker
-  CognitoUserPoolSigninMethod, CognitoUserProperty,
-} from 'amplify-headless-interface';
+  CognitoUserPoolSigninMethod,
+  CognitoUserProperty,
+} from "amplify-headless-interface";
 
-const PROJECT_NAME = 'authTest';
+const PROJECT_NAME = "authTest";
 const defaultsSettings = {
   name: PROJECT_NAME,
 };
 
-describe('headless auth d', () => {
+describe("headless auth d", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth-update');
+    projRoot = await createNewProjectDir("auth-update");
   });
 
   afterEach(async () => {
@@ -31,26 +32,26 @@ describe('headless auth d', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('adds auth resource with TOTP only but enables SMS through password recovery', async () => {
+  it("adds auth resource with TOTP only but enables SMS through password recovery", async () => {
     // AddAuthRequest v1
     const addAuthRequest: any = {
       version: 1,
-      resourceName: 'myAuthResource',
+      resourceName: "myAuthResource",
       serviceConfiguration: {
-        serviceName: 'Cognito',
+        serviceName: "Cognito",
         includeIdentityPool: false,
         userPoolConfiguration: {
           requiredSignupAttributes: [CognitoUserProperty.EMAIL],
           passwordRecovery: {
-            deliveryMethod: 'SMS',
-            smsMessage: 'The verification code is {####}',
+            deliveryMethod: "SMS",
+            smsMessage: "The verification code is {####}",
           },
           // eslint-disable-next-line spellcheck/spell-checker
           signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
           mfa: {
-            mode: 'OPTIONAL',
-            mfaTypes: ['TOTP'],
-            smsMessage: 'The verification code is {####}',
+            mode: "OPTIONAL",
+            mfaTypes: ["TOTP"],
+            smsMessage: "The verification code is {####}",
           },
         },
       },
@@ -60,7 +61,7 @@ describe('headless auth d', () => {
     await addHeadlessAuth(projRoot, addAuthRequest);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const region = meta.providers.awscloudformation.Region;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const mfaConfig = await getMFAConfiguration(id, region);

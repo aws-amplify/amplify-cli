@@ -9,15 +9,15 @@ import {
   initJSProjectWithProfile,
   setTransformConfig,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
-import * as path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import * as path from "path";
 
-describe('GraphQL transformer v2 - Custom transformers', () => {
+describe("GraphQL transformer v2 - Custom transformers", () => {
   let projRoot: string;
   let projFolderName: string;
 
   beforeEach(async () => {
-    projFolderName = 'graphqlv2customtransformer';
+    projFolderName = "graphqlv2customtransformer";
     projRoot = await createNewProjectDir(projFolderName);
   });
 
@@ -31,13 +31,13 @@ describe('GraphQL transformer v2 - Custom transformers', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('create a project including a custom transformer', async () => {
-    const projName = 'v2customtransformer';
-    const schemaDir = 'custom_transformers';
-    const schemaFile = 'simple_custom_model.graphql';
+  it("create a project including a custom transformer", async () => {
+    const projName = "v2customtransformer";
+    const schemaDir = "custom_transformers";
+    const schemaFile = "simple_custom_model.graphql";
     const schemaName = path.join(schemaDir, schemaFile);
     const schemaPath = getSchemaPath(schemaName);
-    const customTransformerName = 'simple_custom_transformer.js';
+    const customTransformerName = "simple_custom_transformer.js";
     const customTransformerPath = schemaPath.replace(schemaFile, customTransformerName);
 
     await initJSProjectWithProfile(projRoot, { name: projName });

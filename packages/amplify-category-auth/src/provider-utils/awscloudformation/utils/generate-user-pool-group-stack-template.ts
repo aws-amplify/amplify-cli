@@ -1,6 +1,6 @@
-import { $TSContext } from 'amplify-cli-core';
-import { Template } from 'cloudform-types';
-import { AmplifyUserPoolGroupTransform } from '../auth-stack-builder/user-pool-group-stack-transform';
+import { $TSContext } from "amplify-cli-core";
+import { Template } from "cloudform-types";
+import { AmplifyUserPoolGroupTransform } from "../auth-stack-builder/user-pool-group-stack-transform";
 
 /**
  * Entry Point to generate UserPoolGroup stack template

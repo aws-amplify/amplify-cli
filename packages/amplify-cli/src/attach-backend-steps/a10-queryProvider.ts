@@ -1,7 +1,7 @@
-import * as inquirer from 'inquirer';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { normalizeProviderName } from '../input-params-manager';
-import { ListQuestion } from 'inquirer';
+import * as inquirer from "inquirer";
+import { getProviderPlugins } from "../extensions/amplify-helpers/get-provider-plugins";
+import { normalizeProviderName } from "../input-params-manager";
+import { ListQuestion } from "inquirer";
 
 export async function queryProvider(context) {
   const providerPlugins = getProviderPlugins(context);
@@ -20,7 +20,7 @@ async function getProvider(context, providerPlugins) {
   const providerPluginList = Object.keys(providerPlugins);
 
   if (providerPluginList.length === 0) {
-    const errorMessage = 'Found no provider plugins';
+    const errorMessage = "Found no provider plugins";
     context.print.error(errorMessage);
     context.print.info("Run 'amplify plugin scan' to scan your system for provider plugins.");
     throw new Error(errorMessage);
@@ -28,7 +28,7 @@ async function getProvider(context, providerPlugins) {
 
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);
@@ -41,9 +41,9 @@ async function getProvider(context, providerPlugins) {
       result = providerPluginList[0]; // eslint-disable-line
     } else {
       const selectProvider: ListQuestion<{ selectedProvider: string }> = {
-        type: 'list',
-        name: 'selectedProvider',
-        message: 'Select the backend provider.',
+        type: "list",
+        name: "selectedProvider",
+        message: "Select the backend provider.",
         choices: providerPluginList,
         default: providerPluginList[0],
       };
@@ -54,9 +54,9 @@ async function getProvider(context, providerPlugins) {
     result = providers[0]; // eslint-disable-line
   } else {
     const selectProvider: ListQuestion<{ selectedProvider: string }> = {
-      type: 'list',
-      name: 'selectedProvider',
-      message: 'Select the backend provider.',
+      type: "list",
+      name: "selectedProvider",
+      message: "Select the backend provider.",
       choices: providers,
       default: providers[0],
     };

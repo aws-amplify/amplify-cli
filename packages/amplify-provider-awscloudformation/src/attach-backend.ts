@@ -1,26 +1,21 @@
-import aws from 'aws-sdk';
-import fs from 'fs-extra';
-import path from 'path';
-import glob from 'glob';
-import extract from 'extract-zip';
-import inquirer from 'inquirer';
-import _ from 'lodash';
-import {
-  exitOnNextTick,
-  pathManager,
-  PathConstants,
-  AmplifyError,
-} from 'amplify-cli-core';
-import * as configurationManager from './configuration-manager';
-import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
-import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
-import constants from './constants';
-import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { resolveAppId } from './utils/resolve-appId';
-import { adminLoginFlow } from './admin-login';
-import { fileLogger } from './utils/aws-logger';
+import aws from "aws-sdk";
+import fs from "fs-extra";
+import path from "path";
+import glob from "glob";
+import extract from "extract-zip";
+import inquirer from "inquirer";
+import _ from "lodash";
+import { exitOnNextTick, pathManager, PathConstants, AmplifyError } from "amplify-cli-core";
+import * as configurationManager from "./configuration-manager";
+import { getConfiguredAmplifyClient } from "./aws-utils/aws-amplify";
+import { checkAmplifyServiceIAMPermission } from "./amplify-service-permission-check";
+import constants from "./constants";
+import { isAmplifyAdminApp } from "./utils/admin-helpers";
+import { resolveAppId } from "./utils/resolve-appId";
+import { adminLoginFlow } from "./admin-login";
+import { fileLogger } from "./utils/aws-logger";
 
-const logger = fileLogger('attach-backend');
+const logger = fileLogger("attach-backend");
 
 /**
  * attach backend to project
@@ -34,31 +29,35 @@ export const run = async (context): Promise<void> => {
   } catch (e) {
     // Swallow
   }
-  const { envName } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
-  const { useProfile, configLevel } = _.get(context, ['exeInfo', 'inputParams', 'awscloudformation'], {});
-  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin') && appId) {
+  const { envName } = _.get(context, ["exeInfo", "inputParams", "amplify"], {});
+  const { useProfile, configLevel } = _.get(context, ["exeInfo", "inputParams", "awscloudformation"], {});
+  if (!useProfile && (!configLevel || configLevel === "amplifyAdmin") && appId) {
     const res = await isAmplifyAdminApp(appId);
     isAdminApp = res.isAdminApp;
     if (isAdminApp) {
       if (!envName) {
-        throw new AmplifyError('EnvironmentNameError', {
-          message: 'Missing --envName <environment name> in parameters.',
+        throw new AmplifyError("EnvironmentNameError", {
+          message: "Missing --envName <environment name> in parameters.",
         });
       }
       // Admin app, go through login flow
       try {
         await adminLoginFlow(context, appId, envName, res.region);
       } catch (e) {
-        throw new AmplifyError('AmplifyStudioLoginError', {
-          message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
-        }, e);
+        throw new AmplifyError(
+          "AmplifyStudioLoginError",
+          {
+            message: `Failed to authenticate: ${e.message || "Unknown error occurred."}`,
+          },
+          e
+        );
       }
     }
   }
 
   if (isAdminApp) {
     context.exeInfo.awsConfigInfo = {
-      configLevel: 'amplifyAdmin',
+      configLevel: "amplifyAdmin",
       config: {},
     };
     awsConfigInfo = await configurationManager.loadConfigurationForEnv(context, envName, appId);
@@ -70,16 +69,16 @@ export const run = async (context): Promise<void> => {
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfigInfo);
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
-    const region = awsConfigInfo && awsConfigInfo.region ? awsConfigInfo.region : '<unknown>';
-    throw new AmplifyError('RegionNotAvailableError', {
+    const region = awsConfigInfo && awsConfigInfo.region ? awsConfigInfo.region : "<unknown>";
+    throw new AmplifyError("RegionNotAvailableError", {
       message: `Amplify service is not available in the region ${region}`,
     });
   }
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
-    throw new AmplifyError('PermissionsError', {
-      message: 'Permissions to access Amplify service is required.',
+    throw new AmplifyError("PermissionsError", {
+      message: "Permissions to access Amplify service is required.",
     });
   }
 
@@ -92,7 +91,7 @@ export const run = async (context): Promise<void> => {
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
-  _.set(context, ['exeInfo', 'teamProviderInfo', backendEnv.environmentName], currentAmplifyMeta.providers);
+  _.set(context, ["exeInfo", "teamProviderInfo", backendEnv.environmentName], currentAmplifyMeta.providers);
 };
 
 async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
@@ -108,8 +107,8 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
 
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
     const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
-    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, "utf8");
+    fs.writeFileSync(amplifyMetaFilePath, jsonString, "utf8");
 
     const { DeploymentBucketName } = currentAmplifyMeta.providers[constants.ProviderName];
     await storeArtifactsForAmplifyService(context, awsConfigInfo, DeploymentBucketName);
@@ -138,7 +137,7 @@ async function uploadFile(s3Client, bucketName, filePath) {
     Key: key,
     Body: body,
   };
-  logger('uploadFile.s3.uploadFile', [{ Key: key, Bucket: bucketName }])();
+  logger("uploadFile.s3.uploadFile", [{ Key: key, Bucket: bucketName }])();
   await s3Client.putObject(s3Params).promise();
 }
 
@@ -147,7 +146,7 @@ async function getAmplifyApp(context, amplifyClient) {
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify && inputParams.amplify.appId) {
     const inputAmplifyAppId = inputParams.amplify.appId;
-    logger('getAmplifyApp.amplifyClient.getApp', [
+    logger("getAmplifyApp.amplifyClient.getApp", [
       {
         appId: inputAmplifyAppId,
       },
@@ -161,14 +160,17 @@ async function getAmplifyApp(context, amplifyClient) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       return getAppResult.app;
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
-        message: e.message && e.name && e.name === 'NotFoundException'
-          ? e.message
-          : `Amplify AppID: ${inputAmplifyAppId} not found.`,
-        resolution: e.name && e.name === 'NotFoundException'
-          ? 'Check that the region of the Amplify App is matching the configured region.'
-          : 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
-      }, e);
+      throw new AmplifyError(
+        "ProjectNotFoundError",
+        {
+          message: e.message && e.name && e.name === "NotFoundException" ? e.message : `Amplify AppID: ${inputAmplifyAppId} not found.`,
+          resolution:
+            e.name && e.name === "NotFoundException"
+              ? "Check that the region of the Amplify App is matching the configured region."
+              : "Ensure your local profile matches the AWS account or region in which the Amplify app exists.",
+        },
+        e
+      );
     }
   }
 
@@ -177,7 +179,7 @@ async function getAmplifyApp(context, amplifyClient) {
 
   let listAppsResponse: any = {};
   do {
-    logger('getAmplifyApp.amplifyClient.listApps', [
+    logger("getAmplifyApp.amplifyClient.listApps", [
       {
         nextToken: listAppsResponse.nextToken,
         maxResults: 25,
@@ -195,7 +197,7 @@ async function getAmplifyApp(context, amplifyClient) {
 
   if (apps.length >= 1) {
     const options = [];
-    apps.forEach(app => {
+    apps.forEach((app) => {
       const option = {
         name: `${app.name} (${app.appId})`,
         value: app,
@@ -205,18 +207,18 @@ async function getAmplifyApp(context, amplifyClient) {
     });
 
     const { selection } = await inquirer.prompt({
-      type: 'list',
-      name: 'selection',
-      message: 'Which app are you working on?',
+      type: "list",
+      name: "selection",
+      message: "Which app are you working on?",
       choices: options,
     });
 
     return selection;
   }
 
-  throw new AmplifyError('ProjectNotFoundError', {
-    message: 'No Amplify apps found.',
-    resolution: 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
+  throw new AmplifyError("ProjectNotFoundError", {
+    message: "No Amplify apps found.",
+    resolution: "Ensure your local profile matches the AWS account or region in which the Amplify app exists.",
   });
 }
 
@@ -225,7 +227,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify && inputParams.amplify.envName) {
     const inputEnvName = inputParams.amplify.envName;
-    logger('getBackendEnv.amplifyClient.getBackendEnvironment', [
+    logger("getBackendEnv.amplifyClient.getBackendEnvironment", [
       {
         appId: amplifyApp.appId,
         environmentName: inputEnvName,
@@ -241,10 +243,14 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
       context.print.info(`Backend environment ${inputEnvName} found in Amplify Console app: ${amplifyApp.name}`);
       return getBackendEnvironmentResult.backendEnvironment;
     } catch (e) {
-      throw new AmplifyError('EnvironmentNotInitializedError', {
-        message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
-        details: e.message,
-      }, e);
+      throw new AmplifyError(
+        "EnvironmentNotInitializedError",
+        {
+          message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
+          details: e.message,
+        },
+        e
+      );
     }
   }
 
@@ -252,7 +258,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
   let backendEnvs = [];
   let listEnvResponse: any = {};
   do {
-    logger('getBackendEnv.amplifyClient.listBackendEnvironments', [
+    logger("getBackendEnv.amplifyClient.listBackendEnvironments", [
       {
         appId: amplifyApp.appId,
         nextToken: listEnvResponse.nextToken,
@@ -270,7 +276,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
 
   if (backendEnvs.length > 1) {
     const options = [];
-    backendEnvs.forEach(env => {
+    backendEnvs.forEach((env) => {
       const option = {
         name: env.environmentName,
         value: env,
@@ -280,18 +286,19 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
     });
 
     const { selection } = await inquirer.prompt({
-      type: 'list',
-      name: 'selection',
-      message: 'Pick a backend environment:',
+      type: "list",
+      name: "selection",
+      message: "Pick a backend environment:",
       choices: options,
     });
 
     return selection;
-  } if (backendEnvs.length === 1) {
+  }
+  if (backendEnvs.length === 1) {
     context.print.info(`Backend environment '${backendEnvs[0].environmentName}' found. Initializing...`);
     return backendEnvs[0];
   }
-  throw new AmplifyError('EnvironmentNotInitializedError', {
+  throw new AmplifyError("EnvironmentNotInitializedError", {
     message: `Cannot find backend environment in Amplify Console app: ${amplifyApp.name}`,
   });
 }
@@ -302,7 +309,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
   }
   const projectPath = process.cwd();
   const amplifyDirPath = context.amplify.pathManager.getAmplifyDirPath(projectPath);
-  const tempDirPath = path.join(amplifyDirPath, '.temp');
+  const tempDirPath = path.join(amplifyDirPath, ".temp");
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath(projectPath);
   const backendDir = context.amplify.pathManager.getBackendDirPath(projectPath);
   const zipFileName = constants.S3BackendZipFileName;
@@ -315,7 +322,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
     Bucket: deploymentBucketName,
   };
 
-  const log = logger('downloadBackend.s3.getObject', [params]);
+  const log = logger("downloadBackend.s3.getObject", [params]);
   let zipObject = null;
   try {
     log();
@@ -336,7 +343,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
     const tempFilePath = path.join(tempDirPath, zipFileName);
     fs.writeFileSync(tempFilePath, buff);
 
-    const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, '.zip'));
+    const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, ".zip"));
 
     await extract(tempFilePath, { dir: unzippedDirPath });
 
@@ -347,7 +354,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
       absolute: true,
     });
     const amplifyDir = pathManager.getAmplifyDirPath();
-    const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+    const isPulling = context.input.command === "pull" || (context.input.command === "env" && context.input.subCommands[0] === "pull");
 
     if ((context.exeInfo && context.exeInfo.restoreBackend) || isPulling) {
       // If backend must be restored then copy out the config files and overwrite existing ones.

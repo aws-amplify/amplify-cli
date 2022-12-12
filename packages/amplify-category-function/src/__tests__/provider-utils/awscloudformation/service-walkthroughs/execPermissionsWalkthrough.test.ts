@@ -1,22 +1,22 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from "amplify-cli-core";
 import {
   getResourcesForCfn,
   generateEnvVariablesForCfn,
   askExecRolePermissionsQuestions,
-} from '../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
+} from "../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough";
 import {
   constructCFModelTableNameComponent,
   constructCFModelTableArnComponent,
-} from '../../../../provider-utils/awscloudformation/utils/cloudformationHelpers';
-import { stateManager } from 'amplify-cli-core';
-import { CRUDOperation } from '../../../../constants';
-import inquirer from 'inquirer';
+} from "../../../../provider-utils/awscloudformation/utils/cloudformationHelpers";
+import { stateManager } from "amplify-cli-core";
+import { CRUDOperation } from "../../../../constants";
+import inquirer from "inquirer";
 
-const backendDirPathStub = 'backendDirPath';
+const backendDirPathStub = "backendDirPath";
 
-jest.mock('../../../../provider-utils/awscloudformation/utils/cloudformationHelpers');
+jest.mock("../../../../provider-utils/awscloudformation/utils/cloudformationHelpers");
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   stateManager: {
     getMeta: jest.fn(),
   },
@@ -28,13 +28,13 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-jest.mock('inquirer', () => {
+jest.mock("inquirer", () => {
   return {
     prompt: jest.fn(),
   };
 });
 
-export const appsyncTableSuffix = '@model(appsync)';
+export const appsyncTableSuffix = "@model(appsync)";
 
 const constructCFModelTableNameComponent_mock = constructCFModelTableNameComponent as jest.MockedFunction<
   typeof constructCFModelTableNameComponent
@@ -42,31 +42,31 @@ const constructCFModelTableNameComponent_mock = constructCFModelTableNameCompone
 const constructCFModelTableArnComponent_mock = constructCFModelTableArnComponent as jest.MockedFunction<
   typeof constructCFModelTableArnComponent
 >;
-const appsyncResourceName = 'mock_api';
-const resourceName = 'storage';
+const appsyncResourceName = "mock_api";
+const resourceName = "storage";
 
 constructCFModelTableNameComponent_mock.mockImplementation(async () => {
   return {
-    'Fn::ImportValue': {
-      'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+    "Fn::ImportValue": {
+      "Fn::Sub": `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, "Table")}:Name`,
     },
   };
 });
 
 constructCFModelTableArnComponent_mock.mockImplementation(async () => {
   return [
-    'arn:aws:dynamodb:',
-    { Ref: 'aws_region' },
-    ':',
-    { Ref: 'aws_accountId' },
-    ':table/',
+    "arn:aws:dynamodb:",
+    { Ref: "aws_region" },
+    ":",
+    { Ref: "aws_accountId" },
+    ":table/",
     await constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
   ];
 });
 
-test('check CFN resources for storage', async () => {
-  const resourceAttributes = [{ resourceName: 'storageattr1@model(appsync)' }, { resourceName: 'storageattr2@model(appsync)' }];
-  const permissionPolicies = 'randomPermissionsforapiandstorage';
+test("check CFN resources for storage", async () => {
+  const resourceAttributes = [{ resourceName: "storageattr1@model(appsync)" }, { resourceName: "storageattr2@model(appsync)" }];
+  const permissionPolicies = "randomPermissionsforapiandstorage";
 
   const contextStub = {
     amplify: {
@@ -75,12 +75,12 @@ test('check CFN resources for storage', async () => {
       },
     },
   };
-  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, 'storage')).toMatchSnapshot();
+  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, "storage")).toMatchSnapshot();
 });
 
-test('check CFN resources', async () => {
-  const resourceAttributes = ['apiattr1', 'apiattr2'];
-  const permissionPolicies = 'randomPermissionsforapi';
+test("check CFN resources", async () => {
+  const resourceAttributes = ["apiattr1", "apiattr2"];
+  const permissionPolicies = "randomPermissionsforapi";
 
   const contextStub = {
     amplify: {
@@ -89,49 +89,49 @@ test('check CFN resources', async () => {
       },
     },
   };
-  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, 'api')).toMatchSnapshot();
+  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, "api")).toMatchSnapshot();
 });
 
-test('env resources for CFN for DDB table and api', async () => {
+test("env resources for CFN for DDB table and api", async () => {
   const contextStub = {
-    ...jest.requireActual('amplify-cli-core'),
+    ...jest.requireActual("amplify-cli-core"),
     print: {
       info: () => jest.fn,
     },
   };
   const resources = [
     {
-      attributes: ['GraphQLAPIIdOutput'],
-      category: 'api',
-      resourceName: 'mock_api',
+      attributes: ["GraphQLAPIIdOutput"],
+      category: "api",
+      resourceName: "mock_api",
     },
   ];
   expect(await generateEnvVariablesForCfn(contextStub as unknown as $TSContext, resources, {})).toMatchSnapshot();
 });
 
-test('env resources for CFN for auth and storage for api', async () => {
+test("env resources for CFN for auth and storage for api", async () => {
   const contextStub = {
-    ...jest.requireActual('amplify-cli-core'),
+    ...jest.requireActual("amplify-cli-core"),
     print: {
       info: () => jest.fn,
     },
   };
   const resources = [
     {
-      attributes: ['randombucket'],
-      category: 'storage',
-      resourceName: 'mock_api',
+      attributes: ["randombucket"],
+      category: "storage",
+      resourceName: "mock_api",
     },
     {
-      attributes: ['userPoolId'],
-      category: 'auth',
-      resourceName: 'mock_api',
+      attributes: ["userPoolId"],
+      category: "auth",
+      resourceName: "mock_api",
     },
   ];
   expect(await generateEnvVariablesForCfn(contextStub as unknown as $TSContext, resources, {})).toMatchSnapshot();
 });
 
-describe('askExecRolePermissionsQuestions', () => {
+describe("askExecRolePermissionsQuestions", () => {
   beforeEach(() => {
     const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
     stateManagerMock.getMeta.mockReturnValue({
@@ -140,55 +140,55 @@ describe('askExecRolePermissionsQuestions', () => {
       },
       function: {
         lambda1: {
-          service: 'Lambda',
-          providerPlugin: 'awscloudformation',
+          service: "Lambda",
+          providerPlugin: "awscloudformation",
         },
         lambda2: {
-          service: 'Lambda',
-          providerPlugin: 'awscloudformation',
-          lastPushTimeStamp: '2021-07-12T00:41:17.966Z',
+          service: "Lambda",
+          providerPlugin: "awscloudformation",
+          lastPushTimeStamp: "2021-07-12T00:41:17.966Z",
         },
       },
       auth: {
         authResourceName: {
-          service: 'Cognito',
-          serviceType: 'imported',
-          providerPlugin: 'awscloudformation',
+          service: "Cognito",
+          serviceType: "imported",
+          providerPlugin: "awscloudformation",
         },
       },
       storage: {
         s3Bucket: {
-          service: 'S3',
-          serviceType: 'imported',
-          providerPlugin: 'awscloudformation',
+          service: "S3",
+          serviceType: "imported",
+          providerPlugin: "awscloudformation",
         },
       },
     });
   });
 
-  it('returns permissions for function that be about to add right', async () => {
+  it("returns permissions for function that be about to add right", async () => {
     const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
-    inquirerMock.prompt.mockResolvedValueOnce({ categories: ['function'] });
-    inquirerMock.prompt.mockResolvedValueOnce({ resources: ['lambda2'] });
+    inquirerMock.prompt.mockResolvedValueOnce({ categories: ["function"] });
+    inquirerMock.prompt.mockResolvedValueOnce({ resources: ["lambda2"] });
     inquirerMock.prompt.mockResolvedValueOnce({ options: [CRUDOperation.READ] });
 
     const resourceAttributes = [
       {
-        attributes: ['Name'],
-        category: 'function',
-        resourceName: 'lambda2',
+        attributes: ["Name"],
+        category: "function",
+        resourceName: "lambda2",
       },
     ];
     const permissionPolicies = [
       {
-        Action: ['lambda:Get*', 'lambda:List*', 'lambda:Invoke*'],
-        Effect: 'Allow',
+        Action: ["lambda:Get*", "lambda:List*", "lambda:Invoke*"],
+        Effect: "Allow",
         Resource: [
           {
-            'Fn::Join': [
-              '',
-              ['arn:aws:lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:', { Ref: 'functionlambda2Name' }],
+            "Fn::Join": [
+              "",
+              ["arn:aws:lambda:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":function:", { Ref: "functionlambda2Name" }],
             ],
           },
         ],
@@ -206,32 +206,32 @@ describe('askExecRolePermissionsQuestions', () => {
         invokePluginMethod: jest.fn().mockResolvedValueOnce({ permissionPolicies, resourceAttributes }),
       },
     };
-    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, 'lambda3', undefined);
+    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, "lambda3", undefined);
     expect(answers).toMatchSnapshot();
   });
 
-  it('returns permissions for exists function', async () => {
+  it("returns permissions for exists function", async () => {
     const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
-    inquirerMock.prompt.mockResolvedValueOnce({ categories: ['function'] });
+    inquirerMock.prompt.mockResolvedValueOnce({ categories: ["function"] });
     inquirerMock.prompt.mockResolvedValueOnce({ options: [CRUDOperation.READ] });
 
     const resourceAttributes = [
       {
-        attributes: ['Name'],
-        category: 'function',
-        resourceName: 'lambda2',
+        attributes: ["Name"],
+        category: "function",
+        resourceName: "lambda2",
       },
     ];
     const permissionPolicies = [
       {
-        Action: ['lambda:Get*', 'lambda:List*', 'lambda:Invoke*'],
-        Effect: 'Allow',
+        Action: ["lambda:Get*", "lambda:List*", "lambda:Invoke*"],
+        Effect: "Allow",
         Resource: [
           {
-            'Fn::Join': [
-              '',
-              ['arn:aws:lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:', { Ref: 'functionlambda2Name' }],
+            "Fn::Join": [
+              "",
+              ["arn:aws:lambda:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":function:", { Ref: "functionlambda2Name" }],
             ],
           },
         ],
@@ -249,7 +249,7 @@ describe('askExecRolePermissionsQuestions', () => {
         invokePluginMethod: jest.fn().mockResolvedValueOnce({ permissionPolicies, resourceAttributes }),
       },
     };
-    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, 'lambda1', undefined);
+    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, "lambda1", undefined);
     expect(answers).toMatchSnapshot();
   });
 });

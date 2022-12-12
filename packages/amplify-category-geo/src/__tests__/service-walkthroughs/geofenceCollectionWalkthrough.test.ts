@@ -1,23 +1,21 @@
-import {
-  $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import { category } from '../../constants';
-import { provider, ServiceName } from '../../service-utils/constants';
-import { GeofenceCollectionParameters } from '../../service-utils/geofenceCollectionParams';
-import { AccessType, DataProvider } from '../../service-utils/resourceParams';
-import { updateGeofenceCollectionWalkthrough } from '../../service-walkthroughs/geofenceCollectionWalkthrough';
-import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
+import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import { category } from "../../constants";
+import { provider, ServiceName } from "../../service-utils/constants";
+import { GeofenceCollectionParameters } from "../../service-utils/geofenceCollectionParams";
+import { AccessType, DataProvider } from "../../service-utils/resourceParams";
+import { updateGeofenceCollectionWalkthrough } from "../../service-walkthroughs/geofenceCollectionWalkthrough";
+import { removeWalkthrough } from "../../service-walkthroughs/removeWalkthrough";
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock("amplify-cli-core");
+jest.mock("amplify-prompts");
 
-describe('Geofence Collection walkthrough works as expected', () => {
-  const projectName = 'mockProject';
+describe("Geofence Collection walkthrough works as expected", () => {
+  const projectName = "mockProject";
   const service = ServiceName.GeofenceCollection;
-  const mockGeofenceCollectionName = 'mockCollection12345';
-  const secondaryGeofenceCollectionName = 'secondaryCollection12345';
-  const mockUserPoolGroup = 'mockCognitoGroup';
+  const mockGeofenceCollectionName = "mockCollection12345";
+  const secondaryGeofenceCollectionName = "secondaryCollection12345";
+  const mockUserPoolGroup = "mockCognitoGroup";
   const mockGeofenceCollectionResource = {
     resourceName: mockGeofenceCollectionName,
     service,
@@ -28,15 +26,12 @@ describe('Geofence Collection walkthrough works as expected', () => {
     isDefault: false,
   };
   const mockPlaceIndexResource = {
-    resourceName: 'placeIndex12345',
+    resourceName: "placeIndex12345",
     service: ServiceName.PlaceIndex,
   };
 
   const mockGroupPermissions: Record<string, string[]> = {};
-  mockGroupPermissions[mockUserPoolGroup] = [
-    'Read geofence',
-    'Create/Update geofence',
-  ];
+  mockGroupPermissions[mockUserPoolGroup] = ["Read geofence", "Create/Update geofence"];
 
   const mockGeofenceCollectionParameters: GeofenceCollectionParameters = {
     providerContext: {
@@ -51,7 +46,7 @@ describe('Geofence Collection walkthrough works as expected', () => {
     groupPermissions: mockGroupPermissions,
   };
 
-  const mockContext = ({
+  const mockContext = {
     amplify: {
       serviceSelectionPrompt: async () => ({ service, providerName: provider }),
       inputValidation: jest.fn(),
@@ -62,7 +57,7 @@ describe('Geofence Collection walkthrough works as expected', () => {
       updateBackendConfigAfterResourceRemove: jest.fn(),
     },
     usageData: { emitError: jest.fn() },
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 
   // construct mock amplify meta
   const mockAmplifyMeta: $TSObject = {
@@ -78,12 +73,12 @@ describe('Geofence Collection walkthrough works as expected', () => {
 
     mockContext.amplify.getUserPoolGroupList = jest.fn().mockReturnValue([mockUserPoolGroup]);
 
-    pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
+    pathManager.getBackendDirPath = jest.fn().mockReturnValue("");
     // mock reading the group permissions
     const mockCollectionGroupPermissions: Record<string, $TSObject> = {};
     mockCollectionGroupPermissions[mockGeofenceCollectionName] = { groupPermissions: mockGeofenceCollectionParameters.groupPermissions };
     stateManager.getResourceInputsJson = jest.fn().mockReturnValue(mockCollectionGroupPermissions);
-    JSONUtilities.writeJson = jest.fn().mockReturnValue('');
+    JSONUtilities.writeJson = jest.fn().mockReturnValue("");
 
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     printer.warn = jest.fn();
@@ -91,25 +86,25 @@ describe('Geofence Collection walkthrough works as expected', () => {
     printer.success = jest.fn();
     printer.info = jest.fn();
     prompter.input = jest.fn().mockImplementation((message: string): Promise<any> => {
-      let mockUserInput = 'mock';
-      if (message === 'Provide a name for the Geofence Collection:') {
+      let mockUserInput = "mock";
+      if (message === "Provide a name for the Geofence Collection:") {
         mockUserInput = mockGeofenceCollectionParameters.name;
       }
       return Promise.resolve(mockUserInput);
     });
     prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
-      let mockUserInput: string | string[] = 'mock';
-      if (message === 'Select one or more cognito groups to give access:') {
+      let mockUserInput: string | string[] = "mock";
+      if (message === "Select one or more cognito groups to give access:") {
         mockUserInput = Object.keys(mockGeofenceCollectionParameters.groupPermissions);
       } else if (message === `What kind of access do you want for ${mockUserPoolGroup} users? Select ALL that apply:`) {
         mockUserInput = mockGeofenceCollectionParameters.groupPermissions[mockUserPoolGroup];
-      } else if (message === 'Select the geofence collection you want to update') {
+      } else if (message === "Select the geofence collection you want to update") {
         mockUserInput = mockGeofenceCollectionParameters.name;
-      } else if (message === 'Select the geofence collection you want to set as default:') {
+      } else if (message === "Select the geofence collection you want to set as default:") {
         mockUserInput = secondaryGeofenceCollectionName;
-      } else if (message === 'Select the geofence collection you want to remove') {
+      } else if (message === "Select the geofence collection you want to remove") {
         mockUserInput = mockGeofenceCollectionName;
-      } else if (message === 'Specify the data provider for geofence collection. This will be only used to calculate billing.') {
+      } else if (message === "Specify the data provider for geofence collection. This will be only used to calculate billing.") {
         mockUserInput = mockGeofenceCollectionParameters.dataProvider;
       }
       return Promise.resolve(mockUserInput);
@@ -117,7 +112,7 @@ describe('Geofence Collection walkthrough works as expected', () => {
     prompter.yesOrNo = jest.fn().mockReturnValue(mockGeofenceCollectionParameters.isDefault);
   });
 
-  it('sets parameters based on user input for update geofence collection walkthrough', async () => {
+  it("sets parameters based on user input for update geofence collection walkthrough", async () => {
     // set initial geofence collection parameters before update
     mockAmplifyMeta.geo[mockGeofenceCollectionName].isDefault = true;
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
@@ -125,9 +120,12 @@ describe('Geofence Collection walkthrough works as expected', () => {
     // update the collection's default settings to false; should set the secondary collection as default
     prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
       let mockUserInput = false;
-      if (message === 'Do you want to update advanced settings?') {
+      if (message === "Do you want to update advanced settings?") {
         mockUserInput = true;
-      } else if (message === 'Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
+      } else if (
+        message ===
+        "Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided."
+      ) {
         mockUserInput = false;
       }
       return Promise.resolve(mockUserInput);
@@ -142,16 +140,24 @@ describe('Geofence Collection walkthrough works as expected', () => {
 
     // The default geofence collection is now changed to secondary geofence collection
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockGeofenceCollectionName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryGeofenceCollectionName, 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category,
+      mockGeofenceCollectionName,
+      "isDefault",
+      false
+    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category,
+      secondaryGeofenceCollectionName,
+      "isDefault",
+      true
+    );
 
     // The geofence collection parameters are updated
     expect(collectionParams).toMatchObject(mockGeofenceCollectionParameters);
   });
 
-  it('early returns and prints error if no geofence collection resource to update', async () => {
+  it("early returns and prints error if no geofence collection resource to update", async () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
@@ -162,12 +168,18 @@ describe('Geofence Collection walkthrough works as expected', () => {
 
     await updateGeofenceCollectionWalkthrough(mockContext, collectionParams, mockGeofenceCollectionName);
 
-    expect(printer.error).toBeCalledWith('No geofence collection resource to update. Use "amplify add geo" to create a new geofence collection.');
+    expect(printer.error).toBeCalledWith(
+      'No geofence collection resource to update. Use "amplify add geo" to create a new geofence collection.'
+    );
   });
 
-  it('sets parameters based on user input for adding subsequent geofence collection walkthrough', async () => {
+  it("sets parameters based on user input for adding subsequent geofence collection walkthrough", async () => {
     mockAmplifyMeta.geo = {};
-    mockAmplifyMeta.geo[secondaryGeofenceCollectionName] = { ...mockGeofenceCollectionParameters, ...secondaryGeofenceCollectionResource, isDefault: true };
+    mockAmplifyMeta.geo[secondaryGeofenceCollectionName] = {
+      ...mockGeofenceCollectionParameters,
+      ...secondaryGeofenceCollectionResource,
+      isDefault: true,
+    };
     mockAmplifyMeta.geo[mockPlaceIndexResource.resourceName] = mockPlaceIndexResource;
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
@@ -176,18 +188,21 @@ describe('Geofence Collection walkthrough works as expected', () => {
       dataProvider: mockGeofenceCollectionParameters.dataProvider,
     };
 
-    const { createGeofenceCollectionWalkthrough } = require('../../service-walkthroughs/geofenceCollectionWalkthrough');
+    const { createGeofenceCollectionWalkthrough } = require("../../service-walkthroughs/geofenceCollectionWalkthrough");
     collectionParams = await createGeofenceCollectionWalkthrough(mockContext, collectionParams);
 
     expect(collectionParams).toMatchObject(mockGeofenceCollectionParameters);
   });
 
-  it('sets the first geofence collection added as default automatically', async () => {
+  it("sets the first geofence collection added as default automatically", async () => {
     prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
       let mockUserInput = false;
-      if (message === 'Do you want to update advanced settings?') {
+      if (message === "Do you want to update advanced settings?") {
         mockUserInput = true;
-      } else if (message === 'Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
+      } else if (
+        message ===
+        "Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided."
+      ) {
         mockUserInput = false;
       }
       return Promise.resolve(mockUserInput);
@@ -199,19 +214,22 @@ describe('Geofence Collection walkthrough works as expected', () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-    const { createGeofenceCollectionWalkthrough } = require('../../service-walkthroughs/geofenceCollectionWalkthrough');
+    const { createGeofenceCollectionWalkthrough } = require("../../service-walkthroughs/geofenceCollectionWalkthrough");
     collectionParams = await createGeofenceCollectionWalkthrough(mockContext, collectionParams);
 
     expect(collectionParams).toMatchObject({ ...mockGeofenceCollectionParameters, isDefault: true });
     // geofence collection default setting question is skipped
-    expect(prompter.yesOrNo).not.toBeCalledWith('Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.', true);
+    expect(prompter.yesOrNo).not.toBeCalledWith(
+      "Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.",
+      true
+    );
   });
 
-  it('sets the resource to remove correctly', async () => {
+  it("sets the resource to remove correctly", async () => {
     expect(await removeWalkthrough(service)).toEqual(mockGeofenceCollectionName);
   });
 
-  it('early returns and prints error if no geofence collection resource to remove', async () => {
+  it("early returns and prints error if no geofence collection resource to remove", async () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
@@ -220,7 +238,7 @@ describe('Geofence Collection walkthrough works as expected', () => {
     expect(printer.error).toBeCalledWith(`No geofence collection exists in the project.`);
   });
 
-  it('updates default geofence collection to another if it is removed', async () => {
+  it("updates default geofence collection to another if it is removed", async () => {
     mockContext.amplify.removeResource = jest.fn().mockReturnValue({
       service: ServiceName.GeofenceCollection,
       resourceName: mockGeofenceCollectionName,
@@ -230,14 +248,22 @@ describe('Geofence Collection walkthrough works as expected', () => {
     mockAmplifyMeta.geo[mockGeofenceCollectionName].isDefault = true;
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-    const { removeGeofenceCollectionResource } = require('../../provider-controllers/geofenceCollection');
+    const { removeGeofenceCollectionResource } = require("../../provider-controllers/geofenceCollection");
 
     expect(await removeGeofenceCollectionResource(mockContext)).toEqual(mockGeofenceCollectionName);
     // The default geofence collection is now changed to secondary collection
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockGeofenceCollectionName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryGeofenceCollectionName, 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category,
+      mockGeofenceCollectionName,
+      "isDefault",
+      false
+    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category,
+      secondaryGeofenceCollectionName,
+      "isDefault",
+      true
+    );
   });
 });

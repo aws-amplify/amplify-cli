@@ -1,7 +1,7 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import * as inquirer from 'inquirer';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
-import { normalizeFrontendHandlerName } from '../input-params-manager';
+import { $TSAny, $TSContext } from "amplify-cli-core";
+import * as inquirer from "inquirer";
+import { getFrontendPlugins } from "../extensions/amplify-helpers/get-frontend-plugins";
+import { normalizeFrontendHandlerName } from "../input-params-manager";
 
 /**
  * Initializes the frontend
@@ -38,7 +38,7 @@ export const getSuitableFrontend = (context: $TSContext, frontendPlugins: $TSAny
   let suitableFrontend;
   let fitToHandleScore = -1;
 
-  Object.keys(frontendPlugins).forEach(key => {
+  Object.keys(frontendPlugins).forEach((key) => {
     // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
     const { scanProject } = require(frontendPlugins[key]);
     const newScore = scanProject(projectPath);
@@ -59,13 +59,13 @@ const getFrontendHandler = async (context: $TSContext, frontendPlugins: $TSAny, 
   }
 
   if (!frontend && inputParams && inputParams.yes) {
-    frontend = 'javascript';
+    frontend = "javascript";
   }
 
   if (!frontend) {
     const selectFrontendHandler: inquirer.ListQuestion = {
-      type: 'list',
-      name: 'selectedFrontendHandler',
+      type: "list",
+      name: "selectedFrontendHandler",
       message: "Choose the type of app that you're building",
       choices: frontendPluginList,
       default: suitableFrontend,

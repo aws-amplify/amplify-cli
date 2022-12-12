@@ -1,9 +1,9 @@
-import { GraphQLSchema } from 'graphql';
-import { getAuthDirectiveTransformer, getAuthDirectives } from './auth';
-import { getAwsSubscribeDirectiveTransformer, getAwsSubscribeDirective } from './aws-subscribe';
-import { AmplifyAppSyncSimulator } from '../..';
+import { GraphQLSchema } from "graphql";
+import { getAuthDirectiveTransformer, getAuthDirectives } from "./auth";
+import { getAwsSubscribeDirectiveTransformer, getAwsSubscribeDirective } from "./aws-subscribe";
+import { AmplifyAppSyncSimulator } from "../..";
 export const getDirectiveTypeDefs = (): string => {
-  return [getAuthDirectives(), getAwsSubscribeDirective()].join('\n');
+  return [getAuthDirectives(), getAwsSubscribeDirective()].join("\n");
 };
 
 export const transformSchemaWithDirectives = (schema: GraphQLSchema, context: AmplifyAppSyncSimulator) => {

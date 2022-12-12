@@ -27,17 +27,17 @@ import {
   validateLayerDir,
   validateLayerMetadata,
   validatePushedVersion,
-} from '@aws-amplify/amplify-e2e-core';
-import { v4 as uuid } from 'uuid';
-import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { v4 as uuid } from "uuid";
+import { addEnvironment, checkoutEnvironment, listEnvironment } from "../environment/env";
 
-describe('test amplify remove function', () => {
+describe("test amplify remove function", () => {
   let projRoot: string;
   let projName: string;
-  const envName = 'integtest';
+  const envName = "integtest";
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('layers');
+    projRoot = await createNewProjectDir("layers");
     await initJSProjectWithProfile(projRoot, { envName });
     ({ projectName: projName } = getProjectConfig(projRoot));
   });
@@ -47,10 +47,10 @@ describe('test amplify remove function', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project, add layer, push 4 layer versions and delete first 3 of them, then push and verify', async () => {
-    const [shortId] = uuid().split('-');
+  it("init a project, add layer, push 4 layer versions and delete first 3 of them, then push and verify", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const runtime: LayerRuntime = 'nodejs';
+    const runtime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [runtime],
@@ -73,7 +73,7 @@ describe('test amplify remove function', () => {
     }
     const removeVersion = [1, 2, 3];
     await removeLayerVersion(projRoot, {}, removeVersion, [1, 2, 3, 4]);
-    updateOptData(projRoot, settings, 'end');
+    updateOptData(projRoot, settings, "end");
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
     });
@@ -82,10 +82,10 @@ describe('test amplify remove function', () => {
     validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
   });
 
-  it('init a project, add layer, push 2 layer versions, add 2 dependent functions, check that removal is blocked', async () => {
-    const [shortId] = uuid().split('-');
+  it("init a project, add layer, push 2 layer versions, add 2 dependent functions, check that removal is blocked", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const runtime: LayerRuntime = 'nodejs';
+    const runtime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [runtime],
@@ -97,7 +97,7 @@ describe('test amplify remove function', () => {
     expect(validateLayerDir(projRoot, { projName, layerName: settings.layerName }, settings.runtimes)).toBe(true);
     await amplifyPushLayer(projRoot, { acceptSuggestedLayerVersionConfigurations: true });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
-    updateOptData(projRoot, settings, 'update');
+    updateOptData(projRoot, settings, "update");
     await amplifyPushLayer(projRoot, { acceptSuggestedLayerVersionConfigurations: true });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
 
@@ -107,14 +107,14 @@ describe('test amplify remove function', () => {
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: fnName1,
         layerOptions: {
           layerWalkthrough: (chain: ExecutionContext): void => {
             chain
-              .wait('Provide existing layers')
+              .wait("Provide existing layers")
               .sendKeyDown()
-              .send(' ')
+              .send(" ")
               .sendCarriageReturn()
               .wait(`Select a version for ${projName + layerName}`)
               .sendKeyDown(2) // Move from Always choose latest version to version 1
@@ -122,19 +122,19 @@ describe('test amplify remove function', () => {
           },
         },
       },
-      runtime,
+      runtime
     );
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         name: fnName2,
         layerOptions: {
           layerWalkthrough: (chain: ExecutionContext): void => {
             chain
-              .wait('Provide existing layers')
+              .wait("Provide existing layers")
               .sendKeyDown()
-              .send(' ')
+              .send(" ")
               .sendCarriageReturn()
               .wait(`Select a version for ${projName + layerName}`)
               .sendKeyDown() // Move from Always choose latest version to version 2
@@ -142,7 +142,7 @@ describe('test amplify remove function', () => {
           },
         },
       },
-      runtime,
+      runtime
     );
 
     await removeLayerVersion(projRoot, { removeNoLayerVersions: true }, [1, 2], [1, 2]);

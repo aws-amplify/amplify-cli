@@ -1,8 +1,8 @@
-import { print } from './print';
+import { print } from "./print";
 
 export function showHelp(header, commands) {
   print.info(header);
-  print.info('');
+  print.info("");
   const tableOptions: [string, string][] = [];
 
   for (let i = 0; i < commands.length; i += 1) {
@@ -11,5 +11,5 @@ export function showHelp(header, commands) {
 
   const { table } = print;
 
-  table(tableOptions, { format: 'default' });
+  table(tableOptions, { format: "default" });
 }

@@ -5,16 +5,16 @@ import {
   getBackendAmplifyMeta,
   initJSProjectWithProfile,
   amplifyConfigureProject,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import * as path from "path";
 
-describe('amplify add hosting - container', () => {
+describe("amplify add hosting - container", () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    projRoot = await createNewProjectDir('container-hosting');
+    projRoot = await createNewProjectDir("container-hosting");
     await initJSProjectWithProfile(projRoot, {});
     await amplifyConfigureProject({
       cwd: projRoot,
@@ -31,9 +31,9 @@ describe('amplify add hosting - container', () => {
     deleteProjectDir(projRoot);
   });
 
-  it.skip('add container hosting works', async () => {
+  it.skip("add container hosting works", async () => {
     // TODO: This needs attention. Need to force circle ci to run this test in us-east-1
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'ElasticContainer'))).toBe(true);
+    expect(fs.existsSync(path.join(projRoot, "amplify", "backend", "hosting", "ElasticContainer"))).toBe(true);
     const projectMeta = getBackendAmplifyMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();
     expect(projectMeta.hosting.ElasticContainer).toBeDefined();

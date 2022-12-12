@@ -28,7 +28,7 @@ export interface BaseCognitoServiceConfiguration {
   /**
    * The name of the service providing the resource.
    */
-  serviceName: 'Cognito';
+  serviceName: "Cognito";
   /**
    * The Cognito user pool configuration.
    */
@@ -78,7 +78,7 @@ export interface CognitoIdentityPoolConfiguration {
  * Defines a social federation provider.
  */
 export interface CognitoIdentitySocialFederation {
-  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON' | 'APPLE';
+  provider: "FACEBOOK" | "GOOGLE" | "AMAZON" | "APPLE";
   /**
    * ClientId unique to your client and the provider.
    */
@@ -148,12 +148,12 @@ export type CognitoAutoVerifiedAttributesConfiguration = Array<
 >;
 
 export interface CognitoAutoVerifyPhoneNumberConfiguration {
-  type: 'PHONE_NUMBER';
+  type: "PHONE_NUMBER";
   verificationMessage?: string;
 }
 
 export interface CognitoAutoVerifyEmailConfiguration {
-  type: 'EMAIL';
+  type: "EMAIL";
   verificationMessage?: string;
   verificationSubject?: string;
 }
@@ -177,11 +177,11 @@ export interface CognitoOAuthConfiguration {
   /**
    * The oAuth grant type.
    */
-  oAuthGrantType: 'CODE' | 'IMPLICIT';
+  oAuthGrantType: "CODE" | "IMPLICIT";
   /**
    * The oAuth scopes granted by signin.
    */
-  oAuthScopes: ('PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'AWS.COGNITO.SIGNIN.USER.ADMIN')[];
+  oAuthScopes: ("PHONE" | "EMAIL" | "OPENID" | "PROFILE" | "AWS.COGNITO.SIGNIN.USER.ADMIN")[];
   /**
    * If defined, users will be able to login with the specified social providers.
    */
@@ -195,7 +195,7 @@ interface SocialProviderConfig {
   /**
    * Social providers supported by Amplify and Cognito
    */
-  provider: 'FACEBOOK' | 'GOOGLE' | 'LOGIN_WITH_AMAZON';
+  provider: "FACEBOOK" | "GOOGLE" | "LOGIN_WITH_AMAZON";
   /**
    * The client ID (sometimes called app ID) configured with the provider.
    */
@@ -210,7 +210,7 @@ interface SocialProviderConfig {
  * Defines a Cognito Sign in with Apple oAuth social provider
  */
 interface SignInWithAppleSocialProviderConfig {
-  provider: 'SIGN_IN_WITH_APPLE';
+  provider: "SIGN_IN_WITH_APPLE";
   /**
    * The client ID (sometimes called apple services ID) configured with the provider.
    */
@@ -246,7 +246,7 @@ export type CognitoMFAConfiguration = CognitoMFAOff | CognitoMFASettings;
  * Specifies that MFA should not be enabled for the user pool.
  */
 export interface CognitoMFAOff {
-  mode: 'OFF';
+  mode: "OFF";
 }
 
 /**
@@ -256,11 +256,11 @@ export interface CognitoMFASettings {
   /**
    * ON requires users to set up MFA when creating an account. OPTIONAL means the user has the option to set up MFA.
    */
-  mode: 'ON' | 'OPTIONAL';
+  mode: "ON" | "OPTIONAL";
   /**
    * MFA delivery options.
    */
-  mfaTypes: ('SMS' | 'TOTP')[];
+  mfaTypes: ("SMS" | "TOTP")[];
   /**
    * If SMS is specified in "mfaTypes" this specifies the smsMessage that will be sent to the user.
    */
@@ -298,49 +298,49 @@ export interface CognitoUserPoolGroup {
  * Password contraints that can be applied to Cognito user pools.
  */
 export enum CognitoPasswordConstraint {
-  REQUIRE_LOWERCASE = 'REQUIRE_LOWERCASE',
-  REQUIRE_UPPERCASE = 'REQUIRE_UPPERCASE',
-  REQUIRE_DIGIT = 'REQUIRE_DIGIT',
-  REQUIRE_SYMBOL = 'REQUIRE_SYMBOL',
+  REQUIRE_LOWERCASE = "REQUIRE_LOWERCASE",
+  REQUIRE_UPPERCASE = "REQUIRE_UPPERCASE",
+  REQUIRE_DIGIT = "REQUIRE_DIGIT",
+  REQUIRE_SYMBOL = "REQUIRE_SYMBOL",
 }
 
 export enum CognitoUserPoolSigninMethod {
-  USERNAME = 'USERNAME',
-  EMAIL = 'EMAIL',
-  PHONE_NUMBER = 'PHONE_NUMBER',
-  EMAIL_AND_PHONE_NUMBER = 'EMAIL_AND_PHONE_NUMBER',
+  USERNAME = "USERNAME",
+  EMAIL = "EMAIL",
+  PHONE_NUMBER = "PHONE_NUMBER",
+  EMAIL_AND_PHONE_NUMBER = "EMAIL_AND_PHONE_NUMBER",
 }
 
 export enum CognitoUserAliasAttributes {
-  PREFERRED_USERNAME = 'PREFERRED_USERNAME',
-  EMAIL = 'EMAIL',
-  PHONE_NUMBER = 'PHONE_NUMBER',
+  PREFERRED_USERNAME = "PREFERRED_USERNAME",
+  EMAIL = "EMAIL",
+  PHONE_NUMBER = "PHONE_NUMBER",
 }
 
 export enum CognitoUserProperty {
-  ADDRESS = 'ADDRESS',
-  BIRTHDATE = 'BIRTHDATE',
-  EMAIL = 'EMAIL',
-  FAMILY_NAME = 'FAMILY_NAME',
-  MIDDLE_NAME = 'MIDDLE_NAME',
-  GENDER = 'GENDER',
-  LOCALE = 'LOCALE',
-  GIVEN_NAME = 'GIVEN_NAME',
-  NAME = 'NAME',
-  NICKNAME = 'NICKNAME',
-  PHONE_NUMBER = 'PHONE_NUMBER',
-  PREFERRED_USERNAME = 'PREFERRED_USERNAME',
-  PICTURE = 'PICTURE',
-  PROFILE = 'PROFILE',
-  UPDATED_AT = 'UPDATED_AT',
-  WEBSITE = 'WEBSITE',
-  ZONE_INFO = 'ZONE_INFO',
+  ADDRESS = "ADDRESS",
+  BIRTHDATE = "BIRTHDATE",
+  EMAIL = "EMAIL",
+  FAMILY_NAME = "FAMILY_NAME",
+  MIDDLE_NAME = "MIDDLE_NAME",
+  GENDER = "GENDER",
+  LOCALE = "LOCALE",
+  GIVEN_NAME = "GIVEN_NAME",
+  NAME = "NAME",
+  NICKNAME = "NICKNAME",
+  PHONE_NUMBER = "PHONE_NUMBER",
+  PREFERRED_USERNAME = "PREFERRED_USERNAME",
+  PICTURE = "PICTURE",
+  PROFILE = "PROFILE",
+  UPDATED_AT = "UPDATED_AT",
+  WEBSITE = "WEBSITE",
+  ZONE_INFO = "ZONE_INFO",
 }
 
 /**
  * Additional Cognito user properties that can only be read, not written.
  */
 export enum CognitoUserPropertyVerified {
-  EMAIL_VERIFIED = 'EMAIL_VERIFIED',
-  PHONE_NUMBER_VERIFIED = 'PHONE_NUMBER_VERIFIED',
+  EMAIL_VERIFIED = "EMAIL_VERIFIED",
+  PHONE_NUMBER_VERIFIED = "PHONE_NUMBER_VERIFIED",
 }

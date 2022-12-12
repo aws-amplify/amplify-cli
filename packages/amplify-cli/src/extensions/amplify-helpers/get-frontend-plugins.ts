@@ -1,10 +1,10 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from "amplify-cli-core";
 
 export function getFrontendPlugins(context: $TSContext) {
   const frontendPlugins = {};
 
   context.runtime.plugins
-    .filter((plugin: { pluginType: string }) => plugin.pluginType === 'frontend')
+    .filter((plugin: { pluginType: string }) => plugin.pluginType === "frontend")
     .map((plugin: { pluginName: string; directory: string }) => (frontendPlugins[plugin.pluginName] = plugin.directory));
 
   // If the CLI does not find any frontend plugins it means that the installation is

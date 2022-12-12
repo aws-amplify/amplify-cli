@@ -1,4 +1,4 @@
-const inquirer: any = jest.genMockFromModule('inquirer');
+const inquirer: any = jest.genMockFromModule("inquirer");
 
 function prompt(obj) {
   return obj;

@@ -12,30 +12,30 @@ import {
   initJSProjectWithProfile,
   removeFirstDefaultGeofenceCollection,
   updateAuthAddUserGroups,
-} from '@aws-amplify/amplify-e2e-core';
-import { existsSync } from 'fs';
-import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import { existsSync } from "fs";
+import path from "path";
+import { getAWSExports } from "../aws-exports/awsExports";
 
-describe('amplify geo remove', () => {
+describe("amplify geo remove", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('geo-remove-test');
+    projRoot = await createNewProjectDir("geo-remove-test");
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config and multiple geofence collection resources, then remove the default geofence collection', async () => {
+  it("init a project with default auth config and multiple geofence collection resources, then remove the default geofence collection", async () => {
     const [collection1Id, collection2Id, collection3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
+    const cognitoGroups = ["admin", "admin1"];
     await updateAuthAddUserGroups(projRoot, cognitoGroups);
     await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
     await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true, isDefault: false });

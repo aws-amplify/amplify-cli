@@ -16,19 +16,19 @@ import {
   overrideFunctionSrcPython,
   overrideLayerCodeNode,
   overrideLayerCodePython,
-} from '@aws-amplify/amplify-e2e-core';
-import { v4 as uuid } from 'uuid';
+} from "@aws-amplify/amplify-e2e-core";
+import { v4 as uuid } from "uuid";
 
-describe('add function with layers for runtime nodeJS', () => {
+describe("add function with layers for runtime nodeJS", () => {
   let projRoot: string;
   let projName: string;
-  const lambdaTestString = 'Hello from Lambda!';
-  const helloWorldSuccessOutput = 'HELLO FROM LAMBDA! data';
+  const lambdaTestString = "Hello from Lambda!";
+  const helloWorldSuccessOutput = "HELLO FROM LAMBDA! data";
   let functionName: string;
-  const runtimes: LayerRuntime[] = ['nodejs'];
+  const runtimes: LayerRuntime[] = ["nodejs"];
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
+    projRoot = await createNewProjectDir("functions");
     await initJSProjectWithProfile(projRoot, {});
     ({ projectName: projName } = getProjectConfig(projRoot));
   });
@@ -38,8 +38,8 @@ describe('add function with layers for runtime nodeJS', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('can add project layers and external layers for nodejs', async () => {
-    const [shortId] = uuid().split('-');
+  it("can add project layers and external layers for nodejs", async () => {
+    const [shortId] = uuid().split("-");
     const settings = {
       layerName: `nodetestlayer${shortId}`,
       projName,
@@ -53,12 +53,12 @@ describe('add function with layers for runtime nodeJS', () => {
       projName,
     });
 
-    const packageJsonContent = loadFunctionTestFile('case-layer-package.json');
-    let functionCode = loadFunctionTestFile('case-function.js');
+    const packageJsonContent = loadFunctionTestFile("case-layer-package.json");
+    let functionCode = loadFunctionTestFile("case-function.js");
 
-    functionCode = functionCode.replace('{{testString}}', lambdaTestString);
+    functionCode = functionCode.replace("{{testString}}", lambdaTestString);
 
-    overrideLayerCodeNode(projRoot, projName, settings.layerName, packageJsonContent, 'package.json');
+    overrideLayerCodeNode(projRoot, projName, settings.layerName, packageJsonContent, "package.json");
 
     const layerOptions: LayerOptions = {
       select: [`${settings.layerName}`],
@@ -66,7 +66,7 @@ describe('add function with layers for runtime nodeJS', () => {
     };
 
     functionName = `nodetestfunction${shortId}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
+    await addFunction(projRoot, { functionTemplate: "Hello World", layerOptions, name: functionName }, "nodejs");
 
     overrideFunctionSrcNode(projRoot, functionName, functionCode);
 
@@ -74,14 +74,14 @@ describe('add function with layers for runtime nodeJS', () => {
       acceptSuggestedLayerVersionConfigurations: true,
     });
 
-    const payload = '{}';
+    const payload = "{}";
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
   });
 
-  it('can add multiple project layers for nodejs', async () => {
-    let [shortId] = uuid().split('-');
+  it("can add multiple project layers for nodejs", async () => {
+    let [shortId] = uuid().split("-");
     const settings = {
       layerName: `nodetestlayer${shortId}`,
       projName,
@@ -95,7 +95,7 @@ describe('add function with layers for runtime nodeJS', () => {
       projName,
     });
 
-    [shortId] = uuid().split('-');
+    [shortId] = uuid().split("-");
     const settings2 = {
       layerName: `nodetestlayer2${shortId}`,
       projName,
@@ -104,12 +104,12 @@ describe('add function with layers for runtime nodeJS', () => {
 
     await addLayer(projRoot, settings2);
 
-    const packageJsonContent = loadFunctionTestFile('case-layer-package.json');
-    let functionCode = loadFunctionTestFile('case-function.js');
+    const packageJsonContent = loadFunctionTestFile("case-layer-package.json");
+    let functionCode = loadFunctionTestFile("case-function.js");
 
-    functionCode = functionCode.replace('{{testString}}', lambdaTestString);
+    functionCode = functionCode.replace("{{testString}}", lambdaTestString);
 
-    overrideLayerCodeNode(projRoot, projName, settings2.layerName, packageJsonContent, 'package.json');
+    overrideLayerCodeNode(projRoot, projName, settings2.layerName, packageJsonContent, "package.json");
 
     const layerOptions: LayerOptions = {
       select: [`${settings.layerName}`, `${settings2.layerName}`],
@@ -117,7 +117,7 @@ describe('add function with layers for runtime nodeJS', () => {
     };
 
     functionName = `nodetestfunction${shortId}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
+    await addFunction(projRoot, { functionTemplate: "Hello World", layerOptions, name: functionName }, "nodejs");
 
     overrideFunctionSrcNode(projRoot, functionName, functionCode);
 
@@ -125,27 +125,27 @@ describe('add function with layers for runtime nodeJS', () => {
       acceptSuggestedLayerVersionConfigurations: true,
     });
 
-    const payload = '{}';
+    const payload = "{}";
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
   });
 });
 
-describe('add function with layers for runtime python', () => {
+describe("add function with layers for runtime python", () => {
   let projRoot: string;
   let projName: string;
-  const lambdaTestString = 'hello from lambda!';
-  const helloWorldSuccessOutput = 'Hello From Lambda! data';
-  const [shortId] = uuid().split('-');
+  const lambdaTestString = "hello from lambda!";
+  const helloWorldSuccessOutput = "Hello From Lambda! data";
+  const [shortId] = uuid().split("-");
   let functionName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
+    projRoot = await createNewProjectDir("functions");
     await initJSProjectWithProfile(projRoot, {});
 
     ({ projectName: projName } = getProjectConfig(projRoot));
-    const runtimes: LayerRuntime[] = ['python'];
+    const runtimes: LayerRuntime[] = ["python"];
 
     const settings = {
       layerName: `pytestlayer${shortId}`,
@@ -160,12 +160,12 @@ describe('add function with layers for runtime python', () => {
       projName,
     });
 
-    const pipfileContent = loadFunctionTestFile('titlecase.pipfile');
-    let functionCode = loadFunctionTestFile('titlecase.py');
+    const pipfileContent = loadFunctionTestFile("titlecase.pipfile");
+    let functionCode = loadFunctionTestFile("titlecase.py");
 
-    functionCode = functionCode.replace('{{testString}}', lambdaTestString);
+    functionCode = functionCode.replace("{{testString}}", lambdaTestString);
 
-    overrideLayerCodePython(projRoot, settings.projName, settings.layerName, pipfileContent, 'Pipfile');
+    overrideLayerCodePython(projRoot, settings.projName, settings.layerName, pipfileContent, "Pipfile");
 
     const layerOptions: LayerOptions = {
       select: [`${settings.layerName}`],
@@ -173,7 +173,7 @@ describe('add function with layers for runtime python', () => {
     };
 
     functionName = `pytestfunction${shortId}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'python');
+    await addFunction(projRoot, { functionTemplate: "Hello World", layerOptions, name: functionName }, "python");
 
     overrideFunctionSrcPython(projRoot, functionName, functionCode);
   });
@@ -183,12 +183,12 @@ describe('add function with layers for runtime python', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('can add project layers and external layers for python', async () => {
+  it("can add project layers and external layers for python", async () => {
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
     });
 
-    const payload = '{}';
+    const payload = "{}";
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(response.Payload.toString()).body).toMatch(helloWorldSuccessOutput);

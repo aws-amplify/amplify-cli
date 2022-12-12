@@ -1,8 +1,8 @@
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FunctionTransformer } from 'graphql-function-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { GraphQLClient } from './utils/graphql-client';
-import { deploy, logDebug } from './utils/index';
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
+import { FunctionTransformer } from "graphql-function-transformer";
+import { FeatureFlagProvider, GraphQLTransform } from "graphql-transformer-core";
+import { GraphQLClient } from "./utils/graphql-client";
+import { deploy, logDebug } from "./utils/index";
 
 jest.setTimeout(2000000);
 
@@ -37,7 +37,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new FunctionTransformer()],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === "improvePluralization" ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -45,11 +45,11 @@ beforeAll(async () => {
     const result = await deploy(out);
     server = result.simulator;
 
-    const endpoint = server.url + '/graphql';
+    const endpoint = server.url + "/graphql";
     logDebug(`Using graphql url: ${endpoint}`);
 
     const apiKey = result.config.appSync.apiKey;
-    GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
+    GRAPHQL_CLIENT = new GraphQLClient(endpoint, { "x-api-key": apiKey });
   } catch (e) {
     logDebug(e);
     console.warn(`Could not setup function: ${e}`);
@@ -70,7 +70,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('simple echo function', async () => {
+test("simple echo function", async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echo(msg: "Hello") {
@@ -81,15 +81,15 @@ test('simple echo function', async () => {
             fieldName
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
-  expect(response.data.echo.arguments.msg).toEqual('Hello');
-  expect(response.data.echo.typeName).toEqual('Query');
-  expect(response.data.echo.fieldName).toEqual('echo');
+  expect(response.data.echo.arguments.msg).toEqual("Hello");
+  expect(response.data.echo.typeName).toEqual("Query");
+  expect(response.data.echo.fieldName).toEqual("echo");
 });
 
-test('simple duplicate function', async () => {
+test("simple duplicate function", async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         duplicate(msg: "Hello") {
@@ -100,26 +100,26 @@ test('simple duplicate function', async () => {
             fieldName
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
-  expect(response.data.duplicate.arguments.msg).toEqual('Hello');
-  expect(response.data.duplicate.typeName).toEqual('Query');
-  expect(response.data.duplicate.fieldName).toEqual('duplicate');
+  expect(response.data.duplicate.arguments.msg).toEqual("Hello");
+  expect(response.data.duplicate.typeName).toEqual("Query");
+  expect(response.data.duplicate.fieldName).toEqual("duplicate");
 });
 
-test('pipeline of @function(s)', async () => {
+test("pipeline of @function(s)", async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipeline(msg: "IGNORED")
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
-  expect(response.data.pipeline).toEqual('Hello, world!');
+  expect(response.data.pipeline).toEqual("Hello, world!");
 });
 
-test('pipelineReverse of @function(s)', async () => {
+test("pipelineReverse of @function(s)", async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipelineReverse(msg: "Hello") {
@@ -130,10 +130,10 @@ test('pipelineReverse of @function(s)', async () => {
             fieldName
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
-  expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');
-  expect(response.data.pipelineReverse.typeName).toEqual('Query');
-  expect(response.data.pipelineReverse.fieldName).toEqual('pipelineReverse');
+  expect(response.data.pipelineReverse.arguments.msg).toEqual("Hello");
+  expect(response.data.pipelineReverse.typeName).toEqual("Query");
+  expect(response.data.pipelineReverse.fieldName).toEqual("pipelineReverse");
 });

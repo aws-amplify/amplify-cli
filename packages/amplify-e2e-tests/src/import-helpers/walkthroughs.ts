@@ -1,27 +1,27 @@
 /* eslint-disable */
-import { getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from "@aws-amplify/amplify-e2e-core";
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
-      .wait('What type of auth resource do you want to import')
+    const chain = spawn(getCLIPath(), ["auth", "import"], { cwd, stripColors: true })
+      .wait("What type of auth resource do you want to import")
       .sendKeyDown()
       .sendCarriageReturn()
-      .wait('Select the User Pool you want to import')
+      .wait("Select the User Pool you want to import")
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn();
 
     if (clientNames?.web) {
       chain
-        .wait('Select a Web client to import:')
+        .wait("Select a Web client to import:")
         .send(clientNames.web)
         .delay(500) // Some delay required for autocomplete and terminal to catch up
         .sendCarriageReturn();
     }
 
     if (clientNames?.native) {
-      chain.wait('Select a Native client to import:');
+      chain.wait("Select a Native client to import:");
       chain
         .send(clientNames.native)
         .delay(500) // Some delay required for autocomplete and terminal to catch up
@@ -29,7 +29,7 @@ export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clie
     }
 
     chain
-      .wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js')
+      .wait("- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js")
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -43,34 +43,34 @@ export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clie
 
 export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
-      .wait('What type of auth resource do you want to import')
+    const chain = spawn(getCLIPath(), ["auth", "import"], { cwd, stripColors: true })
+      .wait("What type of auth resource do you want to import")
       .sendCarriageReturn()
-      .wait('Select the User Pool you want to import')
+      .wait("Select the User Pool you want to import")
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn();
 
     if (clientNames?.web) {
       chain
-        .wait('Select a Web client to import:')
+        .wait("Select a Web client to import:")
         .send(clientNames.web)
         .delay(500) // Some delay required for autocomplete and terminal to catch up
         .sendCarriageReturn();
     }
 
     if (clientNames?.native) {
-      chain.wait('Select a Native client to import:');
+      chain.wait("Select a Native client to import:");
       chain
         .send(clientNames.native)
         .delay(500) // Some delay required for autocomplete and terminal to catch up
         .sendCarriageReturn();
     } else {
-      chain.wait('Select a Native client to import:').sendCarriageReturn();
+      chain.wait("Select a Native client to import:").sendCarriageReturn();
     }
 
     chain
-      .wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js')
+      .wait("- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js")
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -84,10 +84,10 @@ export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: s
 
 export const removeImportedAuthWithDefault = (cwd: string) => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['auth', 'remove'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
+    spawn(getCLIPath(), ["auth", "remove"], { cwd, stripColors: true })
+      .wait("Choose the resource you would want to remove")
       .sendCarriageReturn()
-      .wait('Are you sure you want to unlink this imported resource')
+      .wait("Are you sure you want to unlink this imported resource")
       .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
@@ -102,20 +102,20 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
 
 export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, settings: any) => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services')
+    spawn(getCLIPath(), ["add", "storage"], { cwd, stripColors: true })
+      .wait("Select from one of the below mentioned services")
       .sendCarriageReturn()
-      .wait('Provide a friendly name')
+      .wait("Provide a friendly name")
       .sendCarriageReturn()
-      .wait('Provide bucket name')
+      .wait("Provide bucket name")
       .sendCarriageReturn()
-      .wait('Who should have access')
+      .wait("Who should have access")
       .sendCarriageReturn()
-      .wait('What kind of access do you want')
-      .sendLine(' ')
-      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+      .wait("What kind of access do you want")
+      .sendLine(" ")
+      .wait("Do you want to add a Lambda Trigger for your S3 Bucket")
       .sendConfirmNo()
-      .wait('Current auth configuration is: userPoolOnly, but identityPoolAndUserPool was required.')
+      .wait("Current auth configuration is: userPoolOnly, but identityPoolAndUserPool was required.")
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -133,24 +133,24 @@ export const headlessPullExpectError = (
   providersParameter: Object,
   errorMessage: string,
   categoriesParameter?: Object,
-  frontendParameter?: Object,
+  frontendParameter?: Object
 ): Promise<void> => {
   const pullCommand: string[] = [
-    'pull',
-    '--amplify',
+    "pull",
+    "--amplify",
     JSON.stringify(amplifyParameters),
-    '--providers',
+    "--providers",
     JSON.stringify(providersParameter),
-    '--no-override',
-    '--yes',
+    "--no-override",
+    "--yes",
   ];
 
   if (categoriesParameter) {
-    pullCommand.push(...['--categories', JSON.stringify(categoriesParameter)]);
+    pullCommand.push(...["--categories", JSON.stringify(categoriesParameter)]);
   }
 
   if (frontendParameter) {
-    pullCommand.push('--frontend', JSON.stringify(frontendParameter));
+    pullCommand.push("--frontend", JSON.stringify(frontendParameter));
   }
 
   return new Promise((resolve, reject) => {
@@ -171,24 +171,24 @@ export const headlessPull = (
   amplifyParameters: Object,
   providersParameter: Object,
   categoriesParameter?: Object,
-  frontendParameter?: Object,
+  frontendParameter?: Object
 ): Promise<void> => {
   const pullCommand: string[] = [
-    'pull',
-    '--amplify',
+    "pull",
+    "--amplify",
     JSON.stringify(amplifyParameters),
-    '--providers',
+    "--providers",
     JSON.stringify(providersParameter),
-    '--no-override',
-    '--yes',
+    "--no-override",
+    "--yes",
   ];
 
   if (categoriesParameter) {
-    pullCommand.push(...['--categories', JSON.stringify(categoriesParameter)]);
+    pullCommand.push(...["--categories", JSON.stringify(categoriesParameter)]);
   }
 
   if (frontendParameter) {
-    pullCommand.push('--frontend', JSON.stringify(frontendParameter));
+    pullCommand.push("--frontend", JSON.stringify(frontendParameter));
   }
 
   return new Promise((resolve, reject) => {
@@ -204,14 +204,14 @@ export const headlessPull = (
 
 export const importS3 = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services')
+    spawn(getCLIPath(), ["storage", "import"], { cwd, stripColors: true })
+      .wait("Select from one of the below mentioned services")
       .sendCarriageReturn()
-      .wait('Select the S3 Bucket you want to import')
+      .wait("Select the S3 Bucket you want to import")
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn()
-      .wait('- JavaScript: https://docs.amplify.aws/lib/storage/getting-started/q/platform/js')
+      .wait("- JavaScript: https://docs.amplify.aws/lib/storage/getting-started/q/platform/js")
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -225,10 +225,10 @@ export const importS3 = (cwd: string, autoCompletePrefix: string): Promise<void>
 
 export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['storage', 'remove'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
+    spawn(getCLIPath(), ["storage", "remove"], { cwd, stripColors: true })
+      .wait("Choose the resource you would want to remove")
       .sendCarriageReturn()
-      .wait('Are you sure you want to unlink this imported resource')
+      .wait("Are you sure you want to unlink this imported resource")
       .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
@@ -243,15 +243,15 @@ export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
 
 export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services')
+    spawn(getCLIPath(), ["storage", "import"], { cwd, stripColors: true })
+      .wait("Select from one of the below mentioned services")
       .sendKeyDown()
       .sendCarriageReturn()
-      .wait('Select the DynamoDB Table you want to import')
+      .wait("Select the DynamoDB Table you want to import")
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn()
-      .wait('- This resource can now be accessed from REST APIs (`amplify add api`) and Functions (`amplify add function`)')
+      .wait("- This resource can now be accessed from REST APIs (`amplify add api`) and Functions (`amplify add function`)")
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -267,10 +267,10 @@ export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Pr
 // of these.
 export const removeImportedDynamoDBWithDefault = (cwd: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['storage', 'remove'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
+    spawn(getCLIPath(), ["storage", "remove"], { cwd, stripColors: true })
+      .wait("Choose the resource you would want to remove")
       .sendCarriageReturn()
-      .wait('Are you sure you want to unlink this imported resource')
+      .wait("Are you sure you want to unlink this imported resource")
       .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {

@@ -1,27 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsdoc/require-jsdoc */
-import inquirer from 'inquirer';
-import _ from 'lodash';
-import {
-  stateManager, open, $TSContext, $TSObject,
-} from 'amplify-cli-core';
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { getAuthResourceName } from '../../utils/getAuthResourceName';
-import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
-import {
-  ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys,
-} from './constants';
-import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-handlers';
-import { getSupportedServices } from '../supported-services';
-import { importResource, importedAuthEnvInit } from './import';
+import inquirer from "inquirer";
+import _ from "lodash";
+import { stateManager, open, $TSContext, $TSObject } from "amplify-cli-core";
+import { ensureEnvParamManager } from "@aws-amplify/amplify-environment-parameters";
+import { getAuthResourceName } from "../../utils/getAuthResourceName";
+import { copyCfnTemplate, saveResourceParameters } from "./utils/synthesize-resources";
+import { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } from "./constants";
+import { getAddAuthHandler, getUpdateAuthHandler } from "./handlers/resource-handlers";
+import { getSupportedServices } from "../supported-services";
+import { importResource, importedAuthEnvInit } from "./import";
 
-export { importResource } from './import';
+export { importResource } from "./import";
 
-const serviceQuestions = async (context:any,
-  defaultValuesFilename:any,
+const serviceQuestions = async (
+  context: any,
+  defaultValuesFilename: any,
   stringMapsFilename: any,
   serviceWalkthroughFilename: any,
-  serviceMetadata: any): Promise<any> => {
+  serviceMetadata: any
+): Promise<any> => {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = await import(serviceWalkthroughSrc);
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
@@ -30,38 +28,36 @@ const serviceQuestions = async (context:any,
 export const addResource = async (context: $TSContext, service: string): Promise<string> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
-  return getAddAuthHandler(
-    context,
-  )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
+  return getAddAuthHandler(context)(
+    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata)
+  );
 };
 
-export const updateResource = async (context: $TSContext, { service }: {service:any}): Promise<any> => {
+export const updateResource = async (context: $TSContext, { service }: { service: any }): Promise<any> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
-    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
+    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata)
   );
 };
 
 export const updateConfigOnEnvInit = async (context: $TSContext, category: any, service: string): Promise<any> => {
   const serviceMetadata = getSupportedServices().Cognito;
-  const {
-    defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider,
-  } = serviceMetadata;
+  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   await ensureEnvParamManager();
   // previously selected answers
-  const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
+  const resourceParams = providerPlugin.loadResourceParameters(context, "auth", service);
   // ask only env specific questions
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
 
-  const resource = _.get(context.exeInfo, ['amplifyMeta', category, service]);
+  const resource = _.get(context.exeInfo, ["amplifyMeta", category, service]);
 
   // Imported auth resource behavior is different from Amplify managed resources, as
   // they are immutable and all parameters and values are derived from the currently
   // cloud deployed values.
-  if (resource && resource.serviceType === 'imported') {
+  if (resource && resource.serviceType === "imported") {
     let envSpecificParametersResult;
     const { doServiceWalkthrough, succeeded, envSpecificParameters } = await importedAuthEnvInit(
       context,
@@ -72,7 +68,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       providerPlugin,
       currentEnvSpecificValues,
       isInHeadlessMode(context),
-      isInHeadlessMode(context) ? getHeadlessParams(context) : {},
+      isInHeadlessMode(context) ? getHeadlessParams(context) : {}
     );
 
     // No need for headless check as this will never be true for headless
@@ -84,23 +80,23 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
           // this coercion was done to avoid making `provider` on the ServiceSelection type nullable, a larger, potentially breaking change.
           // Once ServiceSelection is refactored, this should be removed, and provider should be set to undefined without type coercion.
           provider: undefined as unknown as string, // We don't have the resolved directory of the provider we pass in an instance
-          service: 'Cognito',
+          service: "Cognito",
         },
         resourceParams,
         providerPlugin,
-        false,
+        false
       );
 
       if (importResult) {
         envSpecificParametersResult = importResult.envSpecificParameters;
       } else {
-        throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
+        throw new Error("There was an error importing the previously configured auth configuration to the new environment.");
       }
     } else if (succeeded) {
       envSpecificParametersResult = envSpecificParameters;
     } else {
       // succeeded === false | undefined
-      throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
+      throw new Error("There was an error importing the previously configured auth configuration to the new environment.");
     }
 
     // If the imported resource was synced up to the cloud before, copy over the timestamp since frontend generation
@@ -115,7 +111,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         throwIfNotExist: false,
       });
 
-      const cloudTimestamp = _.get(currentMeta, [category, service, 'lastPushTimeStamp'], undefined);
+      const cloudTimestamp = _.get(currentMeta, [category, service, "lastPushTimeStamp"], undefined);
 
       if (cloudTimestamp) {
         resource.lastPushTimeStamp = cloudTimestamp;
@@ -123,7 +119,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         resource.lastPushTimeStamp = new Date();
       }
 
-      _.set(meta, [category, service, 'lastPushTimeStamp'], cloudTimestamp);
+      _.set(meta, [category, service, "lastPushTimeStamp"], cloudTimestamp);
       stateManager.setMeta(undefined, meta);
     }
 
@@ -155,7 +151,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       });
 
       if (missingParams.length) {
-        throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new Error(`auth headless is missing the following inputParams ${missingParams.join(", ")}`);
       }
     }
     if (hostedUIProviderMeta) {
@@ -164,12 +160,12 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
     return envParams;
   }
 
-  const isPullingOrEnv = context.input.command === 'pull'
-    || (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
+  const isPullingOrEnv =
+    context.input.command === "pull" ||
+    (context.input.command === "env" && context.input.subCommands && !context.input.subCommands.includes("add"));
   // don't ask for env_specific params when checking out env or pulling
   serviceMetadata.inputs = serviceMetadata.inputs.filter(
-    (input: any) => ENV_SPECIFIC_PARAMS.includes(input.key)
-      && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
+    (input: any) => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv
   );
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -177,14 +173,14 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 
   // interactive mode
   const result = await serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata, resourceParams);
-  let envParams: {[key: string]: any} = {};
+  let envParams: { [key: string]: any } = {};
 
   if (resourceParams.hostedUIProviderMeta) {
     envParams = formatCredentialsForEnvParams(currentEnvSpecificValues, result, resourceParams);
   }
 
-  ENV_SPECIFIC_PARAMS.forEach(paramName => {
-    if (paramName in result && paramName !== 'hostedUIProviderCreds' && privateKeys.indexOf(paramName) === -1) {
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
+    if (paramName in result && paramName !== "hostedUIProviderCreds" && privateKeys.indexOf(paramName) === -1) {
       envParams[paramName] = result[paramName];
     }
   });
@@ -193,7 +189,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 };
 
 export const migrate = async (context: $TSContext): Promise<void> => {
-  const category = 'auth';
+  const category = "auth";
   const { amplify } = context;
   const existingAuth = context.migrationInfo.amplifyMeta.auth || {};
   if (!(Object.keys(existingAuth).length > 0)) {
@@ -206,9 +202,9 @@ export const migrate = async (context: $TSContext): Promise<void> => {
 
   const providerInstance = amplify.getPluginInstance(context, provider);
   const resourceName = await getAuthResourceName(context);
-  const props = providerInstance.loadResourceParameters(context, 'auth', resourceName);
+  const props = providerInstance.loadResourceParameters(context, "auth", resourceName);
   // Roles have changed to ref. Removing old hard-coded role ref
-  Object.keys(roles).forEach(key => {
+  Object.keys(roles).forEach((key) => {
     delete props[key];
   });
   await copyCfnTemplate(context, category, props, cfnFilename);
@@ -221,7 +217,7 @@ const getHeadlessParams = (context: $TSContext): any => {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSON.parse(inputParams) : inputParams;
+    const { categories = {} } = typeof inputParams === "string" ? JSON.parse(inputParams) : inputParams;
     return categories.auth || {};
   } catch (err) {
     throw new Error(`Failed to parse auth headless parameters: ${err}`);
@@ -231,12 +227,12 @@ const getHeadlessParams = (context: $TSContext): any => {
 /* eslint-disable no-param-reassign */
 const getOAuthProviderKeys = (currentEnvSpecificValues: any, resourceParams: any): any => {
   const oAuthProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map((h: any) => h.ProviderName);
-  const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
+  const { hostedUIProviderCreds = "[]" } = currentEnvSpecificValues;
   const configuredProviders = JSON.parse(hostedUIProviderCreds).map((h: any) => h.ProviderName);
   const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
   deltaProviders.forEach((provider: any) => {
     const lowerCaseProvider = provider.toLowerCase();
-    if (provider === 'SignInWithApple') {
+    if (provider === "SignInWithApple") {
       currentEnvSpecificValues[`${lowerCaseProvider}ClientIdUserPool`] = configuredProviders[`${lowerCaseProvider}ClientIdUserPool`];
       currentEnvSpecificValues[`${lowerCaseProvider}TeamIdUserPool`] = configuredProviders[`${lowerCaseProvider}TeamIdUserPool`];
       currentEnvSpecificValues[`${lowerCaseProvider}KeyIdUserPool`] = configuredProviders[`${lowerCaseProvider}KeyIdUserPool`];
@@ -251,7 +247,7 @@ const getOAuthProviderKeys = (currentEnvSpecificValues: any, resourceParams: any
 /* eslint-enable no-param-reassign */
 
 const formatCredentialsForEnvParams = (currentEnvSpecificValues: any, result: any, resourceParams: any): any => {
-  const partialParams: {[key: string]: any} = {};
+  const partialParams: { [key: string]: any } = {};
   if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
     partialParams.hostedUIProviderCreds = [];
     const inputResult = JSON.parse(result.hostedUIProviderCreds);
@@ -279,7 +275,7 @@ const parseCredsForHeadless = (mergedValues: any, envParams: any): any => {
   envParams.hostedUIProviderCreds = JSON.stringify(
     oAuthProviders.map((provider: any) => {
       const lowerCaseProvider = provider.toLowerCase();
-      if (provider === 'SignInWithApple') {
+      if (provider === "SignInWithApple") {
         return {
           ProviderName: provider,
           client_id: mergedValues[`${lowerCaseProvider}ClientIdUserPool`],
@@ -293,11 +289,11 @@ const parseCredsForHeadless = (mergedValues: any, envParams: any): any => {
         client_id: mergedValues[`${lowerCaseProvider}AppIdUserPool`],
         client_secret: mergedValues[`${lowerCaseProvider}AppSecretUserPool`],
       };
-    }),
+    })
   );
   oAuthProviders.forEach((provider: any) => {
     const lowerCaseProvider = provider.toLowerCase();
-    if (provider === 'SignInWithApple') {
+    if (provider === "SignInWithApple") {
       delete envParams[`${lowerCaseProvider}ClientIdUserPool`];
       delete envParams[`${lowerCaseProvider}TeamIdUserPool`];
       delete envParams[`${lowerCaseProvider}KeyIdUserPool`];
@@ -314,24 +310,24 @@ const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any)
   const requiredParams = [];
 
   if (previousValues.thirdPartyAuth) {
-    if (previousValues.authProviders.includes('accounts.google.com')) {
-      requiredParams.push('googleClientId');
-      if (projectType === 'ios') {
-        requiredParams.push('googleIos');
+    if (previousValues.authProviders.includes("accounts.google.com")) {
+      requiredParams.push("googleClientId");
+      if (projectType === "ios") {
+        requiredParams.push("googleIos");
       }
-      if (projectType === 'android') {
-        requiredParams.push('googleAndroid');
+      if (projectType === "android") {
+        requiredParams.push("googleAndroid");
       }
     }
-    if (previousValues.authProviders.includes('graph.facebook.com')) {
-      requiredParams.push('facebookAppId');
+    if (previousValues.authProviders.includes("graph.facebook.com")) {
+      requiredParams.push("facebookAppId");
     }
-    if (previousValues.authProviders.includes('www.amazon.com')) {
-      requiredParams.push('amazonAppId');
+    if (previousValues.authProviders.includes("www.amazon.com")) {
+      requiredParams.push("amazonAppId");
     }
     // eslint-disable-next-line spellcheck/spell-checker
-    if (previousValues.authProviders.includes('appleid.apple.com')) {
-      requiredParams.push('appleAppId');
+    if (previousValues.authProviders.includes("appleid.apple.com")) {
+      requiredParams.push("appleAppId");
     }
   }
 
@@ -343,7 +339,7 @@ const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any)
         // Everything but SIWA is required because the private key isn't returned by Cognito
         // so we can't initialize SIWA in a new environment programmatically.
         // User will have to reconfigure SIWA through Admin UI or CLI.
-        if (provider !== 'SignInWithApple') {
+        if (provider !== "SignInWithApple") {
           requiredParams.push(`${lowerCaseProvider}AppIdUserPool`);
           requiredParams.push(`${lowerCaseProvider}AppSecretUserPool`);
         }
@@ -373,15 +369,15 @@ export const console = async (context: $TSContext, amplifyMeta: any): Promise<an
           context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
         }
         if (!AmplifyAppId) {
-          throw new Error('Missing AmplifyAppId in amplify-meta.json');
+          throw new Error("Missing AmplifyAppId in amplify-meta.json");
         }
         choices = [AmplifyAdmin, ...choices];
       }
 
       const answer = await inquirer.prompt({
-        name: 'selection',
-        type: 'list',
-        message: 'Which console',
+        name: "selection",
+        type: "list",
+        message: "Which console",
         choices,
         default: isAdminApp ? AmplifyAdmin : BothPools,
       });
@@ -407,9 +403,9 @@ export const console = async (context: $TSContext, amplifyMeta: any): Promise<an
     } else {
       await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
     }
-    context.print.info('');
+    context.print.info("");
   } else {
-    context.print.error('Amazon Cognito resources have NOT been created for your project.');
+    context.print.error("Amazon Cognito resources have NOT been created for your project.");
   }
 };
 
@@ -419,7 +415,7 @@ const getCognitoOutput = (amplifyMeta: any): any => {
   const services = Object.keys(categoryMeta);
   for (let i = 0; i < services.length; i += 1) {
     const serviceMeta = categoryMeta[services[i]];
-    if (serviceMeta.service === 'Cognito' && serviceMeta.output && (serviceMeta.output.UserPoolId || serviceMeta.output.IdentityPoolId)) {
+    if (serviceMeta.service === "Cognito" && serviceMeta.output && (serviceMeta.output.UserPoolId || serviceMeta.output.IdentityPoolId)) {
       cognitoOutput = serviceMeta.output;
       break;
     }
@@ -439,14 +435,14 @@ const openAdminUI = async (context: $TSContext, appId: string, region: string): 
 const openUserPoolConsole = async (context: $TSContext, region: string, userPoolId: string): Promise<void> => {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await open(userPoolConsoleUrl, { wait: false });
-  context.print.info('User Pool console:');
+  context.print.info("User Pool console:");
   context.print.success(userPoolConsoleUrl);
 };
 
 const openIdentityPoolConsole = async (context: $TSContext, region: string, identityPoolId: string): Promise<void> => {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await open(identityPoolConsoleUrl, { wait: false });
-  context.print.info('Identity Pool console:');
+  context.print.info("Identity Pool console:");
   context.print.success(identityPoolConsoleUrl);
 };
 

@@ -1,55 +1,55 @@
-const attachBackendWorker = require('./attach-backend');
-const initializer = require('./initializer');
-const initializeEnv = require('./initialize-env');
-const resourcePusher = require('./push-resources');
-const envRemover = require('./delete-env');
-const providerUtils = require('./utility-functions');
-const constants = require('./constants');
-const configManager = require('./configuration-manager');
-const setupNewUser = require('./setup-new-user');
-const { displayHelpfulURLs } = require('./display-helpful-urls');
-const aws = require('./aws-utils/aws');
-const pinpoint = require('./aws-utils/aws-pinpoint');
-const { getLexRegionMapping } = require('./aws-utils/aws-lex');
-const amplifyService = require('./aws-utils/aws-amplify');
-const consoleCommand = require('./console');
-const { loadResourceParameters, saveResourceParameters } = require('./resourceParams');
-const { formUserAgentParam } = require('./aws-utils/user-agent');
-const predictionsRegionMap = require('./aws-predictions-regions');
+const attachBackendWorker = require("./attach-backend");
+const initializer = require("./initializer");
+const initializeEnv = require("./initialize-env");
+const resourcePusher = require("./push-resources");
+const envRemover = require("./delete-env");
+const providerUtils = require("./utility-functions");
+const constants = require("./constants");
+const configManager = require("./configuration-manager");
+const setupNewUser = require("./setup-new-user");
+const { displayHelpfulURLs } = require("./display-helpful-urls");
+const aws = require("./aws-utils/aws");
+const pinpoint = require("./aws-utils/aws-pinpoint");
+const { getLexRegionMapping } = require("./aws-utils/aws-lex");
+const amplifyService = require("./aws-utils/aws-amplify");
+const consoleCommand = require("./console");
+const { loadResourceParameters, saveResourceParameters } = require("./resourceParams");
+const { formUserAgentParam } = require("./aws-utils/user-agent");
+const predictionsRegionMap = require("./aws-predictions-regions");
 
-import { adminLoginFlow } from './admin-login';
-import { adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers';
-import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
-import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
-import { S3Service, createS3Service } from './aws-utils/S3Service';
-import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
-import { resolveAppId } from './utils/resolve-appId';
-import { loadConfigurationForEnv } from './configuration-manager';
-import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
-import { SSM } from './aws-utils/aws-ssm';
-import { Lambda } from './aws-utils/aws-lambda';
-import CloudFormation from './aws-utils/aws-cfn';
-import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
-import * as resourceExport from './export-resources';
-import * as exportUpdateMeta from './export-update-amplify-meta';
+import { adminLoginFlow } from "./admin-login";
+import { adminBackendMap, isAmplifyAdminApp } from "./utils/admin-helpers";
+import { CognitoUserPoolService, createCognitoUserPoolService } from "./aws-utils/CognitoUserPoolService";
+import { IdentityPoolService, createIdentityPoolService } from "./aws-utils/IdentityPoolService";
+import { S3Service, createS3Service } from "./aws-utils/S3Service";
+import { DynamoDBService, createDynamoDBService } from "./aws-utils/DynamoDBService";
+import { resolveAppId } from "./utils/resolve-appId";
+import { loadConfigurationForEnv } from "./configuration-manager";
+import { getLocationSupportedRegion, getLocationRegionMapping } from "./aws-utils/aws-location";
+import { SSM } from "./aws-utils/aws-ssm";
+import { Lambda } from "./aws-utils/aws-lambda";
+import CloudFormation from "./aws-utils/aws-cfn";
+import { $TSContext, ApiCategoryFacade } from "amplify-cli-core";
+import * as resourceExport from "./export-resources";
+import * as exportUpdateMeta from "./export-update-amplify-meta";
 
-export { resolveAppId } from './utils/resolve-appId';
-export { loadConfigurationForEnv } from './configuration-manager';
-export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
-import { updateEnv } from './update-env';
+export { resolveAppId } from "./utils/resolve-appId";
+export { loadConfigurationForEnv } from "./configuration-manager";
+export { getLocationSupportedRegion, getLocationRegionMapping } from "./aws-utils/aws-location";
+import { updateEnv } from "./update-env";
 
-export const cfnRootStackFileName = 'root-cloudformation-stack.json';
-export { storeRootStackTemplate } from './initializer';
-import { transformResourceWithOverrides } from './override-manager';
-export { transformResourceWithOverrides } from './override-manager';
-import { rootStackFileName } from './push-resources';
-export { rootStackFileName } from './push-resources';
+export const cfnRootStackFileName = "root-cloudformation-stack.json";
+export { storeRootStackTemplate } from "./initializer";
+import { transformResourceWithOverrides } from "./override-manager";
+export { transformResourceWithOverrides } from "./override-manager";
+import { rootStackFileName } from "./push-resources";
+export { rootStackFileName } from "./push-resources";
 
-import { compileSchema } from './utility-functions';
-import { LocationService } from './aws-utils/aws-location-service';
-import { hashDirectory } from './upload-appsync-files';
-import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
-import { getApiKeyConfig } from './utils/api-key-helpers';
+import { compileSchema } from "./utility-functions";
+import { LocationService } from "./aws-utils/aws-location-service";
+import { hashDirectory } from "./upload-appsync-files";
+import { prePushCfnTemplateModifier } from "./pre-push-cfn-processor/pre-push-cfn-modifier";
+import { getApiKeyConfig } from "./utils/api-key-helpers";
 
 function init(context) {
   return initializer.run(context);
@@ -95,8 +95,8 @@ function configure(context) {
 
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
-  category = category || 'missing';
-  action = action || ['missing'];
+  category = category || "missing";
+  action = action || ["missing"];
   const userAgentAction = `${category}:${action[0]}`;
   aws.config.update({
     customUserAgent: formUserAgentParam(context, userAgentAction),
@@ -174,7 +174,7 @@ module.exports = {
   loadResourceParameters,
   saveResourceParameters,
   predictionsRegionMap,
-  ...require('./amplify-plugin-index'),
+  ...require("./amplify-plugin-index"),
   CognitoUserPoolService,
   createCognitoUserPoolService,
   IdentityPoolService,

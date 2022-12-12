@@ -4,11 +4,11 @@
 
 // All Function Runtime Contributor plugins must export a function of this type named 'functionRuntimeContributorFactory'
 export type FunctionRuntimeContributorFactory = (
-  context: any,
+  context: any
 ) => Contributor<FunctionRuntimeParameters, RuntimeContributionRequest> & FunctionRuntimeLifecycleManager;
 
 // Subset of FunctionParameters that defines the function runtime
-export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>;
+export type FunctionRuntimeParameters = Pick<FunctionParameters, "runtime">;
 
 /*
   Function Template Contributor Types
@@ -18,7 +18,7 @@ export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>;
 export type FunctionTemplateContributorFactory = (context: any) => Contributor<Partial<FunctionParameters>, TemplateContributionRequest>;
 
 // Subset of FunctionParameters that defines the function template
-export type FunctionTemplateParameters = Pick<FunctionParameters, 'dependsOn' | 'functionTemplate' | 'triggerEventSourceMappings'>;
+export type FunctionTemplateParameters = Pick<FunctionParameters, "dependsOn" | "functionTemplate" | "triggerEventSourceMappings">;
 
 // Generic interfaces / types for all contributors
 // context is the Amplify core context object (unfourtunately no type for this)
@@ -75,8 +75,8 @@ export type BuildRequest = {
 };
 
 export enum BuildType {
-  PROD = 'PROD',
-  DEV = 'DEV',
+  PROD = "PROD",
+  DEV = "DEV",
 }
 
 // Request sent to package a function
@@ -222,7 +222,7 @@ export interface FunctionDependency {
 
 export type LambdaLayer = ProjectLayer | ExternalLayer;
 export interface ProjectLayer {
-  type: 'ProjectLayer';
+  type: "ProjectLayer";
   resourceName: string;
   version: number | string;
   isLatestVersionSelected: boolean;
@@ -230,8 +230,8 @@ export interface ProjectLayer {
 }
 
 export interface ExternalLayer {
-  type: 'ExternalLayer';
-  arn: string | { 'Fn::Sub': string } | { Ref: string };
+  type: "ExternalLayer";
+  arn: string | { "Fn::Sub": string } | { Ref: string };
 }
 
 interface FunctionContributorCondition {
@@ -241,18 +241,18 @@ interface FunctionContributorCondition {
 }
 
 export type FunctionTemplateCondition = FunctionContributorCondition;
-export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, 'provider' | 'services'>;
+export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, "provider" | "services">;
 
 export interface FunctionBreadcrumbs {
   pluginId: string;
   functionRuntime: string;
   useLegacyBuild: boolean;
   defaultEditorFile: string;
-  scripts?: Record<'build' & 'package', FunctionScript>;
+  scripts?: Record<"build" & "package", FunctionScript>;
 }
 
 export interface FunctionScript {
-  type: 'file' | 'inline';
+  type: "file" | "inline";
   value: string;
 }
 
@@ -263,27 +263,27 @@ export type SecretName = string;
 export type SecretDelta = RetainSecret | RemoveSecret | SetSecret;
 
 export type RetainSecret = {
-  operation: 'retain';
+  operation: "retain";
 };
 
 export const retainSecret: RetainSecret = {
-  operation: 'retain',
+  operation: "retain",
 };
 
 export type RemoveSecret = {
-  operation: 'remove';
+  operation: "remove";
 };
 
 export const removeSecret: RemoveSecret = {
-  operation: 'remove',
+  operation: "remove",
 };
 
 export type SetSecret = {
-  operation: 'set';
+  operation: "set";
   value: string;
 };
 
 export const setSecret = (value: string): SetSecret => ({
-  operation: 'set',
+  operation: "set",
   value,
 });

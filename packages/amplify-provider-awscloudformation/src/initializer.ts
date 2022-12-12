@@ -13,39 +13,39 @@ import {
   stateManager,
   Tag,
   Template,
-} from 'amplify-cli-core';
-import { AmplifySpinner } from 'amplify-prompts';
-import _ from 'lodash';
-import { v4 as uuid } from 'uuid';
-import * as vm from 'vm2';
+} from "amplify-cli-core";
+import { AmplifySpinner } from "amplify-prompts";
+import _ from "lodash";
+import { v4 as uuid } from "uuid";
+import * as vm from "vm2";
 
-import fs from 'fs-extra';
-import glob from 'glob';
-import moment from 'moment';
-import path from 'path';
-import sequential from 'promise-sequential';
-import { getDefaultTemplateDescription } from './template-description-utils';
-import { rootStackFileName } from './push-resources';
-import { transformRootStack } from './override-manager';
-import amplifyServiceManager from './amplify-service-manager';
-import * as amplifyServiceMigrate from './amplify-service-migrate';
-import Cloudformation from './aws-utils/aws-cfn';
-import { S3 } from './aws-utils/aws-s3';
-import * as configurationManager from './configuration-manager';
-import constants from './constants';
-import { configurePermissionsBoundaryForInit } from './permissions-boundary/permissions-boundary';
-import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
-import archiver from './utils/archiver';
-import { fileLogger } from './utils/aws-logger';
+import fs from "fs-extra";
+import glob from "glob";
+import moment from "moment";
+import path from "path";
+import sequential from "promise-sequential";
+import { getDefaultTemplateDescription } from "./template-description-utils";
+import { rootStackFileName } from "./push-resources";
+import { transformRootStack } from "./override-manager";
+import amplifyServiceManager from "./amplify-service-manager";
+import * as amplifyServiceMigrate from "./amplify-service-migrate";
+import Cloudformation from "./aws-utils/aws-cfn";
+import { S3 } from "./aws-utils/aws-s3";
+import * as configurationManager from "./configuration-manager";
+import constants from "./constants";
+import { configurePermissionsBoundaryForInit } from "./permissions-boundary/permissions-boundary";
+import { prePushCfnTemplateModifier } from "./pre-push-cfn-processor/pre-push-cfn-modifier";
+import archiver from "./utils/archiver";
+import { fileLogger } from "./utils/aws-logger";
 
-const logger = fileLogger('initializer');
+const logger = fileLogger("initializer");
 
 type ParamType = {
-  StackName: string,
-  Capabilities: string[],
-  TemplateBody: string,
-  Parameters: {ParameterKey: string, ParameterValue: string}[],
-  Tags: Tag[],
+  StackName: string;
+  Capabilities: string[];
+  TemplateBody: string;
+  Parameters: { ParameterKey: string; ParameterValue: string }[];
+  Tags: Tag[];
 };
 
 /**
@@ -56,10 +56,10 @@ export const run = async (context: $TSContext): Promise<void> => {
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
     const { projectName } = context.exeInfo.projectConfig;
-    const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
+    const initTemplateFilePath = path.join(__dirname, "..", "resources", "rootStackTemplate.json");
     /* eslint-disable-next-line spellcheck/spell-checker */
-    const timeStamp = process.env.CIRCLECI ? uuid().substring(0, 5) : `${moment().format('Hmmss')}`;
-    const { envName = '' } = context.exeInfo.localEnvInfo;
+    const timeStamp = process.env.CIRCLECI ? uuid().substring(0, 5) : `${moment().format("Hmmss")}`;
+    const { envName = "" } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
     const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
@@ -93,25 +93,25 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     let projectInitialized = false;
-    let overrideFilePath = '';
+    let overrideFilePath = "";
     try {
       const backendDir = pathManager.getBackendDirPath();
-      overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
+      overrideFilePath = path.join(backendDir, "awscloudformation", "build", "override.js");
       projectInitialized = true;
     } catch (e) {
       // project not initialized
     }
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
       try {
-        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
+        const overrideCode: string = await fs.readFile(overrideFilePath, "utf-8");
         if (overrideCode) {
           const sandboxNode = new vm.NodeVM({
-            console: 'inherit',
+            console: "inherit",
             timeout: 5000,
             sandbox: {},
             require: {
-              context: 'sandbox',
-              builtin: ['path'],
+              context: "sandbox",
+              builtin: ["path"],
               external: true,
             },
           });
@@ -119,11 +119,15 @@ export const run = async (context: $TSContext): Promise<void> => {
         }
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          "InvalidOverrideError",
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: "There may be runtime errors in your overrides file. If so, fix the errors and try again.",
+          },
+          err
+        );
       }
     }
 
@@ -131,24 +135,24 @@ export const run = async (context: $TSContext): Promise<void> => {
 
     await prePushCfnTemplateModifier(rootStack);
 
-    rootStack.Description = getDefaultTemplateDescription(context, 'root');
+    rootStack.Description = getDefaultTemplateDescription(context, "root");
 
     // deploy steps
     const params: ParamType = {
       StackName: stackName,
-      Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+      Capabilities: ["CAPABILITY_NAMED_IAM", "CAPABILITY_AUTO_EXPAND"],
       TemplateBody: JSONUtilities.stringify(rootStack, { minify: context.input.options?.minify }),
       Parameters: [
         {
-          ParameterKey: 'DeploymentBucketName',
+          ParameterKey: "DeploymentBucketName",
           ParameterValue: deploymentBucketName,
         },
         {
-          ParameterKey: 'AuthRoleName',
+          ParameterKey: "AuthRoleName",
           ParameterValue: configuration.authRole.roleName,
         },
         {
-          ParameterKey: 'UnauthRoleName',
+          ParameterKey: "UnauthRoleName",
           ParameterValue: configuration.unauthRole.roleName,
         },
       ],
@@ -156,7 +160,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     const eventMap = createInitEventMap(params, envName, projectName);
-    const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo, eventMap);
+    const cfnItem = await new Cloudformation(context, "init", awsConfigInfo, eventMap);
     const stackDescriptionData = await cfnItem.createResourceStack(params);
 
     processStackCreationData(context, amplifyAppId, stackDescriptionData);
@@ -168,10 +172,10 @@ export const run = async (context: $TSContext): Promise<void> => {
     // the `#current-cloud-backend` and the `backend` directories, and the team-provider-info file to exist.
     // It allows the local project's env to be added to an existing Amplify Console project, as specified
     // by the appId, without unnecessarily creating another Amplify Console project by the post push migration.
-    !context.exeInfo.isNewProject
-    && context.exeInfo.inputParams
-    && context.exeInfo.inputParams.amplify
-    && context.exeInfo.inputParams.amplify.appId
+    !context.exeInfo.isNewProject &&
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams.amplify &&
+    context.exeInfo.inputParams.amplify.appId
   ) {
     await amplifyServiceMigrate.run(context);
   } else {
@@ -180,20 +184,20 @@ export const run = async (context: $TSContext): Promise<void> => {
 };
 
 type EventMap = {
-  rootStackName: string,
-  rootResources: {key: string}[],
-  categories: string[],
-  envName: string,
-  projectName: string
-}
+  rootStackName: string;
+  rootResources: { key: string }[];
+  categories: string[];
+  envName: string;
+  projectName: string;
+};
 
 function createInitEventMap(params: ParamType, envName: string, projectName: string): EventMap {
   return {
     rootStackName: params.StackName,
-    rootResources: params.Parameters.map(item => {
+    rootResources: params.Parameters.map((item) => {
       const key = item.ParameterKey;
       return {
-        key: key.endsWith('Name') ? key.replace(/.{0,4}$/, '') : key,
+        key: key.endsWith("Name") ? key.replace(/.{0,4}$/, "") : key,
       };
     }),
     categories: [],
@@ -215,21 +219,21 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 
     setCloudFormationOutputInContext(context, metadata);
   } else {
-    throw new AmplifyError('StackNotFoundError', {
-      message: 'No stack data present',
+    throw new AmplifyError("StackNotFoundError", {
+      message: "No stack data present",
     });
   }
 };
 
 const setCloudFormationOutputInContext = (context: $TSContext, cfnOutput: $TSObject): void => {
-  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+  _.set(context, ["exeInfo", "amplifyMeta", "providers", constants.ProviderName], cfnOutput);
   const { envName } = context.exeInfo.localEnvInfo;
   if (envName) {
-    const providerInfo = _.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]);
+    const providerInfo = _.get(context, ["exeInfo", "teamProviderInfo", envName, constants.ProviderName]);
     if (providerInfo) {
       _.merge(providerInfo, cfnOutput);
     } else {
-      _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+      _.set(context, ["exeInfo", "teamProviderInfo", envName, constants.ProviderName], cfnOutput);
     }
   }
 };
@@ -287,14 +291,14 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
   const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
   JSONUtilities.writeJson(rootStackBackendFilePath, template, { minify: context.input.options?.minify });
   // copy the awscloudformation backend to #current-cloud-backend
-  fs.copySync(path.join(rootStackBackendBuildDir, '..'), path.join(rootStackCloudBackendBuildDir, '..'));
+  fs.copySync(path.join(rootStackBackendBuildDir, ".."), path.join(rootStackCloudBackendBuildDir, ".."));
 };
 
 const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   const projectRoot = pathManager.findProjectRoot();
-  const zipFilename = '#current-cloud-backend.zip';
+  const zipFilename = "#current-cloud-backend.zip";
   const backendDir = pathManager.getBackendDirPath(projectRoot);
-  const tempDir = path.join(backendDir, '.temp');
+  const tempDir = path.join(backendDir, ".temp");
   const currentCloudBackendDir = context.exeInfo
     ? path.join(context.exeInfo.localEnvInfo.projectPath, PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName)
     : pathManager.getCurrentCloudBackendDirPath(projectRoot);
@@ -320,40 +324,45 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
 
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
-    .then(result => {
+    .then((result) => {
       const s3Key = `${result.zipFilename}`;
-      spinner.start('Saving deployment state.');
-      return S3.getInstance(context).then(s3 => {
-        spinner.stop('Deployment bucket fetched.');
+      spinner.start("Saving deployment state.");
+      return S3.getInstance(context).then((s3) => {
+        spinner.stop("Deployment bucket fetched.");
         const s3Params = {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
         };
-        logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
+        logger("storeCurrentCloudBackend.s3.uploadFile", [{ Key: s3Key }])();
         return s3.uploadFile(s3Params);
       });
     })
-    .catch(ex => {
-      spinner.stop('Deployment state save failed.', false);
-      throw new AmplifyFault('DeploymentFault', {
-        message: ex.message,
-      }, ex);
+    .catch((ex) => {
+      spinner.stop("Deployment state save failed.", false);
+      throw new AmplifyFault(
+        "DeploymentFault",
+        {
+          message: ex.message,
+        },
+        ex
+      );
     })
     .then(() => {
       fs.removeSync(tempDir);
     });
 };
 
-const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> => S3.getInstance(context).then(async s3 => {
-  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-  const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-  const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
-  const fileUploadTasks = [];
+const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> =>
+  S3.getInstance(context).then(async (s3) => {
+    const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+    const amplifyMetaFilePath = path.join(currentCloudBackendDir, "amplify-meta.json");
+    const backendConfigFilePath = path.join(currentCloudBackendDir, "backend-config.json");
+    const fileUploadTasks = [];
 
-  fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
-  fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
-  await sequential(fileUploadTasks);
-});
+    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, "amplify-meta.json"));
+    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, "backend-config.json"));
+    await sequential(fileUploadTasks);
+  });
 
 const uploadFile = async (s3, filePath: string, key): Promise<void> => {
   if (fs.existsSync(filePath)) {
@@ -361,13 +370,13 @@ const uploadFile = async (s3, filePath: string, key): Promise<void> => {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    logger('uploadFile.s3.uploadFile', [{ Key: key }])();
+    logger("uploadFile.s3.uploadFile", [{ Key: key }])();
     await s3.uploadFile(s3Params);
   }
 };
 
 const normalizeStackName = (stackName: string): string => {
-  let result = stackName.toLowerCase().replace(/[^-a-z0-9]/g, '');
+  let result = stackName.toLowerCase().replace(/[^-a-z0-9]/g, "");
   if (/^[^a-zA-Z]/.test(result) || result.length === 0) {
     result = `a${result}`;
   }

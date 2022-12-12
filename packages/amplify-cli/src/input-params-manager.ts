@@ -1,14 +1,12 @@
 /* eslint-disable no-param-reassign */
-import {
-  $TSAny, $TSContext, $TSObject, JSONUtilities,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities } from "amplify-cli-core";
 
 /**
  * Normalizes the input parameters
  */
 export const normalizeInputParams = (context: $TSContext): $TSObject => {
   const inputParams = {};
-  Object.keys(context.parameters.options).forEach(key => {
+  Object.keys(context.parameters.options).forEach((key) => {
     const normalizedKey = normalizeKey(key);
     const normalizedValue = normalizeValue(context.parameters.options[key]);
     inputParams[normalizedKey] = normalizedValue;
@@ -18,17 +16,17 @@ export const normalizeInputParams = (context: $TSContext): $TSObject => {
 };
 
 const normalizeKey = (key: string): string => {
-  if (['y', 'yes'].includes(key)) {
-    key = 'yes';
+  if (["y", "yes"].includes(key)) {
+    key = "yes";
   }
-  if (['a', 'amplify', 'amplify-config', 'amplifyConfig'].includes(key)) {
-    key = 'amplify';
+  if (["a", "amplify", "amplify-config", "amplifyConfig"].includes(key)) {
+    key = "amplify";
   }
-  if (['p', 'provider', 'providers', 'providers-config', 'providersConfig'].includes(key)) {
-    key = 'providers';
+  if (["p", "provider", "providers", "providers-config", "providersConfig"].includes(key)) {
+    key = "providers";
   }
-  if (['f', 'frontend', 'frontend-config', 'frontendConfig'].includes(key)) {
-    key = 'frontend';
+  if (["f", "frontend", "frontend-config", "frontendConfig"].includes(key)) {
+    key = "frontend";
   }
   return key;
 };
@@ -59,7 +57,7 @@ const transform = (inputParams: $TSAny): void => {
     inputParams[inputParams.amplify.frontend] = inputParams.frontend;
   }
   if (inputParams.amplify.providers.length > 0) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       inputParams[provider] = inputParams.providers[provider];
     });
   }

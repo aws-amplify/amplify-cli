@@ -1,6 +1,6 @@
-import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
-import { Input } from '../input';
-import { SerializableError } from './SerializableError';
+import { IFlowData, IFlowReport } from "amplify-cli-shared-interfaces";
+import { Input } from "../input";
+import { SerializableError } from "./SerializableError";
 
 /**
  * Base interface for emitting usage data
@@ -17,10 +17,10 @@ interface IUsageMetricsData {
     projectSettings: ProjectSettings,
     processStartTimeStamp: number
   ) => void;
-  getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload
+  getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload;
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
-  calculatePushNormalizationFactor: (events: { StackId: string, PhysicalResourceId: string } [], StackId: string) => void;
+  calculatePushNormalizationFactor: (events: { StackId: string; PhysicalResourceId: string }[], StackId: string) => void;
   getSessionUuid: () => string;
 }
 
@@ -56,22 +56,21 @@ export type InputOptions = Record<string, string | boolean>;
 /**
  * Interface for UsageData
  */
-export interface IUsageData extends IUsageMetricsData, IFlowData {
-}
+export interface IUsageData extends IUsageMetricsData, IFlowData {}
 
 /**
  * Code path timers that should start immediately when the CLI process starts
  */
 export enum FromStartupTimedCodePaths {
-  PLATFORM_STARTUP = 'platformStartup', // time from CLI process start to plugin invoke. This timer is auto started on process startup
-  TOTAL_DURATION = 'totalDuration', // time from CLI process start to exit
+  PLATFORM_STARTUP = "platformStartup", // time from CLI process start to plugin invoke. This timer is auto started on process startup
+  TOTAL_DURATION = "totalDuration", // time from CLI process start to exit
 }
 
 /**
  * Code path timers that should not end until the process exits
  */
 export enum UntilExitTimedCodePath {
-  POST_PROCESS = 'postProcess' // time from plugin exit to process exit. This timer is automatically stopped at the end of the process
+  POST_PROCESS = "postProcess", // time from plugin exit to process exit. This timer is automatically stopped at the end of the process
 }
 
 /**
@@ -79,17 +78,17 @@ export enum UntilExitTimedCodePath {
  */
 export enum ManuallyTimedCodePath {
   // general paths (applies to all commands)
-  PLUGIN_TIME = 'pluginTime', // time spent in command handler plugin
+  PLUGIN_TIME = "pluginTime", // time spent in command handler plugin
 
   // push-specific paths
-  PUSH_TRANSFORM = 'pushTransform', // total time spent transforming resources and uploading assets to prepare for a push
-  PUSH_DEPLOYMENT = 'pushDeployment', // time spent deploying CFN
+  PUSH_TRANSFORM = "pushTransform", // total time spent transforming resources and uploading assets to prepare for a push
+  PUSH_DEPLOYMENT = "pushDeployment", // time spent deploying CFN
 
   // init-specific paths (also called during env checkout and pull)
-  INIT_ENV_PLATFORM = 'initEnvPlatform', // time to call awscloudformation provider initEnv. This includes downloading deployment bucket and updating local files
-  INIT_ENV_CATEGORIES = 'initEnvCategories', // time to call all of the category's initEnv methods
+  INIT_ENV_PLATFORM = "initEnvPlatform", // time to call awscloudformation provider initEnv. This includes downloading deployment bucket and updating local files
+  INIT_ENV_CATEGORIES = "initEnvCategories", // time to call all of the category's initEnv methods
 
-  PROMPT_TIME = 'promptTime'// total time to takes to answer a prompt
+  PROMPT_TIME = "promptTime", // total time to takes to answer a prompt
 }
 
 /**

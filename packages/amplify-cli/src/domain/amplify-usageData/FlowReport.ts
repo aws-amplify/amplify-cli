@@ -1,12 +1,17 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager } from 'amplify-cli-core';
-import { logger, Redactor } from 'amplify-cli-logger';
-import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
+import { stateManager } from "amplify-cli-core";
+import { logger, Redactor } from "amplify-cli-logger";
+import { IAmplifyLogger } from "amplify-cli-logger/lib/IAmplifyLogger";
 import {
-  ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData,
-} from 'amplify-cli-shared-interfaces';
-import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
-import { Input } from '../input';
+  ICommandInput,
+  IFlowData,
+  IFlowReport,
+  IOptionFlowCLIData,
+  IOptionFlowHeadlessData,
+  TypeOptionFlowData,
+} from "amplify-cli-shared-interfaces";
+import { createHashedIdentifier } from "../../commands/helpers/encryption-helpers";
+import { Input } from "../input";
 
 /**
  * Store the data and sequence of events of CLI walkthrough
@@ -44,10 +49,7 @@ export class CLIFlowReport implements IFlowData {
         const projectName = stateManager.getProjectName();
         const envName = stateManager.getCurrentEnvName();
         const appId = stateManager.getAppID();
-        const {
-          projectEnvIdentifier,
-          projectIdentifier,
-        } = createHashedIdentifier(projectName, appId, envName);
+        const { projectEnvIdentifier, projectIdentifier } = createHashedIdentifier(projectName, appId, envName);
         this.projectEnvIdentifier = projectEnvIdentifier;
         this.projectIdentifier = projectIdentifier;
         return this.projectEnvIdentifier;
@@ -66,7 +68,7 @@ export class CLIFlowReport implements IFlowData {
     this.runtime = input.argv[0] as string;
     this.executable = input.argv[1] as string;
     this.cmd = input.argv[2] as string;
-    this.subCmd = (input.argv[3]) ? input.argv[3] : undefined;
+    this.subCmd = input.argv[3] ? input.argv[3] : undefined;
     this.optionFlowData = []; // key-value store with ordering maintained
     // Parse options
     if (input.options?.prompt) {

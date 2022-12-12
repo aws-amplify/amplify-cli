@@ -5,10 +5,10 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   addFeatureFlag,
-} from '@aws-amplify/amplify-e2e-core';
-import { testSchema } from '../schema-api-directives';
+} from "@aws-amplify/amplify-e2e-core";
+import { testSchema } from "../schema-api-directives";
 
-describe('api directives @auth batch 14', () => {
+describe("api directives @auth batch 14", () => {
   let projectDir: string;
 
   afterEach(async () => {
@@ -16,33 +16,33 @@ describe('api directives @auth batch 14', () => {
     deleteProjectDir(projectDir);
   });
 
-  describe('javascript libraries', () => {
+  describe("javascript libraries", () => {
     beforeEach(async () => {
-      projectDir = await createNewProjectDir('auth1');
+      projectDir = await createNewProjectDir("auth1");
       await initJSProjectWithProfile(projectDir, {});
-      addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
+      addFeatureFlag(projectDir, "graphqlTransformer", "useSubUsernameForDefaultIdentityClaim", true);
     });
 
-    it('auth customClaims2', async () => {
-      const testResult = await testSchema(projectDir, 'auth', 'customClaims2');
+    it("auth customClaims2", async () => {
+      const testResult = await testSchema(projectDir, "auth", "customClaims2");
       expect(testResult).toBeTruthy();
     });
 
-    it('auth owner8', async () => {
-      const testResult = await testSchema(projectDir, 'auth', 'owner8');
+    it("auth owner8", async () => {
+      const testResult = await testSchema(projectDir, "auth", "owner8");
       expect(testResult).toBeTruthy();
     });
   });
 
-  describe('android libraries', () => {
+  describe("android libraries", () => {
     beforeEach(async () => {
-      projectDir = await createNewProjectDir('auth2');
+      projectDir = await createNewProjectDir("auth2");
       await initAndroidProjectWithProfile(projectDir, {});
-      addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
+      addFeatureFlag(projectDir, "graphqlTransformer", "useSubUsernameForDefaultIdentityClaim", true);
     });
 
-    it('auth owner9', async () => {
-      const testResult = await testSchema(projectDir, 'auth', 'owner9');
+    it("auth owner9", async () => {
+      const testResult = await testSchema(projectDir, "auth", "owner9");
       expect(testResult).toBeTruthy();
     });
   });

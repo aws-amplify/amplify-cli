@@ -1,13 +1,13 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { customResourceNameQuestion } from '../utils/common-questions';
-import { categoryName, CFN_SERVICE_NAME, customResourceCFNFilenameSuffix, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
-import { addCFNResourceDependency } from '../utils/dependency-management-utils';
+import { $TSContext, pathManager } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { customResourceNameQuestion } from "../utils/common-questions";
+import { categoryName, CFN_SERVICE_NAME, customResourceCFNFilenameSuffix, DEPLOYMENT_PROVIDER_NAME } from "../utils/constants";
+import { addCFNResourceDependency } from "../utils/dependency-management-utils";
 
-const cfnTemplateRoot = path.normalize(path.join(__dirname, '../../resources'));
-const cfnFilename = 'cloudformation-template-skeleton.ejs';
+const cfnTemplateRoot = path.normalize(path.join(__dirname, "../../resources"));
+const cfnFilename = "cloudformation-template-skeleton.ejs";
 
 export async function addCloudFormationWalkthrough(context: $TSContext) {
   const resourceName = await customResourceNameQuestion();
@@ -26,7 +26,7 @@ export async function addCloudFormationWalkthrough(context: $TSContext) {
   const customResourceCFNFilename = `${resourceName}-${customResourceCFNFilenameSuffix}`;
   const cfnFilepath = path.join(resourceDirPath, customResourceCFNFilename);
 
-  if (await prompter.yesOrNo('Do you want to edit the CloudFormation stack now?', true)) {
+  if (await prompter.yesOrNo("Do you want to edit the CloudFormation stack now?", true)) {
     await context.amplify.openEditor(context, cfnFilepath);
   }
 }
@@ -40,7 +40,7 @@ export async function updateCloudFormationWalkthrough(context: $TSContext, resou
   const customResourceCFNFilename = `${resourceName}-${customResourceCFNFilenameSuffix}`;
   const cfnFilepath = path.join(resourceDirPath, customResourceCFNFilename);
 
-  if (await prompter.yesOrNo('Do you want to edit the CloudFormation stack now?', true)) {
+  if (await prompter.yesOrNo("Do you want to edit the CloudFormation stack now?", true)) {
     await context.amplify.openEditor(context, cfnFilepath);
   }
 }

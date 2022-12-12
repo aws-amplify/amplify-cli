@@ -1,16 +1,24 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth, getBackendAmplifyMeta,
-  addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  getBackendAmplifyMeta,
+  addFunction,
+  functionMockAssert,
+  functionCloudInvoke,
+  createNewProjectDir,
+  deleteProjectDir,
+  generateRandomShortId,
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
-describe('go function tests', () => {
-  const helloWorldSuccessOutput = 'Hello Amplify!';
+describe("go function tests", () => {
+  const helloWorldSuccessOutput = "Hello Amplify!";
   let projRoot: string;
   let funcName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('go-functions');
+    projRoot = await createNewProjectDir("go-functions");
     await initJSProjectWithProfile(projRoot, {});
 
     funcName = `gotestfn${generateRandomShortId()}`;
@@ -19,9 +27,9 @@ describe('go function tests', () => {
       projRoot,
       {
         name: funcName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
       },
-      'go',
+      "go"
     );
   });
 
@@ -30,15 +38,15 @@ describe('go function tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add go hello world function and mock locally', async () => {
+  it("add go hello world function and mock locally", async () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessOutput,
-      eventFile: 'src/event.json',
+      eventFile: "src/event.json",
     }); // will throw if successString is not in output
   });
 
-  it('add go hello world function and invoke in the cloud', async () => {
+  it("add go hello world function and invoke in the cloud", async () => {
     const payload = '{"name":"Amplify"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
@@ -46,14 +54,14 @@ describe('go function tests', () => {
   });
 });
 
-describe('python function tests', () => {
+describe("python function tests", () => {
   const statusCode = 200;
   const headers = {
-    'Access-Control-Allow-Headers': '*',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
   };
-  const message = 'Hello from your new Amplify Python lambda!';
+  const message = "Hello from your new Amplify Python lambda!";
   const helloWorldSuccessOutput = {
     statusCode,
     headers,
@@ -64,7 +72,7 @@ describe('python function tests', () => {
   let funcName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('py-functions');
+    projRoot = await createNewProjectDir("py-functions");
     await initJSProjectWithProfile(projRoot, {});
 
     funcName = `pytestfn${generateRandomShortId()}`;
@@ -73,9 +81,9 @@ describe('python function tests', () => {
       projRoot,
       {
         name: funcName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
       },
-      'python',
+      "python"
     );
   });
 
@@ -84,16 +92,16 @@ describe('python function tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add python hello world and mock locally', async () => {
+  it("add python hello world and mock locally", async () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessOutput.body,
-      eventFile: 'src/event.json',
+      eventFile: "src/event.json",
       timeout: 120,
     }); // will throw if successString is not in output
   });
 
-  it('add python hello world and invoke in the cloud', async () => {
+  it("add python hello world and invoke in the cloud", async () => {
     const payload = '{"test":"event"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
@@ -105,18 +113,18 @@ describe('python function tests', () => {
   });
 });
 
-describe('dotnet function tests', () => {
+describe("dotnet function tests", () => {
   const helloWorldSuccessObj = {
-    key1: 'VALUE1',
-    key2: 'VALUE2',
-    key3: 'VALUE3',
+    key1: "VALUE1",
+    key2: "VALUE2",
+    key3: "VALUE3",
   };
   const helloWorldSuccessString = '  "key3": "VALUE3"';
   let projRoot: string;
   let funcName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('dotnet-functions');
+    projRoot = await createNewProjectDir("dotnet-functions");
     await initJSProjectWithProfile(projRoot, {});
 
     funcName = `dotnettestfn${generateRandomShortId()}`;
@@ -125,9 +133,9 @@ describe('dotnet function tests', () => {
       projRoot,
       {
         name: funcName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
       },
-      'dotnetCore31',
+      "dotnetCore31"
     );
   });
 
@@ -136,15 +144,15 @@ describe('dotnet function tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add dotnet hello world function and mock locally', async () => {
+  it("add dotnet hello world function and mock locally", async () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessString,
-      eventFile: 'src/event.json',
+      eventFile: "src/event.json",
     }); // will throw if successString is not in output
   });
 
-  it('add dotnet hello world function and invoke in the cloud', async () => {
+  it("add dotnet hello world function and invoke in the cloud", async () => {
     const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
@@ -152,8 +160,8 @@ describe('dotnet function tests', () => {
   });
 });
 
-describe('nodejs function tests', () => {
-  const helloWorldSuccessString = 'Hello from Lambda!';
+describe("nodejs function tests", () => {
+  const helloWorldSuccessString = "Hello from Lambda!";
   const helloWorldSuccessObj = {
     statusCode: 200,
     body: '"Hello from Lambda!"',
@@ -163,7 +171,7 @@ describe('nodejs function tests', () => {
   let funcName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('nodejs-functions');
+    projRoot = await createNewProjectDir("nodejs-functions");
     await initJSProjectWithProfile(projRoot, {});
 
     funcName = `nodejstestfn${generateRandomShortId()}`;
@@ -172,9 +180,9 @@ describe('nodejs function tests', () => {
       projRoot,
       {
         name: funcName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
       },
-      'nodejs',
+      "nodejs"
     );
   });
 
@@ -183,15 +191,15 @@ describe('nodejs function tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add nodejs hello world function and mock locally', async () => {
+  it("add nodejs hello world function and mock locally", async () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessString,
-      eventFile: 'src/event.json',
+      eventFile: "src/event.json",
     }); // will throw if successString is not in output
   });
 
-  it('add nodejs hello world function and invoke in the cloud', async () => {
+  it("add nodejs hello world function and invoke in the cloud", async () => {
     const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
 
     await amplifyPushAuth(projRoot);
@@ -201,29 +209,29 @@ describe('nodejs function tests', () => {
     expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
   });
 
-  it('add nodejs hello world function and mock locally, check buildType, push, check buildType', async () => {
+  it("add nodejs hello world function and mock locally, check buildType, push, check buildType", async () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessString,
-      eventFile: 'src/event.json',
+      eventFile: "src/event.json",
     }); // will throw if successString is not in output
 
     let meta = getBackendAmplifyMeta(projRoot);
-    let functionResource = _.get(meta, ['function', funcName]);
+    let functionResource = _.get(meta, ["function", funcName]);
 
     const lastDevBuildTimeStampBeforePush = functionResource.lastDevBuildTimeStamp;
 
     // Mock should trigger a DEV build of the function
     expect(functionResource).toBeDefined();
-    expect(functionResource.lastBuildType).toEqual('DEV');
+    expect(functionResource.lastBuildType).toEqual("DEV");
 
     await amplifyPushAuth(projRoot);
 
     meta = getBackendAmplifyMeta(projRoot);
-    functionResource = _.get(meta, ['function', funcName]);
+    functionResource = _.get(meta, ["function", funcName]);
 
     // Push should trigger a PROD build of the function
-    expect(functionResource.lastBuildType).toEqual('PROD');
+    expect(functionResource.lastBuildType).toEqual("PROD");
     expect(functionResource.lastDevBuildTimeStamp).toEqual(lastDevBuildTimeStampBeforePush);
   });
 });

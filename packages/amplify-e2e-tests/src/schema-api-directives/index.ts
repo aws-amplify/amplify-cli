@@ -1,7 +1,7 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { runTest, runAuthTest } from './common';
-import { runFunctionTest } from './functionTester';
+import * as fs from "fs-extra";
+import * as path from "path";
+import { runTest, runAuthTest } from "./common";
+import { runFunctionTest } from "./functionTester";
 
 //The contents in the test files might be modified from its original version in the Amplify CLI doc,
 //and mutations or queries might be added to test the input schema.
@@ -11,12 +11,12 @@ import { runFunctionTest } from './functionTester';
 //#extra: the content does not exist in the Amplify CLI document, added for the completeness of the testing, such as the mutation needed to test subscriptions
 
 // to deal with subscriptions in node env
-(global as any).WebSocket = require('ws');
+(global as any).WebSocket = require("ws");
 
 export async function testSchema(projectDir: string, directive: string, section: string, appName?: string): Promise<boolean> {
   let testModule;
 
-  const testFilePath = path.join(__dirname, 'tests', `${directive}-${section}.ts`);
+  const testFilePath = path.join(__dirname, "tests", `${directive}-${section}.ts`);
   if (!fs.existsSync(testFilePath)) {
     throw new Error(`Missing test file ${directive}-${section}.ts`);
   }
@@ -32,10 +32,10 @@ export async function testSchema(projectDir: string, directive: string, section:
       await testModule.runTest(projectDir, testModule, appName);
     } else {
       switch (directive) {
-        case 'auth':
+        case "auth":
           await runAuthTest(projectDir, testModule);
           break;
-        case 'function':
+        case "function":
           await runFunctionTest(projectDir, testModule);
           break;
         default:
@@ -54,4 +54,4 @@ export async function testSchema(projectDir: string, directive: string, section:
   }
 }
 
-export * from './authHelper';
+export * from "./authHelper";

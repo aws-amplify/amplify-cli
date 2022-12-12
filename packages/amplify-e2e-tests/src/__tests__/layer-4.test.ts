@@ -27,17 +27,17 @@ import {
   validateLayerDir,
   validateLayerMetadata,
   validatePushedVersion,
-} from '@aws-amplify/amplify-e2e-core';
-import { v4 as uuid } from 'uuid';
-import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { v4 as uuid } from "uuid";
+import { addEnvironment, checkoutEnvironment, listEnvironment } from "../environment/env";
 
-describe('amplify add lambda layer - with amplify console app', () => {
+describe("amplify add lambda layer - with amplify console app", () => {
   let projRoot: string;
-  const envName = 'integtest';
+  const envName = "integtest";
   let projName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('layers');
+    projRoot = await createNewProjectDir("layers");
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
     const { projectName } = getProjectConfig(projRoot);
     projName = projectName;
@@ -48,10 +48,10 @@ describe('amplify add lambda layer - with amplify console app', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('tests amplify pull on project with layer', async () => {
-    const [shortId] = uuid().split('-');
+  it("tests amplify pull on project with layer", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `testlayer${shortId}`;
-    const runtime: LayerRuntime = 'nodejs';
+    const runtime: LayerRuntime = "nodejs";
     const settings = {
       runtimes: [runtime],
       layerName,
@@ -72,13 +72,13 @@ describe('amplify add lambda layer - with amplify console app', () => {
     let projRoot2;
 
     try {
-      projRoot2 = await createNewProjectDir('layer-pull-test');
+      projRoot2 = await createNewProjectDir("layer-pull-test");
       await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
 
       validatePushedVersion(projRoot2, { layerName, projName }, expectedPerms);
 
       // Push new resource with no change to the layer
-      await addFunction(projRoot2, { functionTemplate: 'Hello World' }, runtime);
+      await addFunction(projRoot2, { functionTemplate: "Hello World" }, runtime);
       await amplifyPushAuth(projRoot2);
 
       // Push a new layer version
@@ -94,7 +94,7 @@ describe('amplify add lambda layer - with amplify console app', () => {
     }
 
     await amplifyPull(projRoot, {});
-    await amplifyStatus(projRoot, 'No Change');
+    await amplifyStatus(projRoot, "No Change");
 
     validatePushedVersion(projRoot, settings, expectedPerms);
   });

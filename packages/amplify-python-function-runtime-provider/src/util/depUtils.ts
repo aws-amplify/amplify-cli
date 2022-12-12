@@ -1,8 +1,8 @@
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
-import { execAsStringPromise, getPythonBinaryName } from './pyUtils';
-import { coerce, lt } from 'semver';
+import { CheckDependenciesResult } from "amplify-function-plugin-interface";
+import { execAsStringPromise, getPythonBinaryName } from "./pyUtils";
+import { coerce, lt } from "semver";
 
-export const minPyVersion = coerce('3.8')!;
+export const minPyVersion = coerce("3.8")!;
 const pythonErrMsg =
   'You must have python >= 3.8 installed and available on your PATH as "python3" or "python". It can be installed from https://www.python.org/downloads';
 const pipenvErrMsg =
@@ -13,7 +13,7 @@ const venvErrMsg =
 
 export async function checkDeps(): Promise<CheckDependenciesResult> {
   let hasDeps = true;
-  let errMsg = '';
+  let errMsg = "";
 
   const pyBinary = getPythonBinaryName();
 
@@ -36,18 +36,18 @@ export async function checkDeps(): Promise<CheckDependenciesResult> {
 
   // check pipenv
   try {
-    await execAsStringPromise('pipenv --version');
+    await execAsStringPromise("pipenv --version");
   } catch (err) {
     hasDeps = false;
-    errMsg = errMsg.concat(errMsg ? '\n' : '', pipenvErrMsg);
+    errMsg = errMsg.concat(errMsg ? "\n" : "", pipenvErrMsg);
   }
 
   // check venv
   try {
-    await execAsStringPromise('virtualenv --version');
+    await execAsStringPromise("virtualenv --version");
   } catch (err) {
     hasDeps = false;
-    errMsg = errMsg.concat(errMsg ? '\n' : '', venvErrMsg);
+    errMsg = errMsg.concat(errMsg ? "\n" : "", venvErrMsg);
   }
 
   return Promise.resolve({ hasRequiredDependencies: hasDeps, errorMessage: errMsg });

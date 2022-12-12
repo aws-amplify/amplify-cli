@@ -1,8 +1,8 @@
-import { printer } from 'amplify-prompts';
+import { printer } from "amplify-prompts";
 
 /**
  * help command
  */
 export const run = (): void => {
-  printer.info('Supported commands: generateComponents, cloneComponentsFromEnv');
+  printer.info("Supported commands: generateComponents, cloneComponentsFromEnv");
 };

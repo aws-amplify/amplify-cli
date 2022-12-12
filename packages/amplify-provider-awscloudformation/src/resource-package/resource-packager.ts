@@ -10,18 +10,18 @@ import {
   spinner,
   $TSAny,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
-import _ from 'lodash';
-import { Fn, Template } from 'cloudform-types';
-import * as path from 'path';
-import { legacyLayerMigration, prePushLambdaLayerPrompt } from '../lambdaLayerInvocations';
+} from "amplify-cli-core";
+import _ from "lodash";
+import { Fn, Template } from "cloudform-types";
+import * as path from "path";
+import { legacyLayerMigration, prePushLambdaLayerPrompt } from "../lambdaLayerInvocations";
 // eslint-disable-next-line import/no-cycle
-import { formNestedStack, getCfnFiles, updateStackForAPIMigration } from '../push-resources';
-import { ensureValidFunctionModelDependencies } from '../utils/remove-dependent-function';
-import { Constants } from './constants';
-import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';
-import { prePushAuthTransform } from '../auth-transform';
-import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
+import { formNestedStack, getCfnFiles, updateStackForAPIMigration } from "../push-resources";
+import { ensureValidFunctionModelDependencies } from "../utils/remove-dependent-function";
+import { Constants } from "./constants";
+import { consolidateApiGatewayPolicies } from "../utils/consolidate-apigw-policies";
+import { prePushAuthTransform } from "../auth-transform";
+import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from "../pre-push-cfn-processor/cfn-pre-processor";
 import {
   DeploymentResources,
   ResourceDefinition,
@@ -31,9 +31,9 @@ import {
   PackagerParams,
   UploadedResourceDefinition,
   TransformedCfnResource,
-} from './types';
+} from "./types";
 // eslint-disable-next-line import/no-cycle
-import { prePushTemplateDescriptionHandler } from '../template-description-utils';
+import { prePushTemplateDescriptionHandler } from "../template-description-utils";
 
 /**
  * Abstract class that holds logic for building, packaging and cfn generation
@@ -50,13 +50,14 @@ export abstract class ResourcePackager {
     allResources,
     resourcesToBeCreated,
     resourcesToBeUpdated,
-  }: DeploymentResources): ResourceDefinition[] => (!!this.context?.exeInfo?.forcePush || this.deployType === ResourceDeployType.Export
-    ? allResources.filter(resource => resource.category !== 'providers' && resource.providerPlugin === 'awscloudformation')
-    : resourcesToBeCreated.concat(resourcesToBeUpdated));
+  }: DeploymentResources): ResourceDefinition[] =>
+    !!this.context?.exeInfo?.forcePush || this.deployType === ResourceDeployType.Export
+      ? allResources.filter((resource) => resource.category !== "providers" && resource.providerPlugin === "awscloudformation")
+      : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   constructor(context: $TSContext, deployType: ResourceDeployType) {
     this.context = context;
-    this.elasticContainerZipFiles = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
+    this.elasticContainerZipFiles = ["custom-resource-pipeline-awaiter.zip", "codepipeline-action-buildspec-generator-lambda.zip"];
     const projectPath = pathManager.findProjectRoot();
     this.amplifyMeta = stateManager.getMeta(projectPath);
     this.amplifyTeamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
@@ -76,16 +77,16 @@ export abstract class ResourcePackager {
     const apiResourceToBeUpdated = this.filterResourceByCategoryService(
       deploymentResources.resourcesToBeUpdated,
       API_CATEGORY.NAME,
-      API_CATEGORY.SERVICE.APP_SYNC,
+      API_CATEGORY.SERVICE.APP_SYNC
     );
     if (apiResourceToBeUpdated.length) {
       const functionResourceToBeUpdated = await ensureValidFunctionModelDependencies(
         this.context,
         apiResourceToBeUpdated,
-        deploymentResources.allResources as $TSObject[],
+        deploymentResources.allResources as $TSObject[]
       );
       if (functionResourceToBeUpdated !== undefined && functionResourceToBeUpdated.length > 0) {
-        return _.uniqBy(resources.concat(functionResourceToBeUpdated.map(r => r as ResourceDefinition)), 'resourceName');
+        return _.uniqBy(resources.concat(functionResourceToBeUpdated.map((r) => r as ResourceDefinition)), "resourceName");
       }
     }
 
@@ -101,7 +102,7 @@ export abstract class ResourcePackager {
     for await (const lambdaLayerResource of this.filterResourceByCategoryService(
       resources,
       FUNCTION_CATEGORY.NAME,
-      FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER,
+      FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER
     )) {
       await legacyLayerMigration(this.context, lambdaLayerResource.resourceName);
     }
@@ -130,14 +131,14 @@ export abstract class ResourcePackager {
           this.context,
           FUNCTION_CATEGORY.NAME,
           resource.service,
-          'buildResource',
-          [this.context, resource],
+          "buildResource",
+          [this.context, resource]
         );
         return {
           ...resource,
           lastBuildTimeStamp,
         };
-      }),
+      })
     );
   }
 
@@ -149,7 +150,7 @@ export abstract class ResourcePackager {
   protected async packageResources(builtResources: BuiltResourceDefinition[]): Promise<PackagedResourceDefinition[]> {
     const { FUNCTION_CATEGORY } = Constants;
     return Promise.all(
-      builtResources.map(async resource => {
+      builtResources.map(async (resource) => {
         if (!resource.build) {
           return resource;
         }
@@ -157,14 +158,14 @@ export abstract class ResourcePackager {
           this.context,
           FUNCTION_CATEGORY.NAME,
           resource.service,
-          'packageResource',
-          [this.context, resource, true],
+          "packageResource",
+          [this.context, resource, true]
         );
         return {
           ...resource,
           packagerParams: result,
         };
-      }),
+      })
     );
   }
 
@@ -176,7 +177,7 @@ export abstract class ResourcePackager {
     const { API_CATEGORY } = Constants;
     if (this.resourcesHasCategoryService(packagedResources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.APP_SYNC)) {
       await ApiCategoryFacade.transformGraphQLSchema(this.context, {
-        handleMigration: opts => updateStackForAPIMigration(this.context, 'api', undefined, opts),
+        handleMigration: (opts) => updateStackForAPIMigration(this.context, "api", undefined, opts),
         minify: options.minify,
       });
     }
@@ -189,14 +190,14 @@ export abstract class ResourcePackager {
   protected resourcesHasContainers(packagedResources: PackagedResourceDefinition[]): boolean {
     const { API_CATEGORY, HOSTING_CATEGORY } = Constants;
     return (
-      this.resourcesHasCategoryService(packagedResources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.ELASTIC_CONTAINER)
-      || this.resourcesHasCategoryService(packagedResources, HOSTING_CATEGORY.NAME, HOSTING_CATEGORY.SERVICE.ELASTIC_CONTAINER)
+      this.resourcesHasCategoryService(packagedResources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.ELASTIC_CONTAINER) ||
+      this.resourcesHasCategoryService(packagedResources, HOSTING_CATEGORY.NAME, HOSTING_CATEGORY.SERVICE.ELASTIC_CONTAINER)
     );
   }
 
   protected resourcesHasApiGatewaysButNotAdminQueries(packagedResources: PackagedResourceDefinition[]): boolean {
     const { API_CATEGORY } = Constants;
-    const resources = packagedResources.filter(r => r.resourceName !== 'AdminQueries');
+    const resources = packagedResources.filter((r) => r.resourceName !== "AdminQueries");
     return this.resourcesHasCategoryService(resources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY);
   }
 
@@ -215,9 +216,9 @@ export abstract class ResourcePackager {
     _.set(
       this.amplifyTeamProviderInfo,
       [this.envInfo.envName, CATEGORIES, packagedResource.category, packagedResource.resourceName],
-      s3Info,
+      s3Info
     );
-    _.set(packagedResource, ['s3Bucket'], s3Info);
+    _.set(packagedResource, ["s3Bucket"], s3Info);
     _.set(this.amplifyMeta, [packagedResource.category, packagedResource.resourceName, S3_BUCKET], s3Info);
   }
 
@@ -247,10 +248,10 @@ export abstract class ResourcePackager {
         if (resource.service === API_CATEGORY.SERVICE.ELASTIC_CONTAINER) {
           const { exposedContainer }: $TSAny = await this.context.amplify.invokePluginMethod(
             this.context,
-            'api',
+            "api",
             undefined,
-            'generateContainersArtifacts',
-            [this.context, resource],
+            "generateContainersArtifacts",
+            [this.context, resource]
           );
           _.set(this.amplifyMeta, [resource.category, resource.resourceName, EXPOSED_CONTAINER], exposedContainer);
         }
@@ -258,7 +259,7 @@ export abstract class ResourcePackager {
 
       case HOSTING_CATEGORY.NAME:
         if (resource.service === HOSTING_CATEGORY.SERVICE.ELASTIC_CONTAINER) {
-          await this.context.amplify.invokePluginMethod(this.context, 'hosting', 'ElasticContainer', 'generateHostingResources', [
+          await this.context.amplify.invokePluginMethod(this.context, "hosting", "ElasticContainer", "generateHostingResources", [
             this.context,
             resource,
           ]);
@@ -281,18 +282,18 @@ export abstract class ResourcePackager {
       const transformedCfnPaths: string[] = [];
       for await (const cfnFile of cfnFiles) {
         if (
-          resource.build
-          && resource.service !== API_CATEGORY.SERVICE.ELASTIC_CONTAINER
-          && resource.service !== FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER
+          resource.build &&
+          resource.service !== API_CATEGORY.SERVICE.ELASTIC_CONTAINER &&
+          resource.service !== FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER
         ) {
           const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
-          const paramType = { Type: 'String' };
-          const deploymentBucketNameRef = 'deploymentBucketName';
-          const s3KeyRef = 's3Key';
+          const paramType = { Type: "String" };
+          const deploymentBucketNameRef = "deploymentBucketName";
+          const s3KeyRef = "s3Key";
 
           cfnTemplate.Parameters.deploymentBucketName = paramType;
           cfnTemplate.Parameters.s3Key = paramType;
-          if (cfnTemplate.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+          if (cfnTemplate.Resources.LambdaFunction.Type === "AWS::Serverless::Function") {
             cfnTemplate.Resources.LambdaFunction.Properties.CodeUri = {
               Bucket: Fn.Ref(deploymentBucketNameRef),
               Key: Fn.Ref(s3KeyRef),
@@ -310,7 +311,7 @@ export abstract class ResourcePackager {
         await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, path.basename(cfnFile), resource.category);
         transformedCfnPaths.push(transformedCFNPath);
       }
-      this.storeS3BucketInfo(resource, 'deploymentBucketRef');
+      this.storeS3BucketInfo(resource, "deploymentBucketRef");
       transformedCfnResources.push({
         ...resource,
         transformedCfnPaths,
@@ -331,12 +332,9 @@ export abstract class ResourcePackager {
     return formNestedStack(this.context, { amplifyMeta: this.amplifyMeta }, undefined, undefined, undefined, undefined, true);
   }
 
-  private resourcesHasCategoryService = (
-    resources: ResourceDefinition[], category: string, service?: string,
-  ): boolean => resources.some(resource => resource.category === category && (service ? resource.service === service : true));
+  private resourcesHasCategoryService = (resources: ResourceDefinition[], category: string, service?: string): boolean =>
+    resources.some((resource) => resource.category === category && (service ? resource.service === service : true));
 
-  protected filterResourceByCategoryService = (
-    resources: ResourceDefinition[], category: string, service?: string,
-  ): ResourceDefinition[] => resources
-    .filter(resource => resource.category === category && (service ? resource.service === service : true));
+  protected filterResourceByCategoryService = (resources: ResourceDefinition[], category: string, service?: string): ResourceDefinition[] =>
+    resources.filter((resource) => resource.category === category && (service ? resource.service === service : true));
 }

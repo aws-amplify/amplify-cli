@@ -1,12 +1,12 @@
-import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
-import _ from 'lodash';
-import * as path from 'path';
-import { deleteVersionsField, ephemeralField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
-import { categoryName } from '../../../constants';
-import { getLegacyLayerState, LegacyState, readLegacyRuntimes } from './layerMigrationUtils';
-import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
+import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from "amplify-cli-core";
+import _ from "lodash";
+import * as path from "path";
+import { deleteVersionsField, ephemeralField, layerConfigurationFileName, updateVersionPermissionsField } from "./constants";
+import { categoryName } from "../../../constants";
+import { getLegacyLayerState, LegacyState, readLegacyRuntimes } from "./layerMigrationUtils";
+import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from "./layerParams";
 
-export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
+export type LayerConfiguration = Pick<LayerParameters, "permissions" | "runtimes" | "description">;
 
 export function createLayerConfiguration(layerDirPath: string, parameters: LayerConfiguration) {
   const layerConfigFilePath = path.join(layerDirPath, layerConfigurationFileName);
@@ -17,7 +17,7 @@ export function createLayerConfiguration(layerDirPath: string, parameters: Layer
 export function getLayerConfiguration(layerName: string) {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName);
   const { runtimes: cloudTemplateValues, description } = loadLayerParametersJson(layerName);
-  layerConfig.runtimes.forEach(runtimeMeta => {
+  layerConfig.runtimes.forEach((runtimeMeta) => {
     runtimeMeta.cloudTemplateValues = cloudTemplateValues.filter((ctv: string) => ctv.startsWith(runtimeMeta.value));
   });
   layerConfig.description = description;
@@ -65,7 +65,7 @@ export function saveLayerVersionPermissionsToBeUpdatedInCfn(
   layerName: string,
   envName: string,
   version: number,
-  permissions: LayerPermission[],
+  permissions: LayerPermission[]
 ) {
   const layerConfig = loadLayerConfigurationFile(layerName);
   _.setWith(layerConfig, [ephemeralField, updateVersionPermissionsField, envName, version.toString()], permissions, Object);
@@ -113,7 +113,7 @@ export function loadLayerParametersJson(layerName: string): $TSObject {
 export function loadLayerConfigurationFile(layerName: string, throwIfNotExist = true) {
   const layerConfigFilePath = path.join(
     pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
-    layerConfigurationFileName,
+    layerConfigurationFileName
   );
 
   return JSONUtilities.readJson<$TSAny>(layerConfigFilePath, { throwIfNotExist });
@@ -122,12 +122,12 @@ export function loadLayerConfigurationFile(layerName: string, throwIfNotExist = 
 export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSAny) {
   const layerConfigFilePath = path.join(
     pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
-    layerConfigurationFileName,
+    layerConfigurationFileName
   );
 
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => _.pick(runtime, 'value', 'name', 'runtimePluginId', 'layerExecutablePath'));
+  return runtimes.map((runtime) => _.pick(runtime, "value", "name", "runtimePluginId", "layerExecutablePath"));
 }

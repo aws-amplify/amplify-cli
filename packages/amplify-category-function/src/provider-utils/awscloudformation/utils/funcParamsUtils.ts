@@ -1,5 +1,5 @@
-import { FunctionParameters } from 'amplify-function-plugin-interface';
-import _ from 'lodash';
+import { FunctionParameters } from "amplify-function-plugin-interface";
+import _ from "lodash";
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
@@ -18,8 +18,8 @@ export function merge(existing: Partial<FunctionParameters>, other: Partial<Func
 }
 
 export function isComplete(partial: Partial<FunctionParameters>): partial is FunctionParameters {
-  const requiredFields = ['providerContext', 'cloudResourceTemplatePath', 'resourceName', 'functionName', 'runtime', 'roleName'];
-  const missingField = requiredFields.find(field => !_.keys(partial).includes(field));
+  const requiredFields = ["providerContext", "cloudResourceTemplatePath", "resourceName", "functionName", "runtime", "roleName"];
+  const missingField = requiredFields.find((field) => !_.keys(partial).includes(field));
   return !missingField;
 }
 
@@ -27,5 +27,5 @@ export function convertToComplete(partial: Partial<FunctionParameters>): Functio
   if (isComplete(partial)) {
     return partial as FunctionParameters;
   }
-  throw new Error('Partial<FunctionParameters> does not satisfy FunctionParameters');
+  throw new Error("Partial<FunctionParameters> does not satisfy FunctionParameters");
 }

@@ -1,8 +1,8 @@
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { VersionedModelTransformer } from 'graphql-versioned-transformer';
-import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
+import { FeatureFlagProvider, GraphQLTransform } from "graphql-transformer-core";
+import { VersionedModelTransformer } from "graphql-versioned-transformer";
+import { GraphQLClient } from "./utils/graphql-client";
+import { deploy, launchDDBLocal, terminateDDB, logDebug } from "./utils/index";
 
 jest.setTimeout(20000);
 
@@ -26,7 +26,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === "improvePluralization" ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -37,13 +37,13 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    const endpoint = server.url + '/graphql';
+    const endpoint = server.url + "/graphql";
     logDebug(`Using graphql url: ${endpoint}`);
 
     const apiKey = result.config.appSync.apiKey;
     expect(apiKey).toBeDefined();
     expect(endpoint).toBeDefined();
-    GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
+    GRAPHQL_CLIENT = new GraphQLClient(endpoint, { "x-api-key": apiKey });
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -65,7 +65,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('createPost mutation', async () => {
+test("createPost mutation", async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -76,16 +76,16 @@ test('createPost mutation', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
   expect(response.data.createPost.id).toBeDefined();
-  expect(response.data.createPost.title).toEqual('Hello, World!');
+  expect(response.data.createPost.title).toEqual("Hello, World!");
   expect(response.data.createPost.createdAt).toBeDefined();
   expect(response.data.createPost.updatedAt).toBeDefined();
   expect(response.data.createPost.version).toEqual(1);
 });
 
-test('updatePost mutation', async () => {
+test("updatePost mutation", async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -96,10 +96,10 @@ test('updatePost mutation', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
   expect(createResponse.data.createPost.id).toBeDefined();
-  expect(createResponse.data.createPost.title).toEqual('Test Update');
+  expect(createResponse.data.createPost.title).toEqual("Test Update");
   expect(createResponse.data.createPost.version).toEqual(1);
   const updateResponse = await GRAPHQL_CLIENT.query(
     `mutation {
@@ -113,13 +113,13 @@ test('updatePost mutation', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
-  expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
+  expect(updateResponse.data.updatePost.title).toEqual("Bye, World!");
   expect(updateResponse.data.updatePost.version).toEqual(2);
 });
 
-test('failed updatePost mutation with wrong version', async () => {
+test("failed updatePost mutation with wrong version", async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -130,10 +130,10 @@ test('failed updatePost mutation with wrong version', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
   expect(createResponse.data.createPost.id).toBeDefined();
-  expect(createResponse.data.createPost.title).toEqual('Test Update');
+  expect(createResponse.data.createPost.title).toEqual("Test Update");
   expect(createResponse.data.createPost.version).toEqual(1);
   const updateResponse = await GRAPHQL_CLIENT.query(
     `mutation {
@@ -147,14 +147,14 @@ test('failed updatePost mutation with wrong version', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
   expect(updateResponse.errors.length).toEqual(1);
   expect((updateResponse.errors[0] as any).data).toBeNull();
-  expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  expect((updateResponse.errors[0] as any).errorType).toEqual("DynamoDB:ConditionalCheckFailedException");
 });
 
-test('deletePost mutation', async () => {
+test("deletePost mutation", async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
@@ -165,10 +165,10 @@ test('deletePost mutation', async () => {
             updatedAt
         }
     }`,
-    {},
+    {}
   );
   expect(createResponse.data.createPost.id).toBeDefined();
-  expect(createResponse.data.createPost.title).toEqual('Test Delete');
+  expect(createResponse.data.createPost.title).toEqual("Test Delete");
   expect(createResponse.data.createPost.version).toBeDefined();
   const deleteResponse = await GRAPHQL_CLIENT.query(
     `mutation {
@@ -178,13 +178,13 @@ test('deletePost mutation', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
-  expect(deleteResponse.data.deletePost.title).toEqual('Test Delete');
+  expect(deleteResponse.data.deletePost.title).toEqual("Test Delete");
   expect(deleteResponse.data.deletePost.version).toEqual(createResponse.data.createPost.version);
 });
 
-test('deletePost mutation with wrong version', async () => {
+test("deletePost mutation with wrong version", async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
@@ -195,10 +195,10 @@ test('deletePost mutation with wrong version', async () => {
             updatedAt
         }
     }`,
-    {},
+    {}
   );
   expect(createResponse.data.createPost.id).toBeDefined();
-  expect(createResponse.data.createPost.title).toEqual('Test Delete');
+  expect(createResponse.data.createPost.title).toEqual("Test Delete");
   expect(createResponse.data.createPost.version).toBeDefined();
   const deleteResponse = await GRAPHQL_CLIENT.query(
     `mutation {
@@ -208,9 +208,9 @@ test('deletePost mutation with wrong version', async () => {
             version
         }
     }`,
-    {},
+    {}
   );
   expect(deleteResponse.errors.length).toEqual(1);
   expect((deleteResponse.errors[0] as any).data).toBeNull();
-  expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  expect((deleteResponse.errors[0] as any).errorType).toEqual("DynamoDB:ConditionalCheckFailedException");
 });

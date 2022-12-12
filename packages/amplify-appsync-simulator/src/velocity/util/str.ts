@@ -6,7 +6,7 @@ export const str = {
     return str.toLowerCase();
   },
   toReplace(str: string, substr: string, newSubstr: string) {
-    return str.replace(new RegExp(substr, 'g'), newSubstr);
+    return str.replace(new RegExp(substr, "g"), newSubstr);
   },
   normalize(str: string, form: string) {
     return str.normalize(form.toUpperCase());

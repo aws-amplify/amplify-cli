@@ -1,11 +1,11 @@
-import { CloudFormationParseContext } from '../types';
-import { parseValue } from '../field-parser';
+import { CloudFormationParseContext } from "../types";
+import { parseValue } from "../field-parser";
 import {
   CloudFormationResource,
   CloudFormationResourceProperty,
   ProcessedLambdaEventSource,
   ProcessedLambdaFunction,
-} from '../stack/types';
+} from "../stack/types";
 
 /**
  * Handles the parsing of a lambda CFN resource into relevant bits of information
@@ -16,7 +16,7 @@ import {
 export const lambdaFunctionHandler = (
   resourceName,
   resource: CloudFormationResource,
-  cfnContext: CloudFormationParseContext,
+  cfnContext: CloudFormationParseContext
 ): ProcessedLambdaFunction => {
   // Use the resource name as a fallback in case the optional functionName is not present in CFN.
   const name: string = parseValue(resource.Properties.FunctionName ?? resourceName, cfnContext);
@@ -27,10 +27,10 @@ export const lambdaFunctionHandler = (
       ...acc,
       [varName]: parseValue(varVal, cfnContext),
     }),
-    {} as Record<string, string>,
+    {} as Record<string, string>
   );
   return {
-    cfnExposedAttributes: { Arn: 'arn' },
+    cfnExposedAttributes: { Arn: "arn" },
     arn: `arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST`,
     ref: `arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST`,
     name,
@@ -42,7 +42,7 @@ export const lambdaFunctionHandler = (
 export const lambdaEventSourceHandler = (
   resourceName: string,
   resource: CloudFormationResource,
-  cfnContext: CloudFormationParseContext,
+  cfnContext: CloudFormationParseContext
 ): ProcessedLambdaEventSource => {
   const batchSize: number = parseValue(resource.Properties.BatchSize, cfnContext);
   const eventSourceArn: string = parseValue(resource.Properties.EventSourceArn, cfnContext);

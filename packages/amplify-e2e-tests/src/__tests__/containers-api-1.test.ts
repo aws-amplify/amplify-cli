@@ -8,9 +8,9 @@ import {
   generateRandomShortId,
   initJSProjectWithProfile,
   retry,
-} from '@aws-amplify/amplify-e2e-core';
-import fetch from 'node-fetch';
-import { getAWSExports } from '../aws-exports/awsExports';
+} from "@aws-amplify/amplify-e2e-core";
+import fetch from "node-fetch";
+import { getAWSExports } from "../aws-exports/awsExports";
 
 const setupAmplifyProject = async (cwd: string): Promise<void> => {
   await amplifyConfigureProject({
@@ -19,10 +19,10 @@ const setupAmplifyProject = async (cwd: string): Promise<void> => {
   });
 };
 
-describe('amplify api add', () => {
+describe("amplify api add", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('containers');
+    projRoot = await createNewProjectDir("containers");
   });
 
   afterEach(async () => {
@@ -30,8 +30,8 @@ describe('amplify api add', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init project, enable containers and add multi-container api', async () => {
-    const envName = 'devtest';
+  it("init project, enable containers and add multi-container api", async () => {
+    const envName = "devtest";
     const apiName = `containersimpletest${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: `multict${generateRandomShortId()}`, envName });
     await setupAmplifyProject(projRoot);
@@ -45,7 +45,7 @@ describe('amplify api add', () => {
     expect(endpoint).toBeDefined();
 
     const url = `${endpoint}/images`;
-    const expected = 'Processing images...';
+    const expected = "Processing images...";
     const result = await retry(
       async (): Promise<string> => (await fetch(url)).text(),
       (fetchResult: string) => fetchResult === expected,
@@ -55,7 +55,7 @@ describe('amplify api add', () => {
         // five minutes
         timeoutMS: 300000,
         stopOnError: false,
-      },
+      }
     );
     expect(result).toEqual(expected);
   });

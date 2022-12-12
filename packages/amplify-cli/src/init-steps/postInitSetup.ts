@@ -1,14 +1,12 @@
-import {
-  $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities,
-} from 'amplify-cli-core';
-import { execSync } from 'child_process';
-import _ from 'lodash';
-import * as path from 'path';
+import { $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities } from "amplify-cli-core";
+import { execSync } from "child_process";
+import _ from "lodash";
+import * as path from "path";
 
-const packageJson = 'package.json';
-const initializationScripts = ['start', 'serve'];
+const packageJson = "package.json";
+const initializationScripts = ["start", "serve"];
 const MISSING_SCRIPTS_ERROR = new Error(
-  'Did not find a "start" or "serve" initialization script. Add a package.json file in the root of the project with one of these scripts.',
+  'Did not find a "start" or "serve" initialization script. Add a package.json file in the root of the project with one of these scripts.'
 );
 
 /**
@@ -27,10 +25,14 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
       if (e instanceof AmplifyError) {
         throw e;
       }
-      throw new AmplifyFault('ProjectInitFault', {
-        message: 'An error occurred during project initialization',
-        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-      }, e);
+      throw new AmplifyFault(
+        "ProjectInitFault",
+        {
+          message: "An error occurred during project initialization",
+          link: "https://docs.amplify.aws/cli/project/troubleshooting/",
+        },
+        e
+      );
     }
   }
 };
@@ -46,7 +48,7 @@ const runPackage = async (): Promise<void> => {
   if (packageManager !== null) {
     const packageScript = getPackageScript();
 
-    execSync(`${packageManager.executable} ${packageScript}`, { stdio: 'inherit' });
+    execSync(`${packageManager.executable} ${packageScript}`, { stdio: "inherit" });
   }
 };
 
@@ -58,11 +60,11 @@ const runPackage = async (): Promise<void> => {
 const getPackageScript = (): string => {
   const packageJsonDir = path.join(process.cwd(), packageJson);
   const packageJsonContent = JSONUtilities.readJson(packageJsonDir, { throwIfNotExist: false }) || {};
-  const scripts = _.get(packageJsonContent, 'scripts', {});
+  const scripts = _.get(packageJsonContent, "scripts", {});
 
   return (
-    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName))
-    || (() => {
+    _.keys(scripts).find((scriptName) => initializationScripts.includes(scriptName)) ||
+    (() => {
       throw MISSING_SCRIPTS_ERROR;
     })()
   );

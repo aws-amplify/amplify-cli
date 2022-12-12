@@ -1,11 +1,11 @@
-import { $TSContext, FeatureFlags } from 'amplify-cli-core';
-import _ from 'lodash';
-import { immutableAttributes, safeDefaults } from '../constants';
-import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
-import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
-import { removeDeprecatedProps } from './synthesize-resources';
-import { verificationBucketName } from './verification-bucket-name';
+import { $TSContext, FeatureFlags } from "amplify-cli-core";
+import _ from "lodash";
+import { immutableAttributes, safeDefaults } from "../constants";
+import { CognitoConfiguration } from "../service-walkthrough-types/awsCognito-user-input-types";
+import { ServiceQuestionHeadlessResult } from "../service-walkthrough-types/cognito-user-input-types";
+import { structureOAuthMetadata } from "../service-walkthroughs/auth-questions";
+import { removeDeprecatedProps } from "./synthesize-resources";
+import { verificationBucketName } from "./verification-bucket-name";
 
 /**
  * Factory function that returns a function that applies default values to a CognitoConfiguation request.
@@ -27,12 +27,12 @@ export const getAddAuthDefaultsApplier =
 
     // Make the usernames for Cognito case-insensitive by default when it is created, if feature flag
     // is enabled.
-    if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
+    if (FeatureFlags.getBoolean("auth.enableCaseInsensitivity")) {
       result.usernameCaseSensitive = false;
     }
     // If the feature flag is enabled the MFA TOTP can only be enabled
 
-    result.useEnabledMfas = FeatureFlags.getBoolean('auth.useEnabledMfas');
+    result.useEnabledMfas = FeatureFlags.getBoolean("auth.useEnabledMfas");
 
     /* merge actual answers object into props object,
      * ensuring that manual entries override defaults */
@@ -44,16 +44,16 @@ export const getUpdateAuthDefaultsApplier =
   async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     if (!result.authSelections) {
-      result.authSelections = previousResult.authSelections ?? 'identityPoolAndUserPool';
+      result.authSelections = previousResult.authSelections ?? "identityPoolAndUserPool";
     }
 
     const defaults = functionMap[result.authSelections](previousResult.resourceName);
 
     // ensure immutable attributes are removed from result
-    immutableAttributes.filter(pv => pv in previousResult).forEach(pv => delete (result as any)[pv]);
+    immutableAttributes.filter((pv) => pv in previousResult).forEach((pv) => delete (result as any)[pv]);
 
-    if (['default', 'defaultSocial'].includes(result.useDefault)) {
-      safeDefaults.forEach(sd => delete (previousResult as any)[sd]);
+    if (["default", "defaultSocial"].includes(result.useDefault)) {
+      safeDefaults.forEach((sd) => delete (previousResult as any)[sd]);
     }
 
     await verificationBucketName(result, previousResult);
@@ -70,5 +70,5 @@ export const getUpdateAuthDefaultsApplier =
 // same as _.assign except undefined values won't overwrite existing values
 // typed to accept up to 4 params but could be typed to accept any number of params
 const assignDefaults = _.partialRight(_.assignWith, (objValue: unknown, srcValue: unknown) =>
-  _.isUndefined(srcValue) ? objValue : srcValue,
+  _.isUndefined(srcValue) ? objValue : srcValue
 ) as <T, U, V, W>(a: T, b: U, c?: V, d?: W) => T & U & V & W;

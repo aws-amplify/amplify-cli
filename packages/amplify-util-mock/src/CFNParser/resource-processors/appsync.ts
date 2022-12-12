@@ -1,30 +1,30 @@
-import { parseValue } from '../field-parser';
-import { CloudFormationProcessedResourceResult } from '../stack/types';
-import { CloudFormationParseContext } from '../types';
-import { isWindowsPlatform } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { parseValue } from "../field-parser";
+import { CloudFormationProcessedResourceResult } from "../stack/types";
+import { CloudFormationParseContext } from "../types";
+import { isWindowsPlatform } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
 export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
   const tableName = resourceName;
-  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
+  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map((gsi) => {
     const p = { ...gsi };
     delete p.ProvisionedThroughput;
     return p;
   });
   const processedResource: any = {
-    cfnExposedAttributes: { Arn: 'Arn', StreamArn: 'StreamArn' },
+    cfnExposedAttributes: { Arn: "Arn", StreamArn: "StreamArn" },
     Arn: `arn:aws:dynamodb:us-east-2:123456789012:table/${tableName}`,
     Ref: tableName,
     StreamArn: `arn:aws:dynamodb:{aws-region}:{aws-account-number}:table/${tableName}/stream/${new Date().toISOString()}`,
     Properties: {
       TableName: tableName,
-      BillingMode: 'PAY_PER_REQUEST',
+      BillingMode: "PAY_PER_REQUEST",
       KeySchema: resource.Properties.KeySchema,
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
       StreamSpecification: {
         StreamEnabled: true,
-        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES'
-      }
+        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || "NEW_AND_OLD_IMAGES",
+      },
     },
   };
 
@@ -40,7 +40,7 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
 
 export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResourceResult & {
   name: string;
-  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'AMAZON_ELASTICSEARCH' | 'NONE';
+  type: "AMAZON_DYNAMODB" | "AWS_LAMBDA" | "AMAZON_ELASTICSEARCH" | "NONE";
   LambdaFunctionArn?: string;
   config?: {
     tableName: string;
@@ -49,50 +49,50 @@ export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResource
 export function appSyncDataSourceHandler(
   resourceName,
   resource,
-  cfnContext: CloudFormationParseContext,
+  cfnContext: CloudFormationParseContext
 ): AppSyncDataSourceProcessedResource {
   const tableName = resource.Properties?.DynamoDBConfig?.TableName?.Ref || resource.Properties.Name;
   const typeName = resource.Properties.Type;
   const commonProps = {
-    cfnExposedAttributes: { DataSourceArn: 'Arn', Name: 'name' },
+    cfnExposedAttributes: { DataSourceArn: "Arn", Name: "name" },
     Arn: `arn:aws:appsync:us-fake-1:123456789012:apis/graphqlapiid/datasources/${resource.Properties.Name}`,
   };
-  if (typeName === 'AMAZON_DYNAMODB') {
+  if (typeName === "AMAZON_DYNAMODB") {
     return {
       ...commonProps,
       name: tableName,
-      type: 'AMAZON_DYNAMODB',
+      type: "AMAZON_DYNAMODB",
       config: {
         tableName,
       },
     };
   }
-  if (typeName === 'NONE') {
+  if (typeName === "NONE") {
     return {
       ...commonProps,
       name: resource.Properties.Name,
-      type: 'NONE',
+      type: "NONE",
     };
   }
 
-  if (typeName === 'AWS_LAMBDA') {
+  if (typeName === "AWS_LAMBDA") {
     const lambdaArn = parseValue(resource.Properties.LambdaConfig.LambdaFunctionArn, cfnContext);
     return {
       ...commonProps,
-      type: 'AWS_LAMBDA',
+      type: "AWS_LAMBDA",
       name: resource.Properties.Name,
       LambdaFunctionArn: lambdaArn,
     };
   }
 
-  if (typeName === 'AMAZON_ELASTICSEARCH') {
+  if (typeName === "AMAZON_ELASTICSEARCH") {
     if (isWindowsPlatform) {
       printer.info(`@searchable mocking is not supported on Windows. Search queries against the mock API will not work.`);
     }
 
     return {
       ...commonProps,
-      type: 'AMAZON_ELASTICSEARCH',
+      type: "AMAZON_ELASTICSEARCH",
       name: resource.Properties.Name,
     };
   }
@@ -101,7 +101,7 @@ export function appSyncDataSourceHandler(
   return {
     ...commonProps,
     name: resourceName,
-    type: 'NONE',
+    type: "NONE",
   };
 }
 
@@ -115,10 +115,10 @@ export type AppSyncAPIProcessedResource = CloudFormationProcessedResourceResult 
   additionalAuthenticationProviders: any;
 };
 export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncAPIProcessedResource {
-  const apiId = 'amplify-test-api-id';
+  const apiId = "amplify-test-api-id";
   const processedResource = {
-    cfnExposedAttributes: { ApiId: 'ApiId', Arn: 'Arn', GraphQLUrl: 'GraphQLUrl' },
-    name: cfnContext.params.AppSyncApiName || 'AppSyncTransformer',
+    cfnExposedAttributes: { ApiId: "ApiId", Arn: "Arn", GraphQLUrl: "GraphQLUrl" },
+    name: cfnContext.params.AppSyncApiName || "AppSyncTransformer",
     defaultAuthenticationType: {
       authenticationType: resource.Properties.AuthenticationType,
       ...(resource.Properties.OpenIDConnectConfig ? { openIDConnectConfig: resource.Properties.OpenIDConnectConfig } : {}),
@@ -127,10 +127,10 @@ export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: Cl
     Ref: `arn:aws:appsync:us-east-1:123456789012:apis/${apiId}`,
     Arn: `arn:aws:appsync:us-east-1:123456789012:apis/${apiId}`,
     ApiId: apiId,
-    GraphQLUrl: 'http://localhost:20002/',
+    GraphQLUrl: "http://localhost:20002/",
     ...(resource.Properties.AdditionalAuthenticationProviders
       ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
+          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map((p) => {
             return {
               authenticationType: p.AuthenticationType,
               ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
@@ -152,12 +152,12 @@ export type AppSyncAPIKeyProcessedResource = CloudFormationProcessedResourceResu
 export function appSyncAPIKeyResourceHandler(
   resourceName,
   resource,
-  cfnContext: CloudFormationParseContext,
+  cfnContext: CloudFormationParseContext
 ): AppSyncAPIKeyProcessedResource {
-  const value = 'da2-fakeApiId123456'; // TODO: Generate
+  const value = "da2-fakeApiId123456"; // TODO: Generate
   const arn = `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/apikey/apikeya1bzhi${value}`;
   const processedResource = {
-    cfnExposedAttributes: { ApiKey: 'ApiKey', Arn: 'ref' },
+    cfnExposedAttributes: { ApiKey: "ApiKey", Arn: "ref" },
     ApiKey: value,
     Ref: arn,
     Arn: arn,
@@ -177,7 +177,7 @@ export function appSyncSchemaHandler(resourceName, resource, cfnContext: CloudFo
     result.definitionS3Location = parseValue(resource.Properties.DefinitionS3Location, cfnContext);
   } else {
     throw new Error(
-      'Invalid configuration for AWS::AppSync::GraphQLSchema. Missing one of the required property (DefinitionS3Location or Definition)',
+      "Invalid configuration for AWS::AppSync::GraphQLSchema. Missing one of the required property (DefinitionS3Location or Definition)"
     );
   }
   return result;
@@ -193,7 +193,7 @@ export type AppSyncResolverProcessedResource = CloudFormationProcessedResourceRe
   requestMappingTemplate?: string;
   responseMappingTemplate?: string;
   ResolverArn: string;
-  kind: 'UNIT' | 'PIPELINE';
+  kind: "UNIT" | "PIPELINE";
 };
 
 export function appSyncResolverHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncResolverProcessedResource {
@@ -212,17 +212,17 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
   let dataSourceName;
   let functions;
 
-  if (properties.Kind === 'PIPELINE') {
-    if (typeof properties.PipelineConfig === 'undefined') {
-      throw new Error('Pipeline DataSource config is missing required property PipelineConfig');
+  if (properties.Kind === "PIPELINE") {
+    if (typeof properties.PipelineConfig === "undefined") {
+      throw new Error("Pipeline DataSource config is missing required property PipelineConfig");
     }
-    functions = (properties.PipelineConfig.Functions || []).map(f => parseValue(f, cfnContext));
+    functions = (properties.PipelineConfig.Functions || []).map((f) => parseValue(f, cfnContext));
   } else {
     dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   }
 
   return {
-    cfnExposedAttributes: { FieldName: 'fieldName', ResolverArn: 'ResolverArn', TypeName: 'typeName' },
+    cfnExposedAttributes: { FieldName: "fieldName", ResolverArn: "ResolverArn", TypeName: "typeName" },
     dataSourceName,
     typeName: properties.TypeName,
     functions,
@@ -231,7 +231,7 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     responseMappingTemplateLocation: responseMappingTemplateLocation,
     requestMappingTemplate,
     responseMappingTemplate,
-    kind: properties.Kind || 'UNIT',
+    kind: properties.Kind || "UNIT",
     ResolverArn: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/types/${properties.TypeName}/resolvers/${properties.FieldName}`,
   };
 }
@@ -262,7 +262,7 @@ export function appSyncFunctionHandler(resourceName, resource, cfnContext: Cloud
   const dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   return {
     ref: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/functions/${resource.Properties.Name}`,
-    cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'ref', FunctionId: 'name', Name: 'name' },
+    cfnExposedAttributes: { DataSourceName: "dataSourceName", FunctionArn: "ref", FunctionId: "name", Name: "name" },
     name: resource.Properties.Name,
     dataSourceName,
     requestMappingTemplateLocation: requestMappingTemplateLocation,

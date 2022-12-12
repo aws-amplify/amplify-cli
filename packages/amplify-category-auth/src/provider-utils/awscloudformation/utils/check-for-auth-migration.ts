@@ -1,8 +1,8 @@
-import { $TSContext, AmplifyCategories, getMigrateResourceMessageForOverride } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { generateAuthStackTemplate } from './generate-auth-stack-template';
-import { migrateResourceToSupportOverride } from './migrate-override-resource';
+import { $TSContext, AmplifyCategories, getMigrateResourceMessageForOverride } from "amplify-cli-core";
+import { printer, prompter } from "amplify-prompts";
+import { AuthInputState } from "../auth-inputs-manager/auth-input-state";
+import { generateAuthStackTemplate } from "./generate-auth-stack-template";
+import { migrateResourceToSupportOverride } from "./migrate-override-resource";
 
 /*
  * returns true if check goes through, false if cancelled

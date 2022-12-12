@@ -6,20 +6,21 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
-  readCFNTemplate, writeCFNTemplate,
-} from 'amplify-cli-core';
-import fs from 'fs-extra';
-import * as path from 'path';
-import { analyticsPush } from '../commands/analytics';
-import { invokeAuthPush } from '../plugin-client-api-auth';
-import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
-import { getAnalyticsResources } from '../utils/analytics-helper';
+  readCFNTemplate,
+  writeCFNTemplate,
+} from "amplify-cli-core";
+import fs from "fs-extra";
+import * as path from "path";
+import { analyticsPush } from "../commands/analytics";
+import { invokeAuthPush } from "../plugin-client-api-auth";
+import { getAllDefaults } from "../provider-utils/awscloudformation/default-values/pinpoint-defaults";
+import { getAnalyticsResources } from "../utils/analytics-helper";
 import {
   getNotificationsCategoryHasPinpointIfExists,
   getPinpointRegionMappings,
   pinpointHasInAppMessagingPolicy,
   pinpointInAppMessagingPolicyName,
-} from '../utils/pinpoint-helper';
+} from "../utils/pinpoint-helper";
 
 /**
  * checks if the project has been migrated to the latest version of in-app messaging
@@ -31,9 +32,9 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
   if (resources.length > 0 && !pinpointHasInAppMessagingPolicy(context)) {
     const amplifyMeta = stateManager.getMeta();
     const analytics = amplifyMeta[AmplifyCategories.ANALYTICS] || {};
-    Object.keys(analytics).forEach(resourceName => {
+    Object.keys(analytics).forEach((resourceName) => {
       const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
-      const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
+      const templateFilePath = path.join(analyticsResourcePath, "pinpoint-cloudformation-template.json");
       const cfn = JSONUtilities.readJson(templateFilePath);
       const updatedCfn = migratePinpointCFN(cfn);
       fs.ensureDirSync(analyticsResourcePath);
@@ -56,10 +57,17 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resource);
     stateManager.setResourceParametersJson(undefined, AmplifyCategories.ANALYTICS, resource, resourceParameters);
 
-    const templateFileName = 'pinpoint-cloudformation-template.json';
+    const templateFileName = "pinpoint-cloudformation-template.json";
     const templateFilePath = path.join(analyticsResourcePath, templateFileName);
     if (!fs.existsSync(templateFilePath)) {
-      const templateSourceFilePath = path.join(__dirname, '..', 'provider-utils', 'awscloudformation', 'cloudformation-templates', templateFileName);
+      const templateSourceFilePath = path.join(
+        __dirname,
+        "..",
+        "provider-utils",
+        "awscloudformation",
+        "cloudformation-templates",
+        templateFileName
+      );
       const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
       cfnTemplate.Mappings = await getPinpointRegionMappings(context);
       await writeCFNTemplate(cfnTemplate, templateFilePath);
@@ -67,12 +75,12 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
 
     const options = {
       service: AmplifySupportedService.PINPOINT,
-      providerPlugin: 'awscloudformation',
+      providerPlugin: "awscloudformation",
     };
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.ANALYTICS, resource, options);
 
     context.parameters.options.yes = true;
-    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true;
 
     await invokeAuthPush(context);
@@ -84,73 +92,68 @@ const migratePinpointCFN = (cfn: $TSAny): $TSAny => {
   const { Parameters, Conditions, Resources } = cfn;
 
   Parameters[pinpointInAppMessagingPolicyName] = {
-    Type: 'String',
-    Default: 'NONE',
+    Type: "String",
+    Default: "NONE",
   };
 
   Conditions.ShouldEnablePinpointInAppMessaging = {
-    'Fn::Not': [
+    "Fn::Not": [
       {
-        'Fn::Equals': [
+        "Fn::Equals": [
           {
-            Ref: 'pinpointInAppMessagingPolicyName',
+            Ref: "pinpointInAppMessagingPolicyName",
           },
-          'NONE',
+          "NONE",
         ],
       },
     ],
   };
 
   Resources.PinpointInAppMessagingPolicy = {
-    Condition: 'ShouldEnablePinpointInAppMessaging',
-    Type: 'AWS::IAM::Policy',
+    Condition: "ShouldEnablePinpointInAppMessaging",
+    Type: "AWS::IAM::Policy",
     Properties: {
       PolicyName: {
-        Ref: 'pinpointInAppMessagingPolicyName',
+        Ref: "pinpointInAppMessagingPolicyName",
       },
       Roles: [
         {
-          Ref: 'unauthRoleName',
+          Ref: "unauthRoleName",
         },
         {
-          Ref: 'authRoleName',
+          Ref: "authRoleName",
         },
       ],
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: [
-              'mobiletargeting:GetInAppMessages',
-            ],
+            Effect: "Allow",
+            Action: ["mobiletargeting:GetInAppMessages"],
             Resource: [
               {
-                'Fn::Join': [
-                  '',
+                "Fn::Join": [
+                  "",
                   [
-                    'arn:aws:mobiletargeting:',
+                    "arn:aws:mobiletargeting:",
                     {
-                      'Fn::FindInMap': [
-                        'RegionMapping',
+                      "Fn::FindInMap": [
+                        "RegionMapping",
                         {
-                          Ref: 'AWS::Region',
+                          Ref: "AWS::Region",
                         },
-                        'pinpointRegion',
+                        "pinpointRegion",
                       ],
                     },
-                    ':',
+                    ":",
                     {
-                      Ref: 'AWS::AccountId',
+                      Ref: "AWS::AccountId",
                     },
-                    ':apps/',
+                    ":apps/",
                     {
-                      'Fn::GetAtt': [
-                        'PinpointFunctionOutputs',
-                        'Id',
-                      ],
+                      "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"],
                     },
-                    '*',
+                    "*",
                   ],
                 ],
               },

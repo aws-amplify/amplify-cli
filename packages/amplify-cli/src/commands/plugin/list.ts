@@ -1,21 +1,21 @@
-import * as inquirer from 'inquirer';
-import { Context } from '../../domain/context';
-import { PluginCollection } from '../../domain/plugin-collection';
-import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
+import * as inquirer from "inquirer";
+import { Context } from "../../domain/context";
+import { PluginCollection } from "../../domain/plugin-collection";
+import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from "../../plugin-helpers/display-plugin-platform";
 
 export const run = async (context: Context) => {
   const { pluginPlatform } = context;
 
-  const plugins = 'active plugins';
-  const excluded = 'excluded plugins';
-  const generalInfo = 'general information';
+  const plugins = "active plugins";
+  const excluded = "excluded plugins";
+  const generalInfo = "general information";
 
   const options = [plugins, excluded, generalInfo];
 
   const answer = await inquirer.prompt({
-    type: 'list',
-    name: 'selection',
-    message: 'Select the section to list',
+    type: "list",
+    name: "selection",
+    message: "Select the section to list",
     choices: options,
   });
 
@@ -36,16 +36,16 @@ export const run = async (context: Context) => {
 };
 
 async function listPluginCollection(context: Context, collection: PluginCollection) {
-  const all = 'all';
+  const all = "all";
   const options = Object.keys(collection);
   if (options.length > 0) {
     let toList = options[0];
     if (options.length > 1) {
       options.push(all);
       const answer = await inquirer.prompt({
-        type: 'list',
-        name: 'selection',
-        message: 'Select the name of the plugin to list',
+        type: "list",
+        name: "selection",
+        message: "Select the name of the plugin to list",
         choices: options,
       });
       toList = answer.selection;
@@ -57,6 +57,6 @@ async function listPluginCollection(context: Context, collection: PluginCollecti
       displayPluginInfoArray(context, collection[toList]);
     }
   } else {
-    context.print.info('The collection is empty');
+    context.print.info("The collection is empty");
   }
 }

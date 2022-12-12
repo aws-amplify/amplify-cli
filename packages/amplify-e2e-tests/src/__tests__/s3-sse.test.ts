@@ -9,19 +9,19 @@ import {
   getBucketEncryption,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify always enables SSE on S3 buckets', () => {
+describe("amplify always enables SSE on S3 buckets", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('s3-test');
+    projRoot = await createNewProjectDir("s3-test");
   });
 
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
-  it('enables SSE on the deployment, category and hosting buckets', async () => {
+  it("enables SSE on the deployment, category and hosting buckets", async () => {
     // setup
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
@@ -42,5 +42,5 @@ describe('amplify always enables SSE on S3 buckets', () => {
 const expectSSEEnabledForBucket = async (bucket?: string) => {
   expect(bucket).toBeDefined();
   const result = await getBucketEncryption(bucket);
-  expect(result?.Rules?.[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm).toBe('AES256');
+  expect(result?.Rules?.[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm).toBe("AES256");
 };

@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import * as fs from "fs-extra";
 import {
   getConfiguredAmplifyClient,
   createConsoleApp,
@@ -6,7 +6,7 @@ import {
   createBackendEnvironment,
   deleteConsoleApp,
   deleteAmplifyStack,
-} from '../src/pullAndInit/amplifyConsoleOperations';
+} from "../src/pullAndInit/amplifyConsoleOperations";
 import {
   createNewProjectDir,
   initJSProjectWithProfile,
@@ -18,11 +18,11 @@ import {
   getSocialProviders,
   getAmplifyDirPath,
   isDeploymentSecretForEnvExists,
-} from '@aws-amplify/amplify-e2e-core';
-import { headlessInit } from '../src/pullAndInit/initProject';
-import { headlessPull, authConfigPull } from '../src/pullAndInit/pullProject';
-import { headlessDelete } from '../src/pullAndInit/deleteProject';
-import { getConfigFromProfile } from '../src/profile-helper';
+} from "@aws-amplify/amplify-e2e-core";
+import { headlessInit } from "../src/pullAndInit/initProject";
+import { headlessPull, authConfigPull } from "../src/pullAndInit/pullProject";
+import { headlessDelete } from "../src/pullAndInit/deleteProject";
+import { getConfigFromProfile } from "../src/profile-helper";
 import {
   removeFilesForTeam,
   removeFilesForThirdParty,
@@ -30,16 +30,16 @@ import {
   getTeamProviderInfo,
   getProjectConfig,
   removeDotConfigDir,
-} from '../src/pullAndInit/amplifyArtifactsManager';
-import * as util from '../src/util';
+} from "../src/pullAndInit/amplifyArtifactsManager";
+import * as util from "../src/util";
 
-describe('amplify console build', () => {
-  it('connects to team project', async () => {
+describe("amplify console build", () => {
+  it("connects to team project", async () => {
     const amplifyClient = getConfiguredAmplifyClient();
-    const projectName = 'cliintegrationteam';
+    const projectName = "cliintegrationteam";
 
     const appId = await createConsoleApp(projectName, amplifyClient);
-    let envName = 'enva';
+    let envName = "enva";
     let backendParams = generateBackendEnvParams(appId, projectName, envName);
 
     await createBackendEnvironment(backendParams, amplifyClient);
@@ -50,7 +50,7 @@ describe('amplify console build', () => {
     };
     const providersParam = {
       awscloudformation: {
-        configLevel: 'project',
+        configLevel: "project",
         useProfile: true,
         profileName: util.getProfileName(),
       },
@@ -62,7 +62,7 @@ describe('amplify console build', () => {
 
     let teamProviderInfo;
     //test for init a clean frontend project
-    const projectDirPath = await util.createNewProjectDir('console');
+    const projectDirPath = await util.createNewProjectDir("console");
     await headlessInit(projectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(projectDirPath)).toBeTruthy();
     teamProviderInfo = getTeamProviderInfo(projectDirPath);
@@ -75,10 +75,10 @@ describe('amplify console build', () => {
     expect(checkAmplifyFolderStructure(projectDirPath)).toBeTruthy();
     teamProviderInfo = getTeamProviderInfo(projectDirPath);
     expect(teamProviderInfo).toBeDefined();
-    expect(teamProviderInfo['enva']).toBeDefined();
+    expect(teamProviderInfo["enva"]).toBeDefined();
 
     //test for new env
-    envName = 'envb';
+    envName = "envb";
     backendParams = generateBackendEnvParams(appId, projectName, envName);
 
     await createBackendEnvironment(backendParams, amplifyClient);
@@ -88,14 +88,14 @@ describe('amplify console build', () => {
       appId,
     };
 
-    const projectDirPathForEnvB = await util.createNewProjectDir('console');
+    const projectDirPathForEnvB = await util.createNewProjectDir("console");
     await headlessInit(projectDirPathForEnvB, amplifyParam, providersParam, codegenParam);
 
     expect(checkAmplifyFolderStructure(projectDirPathForEnvB)).toBeTruthy();
 
     teamProviderInfo = getTeamProviderInfo(projectDirPathForEnvB);
     expect(teamProviderInfo).toBeDefined();
-    expect(teamProviderInfo['envb']).toBeDefined();
+    expect(teamProviderInfo["envb"]).toBeDefined();
 
     // clean up after the tests
     await headlessDelete(projectDirPath);
@@ -105,11 +105,11 @@ describe('amplify console build', () => {
     util.deleteProjectDir(projectDirPath);
   });
 
-  it('connects to third party project', async () => {
+  it("connects to third party project", async () => {
     const amplifyClient = getConfiguredAmplifyClient();
 
-    const projectName = 'cliintegrationthirdparty';
-    let envName = 'devteama';
+    const projectName = "cliintegrationthirdparty";
+    let envName = "devteama";
     const appIdA = await createConsoleApp(projectName, amplifyClient);
     let backendParams = generateBackendEnvParams(appIdA, projectName, envName);
     await createBackendEnvironment(backendParams, amplifyClient);
@@ -120,7 +120,7 @@ describe('amplify console build', () => {
     };
     const providersParam = {
       awscloudformation: {
-        configLevel: 'project',
+        configLevel: "project",
         useProfile: true,
         profileName: util.getProfileName(),
       },
@@ -131,19 +131,19 @@ describe('amplify console build', () => {
     };
 
     //create the original project
-    const originalProjectDirPath = await util.createNewProjectDir('console-original');
+    const originalProjectDirPath = await util.createNewProjectDir("console-original");
     await headlessInit(originalProjectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(originalProjectDirPath)).toBeTruthy();
     let originalTeamProviderInfo = getTeamProviderInfo(originalProjectDirPath);
     expect(originalTeamProviderInfo).toBeDefined();
-    expect(originalTeamProviderInfo['devteama']).toBeDefined();
+    expect(originalTeamProviderInfo["devteama"]).toBeDefined();
 
     //test for third party setup
-    const clonedProjectDirPath = await util.createNewProjectDir('console-cloned');
+    const clonedProjectDirPath = await util.createNewProjectDir("console-cloned");
     fs.copySync(originalProjectDirPath, clonedProjectDirPath);
     removeFilesForThirdParty(clonedProjectDirPath);
     removeDotConfigDir(clonedProjectDirPath);
-    envName = 'devteamb';
+    envName = "devteamb";
     const appIdB = await createConsoleApp(projectName, amplifyClient);
     backendParams = generateBackendEnvParams(appIdB, projectName, envName);
     await createBackendEnvironment(backendParams, amplifyClient);
@@ -155,7 +155,7 @@ describe('amplify console build', () => {
     expect(checkAmplifyFolderStructure(clonedProjectDirPath)).toBeTruthy();
     let clonedTeamProviderInfo = getTeamProviderInfo(clonedProjectDirPath);
     expect(clonedTeamProviderInfo).toBeDefined();
-    expect(clonedTeamProviderInfo['devteamb']).toBeDefined();
+    expect(clonedTeamProviderInfo["devteamb"]).toBeDefined();
 
     //clean up after the tests
     await headlessDelete(originalProjectDirPath);
@@ -167,12 +167,12 @@ describe('amplify console build', () => {
   });
 });
 
-describe('amplify app console tests', () => {
+describe("amplify app console tests", () => {
   let projRoot: string;
   let stackName: string;
   let AmplifyAppID: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('consoleApp');
+    projRoot = await createNewProjectDir("consoleApp");
   });
   afterEach(async () => {
     if (!fs.existsSync(getAmplifyDirPath(projRoot)) && stackName && AmplifyAppID) {
@@ -183,11 +183,11 @@ describe('amplify app console tests', () => {
     }
     deleteProjectDir(projRoot);
   });
-  it('test headless pull with authConfig', async () => {
-    const envName = 'dev';
+  it("test headless pull with authConfig", async () => {
+    const envName = "dev";
     const providersParam = {
       awscloudformation: {
-        configLevel: 'project',
+        configLevel: "project",
         useProfile: true,
         profileName: util.getProfileName(),
       },
@@ -204,7 +204,7 @@ describe('amplify app console tests', () => {
       APPLE_KEY_ID,
       APPLE_PRIVATE_KEY,
     } = getSocialProviders();
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: "authConsoleTest", envName });
     await addAuthWithDefaultSocial(projRoot, {});
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeTruthy();
     await amplifyPushAuth(projRoot);
@@ -217,8 +217,8 @@ describe('amplify app console tests', () => {
     expect(stackName).toBeDefined();
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
+    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
+    expect(authTeamInfo).not.toHaveProperty("hostedUIProviderCreds");
 
     deleteAmplifyDir(projRoot);
 
@@ -242,8 +242,8 @@ describe('amplify app console tests', () => {
     appId = teamInfo[envName].awscloudformation.AmplifyAppId;
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
+    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
+    expect(authTeamInfo).not.toHaveProperty("hostedUIProviderCreds");
 
     // with frontend
     const frontendConfig = deleteAmplifyDir(projRoot);
@@ -266,38 +266,38 @@ describe('amplify app console tests', () => {
         },
       },
       {
-        frontend: 'javascript',
+        frontend: "javascript",
         config: {
-          BuildCommand: 'yarn run build',
-          DistributionDir: 'build',
-          SourceDir: 'src',
-          StartCommand: 'yarn run start',
+          BuildCommand: "yarn run build",
+          DistributionDir: "build",
+          SourceDir: "src",
+          StartCommand: "yarn run start",
         },
-        framework: 'react-native',
-      },
+        framework: "react-native",
+      }
     );
 
     const projectConfig = getProjectConfig(projRoot);
     expect(projectConfig).toEqual({
-      providers: ['awscloudformation'],
-      projectName: 'authConsoleTest',
-      version: '3.1',
-      frontend: 'javascript',
+      providers: ["awscloudformation"],
+      projectName: "authConsoleTest",
+      version: "3.1",
+      frontend: "javascript",
       javascript: {
-        framework: 'react-native',
+        framework: "react-native",
         config: {
-          SourceDir: 'src',
-          DistributionDir: 'build',
-          BuildCommand: 'yarn run build',
-          StartCommand: 'yarn run start',
+          SourceDir: "src",
+          DistributionDir: "build",
+          BuildCommand: "yarn run build",
+          StartCommand: "yarn run start",
         },
       },
     });
   });
 
-  it('test pull with auth config', async () => {
-    const envName = 'dev';
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
+  it("test pull with auth config", async () => {
+    const envName = "dev";
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: "authConsoleTest", envName });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     let teamInfo = getTeamProviderInfo(projRoot);
@@ -308,8 +308,8 @@ describe('amplify app console tests', () => {
     expect(stackName).toBeDefined();
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
+    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
+    expect(authTeamInfo).not.toHaveProperty("hostedUIProviderCreds");
 
     deleteAmplifyDir(projRoot);
 
@@ -320,7 +320,7 @@ describe('amplify app console tests', () => {
     appId = teamInfo[envName].awscloudformation.AmplifyAppId;
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
+    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
+    expect(authTeamInfo).not.toHaveProperty("hostedUIProviderCreds");
   });
 });

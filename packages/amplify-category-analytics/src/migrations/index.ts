@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { inAppMessagingMigrationCheck } from './in-app-messaging-migration';
+import { $TSContext } from "amplify-cli-core";
+import { inAppMessagingMigrationCheck } from "./in-app-messaging-migration";
 
 /**
  * Analytics plugin migrations
@@ -13,7 +13,7 @@ export const analyticsMigrations = async (context: $TSContext): Promise<void> =>
  * checks if the project has been migrated to the latest version
  */
 export const migrationCheck = async (context: $TSContext): Promise<void> => {
-  if (['add', 'update', 'push'].includes(context.input.command)) {
+  if (["add", "update", "push"].includes(context.input.command)) {
     await analyticsMigrations(context);
   }
 };

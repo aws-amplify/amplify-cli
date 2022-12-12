@@ -11,11 +11,11 @@ import {
   exitOnNextTick,
   IAmplifyResource,
   ResourceDoesNotExistError,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import inquirer from 'inquirer';
-import os from 'os';
-import path from 'path';
+} from "amplify-cli-core";
+import { printer } from "amplify-prompts";
+import inquirer from "inquirer";
+import os from "os";
+import path from "path";
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = AmplifyCategories.ANALYTICS;
 const service = AmplifySupportedService.KINESIS;
@@ -27,13 +27,13 @@ const service = AmplifySupportedService.KINESIS;
  * @param serviceMetadata Amplify Meta for analytics category kinesis resource
  * @returns kinesis resource name
  */
-export const addWalkthrough = async (context : $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSContext> => {
+export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSContext> => {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    throw new AmplifyError('ResourceAlreadyExistsError', {
-      message: 'Kinesis resource have already been added to your project.',
-      resolution: 'Please run amplify update analytics to make changes to the existing Kinesis resource.',
+    throw new AmplifyError("ResourceAlreadyExistsError", {
+      message: "Kinesis resource have already been added to your project.",
+      resolution: "Please run amplify update analytics to make changes to the existing Kinesis resource.",
     });
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -42,7 +42,7 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
 /**
  * migration not implemented/required
  */
-export const migrate = () : void => {
+export const migrate = (): void => {
   // no-op for now
 };
 
@@ -55,13 +55,13 @@ interface IKinesisInputType {
 }
 
 interface IKinesisCRUDPolicy {
-  Effect: string,
-  Action: $TSAny,
-  Resource: $TSAny,
+  Effect: string;
+  Action: $TSAny;
+  Resource: $TSAny;
 }
-interface IKinesisPolicyAttributes{
- policy: IKinesisCRUDPolicy,
- attributes : Array<$TSAny>
+interface IKinesisPolicyAttributes {
+  policy: IKinesisCRUDPolicy;
+  attributes: Array<$TSAny>;
 }
 
 /**
@@ -70,11 +70,11 @@ interface IKinesisPolicyAttributes{
  * configurations of the Auth resource have been configured.
  */
 interface IAuthConfigRequirements {
-  errors: Array<string>
-  authEnabled : boolean;
-  authImported : boolean;
-  authSelections :boolean;
-  allowUnauthenticatedIdentities : boolean;
+  errors: Array<string>;
+  authEnabled: boolean;
+  authImported: boolean;
+  authSelections: boolean;
+  allowUnauthenticatedIdentities: boolean;
   requirementsMet: boolean;
 }
 
@@ -84,31 +84,31 @@ interface IAuthConfigRequirements {
  * configurations of the Auth resource have been configured.
  */
 interface IAuthConfigRequirements {
-  errors: Array<string>
-  authEnabled : boolean;
-  authImported : boolean;
-  authSelections :boolean;
-  allowUnauthenticatedIdentities : boolean;
+  errors: Array<string>;
+  authEnabled: boolean;
+  authImported: boolean;
+  authSelections: boolean;
+  allowUnauthenticatedIdentities: boolean;
   requirementsMet: boolean;
 }
 
 interface IKinesisCRUDPolicy {
-  Effect: string,
-  Action: $TSAny,
-  Resource: $TSAny,
+  Effect: string;
+  Action: $TSAny;
+  Resource: $TSAny;
 }
 
-interface IKinesisPolicyAttributes{
-  policy: IKinesisCRUDPolicy,
-  attributes : Array<$TSAny>
+interface IKinesisPolicyAttributes {
+  policy: IKinesisCRUDPolicy;
+  attributes: Array<$TSAny>;
 }
 
 const configure = async (
   context: $TSContext,
   defaultValuesFilename: string,
   serviceMetadata: $TSAny,
-  resourceName: string|null = null,
-) : Promise<$TSAny> => {
+  resourceName: string | null = null
+): Promise<$TSAny> => {
   const { amplify } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -120,14 +120,14 @@ const configure = async (
     .map((input: IKinesisInputType) => ({
       name: input.key,
       message: input.question,
-      type: input.type || 'input',
+      type: input.type || "input",
       choices: input.options || undefined,
       required: input.required || false,
-      validate: 'validation' in input ? amplify.inputValidation(input) : undefined,
+      validate: "validation" in input ? amplify.inputValidation(input) : undefined,
       default: () => defaultValues[input.key],
     }))
     // when resourceName is provider, we are in update flow - skip name question
-    .filter((question: { name: string; }) => (resourceName && question.name !== 'kinesisStreamName') || !resourceName);
+    .filter((question: { name: string }) => (resourceName && question.name !== "kinesisStreamName") || !resourceName);
 
   return inquirer.prompt(questions).then(async (answers: $TSAny) => {
     const targetResourceName = resourceName || answers.kinesisStreamName;
@@ -144,7 +144,7 @@ const configure = async (
         dir: templateDir,
         template: serviceMetadata.cfnFilename,
         target: path.join(resourceDirPath, serviceMetadata.cfnFilename),
-        paramsFile: path.join(resourceDirPath, 'parameters.json'),
+        paramsFile: path.join(resourceDirPath, "parameters.json"),
       },
     ];
 
@@ -158,14 +158,14 @@ const configure = async (
     };
 
     const analyticsRequirements = {
-      authSelections: 'identityPoolOnly',
+      authSelections: "identityPoolOnly",
       allowUnauthenticatedIdentities: true,
     };
 
-    const checkResult: IAuthConfigRequirements = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    const checkResult: IAuthConfigRequirements = await context.amplify.invokePluginMethod(context, "auth", undefined, "checkRequirements", [
       analyticsRequirements,
       context,
-      'analytics',
+      "analytics",
       targetResourceName,
     ]);
 
@@ -181,20 +181,18 @@ const configure = async (
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
     if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      printer.warn('Adding analytics would add the Auth category to the project if not already added.');
+      printer.warn("Adding analytics would add the Auth category to the project if not already added.");
       if (
-        !await amplify.confirmPrompt(
-          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
-        )
+        !(await amplify.confirmPrompt(
+          "Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)"
+        ))
       ) {
-        printer.warn(
-          'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
-        );
+        printer.warn('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
         analyticsRequirements.allowUnauthenticatedIdentities = false;
       }
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+      await context.amplify.invokePluginMethod(context, "auth", undefined, "externalAuthEnable", [
         context,
-        'analytics',
+        "analytics",
         targetResourceName,
         analyticsRequirements,
       ]);
@@ -227,12 +225,12 @@ const resourceNameAlreadyExists = (context: $TSContext, name: string): boolean =
  * @param serviceMetadata Amplify Meta, Analytics resource for Kinesis service
  * @returns Kinesis resource name?( needs validation )
  */
-export const updateWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny) : Promise<$TSAny> => {
+export const updateWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSAny> => {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();
-  const kinesisResources = (allResources as IAmplifyResource[]).filter(
-    resource => resource.service === service,
-  ).map(resource => resource.resourceName);
+  const kinesisResources = (allResources as IAmplifyResource[])
+    .filter((resource) => resource.service === service)
+    .map((resource) => resource.resourceName);
 
   let targetResourceName;
   if (kinesisResources.length === 0) {
@@ -249,9 +247,9 @@ export const updateWalkthrough = async (context: $TSContext, defaultValuesFilena
   } else {
     const resourceQuestion = [
       {
-        name: 'resourceName',
-        message: 'Please select the Kinesis stream you would want to update',
-        type: 'list',
+        name: "resourceName",
+        message: "Please select the Kinesis stream you would want to update",
+        type: "list",
         choices: kinesisResources,
       },
     ];
@@ -260,7 +258,7 @@ export const updateWalkthrough = async (context: $TSContext, defaultValuesFilena
     targetResourceName = answer.resourceName;
   }
 
-  const result:$TSAny = await configure(context, defaultValuesFilename, serviceMetadata, targetResourceName as string);
+  const result: $TSAny = await configure(context, defaultValuesFilename, serviceMetadata, targetResourceName as string);
   // eslint-disable-next-line consistent-return
   return result;
 };
@@ -273,42 +271,42 @@ export const updateWalkthrough = async (context: $TSContext, defaultValuesFilena
  */
 export const getIAMPolicies = (resourceName: string, crudOptions: Array<$TSAny>): IKinesisPolicyAttributes => {
   const actions = crudOptions
-    .map(crudOption => {
+    .map((crudOption) => {
       switch (crudOption) {
-        case 'create':
-          return ['kinesis:CreateStream', 'kinesis:RegisterStreamConsumer', 'kinesis:AddTagsToStream'];
+        case "create":
+          return ["kinesis:CreateStream", "kinesis:RegisterStreamConsumer", "kinesis:AddTagsToStream"];
 
-        case 'update':
+        case "update":
           return [
-            'kinesis:EnableEnhancedMonitoring',
-            'kinesis:DisableEnhancedMonitoring',
-            'kinesis:IncreaseStreamRetentionPeriod',
-            'kinesis:DecreaseStreamRetentionPeriod',
-            'kinesis:MergeShards',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-            'kinesis:SplitShard',
-            'kinesis:UpdateShardCount',
+            "kinesis:EnableEnhancedMonitoring",
+            "kinesis:DisableEnhancedMonitoring",
+            "kinesis:IncreaseStreamRetentionPeriod",
+            "kinesis:DecreaseStreamRetentionPeriod",
+            "kinesis:MergeShards",
+            "kinesis:PutRecord",
+            "kinesis:PutRecords",
+            "kinesis:SplitShard",
+            "kinesis:UpdateShardCount",
           ];
 
-        case 'read':
+        case "read":
           return [
-            'kinesis:ListShards',
-            'kinesis:ListStreams',
-            'kinesis:ListStreamConsumers',
-            'kinesis:DescribeStream',
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStreamConsumer',
-            'kinesis:GetRecords',
-            'kinesis:GetShardIterator',
-            'kinesis:SubscribeToShard',
-            'kinesis:DescribeLimits',
-            'kinesis:ListTagsForStream',
-            'kinesis:SubscribeToShard',
+            "kinesis:ListShards",
+            "kinesis:ListStreams",
+            "kinesis:ListStreamConsumers",
+            "kinesis:DescribeStream",
+            "kinesis:DescribeStreamSummary",
+            "kinesis:DescribeStreamConsumer",
+            "kinesis:GetRecords",
+            "kinesis:GetShardIterator",
+            "kinesis:SubscribeToShard",
+            "kinesis:DescribeLimits",
+            "kinesis:ListTagsForStream",
+            "kinesis:SubscribeToShard",
           ];
 
-        case 'delete':
-          return ['kinesis:DeleteStream', 'kinesis:DeregisterStreamConsumer', 'kinesis:RemoveTagsFromStream'];
+        case "delete":
+          return ["kinesis:DeleteStream", "kinesis:DeregisterStreamConsumer", "kinesis:RemoveTagsFromStream"];
 
         default:
           console.log(`${crudOption} not supported`);
@@ -318,12 +316,12 @@ export const getIAMPolicies = (resourceName: string, crudOptions: Array<$TSAny>)
     .reduce((flattened, kinesisActions) => [...flattened, ...kinesisActions], []);
 
   const policy = {
-    Effect: 'Allow',
+    Effect: "Allow",
     Action: actions,
     Resource: { Ref: `${category}${resourceName}kinesisStreamArn` },
   };
 
-  const attributes = ['kinesisStreamArn'];
+  const attributes = ["kinesisStreamArn"];
   return { policy, attributes };
 };
 
@@ -332,14 +330,14 @@ export const getIAMPolicies = (resourceName: string, crudOptions: Array<$TSAny>)
  * @param context Amplify CLI context
  * @returns resourceName if found
  */
-const resourceAlreadyExists = (context: $TSContext) : string|undefined => {
+const resourceAlreadyExists = (context: $TSContext): string | undefined => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let resourceName;
 
   if (amplifyMeta[category]) {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === service) {
         resourceName = resource;
       }

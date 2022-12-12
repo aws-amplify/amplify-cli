@@ -1,5 +1,6 @@
 import {
-  addApiWithBlankSchema, addFunction,
+  addApiWithBlankSchema,
+  addFunction,
   amplifyPush,
   amplifyPushFunction,
   createNewProjectDir,
@@ -8,13 +9,13 @@ import {
   generateRandomShortId,
   initJSProjectWithProfile,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('test function deploy when other resources are present', () => {
+describe("test function deploy when other resources are present", () => {
   let projectRoot: string;
 
   beforeEach(async () => {
-    projectRoot = await createNewProjectDir('functions');
+    projectRoot = await createNewProjectDir("functions");
   });
 
   afterEach(async () => {
@@ -22,20 +23,23 @@ describe('test function deploy when other resources are present', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('testing amplify push function command', async () => {
-    const apiName = 'myApi';
+  it("testing amplify push function command", async () => {
+    const apiName = "myApi";
     await initJSProjectWithProfile(projectRoot, {
-      name: 'functions',
+      name: "functions",
     });
     await addApiWithBlankSchema(projectRoot, { apiName });
-    await updateApiSchema(projectRoot, apiName, 'simple_model.graphql');
+    await updateApiSchema(projectRoot, apiName, "simple_model.graphql");
     await amplifyPush(projectRoot);
     const fnName = `integtestFn${generateRandomShortId()}`;
-    await addFunction(projectRoot, {
-      name: fnName,
-      functionTemplate: 'Hello World',
-    },
-    'nodejs');
+    await addFunction(
+      projectRoot,
+      {
+        name: fnName,
+        functionTemplate: "Hello World",
+      },
+      "nodejs"
+    );
     await amplifyPushFunction(projectRoot);
   });
 });

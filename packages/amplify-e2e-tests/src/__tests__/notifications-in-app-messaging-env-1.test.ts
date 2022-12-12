@@ -11,16 +11,14 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   removeNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
-import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
-import {
-  getShortId,
-} from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { addEnvironment, checkoutEnvironment, removeEnvironment } from "../environment/env";
+import { getShortId } from "../import-helpers";
 
-describe('notifications in-app with existing pinpoint', () => {
-  const testChannel = 'InAppMessaging';
-  const testChannelSelection = 'In-App Messaging';
-  const envName = 'inapptesta';
+describe("notifications in-app with existing pinpoint", () => {
+  const testChannel = "InAppMessaging";
+  const testChannelSelection = "In-App Messaging";
+  const envName = "inapptesta";
   const projectPrefix = `notification${testChannel}`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -53,9 +51,9 @@ describe('notifications in-app with existing pinpoint', () => {
     await amplifyPushAuth(projectRoot);
 
     // expect that Notifications, Analytics, and Auth categories are shown
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // InAppMessaging & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
@@ -73,11 +71,11 @@ describe('notifications in-app with existing pinpoint', () => {
     expect(pinpointId).toEqual(analyticsMeta.Id);
 
     // make sure we can add new environments
-    const newEnvName = 'inapptestb';
+    const newEnvName = "inapptestb";
     await addEnvironment(projectRoot, { envName: newEnvName });
     // new environment should show that we still need to push resources for this environment
-    await amplifyStatus(projectRoot, 'Create');
-    await amplifyStatus(projectRoot, 'Notifications');
+    await amplifyStatus(projectRoot, "Create");
+    await amplifyStatus(projectRoot, "Notifications");
     // remove in-app messaging on this environment
     await removeNotificationChannel(projectRoot, testChannelSelection);
     await amplifyPushAuth(projectRoot);
@@ -97,16 +95,16 @@ describe('notifications in-app with existing pinpoint', () => {
     expect(originalEnvCloudBackendInAppMsgMeta.Enabled).toBe(true);
 
     // resources should still exist on the first environment (this checks that status works after checkout)
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
-    await amplifyStatus(projectRoot, 'Notifications');
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
+    await amplifyStatus(projectRoot, "Notifications");
 
     // delete the 2nd environment
     await removeEnvironment(projectRoot, { envName: newEnvName });
 
     // resources should still exist on the first environment (this checks that env1 is not deleted when deleting env2)
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
-    await amplifyStatus(projectRoot, 'Notifications');
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
+    await amplifyStatus(projectRoot, "Notifications");
   });
 });

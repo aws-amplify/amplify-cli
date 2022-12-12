@@ -1,21 +1,23 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
   addAuthWithDefault,
   removeAuthWithDefault,
   getBackendAmplifyMeta,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
 const defaultsSettings = {
-  name: 'authTest',
+  name: "authTest",
 };
 
-describe('amplify add auth...a', () => {
+describe("amplify add auth...a", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
   });
 
   afterEach(async () => {
@@ -23,14 +25,14 @@ describe('amplify add auth...a', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a project and add auth with defaults and push, then remove auth and push should clean up trust relationship conditions', async () => {
+  it("...should init a project and add auth with defaults and push, then remove auth and push should clean up trust relationship conditions", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
 
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
     const { AuthRoleName, UnauthRoleName } = amplifyMeta.providers.awscloudformation;
-    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => res.service === 'Cognito') as any;
+    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => res.service === "Cognito") as any;
     const idpId = cognitoResource.output.IdentityPoolId;
 
     expect(AuthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);

@@ -12,12 +12,12 @@ import {
   listRolePolicies,
   updateAuthAddAdminQueries,
   validateRestApiMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify add api (REST)', () => {
+describe("amplify add api (REST)", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('rest-api');
+    projRoot = await createNewProjectDir("rest-api");
   });
 
   afterEach(async () => {
@@ -25,7 +25,7 @@ describe('amplify add api (REST)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project, add a DDB, then add a crud rest api', async () => {
+  it("init a project, add a DDB, then add a crud rest api", async () => {
     const randomId = await global.getRandomId();
     const DDB_NAME = `ddb${randomId}`;
     await initJSProjectWithProfile(projRoot, {});
@@ -36,30 +36,30 @@ describe('amplify add api (REST)', () => {
     const meta = getProjectMeta(projRoot);
     expect(meta.storage[DDB_NAME]).toBeDefined();
     const { service, lastPushTimeStamp, lastPushDirHash } = meta.storage[DDB_NAME];
-    expect(service).toBe('DynamoDB');
+    expect(service).toBe("DynamoDB");
     expect(lastPushTimeStamp).toBeDefined();
     expect(lastPushDirHash).toBeDefined();
     validateRestApiMeta(projRoot, meta);
   });
 
-  it('init a project, then add a serverless rest api', async () => {
+  it("init a project, then add a serverless rest api", async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addRestApi(projRoot, { isCrud: false });
     await amplifyPushUpdate(projRoot);
     validateRestApiMeta(projRoot);
   });
 
-  it('init a project, create lambda and attach it to an api', async () => {
+  it("init a project, create lambda and attach it to an api", async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addFunction(projRoot, { functionTemplate: "Hello World" }, "nodejs");
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
     validateRestApiMeta(projRoot);
   });
 
-  it('init a project, create lambda and attach multiple rest apis', async () => {
+  it("init a project, create lambda and attach multiple rest apis", async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addFunction(projRoot, { functionTemplate: "Hello World" }, "nodejs");
     await addRestApi(projRoot, {
       existingLambda: true,
       restrictAccess: true,
@@ -115,5 +115,4 @@ describe('amplify add api (REST)', () => {
 
     validateRestApiMeta(projRoot, amplifyMeta);
   });
-
 });

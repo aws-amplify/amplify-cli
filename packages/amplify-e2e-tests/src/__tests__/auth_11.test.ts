@@ -12,16 +12,16 @@ import {
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
 const defaultsSettings = {
-  name: 'authTest',
+  name: "authTest",
 };
 
-describe('amplify add auth...', () => {
+describe("amplify add auth...", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
   });
 
   afterEach(async () => {
@@ -29,7 +29,7 @@ describe('amplify add auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init an Android project and add default auth', async () => {
+  it("...should init an Android project and add default auth", async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -42,9 +42,9 @@ describe('amplify add auth...', () => {
     let clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
 
     expect(clients[0].UserPoolClient.ClientSecret).toBeUndefined();
-    const parameters = getCLIInputs(projRoot, 'auth', id);
+    const parameters = getCLIInputs(projRoot, "auth", id);
     parameters.cognitoConfig.userpoolClientGenerateSecret = true;
-    setCLIInputs(projRoot, 'auth', id, parameters);
+    setCLIInputs(projRoot, "auth", id, parameters);
 
     await amplifyPushAuth(projRoot);
 
@@ -59,12 +59,12 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
   });
 
-  it('should init with a long env name and add default auth', async () => {
-    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: 'longenviro' });
+  it("should init with a long env name and add default auth", async () => {
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: "longenviro" });
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
   });

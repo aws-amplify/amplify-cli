@@ -11,19 +11,19 @@ import {
   deleteProjectDir,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
+} from "@aws-amplify/amplify-e2e-core";
+import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from "../environment/env";
 import {
   createDynamoDBSettings,
   expectDynamoDBLocalAndOGMetaFilesOutputMatching,
   expectLocalAndCloudMetaFilesMatching,
   getShortId,
   importDynamoDBTable,
-} from '../import-helpers';
+} from "../import-helpers";
 
-describe('dynamodb import 2a', () => {
-  const projectPrefix = 'ddbimp';
-  const ogProjectPrefix = 'ogddbimp';
+describe("dynamodb import 2a", () => {
+  const projectPrefix = "ddbimp";
+  const ogProjectPrefix = "ogddbimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -34,7 +34,7 @@ describe('dynamodb import 2a', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the dynamodb tables to import by other test projects
@@ -95,15 +95,15 @@ describe('dynamodb import 2a', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('imported dynamodb table, create prod env, files should match', async () => {
+  it("imported dynamodb table, create prod env, files should match", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
     await amplifyPushAuth(projectRoot);
 
-    const firstEnvName = 'integtest';
-    const secondEnvName = 'prod';
+    const firstEnvName = "integtest";
+    const secondEnvName = "prod";
 
     await addEnvironmentWithImportedAuth(projectRoot, {
       envName: secondEnvName,

@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import { Packager } from '../types/packaging-types';
-import { ServiceName } from './constants';
-import { packageFunction } from './packageFunction';
-import { packageLayer } from './packageLayer';
+import _ from "lodash";
+import { Packager } from "../types/packaging-types";
+import { ServiceName } from "./constants";
+import { packageFunction } from "./packageFunction";
+import { packageLayer } from "./packageLayer";
 
 export const packageResource: Packager = async (context, resource, isExport) =>
   getPackagerForService(resource.service)(context, resource, isExport);

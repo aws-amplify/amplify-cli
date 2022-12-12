@@ -1,11 +1,11 @@
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { KeyTransformer } from 'graphql-key-transformer';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import { ModelAuthTransformer } from "graphql-auth-transformer";
+import { ModelConnectionTransformer } from "graphql-connection-transformer";
+import { KeyTransformer } from "graphql-key-transformer";
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
+import { FeatureFlagProvider, GraphQLTransform } from "graphql-transformer-core";
 
-import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { GraphQLClient } from "./utils/graphql-client";
+import { deploy, launchDDBLocal, terminateDDB, logDebug } from "./utils/index";
 
 let GRAPHQL_CLIENT = undefined;
 let GRAPHQL_ENDPOINT = undefined;
@@ -107,14 +107,14 @@ beforeAll(async () => {
         new ModelAuthTransformer({
           authConfig: {
             defaultAuthentication: {
-              authenticationType: 'API_KEY',
+              authenticationType: "API_KEY",
             },
             additionalAuthenticationProviders: [],
           },
         }),
       ],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === "improvePluralization" ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
@@ -124,13 +124,13 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    GRAPHQL_ENDPOINT = server.url + '/graphql';
+    GRAPHQL_ENDPOINT = server.url + "/graphql";
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
     logDebug(apiKey);
     GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
-      'x-api-key': apiKey,
+      "x-api-key": apiKey,
     });
   } catch (e) {
     console.error(e);
@@ -154,7 +154,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('Unnamed connection 1 way navigation, with primary @key directive 1:1', async () => {
+test("Unnamed connection 1 way navigation, with primary @key directive 1:1", async () => {
   await GRAPHQL_CLIENT.query(
     `
     mutation CreateATeam {
@@ -164,7 +164,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -176,7 +176,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
         }
     }
     `,
-    {},
+    {}
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -194,17 +194,17 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
         }
     }
     `,
-    {},
+    {}
   );
   expect(queryResponse.data.listAProjects).toBeDefined();
   const items = queryResponse.data.listAProjects.items;
   expect(items.length).toEqual(1);
-  expect(items[0].projectId).toEqual('P1');
+  expect(items[0].projectId).toEqual("P1");
   expect(items[0].team).toBeDefined();
-  expect(items[0].team.teamId).toEqual('T1');
+  expect(items[0].team.teamId).toEqual("T1");
 });
 
-test('Unnamed connection 1 way navigation, with primary @key directive 1:M', async () => {
+test("Unnamed connection 1 way navigation, with primary @key directive 1:M", async () => {
   await GRAPHQL_CLIENT.query(
     `
     mutation CreateBProject {
@@ -214,7 +214,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -226,7 +226,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -238,7 +238,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {},
+    {}
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -258,20 +258,20 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {},
+    {}
   );
   expect(queryResponse.data.listBProjects).toBeDefined();
   const items = queryResponse.data.listBProjects.items;
   expect(items.length).toEqual(1);
-  expect(items[0].projectId).toEqual('P1');
+  expect(items[0].projectId).toEqual("P1");
   expect(items[0].teams).toBeDefined();
   expect(items[0].teams.items).toBeDefined();
   expect(items[0].teams.items.length).toEqual(2);
-  expect(items[0].teams.items[0].teamId).toEqual('T1');
-  expect(items[0].teams.items[1].teamId).toEqual('T2');
+  expect(items[0].teams.items[0].teamId).toEqual("T1");
+  expect(items[0].teams.items[1].teamId).toEqual("T2");
 });
 
-test('Named connection 2 way navigation, with with custom @key fields 1:1', async () => {
+test("Named connection 2 way navigation, with with custom @key fields 1:1", async () => {
   await GRAPHQL_CLIENT.query(
     `
     mutation CreateCTeam {
@@ -281,7 +281,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -293,7 +293,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
         }
     }
     `,
-    {},
+    {}
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -315,19 +315,19 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
         }
     }
     `,
-    {},
+    {}
   );
   expect(queryResponse.data.listCProjects).toBeDefined();
   const items = queryResponse.data.listCProjects.items;
   expect(items.length).toEqual(1);
-  expect(items[0].projectId).toEqual('P1');
+  expect(items[0].projectId).toEqual("P1");
   expect(items[0].team).toBeDefined();
-  expect(items[0].team.teamId).toEqual('T1');
+  expect(items[0].team.teamId).toEqual("T1");
   expect(items[0].team.project).toBeDefined();
-  expect(items[0].team.project.projectId).toEqual('P1');
+  expect(items[0].team.project.projectId).toEqual("P1");
 });
 
-test('Named connection 2 way navigation, with with custom @key fields 1:M', async () => {
+test("Named connection 2 way navigation, with with custom @key fields 1:M", async () => {
   await GRAPHQL_CLIENT.query(
     `
     mutation CreateDProject {
@@ -337,7 +337,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -349,7 +349,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -361,7 +361,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {},
+    {}
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -385,24 +385,24 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {},
+    {}
   );
   expect(queryResponse.data.listDProjects).toBeDefined();
   const items = queryResponse.data.listDProjects.items;
   expect(items.length).toEqual(1);
-  expect(items[0].projectId).toEqual('P1');
+  expect(items[0].projectId).toEqual("P1");
   expect(items[0].teams).toBeDefined();
   expect(items[0].teams.items).toBeDefined();
   expect(items[0].teams.items.length).toEqual(2);
-  expect(items[0].teams.items[0].teamId).toEqual('T1');
+  expect(items[0].teams.items[0].teamId).toEqual("T1");
   expect(items[0].teams.items[0].project).toBeDefined();
-  expect(items[0].teams.items[0].project.projectId).toEqual('P1');
-  expect(items[0].teams.items[1].teamId).toEqual('T2');
+  expect(items[0].teams.items[0].project.projectId).toEqual("P1");
+  expect(items[0].teams.items[1].teamId).toEqual("T2");
   expect(items[0].teams.items[1].project).toBeDefined();
-  expect(items[0].teams.items[1].project.projectId).toEqual('P1');
+  expect(items[0].teams.items[1].project.projectId).toEqual("P1");
 });
 
-test('Unnamed connection with sortField parameter only #2100', async () => {
+test("Unnamed connection with sortField parameter only #2100", async () => {
   await GRAPHQL_CLIENT.query(
     `
     mutation M11 {
@@ -413,7 +413,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -426,7 +426,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {},
+    {}
   );
 
   await GRAPHQL_CLIENT.query(
@@ -438,7 +438,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {},
+    {}
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -454,12 +454,12 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {},
+    {}
   );
   expect(queryResponse.data.getModel2).toBeDefined();
   const item = queryResponse.data.getModel2;
-  expect(item.id).toEqual('M21');
+  expect(item.id).toEqual("M21");
   expect(item.connection).toBeDefined();
-  expect(item.connection.id).toEqual('M11');
+  expect(item.connection.id).toEqual("M11");
   expect(item.connection.sort).toEqual(10);
 });

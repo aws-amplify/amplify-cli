@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from "amplify-cli-core";
 import {
   addAuthWithDefault,
   AddDynamoDBSettings,
@@ -12,9 +12,9 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import * as path from "path";
 import {
   createDynamoDBSettings,
   DynamoDBProjectDetails,
@@ -31,12 +31,12 @@ import {
   importDynamoDBTable,
   readRootStack,
   removeImportedDynamoDBWithDefault,
-} from '../import-helpers';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
+} from "../import-helpers";
+import { randomizedFunctionName } from "../schema-api-directives/functionTester";
 
-describe('dynamodb import', () => {
-  const projectPrefix = 'ddbimp';
-  const ogProjectPrefix = 'ogddbimp';
+describe("dynamodb import", () => {
+  const projectPrefix = "ddbimp";
+  const ogProjectPrefix = "ogddbimp";
 
   const projectSettings = {
     name: projectPrefix,
@@ -47,7 +47,7 @@ describe('dynamodb import', () => {
   };
 
   const dummyOGProjectSettings = {
-    name: 'dummyog1',
+    name: "dummyog1",
   };
 
   // OG is the CLI project that creates the dynamodb tables to import by other test projects
@@ -111,7 +111,7 @@ describe('dynamodb import', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('status should reflect correct values for imported dynamodb table', async () => {
+  it("status should reflect correct values for imported dynamodb table", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
@@ -120,9 +120,9 @@ describe('dynamodb import', () => {
 
     expectDynamoDBProjectDetailsMatch(projectDetails, ogProjectDetails);
 
-    await amplifyStatus(projectRoot, 'Import');
+    await amplifyStatus(projectRoot, "Import");
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
+    await amplifyStatus(projectRoot, "No Change");
 
     expectLocalAndCloudMetaFilesMatching(projectRoot);
 
@@ -131,7 +131,7 @@ describe('dynamodb import', () => {
     expectDynamoDBProjectDetailsMatch(projectDetails, ogProjectDetails);
 
     await removeImportedDynamoDBWithDefault(projectRoot);
-    await amplifyStatus(projectRoot, 'Unlink');
+    await amplifyStatus(projectRoot, "Unlink");
 
     await amplifyPushAuth(projectRoot);
 
@@ -140,28 +140,28 @@ describe('dynamodb import', () => {
     expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage(projectRoot);
   });
 
-  it('imported dynamodb table with function and crud on storage should push', async () => {
+  it("imported dynamodb table with function and crud on storage should push", async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
-    const functionName = randomizedFunctionName('ddbimpfunc');
+    const functionName = randomizedFunctionName("ddbimpfunc");
     const storageResourceName = getDynamoDBResourceName(projectRoot);
 
     await addFunction(
       projectRoot,
       {
         name: functionName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
+          permissions: ["storage"],
+          choices: ["auth", "storage"],
           resources: [storageResourceName],
           resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
+          operations: ["create", "read", "update", "delete"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projectRoot);
@@ -169,9 +169,9 @@ describe('dynamodb import', () => {
     const projectDetails = getDynamoDBProjectDetails(projectRoot);
 
     // Verify that index.js gets the userpool env var name injected
-    const amplifyBackendDirPath = path.join(projectRoot, 'amplify', 'backend');
-    const functionFilePath = path.join(amplifyBackendDirPath, 'function', functionName);
-    const amplifyFunctionIndexFilePath = path.join(functionFilePath, 'src', 'index.js');
+    const amplifyBackendDirPath = path.join(projectRoot, "amplify", "backend");
+    const functionFilePath = path.join(amplifyBackendDirPath, "function", functionName);
+    const amplifyFunctionIndexFilePath = path.join(functionFilePath, "src", "index.js");
     const dynamoDBResourceNameUpperCase = projectDetails.storageResourceName.toUpperCase();
     const tableEnvVarName = `STORAGE_${dynamoDBResourceNameUpperCase}_NAME`;
     const arnEnvVarName = `STORAGE_${dynamoDBResourceNameUpperCase}_ARN`;
@@ -184,8 +184,8 @@ describe('dynamodb import', () => {
     // Verify table name in root stack
     const rootStack = readRootStack(projectRoot);
     const functionResourceName = `function${functionName}`;
-    const tableNameParameterName = `storage${projectDetails.storageResourceName.replace(/[\W_]+/g, '')}Name`;
-    const arnParameterName = `storage${projectDetails.storageResourceName.replace(/[\W_]+/g, '')}Arn`;
+    const tableNameParameterName = `storage${projectDetails.storageResourceName.replace(/[\W_]+/g, "")}Name`;
+    const arnParameterName = `storage${projectDetails.storageResourceName.replace(/[\W_]+/g, "")}Arn`;
     const functionResource = rootStack.Resources[functionResourceName];
     expect(functionResource.Properties?.Parameters[tableNameParameterName]).toEqual(projectDetails.meta.Name);
 
@@ -193,20 +193,20 @@ describe('dynamodb import', () => {
     const functionStackFilePath = path.join(functionFilePath, `${functionName}-cloudformation-template.json`);
     const functionStack = JSONUtilities.readJson<$TSObject>(functionStackFilePath);
     expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[tableEnvVarName].Ref).toEqual(
-      tableNameParameterName,
+      tableNameParameterName
     );
     expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[arnEnvVarName].Ref).toEqual(arnParameterName);
 
     // Verify if generated policy has the userpool id as resource
     expect(functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0].Ref).toEqual(
-      arnParameterName,
+      arnParameterName
     );
     expect(
-      functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[1]['Fn::Join'][1][0].Ref,
+      functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[1]["Fn::Join"][1][0].Ref
     ).toEqual(arnParameterName);
   });
 
-  it('imported dynamodb table, push, pull to empty directory, files should match', async () => {
+  it("imported dynamodb table, push, pull to empty directory, files should match", async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -214,23 +214,23 @@ describe('dynamodb import', () => {
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
-    const functionName = randomizedFunctionName('ddbimpfunc');
+    const functionName = randomizedFunctionName("ddbimpfunc");
     const storageResourceName = getDynamoDBResourceName(projectRoot);
 
     await addFunction(
       projectRoot,
       {
         name: functionName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
+          permissions: ["storage"],
+          choices: ["auth", "storage"],
           resources: [storageResourceName],
           resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
+          operations: ["create", "read", "update", "delete"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
 
     await amplifyPushAuth(projectRoot);
@@ -241,7 +241,7 @@ describe('dynamodb import', () => {
     let projectRootPull;
 
     try {
-      projectRootPull = await createNewProjectDir('ddbimport-pull');
+      projectRootPull = await createNewProjectDir("ddbimport-pull");
 
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 

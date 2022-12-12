@@ -17,12 +17,12 @@ import {
   amplifyPushForce,
   createRandomName,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
-import path from 'path';
-import { existsSync } from 'fs';
-import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+} from "@aws-amplify/amplify-e2e-core";
+import path from "path";
+import { existsSync } from "fs";
+import { TRANSFORM_CURRENT_VERSION } from "graphql-transformer-core";
 
-describe('amplify add api (GraphQL)', () => {
+describe("amplify add api (GraphQL)", () => {
   let projRoot: string;
   let projFolderName: string;
   beforeEach(async () => {
@@ -31,17 +31,17 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, "amplify", "#current-cloud-backend", "amplify-meta.json");
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with a simple model , add a function and removes the dependent @model', async () => {
+  it("init a project with a simple model , add a function and removes the dependent @model", async () => {
     const projectName = `simplemodel${generateRandomShortId()}`;
-    const nextSchema = 'initial_key_blog.graphql';
-    const initialSchema = 'two-model-schema.graphql';
+    const nextSchema = "initial_key_blog.graphql";
+    const initialSchema = "two-model-schema.graphql";
     const fnName = `integtestfn${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
@@ -50,16 +50,16 @@ describe('amplify add api (GraphQL)', () => {
       projRoot,
       {
         name: fnName,
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['api', 'storage'],
-          resources: ['Comment:@model(appsync)'],
-          resourceChoices: ['Post:@model(appsync)', 'Comment:@model(appsync)'],
-          operations: ['read'],
+          permissions: ["storage"],
+          choices: ["api", "storage"],
+          resources: ["Comment:@model(appsync)"],
+          resourceChoices: ["Post:@model(appsync)", "Comment:@model(appsync)"],
+          operations: ["read"],
         },
       },
-      'nodejs',
+      "nodejs"
     );
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -89,11 +89,11 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-  it('api force push with no changes', async () => {
+  it("api force push with no changes", async () => {
     const projectName = `apinochange${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, projectName, 'two-model-schema.graphql');
+    await updateApiSchema(projRoot, projectName, "two-model-schema.graphql");
     await amplifyPush(projRoot);
     let meta = getBackendAmplifyMeta(projRoot);
     const { lastPushDirHash: beforeDirHash } = meta.api[projectName];

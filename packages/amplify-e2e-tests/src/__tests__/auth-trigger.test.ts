@@ -10,12 +10,12 @@ import {
   getUserPoolClients,
   initJSProjectWithProfile,
   validateNodeModulesDirRemoval,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify init and add auth...', () => {
+describe("amplify init and add auth...", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
     await initJSProjectWithProfile(projRoot);
   });
 
@@ -24,7 +24,7 @@ describe('amplify init and add auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should add multiple auth triggers and push successfully', async () => {
+  it("...should add multiple auth triggers and push successfully", async () => {
     await addAuthWithEmailVerificationAndUserPoolGroupTriggers(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -32,7 +32,7 @@ describe('amplify init and add auth...', () => {
     const emailVerificationTriggerName = `${Object.keys(meta.auth)[0]}CustomMessage-integtest`;
     const addUserToGroupTriggerName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
@@ -46,6 +46,6 @@ describe('amplify init and add auth...', () => {
     expect(clients).toHaveLength(2);
     expect(emailVerificationTrigger).toBeDefined();
     expect(addUserToGroupTrigger).toBeDefined();
-    expect(addUserToGroupTrigger.Configuration.Environment.Variables.GROUP).toEqual('admin');
+    expect(addUserToGroupTrigger.Configuration.Environment.Variables.GROUP).toEqual("admin");
   });
 });

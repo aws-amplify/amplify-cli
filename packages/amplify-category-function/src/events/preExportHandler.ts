@@ -1,4 +1,4 @@
-import { ensureLambdaExecutionRoleOutputs } from './prePushHandler';
+import { ensureLambdaExecutionRoleOutputs } from "./prePushHandler";
 /**
  * prePush Handler event for function category
  */

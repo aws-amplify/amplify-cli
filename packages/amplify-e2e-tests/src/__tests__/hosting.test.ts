@@ -12,12 +12,12 @@ import {
   deleteS3Bucket,
   deleteProjectDir,
   getProjectMeta,
-  amplifyPublishWithoutUpdateWithYesFlag
-} from '@aws-amplify/amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+  amplifyPublishWithoutUpdateWithYesFlag,
+} from "@aws-amplify/amplify-e2e-core";
+import * as fs from "fs-extra";
+import * as path from "path";
 
-describe('amplify add hosting', () => {
+describe("amplify add hosting", () => {
   let projRoot: string;
 
   beforeAll(async () => {
@@ -35,20 +35,20 @@ describe('amplify add hosting', () => {
     if (hostingBucket) {
       try {
         await deleteS3Bucket(hostingBucket);
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
     }
     deleteProjectDir(projRoot);
   });
 
-  it('push creates correct amplify artifacts', async () => {
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
+  it("push creates correct amplify artifacts", async () => {
+    expect(fs.existsSync(path.join(projRoot, "amplify", "backend", "hosting", "S3AndCloudFront"))).toBe(true);
     const projectMeta = getProjectMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();
     expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
   });
 
-  it('publish successfully', async () => {
+  it("publish successfully", async () => {
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);
@@ -58,7 +58,7 @@ describe('amplify add hosting', () => {
     expect(error).not.toBeDefined();
   });
 
-  it('publish successfully with yes flag', async () => {
+  it("publish successfully with yes flag", async () => {
     let error;
     try {
       await amplifyPublishWithoutUpdateWithYesFlag(projRoot);
@@ -68,8 +68,8 @@ describe('amplify add hosting', () => {
     expect(error).not.toBeDefined();
   });
 
-  it('publish throws error if build command is missing', async () => {
-    const currentBuildCommand = resetBuildCommand(projRoot, '');
+  it("publish throws error if build command is missing", async () => {
+    const currentBuildCommand = resetBuildCommand(projRoot, "");
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);
@@ -77,7 +77,7 @@ describe('amplify add hosting', () => {
       error = err;
     }
     expect(error).toBeDefined();
-    expect(error.message).toEqual('Process exited with non zero exit code 1');
+    expect(error.message).toEqual("Process exited with non zero exit code 1");
     resetBuildCommand(projRoot, currentBuildCommand);
   });
 });

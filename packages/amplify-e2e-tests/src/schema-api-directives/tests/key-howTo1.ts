@@ -21,17 +21,17 @@ mutation CreateCustomer(
 }`;
 export const input_mutation = {
   input: {
-    email: 'me@email.com',
-    username: 'myusername',
+    email: "me@email.com",
+    username: "myusername",
   },
 };
 export const expected_result_mutation = {
   data: {
     createCustomer: {
-      email: 'me@email.com',
-      username: 'myusername',
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      email: "me@email.com",
+      username: "myusername",
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };
@@ -48,8 +48,8 @@ query GetCustomerById {
 export const expected_result_query = {
   data: {
     getCustomer: {
-      email: 'me@email.com',
-      username: 'myusername',
+      email: "me@email.com",
+      username: "myusername",
     },
   },
 };

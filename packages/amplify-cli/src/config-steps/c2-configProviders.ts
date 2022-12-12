@@ -1,7 +1,7 @@
-import inquirer, { CheckboxQuestion } from 'inquirer';
-import sequential from 'promise-sequential';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { normalizeProviderName } from '../input-params-manager';
+import inquirer, { CheckboxQuestion } from "inquirer";
+import sequential from "promise-sequential";
+import { getProviderPlugins } from "../extensions/amplify-helpers/get-provider-plugins";
+import { normalizeProviderName } from "../input-params-manager";
 
 export async function configProviders(context) {
   const providerPlugins = getProviderPlugins(context);
@@ -35,7 +35,7 @@ async function configureProviders(context, providerPlugins, currentProviders) {
   const providerPluginList = Object.keys(providerPlugins);
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);
@@ -49,9 +49,9 @@ async function configureProviders(context, providerPlugins, currentProviders) {
       providers.push(providerPluginList[0]);
     } else {
       const selectProviders: CheckboxQuestion<{ selectedProviders: [] }> = {
-        type: 'checkbox',
-        name: 'selectedProviders',
-        message: 'Select the backend providers.',
+        type: "checkbox",
+        name: "selectedProviders",
+        message: "Select the backend providers.",
         choices: providerPluginList,
         default: currentProviders,
       };

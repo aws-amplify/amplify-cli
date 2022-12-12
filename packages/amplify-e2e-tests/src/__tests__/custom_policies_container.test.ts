@@ -9,17 +9,15 @@ import {
   amplifyConfigureProject,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
-import AWS from 'aws-sdk';
-import path from 'path';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
+import { JSONUtilities } from "amplify-cli-core";
+import AWS from "aws-sdk";
+import path from "path";
 
 const customIAMPolicy: CustomIAMPolicy = {
-  Effect: 'Allow',
-  Action: [
-    'ssm:GetParameter',
-  ],
+  Effect: "Allow",
+  Action: ["ssm:GetParameter"],
   Resource: [],
 };
 const customIAMPolicies: CustomIAMPolicy[] = [];
@@ -33,7 +31,7 @@ async function setupAmplifyProject(cwd: string) {
 let projRoot: string;
 
 beforeEach(async () => {
-  projRoot = await createNewProjectDir('testCusomtPolicies');
+  projRoot = await createNewProjectDir("testCusomtPolicies");
 });
 
 afterEach(async () => {
@@ -42,9 +40,9 @@ afterEach(async () => {
 });
 
 it(`should init and deploy a api container, attach custom policies to the Fargate task`, async () => {
-  const envName = 'devtest';
-  const containerName = 'container';
-  const name = 'containertest';
+  const envName = "devtest";
+  const containerName = "container";
+  const name = "containertest";
   await initJSProjectWithProfile(projRoot, { name: containerName, envName });
   await setupAmplifyProject(projRoot);
   await addRestContainerApiForCustomPolicies(projRoot, { name });
@@ -54,34 +52,35 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
 
   // Put SSM parameter
   const ssmClient = new AWS.SSM({ region });
-  await ssmClient.putParameter({
-    Name: '/amplify/testCustomPolicies',
-    Value: 'testCustomPoliciesValue',
-    Type: 'String',
-    Overwrite: true,
-  }).promise();
+  await ssmClient
+    .putParameter({
+      Name: "/amplify/testCustomPolicies",
+      Value: "testCustomPoliciesValue",
+      Type: "String",
+      Overwrite: true,
+    })
+    .promise();
 
-  const getParaResponse = await ssmClient.getParameter({
-    Name: '/amplify/testCustomPolicies',
-  }).promise();
+  const getParaResponse = await ssmClient
+    .getParameter({
+      Name: "/amplify/testCustomPolicies",
+    })
+    .promise();
   const ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
-  const customPoliciesPath = getCustomPoliciesPath(projRoot, 'api', name);
+  const customPoliciesPath = getCustomPoliciesPath(projRoot, "api", name);
   customIAMPolicies.push(customIAMPolicy);
   JSONUtilities.writeJson(customPoliciesPath, customIAMPolicies);
 
   await amplifyPushWithoutCodegen(projRoot);
-  const containerCFN = readJsonFile(
-    path.join(projRoot, 'amplify', 'backend', 'api', name, `${name}-cloudformation-template.json`),
-  );
+  const containerCFN = readJsonFile(path.join(projRoot, "amplify", "backend", "api", name, `${name}-cloudformation-template.json`));
 
-  expect(containerCFN.Resources.CustomExecutionPolicyForContainer.Properties.PolicyDocument.Statement[0])
-    .toEqual(customIAMPolicies[0]);
+  expect(containerCFN.Resources.CustomExecutionPolicyForContainer.Properties.PolicyDocument.Statement[0]).toEqual(customIAMPolicies[0]);
 });
 
 type CustomIAMPolicy = {
   Action: string[];
   Effect: string;
   Resource: string[];
-}
+};

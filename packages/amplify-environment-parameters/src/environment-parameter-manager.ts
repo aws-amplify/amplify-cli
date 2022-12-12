@@ -1,9 +1,7 @@
-import {
-  AmplifyFault, pathManager, stateManager,
-} from 'amplify-cli-core';
-import _ from 'lodash';
-import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
-import { ResourceParameterManager } from './resource-parameter-manager';
+import { AmplifyFault, pathManager, stateManager } from "amplify-cli-core";
+import _ from "lodash";
+import { getParametersControllerInstance, IBackendParametersController } from "./backend-config-parameters-controller";
+import { ResourceParameterManager } from "./resource-parameter-manager";
 
 const envParamManagerMap: Record<string, IEnvironmentParameterManager> = {};
 
@@ -11,8 +9,8 @@ const envParamManagerMap: Record<string, IEnvironmentParameterManager> = {};
  * Returns singleton instance of param manager for the given environment, or initializes one if it doesn't exist
  */
 export const ensureEnvParamManager = async (
-  envName: string = stateManager.getLocalEnvInfo().envName,
-): Promise<{instance: IEnvironmentParameterManager}> => {
+  envName: string = stateManager.getLocalEnvInfo().envName
+): Promise<{ instance: IEnvironmentParameterManager }> => {
   if (!envParamManagerMap[envName]) {
     const envManager = new EnvironmentParameterManager(envName, getParametersControllerInstance());
     await envManager.init();
@@ -31,7 +29,7 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
-  throw new AmplifyFault('ProjectInitFault', {
+  throw new AmplifyFault("ProjectInitFault", {
     message: `EnvironmentParameterManager for ${envName} environment is not initialized.`,
   });
 };
@@ -72,8 +70,8 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     if (!category || !resource) {
-      throw new AmplifyFault('ResourceNotFoundFault', {
-        message: 'Missing Category or Resource.',
+      throw new AmplifyFault("ResourceNotFoundFault", {
+        message: "Missing Category or Resource.",
       });
     }
     const resourceKey = getResourceKey(category, resource);
@@ -110,16 +108,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
 
     // update param mapping
-    this.parameterMapController
-      .removeAllParameters();
+    this.parameterMapController.removeAllParameters();
     Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
       const [category, resourceName] = splitResourceKey(resourceKey);
       const resourceParams = paramManager.getAllParams();
-      Object.entries(resourceParams)
-        .forEach(([paramName]) => {
-          const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
-          this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
-        });
+      Object.entries(resourceParams).forEach(([paramName]) => {
+        const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
+        this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
+      });
     });
     // uploading values to PS will go here
     this.parameterMapController.save();
@@ -137,7 +133,7 @@ const getResourceKey = (category: string, resourceName: string): string => `${ca
 
 // split into [category, resourceName]
 const splitResourceKey = (key: string): readonly [string, string] => {
-  const [category, resourceName] = key.split('_');
+  const [category, resourceName] = key.split("_");
   return [category, resourceName];
 };
 
@@ -150,10 +146,7 @@ export type IEnvironmentParameterManager = {
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: () => void;
-}
+};
 
-const getParameterStoreKey = (
-  categoryName: string,
-  resourceName: string,
-  paramName: string,
-): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
+const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
+  `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;

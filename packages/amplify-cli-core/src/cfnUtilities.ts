@@ -1,15 +1,15 @@
-import { Template } from 'cloudform-types';
-import * as fs from 'fs-extra';
-import * as yaml from 'js-yaml';
-import * as path from 'path';
-import { JSONUtilities } from './jsonUtilities';
+import { Template } from "cloudform-types";
+import * as fs from "fs-extra";
+import * as yaml from "js-yaml";
+import * as path from "path";
+import { JSONUtilities } from "./jsonUtilities";
 
 const defaultReadCFNTemplateOptions = { throwIfNotExist: true };
 
 export function readCFNTemplate(filePath: string): { templateFormat: CFNTemplateFormat; cfnTemplate: Template };
 export function readCFNTemplate(
   filePath: string,
-  options: Partial<typeof defaultReadCFNTemplateOptions>,
+  options: Partial<typeof defaultReadCFNTemplateOptions>
 ): { templateFormat: CFNTemplateFormat; cfnTemplate: Template } | undefined;
 
 /**
@@ -24,7 +24,7 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
     }
     throw new Error(`No CloudFormation template found at ${filePath}`);
   }
-  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const fileContent = fs.readFileSync(filePath, "utf8");
 
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
@@ -38,8 +38,8 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
  * CloudFormation template formats
  */
 export enum CFNTemplateFormat {
-  JSON = 'json',
-  YAML = 'yaml',
+  JSON = "json",
+  YAML = "yaml",
 }
 
 /**
@@ -78,166 +78,166 @@ export const writeCFNTemplate = async (template: object, filePath: string, optio
 // Register custom tags for yaml parser
 // Order and definition based on docs: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
-  new yaml.Type('!Base64', {
-    kind: 'scalar',
+  new yaml.Type("!Base64", {
+    kind: "scalar",
     construct(data) {
-      return { 'Fn::Base64': data };
+      return { "Fn::Base64": data };
     },
   }),
-  new yaml.Type('!Base64', {
-    kind: 'mapping',
+  new yaml.Type("!Base64", {
+    kind: "mapping",
     construct(data) {
-      return { 'Fn::Base64': data };
+      return { "Fn::Base64": data };
     },
   }),
   /* eslint-disable spellcheck/spell-checker */
-  new yaml.Type('!Cidr', {
-    kind: 'sequence',
+  new yaml.Type("!Cidr", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Cidr': data };
+      return { "Fn::Cidr": data };
     },
   }),
-  new yaml.Type('!Cidr', {
-    kind: 'mapping',
+  new yaml.Type("!Cidr", {
+    kind: "mapping",
     construct(data) {
-      return { 'Fn::Cidr': data };
+      return { "Fn::Cidr": data };
     },
   }),
   /* eslint-enable spellcheck/spell-checker */
-  new yaml.Type('!And', {
-    kind: 'sequence',
+  new yaml.Type("!And", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::And': data };
+      return { "Fn::And": data };
     },
   }),
-  new yaml.Type('!Equals', {
-    kind: 'sequence',
+  new yaml.Type("!Equals", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Equals': data };
+      return { "Fn::Equals": data };
     },
   }),
-  new yaml.Type('!If', {
-    kind: 'sequence',
+  new yaml.Type("!If", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::If': data };
+      return { "Fn::If": data };
     },
   }),
-  new yaml.Type('!Not', {
-    kind: 'sequence',
+  new yaml.Type("!Not", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Not': data };
+      return { "Fn::Not": data };
     },
   }),
-  new yaml.Type('!Or', {
-    kind: 'sequence',
+  new yaml.Type("!Or", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Or': data };
+      return { "Fn::Or": data };
     },
   }),
-  new yaml.Type('!Condition', {
-    kind: 'scalar',
+  new yaml.Type("!Condition", {
+    kind: "scalar",
     construct(data) {
       return { Condition: data };
     },
   }),
-  new yaml.Type('!FindInMap', {
-    kind: 'sequence',
+  new yaml.Type("!FindInMap", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::FindInMap': data };
+      return { "Fn::FindInMap": data };
     },
   }),
-  new yaml.Type('!GetAtt', {
-    kind: 'scalar',
-    construct(data) {
-      if (Array.isArray(data)) {
-        return {
-          'Fn::GetAtt': data,
-        };
-      }
-      // data is a string
-      const firstPeriodIdx = data.indexOf('.');
-      return {
-        'Fn::GetAtt': [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
-      };
-    },
-  }),
-  new yaml.Type('!GetAtt', {
-    kind: 'sequence',
+  new yaml.Type("!GetAtt", {
+    kind: "scalar",
     construct(data) {
       if (Array.isArray(data)) {
         return {
-          'Fn::GetAtt': data,
+          "Fn::GetAtt": data,
         };
       }
       // data is a string
-      const firstPeriodIdx = data.indexOf('.');
+      const firstPeriodIdx = data.indexOf(".");
       return {
-        'Fn::GetAtt': [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
+        "Fn::GetAtt": [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
       };
     },
   }),
-  new yaml.Type('!GetAZs', {
-    kind: 'scalar',
+  new yaml.Type("!GetAtt", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::GetAZs': data };
+      if (Array.isArray(data)) {
+        return {
+          "Fn::GetAtt": data,
+        };
+      }
+      // data is a string
+      const firstPeriodIdx = data.indexOf(".");
+      return {
+        "Fn::GetAtt": [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
+      };
     },
   }),
-  new yaml.Type('!GetAZs', {
-    kind: 'mapping',
+  new yaml.Type("!GetAZs", {
+    kind: "scalar",
     construct(data) {
-      return { 'Fn::GetAZs': data };
+      return { "Fn::GetAZs": data };
     },
   }),
-  new yaml.Type('!ImportValue', {
-    kind: 'scalar',
+  new yaml.Type("!GetAZs", {
+    kind: "mapping",
     construct(data) {
-      return { 'Fn::ImportValue': data };
+      return { "Fn::GetAZs": data };
     },
   }),
-  new yaml.Type('!ImportValue', {
-    kind: 'mapping',
+  new yaml.Type("!ImportValue", {
+    kind: "scalar",
     construct(data) {
-      return { 'Fn::ImportValue': data };
+      return { "Fn::ImportValue": data };
     },
   }),
-  new yaml.Type('!Join', {
-    kind: 'sequence',
+  new yaml.Type("!ImportValue", {
+    kind: "mapping",
     construct(data) {
-      return { 'Fn::Join': data };
+      return { "Fn::ImportValue": data };
     },
   }),
-  new yaml.Type('!Select', {
-    kind: 'sequence',
+  new yaml.Type("!Join", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Select': data };
+      return { "Fn::Join": data };
     },
   }),
-  new yaml.Type('!Split', {
-    kind: 'sequence',
+  new yaml.Type("!Select", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Split': data };
+      return { "Fn::Select": data };
     },
   }),
-  new yaml.Type('!Sub', {
-    kind: 'scalar',
+  new yaml.Type("!Split", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Sub': data };
+      return { "Fn::Split": data };
     },
   }),
-  new yaml.Type('!Sub', {
-    kind: 'sequence',
+  new yaml.Type("!Sub", {
+    kind: "scalar",
     construct(data) {
-      return { 'Fn::Sub': data };
+      return { "Fn::Sub": data };
     },
   }),
-  new yaml.Type('!Transform', {
-    kind: 'mapping',
+  new yaml.Type("!Sub", {
+    kind: "sequence",
     construct(data) {
-      return { 'Fn::Transform': data };
+      return { "Fn::Sub": data };
     },
   }),
-  new yaml.Type('!Ref', {
-    kind: 'scalar',
+  new yaml.Type("!Transform", {
+    kind: "mapping",
+    construct(data) {
+      return { "Fn::Transform": data };
+    },
+  }),
+  new yaml.Type("!Ref", {
+    kind: "scalar",
     construct(data) {
       return { Ref: data };
     },
@@ -248,4 +248,4 @@ const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
  * We use the first character to determine if the content is json or yaml because historically the CLI could
  * have emitted JSON with YML extension, so we can't rely on filename extension.
  */
-const isJsonFileContent = (fileContent: string): boolean => fileContent?.trim()[0] === '{';
+const isJsonFileContent = (fileContent: string): boolean => fileContent?.trim()[0] === "{";

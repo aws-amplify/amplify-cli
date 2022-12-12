@@ -1,24 +1,17 @@
-import { printer } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
-import {
-  StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm,
-} from '@aws-amplify/codegen-ui';
-import {
-  createUiBuilderComponent,
-  createUiBuilderForm,
-  createUiBuilderTheme,
-  generateBaseForms,
-} from './codegenResources';
-import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
+import { printer } from "amplify-prompts";
+import { $TSContext } from "amplify-cli-core";
+import { StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm } from "@aws-amplify/codegen-ui";
+import { createUiBuilderComponent, createUiBuilderForm, createUiBuilderTheme, generateBaseForms } from "./codegenResources";
+import { getUiBuilderComponentsPath } from "./getUiBuilderComponentsPath";
 
 type CodegenResponse<T extends StudioSchema> =
   | {
-      resultType: 'SUCCESS';
+      resultType: "SUCCESS";
       schema: T;
       schemaName?: string;
     }
   | {
-      resultType: 'FAILURE';
+      resultType: "FAILURE";
       schemaName: string;
       error: Error;
       schema?: T;
@@ -32,23 +25,23 @@ type CodegenResponse<T extends StudioSchema> =
 export const generateUiBuilderComponents = (
   context: $TSContext,
   componentSchemas: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
-  dataSchema?: GenericDataSchema,
+  dataSchema?: GenericDataSchema
 ): CodegenResponse<StudioComponent>[] => {
-  const componentResults = componentSchemas.map<CodegenResponse<StudioComponent>>(schema => {
+  const componentResults = componentSchemas.map<CodegenResponse<StudioComponent>>((schema) => {
     try {
       const component = createUiBuilderComponent(context, schema, dataSchema);
-      return { resultType: 'SUCCESS', schema: component };
+      return { resultType: "SUCCESS", schema: component };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
       printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      return { resultType: "FAILURE", schemaName: schema.name, error: e };
     }
   });
 
   printer.debug(
-    `Generated ${componentResults.filter(result => result.resultType === 'SUCCESS').length} components in ${getUiBuilderComponentsPath(
-      context,
-    )}`,
+    `Generated ${componentResults.filter((result) => result.resultType === "SUCCESS").length} components in ${getUiBuilderComponentsPath(
+      context
+    )}`
   );
   return componentResults;
 };
@@ -61,19 +54,19 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
   if (themeSchemas.length === 0) {
     return [generateDefaultTheme(context)];
   }
-  const themeResults = themeSchemas.map<CodegenResponse<StudioTheme>>(schema => {
+  const themeResults = themeSchemas.map<CodegenResponse<StudioTheme>>((schema) => {
     try {
       const theme = createUiBuilderTheme(context, schema);
-      return { resultType: 'SUCCESS', schema: theme };
+      return { resultType: "SUCCESS", schema: theme };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
       printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      return { resultType: "FAILURE", schemaName: schema.name, error: e };
     }
   });
 
   printer.debug(
-    `Generated ${themeResults.filter(result => result.resultType === 'SUCCESS').length} themes in ${getUiBuilderComponentsPath(context)}`,
+    `Generated ${themeResults.filter((result) => result.resultType === "SUCCESS").length} themes in ${getUiBuilderComponentsPath(context)}`
   );
   return themeResults;
 };
@@ -83,15 +76,13 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
  */
 const generateDefaultTheme = (context: $TSContext): CodegenResponse<StudioTheme> => {
   try {
-    const theme = createUiBuilderTheme(context, { name: 'studioTheme', values: [] }, { renderDefaultTheme: true });
-    printer.debug(
-      `Generated default theme in ${getUiBuilderComponentsPath(context)}`,
-    );
-    return { resultType: 'SUCCESS', schema: theme };
+    const theme = createUiBuilderTheme(context, { name: "studioTheme", values: [] }, { renderDefaultTheme: true });
+    printer.debug(`Generated default theme in ${getUiBuilderComponentsPath(context)}`);
+    return { resultType: "SUCCESS", schema: theme };
   } catch (e) {
     printer.debug(`Failure caught rendering default theme`);
     printer.debug(e);
-    return { resultType: 'FAILURE', schemaName: 'studioTheme', error: e };
+    return { resultType: "FAILURE", schemaName: "studioTheme", error: e };
   }
 };
 
@@ -103,28 +94,28 @@ export const generateUiBuilderForms = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formSchemas: any[],
   dataSchema?: GenericDataSchema,
-  autoGenerateForms?: boolean,
+  autoGenerateForms?: boolean
 ): CodegenResponse<StudioForm>[] => {
-  const modelMap: { [model: string]: Set<'create' | 'update'> } = {};
-  if (dataSchema?.dataSourceType === 'DataStore' && autoGenerateForms) {
+  const modelMap: { [model: string]: Set<"create" | "update"> } = {};
+  if (dataSchema?.dataSourceType === "DataStore" && autoGenerateForms) {
     Object.entries(dataSchema.models).forEach(([name, model]) => {
       if (checkIsSupportedAsForm(model) && !model.isJoinTable) {
-        modelMap[name] = new Set(['create', 'update']);
+        modelMap[name] = new Set(["create", "update"]);
       }
     });
   }
   const codegenForm = (schema: StudioForm): CodegenResponse<StudioForm> => {
     try {
       const form = createUiBuilderForm(context, schema, dataSchema);
-      return { resultType: 'SUCCESS', schema: form };
+      return { resultType: "SUCCESS", schema: form };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
       printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      return { resultType: "FAILURE", schemaName: schema.name, error: e };
     }
   };
   const formResults = formSchemas.map((schema: StudioForm) => {
-    if (schema?.dataType && schema.dataType?.dataSourceType === 'DataStore') {
+    if (schema?.dataType && schema.dataType?.dataSourceType === "DataStore") {
       modelMap[schema.dataType.dataTypeName]?.delete(schema.formActionType);
     }
     return codegenForm(schema);
@@ -134,7 +125,7 @@ export const generateUiBuilderForms = (
   formResults.push(...generateBaseForms(modelMap).map(codegenForm));
 
   printer.debug(
-    `Generated ${formResults.filter(result => result.resultType === 'SUCCESS').length} forms in ${getUiBuilderComponentsPath(context)}`,
+    `Generated ${formResults.filter((result) => result.resultType === "SUCCESS").length} forms in ${getUiBuilderComponentsPath(context)}`
   );
   return formResults;
 };

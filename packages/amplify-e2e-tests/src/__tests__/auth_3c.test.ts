@@ -1,5 +1,7 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
   addAuthWithDefault,
   removeAuthWithDefault,
   addAuthWithMaxOptions,
@@ -11,17 +13,17 @@ import {
   getUserPool,
   getUserPoolClients,
   getLambdaFunction,
-} from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
+} from "@aws-amplify/amplify-e2e-core";
+import _ from "lodash";
 
 const defaultsSettings = {
-  name: 'authTest',
+  name: "authTest",
 };
 
-describe('amplify add auth...c', () => {
+describe("amplify add auth...c", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
   });
 
   afterEach(async () => {
@@ -29,7 +31,7 @@ describe('amplify add auth...c', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a project where all possible options are selected', async () => {
+  it("...should init a project where all possible options are selected", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -38,7 +40,7 @@ describe('amplify add auth...c', () => {
     const createFunctionName = `${Object.keys(meta.auth)[1]}CreateAuthChallenge-integtest`;
     const defineFunctionName = `${Object.keys(meta.auth)[1]}DefineAuthChallenge-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[1];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[1];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
@@ -52,18 +54,18 @@ describe('amplify add auth...c', () => {
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();
 
-    expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
-    expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+    expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual("custom");
+    expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual("custom");
 
     const { userPoolGroups } = meta.auth;
-    expect(userPoolGroups.service).toEqual('Cognito-UserPool-Groups');
-    expect(userPoolGroups.providerPlugin).toEqual('awscloudformation');
+    expect(userPoolGroups.service).toEqual("Cognito-UserPool-Groups");
+    expect(userPoolGroups.providerPlugin).toEqual("awscloudformation");
     expect(userPoolGroups.dependsOn.length).toBe(1);
-    expect(userPoolGroups.dependsOn[0].category).toBe('auth');
+    expect(userPoolGroups.dependsOn[0].category).toBe("auth");
     expect(userPoolGroups.dependsOn[0].attributes.length).toBe(4);
-    expect(userPoolGroups.dependsOn[0].attributes).toContain('UserPoolId');
-    expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientIDWeb');
-    expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientID');
-    expect(userPoolGroups.dependsOn[0].attributes).toContain('IdentityPoolId');
+    expect(userPoolGroups.dependsOn[0].attributes).toContain("UserPoolId");
+    expect(userPoolGroups.dependsOn[0].attributes).toContain("AppClientIDWeb");
+    expect(userPoolGroups.dependsOn[0].attributes).toContain("AppClientID");
+    expect(userPoolGroups.dependsOn[0].attributes).toContain("IdentityPoolId");
   });
 });

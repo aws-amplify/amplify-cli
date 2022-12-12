@@ -1,5 +1,5 @@
 //handle subscription from another user
-import { runAuthTest } from '../common';
+import { runAuthTest } from "../common";
 
 export async function runTest(projectDir: string, testModule: any) {
   //test owner
@@ -43,9 +43,9 @@ mutation {
 export const expected_result_mutation = {
   data: {
     createEmployee: {
-      id: '1',
-      name: 'Nadia',
-      address: '123 First Ave',
+      id: "1",
+      name: "Nadia",
+      address: "123 First Ave",
       ssn: null,
     },
   },
@@ -65,11 +65,11 @@ export const query = `
 export const expected_result_query = {
   data: {
     getEmployee: {
-      id: '1',
-      name: 'Nadia',
-      address: '123 First Ave',
-      ssn: '392-95-2716',
-      owner: 'user1',
+      id: "1",
+      name: "Nadia",
+      address: "123 First Ave",
+      ssn: "392-95-2716",
+      owner: "user1",
     },
   },
 };

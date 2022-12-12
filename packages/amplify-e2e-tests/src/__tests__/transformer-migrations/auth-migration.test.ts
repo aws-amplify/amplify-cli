@@ -11,12 +11,12 @@ import {
   updateApiWithMultiAuth,
   addApiWithoutSchema,
   updateAuthAddUserGroups,
-} from '@aws-amplify/amplify-e2e-core';
-import gql from 'graphql-tag';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { Auth } from 'aws-amplify';
-import moment from 'moment';
-import { IAM } from 'aws-sdk';
+} from "@aws-amplify/amplify-e2e-core";
+import gql from "graphql-tag";
+import { default as CognitoClient } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { Auth } from "aws-amplify";
+import moment from "moment";
+import { IAM } from "aws-sdk";
 import {
   configureAmplify,
   getUserPoolId,
@@ -26,23 +26,23 @@ import {
   getConfiguredAppsyncClientIAMAuth,
   setupUser,
   signInUser,
-} from '../../schema-api-directives';
+} from "../../schema-api-directives";
 
-(global as any).fetch = require('node-fetch');
+(global as any).fetch = require("node-fetch");
 
-describe('transformer @auth migration test', () => {
+describe("transformer @auth migration test", () => {
   let projRoot: string;
   let projectName: string;
 
-  const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-  const GROUPNAME = 'Admin';
-  const PASSWORD = 'user1Password';
-  const NEW_PASSWORD = 'user1Password!!!**@@@';
-  const EMAIL = 'username@amazon.com';
+  const BUILD_TIMESTAMP = moment().format("YYYYMMDDHHmmss");
+  const GROUPNAME = "Admin";
+  const PASSWORD = "user1Password";
+  const NEW_PASSWORD = "user1Password!!!**@@@";
+  const EMAIL = "username@amazon.com";
   const UNAUTH_ROLE_NAME = `unauthRole${BUILD_TIMESTAMP}`;
 
-  const modelSchemaV1 = 'transformer_migration/auth-model-v1.graphql';
-  const modelSchemaV2 = 'transformer_migration/auth-model-v2.graphql';
+  const modelSchemaV1 = "transformer_migration/auth-model-v1.graphql";
+  const modelSchemaV2 = "transformer_migration/auth-model-v2.graphql";
 
   beforeEach(async () => {
     projectName = createRandomName();
@@ -61,8 +61,8 @@ describe('transformer @auth migration test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('migration of queries with different auth methods should succeed', async () => {
-    const iamHelper = new IAM({ region: 'us-east-2' });
+  it("migration of queries with different auth methods should succeed", async () => {
+    const iamHelper = new IAM({ region: "us-east-2" });
     const awsconfig = configureAmplify(projRoot);
     const userPoolId = getUserPoolId(projRoot);
 
@@ -74,12 +74,12 @@ describe('transformer @auth migration test', () => {
     let appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(
       awsconfig.aws_appsync_graphqlEndpoint,
       awsconfig.aws_appsync_region,
-      user,
+      user
     );
     let appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(
       awsconfig.aws_appsync_graphqlEndpoint,
       awsconfig.aws_appsync_region,
-      apiKey,
+      apiKey
     );
     const appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
 
@@ -93,7 +93,7 @@ describe('transformer @auth migration test', () => {
 
     let createPostResult = await appSyncClientViaUser.mutate({
       mutation: gql(createPostMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostResult.errors).toBeUndefined();
@@ -109,7 +109,7 @@ describe('transformer @auth migration test', () => {
 
     let createPostPublicResult = await appSyncClientViaApiKey.mutate({
       mutation: gql(createPostPublicMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostPublicResult.errors).toBeUndefined();
@@ -125,7 +125,7 @@ describe('transformer @auth migration test', () => {
 
     const createPostPublicIAMResult = await appSyncClientViaIAM.mutate({
       mutation: gql(createPostPublicIAMMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostPublicIAMResult.errors).toBeUndefined();
@@ -142,14 +142,14 @@ describe('transformer @auth migration test', () => {
 
     let createSalaryResult = await appSyncClientViaUser.mutate({
       mutation: gql(createSalaryMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createSalaryResult.errors).toBeUndefined();
     expect(createSalaryResult.data).toBeDefined();
 
-    addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
-    addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
+    addFeatureFlag(projRoot, "graphqltransformer", "transformerVersion", 2);
+    addFeatureFlag(projRoot, "graphqltransformer", "useExperimentalPipelinedTransformer", true);
 
     await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
@@ -166,7 +166,7 @@ describe('transformer @auth migration test', () => {
 
     createPostResult = await appSyncClientViaUser.mutate({
       mutation: gql(createPostMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostResult.errors).toBeUndefined();
@@ -176,7 +176,7 @@ describe('transformer @auth migration test', () => {
     appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(
       awsconfig.aws_appsync_graphqlEndpoint,
       awsconfig.aws_appsync_region,
-      apiKey,
+      apiKey
     );
 
     createPostPublicMutation = /* GraphQL */ `
@@ -189,7 +189,7 @@ describe('transformer @auth migration test', () => {
 
     createPostPublicResult = await appSyncClientViaApiKey.mutate({
       mutation: gql(createPostPublicMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createPostPublicResult.errors).toBeUndefined();
@@ -206,7 +206,7 @@ describe('transformer @auth migration test', () => {
 
     createSalaryResult = await appSyncClientViaUser.mutate({
       mutation: gql(createSalaryMutation),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(createSalaryResult.errors).toBeUndefined();
@@ -225,7 +225,7 @@ describe('transformer @auth migration test', () => {
 
     let queryResult = await appSyncClientViaUser.query({
       query: gql(postsQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();
@@ -245,7 +245,7 @@ describe('transformer @auth migration test', () => {
 
     queryResult = await appSyncClientViaApiKey.query({
       query: gql(postPublicsQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();
@@ -264,7 +264,7 @@ describe('transformer @auth migration test', () => {
 
     queryResult = await appSyncClientViaUser.query({
       query: gql(salaryQuery),
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     });
 
     expect(queryResult.errors).toBeUndefined();

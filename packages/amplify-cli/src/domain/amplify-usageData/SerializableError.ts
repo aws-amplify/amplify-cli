@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from "path";
 
 const regex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
 
@@ -18,8 +18,8 @@ export class SerializableError {
   private extractStackTrace(error: Error): Trace[] {
     const result: Trace[] = [];
     if (error.stack) {
-      const stack = error.stack.split('\n');
-      stack.forEach(line => {
+      const stack = error.stack.split("\n");
+      stack.forEach((line) => {
         const match = regex.exec(line);
         if (match) {
           const [, methodName, file, lineNumber, columnNumber] = match;
@@ -31,7 +31,7 @@ export class SerializableError {
           });
         }
       });
-      const processedPaths = this.processPaths(result.map(trace => trace.file));
+      const processedPaths = this.processPaths(result.map((trace) => trace.file));
       result.forEach((trace, index) => {
         trace.file = processedPaths[index];
       });
@@ -45,23 +45,23 @@ export class SerializableError {
       return result;
     }
     const longestString = paths.reduce((a, b) => (a.length > b.length ? a : b));
-    const directoriesToRemove = longestString.split('/');
+    const directoriesToRemove = longestString.split("/");
     const directoriesRemoved = new Set<string>();
-    directoriesToRemove.forEach(directory => {
-      if (directory === '') {
+    directoriesToRemove.forEach((directory) => {
+      if (directory === "") {
         return;
       }
       for (let i = 0; i < result.length; i++) {
         if (result[i].startsWith(`/${directory}`) && result[i] !== longestString) {
-          result[i] = result[i].replace(`/${directory}`, '');
+          result[i] = result[i].replace(`/${directory}`, "");
           directoriesRemoved.add(directory);
         }
       }
     });
 
-    return result.map(r => {
+    return result.map((r) => {
       if (r === longestString) {
-        return longestString.replace(path.join(...directoriesRemoved), '');
+        return longestString.replace(path.join(...directoriesRemoved), "");
       }
       return r;
     });
@@ -73,4 +73,4 @@ type Trace = {
   file: string;
   lineNumber: string;
   columnNumber: string;
-}
+};

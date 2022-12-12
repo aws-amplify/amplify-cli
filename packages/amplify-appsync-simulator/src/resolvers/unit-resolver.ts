@@ -1,6 +1,6 @@
-import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncBaseResolver } from './base-resolver';
-import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
+import { AmplifyAppSyncSimulator } from "..";
+import { AppSyncBaseResolver } from "./base-resolver";
+import { AppSyncSimulatorUnitResolverConfig } from "../type-definition";
 
 export class AppSyncUnitResolver extends AppSyncBaseResolver {
   protected config: AppSyncSimulatorUnitResolverConfig;
@@ -22,11 +22,12 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const requestMappingTemplate = this.getRequestMappingTemplate();
     const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
-      { source, arguments: args },
-      context,
-      info,
-    );
+    const {
+      result: requestPayload,
+      errors: requestTemplateErrors,
+      isReturn,
+      hadException,
+    } = requestMappingTemplate.render({ source, arguments: args }, context, info);
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateErrors];
     let result = null;
     let error;
@@ -37,21 +38,21 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     try {
       result = await dataLoader.load(requestPayload, { source, args, context, info });
     } catch (e) {
-      if (requestPayload && requestPayload.version === '2018-05-29') {
+      if (requestPayload && requestPayload.version === "2018-05-29") {
         // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-changelog.html#aws-appsync-resolver-mapping-template-version-2018-05-29
         error = e;
       } else {
         throw e;
       }
     }
-    if (requestPayload && requestPayload.version !== '2018-05-29' && result === null) {
+    if (requestPayload && requestPayload.version !== "2018-05-29" && result === null) {
       return;
     }
 
     const { result: responseTemplateResult, errors: responseTemplateErrors } = responseMappingTemplate.render(
       { source, arguments: args, result, error },
       context,
-      info,
+      info
     );
     context.appsyncErrors = [...context.appsyncErrors, ...responseTemplateErrors];
 

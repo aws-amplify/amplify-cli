@@ -1,21 +1,21 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, $TSAny } from "amplify-cli-core";
+import { printer } from "amplify-prompts";
 
-const subcommand = 'update';
-const category = 'analytics';
+const subcommand = "update";
+const category = "analytics";
 
 /**
  * Update resource handler for Analytics category
  * @param context amplify cli context
  * @returns response from the resource's update function
  */
-export const run = async (context: $TSContext) : Promise<$TSAny> => {
+export const run = async (context: $TSContext): Promise<$TSAny> => {
   const { amplify } = context;
   const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
 
   return amplify
     .serviceSelectionPrompt(context, category, servicesMetadata)
-    .then(result => {
+    .then((result) => {
       const options = {
         service: result.service,
         providerPlugin: result.providerName,
@@ -24,23 +24,23 @@ export const run = async (context: $TSContext) : Promise<$TSAny> => {
       // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
       const providerController = require(`../../provider-utils/${result.providerName}/index`);
       if (!providerController) {
-        printer.error('Provider not configured for this category');
+        printer.error("Provider not configured for this category");
         return undefined;
       }
 
       return providerController.updateResource(context, category, result.service, options);
     })
-    .then(resourceName => {
+    .then((resourceName) => {
       printer.success(`Successfully updated resource ${resourceName} locally`);
-      printer.info('');
-      printer.success('Some next steps:');
+      printer.info("");
+      printer.success("Some next steps:");
       printer.info('"amplify push" will build all your local backend resources and provision it in the cloud');
       printer.info(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
       );
-      printer.info('');
+      printer.info("");
     })
-    .catch(err => {
+    .catch((err) => {
       printer.info(err.stack);
       printer.error(`There was an error updating the ${category} resource`);
       context.usageData.emitError(err);
@@ -49,4 +49,4 @@ export const run = async (context: $TSContext) : Promise<$TSAny> => {
 };
 
 export const name = subcommand;
-export const alias = ['configure'];
+export const alias = ["configure"];

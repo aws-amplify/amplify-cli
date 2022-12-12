@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import * as path from "path";
 import {
   $TSContext,
   AmplifyError,
@@ -9,8 +9,8 @@ import {
   JSONUtilities,
   PathConstants,
   pathManager,
-} from 'amplify-cli-core';
-import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
+} from "amplify-cli-core";
+import { insertAmplifyIgnore } from "../extensions/amplify-helpers/git-manager";
 
 /**
  * Extract amplify project structure with backend-config and project-config
@@ -19,7 +19,7 @@ export const scaffoldProjectHeadless = async (context: $TSContext): Promise<void
   const projectPath = process.cwd();
   const { projectName, frontend } = context.exeInfo.projectConfig;
 
-  const skeletonLocalDir = path.join(__dirname, '..', '..', 'templates', 'amplify-skeleton');
+  const skeletonLocalDir = path.join(__dirname, "..", "..", "templates", "amplify-skeleton");
 
   // create amplify folder
   const destFolder = pathManager.getAmplifyDirPath(projectPath);
@@ -30,13 +30,13 @@ export const scaffoldProjectHeadless = async (context: $TSContext): Promise<void
 
   // copy project-config.json file
   const projectConfigFile = JSONUtilities.readJson<AmplifyProjectConfig>(
-    path.join(skeletonLocalDir, PathConstants.DotConfigDirName, `project-config__${frontend}.json`),
+    path.join(skeletonLocalDir, PathConstants.DotConfigDirName, `project-config__${frontend}.json`)
   );
 
   if (!projectConfigFile) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError("ProjectInitError", {
       message: `project-config.json template not found for frontend: ${frontend}`,
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+      link: "https://docs.amplify.aws/cli/project/troubleshooting/",
     });
   }
 

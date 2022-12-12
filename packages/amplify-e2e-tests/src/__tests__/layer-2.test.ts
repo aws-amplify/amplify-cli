@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as rimraf from 'rimraf';
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as rimraf from "rimraf";
 import {
   addFunction,
   addLayer,
@@ -33,16 +33,16 @@ import {
   updateFunction,
   updateLayer,
   validatePushedVersion,
-} from '@aws-amplify/amplify-e2e-core';
-import { v4 as uuid } from 'uuid';
+} from "@aws-amplify/amplify-e2e-core";
+import { v4 as uuid } from "uuid";
 
-describe('amplify add lambda layer with changes', () => {
+describe("amplify add lambda layer with changes", () => {
   let projRoot: string;
   let projName: string;
-  const envName = 'integtest';
+  const envName = "integtest";
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('layers');
+    projRoot = await createNewProjectDir("layers");
     await initJSProjectWithProfile(projRoot, { envName });
     ({ projectName: projName } = getProjectConfig(projRoot));
   });
@@ -52,10 +52,10 @@ describe('amplify add lambda layer with changes', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('simple layer, change future permission, no changes', async () => {
-    const [shortId] = uuid().split('-');
+  it("simple layer, change future permission, no changes", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [layerRuntime],
@@ -66,7 +66,7 @@ describe('amplify add lambda layer with changes', () => {
       runtimes: [layerRuntime],
       layerName,
       changePermissionOnFutureVersion: true,
-      permissions: ['Public (Anyone on AWS can use this layer)'],
+      permissions: ["Public (Anyone on AWS can use this layer)"],
       numLayers: 1,
       projName,
     };
@@ -82,13 +82,13 @@ describe('amplify add lambda layer with changes', () => {
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.public }];
     validatePushedVersion(projRoot, { layerName, projName }, expectedPerms);
 
-    await amplifyStatus(projRoot, 'No Change');
+    await amplifyStatus(projRoot, "No Change");
   });
 
-  it('simple layer, change latest permission, update status, no new layer version', async () => {
-    const [shortId] = uuid().split('-');
+  it("simple layer, change latest permission, update status, no new layer version", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [layerRuntime],
@@ -99,7 +99,7 @@ describe('amplify add lambda layer with changes', () => {
       runtimes: [layerRuntime],
       layerName,
       changePermissionOnLatestVersion: true,
-      permissions: ['Public (Anyone on AWS can use this layer)'],
+      permissions: ["Public (Anyone on AWS can use this layer)"],
       numLayers: 1,
       projName,
     };
@@ -117,7 +117,7 @@ describe('amplify add lambda layer with changes', () => {
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.public }];
     expectEphemeralPermissions(projRoot, settingsUpdate, envName, 1, expectedPerms);
 
-    await amplifyStatus(projRoot, 'Update');
+    await amplifyStatus(projRoot, "Update");
 
     await amplifyPushAuth(projRoot);
 
@@ -129,10 +129,10 @@ describe('amplify add lambda layer with changes', () => {
     expect(firstArn).toEqual(secondArn);
   });
 
-  it('simple layer, change update layer, select NO to permissions, no changes', async () => {
-    const [shortId] = uuid().split('-');
+  it("simple layer, change update layer, select NO to permissions, no changes", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [layerRuntime],
@@ -154,13 +154,13 @@ describe('amplify add lambda layer with changes', () => {
 
     await updateLayer(projRoot, settingsUpdate);
 
-    await amplifyStatus(projRoot, 'No Change');
+    await amplifyStatus(projRoot, "No Change");
   });
 
-  it('simple layer, update description during push', async () => {
-    const [shortId] = uuid().split('-');
+  it("simple layer, update description during push", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [layerRuntime],
@@ -168,7 +168,7 @@ describe('amplify add lambda layer with changes', () => {
       projName,
     };
 
-    const layerDescription = 'Custom Description from E2E';
+    const layerDescription = "Custom Description from E2E";
 
     await addLayer(projRoot, settings);
     await amplifyPushLayer(projRoot, {
@@ -180,13 +180,13 @@ describe('amplify add lambda layer with changes', () => {
     await expectDeployedLayerDescription(projRoot, settings, getProjectMeta(projRoot), envName, layerDescription);
   });
 
-  it('function with layer reference, change version, test invocation', async () => {
-    const lambdaTestString = 'Hello from Lambda!';
-    const helloWorldUpperCaseOutput = 'HELLO FROM LAMBDA!';
-    const helloWorldTitleCaseOutput = 'Hello From Lambda!';
-    const [shortId] = uuid().split('-');
+  it("function with layer reference, change version, test invocation", async () => {
+    const lambdaTestString = "Hello from Lambda!";
+    const helloWorldUpperCaseOutput = "HELLO FROM LAMBDA!";
+    const helloWorldTitleCaseOutput = "Hello From Lambda!";
+    const [shortId] = uuid().split("-");
     const layerName = `reflayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
 
     // 1. Step
     // - Create a layer
@@ -206,24 +206,24 @@ describe('amplify add lambda layer with changes', () => {
 
     await addLayer(projRoot, settings);
 
-    const packageJsonContent = loadFunctionTestFile('case-layer-package.json');
-    const caseLayerIndexV1 = loadFunctionTestFile('case-layer-v1.js');
-    const caseLayerIndexV2 = loadFunctionTestFile('case-layer-v2.js');
+    const packageJsonContent = loadFunctionTestFile("case-layer-package.json");
+    const caseLayerIndexV1 = loadFunctionTestFile("case-layer-v1.js");
+    const caseLayerIndexV2 = loadFunctionTestFile("case-layer-v2.js");
 
-    let functionCode = loadFunctionTestFile('case-function-for-layer.js');
+    let functionCode = loadFunctionTestFile("case-function-for-layer.js");
 
-    functionCode = functionCode.replace('{{testString}}', lambdaTestString);
+    functionCode = functionCode.replace("{{testString}}", lambdaTestString);
 
-    overrideLayerCodeNode(projRoot, settings.projName, settings.layerName, packageJsonContent, 'package.json');
+    overrideLayerCodeNode(projRoot, settings.projName, settings.layerName, packageJsonContent, "package.json");
 
-    addOptFile(projRoot, settings.projName, settings.layerName, caseLayerIndexV1, 'casing.js');
+    addOptFile(projRoot, settings.projName, settings.layerName, caseLayerIndexV1, "casing.js");
 
     const layerOptions: LayerOptions = {
       select: [`${settings.projName}${settings.layerName}`],
       expectedListOptions: [`${settings.projName}${settings.layerName}`],
     };
 
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, layerRuntime);
+    await addFunction(projRoot, { functionTemplate: "Hello World", layerOptions, name: functionName }, layerRuntime);
 
     overrideFunctionSrcNode(projRoot, functionName, functionCode);
 
@@ -231,7 +231,7 @@ describe('amplify add lambda layer with changes', () => {
       acceptSuggestedLayerVersionConfigurations: true,
     });
 
-    const payload = '{}';
+    const payload = "{}";
     let response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldUpperCaseOutput);
 
@@ -241,7 +241,7 @@ describe('amplify add lambda layer with changes', () => {
     // - Push
     // - Invoke function, result must be the same as first time (upper cased)
 
-    addOptFile(projRoot, settings.projName, settings.layerName, caseLayerIndexV2, 'casing.js');
+    addOptFile(projRoot, settings.projName, settings.layerName, caseLayerIndexV2, "casing.js");
 
     const fullLayerName = `${settings.projName}${settings.layerName}`;
 
@@ -281,7 +281,7 @@ describe('amplify add lambda layer with changes', () => {
         layerAndFunctionExist: true,
         layerWalkthrough: (chain: ExecutionContext): void => {
           chain
-            .wait('Provide existing layers')
+            .wait("Provide existing layers")
             .sendCarriageReturn()
             .wait(`Select a version for ${fullLayerName}`)
             .sendKeyUp(2) // Move from version 1 to Always choose latest version
@@ -311,10 +311,10 @@ describe('amplify add lambda layer with changes', () => {
     -> should not create layer version, (it should force a npm/yarn), node_module should exist with content, push should succeed
   */
 
-  it('add node layer, remove lock file, node_modules, verify status, push', async () => {
-    const [shortId] = uuid().split('-');
+  it("add node layer, remove lock file, node_modules, verify status, push", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'nodejs';
+    const layerRuntime: LayerRuntime = "nodejs";
 
     const settings = {
       runtimes: [layerRuntime],
@@ -324,8 +324,8 @@ describe('amplify add lambda layer with changes', () => {
 
     await addLayer(projRoot, settings);
 
-    const packageJsonContent = loadFunctionTestFile('case-layer-package.json');
-    overrideLayerCodeNode(projRoot, settings.projName, settings.layerName, packageJsonContent, 'package.json');
+    const packageJsonContent = loadFunctionTestFile("case-layer-package.json");
+    overrideLayerCodeNode(projRoot, settings.projName, settings.layerName, packageJsonContent, "package.json");
 
     addOptData(projRoot, settings);
 
@@ -340,21 +340,21 @@ describe('amplify add lambda layer with changes', () => {
     // 2. Check status: No Change
     const layerPath = path.join(
       projRoot,
-      'amplify',
-      'backend',
-      'function',
-      getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName }),
+      "amplify",
+      "backend",
+      "function",
+      getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName })
     );
 
-    rimraf.sync(path.join(layerPath, 'lib', 'nodejs', 'node_modules'));
+    rimraf.sync(path.join(layerPath, "lib", "nodejs", "node_modules"));
 
-    await amplifyStatus(projRoot, 'No Change');
+    await amplifyStatus(projRoot, "No Change");
 
     // 3. Remove yarn.lock
     // 4. Check status: Update
-    fs.removeSync(path.join(layerPath, 'lib', 'nodejs', 'yarn.lock'));
+    fs.removeSync(path.join(layerPath, "lib", "nodejs", "yarn.lock"));
 
-    await amplifyStatus(projRoot, 'Update');
+    await amplifyStatus(projRoot, "Update");
 
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
@@ -380,10 +380,10 @@ describe('amplify add lambda layer with changes', () => {
     lib/python3.8/site-packages should exist with content, push should succeed
   */
 
-  it('add python layer, remove lock file, site-packages, verify status, push', async () => {
-    const [shortId] = uuid().split('-');
+  it("add python layer, remove lock file, site-packages, verify status, push", async () => {
+    const [shortId] = uuid().split("-");
     const layerName = `simplelayer${shortId}`;
-    const layerRuntime: LayerRuntime = 'python';
+    const layerRuntime: LayerRuntime = "python";
 
     const settings = {
       runtimes: [layerRuntime],
@@ -393,8 +393,8 @@ describe('amplify add lambda layer with changes', () => {
 
     await addLayer(projRoot, settings);
 
-    const pipfileContent = loadFunctionTestFile('titlecase.pipfile');
-    overrideLayerCodePython(projRoot, settings.projName, settings.layerName, pipfileContent, 'Pipfile');
+    const pipfileContent = loadFunctionTestFile("titlecase.pipfile");
+    overrideLayerCodePython(projRoot, settings.projName, settings.layerName, pipfileContent, "Pipfile");
 
     addOptData(projRoot, settings);
 
@@ -409,21 +409,21 @@ describe('amplify add lambda layer with changes', () => {
     // 2. Check status: No Change
     const layerPath = path.join(
       projRoot,
-      'amplify',
-      'backend',
-      'function',
-      getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName }),
+      "amplify",
+      "backend",
+      "function",
+      getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName })
     );
 
-    rimraf.sync(path.join(layerPath, 'lib', 'python', 'lib'));
+    rimraf.sync(path.join(layerPath, "lib", "python", "lib"));
 
-    await amplifyStatus(projRoot, 'No Change');
+    await amplifyStatus(projRoot, "No Change");
 
     // 3. Remove Pipfile.lock
     // 4. Check status: Update
-    fs.removeSync(path.join(layerPath, 'lib', 'python', 'Pipfile.lock'));
+    fs.removeSync(path.join(layerPath, "lib", "python", "Pipfile.lock"));
 
-    await amplifyStatus(projRoot, 'Update');
+    await amplifyStatus(projRoot, "Update");
 
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,

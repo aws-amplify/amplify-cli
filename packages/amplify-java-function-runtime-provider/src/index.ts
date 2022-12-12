@@ -1,29 +1,29 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
-import { buildResource } from './utils/build';
-import { packageResource } from './utils/package';
-import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
-import { invokeResource } from './utils/invoke';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
-import path from 'path';
-import { relativeShimSrcPath } from './utils/constants';
-import { GetPackageAssetPaths } from 'amplify-cli-core';
+import { FunctionRuntimeContributorFactory } from "amplify-function-plugin-interface";
+import { buildResource } from "./utils/build";
+import { packageResource } from "./utils/package";
+import { checkJava, checkJavaCompiler, checkGradle } from "./utils/detect";
+import { invokeResource } from "./utils/invoke";
+import { CheckDependenciesResult } from "amplify-function-plugin-interface";
+import path from "path";
+import { relativeShimSrcPath } from "./utils/constants";
+import { GetPackageAssetPaths } from "amplify-cli-core";
 
-export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
+export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       const selection = request.selection;
 
-      if (selection !== 'java') {
+      if (selection !== "java") {
         return Promise.reject(new Error(`Unknown selection ${selection}`));
       }
 
       return Promise.resolve({
         runtime: {
-          name: 'Java',
-          value: 'java',
-          cloudTemplateValue: 'java11',
-          defaultHandler: 'example.LambdaRequestHandler::handleRequest',
-          layerExecutablePath: path.join('java', 'lib'),
+          name: "Java",
+          value: "java",
+          cloudTemplateValue: "java11",
+          defaultHandler: "example.LambdaRequestHandler::handleRequest",
+          layerExecutablePath: path.join("java", "lib"),
         },
       });
     },
@@ -55,14 +55,14 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         resultJava.hasRequiredDependencies && resultCompileJava.hasRequiredDependencies && resultGradle.hasRequiredDependencies;
 
       if (result.hasRequiredDependencies === false) {
-        result.errorMessage = errArray.join('\n');
+        result.errorMessage = errArray.join("\n");
       }
 
       return result;
     },
-    package: params => packageResource(params, context),
+    package: (params) => packageResource(params, context),
     build: buildResource,
-    invoke: params => invokeResource(params, context),
+    invoke: (params) => invokeResource(params, context),
   };
 };
 

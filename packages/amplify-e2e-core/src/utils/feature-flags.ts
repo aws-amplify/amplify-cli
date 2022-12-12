@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import { pathManager, FeatureFlagsEntry, JSONUtilities } from 'amplify-cli-core';
+import _ from "lodash";
+import { pathManager, FeatureFlagsEntry, JSONUtilities } from "amplify-cli-core";
 
 type FeatureFlagData = { features: FeatureFlagsEntry };
 const getFeatureFlagFilePath = (projectRoot: string) => {
@@ -28,11 +28,10 @@ export const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) 
 export const addFeatureFlag = (projectRoot: string, section: string, name: string, value: boolean | number): void => {
   const ff = loadFeatureFlags(projectRoot);
   const nameLowerCase = name.toLowerCase();
-  if (_.get(ff, ['features', section, nameLowerCase])) {
-    _.set(ff, ['features', section, nameLowerCase], value);
-  }
-  else {
-    _.set(ff, ['features', section, name], value);
+  if (_.get(ff, ["features", section, nameLowerCase])) {
+    _.set(ff, ["features", section, nameLowerCase], value);
+  } else {
+    _.set(ff, ["features", section, name], value);
   }
   saveFeatureFlagFile(projectRoot, ff);
 };

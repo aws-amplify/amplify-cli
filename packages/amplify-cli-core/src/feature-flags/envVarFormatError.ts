@@ -3,11 +3,11 @@ export class EnvVarFormatError extends Error {
     let normalizedName = variableName;
 
     if (variableName === undefined || variableName.trim().length === 0) {
-      normalizedName = '<unknown>';
+      normalizedName = "<unknown>";
     }
 
     super(`Invalid variable name format: '${normalizedName}'`);
 
-    this.name = 'EnvVarFormatError';
+    this.name = "EnvVarFormatError";
   }
 }

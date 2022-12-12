@@ -1,16 +1,36 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush,
-  addFunction, functionBuild, addLambdaTrigger, addSimpleDDB, addKinesis, createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, addApiWithoutSchema, updateApiSchema, appsyncGraphQLRequest, getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings, retry, generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  amplifyPush,
+  addFunction,
+  functionBuild,
+  addLambdaTrigger,
+  addSimpleDDB,
+  addKinesis,
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getFunction,
+  addApiWithoutSchema,
+  updateApiSchema,
+  appsyncGraphQLRequest,
+  getCloudWatchLogs,
+  putKinesisRecords,
+  invokeFunction,
+  getEventSourceMappings,
+  retry,
+  generateRandomShortId,
+} from "@aws-amplify/amplify-e2e-core";
 
-import _ from 'lodash';
+import _ from "lodash";
 
-describe('nodejs', () => {
-  describe('amplify add function', () => {
+describe("nodejs", () => {
+  describe("amplify add function", () => {
     let projRoot: string;
 
     beforeEach(async () => {
-      projRoot = await createNewProjectDir('functions');
+      projRoot = await createNewProjectDir("functions");
     });
 
     afterEach(async () => {
@@ -18,34 +38,38 @@ describe('nodejs', () => {
       deleteProjectDir(projRoot);
     });
 
-    it('init a project and add simple function and uncomment cors header', async () => {
+    it("init a project and add simple function and uncomment cors header", async () => {
       await initJSProjectWithProfile(projRoot, {});
       const functionName = `testcorsfunction${generateRandomShortId()}`;
-      process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER = 'true';
-      await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
+      process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER = "true";
+      await addFunction(projRoot, { functionTemplate: "Hello World", name: functionName }, "nodejs");
       await functionBuild(projRoot, {});
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Arn: functionArn, Name, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const { Arn: functionArn, Name, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(functionArn).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
       const cloudFunction = await getFunction(Name, region);
       const response = await invokeFunction(Name, JSON.stringify({}), region);
       const payload = JSON.parse(response.Payload.toString());
-      expect(payload.headers['Access-Control-Allow-Origin']).toEqual('*');
-      expect(payload.headers['Access-Control-Allow-Headers']).toEqual('*');
+      expect(payload.headers["Access-Control-Allow-Origin"]).toEqual("*");
+      expect(payload.headers["Access-Control-Allow-Headers"]).toEqual("*");
       expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
       delete process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER;
     });
 
-    it('init a project and add simple function', async () => {
+    it("init a project and add simple function", async () => {
       await initJSProjectWithProfile(projRoot, {});
-      await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+      await addFunction(projRoot, { functionTemplate: "Hello World" }, "nodejs");
       await functionBuild(projRoot, {});
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const {
+        Arn: functionArn,
+        Name: functionName,
+        Region: region,
+      } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(functionArn).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
@@ -53,18 +77,22 @@ describe('nodejs', () => {
       expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
     });
 
-    it('graphql mutation should result in trigger called in minimal AppSync + trigger infra', async () => {
+    it("graphql mutation should result in trigger called in minimal AppSync + trigger infra", async () => {
       await initJSProjectWithProfile(projRoot, {
-        name: 'graphqltriggerinfra',
+        name: "graphqltriggerinfra",
       });
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-      await updateApiSchema(projRoot, 'graphqltriggerinfra', 'simple_model.graphql');
-      await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'DynamoDB' }, 'nodejs', addLambdaTrigger);
+      await updateApiSchema(projRoot, "graphqltriggerinfra", "simple_model.graphql");
+      await addFunction(projRoot, { functionTemplate: "Lambda trigger", triggerType: "DynamoDB" }, "nodejs", addLambdaTrigger);
 
       await functionBuild(projRoot, {});
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const {
+        Arn: functionArn,
+        Name: functionName,
+        Region: region,
+      } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(functionArn).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
@@ -76,15 +104,15 @@ describe('nodejs', () => {
         variables: null,
       });
 
-      const appsyncResource = Object.keys(meta.api).map(key => meta.api[key])[0];
+      const appsyncResource = Object.keys(meta.api).map((key) => meta.api[key])[0];
 
       await retry(
         () => getEventSourceMappings(functionName, region),
-        res => res.length > 0 && res[0].State === 'Enabled',
+        (res) => res.length > 0 && res[0].State === "Enabled"
       );
 
       const fireGqlRequestAndCheckLogs: () => Promise<boolean> = async () => {
-        const resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
+        const resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), "amplify"))) as {
           data: { createTodo: { id: string; content: string } };
         };
         const { id } = resp.data.createTodo;
@@ -93,30 +121,34 @@ describe('nodejs', () => {
         }
         await retry(
           () => getCloudWatchLogs(region, `/aws/lambda/${functionName}`),
-          logs => !!logs.find(logEntry => logEntry.message.includes(`"id":{"S":"${id}"},"content":{"S":"amplify"}`)),
+          (logs) => !!logs.find((logEntry) => logEntry.message.includes(`"id":{"S":"${id}"},"content":{"S":"amplify"}`)),
           {
             stopOnError: false,
             times: 2,
-          },
+          }
         );
         return true;
       };
 
-      await retry(fireGqlRequestAndCheckLogs, res => res, {
+      await retry(fireGqlRequestAndCheckLogs, (res) => res, {
         stopOnError: false,
         times: 2,
       });
     });
 
-    it('records put into kinesis stream should result in trigger called in minimal kinesis + trigger infra', async () => {
+    it("records put into kinesis stream should result in trigger called in minimal kinesis + trigger infra", async () => {
       await initJSProjectWithProfile(projRoot, {});
-      await addKinesis(projRoot, { rightName: `kinesisintegtest${generateRandomShortId()}`, wrongName: '$' });
-      await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'Kinesis' }, 'nodejs', addLambdaTrigger);
+      await addKinesis(projRoot, { rightName: `kinesisintegtest${generateRandomShortId()}`, wrongName: "$" });
+      await addFunction(projRoot, { functionTemplate: "Lambda trigger", triggerType: "Kinesis" }, "nodejs", addLambdaTrigger);
 
       await functionBuild(projRoot, {});
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const {
+        Arn: functionArn,
+        Name: functionName,
+        Region: region,
+      } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(functionArn).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
@@ -125,17 +157,17 @@ describe('nodejs', () => {
 
       await retry(
         () => getEventSourceMappings(functionName, region),
-        res => res.length > 0 && res[0].State === 'Enabled',
+        (res) => res.length > 0 && res[0].State === "Enabled"
       );
 
-      const kinesisResource = Object.keys(meta.analytics).map(key => meta.analytics[key])[0];
+      const kinesisResource = Object.keys(meta.analytics).map((key) => meta.analytics[key])[0];
 
       const fireKinesisRequestAndCheckLogs = async () => {
         const resp = await putKinesisRecords(
-          'integtest',
-          '0',
+          "integtest",
+          "0",
           kinesisResource.output.kinesisStreamId,
-          meta.providers.awscloudformation.Region,
+          meta.providers.awscloudformation.Region
         );
         if (!(resp.FailedRecordCount === 0 && resp.Records.length > 0)) {
           return false;
@@ -145,73 +177,73 @@ describe('nodejs', () => {
 
         await retry(
           () => getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`),
-          logs => !!logs.find(logEntry => logEntry.message.includes(eventId)),
+          (logs) => !!logs.find((logEntry) => logEntry.message.includes(eventId)),
           {
             stopOnError: false,
             times: 2,
-          },
+          }
         );
         return true;
       };
 
-      await retry(fireKinesisRequestAndCheckLogs, res => res, {
+      await retry(fireKinesisRequestAndCheckLogs, (res) => res, {
         stopOnError: false,
         times: 2,
       });
     });
 
-    it('should fail with approp message when adding lambda triggers to unexisting resources', async () => {
+    it("should fail with approp message when adding lambda triggers to unexisting resources", async () => {
       await initJSProjectWithProfile(projRoot, {});
 
       // No AppSync resources have been configured in API category.
       await addFunction(
         projRoot,
         {
-          functionTemplate: 'Lambda trigger',
-          triggerType: 'DynamoDB',
-          eventSource: 'AppSync',
+          functionTemplate: "Lambda trigger",
+          triggerType: "DynamoDB",
+          eventSource: "AppSync",
           expectFailure: true,
         },
-        'nodejs',
-        addLambdaTrigger,
+        "nodejs",
+        addLambdaTrigger
       );
       // There are no DynamoDB resources configured in your project currently
       await addFunction(
         projRoot,
         {
-          functionTemplate: 'Lambda trigger',
-          triggerType: 'DynamoDB',
-          eventSource: 'DynamoDB',
+          functionTemplate: "Lambda trigger",
+          triggerType: "DynamoDB",
+          eventSource: "DynamoDB",
           expectFailure: true,
         },
-        'nodejs',
-        addLambdaTrigger,
+        "nodejs",
+        addLambdaTrigger
       );
       // No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream
       await addFunction(
         projRoot,
         {
-          functionTemplate: 'Lambda trigger',
-          triggerType: 'Kinesis',
+          functionTemplate: "Lambda trigger",
+          triggerType: "Kinesis",
           expectFailure: true,
         },
-        'nodejs',
-        addLambdaTrigger,
+        "nodejs",
+        addLambdaTrigger
       );
     });
 
-    it('should init and deploy storage DynamoDB + Lambda trigger', async () => {
+    it("should init and deploy storage DynamoDB + Lambda trigger", async () => {
       await initJSProjectWithProfile(projRoot, {});
       await addSimpleDDB(projRoot, {});
       await addFunction(
         projRoot,
         {
-          functionTemplate: 'Lambda trigger',
-          triggerType: 'DynamoDB',
-          eventSource: 'DynamoDB',
+          functionTemplate: "Lambda trigger",
+          triggerType: "DynamoDB",
+          eventSource: "DynamoDB",
         },
-        'nodejs',
-        addLambdaTrigger,
+        "nodejs",
+        addLambdaTrigger
       );
 
       await amplifyPushAuth(projRoot);
@@ -221,7 +253,7 @@ describe('nodejs', () => {
         Arn: table1Arn,
         Region: table1Region,
         StreamArn: table1StreamArn,
-      } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+      } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
       expect(table1Name).toBeDefined();
       expect(table1Arn).toBeDefined();

@@ -1,1 +1,1 @@
-export { GraphQLResourceManager } from './amplify-graphql-resource-manager';
+export { GraphQLResourceManager } from "./amplify-graphql-resource-manager";

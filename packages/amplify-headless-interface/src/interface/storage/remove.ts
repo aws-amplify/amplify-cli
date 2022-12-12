@@ -1,4 +1,4 @@
-import { S3ServiceConfigurationBase } from './base';
+import { S3ServiceConfigurationBase } from "./base";
 
 /**
  * Service configuration for removing AWS S3 through Amplify

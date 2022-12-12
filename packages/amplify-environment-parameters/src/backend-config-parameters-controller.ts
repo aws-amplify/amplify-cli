@@ -1,23 +1,19 @@
-import {
-  ResourceTuple,
-  stateManager,
-  AmplifyError,
-} from 'amplify-cli-core';
-import Ajv from 'ajv';
-import { BackendParameters } from './backend-parameters';
-import parameterMapSchema from './schemas/BackendParameters.schema.json';
+import { ResourceTuple, stateManager, AmplifyError } from "amplify-cli-core";
+import Ajv from "ajv";
+import { BackendParameters } from "./backend-parameters";
+import parameterMapSchema from "./schemas/BackendParameters.schema.json";
 
 /**
  * Interface for controller that maps parameters to resources that depend on those parameters
  */
 export type IBackendParametersController = {
-  save: () => Promise<void>,
-  addParameter: (name: string, usedBy: ResourceTuple[]) => IBackendParametersController,
-  addAllParameters: (parameterMap: BackendParameters) => IBackendParametersController,
-  removeParameter: (name: string) => IBackendParametersController,
-  removeAllParameters: () => IBackendParametersController,
-  getParameters: () => Readonly<BackendParameters>,
-}
+  save: () => Promise<void>;
+  addParameter: (name: string, usedBy: ResourceTuple[]) => IBackendParametersController;
+  addAllParameters: (parameterMap: BackendParameters) => IBackendParametersController;
+  removeParameter: (name: string) => IBackendParametersController;
+  removeAllParameters: () => IBackendParametersController;
+  getParameters: () => Readonly<BackendParameters>;
+};
 
 let localBackendParametersController: IBackendParametersController;
 
@@ -88,10 +84,10 @@ const backendConfigParameterMapSupplier = (): BackendParameters => {
   const validator = ajv.compile(parameterMapSchema);
   if (!validator(uncheckedParamMap)) {
     // throw new Error('test');
-    throw new AmplifyError('BackendConfigValidationError', {
+    throw new AmplifyError("BackendConfigValidationError", {
       message: `backend-config.json parameter config is invalid`,
-      resolution: 'Correct the errors in the file and retry the command',
-      details: validator.errors?.map(err => JSON.stringify(err, undefined, 2)).join('\n'),
+      resolution: "Correct the errors in the file and retry the command",
+      details: validator.errors?.map((err) => JSON.stringify(err, undefined, 2)).join("\n"),
     });
   }
   return uncheckedParamMap as BackendParameters;

@@ -1,7 +1,7 @@
-import * as cdk from '@aws-cdk/core';
-import * as ddb from '@aws-cdk/aws-dynamodb';
-import * as s3Cdk from '@aws-cdk/aws-s3';
-import * as iamCdk from '@aws-cdk/aws-iam';
+import * as cdk from "@aws-cdk/core";
+import * as ddb from "@aws-cdk/aws-dynamodb";
+import * as s3Cdk from "@aws-cdk/aws-s3";
+import * as iamCdk from "@aws-cdk/aws-iam";
 
 /**
  * PUBLIC API : L1 methods to store CFN gen related information
@@ -40,6 +40,6 @@ export interface AmplifyS3ResourceTemplate extends AmplifyCDKL1 {
  * PUBLIC API : Amplify build permissions type
  */
 export enum AmplifyBuildParamsPermissions {
-  ALLOW = 'ALLOW',
-  DISALLOW = 'DISALLOW',
+  ALLOW = "ALLOW",
+  DISALLOW = "DISALLOW",
 }

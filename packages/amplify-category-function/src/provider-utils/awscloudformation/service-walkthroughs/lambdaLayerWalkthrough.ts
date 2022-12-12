@@ -1,10 +1,10 @@
-import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
-import inquirer, { InputQuestion } from 'inquirer';
-import _ from 'lodash';
-import { ServiceName } from '../utils/constants';
-import { runtimeWalkthrough } from '../utils/functionPluginLoader';
-import { LayerCloudState } from '../utils/layerCloudState';
-import { saveLayerVersionPermissionsToBeUpdatedInCfn } from '../utils/layerConfiguration';
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from "amplify-cli-core";
+import inquirer, { InputQuestion } from "inquirer";
+import _ from "lodash";
+import { ServiceName } from "../utils/constants";
+import { runtimeWalkthrough } from "../utils/functionPluginLoader";
+import { LayerCloudState } from "../utils/layerCloudState";
+import { saveLayerVersionPermissionsToBeUpdatedInCfn } from "../utils/layerConfiguration";
 import {
   layerAccountAccessPrompt,
   LayerInputParams,
@@ -16,25 +16,25 @@ import {
   loadPreviousLayerHash,
   loadStoredLayerParameters,
   previousPermissionsQuestion,
-} from '../utils/layerHelpers';
-import { migrateLegacyLayer } from '../utils/layerMigrationUtils';
-import { AccountsLayer, defaultLayerPermission, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from '../utils/layerParams';
+} from "../utils/layerHelpers";
+import { migrateLegacyLayer } from "../utils/layerMigrationUtils";
+import { AccountsLayer, defaultLayerPermission, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from "../utils/layerParams";
 
 export async function createLayerWalkthrough(
   context: $TSContext,
-  parameters: Partial<LayerParameters> = {},
+  parameters: Partial<LayerParameters> = {}
 ): Promise<Partial<LayerParameters>> {
   const projectName = context.amplify
     .getProjectDetails()
     .projectConfig.projectName.toLowerCase()
-    .replace(/[^a-zA-Z0-9]/gi, '');
+    .replace(/[^a-zA-Z0-9]/gi, "");
   const { layerName } = await inquirer.prompt(layerNameQuestion(projectName));
   parameters.layerName = `${projectName}${layerName}`; // prefix with project name
 
   const runtimeReturn = await runtimeWalkthrough(context, parameters);
 
   // need to map cloudTemplateValue: string => cloudTemplateValues: string[]
-  parameters.runtimes = runtimeReturn.map(val => ({
+  parameters.runtimes = runtimeReturn.map((val) => ({
     name: val.runtime.name,
     value: val.runtime.value,
     layerExecutablePath: val.runtime.layerExecutablePath,
@@ -64,10 +64,12 @@ export async function createLayerWalkthrough(
 export async function updateLayerWalkthrough(
   context: $TSContext,
   lambdaToUpdate?: string,
-  parameters?: Partial<LayerParameters>,
+  parameters?: Partial<LayerParameters>
 ): Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }> {
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
+  const resources = allResources
+    .filter((resource) => resource.service === ServiceName.LambdaLayer)
+    .map((resource) => resource.resourceName);
 
   if (resources.length === 0) {
     const errMessage = 'No Lambda layer resource to update. Please use "amplify add function" to create a new Layer';
@@ -83,9 +85,9 @@ export async function updateLayerWalkthrough(
   } else {
     const resourceQuestion: InputQuestion = [
       {
-        name: 'resourceName',
-        message: 'Select the Lambda layer to update:',
-        type: 'list',
+        name: "resourceName",
+        message: "Select the Lambda layer to update:",
+        type: "list",
         choices: resources,
       },
     ];
@@ -104,7 +106,7 @@ export async function updateLayerWalkthrough(
   const storedLayerParameters = loadStoredLayerParameters(context, parameters.layerName);
   let { permissions } = storedLayerParameters;
 
-  if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
+  if (await context.amplify.confirmPrompt("Do you want to adjust layer version permissions?", true)) {
     permissionsUpdateConfirmed = true;
     let defaultLayerPermissions: PermissionEnum[];
     let defaultOrgs: string[] = [];
@@ -115,30 +117,30 @@ export async function updateLayerWalkthrough(
     if (layerHasDeployed) {
       const layerCloudState = LayerCloudState.getInstance(parameters.layerName);
       const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
-      const latestVersionText = 'Future layer versions';
+      const latestVersionText = "Future layer versions";
       const layerVersionChoices = [
         latestVersionText,
-        ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
+        ...layerVersions.map((layerVersionMetadata) => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
       ];
       const selectedVersion: string = (
-        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
+        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, "Select the layer version to update:"))
       ).versionSelection;
 
       if (selectedVersion !== latestVersionText) {
-        selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
-        parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));
+        selectedVersionNumber = Number(_.first(selectedVersion.split(":")));
+        parameters.selectedVersion = _.first(layerVersions.filter((version) => version.Version === selectedVersionNumber));
         permissions = parameters.selectedVersion.permissions;
       }
     }
 
     // load defaults
-    defaultLayerPermissions = permissions.map(permission => permission.type);
+    defaultLayerPermissions = permissions.map((permission) => permission.type);
     defaultOrgs = permissions
-      .filter(p => p.type === PermissionEnum.AwsOrg)
+      .filter((p) => p.type === PermissionEnum.AwsOrg)
       .reduce((orgs: string[], permission: OrgsLayer) => [...orgs, ...permission.orgs], []);
 
     defaultAccounts = permissions
-      .filter(p => p.type === PermissionEnum.AwsAccounts)
+      .filter((p) => p.type === PermissionEnum.AwsAccounts)
       .reduce((accounts: string[], permission: AccountsLayer) => [...accounts, ...permission.accounts], []);
 
     // select permission strategy
@@ -194,12 +196,12 @@ export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, 
 
 async function descriptionQuestion(timestampString: string): Promise<string> {
   const response = await inquirer.prompt({
-    name: 'description',
-    default: `${'Updated layer version'} ${timestampString}`,
-    message: 'Description:',
+    name: "description",
+    default: `${"Updated layer version"} ${timestampString}`,
+    message: "Description:",
     validate: (desc: string) => {
-      if (desc.length === 0) return 'Description cannot be empty';
-      if (desc.length > 256) return 'Description cannot be more than 256 characters';
+      if (desc.length === 0) return "Description cannot be empty";
+      if (desc.length > 256) return "Description cannot be more than 256 characters";
       return true;
     },
   });

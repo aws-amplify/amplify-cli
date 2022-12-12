@@ -48,16 +48,16 @@ export const mutation2 = `
 export const expected_result_mutation2 = {
   data: {
     createProject: {
-      id: '1',
-      name: 'project1',
+      id: "1",
+      name: "project1",
       team: {
-        id: '1',
-        name: 'team1',
-        createdAt: '<check-defined>',
-        updatedAt: '<check-defined>',
+        id: "1",
+        name: "team1",
+        createdAt: "<check-defined>",
+        updatedAt: "<check-defined>",
       },
-      createdAt: '<check-defined>',
-      updatedAt: '<check-defined>',
+      createdAt: "<check-defined>",
+      updatedAt: "<check-defined>",
     },
   },
 };

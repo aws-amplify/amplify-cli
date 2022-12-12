@@ -1,7 +1,7 @@
-import { AmplifySupportedService, CLIInputSchemaGenerator, TypeDef } from 'amplify-cli-core';
+import { AmplifySupportedService, CLIInputSchemaGenerator, TypeDef } from "amplify-cli-core";
 
 const CognitoAuthTypeDef: TypeDef = {
-  typeName: 'CognitoCLIInputs',
+  typeName: "CognitoCLIInputs",
   service: AmplifySupportedService.COGNITO,
 };
 

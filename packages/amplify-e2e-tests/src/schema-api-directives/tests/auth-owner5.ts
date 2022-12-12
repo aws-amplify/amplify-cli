@@ -24,19 +24,19 @@ mutation CreateTodo(
 }`;
 export const input_mutation1 = {
   input: {
-    id: '1',
-    updatedAt: '2020-05-20T01:05:49.129Z',
-    content: 'todo1',
+    id: "1",
+    updatedAt: "2020-05-20T01:05:49.129Z",
+    content: "todo1",
   },
 };
 export const expected_result_mutation1 = {
   data: {
     createTodo: {
-      id: '1',
-      updatedAt: '2020-05-20T01:05:49.129Z',
-      content: 'todo1',
-      createdAt: '<check-defined>',
-      owner: 'user1',
+      id: "1",
+      updatedAt: "2020-05-20T01:05:49.129Z",
+      content: "todo1",
+      createdAt: "<check-defined>",
+      owner: "user1",
     },
   },
 };
@@ -56,19 +56,19 @@ export const mutation2 = `
 }`;
 export const input_mutation2 = {
   input: {
-    id: '1',
-    updatedAt: '2020-05-20T01:05:49.129Z',
-    content: 'todo1-updated',
+    id: "1",
+    updatedAt: "2020-05-20T01:05:49.129Z",
+    content: "todo1-updated",
   },
 };
 export const expected_result_mutation2 = {
   data: {
     updateTodo: {
-      id: '1',
-      updatedAt: '2020-05-20T01:05:49.129Z',
-      content: 'todo1-updated',
-      createdAt: '<check-defined>',
-      owner: 'user1',
+      id: "1",
+      updatedAt: "2020-05-20T01:05:49.129Z",
+      content: "todo1-updated",
+      createdAt: "<check-defined>",
+      owner: "user1",
     },
   },
 };

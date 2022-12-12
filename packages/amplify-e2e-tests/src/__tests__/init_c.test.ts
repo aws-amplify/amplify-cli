@@ -9,12 +9,12 @@ import {
   deleteProjectDir,
   getEnvVars,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-describe('amplify init c', () => {
+describe("amplify init c", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('init');
+    projRoot = await createNewProjectDir("init");
   });
 
   afterEach(async () => {
@@ -22,10 +22,10 @@ describe('amplify init c', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('should init project without profile', async () => {
+  it("should init project without profile", async () => {
     const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
-      throw new Error('Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable');
+      throw new Error("Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable");
     }
     await initProjectWithAccessKey(projRoot, {
       accessKeyId: AWS_ACCESS_KEY_ID,
@@ -34,9 +34,7 @@ describe('amplify init c', () => {
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const {
-      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
-    } = meta;
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
@@ -44,7 +42,7 @@ describe('amplify init c', () => {
 
     // init new env
     await initNewEnvWithAccessKey(projRoot, {
-      envName: 'foo',
+      envName: "foo",
       accessKeyId: AWS_ACCESS_KEY_ID,
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
     });

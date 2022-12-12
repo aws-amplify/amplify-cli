@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
-import * as pinpointHelper from '../../pinpoint-helper';
+import { $TSContext } from "amplify-cli-core";
+import * as pinpointHelper from "../../pinpoint-helper";
 
-export const name = 'console';
+export const name = "console";
 
 /**
  * Opens AWS console for Pinpoint resource

@@ -1,4 +1,4 @@
-import { IAM } from 'aws-sdk';
+import { IAM } from "aws-sdk";
 
 export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
   const iam = new IAM();
@@ -30,7 +30,7 @@ export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
 
 export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, idpId: string) => {
   let pass = false;
-  let message = '';
+  let message = "";
 
   try {
     const iam = new IAM({
@@ -42,24 +42,24 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
     const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
-    pass = assumeRolePolicyDocument.Statement.some(statement => {
+    pass = assumeRolePolicyDocument.Statement.some((statement) => {
       if (statement.Condition) {
         return (
           statement.Condition.StringEquals &&
-          statement.Condition.StringEquals['cognito-identity.amazonaws.com:aud'] &&
-          statement.Condition.StringEquals['cognito-identity.amazonaws.com:aud'] === idpId &&
-          statement.Condition['ForAnyValue:StringLike'] &&
-          statement.Condition['ForAnyValue:StringLike']['cognito-identity.amazonaws.com:amr'] &&
-          /authenticated/.test(statement.Condition['ForAnyValue:StringLike']['cognito-identity.amazonaws.com:amr'])
+          statement.Condition.StringEquals["cognito-identity.amazonaws.com:aud"] &&
+          statement.Condition.StringEquals["cognito-identity.amazonaws.com:aud"] === idpId &&
+          statement.Condition["ForAnyValue:StringLike"] &&
+          statement.Condition["ForAnyValue:StringLike"]["cognito-identity.amazonaws.com:amr"] &&
+          /authenticated/.test(statement.Condition["ForAnyValue:StringLike"]["cognito-identity.amazonaws.com:amr"])
         );
       } else {
         return false;
       }
     });
-    message = pass ? 'Found Matching Condition' : 'Matching Condition does not exist';
+    message = pass ? "Found Matching Condition" : "Matching Condition does not exist";
   } catch (e) {
     pass = false;
-    message = 'IAM GetRole threw Error: ' + e.message;
+    message = "IAM GetRole threw Error: " + e.message;
   }
 
   return {

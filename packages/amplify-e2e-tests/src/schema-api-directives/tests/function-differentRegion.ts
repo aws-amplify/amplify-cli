@@ -1,6 +1,6 @@
 //special handling needed becasue we need to set up the function in a differnt region
-import path from 'path';
-import fs from 'fs-extra';
+import path from "path";
+import fs from "fs-extra";
 
 import {
   getProjectMeta,
@@ -11,17 +11,17 @@ import {
   amplifyPushWithoutCodegen,
   addFunction,
   initProjectWithAccessKey,
-} from '@aws-amplify/amplify-e2e-core';
+} from "@aws-amplify/amplify-e2e-core";
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from "../authHelper";
 
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { updateSchemaInTestProject, testQueries } from "../common";
 
-import { randomizedFunctionName } from '../functionTester';
+import { randomizedFunctionName } from "../functionTester";
 
 export async function runTest(projectDir: string, testModule: any) {
-  const functionRegion = process.env.CLI_REGION === 'us-west-2' ? 'us-east-2' : 'us-west-2';
-  const functionProjectDirPath = path.join(path.dirname(projectDir), path.basename(projectDir) + '-function');
+  const functionRegion = process.env.CLI_REGION === "us-west-2" ? "us-east-2" : "us-west-2";
+  const functionProjectDirPath = path.join(path.dirname(projectDir), path.basename(projectDir) + "-function");
 
   try {
     const functionName = await setupFunction(functionProjectDirPath, functionRegion);
@@ -52,18 +52,18 @@ async function setupFunction(functionProjectDirPath: string, functionRegion: str
     region: functionRegion,
   });
 
-  const functionName = randomizedFunctionName('function');
+  const functionName = randomizedFunctionName("function");
   await addFunction(
     functionProjectDirPath,
     {
       name: functionName,
-      functionTemplate: 'Hello World',
+      functionTemplate: "Hello World",
     },
-    'nodejs',
+    "nodejs"
   );
 
-  const amplifyBackendDirPath = path.join(functionProjectDirPath, 'amplify', 'backend');
-  const amplifyFunctionIndexFilePath = path.join(amplifyBackendDirPath, 'function', functionName, 'src', 'index.js');
+  const amplifyBackendDirPath = path.join(functionProjectDirPath, "amplify", "backend");
+  const amplifyFunctionIndexFilePath = path.join(amplifyBackendDirPath, "function", functionName, "src", "index.js");
 
   fs.writeFileSync(amplifyFunctionIndexFilePath, func);
 
@@ -81,9 +81,9 @@ async function deleteFunctionProject(functionProjectDirPath: string) {
 }
 
 function updateFunctionNameAndRegionInSchema(projectDir: string, functionName: string, functionRegion: string) {
-  const backendApiDirPath = path.join(projectDir, 'amplify', 'backend', 'api');
+  const backendApiDirPath = path.join(projectDir, "amplify", "backend", "api");
   const apiResDirName = fs.readdirSync(backendApiDirPath)[0];
-  const amplifySchemaFilePath = path.join(backendApiDirPath, apiResDirName, 'schema.graphql');
+  const amplifySchemaFilePath = path.join(backendApiDirPath, apiResDirName, "schema.graphql");
 
   let amplifySchemaFileContents = fs.readFileSync(amplifySchemaFilePath).toString();
 
@@ -120,6 +120,6 @@ query Echo {
 `;
 export const expected_result_query = {
   data: {
-    echo: 'query message echoed from different region.',
+    echo: "query message echoed from different region.",
   },
 };

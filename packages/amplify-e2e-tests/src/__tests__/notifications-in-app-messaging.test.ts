@@ -12,15 +12,13 @@ import {
   initJSProjectWithProfile,
   removeAllNotificationChannel,
   removeNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
-import {
-  getShortId,
-} from '../import-helpers';
+} from "@aws-amplify/amplify-e2e-core";
+import { getShortId } from "../import-helpers";
 
-describe('notification category test - InAppMessaging', () => {
-  const testChannel = 'InAppMessaging';
-  const testChannelSelection = 'In-App Messaging';
-  const envName = 'test';
+describe("notification category test - InAppMessaging", () => {
+  const testChannel = "InAppMessaging";
+  const testChannelSelection = "In-App Messaging";
+  const envName = "test";
   const projectPrefix = `notification${testChannel}`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -52,9 +50,9 @@ describe('notification category test - InAppMessaging', () => {
     await amplifyPushAuth(projectRoot);
 
     // expect that Notifications, Analytics, and Auth categories are shown
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // InAppMessaging & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
@@ -80,7 +78,7 @@ describe('notification category test - InAppMessaging', () => {
     expect(updatedInAppMsgMeta.Enabled).toBe(false);
 
     // amplify status should detect that we haven't pushed yet & show Update status
-    await amplifyStatus(projectRoot, 'Update');
+    await amplifyStatus(projectRoot, "Update");
     // cloud backend should show that InAppMessaging is still enabled because we haven't pushed
     const cloudBackendMeta = await getProjectMeta(projectRoot);
     const cloudBackendInAppMsgMeta = cloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
@@ -97,16 +95,16 @@ describe('notification category test - InAppMessaging', () => {
     expect(updatedCloudBackendInAppMsgMeta.Enabled).toBe(false);
 
     // make sure Notifications/Analytics/Auth still show up in status
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Notifications");
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // this will remove notifications inline, so both local/cloud will be updated
     await removeAllNotificationChannel(projectRoot);
 
     // analytics/auth should still exist
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, "Analytics");
+    await amplifyStatus(projectRoot, "Auth");
 
     // notifications should not exist locally (check the amplify-meta.json file)
     const finalLocalMeta = getBackendAmplifyMeta(projectRoot);

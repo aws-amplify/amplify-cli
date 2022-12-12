@@ -26,8 +26,8 @@ mutation CreatePost {
 export const expected_result_mutation1 = {
   data: {
     createPost: {
-      id: 'a-post-id',
-      title: 'Post Title',
+      id: "a-post-id",
+      title: "Post Title",
     },
   },
 };
@@ -42,8 +42,8 @@ mutation CreateCommentOnPost1 {
 export const expected_result_mutation2 = {
   data: {
     createComment: {
-      id: 'a-comment-id-1',
-      content: 'A comment #1',
+      id: "a-comment-id-1",
+      content: "A comment #1",
     },
   },
 };
@@ -59,8 +59,8 @@ mutation CreateCommentOnPost2 {
 export const expected_result_mutation3 = {
   data: {
     createComment: {
-      id: 'a-comment-id-2',
-      content: 'A comment #2',
+      id: "a-comment-id-2",
+      content: "A comment #2",
     },
   },
 };
@@ -87,20 +87,20 @@ query GetCommentWithPostAndComments {
 export const expected_result_query = {
   data: {
     getComment: {
-      id: 'a-comment-id-1',
-      content: 'A comment #1',
+      id: "a-comment-id-1",
+      content: "A comment #1",
       post: {
-        id: 'a-post-id',
-        title: 'Post Title',
+        id: "a-post-id",
+        title: "Post Title",
         comments: {
           items: [
             {
-              id: 'a-comment-id-1',
-              content: 'A comment #1',
+              id: "a-comment-id-1",
+              content: "A comment #1",
             },
             {
-              id: 'a-comment-id-2',
-              content: 'A comment #2',
+              id: "a-comment-id-2",
+              content: "A comment #2",
             },
           ],
         },

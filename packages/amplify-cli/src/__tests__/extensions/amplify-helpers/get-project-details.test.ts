@@ -1,13 +1,13 @@
-import { stateManager } from 'amplify-cli-core';
-import { getProjectDetails } from '../../../extensions/amplify-helpers/get-project-details';
+import { stateManager } from "amplify-cli-core";
+import { getProjectDetails } from "../../../extensions/amplify-helpers/get-project-details";
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
-jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
-  getEnvInfo: jest.fn().mockReturnValue({ envName: 'test' }),
+jest.mock("../../../extensions/amplify-helpers/get-env-info", () => ({
+  getEnvInfo: jest.fn().mockReturnValue({ envName: "test" }),
 }));
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   stateManager: {
     getLocalEnvInfo: jest.fn(),
     getProjectConfig: jest.fn(),
@@ -23,27 +23,27 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 const mockProjectConfig = {
-  projectName: 'mockProjectName',
-  version: '2.0',
-  frontend: 'javascript',
+  projectName: "mockProjectName",
+  version: "2.0",
+  frontend: "javascript",
   javascript: {
-    framework: 'none',
+    framework: "none",
     config: {
-      SourceDir: 'src',
-      DistributionDir: 'dist',
-      BuildCommand: 'npm run-script build',
-      StartCommand: 'npm run-script start',
+      SourceDir: "src",
+      DistributionDir: "dist",
+      BuildCommand: "npm run-script build",
+      StartCommand: "npm run-script start",
     },
   },
-  providers: ['awscloudformation'],
+  providers: ["awscloudformation"],
 };
 
-describe('getProjectDetails', () => {
+describe("getProjectDetails", () => {
   beforeEach(() => {
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
   });
 
-  it('should return correctly if there is not amplify-meta.json and team-provider.json', () => {
+  it("should return correctly if there is not amplify-meta.json and team-provider.json", () => {
     stateManagerMock.metaFileExists.mockReturnValue(false);
 
     const response = getProjectDetails();
@@ -52,12 +52,12 @@ describe('getProjectDetails', () => {
       projectConfig: mockProjectConfig,
       backendConfig: {},
       localEnvInfo: {
-        envName: 'test',
+        envName: "test",
       },
     });
   });
 
-  it('should return correctly if amplify-meta.json and team-provider-info.json exist', () => {
+  it("should return correctly if amplify-meta.json and team-provider-info.json exist", () => {
     stateManagerMock.metaFileExists.mockReturnValue(true);
     stateManagerMock.backendConfigFileExists.mockReturnValue(true);
     const response = getProjectDetails();
@@ -72,7 +72,7 @@ describe('getProjectDetails', () => {
       projectConfig: mockProjectConfig,
       backendConfig: {},
       localEnvInfo: {
-        envName: 'test',
+        envName: "test",
       },
     });
   });

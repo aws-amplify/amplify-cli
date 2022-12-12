@@ -1,6 +1,6 @@
-import { JavaMap } from '../value-mapper/map';
-import { map as mapper } from '../value-mapper/mapper';
-import { JavaArray } from '../value-mapper/array';
+import { JavaMap } from "../value-mapper/map";
+import { map as mapper } from "../value-mapper/mapper";
+import { JavaArray } from "../value-mapper/array";
 export const mapUtils = {
   copyAndRetainAllKeys(map: JavaMap, keys: JavaArray): JavaMap {
     const keyStr = keys.toJSON();

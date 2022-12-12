@@ -1,5 +1,5 @@
-import { $TSContext, open } from 'amplify-cli-core';
-import { run } from '../setup-new-user';
+import { $TSContext, open } from "amplify-cli-core";
+import { run } from "../setup-new-user";
 
 const context_stub = {
   print: {
@@ -10,53 +10,53 @@ const context_stub = {
   amplify: {
     makeId: jest.fn(),
     pressEnterToContinue: {
-      run: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
+      run: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
     },
   },
 } as unknown as jest.Mocked<$TSContext>;
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),
 }));
-jest.mock('inquirer', () => ({
+jest.mock("inquirer", () => ({
   prompt: jest.fn().mockReturnValue({
-    pn: 'test',
-    accessKeyId: 'test',
-    secretAccessKey: 'test',
-    userName: 'test',
-    region: 'test',
+    pn: "test",
+    accessKeyId: "test",
+    secretAccessKey: "test",
+    userName: "test",
+    region: "test",
   }),
 }));
-jest.mock('../system-config-manager', () => ({
+jest.mock("../system-config-manager", () => ({
   setProfile: jest.fn(),
 }));
-jest.mock('../utility-obfuscate');
+jest.mock("../utility-obfuscate");
 
-describe('setupNewUser.run', () => {
+describe("setupNewUser.run", () => {
   let originalPlatform;
   beforeAll(() => {
     originalPlatform = process.platform;
   });
   afterAll(() => {
-    Object.defineProperty(process, 'platform', {
+    Object.defineProperty(process, "platform", {
       value: originalPlatform,
     });
   });
-  it('should print deepLinkURL', async () => {
+  it("should print deepLinkURL", async () => {
     await run(context_stub);
     expect(open).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
-      { wait: false },
+      "https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify",
+      { wait: false }
     );
   });
-  it('should print deepLinkURL with backtick on win32', async () => {
-    Object.defineProperty(process, 'platform', {
-      value: 'win32',
+  it("should print deepLinkURL with backtick on win32", async () => {
+    Object.defineProperty(process, "platform", {
+      value: "win32",
     });
     await run(context_stub);
     expect(open).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
-      { wait: false },
+      "https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify",
+      { wait: false }
     );
   });
 });

@@ -1,12 +1,10 @@
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as iamCdk from '@aws-cdk/aws-iam';
-import * as lambdaCdk from '@aws-cdk/aws-lambda';
-import * as s3Cdk from '@aws-cdk/aws-s3';
-import { HttpMethods } from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
-import {
-  $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager,
-} from 'amplify-cli-core';
+import { AmplifyS3ResourceTemplate } from "@aws-amplify/cli-extensibility-helper";
+import * as iamCdk from "@aws-cdk/aws-iam";
+import * as lambdaCdk from "@aws-cdk/aws-lambda";
+import * as s3Cdk from "@aws-cdk/aws-s3";
+import { HttpMethods } from "@aws-cdk/aws-s3";
+import * as cdk from "@aws-cdk/core";
+import { $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager } from "amplify-cli-core";
 import {
   defaultS3UserInputs,
   GroupAccessType,
@@ -16,13 +14,11 @@ import {
   S3TriggerPrefixType,
   S3UserInputs,
   S3UserInputTriggerFunctionParams,
-} from '../service-walkthrough-types/s3-user-input-types';
-import * as s3AuthAPI from '../service-walkthroughs/s3-auth-api';
+} from "../service-walkthrough-types/s3-user-input-types";
+import * as s3AuthAPI from "../service-walkthroughs/s3-auth-api";
 // eslint-disable-next-line import/no-cycle
-import { S3CFNDependsOn, S3CFNPermissionType, S3InputState } from '../service-walkthroughs/s3-user-input-state';
-import {
-  AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyResourceCfnStack, AmplifyS3ResourceInputParameters,
-} from './types';
+import { S3CFNDependsOn, S3CFNPermissionType, S3InputState } from "../service-walkthroughs/s3-user-input-state";
+import { AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyResourceCfnStack, AmplifyS3ResourceInputParameters } from "./types";
 
 /**
  * Class to generate S3 resource cloudformation stack
@@ -112,20 +108,20 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   private configureTriggerPolicy(): void {
     let s3TriggerPolicyDefinition;
     // 6.1 Configure Trigger policy group
-    if (this._props.triggerFunction && this._props.triggerFunction !== 'NONE') {
-      s3TriggerPolicyDefinition = this.createTriggerPolicyDefinition('S3TriggerBucketPolicy', this._props.triggerFunction);
+    if (this._props.triggerFunction && this._props.triggerFunction !== "NONE") {
+      s3TriggerPolicyDefinition = this.createTriggerPolicyDefinition("S3TriggerBucketPolicy", this._props.triggerFunction);
     }
     // 6.2 Configure Trigger policy group with adminTrigger
     if (
-      this._props.adminTriggerFunction?.triggerFunction
-      && this._props.adminTriggerFunction.triggerFunction !== 'NONE'
-      && this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
+      this._props.adminTriggerFunction?.triggerFunction &&
+      this._props.adminTriggerFunction.triggerFunction !== "NONE" &&
+      this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
     ) {
       const adminTriggerFunctionName = this._props.adminTriggerFunction.triggerFunction;
       // create/update s3TriggerPolicyGroup with [predictions] adminLambda
       s3TriggerPolicyDefinition = s3TriggerPolicyDefinition
         ? this.addFunctionToTriggerPolicyDefinition(s3TriggerPolicyDefinition, adminTriggerFunctionName)
-        : this.createTriggerPolicyDefinition('S3TriggerBucketPolicy', adminTriggerFunctionName);
+        : this.createTriggerPolicyDefinition("S3TriggerBucketPolicy", adminTriggerFunctionName);
     }
     // 6.3 Configure Trigger policy if groups are configured
     if (s3TriggerPolicyDefinition) {
@@ -137,29 +133,29 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    * This check is required because, in legacy code S3bucket triggers are configured without prefix.
    * When adding a predictions element, we need to remove the global trigger function and apply it to a subfolder.
    */
-  _conditionallyBuildTriggerLambdaParams(triggerFunction : string): S3UserInputTriggerFunctionParams {
+  _conditionallyBuildTriggerLambdaParams(triggerFunction: string): S3UserInputTriggerFunctionParams {
     let triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams;
     if (
-      this._props.adminTriggerFunction?.triggerFunction
-          && this._props.adminTriggerFunction.triggerFunction !== 'NONE'
-          && this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
+      this._props.adminTriggerFunction?.triggerFunction &&
+      this._props.adminTriggerFunction.triggerFunction !== "NONE" &&
+      this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
     ) {
       triggerLambdaFunctionParams = {
         category: AmplifyCategories.STORAGE,
-        tag: 'triggerFunction',
+        tag: "triggerFunction",
         triggerFunction,
         permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
         triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
         triggerPrefix: [
-          { prefix: 'protected/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-          { prefix: 'private/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-          { prefix: 'public/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+          { prefix: "protected/", prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+          { prefix: "private/", prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+          { prefix: "public/", prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
         ],
       };
     } else {
       triggerLambdaFunctionParams = {
         category: AmplifyCategories.STORAGE,
-        tag: 'triggerFunction',
+        tag: "triggerFunction",
         triggerFunction,
         permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
         triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
@@ -173,18 +169,18 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    */
   async generateCfnStackResources(context: $TSContext): Promise<void> {
     // 1. Create the S3 bucket and configure CORS
-    this.s3Bucket = new s3Cdk.CfnBucket(this, 'S3Bucket', {
+    this.s3Bucket = new s3Cdk.CfnBucket(this, "S3Bucket", {
       bucketName: this.s3BucketName,
       corsConfiguration: this.buildCORSRules(),
     });
 
     this.s3Bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
     // 2. Configure Notifications on the S3 bucket.
-    if (this._props.triggerFunction && this._props.triggerFunction !== 'NONE') {
+    if (this._props.triggerFunction && this._props.triggerFunction !== "NONE") {
       const triggerLambdaFunctionParams = this._conditionallyBuildTriggerLambdaParams(this._props.triggerFunction);
       const newLambdaConfigurations = this.buildLambdaConfigFromTriggerParams(triggerLambdaFunctionParams);
       this._addNotificationsLambdaConfigurations(newLambdaConfigurations);
-      this.triggerLambdaPermissions = this.createInvokeFunctionS3Permission('TriggerPermissions', this._props.triggerFunction);
+      this.triggerLambdaPermissions = this.createInvokeFunctionS3Permission("TriggerPermissions", this._props.triggerFunction);
       this.s3Bucket.addDependsOn(this.triggerLambdaPermissions as lambdaCdk.CfnPermission);
       /**
        * Add Depends On: FUNCTION service
@@ -194,15 +190,15 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
     // 3. Configure (Predictions category) Admin Trigger Notifications on Bucket
     if (
-      this._props.adminTriggerFunction?.triggerFunction
-      && this._props.adminTriggerFunction.triggerFunction !== 'NONE'
-      && this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
+      this._props.adminTriggerFunction?.triggerFunction &&
+      this._props.adminTriggerFunction.triggerFunction !== "NONE" &&
+      this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
     ) {
       const adminLambdaConfigurations = this.buildLambdaConfigFromTriggerParams(this._props.adminTriggerFunction);
       this._addNotificationsLambdaConfigurations(adminLambdaConfigurations);
       this.adminTriggerLambdaPermissions = this.createInvokeFunctionS3Permission(
-        'AdminTriggerPermissions',
-        this._props.adminTriggerFunction.triggerFunction,
+        "AdminTriggerPermissions",
+        this._props.adminTriggerFunction.triggerFunction
       );
       this.s3Bucket.addDependsOn(this.adminTriggerLambdaPermissions);
 
@@ -215,8 +211,8 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
     // Apply all Notifications configurations on S3Bucket;
     if (
-      this.notificationConfiguration.lambdaConfigurations
-      && (this.notificationConfiguration.lambdaConfigurations as s3Cdk.CfnBucket.LambdaConfigurationProperty[]).length > 0
+      this.notificationConfiguration.lambdaConfigurations &&
+      (this.notificationConfiguration.lambdaConfigurations as s3Cdk.CfnBucket.LambdaConfigurationProperty[]).length > 0
     ) {
       this.s3Bucket.notificationConfiguration = this.notificationConfiguration;
     }
@@ -257,7 +253,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       const s3CfnParams: Array<AmplifyCfnParamType> = [
         {
           params: [`auth${authResourceName}UserPoolId`],
-          paramType: 'String',
+          paramType: "String",
           default: `auth${authResourceName}UserPoolId`,
         },
       ];
@@ -266,13 +262,13 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
         s3CfnParams.push({
           // eslint-disable-next-line spellcheck/spell-checker
           params: [`authuserPoolGroups${this.buildGroupRoleName(groupName)}`],
-          paramType: 'String',
+          paramType: "String",
           // eslint-disable-next-line spellcheck/spell-checker
           default: `authuserPoolGroups${this.buildGroupRoleName(groupName)}`,
         });
       }
       // insert into the stack
-      s3CfnParams.map(params => this._setCFNParams(params));
+      s3CfnParams.map((params) => this._setCFNParams(params));
     }
     return undefined;
   }
@@ -282,17 +278,17 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     const triggerFunctionName = `function${triggerFunction}Name`;
     const triggerFunctionLambdaExecutionRole = `function${triggerFunction}LambdaExecutionRole`;
     const params = [triggerFunctionARN, triggerFunctionName, triggerFunctionLambdaExecutionRole];
-    const s3CfnTriggerFunctionParams: $TSAny[] = params.map(param => ({
+    const s3CfnTriggerFunctionParams: $TSAny[] = params.map((param) => ({
       params: [param],
-      paramType: 'String',
+      paramType: "String",
       default: param,
     }));
     s3CfnTriggerFunctionParams.push({
       params: [triggerParameterName],
-      paramType: 'String',
+      paramType: "String",
     });
     return s3CfnTriggerFunctionParams;
-  }
+  };
 
   /**
    * adds cfn parameter to stack
@@ -300,53 +296,53 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   public addParameters(): void {
     let s3CfnParams: Array<AmplifyCfnParamType> = [
       {
-        params: ['env', 'bucketName', 'authRoleName', 'unauthRoleName', 'authPolicyName', 'unauthPolicyName'],
-        paramType: 'String',
+        params: ["env", "bucketName", "authRoleName", "unauthRoleName", "authPolicyName", "unauthPolicyName"],
+        paramType: "String",
       },
       {
-        params: ['s3PublicPolicy', 's3PrivatePolicy', 's3ProtectedPolicy', 's3UploadsPolicy', 's3ReadPolicy'],
-        paramType: 'String',
-        default: 'NONE',
+        params: ["s3PublicPolicy", "s3PrivatePolicy", "s3ProtectedPolicy", "s3UploadsPolicy", "s3ReadPolicy"],
+        paramType: "String",
+        default: "NONE",
       },
       {
         params: [
-          's3PermissionsAuthenticatedPublic',
-          's3PermissionsAuthenticatedProtected',
-          's3PermissionsAuthenticatedPrivate',
-          's3PermissionsAuthenticatedUploads',
-          's3PermissionsGuestPublic',
-          's3PermissionsGuestUploads',
-          'AuthenticatedAllowList',
-          'GuestAllowList',
+          "s3PermissionsAuthenticatedPublic",
+          "s3PermissionsAuthenticatedProtected",
+          "s3PermissionsAuthenticatedPrivate",
+          "s3PermissionsAuthenticatedUploads",
+          "s3PermissionsGuestPublic",
+          "s3PermissionsGuestUploads",
+          "AuthenticatedAllowList",
+          "GuestAllowList",
         ],
-        paramType: 'String',
+        paramType: "String",
         default: AmplifyBuildParamsPermissions.DISALLOW,
       },
       {
-        params: ['selectedGuestPermissions', 'selectedAuthenticatedPermissions'],
-        paramType: 'CommaDelimitedList',
-        default: 'NONE',
+        params: ["selectedGuestPermissions", "selectedAuthenticatedPermissions"],
+        paramType: "CommaDelimitedList",
+        default: "NONE",
       },
     ];
-    if (this._props.triggerFunction && this._props.triggerFunction !== 'NONE') {
-      const triggerFunctionCFNParams = this.createTriggerLambdaCFNParams('triggerFunction', this._props.triggerFunction);
+    if (this._props.triggerFunction && this._props.triggerFunction !== "NONE") {
+      const triggerFunctionCFNParams = this.createTriggerLambdaCFNParams("triggerFunction", this._props.triggerFunction);
       s3CfnParams = s3CfnParams.concat(triggerFunctionCFNParams);
     }
 
     if (
-      this._props.adminTriggerFunction?.triggerFunction
-      && this._props.adminTriggerFunction.triggerFunction !== 'NONE'
-      && this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
+      this._props.adminTriggerFunction?.triggerFunction &&
+      this._props.adminTriggerFunction.triggerFunction !== "NONE" &&
+      this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction
     ) {
       const adminTriggerFunctionCFNParams = this.createTriggerLambdaCFNParams(
-        'adminTriggerFunction',
-        this._props.adminTriggerFunction.triggerFunction,
+        "adminTriggerFunction",
+        this._props.adminTriggerFunction.triggerFunction
       );
       s3CfnParams = s3CfnParams.concat(adminTriggerFunctionCFNParams);
     }
 
     // insert into the stack
-    s3CfnParams.map(params => this._setCFNParams(params));
+    s3CfnParams.map((params) => this._setCFNParams(params));
   }
 
   /**
@@ -354,52 +350,52 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    */
   public addConditions(): AmplifyS3Conditions {
     this.conditions = {
-      ShouldNotCreateEnvResources: new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
-        expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),
+      ShouldNotCreateEnvResources: new cdk.CfnCondition(this, "ShouldNotCreateEnvResources", {
+        expression: cdk.Fn.conditionEquals(cdk.Fn.ref("env"), "NONE"),
       }),
-      CreateAuthPublic: new cdk.CfnCondition(this, 'CreateAuthPublic', {
+      CreateAuthPublic: new cdk.CfnCondition(this, "CreateAuthPublic", {
         expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('s3PermissionsAuthenticatedPublic'), AmplifyBuildParamsPermissions.DISALLOW),
+          cdk.Fn.conditionEquals(cdk.Fn.ref("s3PermissionsAuthenticatedPublic"), AmplifyBuildParamsPermissions.DISALLOW)
         ),
       }),
-      CreateAuthProtected: new cdk.CfnCondition(this, 'CreateAuthProtected', {
+      CreateAuthProtected: new cdk.CfnCondition(this, "CreateAuthProtected", {
         expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('s3PermissionsAuthenticatedProtected'), AmplifyBuildParamsPermissions.DISALLOW),
-        ),
-      }),
-
-      CreateAuthPrivate: new cdk.CfnCondition(this, 'CreateAuthPrivate', {
-        expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('s3PermissionsAuthenticatedPrivate'), AmplifyBuildParamsPermissions.DISALLOW),
+          cdk.Fn.conditionEquals(cdk.Fn.ref("s3PermissionsAuthenticatedProtected"), AmplifyBuildParamsPermissions.DISALLOW)
         ),
       }),
 
-      CreateAuthUploads: new cdk.CfnCondition(this, 'CreateAuthUploads', {
+      CreateAuthPrivate: new cdk.CfnCondition(this, "CreateAuthPrivate", {
         expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('s3PermissionsAuthenticatedUploads'), AmplifyBuildParamsPermissions.DISALLOW),
+          cdk.Fn.conditionEquals(cdk.Fn.ref("s3PermissionsAuthenticatedPrivate"), AmplifyBuildParamsPermissions.DISALLOW)
         ),
       }),
 
-      CreateGuestPublic: new cdk.CfnCondition(this, 'CreateGuestPublic', {
+      CreateAuthUploads: new cdk.CfnCondition(this, "CreateAuthUploads", {
         expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('s3PermissionsGuestPublic'), AmplifyBuildParamsPermissions.DISALLOW),
+          cdk.Fn.conditionEquals(cdk.Fn.ref("s3PermissionsAuthenticatedUploads"), AmplifyBuildParamsPermissions.DISALLOW)
         ),
       }),
 
-      CreateGuestUploads: new cdk.CfnCondition(this, 'CreateGuestUploads', {
+      CreateGuestPublic: new cdk.CfnCondition(this, "CreateGuestPublic", {
         expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('s3PermissionsGuestUploads'), AmplifyBuildParamsPermissions.DISALLOW),
+          cdk.Fn.conditionEquals(cdk.Fn.ref("s3PermissionsGuestPublic"), AmplifyBuildParamsPermissions.DISALLOW)
         ),
       }),
 
-      CreateAuthReadAndList: new cdk.CfnCondition(this, 'AuthReadAndList', {
+      CreateGuestUploads: new cdk.CfnCondition(this, "CreateGuestUploads", {
         expression: cdk.Fn.conditionNot(
-          cdk.Fn.conditionEquals(cdk.Fn.ref('AuthenticatedAllowList'), AmplifyBuildParamsPermissions.DISALLOW),
+          cdk.Fn.conditionEquals(cdk.Fn.ref("s3PermissionsGuestUploads"), AmplifyBuildParamsPermissions.DISALLOW)
         ),
       }),
 
-      CreateGuestReadAndList: new cdk.CfnCondition(this, 'GuestReadAndList', {
-        expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(cdk.Fn.ref('GuestAllowList'), AmplifyBuildParamsPermissions.DISALLOW)),
+      CreateAuthReadAndList: new cdk.CfnCondition(this, "AuthReadAndList", {
+        expression: cdk.Fn.conditionNot(
+          cdk.Fn.conditionEquals(cdk.Fn.ref("AuthenticatedAllowList"), AmplifyBuildParamsPermissions.DISALLOW)
+        ),
+      }),
+
+      CreateGuestReadAndList: new cdk.CfnCondition(this, "GuestReadAndList", {
+        expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(cdk.Fn.ref("GuestAllowList"), AmplifyBuildParamsPermissions.DISALLOW)),
       }),
     };
 
@@ -412,16 +408,16 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   public addOutputs(): void {
     this.addCfnOutput(
       {
-        value: cdk.Fn.ref('S3Bucket'),
-        description: 'Bucket name for the S3 bucket',
+        value: cdk.Fn.ref("S3Bucket"),
+        description: "Bucket name for the S3 bucket",
       },
-      'BucketName',
+      "BucketName"
     );
     this.addCfnOutput(
       {
-        value: cdk.Fn.ref('AWS::Region'),
+        value: cdk.Fn.ref("AWS::Region"),
       },
-      'Region',
+      "Region"
     );
   }
 
@@ -430,23 +426,19 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    */
   emptyNotificationsConfiguration = (): $TSAny => ({
     lambdaConfigurations: [],
-  })
+  });
 
   /**
    * builds bucket name for s3
    */
   buildBucketName(): string {
-    const bucketRef = cdk.Fn.ref('bucketName');
-    const envRef = cdk.Fn.ref('env');
-    const bucketNameSuffixRef = cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName')));
+    const bucketRef = cdk.Fn.ref("bucketName");
+    const envRef = cdk.Fn.ref("env");
+    const bucketNameSuffixRef = cdk.Fn.select(3, cdk.Fn.split("-", cdk.Fn.ref("AWS::StackName")));
     const bucketFinalName = this.isAmplifyStackLegacy()
-      ? cdk.Fn.join('', [bucketRef, '-', envRef])
-      : cdk.Fn.join('', [bucketRef, bucketNameSuffixRef, '-', envRef]);
-    return cdk.Fn.conditionIf(
-      'ShouldNotCreateEnvResources',
-      bucketRef,
-      bucketFinalName,
-    ).toString();
+      ? cdk.Fn.join("", [bucketRef, "-", envRef])
+      : cdk.Fn.join("", [bucketRef, bucketNameSuffixRef, "-", envRef]);
+    return cdk.Fn.conditionIf("ShouldNotCreateEnvResources", bucketRef, bucketFinalName).toString();
   }
 
   /**
@@ -456,20 +448,20 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    */
   isAmplifyStackLegacy = (): boolean => {
     const amplifyMeta = stateManager.getMeta();
-    const stackName :string = amplifyMeta.providers.awscloudformation.StackName;
-    return !stackName.startsWith('amplify-');
-  }
+    const stackName: string = amplifyMeta.providers.awscloudformation.StackName;
+    return !stackName.startsWith("amplify-");
+  };
 
   /**
    * build cors rules
    */
   buildCORSRules = (): s3Cdk.CfnBucket.CorsConfigurationProperty => {
     const corsRule: s3Cdk.CfnBucket.CorsRuleProperty = {
-      id: 'S3CORSRuleId1',
+      id: "S3CORSRuleId1",
       maxAge: 3000,
-      exposedHeaders: ['x-amz-server-side-encryption', 'x-amz-request-id', 'x-amz-id-2', 'ETag'],
-      allowedHeaders: ['*'],
-      allowedOrigins: ['*'],
+      exposedHeaders: ["x-amz-server-side-encryption", "x-amz-request-id", "x-amz-id-2", "ETag"],
+      allowedHeaders: ["*"],
+      allowedOrigins: ["*"],
       allowedMethods: [HttpMethods.GET, HttpMethods.HEAD, HttpMethods.PUT, HttpMethods.POST, HttpMethods.DELETE],
     };
     const corsConfig: s3Cdk.CfnBucket.CorsConfigurationProperty = {
@@ -477,7 +469,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
 
     return corsConfig;
-  }
+  };
 
   /**
    * builds notification configuration for s3
@@ -487,11 +479,11 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
     const lambdaConfigurations = [
       {
-        event: 's3:ObjectCreated:*',
+        event: "s3:ObjectCreated:*",
         function: triggerFunctionArnRef,
       },
       {
-        event: 's3:ObjectRemoved:*',
+        event: "s3:ObjectRemoved:*",
         function: triggerFunctionArnRef,
       },
     ];
@@ -502,24 +494,24 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    * filter rule append region to S3lambdatrigger prefix
    */
   filterRuleAppendRegionToLambdaTriggerPrefix = (triggerPrefix: S3TriggerPrefixType): $TSAny => {
-    const regionRef = cdk.Fn.ref('AWS::Region');
+    const regionRef = cdk.Fn.ref("AWS::Region");
     const filterRule = {
-      name: 'prefix',
-      value: cdk.Fn.join('', [triggerPrefix.prefix, regionRef]),
+      name: "prefix",
+      value: cdk.Fn.join("", [triggerPrefix.prefix, regionRef]),
     };
     return filterRule;
-  }
+  };
 
   /**
    * filter rule plain string lambdaTrigger Prefix
    */
-  filterRulePlainStringLambdaTriggerPrefix = (triggerPrefix: S3TriggerPrefixType) : $TSAny => {
+  filterRulePlainStringLambdaTriggerPrefix = (triggerPrefix: S3TriggerPrefixType): $TSAny => {
     const filterRule = {
-      name: 'prefix',
+      name: "prefix",
       value: triggerPrefix.prefix,
     };
     return filterRule;
-  }
+  };
 
   /**
    * builds s3 trigger prefix rule
@@ -531,7 +523,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
     const filterRule = this.filterRulePlainStringLambdaTriggerPrefix(triggerPrefix);
     return filterRule;
-  }
+  };
 
   /**
    * builds lambda config for S3 Stack
@@ -601,15 +593,15 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
     // Create GuestReadPolicy
     this.s3GuestReadPolicy = this.createS3GuestReadPolicy();
-  }
+  };
 
   /**
    * creates S3 iam policy document
    */
-  createS3IAMPolicyDocument = (refStr: string, pathStr: string, actionStr: string, effect: iamCdk.Effect):iamCdk.PolicyDocument => {
+  createS3IAMPolicyDocument = (refStr: string, pathStr: string, actionStr: string, effect: iamCdk.Effect): iamCdk.PolicyDocument => {
     const props: iamCdk.PolicyStatementProps = {
-      resources: [cdk.Fn.join('', ['arn:aws:s3:::', cdk.Fn.ref(refStr), pathStr])],
-      actions: cdk.Fn.split(',', cdk.Fn.ref(actionStr)),
+      resources: [cdk.Fn.join("", ["arn:aws:s3:::", cdk.Fn.ref(refStr), pathStr])],
+      actions: cdk.Fn.split(",", cdk.Fn.ref(actionStr)),
       effect,
     };
     // policy document
@@ -618,18 +610,18 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     const policyStatement = new iamCdk.PolicyStatement(props);
     policyDocument.addStatements(policyStatement);
     return policyDocument;
-  }
+  };
 
   /**
    * create multi statement IAM policyDocument
    */
   createMultiStatementIAMPolicyDocument = (policyStatements: Array<IAmplifyIamPolicyStatementParams>): iamCdk.PolicyDocument => {
     const policyDocument = new iamCdk.PolicyDocument();
-    policyStatements.forEach(policyStatement => {
+    policyStatements.forEach((policyStatement) => {
       const props: iamCdk.PolicyStatementProps = {
         resources: policyStatement.pathStr
-          ? [cdk.Fn.join('', ['arn:aws:s3:::', cdk.Fn.ref(policyStatement.refStr), policyStatement.pathStr])]
-          : [cdk.Fn.join('', ['arn:aws:s3:::', cdk.Fn.ref(policyStatement.refStr)])],
+          ? [cdk.Fn.join("", ["arn:aws:s3:::", cdk.Fn.ref(policyStatement.refStr), policyStatement.pathStr])]
+          : [cdk.Fn.join("", ["arn:aws:s3:::", cdk.Fn.ref(policyStatement.refStr)])],
         conditions: policyStatement.conditions,
         actions: policyStatement.actions,
         effect: policyStatement.effect,
@@ -639,19 +631,19 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       policyDocument.addStatements(statement);
     });
     return policyDocument;
-  }
+  };
 
   /** *************************************************************************************************
    *  Lambda Trigger Permissions : Allow S3 to invoke the trigger function
    ***************************************************************************************************/
   createInvokeFunctionS3Permission(logicalId: string, triggerFunctionName: string): lambdaCdk.CfnPermission {
-    const sourceArn = cdk.Fn.join('', ['arn:aws:s3:::', this.buildBucketName()]);
+    const sourceArn = cdk.Fn.join("", ["arn:aws:s3:::", this.buildBucketName()]);
 
     const resourceDefinition: lambdaCdk.CfnPermissionProps = {
-      action: 'lambda:InvokeFunction',
+      action: "lambda:InvokeFunction",
       functionName: cdk.Fn.ref(`function${triggerFunctionName}Name`),
-      principal: 's3.amazonaws.com',
-      sourceAccount: cdk.Fn.ref('AWS::AccountId'),
+      principal: "s3.amazonaws.com",
+      sourceAccount: cdk.Fn.ref("AWS::AccountId"),
       sourceArn,
     };
     const lambdaPermission = new lambdaCdk.CfnPermission(this, logicalId, resourceDefinition);
@@ -668,16 +660,16 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   // S3AuthPublicPolicy
   createS3AuthPublicPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3AuthPublicPolicy',
+      logicalId: "S3AuthPublicPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3PublicPolicy',
-      roleRefs: ['authRoleName'],
+      policyNameRef: "s3PublicPolicy",
+      roleRefs: ["authRoleName"],
       condition: this.conditions.CreateAuthPublic,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/public/*',
-          actions: ['s3PermissionsAuthenticatedPublic'],
+          refStr: "S3Bucket",
+          pathStr: "/public/*",
+          actions: ["s3PermissionsAuthenticatedPublic"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -685,7 +677,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = this.createIAMPolicy(policyDefinition, true /* action is Ref*/);
     return policy;
-  }
+  };
 
   // S3AuthProtectedPolicy
   /**
@@ -693,16 +685,16 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    */
   createS3AuthProtectedPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3AuthProtectedPolicy',
+      logicalId: "S3AuthProtectedPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3ProtectedPolicy',
-      roleRefs: ['authRoleName'],
+      policyNameRef: "s3ProtectedPolicy",
+      roleRefs: ["authRoleName"],
       condition: this.conditions.CreateAuthProtected,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/protected/${cognito-identity.amazonaws.com:sub}/*',
-          actions: ['s3PermissionsAuthenticatedProtected'],
+          refStr: "S3Bucket",
+          pathStr: "/protected/${cognito-identity.amazonaws.com:sub}/*",
+          actions: ["s3PermissionsAuthenticatedProtected"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -710,23 +702,23 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = this.createIAMPolicy(policyDefinition, true /* action is Ref*/);
     return policy;
-  }
+  };
 
   /**
    * IAM policy for Auth private users
    */
   createS3AuthPrivatePolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3AuthPrivatePolicy',
+      logicalId: "S3AuthPrivatePolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3PrivatePolicy',
-      roleRefs: ['authRoleName'],
+      policyNameRef: "s3PrivatePolicy",
+      roleRefs: ["authRoleName"],
       condition: this.conditions.CreateAuthPrivate,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/private/${cognito-identity.amazonaws.com:sub}/*',
-          actions: ['s3PermissionsAuthenticatedPrivate'],
+          refStr: "S3Bucket",
+          pathStr: "/private/${cognito-identity.amazonaws.com:sub}/*",
+          actions: ["s3PermissionsAuthenticatedPrivate"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -734,23 +726,23 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = this.createIAMPolicy(policyDefinition, true /* action is Ref*/);
     return policy;
-  }
+  };
 
   /**
    * creates S3 uploads IAM policy
    */
   createS3AuthUploadPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3AuthUploadPolicy',
+      logicalId: "S3AuthUploadPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3UploadsPolicy',
-      roleRefs: ['authRoleName'],
+      policyNameRef: "s3UploadsPolicy",
+      roleRefs: ["authRoleName"],
       condition: this.conditions.CreateAuthUploads,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/uploads/*',
-          actions: ['s3PermissionsAuthenticatedUploads'],
+          refStr: "S3Bucket",
+          pathStr: "/uploads/*",
+          actions: ["s3PermissionsAuthenticatedUploads"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -758,23 +750,23 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = this.createIAMPolicy(policyDefinition, true /* action is Ref*/);
     return policy;
-  }
+  };
 
   /**
    * creates public IAM policy for guest users
    */
   createS3GuestPublicPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3GuestPublicPolicy',
+      logicalId: "S3GuestPublicPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3PublicPolicy',
-      roleRefs: ['unauthRoleName'],
+      policyNameRef: "s3PublicPolicy",
+      roleRefs: ["unauthRoleName"],
       condition: this.conditions.CreateGuestPublic,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/public/*',
-          actions: ['s3PermissionsGuestPublic'],
+          refStr: "S3Bucket",
+          pathStr: "/public/*",
+          actions: ["s3PermissionsGuestPublic"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -782,23 +774,23 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = this.createIAMPolicy(policyDefinition, true /* action is Ref*/);
     return policy;
-  }
+  };
 
   /**
    * creates upload IAM policy for guest users
    */
   createGuestUploadsPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3GuestUploadPolicy',
+      logicalId: "S3GuestUploadPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3UploadsPolicy',
-      roleRefs: ['unauthRoleName'],
+      policyNameRef: "s3UploadsPolicy",
+      roleRefs: ["unauthRoleName"],
       condition: this.conditions.CreateGuestUploads,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/uploads/*',
-          actions: ['s3PermissionsGuestUploads'],
+          refStr: "S3Bucket",
+          pathStr: "/uploads/*",
+          actions: ["s3PermissionsGuestUploads"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -806,37 +798,37 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = this.createIAMPolicy(policyDefinition, true /* action is Ref*/);
     return policy;
-  }
+  };
 
   /**
    * creates read IAM policy for Authenticated users
    */
   createS3AuthReadPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3AuthReadPolicy',
+      logicalId: "S3AuthReadPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3ReadPolicy',
-      roleRefs: ['authRoleName'],
+      policyNameRef: "s3ReadPolicy",
+      roleRefs: ["authRoleName"],
       condition: this.conditions.CreateAuthReadAndList,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/protected/*',
-          actions: ['s3:GetObject'],
+          refStr: "S3Bucket",
+          pathStr: "/protected/*",
+          actions: ["s3:GetObject"],
           effect: iamCdk.Effect.ALLOW,
         },
         {
-          refStr: 'S3Bucket',
-          actions: ['s3:ListBucket'],
+          refStr: "S3Bucket",
+          actions: ["s3:ListBucket"],
           conditions: {
             StringLike: {
-              's3:prefix': [
-                'public/',
-                'public/*',
-                'protected/',
-                'protected/*',
-                'private/${cognito-identity.amazonaws.com:sub}/',
-                'private/${cognito-identity.amazonaws.com:sub}/*',
+              "s3:prefix": [
+                "public/",
+                "public/*",
+                "protected/",
+                "protected/*",
+                "private/${cognito-identity.amazonaws.com:sub}/",
+                "private/${cognito-identity.amazonaws.com:sub}/*",
               ],
             },
           },
@@ -848,31 +840,31 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
     const policy: iamCdk.CfnPolicy = this.createMultiStatementIAMPolicy(policyDefinition);
     return policy;
-  }
+  };
 
   /**
    * create read IAM policy for Guest users
    */
   createS3GuestReadPolicy = (): iamCdk.CfnPolicy => {
     const policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3GuestReadPolicy',
+      logicalId: "S3GuestReadPolicy",
       isPolicyNameAbsolute: false,
-      policyNameRef: 's3ReadPolicy',
-      roleRefs: ['unauthRoleName'],
+      policyNameRef: "s3ReadPolicy",
+      roleRefs: ["unauthRoleName"],
       condition: this.conditions.CreateGuestReadAndList,
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '/protected/*',
-          actions: ['s3:GetObject'],
+          refStr: "S3Bucket",
+          pathStr: "/protected/*",
+          actions: ["s3:GetObject"],
           effect: iamCdk.Effect.ALLOW,
         },
         {
-          refStr: 'S3Bucket',
-          actions: ['s3:ListBucket'],
+          refStr: "S3Bucket",
+          actions: ["s3:ListBucket"],
           conditions: {
             StringLike: {
-              's3:prefix': ['public/', 'public/*', 'protected/', 'protected/*'],
+              "s3:prefix": ["public/", "public/*", "protected/", "protected/*"],
             },
           },
           effect: iamCdk.Effect.ALLOW,
@@ -882,7 +874,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy: iamCdk.CfnPolicy = this.createMultiStatementIAMPolicy(policyDefinition);
     return policy;
-  }
+  };
 
   /**
    * Policy Definition to trigger the given function from the S3Bucket
@@ -891,21 +883,21 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     const policyDefinition: IAmplifyPolicyDefinition = {
       logicalId,
       isPolicyNameAbsolute: true, // set if policyName is not a reference
-      policyNameRef: 'amplify-lambda-execution-policy-storage',
+      policyNameRef: "amplify-lambda-execution-policy-storage",
       roleRefs: [`function${triggerFunctionName}LambdaExecutionRole`],
       statements: [
         {
-          refStr: 'S3Bucket',
-          pathStr: '',
+          refStr: "S3Bucket",
+          pathStr: "",
           isActionAbsolute: true, // actions are not refs
-          actions: ['s3:ListBucket'],
+          actions: ["s3:ListBucket"],
           effect: iamCdk.Effect.ALLOW,
         },
         {
-          refStr: 'S3Bucket',
-          pathStr: '/*',
+          refStr: "S3Bucket",
+          pathStr: "/*",
           isActionAbsolute: true, // actions are not refs
-          actions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
+          actions: ["s3:PutObject", "s3:GetObject", "s3:ListBucket", "s3:DeleteObject"],
           effect: iamCdk.Effect.ALLOW,
         },
       ],
@@ -925,7 +917,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
     newPolicyDefinition.roleRefs = policyDefinition.roleRefs ? policyDefinition.roleRefs.concat([newRoleRef]) : [newRoleRef];
     return newPolicyDefinition;
-  }
+  };
 
   /**
    * S3TriggerBucketPolicy - Policy to control trigger function access to S3 bucket
@@ -933,28 +925,25 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createTriggerPolicyFromPolicyDefinition = (policyDefinition: IAmplifyPolicyDefinition): iamCdk.CfnPolicy => {
     const policy: iamCdk.CfnPolicy = this.createIAMPolicy(policyDefinition, false /* action is array*/);
     return policy;
-  }
+  };
 
   /**
-  *   helper: builder for policy statement resource
-  */
-  buildResourceFromPolicyDefinition = (policyDefinitionStatement : IAmplifyIamPolicyStatementParams): $TSAny => {
-    const resourceStrArr = ['arn:aws:s3:::', { Ref: policyDefinitionStatement.refStr }];
+   *   helper: builder for policy statement resource
+   */
+  buildResourceFromPolicyDefinition = (policyDefinitionStatement: IAmplifyIamPolicyStatementParams): $TSAny => {
+    const resourceStrArr = ["arn:aws:s3:::", { Ref: policyDefinitionStatement.refStr }];
     if (policyDefinitionStatement.pathStr && policyDefinitionStatement.pathStr.length > 0) {
       resourceStrArr.push(policyDefinitionStatement.pathStr);
     }
     return {
-      'Fn::Join': [
-        '',
-        resourceStrArr,
-      ],
+      "Fn::Join": ["", resourceStrArr],
     };
-  }
+  };
 
   /**
    * build IAM action from IAM policy definition
    */
-  buildActionFromPolicyDefinition = (policyDefinitionStatement : IAmplifyIamPolicyStatementParams, IsActionRef : boolean): $TSAny => {
+  buildActionFromPolicyDefinition = (policyDefinitionStatement: IAmplifyIamPolicyStatementParams, IsActionRef: boolean): $TSAny => {
     if (!policyDefinitionStatement.actions) {
       return [];
     }
@@ -962,8 +951,8 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       // IsActionRef is true, when : The action provided is a Ref to concatenated string of command separated permissions
       const actionRef = policyDefinitionStatement.actions[0];
       const actions = {
-        'Fn::Split': [
-          ',',
+        "Fn::Split": [
+          ",",
           {
             Ref: actionRef,
           },
@@ -973,7 +962,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
     // isActionAbsolute is true or actionRef is false, when : The action provided is an array of action strings. e.g Triggers
     return policyDefinitionStatement.actions;
-  }
+  };
 
   /**
    * Helper:: function to create single statement IAM policy & bind to the App's stack
@@ -991,18 +980,18 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       };
     }
     // 2. Property: Roles
-    policyL1.Properties.roles = policyDefinition.roleRefs.map(roleRef => ({
+    policyL1.Properties.roles = policyDefinition.roleRefs.map((roleRef) => ({
       Ref: roleRef,
     }));
     // 3. Property: PolicyDocument
     policyL1.Properties.policyDocument = {
-      Version: '2012-10-17',
+      Version: "2012-10-17",
       Statement: [],
     };
 
     const policyStatements = []; // Build each statement from the policyDefinitionStatement
     for (const policyDefinitionStatement of policyDefinition.statements) {
-      const policyStatement:$TSAny = {};
+      const policyStatement: $TSAny = {};
       // 3.1.0 Property: PolicyDocument.Statement.Effect
       policyStatement.Effect = policyDefinitionStatement.effect;
 
@@ -1018,7 +1007,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     policyL1.Properties.policyDocument.Statement = policyStatements;
     const policy = new iamCdk.CfnPolicy(this, policyDefinition.logicalId, policyL1.Properties);
     if (policyDefinition.dependsOn) {
-      policyDefinition.dependsOn.map(dependency => policy.addDependsOn(dependency));
+      policyDefinition.dependsOn.map((dependency) => policy.addDependsOn(dependency));
     }
     if (policyDefinition.condition) {
       policy.cfnOptions.condition = policyDefinition.condition;
@@ -1029,21 +1018,21 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   /**
    * Helper:: function to create multi-statement IAM policy & bind to the App's stack
    */
-  createMultiStatementIAMPolicy = (policyDefinition: IAmplifyPolicyDefinition):iamCdk.CfnPolicy => {
+  createMultiStatementIAMPolicy = (policyDefinition: IAmplifyPolicyDefinition): iamCdk.CfnPolicy => {
     const props: iamCdk.CfnPolicyProps = {
       policyName: cdk.Fn.ref(policyDefinition.policyNameRef),
-      roles: policyDefinition.roleRefs.map(roleRef => cdk.Fn.ref(roleRef as string)),
+      roles: policyDefinition.roleRefs.map((roleRef) => cdk.Fn.ref(roleRef as string)),
       policyDocument: this.createMultiStatementIAMPolicyDocument(policyDefinition.statements),
     };
     const policy = new iamCdk.CfnPolicy(this, policyDefinition.logicalId, props); // bind policy to stack
     if (policyDefinition.dependsOn) {
-      policyDefinition.dependsOn.map(dependency => policy.addDependsOn(dependency));
+      policyDefinition.dependsOn.map((dependency) => policy.addDependsOn(dependency));
     }
     if (policyDefinition.condition) {
       policy.cfnOptions.condition = policyDefinition.condition;
     }
     return policy;
-  }
+  };
 
   /**
    * Helper:: function to create Cognito Group IAM policy & bind to the App's stack
@@ -1073,39 +1062,39 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   /**
    * Helper:: create logical ID from groupName
    */
-  buildGroupPolicyLogicalID = (groupName: string): string => `${groupName}GroupPolicy`
+  buildGroupPolicyLogicalID = (groupName: string): string => `${groupName}GroupPolicy`;
 
   /**
    * Helper:: create policyName from groupName
    */
-  buildGroupPolicyName = (groupName: string): string => `${groupName}-group-s3-policy`
+  buildGroupPolicyName = (groupName: string): string => `${groupName}-group-s3-policy`;
 
   /**
    * Helper:: create group Role name from groupName
    */
-  buildGroupRoleName = (groupName: string): string => `${groupName}GroupRole`
+  buildGroupRoleName = (groupName: string): string => `${groupName}GroupRole`;
 
   /**
    * Helper:: create CDK Group-Role name from groupName and cognito ARN
    */
   public buildCDKGroupRoles = (groupName: string, authResourceName: string): string[] => {
-    const roles = [cdk.Fn.join('', [cdk.Fn.ref(`auth${authResourceName}UserPoolId`), `-${this.buildGroupRoleName(groupName)}`])];
+    const roles = [cdk.Fn.join("", [cdk.Fn.ref(`auth${authResourceName}UserPoolId`), `-${this.buildGroupRoleName(groupName)}`])];
     return roles;
-  }
+  };
 
   /**
    * Helper:: Create Group permissions into CDK policy statements
    */
   _buildCDKGroupPolicyStatements = (groupPerms: S3PermissionType[]): iamCdk.PolicyStatement[] => {
     const policyStatementList: Array<iamCdk.PolicyStatement> = [];
-    const bucketArn = cdk.Fn.join('', ['arn:aws:s3:::', cdk.Fn.ref('S3Bucket')]).toString();
+    const bucketArn = cdk.Fn.join("", ["arn:aws:s3:::", cdk.Fn.ref("S3Bucket")]).toString();
     const permissions: S3CFNPermissionType[] = S3InputState.getCfnPermissionsFromInputPermissions(groupPerms);
     policyStatementList.push(
       new iamCdk.PolicyStatement({
         resources: [`${bucketArn}/*`],
         actions: permissions,
         effect: iamCdk.Effect.ALLOW,
-      }),
+      })
     );
     if (groupPerms.includes(S3PermissionType.READ)) {
       policyStatementList.push(
@@ -1113,29 +1102,29 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
           resources: [`${bucketArn}`],
           actions: [S3CFNPermissionType.LIST],
           effect: iamCdk.Effect.ALLOW,
-        }),
+        })
       );
     }
     return policyStatementList;
-  }
+  };
 
   /**
    * Helper:: Create PolicyDocument from policyStatement list
    */
   _buildCDKGroupPolicyDocument = (policyStatementList: iamCdk.PolicyStatement[]): iamCdk.PolicyDocument => {
     const policyDocument = new iamCdk.PolicyDocument();
-    policyStatementList.forEach(policyStatement => {
+    policyStatementList.forEach((policyStatement) => {
       // Add Statement to Policy
       policyDocument.addStatements(policyStatement);
     });
     return policyDocument;
-  }
+  };
 
   /**
    * Helper: Add CFN Resource Param definitions as CfnParameter
    */
   _setCFNParams = (paramDefinitions: AmplifyCfnParamType): void => {
-    paramDefinitions.params.forEach(paramName => {
+    paramDefinitions.params.forEach((paramName) => {
       // set param type
       const cfnParam: $TSAny = {
         type: paramDefinitions.paramType,
@@ -1147,31 +1136,31 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       // configure param in resource template object
       this.addCfnParameter(cfnParam, paramName);
     });
-  }
+  };
 
   /**
    * Helper: Get DependsOn CFN to add Function as dependency on S3Bucket.
    */
   buildS3DependsOnFunctionCfn = (functionName: string): S3CFNDependsOn => {
     const s3DependsOnLambda: S3CFNDependsOn = {
-      category: 'function',
+      category: "function",
       resourceName: functionName,
-      attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
+      attributes: ["Name", "Arn", "LambdaExecutionRole"],
     };
     return s3DependsOnLambda;
-  }
+  };
 
   /**
    *Helper: Get DependsOn CFN to add Auth as dependency on S3Bucket
    */
   buildS3DependsOnUserPoolIdCfn = (authResourceName: string): S3CFNDependsOn => {
     const dependsOnAuth: S3CFNDependsOn = {
-      category: 'auth',
+      category: "auth",
       resourceName: authResourceName,
-      attributes: ['UserPoolId'],
+      attributes: ["UserPoolId"],
     };
     return dependsOnAuth;
-  }
+  };
 
   /**
    * Helper: builds dependsOn CFN to add Auth userpool groups as dependency on S3Bucket
@@ -1180,8 +1169,8 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     if (selectedUserPoolGroupList && selectedUserPoolGroupList.length > 0) {
       const userPoolGroupRoleList = selectedUserPoolGroupList.map((groupName: string) => {
         const dependsOnAuth: S3CFNDependsOn = {
-          category: 'auth',
-          resourceName: 'userPoolGroups',
+          category: "auth",
+          resourceName: "userPoolGroups",
           attributes: [`${groupName}GroupRole`],
         };
         return dependsOnAuth;
@@ -1189,12 +1178,12 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       return userPoolGroupRoleList;
     }
     return [];
-  }
+  };
 }
 
 // Constants and Interfaces
-const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
-const S3_ROOT_CFN_DESCRIPTION = 'S3 Resource for AWS Amplify CLI';
+const CFN_TEMPLATE_FORMAT_VERSION = "2010-09-09";
+const S3_ROOT_CFN_DESCRIPTION = "S3 Resource for AWS Amplify CLI";
 
 /**
  * amplify IAM policy interface

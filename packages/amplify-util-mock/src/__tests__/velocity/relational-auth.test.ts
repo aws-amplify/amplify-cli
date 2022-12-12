@@ -1,16 +1,16 @@
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthTransformer } from "@aws-amplify/graphql-auth-transformer";
+import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
+import { PrimaryKeyTransformer, IndexTransformer } from "@aws-amplify/graphql-index-transformer";
+import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from "@aws-amplify/graphql-relational-transformer";
+import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
+import { AppSyncAuthConfiguration, FeatureFlagProvider } from "@aws-amplify/graphql-transformer-interfaces";
 // eslint-disable-next-line import/no-unresolved
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from "@aws-amplify/amplify-appsync-simulator";
+import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from "../../velocity";
 
 const mockFeatureFlags: FeatureFlagProvider = {
   getBoolean: (value: string): boolean => {
-    if (value === 'useSubUsernameForDefaultIdentityClaim') {
+    if (value === "useSubUsernameForDefaultIdentityClaim") {
       return true;
     }
     return false;
@@ -19,30 +19,30 @@ const mockFeatureFlags: FeatureFlagProvider = {
   getObject: jest.fn(),
 };
 
-jest.mock('amplify-prompts');
+jest.mock("amplify-prompts");
 
-const USER_POOL_ID = 'us-fake-1ID';
+const USER_POOL_ID = "us-fake-1ID";
 
-describe('relational tests', () => {
+describe("relational tests", () => {
   let vtlTemplate: VelocityTemplateSimulator;
   let transformer: GraphQLTransform;
   const ownerRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-    jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
+    jwt: getJWTToken(USER_POOL_ID, "user1", "user1@test.com"),
     headers: {},
   };
   const adminGroupRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-    jwt: getJWTToken(USER_POOL_ID, 'user2', 'user2@test.com', ['admin']),
+    jwt: getJWTToken(USER_POOL_ID, "user2", "user2@test.com", ["admin"]),
     headers: {},
   };
   const iamAuthRole: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM,
-    iamToken: getIAMToken('authRole', {
+    iamToken: getIAMToken("authRole", {
       cognitoIdentityAuthProvider: `cognito-idp.us-fake1.amazonaws.com/${USER_POOL_ID}`,
-      cognitoIdentityAuthType: 'authenticated',
+      cognitoIdentityAuthType: "authenticated",
       cognitoIdentityPoolId: `${USER_POOL_ID}:000-111-222`,
-      cognitoIdentityId: 'us-fake-1:000',
+      cognitoIdentityId: "us-fake-1:000",
     }),
     headers: {},
   };
@@ -50,11 +50,11 @@ describe('relational tests', () => {
   beforeEach(() => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        authenticationType: "AMAZON_COGNITO_USER_POOLS",
       },
       additionalAuthenticationProviders: [
         {
-          authenticationType: 'AWS_IAM',
+          authenticationType: "AWS_IAM",
         },
       ],
     };
@@ -74,7 +74,7 @@ describe('relational tests', () => {
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
-  test('1:1 nested auth read', () => {
+  test("1:1 nested auth read", () => {
     // public signed user pools should only be able to read
     // blogs and they can't see the editor
     const validSchema = `
@@ -93,8 +93,8 @@ describe('relational tests', () => {
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    const listBlogTemplate = out.resolvers['Query.listBlogs.auth.1.req.vtl'];
-    const blogEditor = out.resolvers['Blog.editor.auth.1.req.vtl'];
+    const listBlogTemplate = out.resolvers["Query.listBlogs.auth.1.req.vtl"];
+    const blogEditor = out.resolvers["Blog.editor.auth.1.req.vtl"];
 
     // signed in as a cognito user should not yield unauthorized
     const upResponse = vtlTemplate.render(listBlogTemplate, { context: {}, requestParameters: ownerRequest });
@@ -103,23 +103,19 @@ describe('relational tests', () => {
     // signed in via iam will yield unauthorized
     const iamResponse = vtlTemplate.render(listBlogTemplate, { context: {}, requestParameters: iamAuthRole });
     expect(iamResponse.hadException).toBe(true);
-    expect(iamResponse.errors[0].errorType).toEqual('Unauthorized');
+    expect(iamResponse.errors[0].errorType).toEqual("Unauthorized");
 
     // query for blogEditor should have an owner rule filter
     const ownerFieldResponse = vtlTemplate.render(blogEditor, { context: {}, requestParameters: ownerRequest });
     expect(ownerFieldResponse.hadException).toBe(false);
     expect(ownerFieldResponse.stash.authFilter).toEqual(
       expect.objectContaining({
-        or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
-          { owner: { eq: `${ownerRequest.jwt.sub}` } },
-          { owner: { eq: 'user1' } },
-        ],
-      }),
+        or: [{ owner: { eq: `${ownerRequest.jwt.sub}::user1` } }, { owner: { eq: `${ownerRequest.jwt.sub}` } }, { owner: { eq: "user1" } }],
+      })
     );
   });
 
-  test('1:M nested auth read', () => {
+  test("1:M nested auth read", () => {
     // checking for the following cases
     // don't apply the authFilter if the owner is not in any valid groups
     // remove auth filter if the primaryRole (ex. the owner rule) condition is met
@@ -140,26 +136,26 @@ describe('relational tests', () => {
       posts: [Post] @hasMany(indexName: "byOwner", fields: ["id"])
     }`;
     const out = transformer.transform(validSchema);
-    const userPostTemplate = out.resolvers['User.posts.auth.1.req.vtl'];
+    const userPostTemplate = out.resolvers["User.posts.auth.1.req.vtl"];
 
     // request as admin editor where the user is not the user in the record so therefore the auth filter is applied
     const adminWithFilterResponse = vtlTemplate.render(userPostTemplate, {
       context: {
-        source: { id: 'user1' },
+        source: { id: "user1" },
       },
       requestParameters: adminGroupRequest,
     });
     expect(adminWithFilterResponse.hadException).toEqual(false);
     expect(adminWithFilterResponse.stash.authFilter).toEqual(
       expect.objectContaining({
-        or: [{ editors: { contains: 'admin' } }],
-      }),
+        or: [{ editors: { contains: "admin" } }],
+      })
     );
 
     // response where the editor member is the owner therefore the auth filter does not need to be applied
     const adminWithNoFilterResponse = vtlTemplate.render(userPostTemplate, {
       context: {
-        source: { id: 'user2' },
+        source: { id: "user2" },
       },
       requestParameters: adminGroupRequest,
     });
@@ -172,7 +168,7 @@ describe('relational tests', () => {
     // the owner rule should still be enforced
     const ownerWithNoFilter = vtlTemplate.render(userPostTemplate, {
       context: {
-        source: { id: 'user3' },
+        source: { id: "user3" },
       },
       requestParameters: ownerRequest,
     });
@@ -180,7 +176,7 @@ describe('relational tests', () => {
     expect(ownerWithNoFilter.stash.authFilter).not.toBeDefined();
   });
 
-  test('has one and partial type access', () => {
+  test("has one and partial type access", () => {
     const validSchema = `
       type ModelA @model @auth(rules: [{ allow: owner }]) {
         id: ID!
@@ -199,14 +195,14 @@ describe('relational tests', () => {
     expect(out).toBeDefined();
 
     // load vtl templates
-    const createModelATemplate = out.resolvers['Mutation.createModelA.auth.1.req.vtl'];
-    const createModelBTemplate = out.resolvers['Mutation.createModelB.auth.1.req.vtl'];
+    const createModelATemplate = out.resolvers["Mutation.createModelA.auth.1.req.vtl"];
+    const createModelBTemplate = out.resolvers["Mutation.createModelB.auth.1.req.vtl"];
 
     const createModelBContext = {
       arguments: {
         input: {
-          id: '001',
-          name: 'sample',
+          id: "001",
+          name: "sample",
         },
       },
     };
@@ -219,9 +215,9 @@ describe('relational tests', () => {
     const createModelAContext = {
       arguments: {
         input: {
-          id: '001',
-          name: 'sample',
-          modelAChildId: '001',
+          id: "001",
+          name: "sample",
+          modelAChildId: "001",
         },
       },
     };
@@ -232,7 +228,7 @@ describe('relational tests', () => {
     expect(createModelARequest.hadException).toEqual(false);
   });
 
-  test('should allow update with has one with multiple fields and multiple sort key fields', () => {
+  test("should allow update with has one with multiple fields and multiple sort key fields", () => {
     const validSchema = `
       type Post @model @auth(rules: [{ allow: owner, operations: [create, read, update] }]) {
         id: ID!
@@ -255,14 +251,14 @@ describe('relational tests', () => {
     expect(out).toBeDefined();
 
     // load vtl templates
-    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
-    const createCommentTemplate = out.resolvers['Mutation.createComment.auth.1.req.vtl'];
+    const createPostTemplate = out.resolvers["Mutation.createPost.auth.1.req.vtl"];
+    const createCommentTemplate = out.resolvers["Mutation.createComment.auth.1.req.vtl"];
 
     const createCommentContext = {
       arguments: {
         input: {
-          id: '001',
-          name: 'sample',
+          id: "001",
+          name: "sample",
         },
       },
     };
@@ -275,10 +271,10 @@ describe('relational tests', () => {
     const createPostContext = {
       arguments: {
         input: {
-          id: '001',
-          name: 'sample',
-          partOneId: '001',
-          partTwoId: '001',
+          id: "001",
+          name: "sample",
+          partOneId: "001",
+          partTwoId: "001",
         },
       },
     };
@@ -288,14 +284,14 @@ describe('relational tests', () => {
     });
     expect(createPostRequest.hadException).toEqual(false);
 
-    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
-    const updateCommentTemplate = out.resolvers['Mutation.updateComment.auth.1.res.vtl'];
+    const updatePostTemplate = out.resolvers["Mutation.updatePost.auth.1.res.vtl"];
+    const updateCommentTemplate = out.resolvers["Mutation.updateComment.auth.1.res.vtl"];
 
     const updateCommentContext = {
       result: {
-        id: '001',
-        name: 'updated',
-        owner: 'user1',
+        id: "001",
+        name: "updated",
+        owner: "user1",
       },
     };
     const updateCommentRequest = vtlTemplate.render(updateCommentTemplate, {
@@ -306,9 +302,9 @@ describe('relational tests', () => {
 
     const updatePostContext = {
       result: {
-        id: '001',
-        name: 'updated',
-        owner: 'user1',
+        id: "001",
+        name: "updated",
+        owner: "user1",
       },
     };
     const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
@@ -317,13 +313,13 @@ describe('relational tests', () => {
     });
     expect(updatePostRequest.hadException).toEqual(false);
 
-    const deletePostTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
-    const deleteCommentTemplate = out.resolvers['Mutation.deleteComment.auth.1.res.vtl'];
+    const deletePostTemplate = out.resolvers["Mutation.deletePost.auth.1.res.vtl"];
+    const deleteCommentTemplate = out.resolvers["Mutation.deleteComment.auth.1.res.vtl"];
 
     const deleteCommentContext = {
       result: {
-        id: '001',
-        owner: 'user1',
+        id: "001",
+        owner: "user1",
       },
     };
     const deleteCommentRequest = vtlTemplate.render(deleteCommentTemplate, {
@@ -334,8 +330,8 @@ describe('relational tests', () => {
 
     const deletePostContext = {
       result: {
-        id: '001',
-        owner: 'user1',
+        id: "001",
+        owner: "user1",
       },
     };
     const deletePostRequest = vtlTemplate.render(deletePostTemplate, {
@@ -346,27 +342,27 @@ describe('relational tests', () => {
   });
 });
 
-describe('with identity claim feature flag disabled', () => {
-  describe('relational tests', () => {
+describe("with identity claim feature flag disabled", () => {
+  describe("relational tests", () => {
     let vtlTemplate: VelocityTemplateSimulator;
     let transformer: GraphQLTransform;
     const ownerRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-      jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
+      jwt: getJWTToken(USER_POOL_ID, "user1", "user1@test.com"),
       headers: {},
     };
     const adminGroupRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-      jwt: getJWTToken(USER_POOL_ID, 'user2', 'user2@test.com', ['admin']),
+      jwt: getJWTToken(USER_POOL_ID, "user2", "user2@test.com", ["admin"]),
       headers: {},
     };
     const iamAuthRole: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM,
-      iamToken: getIAMToken('authRole', {
+      iamToken: getIAMToken("authRole", {
         cognitoIdentityAuthProvider: `cognito-idp.us-fake1.amazonaws.com/${USER_POOL_ID}`,
-        cognitoIdentityAuthType: 'authenticated',
+        cognitoIdentityAuthType: "authenticated",
         cognitoIdentityPoolId: `${USER_POOL_ID}:000-111-222`,
-        cognitoIdentityId: 'us-fake-1:000',
+        cognitoIdentityId: "us-fake-1:000",
       }),
       headers: {},
     };
@@ -374,11 +370,11 @@ describe('with identity claim feature flag disabled', () => {
     beforeEach(() => {
       const authConfig: AppSyncAuthConfiguration = {
         defaultAuthentication: {
-          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          authenticationType: "AMAZON_COGNITO_USER_POOLS",
         },
         additionalAuthenticationProviders: [
           {
-            authenticationType: 'AWS_IAM',
+            authenticationType: "AWS_IAM",
           },
         ],
       };
@@ -401,7 +397,7 @@ describe('with identity claim feature flag disabled', () => {
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 
-    test('1:1 nested auth read', () => {
+    test("1:1 nested auth read", () => {
       // public signed user pools should only be able to read
       // blogs and they can't see the editor
       const validSchema = `
@@ -420,8 +416,8 @@ describe('with identity claim feature flag disabled', () => {
 
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
-      const listBlogTemplate = out.resolvers['Query.listBlogs.auth.1.req.vtl'];
-      const blogEditor = out.resolvers['Blog.editor.auth.1.req.vtl'];
+      const listBlogTemplate = out.resolvers["Query.listBlogs.auth.1.req.vtl"];
+      const blogEditor = out.resolvers["Blog.editor.auth.1.req.vtl"];
 
       // signed in as a cognito user should not yield unauthorized
       const upResponse = vtlTemplate.render(listBlogTemplate, { context: {}, requestParameters: ownerRequest });
@@ -430,19 +426,19 @@ describe('with identity claim feature flag disabled', () => {
       // signed in via iam will yield unauthorized
       const iamResponse = vtlTemplate.render(listBlogTemplate, { context: {}, requestParameters: iamAuthRole });
       expect(iamResponse.hadException).toBe(true);
-      expect(iamResponse.errors[0].errorType).toEqual('Unauthorized');
+      expect(iamResponse.errors[0].errorType).toEqual("Unauthorized");
 
       // query for blogEditor should have an owner rule filter
       const ownerFieldResponse = vtlTemplate.render(blogEditor, { context: {}, requestParameters: ownerRequest });
       expect(ownerFieldResponse.hadException).toBe(false);
       expect(ownerFieldResponse.stash.authFilter).toEqual(
         expect.objectContaining({
-          or: [{ owner: { eq: 'user1' } }],
-        }),
+          or: [{ owner: { eq: "user1" } }],
+        })
       );
     });
 
-    test('1:M nested auth read', () => {
+    test("1:M nested auth read", () => {
       // checking for the following cases
       // don't apply the authFilter if the owner is not in any valid groups
       // remove auth filter if the primaryRole (ex. the owner rule) condition is met
@@ -463,26 +459,26 @@ describe('with identity claim feature flag disabled', () => {
         posts: [Post] @hasMany(indexName: "byOwner", fields: ["id"])
       }`;
       const out = transformer.transform(validSchema);
-      const userPostTemplate = out.resolvers['User.posts.auth.1.req.vtl'];
+      const userPostTemplate = out.resolvers["User.posts.auth.1.req.vtl"];
 
       // request as admin editor where the user is not the user in the record so therefore the auth filter is applied
       const adminWithFilterResponse = vtlTemplate.render(userPostTemplate, {
         context: {
-          source: { id: 'user1' },
+          source: { id: "user1" },
         },
         requestParameters: adminGroupRequest,
       });
       expect(adminWithFilterResponse.hadException).toEqual(false);
       expect(adminWithFilterResponse.stash.authFilter).toEqual(
         expect.objectContaining({
-          or: [{ editors: { contains: 'admin' } }],
-        }),
+          or: [{ editors: { contains: "admin" } }],
+        })
       );
 
       // response where the editor member is the owner therefore the auth filter does not need to be applied
       const adminWithNoFilterResponse = vtlTemplate.render(userPostTemplate, {
         context: {
-          source: { id: 'user2' },
+          source: { id: "user2" },
         },
         requestParameters: adminGroupRequest,
       });
@@ -495,7 +491,7 @@ describe('with identity claim feature flag disabled', () => {
       // owner rule should still be enforced
       const ownerWithNoFilter = vtlTemplate.render(userPostTemplate, {
         context: {
-          source: { id: 'user3' },
+          source: { id: "user3" },
         },
         requestParameters: ownerRequest,
       });
@@ -503,7 +499,7 @@ describe('with identity claim feature flag disabled', () => {
       expect(ownerWithNoFilter.stash.authFilter).not.toBeDefined();
     });
 
-    test('has one and partial type access', () => {
+    test("has one and partial type access", () => {
       const validSchema = `
         type ModelA @model @auth(rules: [{ allow: owner }]) {
           id: ID!
@@ -522,14 +518,14 @@ describe('with identity claim feature flag disabled', () => {
       expect(out).toBeDefined();
 
       // load vtl templates
-      const createModelATemplate = out.resolvers['Mutation.createModelA.auth.1.req.vtl'];
-      const createModelBTemplate = out.resolvers['Mutation.createModelB.auth.1.req.vtl'];
+      const createModelATemplate = out.resolvers["Mutation.createModelA.auth.1.req.vtl"];
+      const createModelBTemplate = out.resolvers["Mutation.createModelB.auth.1.req.vtl"];
 
       const createModelBContext = {
         arguments: {
           input: {
-            id: '001',
-            name: 'sample',
+            id: "001",
+            name: "sample",
           },
         },
       };
@@ -542,9 +538,9 @@ describe('with identity claim feature flag disabled', () => {
       const createModelAContext = {
         arguments: {
           input: {
-            id: '001',
-            name: 'sample',
-            modelAChildId: '001',
+            id: "001",
+            name: "sample",
+            modelAChildId: "001",
           },
         },
       };
@@ -555,7 +551,7 @@ describe('with identity claim feature flag disabled', () => {
       expect(createModelARequest.hadException).toEqual(false);
     });
 
-    test('should allow update with has one with multiple fields and multiple sort key fields', () => {
+    test("should allow update with has one with multiple fields and multiple sort key fields", () => {
       const validSchema = `
         type Post @model @auth(rules: [{ allow: owner, operations: [create, read, update] }]) {
           id: ID!
@@ -578,14 +574,14 @@ describe('with identity claim feature flag disabled', () => {
       expect(out).toBeDefined();
 
       // load vtl templates
-      const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
-      const createCommentTemplate = out.resolvers['Mutation.createComment.auth.1.req.vtl'];
+      const createPostTemplate = out.resolvers["Mutation.createPost.auth.1.req.vtl"];
+      const createCommentTemplate = out.resolvers["Mutation.createComment.auth.1.req.vtl"];
 
       const createCommentContext = {
         arguments: {
           input: {
-            id: '001',
-            name: 'sample',
+            id: "001",
+            name: "sample",
           },
         },
       };
@@ -598,10 +594,10 @@ describe('with identity claim feature flag disabled', () => {
       const createPostContext = {
         arguments: {
           input: {
-            id: '001',
-            name: 'sample',
-            partOneId: '001',
-            partTwoId: '001',
+            id: "001",
+            name: "sample",
+            partOneId: "001",
+            partTwoId: "001",
           },
         },
       };
@@ -611,14 +607,14 @@ describe('with identity claim feature flag disabled', () => {
       });
       expect(createPostRequest.hadException).toEqual(false);
 
-      const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
-      const updateCommentTemplate = out.resolvers['Mutation.updateComment.auth.1.res.vtl'];
+      const updatePostTemplate = out.resolvers["Mutation.updatePost.auth.1.res.vtl"];
+      const updateCommentTemplate = out.resolvers["Mutation.updateComment.auth.1.res.vtl"];
 
       const updateCommentContext = {
         result: {
-          id: '001',
-          name: 'updated',
-          owner: 'user1',
+          id: "001",
+          name: "updated",
+          owner: "user1",
         },
       };
       const updateCommentRequest = vtlTemplate.render(updateCommentTemplate, {
@@ -629,9 +625,9 @@ describe('with identity claim feature flag disabled', () => {
 
       const updatePostContext = {
         result: {
-          id: '001',
-          name: 'updated',
-          owner: 'user1',
+          id: "001",
+          name: "updated",
+          owner: "user1",
         },
       };
       const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
@@ -640,13 +636,13 @@ describe('with identity claim feature flag disabled', () => {
       });
       expect(updatePostRequest.hadException).toEqual(false);
 
-      const deletePostTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
-      const deleteCommentTemplate = out.resolvers['Mutation.deleteComment.auth.1.res.vtl'];
+      const deletePostTemplate = out.resolvers["Mutation.deletePost.auth.1.res.vtl"];
+      const deleteCommentTemplate = out.resolvers["Mutation.deleteComment.auth.1.res.vtl"];
 
       const deleteCommentContext = {
         result: {
-          id: '001',
-          owner: 'user1',
+          id: "001",
+          owner: "user1",
         },
       };
       const deleteCommentRequest = vtlTemplate.render(deleteCommentTemplate, {
@@ -657,8 +653,8 @@ describe('with identity claim feature flag disabled', () => {
 
       const deletePostContext = {
         result: {
-          id: '001',
-          owner: 'user1',
+          id: "001",
+          owner: "user1",
         },
       };
       const deletePostRequest = vtlTemplate.render(deletePostTemplate, {
