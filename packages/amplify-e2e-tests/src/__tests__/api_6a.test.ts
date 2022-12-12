@@ -5,27 +5,13 @@ import {
   amplifyPush,
   deleteProject,
   deleteProjectDir,
-  putItemInTable,
-  scanTable,
   rebuildApi,
   getProjectMeta,
   updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
+import { testTableAfterRebuildApi, testTableBeforeRebuildApi } from '../rebuild-test-helpers';
 
 const projName = 'apitest';
-
-export const testTableBeforeRebuildApi = async (apiId: string, region: string, modelName: string) => {
-  const tableName = `${modelName}-${apiId}-integtest`;
-  await putItemInTable(tableName, region, { id: 'this is a test value' });
-  const scanResultBefore = await scanTable(tableName, region);
-  expect(scanResultBefore.Items.length).toBe(1);
-};
-
-export const testTableAfterRebuildApi = async (apiId: string, region: string, modelName: string) => {
-  const tableName = `${modelName}-${apiId}-integtest`;
-  const scanResultAfter = await scanTable(tableName, region);
-  expect(scanResultAfter.Items.length).toBe(0);
-};
 
 let projRoot;
 beforeEach(async () => {
