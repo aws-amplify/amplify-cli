@@ -30,7 +30,7 @@
     "amplify-headless-interface": "1.16.0-beta.1",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
-    "aws-cdk-lib": "~2.44.0",
+    "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "circleci-api": "^4.1.4",
     "constructs": "^10.0.5",
