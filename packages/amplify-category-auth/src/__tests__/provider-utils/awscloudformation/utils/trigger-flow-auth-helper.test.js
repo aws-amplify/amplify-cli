@@ -1,4 +1,4 @@
-jest.mock('amplify-cli-core', () => {
+jest.mock("amplify-cli-core", () => {
   return {
     FeatureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
@@ -8,7 +8,7 @@ jest.mock('amplify-cli-core', () => {
   };
 });
 
-const { handleTriggers } = require('../../../../provider-utils/awscloudformation/utils/trigger-flow-auth-helper');
+const { handleTriggers } = require("../../../../provider-utils/awscloudformation/utils/trigger-flow-auth-helper");
 
 const defaults = {
   envVars: {},
@@ -22,7 +22,7 @@ const mockContext = (options = defaults) => {
   const contextObj = {
     amplify: {
       pathManager: {
-        getBackendDirPath: () => '',
+        getBackendDirPath: () => "",
       },
       getTriggerEnvVariables: () => options.envVars,
       getTriggerEnvInputs: () => options.envVars,
@@ -37,25 +37,25 @@ const mockContext = (options = defaults) => {
   return contextObj;
 };
 
-describe('When handling selected triggers...', () => {
-  it('...it should return the triggers key/values unaltered on simple creation', async () => {
+describe("When handling selected triggers...", () => {
+  it("...it should return the triggers key/values unaltered on simple creation", async () => {
     const context = mockContext();
     const mockAnswers = {
       triggers: {
-        PostConfirmation: ['add-to-group'],
-        PostAuthentication: ['custom'],
+        PostConfirmation: ["add-to-group"],
+        PostAuthentication: ["custom"],
       },
       authTriggerConnections: [
         {
-          lambdaFunctionName: 'demoFnPostConfirmation',
-          triggerType: 'PostConfirmation',
+          lambdaFunctionName: "demoFnPostConfirmation",
+          triggerType: "PostConfirmation",
         },
         {
-          lambdaFunctionName: 'demoFnPostAuthentication',
-          triggerType: 'PostAuthentication',
+          lambdaFunctionName: "demoFnPostAuthentication",
+          triggerType: "PostAuthentication",
         },
       ],
-      resourceName: 'demoFn',
+      resourceName: "demoFn",
     };
     const { triggers, authTriggerConnections } = await handleTriggers(context, mockAnswers);
     expect(triggers).toEqual(mockAnswers.triggers);

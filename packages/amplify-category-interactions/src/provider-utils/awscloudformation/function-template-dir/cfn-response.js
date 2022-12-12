@@ -5,8 +5,8 @@ A copy of the License is located at http://aws.amazon.com/agreement/ .
 This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied.
 See the License for the specific language governing permissions and limitations under the License. */
 
-exports.SUCCESS = 'SUCCESS';
-exports.FAILED = 'FAILED';
+exports.SUCCESS = "SUCCESS";
+exports.FAILED = "FAILED";
 
 exports.send = function (event, context, responseStatus, responseData, physicalResourceId, noEcho) {
   const responseBody = JSON.stringify({
@@ -20,30 +20,30 @@ exports.send = function (event, context, responseStatus, responseData, physicalR
     Data: responseData,
   });
 
-  console.log('Response body:\n', responseBody);
+  console.log("Response body:\n", responseBody);
 
-  const https = require('https');
-  const url = require('url');
+  const https = require("https");
+  const url = require("url");
 
   const parsedUrl = url.parse(event.ResponseURL);
   const options = {
     hostname: parsedUrl.hostname,
     port: 443,
     path: parsedUrl.path,
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'content-type': '',
-      'content-length': responseBody.length,
+      "content-type": "",
+      "content-length": responseBody.length,
     },
   };
 
-  const request = https.request(options, response => {
+  const request = https.request(options, (response) => {
     console.log(`Status code: ${response.statusCode}`);
     console.log(`Status message: ${response.statusMessage}`);
     context.done();
   });
 
-  request.on('error', error => {
+  request.on("error", (error) => {
     console.log(`send(..) failed executing https.request(..): ${error}`);
     context.done();
   });

@@ -1,12 +1,12 @@
-const path = require('path');
-const fs = require('fs');
-const _ = require('lodash');
+const path = require("path");
+const fs = require("fs");
+const _ = require("lodash");
 
-const CODEGEN_TEMPLATES_FOLDER = 'templates';
+const CODEGEN_TEMPLATES_FOLDER = "templates";
 
-const canonicalFunctionName = commandName => _.camelCase(commandName);
+const canonicalFunctionName = (commandName) => _.camelCase(commandName);
 
-const getTemplate = templatName => {
+const getTemplate = (templatName) => {
   const templatePath = path.join(__dirname, CODEGEN_TEMPLATES_FOLDER, templatName);
   const template = fs.readFileSync(templatePath).toString();
   return _.template(template, { interpolate: /<%=([\s\S]+?)%>/g });
@@ -22,7 +22,7 @@ const generateFunctionDocs = (abstract, parameters) => {
 /**
  * ${abstract}
  * @param {Object} params
-${parameters.map(p => ` * @param {${p.type}} params.${p.name} - ${p.help}`).join('\n')}
+${parameters.map((p) => ` * @param {${p.type}} params.${p.name} - ${p.help}`).join("\n")}
  */`;
 };
 
@@ -42,19 +42,19 @@ ${parameters.map(p => ` * @param {${p.type}} params.${p.name} - ${p.help}`).join
  *    help: String}>} parameters
  * @returns {Array<Array<String>>}
  */
-const generateCommandParameters = parameters => {
-  return parameters.map(param => {
+const generateCommandParameters = (parameters) => {
+  return parameters.map((param) => {
     const { kind, name } = param;
     const funcParamValue = `params['${name}']`;
     let output;
     switch (kind) {
-      case 'option':
+      case "option":
         output = [`if (${funcParamValue}) {`, `    command += \` --${name}=\${${funcParamValue}}\`;`, `  }`];
         break;
-      case 'flag':
+      case "flag":
         output = [`if (${funcParamValue}) {`, `    command += \` --${name}\`;`, `  }`];
         break;
-      case 'argument':
+      case "argument":
         output = [`  command += \` \${${funcParamValue}}\`;`];
     }
     return output;
@@ -69,15 +69,15 @@ const generateCommandParameters = parameters => {
  * @param {String} commandSchema.name
  * @param {Array} commandSchema.parameters
  */
-const generateFunctionBodyData = commandSchema => {
+const generateFunctionBodyData = (commandSchema) => {
   const { abstract, name, parameters } = commandSchema;
   return {
     __FUNCTION_DOCS__: generateFunctionDocs(abstract, parameters),
     __FUNCTION_NAME__: canonicalFunctionName(name),
     __COMMAND_NAME__: name,
     __COMMAND_PARAMS__: generateCommandParameters(parameters)
-      .map(p => `  ${p.join('\n')}`)
-      .join('\n'),
+      .map((p) => `  ${p.join("\n")}`)
+      .join("\n"),
   };
 };
 
@@ -86,12 +86,12 @@ const generateFunctionBodyData = commandSchema => {
  * exported module declaration
  * @param {Object} schema amplify-xcode schema @see amplify-xcode.json
  */
-const generateModuleExports = schema => {
-  let output = ['module.exports = {'];
-  schema.commands.forEach(command => {
+const generateModuleExports = (schema) => {
+  let output = ["module.exports = {"];
+  schema.commands.forEach((command) => {
     output.push(`  ${canonicalFunctionName(command.name)},`);
   });
-  output.push('};');
+  output.push("};");
 
   return output;
 };
@@ -103,18 +103,18 @@ const generateModuleExports = schema => {
  * @param {String} outputPath generated JS bindings file path
  */
 const generateNativeBindings = (schema, outputPath) => {
-  const preamble = getTemplate('preamble.jst')();
-  const functionTemplate = getTemplate('function.jst');
+  const preamble = getTemplate("preamble.jst")();
+  const functionTemplate = getTemplate("function.jst");
   // generate functions body
   let output = preamble;
   output += schema.commands
-    .map(command => {
+    .map((command) => {
       return functionTemplate(generateFunctionBodyData(command));
     })
-    .join('');
+    .join("");
 
   // generate exports
-  output += '\n' + generateModuleExports(schema).join('\n') + '\n';
+  output += "\n" + generateModuleExports(schema).join("\n") + "\n";
 
   fs.writeFileSync(outputPath, output);
 };

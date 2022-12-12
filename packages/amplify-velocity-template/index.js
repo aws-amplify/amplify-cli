@@ -1,2 +1,2 @@
-'use strict';
-module.exports = require('./src/velocity');
+"use strict";
+module.exports = require("./src/velocity");

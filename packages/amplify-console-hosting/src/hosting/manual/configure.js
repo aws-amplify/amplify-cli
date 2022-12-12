@@ -1,6 +1,6 @@
-const utils = require('../../utils/amplify-context-utils');
-const { open } = require('amplify-cli-core');
-const questions = require('../../modules/questions/question-generator');
+const utils = require("../../utils/amplify-context-utils");
+const { open } = require("amplify-cli-core");
+const questions = require("../../modules/questions/question-generator");
 
 async function configure(context) {
   const region = utils.getRegionForCurrEnv(context);

@@ -1,21 +1,21 @@
-import GraphiQL from 'graphiql';
-import GraphiQLExplorer from 'graphiql-explorer';
-import 'graphiql/graphiql.css';
-import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, parse } from 'graphql';
-import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css';
-import './App.css';
-import { AuthModal, AUTH_MODE } from './AuthModal';
-import { refreshToken } from './utils/jwt';
+import GraphiQL from "graphiql";
+import GraphiQLExplorer from "graphiql-explorer";
+import "graphiql/graphiql.css";
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, parse } from "graphql";
+import React, { Component } from "react";
+import "semantic-ui-css/semantic.min.css";
+import "./App.css";
+import { AuthModal, AUTH_MODE } from "./AuthModal";
+import { refreshToken } from "./utils/jwt";
 
 const DEFAULT_COGNITO_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZDhjYTUyOC00OTMxLTQyNTQtOTI3My1lYTVlZTg1M2YyNzEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS91cy1lYXN0LTFfZmFrZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6InVzZXIxIiwiYXVkIjoiMmhpZmEwOTZiM2EyNG12bTNwaHNrdWFxaTMiLCJldmVudF9pZCI6ImIxMmEzZTJmLTdhMzYtNDkzYy04NWIzLTIwZDgxOGJkNzhhMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxOTc0MjY0NDEyLCJwaG9uZV9udW1iZXIiOiIrMTIwNjIwNjIwMTYiLCJleHAiOjE1NjQyNjgwMTIsImlhdCI6MTU2NDI2NDQxMywiZW1haWwiOiJ1c2VyQGRvbWFpbi5jb20ifQ.wHKY2KIhvWn4zpJ4TZ1vS3zRE9mGWsLY4NCV2Cof17Q`;
 const DEFAULT_OIDC_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL3NvbWUtb2lkYy1wcm92aWRlci9hdXRoIiwicGhvbmVfbnVtYmVyX3ZlcmlmaWVkIjp0cnVlLCJhdWQiOiIyaGlmYTA5NmIzYTI0bXZtM3Boc2t1YXFpMyIsImV2ZW50X2lkIjoiYjEyYTNlMmYtN2EzNi00OTNjLTg1YjMtMjBkODE4YmQ3OGExIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE5NzQyNjQ0MTIsInBob25lX251bWJlciI6IisxMjA2MjA2MjAxNiIsImV4cCI6MTU2NDI2ODAxMiwiaWF0IjoxNTY0MjY0NDEzLCJlbWFpbCI6InVzZXJAZG9tYWluLmNvbSJ9.uAegFXomOnA7Dkl-5FcS5icu5kL9Juqb81GnTrOZZqM`;
 
 const AUTH_TYPE_TO_NAME = {
-  AMAZON_COGNITO_USER_POOLS: 'User Pool',
-  API_KEY: 'API Key',
-  OPENID_CONNECT: 'Open ID',
-  AWS_IAM: 'IAM',
+  AMAZON_COGNITO_USER_POOLS: "User Pool",
+  API_KEY: "API Key",
+  OPENID_CONNECT: "Open ID",
+  AWS_IAM: "IAM",
 };
 
 type AmplifyAppSyncSimulatorAuthInfo = {
@@ -29,34 +29,34 @@ type AmplifyAppSyncSimulatorApiInfo = {
   authAccessKeyId?: string;
 };
 const DEFAULT_API_INFO: AmplifyAppSyncSimulatorApiInfo = {
-  name: 'AppSyncTransformer',
+  name: "AppSyncTransformer",
   defaultAuthenticationType: {
-    authenticationType: 'API_KEY',
+    authenticationType: "API_KEY",
   },
   additionalAuthenticationProviders: [],
-  apiKey: 'da2-fakeApiId123456',
+  apiKey: "da2-fakeApiId123456",
 };
 
 const LOCAL_STORAGE_KEY_NAMES = {
-  cognitoToken: 'AMPLIFY_GRPAHIQL_EXPLORER_COGNITO_JWT_TOKEN',
-  oidcToken: 'AMPLIFY_GRPAHIQL_EXPLORER_OIDC_JWT_TOKEN',
-  apiKey: 'AMPLIFY_GRPAHIQL_EXPLORER_API_KEY',
-  iam: 'AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM',
-  iamRole: 'AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM_ROLE',
+  cognitoToken: "AMPLIFY_GRPAHIQL_EXPLORER_COGNITO_JWT_TOKEN",
+  oidcToken: "AMPLIFY_GRPAHIQL_EXPLORER_OIDC_JWT_TOKEN",
+  apiKey: "AMPLIFY_GRPAHIQL_EXPLORER_API_KEY",
+  iam: "AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM",
+  iamRole: "AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM_ROLE",
 };
 
 function getAPIInfo() {
-  return fetch('/api-config').then(response => response.json());
+  return fetch("/api-config").then((response) => response.json());
 }
 
 function fetcher(params: Object, additionalHeaders): Promise<any> {
   const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
+    Accept: "application/json",
+    "Content-Type": "application/json",
     ...additionalHeaders,
   };
-  return fetch('/graphql', {
-    method: 'POST',
+  return fetch("/graphql", {
+    method: "POST",
     headers,
     body: JSON.stringify(params),
   })
@@ -89,7 +89,7 @@ type State = {
     apiKey?: string;
     cognitoJWTToken?: string;
     oidcJWTToken?: string;
-    iamRole?: 'Auth' | 'UnAuth';
+    iamRole?: "Auth" | "UnAuth";
   };
 };
 
@@ -103,10 +103,10 @@ class App extends Component<{}, State> {
     apiInfo: DEFAULT_API_INFO,
     currentAuthMode: AUTH_MODE.API_KEY,
     credentials: {
-      apiKey: '',
-      cognitoJWTToken: '',
-      oidcJWTToken: '',
-      iamRole: 'UnAuth',
+      apiKey: "",
+      cognitoJWTToken: "",
+      oidcJWTToken: "",
+      iamRole: "UnAuth",
     },
   };
 
@@ -123,9 +123,9 @@ class App extends Component<{}, State> {
     });
 
     const editor = this._graphiql?.getQueryEditor();
-    editor.setOption('extraKeys', {
+    editor.setOption("extraKeys", {
       ...(editor.options.extraKeys || {}),
-      'Shift-Alt-LeftClick': this._handleInspectOperation,
+      "Shift-Alt-LeftClick": this._handleInspectOperation,
     });
     if (introspectionResult && introspectionResult.data) {
       this.setState({ schema: buildClientSchema(introspectionResult.data) });
@@ -133,15 +133,15 @@ class App extends Component<{}, State> {
   }
 
   toggleAuthModal = () =>
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       authModalVisible: !prevState.authModalVisible,
     }));
 
-  switchAuthMode = val => {
+  switchAuthMode = (val) => {
     this.setState({ currentAuthMode: val });
   };
   _handleInspectOperation = (cm: any, mousePos: { line: Number; ch: Number }) => {
-    const parsedQuery = parse(this.state.query || '');
+    const parsedQuery = parse(this.state.query || "");
 
     if (!parsedQuery) {
       console.error("Couldn't parse query document");
@@ -158,9 +158,9 @@ class App extends Component<{}, State> {
 
     var position = relevantMousePos;
 
-    var def = parsedQuery.definitions.find(definition => {
+    var def = parsedQuery.definitions.find((definition) => {
       if (!definition.loc) {
-        console.log('Missing location information for definition');
+        console.log("Missing location information for definition");
         return false;
       }
 
@@ -173,14 +173,14 @@ class App extends Component<{}, State> {
       return null;
     }
 
-    var operationKind = def.kind === 'OperationDefinition' ? def.operation : def.kind === 'FragmentDefinition' ? 'fragment' : 'unknown';
+    var operationKind = def.kind === "OperationDefinition" ? def.operation : def.kind === "FragmentDefinition" ? "fragment" : "unknown";
 
     var operationName =
-      def.kind === 'OperationDefinition' && !!def.name
+      def.kind === "OperationDefinition" && !!def.name
         ? def.name.value
-        : def.kind === 'FragmentDefinition' && !!def.name
+        : def.kind === "FragmentDefinition" && !!def.name
         ? def.name.value
-        : 'unknown';
+        : "unknown";
 
     var selector = `.graphiql-explorer-root #${operationKind}-${operationName}`;
 
@@ -197,37 +197,37 @@ class App extends Component<{}, State> {
   fetch(params) {
     const headers = {};
     if (this.state.currentAuthMode === AUTH_MODE.API_KEY) {
-      headers['x-api-key'] = this.state.credentials.apiKey;
+      headers["x-api-key"] = this.state.credentials.apiKey;
     } else if (this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
-      headers['Authorization'] = this.state.credentials.cognitoJWTToken;
+      headers["Authorization"] = this.state.credentials.cognitoJWTToken;
     } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
-      headers['Authorization'] = this.state.credentials.oidcJWTToken;
+      headers["Authorization"] = this.state.credentials.oidcJWTToken;
     } else if (this.state.currentAuthMode === AUTH_MODE.AWS_IAM) {
       const { iamRole } = this.state.credentials;
-      const iamAccessKeyId = iamRole === 'Auth' ? this.state.apiInfo.authAccessKeyId || 'ASIAVJKIAM-AuthRole' : 'ASIAVJKI-UnAuthRole';
+      const iamAccessKeyId = iamRole === "Auth" ? this.state.apiInfo.authAccessKeyId || "ASIAVJKIAM-AuthRole" : "ASIAVJKI-UnAuthRole";
 
-      headers['Authorization'] = `AWS4-HMAC-SHA256 Credential=${iamAccessKeyId}/${new Date().toISOString()}/aws-fake/service`;
+      headers["Authorization"] = `AWS4-HMAC-SHA256 Credential=${iamAccessKeyId}/${new Date().toISOString()}/aws-fake/service`;
     }
     return fetcher(params, headers);
   }
 
   storeCredentials(credentials) {
     const newState = {};
-    if (credentials.authMode === 'API_KEY') {
-      newState['apiKey'] = credentials.apiKey;
+    if (credentials.authMode === "API_KEY") {
+      newState["apiKey"] = credentials.apiKey;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.apiKey, credentials.apiKey);
     } else if (credentials.authMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
-      newState['cognitoJWTToken'] = credentials.cognitoToken;
+      newState["cognitoJWTToken"] = credentials.cognitoToken;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken, credentials.cognitoToken);
     } else if (credentials.authMode === AUTH_MODE.OPENID_CONNECT) {
-      newState['oidcJWTToken'] = credentials.OIDCToken;
+      newState["oidcJWTToken"] = credentials.OIDCToken;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.oidcToken, credentials.OIDCToken);
     } else if (credentials.authMode === AUTH_MODE.AWS_IAM) {
-      newState['iamRole'] = credentials.iamRole;
+      newState["iamRole"] = credentials.iamRole;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.iamRole, credentials.iamRole);
     }
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       credentials: {
         ...prevState.credentials,
@@ -240,36 +240,36 @@ class App extends Component<{}, State> {
   loadCredentials(apiInfo = this.state.apiInfo) {
     const credentials = {};
     const authProviders = [apiInfo.defaultAuthenticationType, ...apiInfo.additionalAuthenticationProviders];
-    const possibleAuth = authProviders.map(auth => auth.authenticationType);
+    const possibleAuth = authProviders.map((auth) => auth.authenticationType);
 
-    if (possibleAuth.includes('API_KEY')) {
-      credentials['apiKey'] = DEFAULT_API_INFO.apiKey;
+    if (possibleAuth.includes("API_KEY")) {
+      credentials["apiKey"] = DEFAULT_API_INFO.apiKey;
     }
 
-    if (possibleAuth.includes('AMAZON_COGNITO_USER_POOLS')) {
+    if (possibleAuth.includes("AMAZON_COGNITO_USER_POOLS")) {
       try {
-        credentials['cognitoJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken) || '');
+        credentials["cognitoJWTToken"] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken) || "");
       } catch (e) {
-        console.warn('Invalid Cognito token found in local storage. Using the default OIDC token');
+        console.warn("Invalid Cognito token found in local storage. Using the default OIDC token");
         // token is not valid
-        credentials['cognitoJWTToken'] = refreshToken(DEFAULT_COGNITO_JWT_TOKEN);
+        credentials["cognitoJWTToken"] = refreshToken(DEFAULT_COGNITO_JWT_TOKEN);
       }
     }
 
-    if (possibleAuth.includes('OPENID_CONNECT')) {
+    if (possibleAuth.includes("OPENID_CONNECT")) {
       const issuers = authProviders
-        .filter(auth => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
+        .filter((auth) => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
         .map((auth: any) => auth.openIDConnectConfig.Issuer);
       try {
-        credentials['oidcJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '', issuers[0]);
+        credentials["oidcJWTToken"] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || "", issuers[0]);
       } catch (e) {
-        console.warn('Invalid OIDC token found in local storage. Using the default OIDC token');
-        credentials['oidcJWTToken'] = refreshToken(DEFAULT_OIDC_JWT_TOKEN, issuers[0]);
+        console.warn("Invalid OIDC token found in local storage. Using the default OIDC token");
+        credentials["oidcJWTToken"] = refreshToken(DEFAULT_OIDC_JWT_TOKEN, issuers[0]);
       }
     }
 
-    if (possibleAuth.includes('AWS_IAM')) {
-      credentials['iamRole'] = window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.iamRole) || 'auth';
+    if (possibleAuth.includes("AWS_IAM")) {
+      credentials["iamRole"] = window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.iamRole) || "auth";
     }
 
     this.setState(() => ({
@@ -283,8 +283,8 @@ class App extends Component<{}, State> {
     const { query, schema, authModalVisible, apiInfo } = this.state;
     const authModes = [
       AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType],
-      ...apiInfo.additionalAuthenticationProviders.map(auth => AUTH_MODE[auth.authenticationType]),
-    ].filter(auth => auth);
+      ...apiInfo.additionalAuthenticationProviders.map((auth) => AUTH_MODE[auth.authenticationType]),
+    ].filter((auth) => auth);
     const authModal = authModalVisible ? (
       <AuthModal
         selectedAuthMode={this.state.currentAuthMode}
@@ -293,7 +293,7 @@ class App extends Component<{}, State> {
         apiKey={this.state.credentials.apiKey}
         iamRole={this.state.credentials.iamRole}
         authModes={authModes}
-        onClose={credentials => {
+        onClose={(credentials) => {
           this.storeCredentials(credentials);
           this.setState({ authModalVisible: false });
         }}
@@ -302,17 +302,17 @@ class App extends Component<{}, State> {
     return (
       <>
         {authModal}
-        <div className='graphiql-container'>
+        <div className="graphiql-container">
           <GraphiQLExplorer
             schema={schema}
             query={query}
             onEdit={this._handleEditQuery}
-            onRunOperation={operationName => this._graphiql?.handleRunQuery(operationName)}
+            onRunOperation={(operationName) => this._graphiql?.handleRunQuery(operationName)}
             explorerIsOpen={this.state.explorerIsOpen}
             onToggleExplorer={this._handleToggleExplorer}
           />
           <GraphiQL
-            ref={ref => (this._graphiql = ref as GraphiQL)}
+            ref={(ref) => (this._graphiql = ref as GraphiQL)}
             fetcher={this.fetch}
             schema={schema!}
             query={query}
@@ -321,19 +321,19 @@ class App extends Component<{}, State> {
             <GraphiQL.Toolbar>
               <GraphiQL.Button
                 onClick={() => this._graphiql?.handlePrettifyQuery()}
-                label='Prettify'
-                title='Prettify Query (Shift-Ctrl-P)'
+                label="Prettify"
+                title="Prettify Query (Shift-Ctrl-P)"
               />
-              <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label='History' title='Show History' />
-              <GraphiQL.Button onClick={this._handleToggleExplorer} label='Explorer' title='Toggle Explorer' />
-              <GraphiQL.Button onClick={this.toggleAuthModal} label='Update Auth' title='Auth Setting' />
+              <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label="History" title="Show History" />
+              <GraphiQL.Button onClick={this._handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
+              <GraphiQL.Button onClick={this.toggleAuthModal} label="Update Auth" title="Auth Setting" />
               <GraphiQL.Menu
                 label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}${
-                  this.state.currentAuthMode === 'AWS_IAM' ? `(${this.state.credentials.iamRole} Role)` : ''
+                  this.state.currentAuthMode === "AWS_IAM" ? `(${this.state.credentials.iamRole} Role)` : ""
                 }`}
                 title={AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}
               >
-                {authModes.map(mode => (
+                {authModes.map((mode) => (
                   <GraphiQL.MenuItem
                     title={AUTH_TYPE_TO_NAME[mode]}
                     label={`Use: ${AUTH_TYPE_TO_NAME[mode]}`}

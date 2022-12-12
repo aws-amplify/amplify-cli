@@ -1,4 +1,4 @@
-const NodeEnvironment = require('jest-environment-node');
+const NodeEnvironment = require("jest-environment-node");
 
 class CLIEnvironment extends NodeEnvironment {
   constructor(config, context) {
@@ -6,8 +6,8 @@ class CLIEnvironment extends NodeEnvironment {
     this.testPath = context.testPath;
     this.testLogStack = [];
     this.describeBlocks = [];
-    this.testName = '';
-    this.hook = '';
+    this.testName = "";
+    this.hook = "";
     this.cliExecutionLogs = {
       path: this.testPath,
       children: [],
@@ -20,7 +20,7 @@ class CLIEnvironment extends NodeEnvironment {
 
   async setup() {
     await super.setup();
-    this.global.storeCLIExecutionLog = result => {
+    this.global.storeCLIExecutionLog = (result) => {
       this.currentBlock.logs.push(result);
     };
 
@@ -30,7 +30,7 @@ class CLIEnvironment extends NodeEnvironment {
     };
 
     this.global.getDescibeBlocks = () => {
-      return this.describeBlocks.filter(b => b !== 'ROOT_DESCRIBE_BLOCK');
+      return this.describeBlocks.filter((b) => b !== "ROOT_DESCRIBE_BLOCK");
     };
 
     this.global.getHookName = () => {
@@ -40,7 +40,7 @@ class CLIEnvironment extends NodeEnvironment {
 
   async teardown() {
     if (this.context.global.addCLITestRunnerLogs) {
-      const result = this.cliExecutionLogs.children.find(log => log.type === 'describe' && log.name === 'ROOT_DESCRIBE_BLOCK');
+      const result = this.cliExecutionLogs.children.find((log) => log.type === "describe" && log.name === "ROOT_DESCRIBE_BLOCK");
       if (result) {
         this.context.global.addCLITestRunnerLogs(result);
       }
@@ -56,7 +56,7 @@ class CLIEnvironment extends NodeEnvironment {
     let hookName;
     let currentBlock;
     switch (event.name) {
-      case 'hook_start':
+      case "hook_start":
         hookName = event.hook.type;
         currentBlock = {
           name: hookName,
@@ -67,9 +67,9 @@ class CLIEnvironment extends NodeEnvironment {
         this.currentBlock = currentBlock;
         this.hook = currentBlock.name;
         break;
-      case 'test_start':
+      case "test_start":
         currentBlock = {
-          type: 'test',
+          type: "test",
           name: event.test.name,
           hooks: {},
           logs: [],
@@ -81,9 +81,9 @@ class CLIEnvironment extends NodeEnvironment {
         this.currentBlock.children.push(currentBlock);
         this.currentBlock = currentBlock;
         break;
-      case 'run_describe_start':
+      case "run_describe_start":
         currentBlock = {
-          type: 'describe',
+          type: "describe",
           name: event.describeBlock.name,
           hooks: {},
           logs: [],
@@ -94,16 +94,16 @@ class CLIEnvironment extends NodeEnvironment {
         this.currentBlock.children.push(currentBlock);
         this.currentBlock = currentBlock;
         break;
-      case 'hook_success':
-      case 'hook_failure':
+      case "hook_success":
+      case "hook_failure":
         this.currentBlock = this.testLogStack.pop();
-        this.hook = '';
+        this.hook = "";
         break;
-      case 'test_done':
-        this.testName = '';
+      case "test_done":
+        this.testName = "";
         this.currentBlock = this.testLogStack.pop();
         break;
-      case 'run_describe_finish':
+      case "run_describe_finish":
         this.describeBlocks.pop();
         this.currentBlock = this.testLogStack.pop();
         break;

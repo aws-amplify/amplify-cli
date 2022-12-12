@@ -1,4 +1,4 @@
 var Helper = {};
-var utils = require('../utils');
-require('./text')(Helper, utils);
+var utils = require("../utils");
+require("./text")(Helper, utils);
 module.exports = Helper;

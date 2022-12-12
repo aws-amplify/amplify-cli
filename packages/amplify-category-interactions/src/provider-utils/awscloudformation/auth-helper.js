@@ -1,9 +1,9 @@
-const os = require('os');
-const CategoryName = 'interactions';
+const os = require("os");
+const CategoryName = "interactions";
 
 async function ensureAuth(context, resourceName) {
-  const interactionsRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
-  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+  const interactionsRequirements = { authSelections: "identityPoolOnly", allowUnauthenticatedIdentities: true };
+  const checkResult = await context.amplify.invokePluginMethod(context, "auth", undefined, "checkRequirements", [
     interactionsRequirements,
     context,
     CategoryName,
@@ -23,7 +23,7 @@ async function ensureAuth(context, resourceName) {
   // If auth is not imported and there were errors, adjust or enable auth configuration
   if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     try {
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+      await context.amplify.invokePluginMethod(context, "auth", undefined, "externalAuthEnable", [
         context,
         CategoryName,
         resourceName,

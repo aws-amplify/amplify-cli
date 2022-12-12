@@ -1,7 +1,7 @@
-const aws = require('aws-sdk');
-const proxyAgent = require('proxy-agent');
-const configurationManager = require('../configuration-manager');
-const { regions: amplifyServiceRegions } = require('../aws-regions');
+const aws = require("aws-sdk");
+const proxyAgent = require("proxy-agent");
+const configurationManager = require("../configuration-manager");
+const { regions: amplifyServiceRegions } = require("../aws-regions");
 
 async function getConfiguredAmplifyClient(context, options = {}) {
   let cred = {};
@@ -43,11 +43,11 @@ async function getConfiguredAmplifyClient(context, options = {}) {
 }
 
 function printAuthErrorMessage(context) {
-  context.print.warning('As of Amplify CLI version 4.0');
-  context.print.warning('A cloud project in the Amplify Console will be created to view your resources.');
-  context.print.warning('Please update your IAM policy accordingly based on the following documentation:');
-  context.print.green('https://docs.amplify.aws/cli/usage/iam');
-  context.print.warning('These permissions will be required in a future CLI release.');
+  context.print.warning("As of Amplify CLI version 4.0");
+  context.print.warning("A cloud project in the Amplify Console will be created to view your resources.");
+  context.print.warning("Please update your IAM policy accordingly based on the following documentation:");
+  context.print.green("https://docs.amplify.aws/cli/usage/iam");
+  context.print.warning("These permissions will be required in a future CLI release.");
 }
 
 module.exports = {

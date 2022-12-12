@@ -1,10 +1,10 @@
-var path = require('path');
-var fs = require('fs');
+var path = require("path");
+var fs = require("fs");
 var exists = fs.existsSync || path.existsSync;
 var currentPath = process.cwd();
 
-var Velocity = require('../src/velocity');
-var utils = require('../src/utils');
+var Velocity = require("../src/velocity");
+var utils = require("../src/utils");
 var parse = Velocity.parse;
 var Structure = Velocity.Helper.Structure;
 var Jsonify = Velocity.Helper.Jsonify;
@@ -12,11 +12,11 @@ var Jsonify = Velocity.Helper.Jsonify;
 function escapeIt(buf) {
   var str = Buffer.isBuffer(buf) ? buf.toString() : buf;
   var len = str.length;
-  var ret = '';
+  var ret = "";
   for (var i = 0; i < len; i++) {
     var bit = str.charCodeAt(i);
     if (bit < 0 || bit > 255) {
-      ret += '\\u' + bit.toString(16);
+      ret += "\\u" + bit.toString(16);
     } else {
       ret += str[i];
     }
@@ -26,27 +26,27 @@ function escapeIt(buf) {
 }
 
 function buildAst(files, prefix) {
-  var _template = fs.readFileSync(__dirname + '/build-tpl.js').toString();
-  files.forEach(function(file) {
-    if (path.extname(file) === '.vm') {
-      console.log('read file ' + file);
+  var _template = fs.readFileSync(__dirname + "/build-tpl.js").toString();
+  files.forEach(function (file) {
+    if (path.extname(file) === ".vm") {
+      console.log("read file " + file);
       var template = _template;
 
-      var str = fs.readFileSync(currentPath + '/' + file).toString();
+      var str = fs.readFileSync(currentPath + "/" + file).toString();
       var asts = parse(str);
 
-      template = template.replace('{content}', JSON.stringify(asts, null, 2));
+      template = template.replace("{content}", JSON.stringify(asts, null, 2));
       template = escapeIt(template);
 
-      console.log('read js ' + file);
-      fs.writeFileSync(currentPath + '/' + file.replace('.vm', '.js'), template);
+      console.log("read js " + file);
+      fs.writeFileSync(currentPath + "/" + file.replace(".vm", ".js"), template);
     }
   });
 }
 
 function parseVelocity(argv) {
   var vmfile = argv[0];
-  if (vmfile && vmfile.indexOf('.vm')) {
+  if (vmfile && vmfile.indexOf(".vm")) {
     vmfile = path.resolve(process.cwd(), vmfile);
   }
 
@@ -58,14 +58,14 @@ function parseVelocity(argv) {
     dataFile = path.resolve(process.cwd(), dataFile);
   }
 
-  if (ext === '.json') {
+  if (ext === ".json") {
     if (exists(dataFile)) data = fs.readFileSync(dataFile).toString();
-  } else if (ext === '.js') {
+  } else if (ext === ".js") {
     if (exists(dataFile)) data = require(dataFile);
   }
 
   if (!exists(vmfile)) {
-    console.log('velocity xx.vm [xx.js | xx.json]');
+    console.log("velocity xx.vm [xx.js | xx.json]");
   } else {
     var str = fs.readFileSync(vmfile).toString();
     console.log(Velocity.render(str, data));
@@ -73,26 +73,26 @@ function parseVelocity(argv) {
 }
 
 function showHelp() {
-  console.log(fs.readFileSync(__dirname + '/help.txt').toString());
+  console.log(fs.readFileSync(__dirname + "/help.txt").toString());
 }
 
 function showVersion() {
-  var data = fs.readFileSync(__dirname + '/../package.json').toString();
-  console.log('v' + JSON.parse(data).version);
+  var data = fs.readFileSync(__dirname + "/../package.json").toString();
+  console.log("v" + JSON.parse(data).version);
 }
 
 function jsonify(file) {
-  file = process.cwd() + '/' + file;
-  var pwd = process.cwd() + '/';
+  file = process.cwd() + "/" + file;
+  var pwd = process.cwd() + "/";
 
   if (!fs.existsSync(file)) {
-    console.log('$ velocity --makeup xx.vm | xx.js');
+    console.log("$ velocity --makeup xx.vm | xx.js");
     return;
   }
 
   var extname = path.extname(file);
 
-  if (extname === '.vm') {
+  if (extname === ".vm") {
     console.log(getVTL(file));
   } else {
     var compoment = require(file);
@@ -108,10 +108,10 @@ function getVTL(file, context, macros) {
 }
 
 function showMakeup(file) {
-  file = process.cwd() + '/' + file;
+  file = process.cwd() + "/" + file;
 
   if (!fs.existsSync(file)) {
-    console.log('$ velocity --makeup xx.vm');
+    console.log("$ velocity --makeup xx.vm");
     return;
   }
 

@@ -1,10 +1,10 @@
-const aws = require('aws-sdk');
+const aws = require("aws-sdk");
 
-exports.handler = async event => {
+exports.handler = async (event) => {
   const { secretNames } = event;
   const { Parameters } = await new aws.SSM()
     .getParameters({
-      Names: secretNames.map(secretName => process.env[secretName]),
+      Names: secretNames.map((secretName) => process.env[secretName]),
       WithDecryption: true,
     })
     .promise();

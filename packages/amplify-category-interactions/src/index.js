@@ -1,18 +1,18 @@
-const path = require('path');
+const path = require("path");
 
-const category = 'interactions';
+const category = "interactions";
 
 async function migrate(context) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
-  Object.keys(amplifyMeta).forEach(categoryName => {
+  Object.keys(amplifyMeta).forEach((categoryName) => {
     if (categoryName === category) {
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         try {
           const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
           if (providerController) {
             migrateResourcePromises.push(
-              providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
+              providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName)
             );
           } else {
             context.print.error(`Provider not configured for ${category}: ${resourceName}`);
@@ -34,7 +34,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     try {
       const providerName = amplifyMeta[category][resourceName].providerPlugin;
       if (providerName) {
@@ -43,7 +43,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName],
+          resourceOpsMapping[resourceName]
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });
@@ -59,8 +59,8 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, category);
   } else {
     commandPath = path.join(commandPath, category, context.input.command);

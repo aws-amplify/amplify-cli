@@ -1,12 +1,12 @@
-const os = require('os');
+const os = require("os");
 
 export async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
+  const identifyRequirements = { authSelections: "identityPoolAndUserPool", allowUnauthenticatedIdentities };
 
-  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+  const checkResult = await context.amplify.invokePluginMethod(context, "auth", undefined, "checkRequirements", [
     identifyRequirements,
     context,
-    'predictions',
+    "predictions",
     resourceName,
   ]);
 
@@ -23,9 +23,9 @@ export async function enableGuestAuth(context, resourceName, allowUnauthenticate
   // If auth is not imported and there were errors, adjust or enable auth configuration
   if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     try {
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+      await context.amplify.invokePluginMethod(context, "auth", undefined, "externalAuthEnable", [
         context,
-        'predictions',
+        "predictions",
         resourceName,
         identifyRequirements,
       ]);

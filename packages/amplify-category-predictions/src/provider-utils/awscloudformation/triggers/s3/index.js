@@ -1,5 +1,5 @@
-const AWS = require('aws-sdk'); //eslint-disable-line
-const querystring = require('querystring');
+const AWS = require("aws-sdk"); //eslint-disable-line
+const querystring = require("querystring");
 
 async function deleteImageIndex(rekognition, result, externalImageID) {
   const len = result.Faces.length;
@@ -14,9 +14,9 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
       const result1 = await rekognition.deleteFaces(params1).promise();
 
       if (result1.DeletedFaces) {
-        console.log('deleted faces from collection successfully');
+        console.log("deleted faces from collection successfully");
       } else {
-        console.log('error occurred');
+        console.log("error occurred");
         console.log(result1);
       }
       resultDeleted = true;
@@ -27,7 +27,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
   return resultDeleted;
 }
 
-exports.handler = async event => {
+exports.handler = async (event) => {
   AWS.config.update({
     region: event.Records[0].awsRegion,
   });
@@ -39,16 +39,16 @@ exports.handler = async event => {
     const key = event.Records[j].s3.object.key;
     const decodeKey = Object.keys(querystring.parse(key))[0];
     const bucketName = event.Records[j].s3.bucket.name;
-    const lastIndex = decodeKey.lastIndexOf('/');
+    const lastIndex = decodeKey.lastIndexOf("/");
     const imageName = decodeKey.substring(lastIndex + 1);
-    if (imageName === '') {
-      console.log('creation of folder');
+    if (imageName === "") {
+      console.log("creation of folder");
       return;
     }
-    const externalImageId = decodeKey.replace(/\//g, '::');
+    const externalImageId = decodeKey.replace(/\//g, "::");
     console.log(decodeKey);
 
-    if (event.Records[j].eventName === 'ObjectCreated:Put') {
+    if (event.Records[j].eventName === "ObjectCreated:Put") {
       const params1 = {
         CollectionId: process.env.collectionId,
         ExternalImageId: externalImageId,
@@ -63,9 +63,9 @@ exports.handler = async event => {
       const result = await rekognition.indexFaces(params1).promise();
 
       if (result.FaceRecords) {
-        console.log('Indexed image successfully');
+        console.log("Indexed image successfully");
       } else {
-        console.log('Request Failed');
+        console.log("Request Failed");
         console.log(result);
       }
     } else {

@@ -1,46 +1,46 @@
-const { generateCommandParameters, generateFunctionBodyData, generateModuleExports } = require('../native-bindings-codegen');
+const { generateCommandParameters, generateFunctionBodyData, generateModuleExports } = require("../native-bindings-codegen");
 
-describe('amplify-xcode native bindings codegen', () => {
-  describe('should generate command parameters list', () => {
-    it('option', () => {
+describe("amplify-xcode native bindings codegen", () => {
+  describe("should generate command parameters list", () => {
+    it("option", () => {
       const param = {
-        name: 'option-name',
-        kind: 'option',
+        name: "option-name",
+        kind: "option",
       };
       const expected = [[`if (params['${param.name}']) {`, `    command += \` --${param.name}=\${params['${param.name}']}\`;`, `  }`]];
       expect(generateCommandParameters([param])).toEqual(expected);
     });
 
-    it('flag', () => {
+    it("flag", () => {
       const param = {
-        name: 'flagName',
-        kind: 'flag',
+        name: "flagName",
+        kind: "flag",
       };
       const expected = [[`if (params['${param.name}']) {`, `    command += \` --${param.name}\`;`, `  }`]];
       expect(generateCommandParameters([param])).toEqual(expected);
     });
 
-    it('argument', () => {
+    it("argument", () => {
       const param = {
-        name: 'argName',
-        kind: 'argument',
+        name: "argName",
+        kind: "argument",
       };
       const expected = [["  command += ` ${params['argName']}`;"]];
       expect(generateCommandParameters([param])).toEqual(expected);
     });
   });
 
-  describe('Functions bindings', () => {
-    it('should generate functions template data', () => {
+  describe("Functions bindings", () => {
+    it("should generate functions template data", () => {
       const commandParam = {
-        name: 'option-name',
-        kind: 'option',
-        type: 'String',
-        help: 'Option description',
+        name: "option-name",
+        kind: "option",
+        type: "String",
+        help: "Option description",
       };
       const commandSchema = {
-        name: 'command-name',
-        abstract: 'Command abstract',
+        name: "command-name",
+        abstract: "Command abstract",
         parameters: [commandParam],
       };
       const expectedDocs = `
@@ -50,25 +50,25 @@ describe('amplify-xcode native bindings codegen', () => {
  * @param {String} params.${commandParam.name} - ${commandParam.help}
  */`;
       const result = generateFunctionBodyData(commandSchema);
-      expect(result.__FUNCTION_NAME__).toEqual('commandName');
+      expect(result.__FUNCTION_NAME__).toEqual("commandName");
       expect(result.__FUNCTION_DOCS__).toEqual(expectedDocs);
       expect(result.__COMMAND_NAME__).toEqual(commandSchema.name);
     });
 
-    it('should generate commonjs module exports', () => {
+    it("should generate commonjs module exports", () => {
       const command1 = {
-        name: 'command-name',
-        abstract: 'Command abstract',
+        name: "command-name",
+        abstract: "Command abstract",
       };
       const command2 = {
-        name: 'another-command-name',
-        abstract: 'Another command abstract',
+        name: "another-command-name",
+        abstract: "Another command abstract",
       };
       const schema = {
         commands: [command1, command2],
       };
       const result = generateModuleExports(schema);
-      expect(result).toEqual(['module.exports = {', '  commandName,', '  anotherCommandName,', '};']);
+      expect(result).toEqual(["module.exports = {", "  commandName,", "  anotherCommandName,", "};"]);
     });
   });
 });

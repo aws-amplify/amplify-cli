@@ -9,7 +9,7 @@ Much of the logic in this package is around retrying to start the server. This c
 ## Usage
 
 ```js
-const emulator = require('amplify-dynamodb-simulator');
+const emulator = require("amplify-dynamodb-simulator");
 
 async function main() {
   // start the emulator

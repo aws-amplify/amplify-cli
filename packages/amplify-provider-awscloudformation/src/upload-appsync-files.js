@@ -1,23 +1,23 @@
-const fs = require('fs');
-const fsext = require('fs-extra');
-const path = require('path');
+const fs = require("fs");
+const fsext = require("fs-extra");
+const path = require("path");
 
-const TransformPackage = require('graphql-transformer-core');
-const { S3 } = require('./aws-utils/aws-s3');
-const { fileLogger } = require('./utils/aws-logger');
-const logger = fileLogger('upload-appsync-files');
+const TransformPackage = require("graphql-transformer-core");
+const { S3 } = require("./aws-utils/aws-s3");
+const { fileLogger } = require("./utils/aws-logger");
+const logger = fileLogger("upload-appsync-files");
 
-const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
-const providerName = require('./constants').ProviderName;
-const { hashElement } = require('folder-hash');
-const ora = require('ora');
+const ROOT_APPSYNC_S3_KEY = "amplify-appsync-files";
+const providerName = require("./constants").ProviderName;
+const { hashElement } = require("folder-hash");
+const ora = require("ora");
 
-const PARAM_FILE_NAME = 'parameters.json';
-const CF_FILE_NAME = 'cloudformation-template.json';
+const PARAM_FILE_NAME = "parameters.json";
+const CF_FILE_NAME = "cloudformation-template.json";
 
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
-  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : "";
   return projectBucket;
 }
 /**
@@ -29,13 +29,13 @@ function getProjectBucket(context) {
  * @param {*} options
  */
 async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options = {}) {
-  const allApiResourceToUpdate = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
-  const allApiResources = allResources.filter(resource => resource.service === 'AppSync');
+  const allApiResourceToUpdate = resourcesToUpdate.filter((resource) => resource.service === "AppSync");
+  const allApiResources = allResources.filter((resource) => resource.service === "AppSync");
   const { defaultParams, useDeprecatedParameters } = options;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const projectBucket = getProjectBucket(context);
 
-  const getDeploymentRootKey = async resourceDir => {
+  const getDeploymentRootKey = async (resourceDir) => {
     let deploymentSubKey;
     if (useDeprecatedParameters) {
       deploymentSubKey = new Date().getTime();
@@ -50,7 +50,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const projectDetails = context.amplify.getProjectDetails();
     const appSyncAPIs = Object.keys(projectDetails.amplifyMeta.api).reduce((acc, apiName) => {
       const api = projectDetails.amplifyMeta.api[apiName];
-      if (api.service === 'AppSync') {
+      if (api.service === "AppSync") {
         acc.push({ ...api, name: apiName });
       }
       return acc;
@@ -64,14 +64,14 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
       // Check for legacy security configuration and multi-auth as well
       const { authConfig, securityType } = appSyncApi.output;
 
-      if (securityType && securityType === 'API_KEY') {
+      if (securityType && securityType === "API_KEY") {
         hasApiKey = true;
       } else if (authConfig) {
-        if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
+        if (authConfig.defaultAuthentication.authenticationType === "API_KEY") {
           hasApiKey = true;
         } else if (
           authConfig.additionalAuthenticationProviders &&
-          authConfig.additionalAuthenticationProviders.find(p => p.authenticationType === 'API_KEY')
+          authConfig.additionalAuthenticationProviders.find((p) => p.authenticationType === "API_KEY")
         ) {
           hasApiKey = true;
         }
@@ -97,21 +97,21 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
         // If authRoleName parameter not present, add it
         if (!currentParameters.authRoleName) {
           currentParameters.authRoleName = {
-            Ref: 'AuthRoleName',
+            Ref: "AuthRoleName",
           };
         }
 
         // If unauthRoleName parameter not present, add it
         if (!currentParameters.unauthRoleName) {
           currentParameters.unauthRoleName = {
-            Ref: 'UnauthRoleName',
+            Ref: "UnauthRoleName",
           };
         }
 
         if (personalParams.CreateAPIKey !== undefined && personalParams.APIKeyExpirationEpoch !== undefined) {
           context.print.warning(
-            'APIKeyExpirationEpoch and CreateAPIKey parameters should not used together because it can cause ' +
-              'unwanted behavior. In the future APIKeyExpirationEpoch will be removed, use CreateAPIKey instead.',
+            "APIKeyExpirationEpoch and CreateAPIKey parameters should not used together because it can cause " +
+              "unwanted behavior. In the future APIKeyExpirationEpoch will be removed, use CreateAPIKey instead."
           );
         }
 
@@ -125,7 +125,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
 
             context.print.warning(
               "APIKeyExpirationEpoch parameter's -1 value is deprecated to disable " +
-                'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.',
+                "the API Key creation. In the future CreateAPIKey parameter replaces this behavior."
             );
           } else {
             currentParameters.CreateAPIKey = 1;
@@ -152,7 +152,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
 
     // As a safety mechanism when dealing with migrations and diff versions,
     // make sure only expected parameters are passed.
-    const cfFilePath = path.join(backEndDir, category, resourceName, 'build', CF_FILE_NAME);
+    const cfFilePath = path.join(backEndDir, category, resourceName, "build", CF_FILE_NAME);
     try {
       const cfFileContents = fs.readFileSync(cfFilePath).toString();
       const cfTemplateJson = JSON.parse(cfFileContents);
@@ -168,10 +168,10 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     }
 
     const jsonString = JSON.stringify(currentParameters, null, 4);
-    const buildDirectoryPath = path.join(backEndDir, category, resourceName, 'build');
+    const buildDirectoryPath = path.join(backEndDir, category, resourceName, "build");
     const parametersOutputFilePath = path.join(buildDirectoryPath, PARAM_FILE_NAME);
     fsext.ensureDirSync(buildDirectoryPath);
-    fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
+    fs.writeFileSync(parametersOutputFilePath, jsonString, "utf8");
   };
 
   // There can only be one appsync resource
@@ -179,7 +179,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const resource = allApiResourceToUpdate[0];
     const { category, resourceName } = resource;
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const resourceBuildDir = path.normalize(path.join(resourceDir, 'build'));
+    const resourceBuildDir = path.normalize(path.join(resourceDir, "build"));
 
     const deploymentRootKey = await getDeploymentRootKey(resourceDir);
     writeUpdatedParametersJson(resource, deploymentRootKey);
@@ -189,21 +189,21 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (!fs.existsSync(resourceBuildDir)) {
       return;
     }
-    const spinner = new ora('Uploading files.');
+    const spinner = new ora("Uploading files.");
     spinner.start();
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
-      upload: async blob => {
+      upload: async (blob) => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
-        logger('uploadAppSyncFiles.upload.s3Client.uploadFile', [{ Key }])();
+        logger("uploadAppSyncFiles.upload.s3Client.uploadFile", [{ Key }])();
 
         return await s3Client.uploadFile(
           {
             Key: fullKey,
             Body,
           },
-          false,
+          false
         );
       },
     });
@@ -229,9 +229,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
  */
 async function hashDirectory(directory) {
   const options = {
-    encoding: 'hex',
+    encoding: "hex",
     folders: {
-      exclude: ['build'],
+      exclude: ["build"],
     },
   };
 

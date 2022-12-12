@@ -1,15 +1,15 @@
 // TODO disable lint until file is converted to TS
 /* eslint-disable */
-const { open } = require('amplify-cli-core');
-const fs = require('fs-extra');
-const utils = require('../../utils/amplify-context-utils');
-const questions = require('../../modules/questions/question-generator');
-const configUtils = require('../../utils/config-utils');
-const constants = require('../../constants/plugin-constants');
-const clientFactory = require('../../utils/client-factory');
-const pathManager = require('../../utils/path-manager');
-const ValidationError = require('../../error/validation-error').default;
-const statusMod = require('../index');
+const { open } = require("amplify-cli-core");
+const fs = require("fs-extra");
+const utils = require("../../utils/amplify-context-utils");
+const questions = require("../../modules/questions/question-generator");
+const configUtils = require("../../utils/config-utils");
+const constants = require("../../constants/plugin-constants");
+const clientFactory = require("../../utils/client-factory");
+const pathManager = require("../../utils/path-manager");
+const ValidationError = require("../../error/validation-error").default;
+const statusMod = require("../index");
 
 /**
  * Entry point to enable CI/CD hosting

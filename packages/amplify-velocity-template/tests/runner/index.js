@@ -1,41 +1,41 @@
-define('velocityjs/0.4.10/index', [], function(e, t, s) {
-  'use strict';
-  s.exports = e('velocityjs/0.4.10/src/velocity');
+define("velocityjs/0.4.10/index", [], function (e, t, s) {
+  "use strict";
+  s.exports = e("velocityjs/0.4.10/src/velocity");
 }),
-  define('velocityjs/0.4.10/src/velocity', [], function(e, t, s) {
-    var i = e('velocityjs/0.4.10/src/parse/index'),
-      r = e('velocityjs/0.4.10/src/utils'),
-      n = e('velocityjs/0.4.10/src/compile/index'),
-      a = e('velocityjs/0.4.10/src/helper/index');
+  define("velocityjs/0.4.10/src/velocity", [], function (e, t, s) {
+    var i = e("velocityjs/0.4.10/src/parse/index"),
+      r = e("velocityjs/0.4.10/src/utils"),
+      n = e("velocityjs/0.4.10/src/compile/index"),
+      a = e("velocityjs/0.4.10/src/helper/index");
     (n.Parser = i),
       (i._parse = i.parse),
-      (i.parse = function(e) {
+      (i.parse = function (e) {
         var t = i._parse(e);
         return (
-          r.forEach(t, function(e, s) {
+          r.forEach(t, function (e, s) {
             var i = /^[ \t]*\n/;
-            if (e.type && 'references' !== e.type) {
+            if (e.type && "references" !== e.type) {
               var r = t[s + 1];
-              'string' == typeof r && i.test(r) && (t[s + 1] = r.replace(i, ''));
+              "string" == typeof r && i.test(r) && (t[s + 1] = r.replace(i, ""));
             }
           }),
           r.makeLevel(t)
         );
       });
     var c = { Parser: i, Compile: n, Helper: a };
-    (c.render = function(e, t, s) {
+    (c.render = function (e, t, s) {
       var r = i.parse(e),
         a = new n(r);
       return a.render(t, s);
     }),
       (s.exports = c);
   }),
-  define('velocityjs/0.4.10/src/parse/index', [], function(e, t, s) {
-    var i = (function() {
+  define("velocityjs/0.4.10/src/parse/index", [], function (e, t, s) {
+    var i = (function () {
       function e() {
         this.yy = {};
       }
-      var t = function(e, t, s, i) {
+      var t = function (e, t, s, i) {
           for (s = s || {}, i = e.length; i--; s[e[i]] = t);
           return s;
         },
@@ -102,7 +102,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         ot = [22, 49, 50, 51, 52, 56, 57, 58, 59, 60, 61],
         ht = [22, 49, 50, 56, 57, 58, 59, 60, 61],
         lt = {
-          trace: function() {},
+          trace: function () {},
           yy: {},
           symbols_: {
             error: 2,
@@ -152,21 +152,21 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             EQUAL: 46,
             map: 47,
             math: 48,
-            '||': 49,
-            '&&': 50,
-            '+': 51,
-            '-': 52,
-            '*': 53,
-            '/': 54,
-            '%': 55,
-            '>': 56,
-            '<': 57,
-            '==': 58,
-            '>=': 59,
-            '<=': 60,
-            '!=': 61,
+            "||": 49,
+            "&&": 50,
+            "+": 51,
+            "-": 52,
+            "*": 53,
+            "/": 54,
+            "%": 55,
+            ">": 56,
+            "<": 57,
+            "==": 58,
+            ">=": 59,
+            "<=": 60,
+            "!=": 61,
             parenthesis: 62,
-            '!': 63,
+            "!": 63,
             literal: 64,
             brace_begin: 65,
             attributes: 66,
@@ -201,57 +201,57 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             $end: 1,
           },
           terminals_: {
-            2: 'error',
-            4: 'EOF',
-            10: 'COMMENT',
-            19: 'HASH',
-            20: 'NOESCAPE',
-            21: 'PARENTHESIS',
-            22: 'CLOSE_PARENTHESIS',
-            25: 'SET',
-            27: 'IF',
-            29: 'ELSEIF',
-            30: 'ELSE',
-            31: 'END',
-            32: 'FOREACH',
-            33: 'DOLLAR',
-            34: 'ID',
-            35: 'IN',
-            37: 'BREAK',
-            38: 'DEFINE',
-            39: 'MACRO',
-            44: 'SPACE',
-            45: 'COMMA',
-            46: 'EQUAL',
-            49: '||',
-            50: '&&',
-            51: '+',
-            52: '-',
-            53: '*',
-            54: '/',
-            55: '%',
-            56: '>',
-            57: '<',
-            58: '==',
-            59: '>=',
-            60: '<=',
-            61: '!=',
-            63: '!',
-            69: 'VAR_BEGIN',
-            70: 'MAP_BEGIN',
-            71: 'VAR_END',
-            72: 'MAP_END',
-            77: 'DOT',
-            79: 'CONTENT',
-            80: 'BRACKET',
-            81: 'CLOSE_BRACKET',
-            84: 'BOOL',
-            86: 'INTEGER',
-            87: 'DECIMAL_POINT',
-            88: 'STRING',
-            89: 'EVAL_STRING',
-            91: 'RANGE',
-            93: 'MAP_SPLIT',
+            2: "error",
+            4: "EOF",
+            10: "COMMENT",
+            19: "HASH",
+            20: "NOESCAPE",
+            21: "PARENTHESIS",
+            22: "CLOSE_PARENTHESIS",
+            25: "SET",
+            27: "IF",
+            29: "ELSEIF",
+            30: "ELSE",
+            31: "END",
+            32: "FOREACH",
+            33: "DOLLAR",
+            34: "ID",
+            35: "IN",
+            37: "BREAK",
+            38: "DEFINE",
+            39: "MACRO",
+            44: "SPACE",
+            45: "COMMA",
+            46: "EQUAL",
+            49: "||",
+            50: "&&",
+            51: "+",
+            52: "-",
+            53: "*",
+            54: "/",
+            55: "%",
+            56: ">",
+            57: "<",
+            58: "==",
+            59: ">=",
+            60: "<=",
+            61: "!=",
+            63: "!",
+            69: "VAR_BEGIN",
+            70: "MAP_BEGIN",
+            71: "VAR_END",
+            72: "MAP_END",
+            77: "DOT",
+            79: "CONTENT",
+            80: "BRACKET",
+            81: "CLOSE_BRACKET",
+            84: "BOOL",
+            86: "INTEGER",
+            87: "DECIMAL_POINT",
+            88: "STRING",
+            89: "EVAL_STRING",
+            91: "RANGE",
+            93: "MAP_SPLIT",
           },
           productions_: [
             0,
@@ -387,7 +387,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             [9, 3],
             [9, 2],
           ],
-          performAction: function(e, t, s, i, r, n) {
+          performAction: function (e, t, s, i, r, n) {
             var a = n.length - 1;
             switch (r) {
               case 1:
@@ -449,47 +449,47 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 this.$ = n[a];
                 break;
               case 8:
-                this.$ = { type: 'comment', value: n[a] };
+                this.$ = { type: "comment", value: n[a] };
                 break;
               case 17:
-                this.$ = { type: 'noescape' };
+                this.$ = { type: "noescape" };
                 break;
               case 20:
-                this.$ = { type: 'set', equal: n[a - 1] };
+                this.$ = { type: "set", equal: n[a - 1] };
                 break;
               case 21:
-                this.$ = { type: 'if', condition: n[a - 1] };
+                this.$ = { type: "if", condition: n[a - 1] };
                 break;
               case 22:
-                this.$ = { type: 'elseif', condition: n[a - 1] };
+                this.$ = { type: "elseif", condition: n[a - 1] };
                 break;
               case 23:
-                this.$ = { type: 'else' };
+                this.$ = { type: "else" };
                 break;
               case 24:
-                this.$ = { type: 'end' };
+                this.$ = { type: "end" };
                 break;
               case 25:
               case 26:
-                this.$ = { type: 'foreach', to: n[a - 3], from: n[a - 1] };
+                this.$ = { type: "foreach", to: n[a - 3], from: n[a - 1] };
                 break;
               case 27:
                 this.$ = { type: n[a] };
                 break;
               case 28:
-                this.$ = { type: 'define', id: n[a - 1] };
+                this.$ = { type: "define", id: n[a - 1] };
                 break;
               case 29:
-                this.$ = { type: 'macro', id: n[a - 2], args: n[a - 1] };
+                this.$ = { type: "macro", id: n[a - 2], args: n[a - 1] };
                 break;
               case 30:
-                this.$ = { type: 'macro', id: n[a - 1] };
+                this.$ = { type: "macro", id: n[a - 1] };
                 break;
               case 33:
-                this.$ = { type: 'macro_call', id: n[a - 3].replace(/^\s+|\s+$/g, ''), args: n[a - 1] };
+                this.$ = { type: "macro_call", id: n[a - 3].replace(/^\s+|\s+$/g, ""), args: n[a - 1] };
                 break;
               case 34:
-                this.$ = { type: 'macro_call', id: n[a - 2].replace(/^\s+|\s+$/g, '') };
+                this.$ = { type: "macro_call", id: n[a - 2].replace(/^\s+|\s+$/g, "") };
                 break;
               case 37:
               case 38:
@@ -521,49 +521,49 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               case 59:
               case 60:
               case 61:
-                this.$ = { type: 'math', expression: [n[a - 2], n[a]], operator: n[a - 1] };
+                this.$ = { type: "math", expression: [n[a - 2], n[a]], operator: n[a - 1] };
                 break;
               case 63:
-                this.$ = { type: 'math', expression: [n[a]], operator: 'minus' };
+                this.$ = { type: "math", expression: [n[a]], operator: "minus" };
                 break;
               case 64:
-                this.$ = { type: 'math', expression: [n[a]], operator: 'not' };
+                this.$ = { type: "math", expression: [n[a]], operator: "not" };
                 break;
               case 67:
-                this.$ = { type: 'math', expression: [n[a - 1]], operator: 'parenthesis' };
+                this.$ = { type: "math", expression: [n[a - 1]], operator: "parenthesis" };
                 break;
               case 68:
-                this.$ = { type: 'references', id: n[a - 2], path: n[a - 1], isWraped: !0, leader: n[a - 4] };
+                this.$ = { type: "references", id: n[a - 2], path: n[a - 1], isWraped: !0, leader: n[a - 4] };
                 break;
               case 69:
-                this.$ = { type: 'references', id: n[a - 1], path: n[a], leader: n[a - 2] };
+                this.$ = { type: "references", id: n[a - 1], path: n[a], leader: n[a - 2] };
                 break;
               case 70:
-                this.$ = { type: 'references', id: n[a - 2].id, path: n[a - 1], isWraped: !0, leader: n[a - 4], args: n[a - 2].args };
+                this.$ = { type: "references", id: n[a - 2].id, path: n[a - 1], isWraped: !0, leader: n[a - 4], args: n[a - 2].args };
                 break;
               case 71:
-                this.$ = { type: 'references', id: n[a - 1].id, path: n[a], leader: n[a - 2], args: n[a - 1].args };
+                this.$ = { type: "references", id: n[a - 1].id, path: n[a], leader: n[a - 2], args: n[a - 1].args };
                 break;
               case 72:
-                this.$ = { type: 'references', id: n[a], leader: n[a - 1] };
+                this.$ = { type: "references", id: n[a], leader: n[a - 1] };
                 break;
               case 73:
-                this.$ = { type: 'references', id: n[a - 1], isWraped: !0, leader: n[a - 3] };
+                this.$ = { type: "references", id: n[a - 1], isWraped: !0, leader: n[a - 3] };
                 break;
               case 74:
-                this.$ = { type: 'references', id: n[a].id, leader: n[a - 1], args: n[a].args };
+                this.$ = { type: "references", id: n[a].id, leader: n[a - 1], args: n[a].args };
                 break;
               case 75:
-                this.$ = { type: 'references', id: n[a - 1].id, isWraped: !0, args: n[a - 1].args, leader: n[a - 3] };
+                this.$ = { type: "references", id: n[a - 1].id, isWraped: !0, args: n[a - 1].args, leader: n[a - 3] };
                 break;
               case 82:
-                this.$ = { type: 'method', id: n[a].id, args: n[a].args };
+                this.$ = { type: "method", id: n[a].id, args: n[a].args };
                 break;
               case 83:
-                this.$ = { type: 'index', id: n[a] };
+                this.$ = { type: "index", id: n[a] };
                 break;
               case 84:
-                (this.$ = { type: 'property', id: n[a] }), 'content' === n[a].type && (this.$ = n[a]);
+                (this.$ = { type: "property", id: n[a] }), "content" === n[a].type && (this.$ = n[a]);
                 break;
               case 86:
                 this.$ = { id: n[a - 3], args: n[a - 1] };
@@ -572,57 +572,57 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 this.$ = { id: n[a - 2], args: !1 };
                 break;
               case 93:
-                this.$ = { type: 'content', value: n[a - 1] + n[a] };
+                this.$ = { type: "content", value: n[a - 1] + n[a] };
                 break;
               case 96:
-                this.$ = { type: 'content', value: n[a - 2] + n[a - 1].value + n[a] };
+                this.$ = { type: "content", value: n[a - 2] + n[a - 1].value + n[a] };
                 break;
               case 97:
               case 98:
-                this.$ = { type: 'content', value: n[a - 1] + n[a] };
+                this.$ = { type: "content", value: n[a - 1] + n[a] };
                 break;
               case 101:
-                this.$ = { type: 'bool', value: n[a] };
+                this.$ = { type: "bool", value: n[a] };
                 break;
               case 102:
-                this.$ = { type: 'integer', value: n[a] };
+                this.$ = { type: "integer", value: n[a] };
                 break;
               case 103:
-                this.$ = { type: 'decimal', value: +(n[a - 2] + '.' + n[a]) };
+                this.$ = { type: "decimal", value: +(n[a - 2] + "." + n[a]) };
                 break;
               case 104:
-                this.$ = { type: 'decimal', value: -(n[a - 2] + '.' + n[a]) };
+                this.$ = { type: "decimal", value: -(n[a - 2] + "." + n[a]) };
                 break;
               case 106:
                 this.$ = -parseInt(n[a], 10);
                 break;
               case 107:
-                this.$ = { type: 'string', value: n[a] };
+                this.$ = { type: "string", value: n[a] };
                 break;
               case 108:
-                this.$ = { type: 'string', value: n[a], isEval: !0 };
+                this.$ = { type: "string", value: n[a], isEval: !0 };
                 break;
               case 109:
               case 110:
                 this.$ = n[a];
                 break;
               case 112:
-                this.$ = { type: 'array', value: n[a - 1] };
+                this.$ = { type: "array", value: n[a - 1] };
                 break;
               case 114:
-                this.$ = { type: 'array', value: [] };
+                this.$ = { type: "array", value: [] };
                 break;
               case 115:
               case 116:
               case 117:
               case 118:
-                this.$ = { type: 'array', isRange: !0, value: [n[a - 3], n[a - 1]] };
+                this.$ = { type: "array", isRange: !0, value: [n[a - 3], n[a - 1]] };
                 break;
               case 119:
-                this.$ = { type: 'map', value: n[a - 1] };
+                this.$ = { type: "map", value: n[a - 1] };
                 break;
               case 120:
-                this.$ = { type: 'map' };
+                this.$ = { type: "map" };
                 break;
               case 121:
               case 122:
@@ -1194,21 +1194,21 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             201: [2, 105],
             213: [2, 106],
           },
-          parseError: function(e, t) {
+          parseError: function (e, t) {
             if (!t.recoverable) throw new Error(e);
             this.trace(e);
           },
-          parse: function(e) {
+          parse: function (e) {
             function t() {
               var e;
-              return (e = f.lex() || p), 'number' != typeof e && (e = s.symbols_[e] || e), e;
+              return (e = f.lex() || p), "number" != typeof e && (e = s.symbols_[e] || e), e;
             }
             var s = this,
               i = [0],
               r = [null],
               n = [],
               a = this.table,
-              c = '',
+              c = "",
               o = 0,
               h = 0,
               l = 0,
@@ -1218,37 +1218,37 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               f = Object.create(this.lexer),
               g = { yy: {} };
             for (var d in this.yy) Object.prototype.hasOwnProperty.call(this.yy, d) && (g.yy[d] = this.yy[d]);
-            f.setInput(e, g.yy), (g.yy.lexer = f), (g.yy.parser = this), 'undefined' == typeof f.yylloc && (f.yylloc = {});
+            f.setInput(e, g.yy), (g.yy.lexer = f), (g.yy.parser = this), "undefined" == typeof f.yylloc && (f.yylloc = {});
             var v = f.yylloc;
             n.push(v);
             var m = f.options && f.options.ranges;
-            this.parseError = 'function' == typeof g.yy.parseError ? g.yy.parseError : Object.getPrototypeOf(this).parseError;
+            this.parseError = "function" == typeof g.yy.parseError ? g.yy.parseError : Object.getPrototypeOf(this).parseError;
             for (var b, k, x, E, _, S, $, A, I, O = {}; ; ) {
               if (
                 ((x = i[i.length - 1]),
                 this.defaultActions[x]
                   ? (E = this.defaultActions[x])
-                  : ((null === b || 'undefined' == typeof b) && (b = t()), (E = a[x] && a[x][b])),
-                'undefined' == typeof E || !E.length || !E[0])
+                  : ((null === b || "undefined" == typeof b) && (b = t()), (E = a[x] && a[x][b])),
+                "undefined" == typeof E || !E.length || !E[0])
               ) {
-                var j = '';
+                var j = "";
                 I = [];
                 for (S in a[x]) this.terminals_[S] && S > u && I.push("'" + this.terminals_[S] + "'");
                 (j = f.showPosition
-                  ? 'Parse error on line ' +
+                  ? "Parse error on line " +
                     (o + 1) +
-                    ':\n' +
+                    ":\n" +
                     f.showPosition() +
-                    '\nExpecting ' +
-                    I.join(', ') +
+                    "\nExpecting " +
+                    I.join(", ") +
                     ", got '" +
                     (this.terminals_[b] || b) +
                     "'"
-                  : 'Parse error on line ' + (o + 1) + ': Unexpected ' + (b == p ? 'end of input' : "'" + (this.terminals_[b] || b) + "'")),
+                  : "Parse error on line " + (o + 1) + ": Unexpected " + (b == p ? "end of input" : "'" + (this.terminals_[b] || b) + "'")),
                   this.parseError(j, { text: f.match, token: this.terminals_[b] || b, line: f.yylineno, loc: v, expected: I });
               }
               if (E[0] instanceof Array && E.length > 1)
-                throw new Error('Parse Error: multiple actions possible at state: ' + x + ', token: ' + b);
+                throw new Error("Parse Error: multiple actions possible at state: " + x + ", token: " + b);
               switch (E[0]) {
                 case 1:
                   i.push(b),
@@ -1270,7 +1270,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                     }),
                     m && (O._$.range = [n[n.length - ($ || 1)].range[0], n[n.length - 1].range[1]]),
                     (_ = this.performAction.apply(O, [c, h, o, g.yy, E[1], r, n].concat(y))),
-                    'undefined' != typeof _)
+                    "undefined" != typeof _)
                   )
                     return _;
                   $ && ((i = i.slice(0, -1 * $ * 2)), (r = r.slice(0, -1 * $)), (n = n.slice(0, -1 * $))),
@@ -1287,28 +1287,28 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             return !0;
           },
         },
-        ut = (function() {
+        ut = (function () {
           var e = {
             EOF: 1,
-            parseError: function(e, t) {
+            parseError: function (e, t) {
               if (!this.yy.parser) throw new Error(e);
               this.yy.parser.parseError(e, t);
             },
-            setInput: function(e, t) {
+            setInput: function (e, t) {
               return (
                 (this.yy = t || this.yy || {}),
                 (this._input = e),
                 (this._more = this._backtrack = this.done = !1),
                 (this.yylineno = this.yyleng = 0),
-                (this.yytext = this.matched = this.match = ''),
-                (this.conditionStack = ['INITIAL']),
+                (this.yytext = this.matched = this.match = ""),
+                (this.conditionStack = ["INITIAL"]),
                 (this.yylloc = { first_line: 1, first_column: 0, last_line: 1, last_column: 0 }),
                 this.options.ranges && (this.yylloc.range = [0, 0]),
                 (this.offset = 0),
                 this
               );
             },
-            input: function() {
+            input: function () {
               var e = this._input[0];
               (this.yytext += e), this.yyleng++, this.offset++, (this.match += e), (this.matched += e);
               var t = e.match(/(?:\r\n?|\n).*/g);
@@ -1319,7 +1319,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 e
               );
             },
-            unput: function(e) {
+            unput: function (e) {
               var t = e.length,
                 s = e.split(/(?:\r\n?|\n)/g);
               (this._input = e + this._input), (this.yytext = this.yytext.substr(0, this.yytext.length - t)), (this.offset -= t);
@@ -1342,40 +1342,40 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 this
               );
             },
-            more: function() {
+            more: function () {
               return (this._more = !0), this;
             },
-            reject: function() {
+            reject: function () {
               return this.options.backtrack_lexer
                 ? ((this._backtrack = !0), this)
                 : this.parseError(
-                    'Lexical error on line ' +
+                    "Lexical error on line " +
                       (this.yylineno + 1) +
-                      '. You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n' +
+                      ". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n" +
                       this.showPosition(),
-                    { text: '', token: null, line: this.yylineno }
+                    { text: "", token: null, line: this.yylineno }
                   );
             },
-            less: function(e) {
+            less: function (e) {
               this.unput(this.match.slice(e));
             },
-            pastInput: function() {
+            pastInput: function () {
               var e = this.matched.substr(0, this.matched.length - this.match.length);
-              return (e.length > 20 ? '...' : '') + e.substr(-20).replace(/\n/g, '');
+              return (e.length > 20 ? "..." : "") + e.substr(-20).replace(/\n/g, "");
             },
-            upcomingInput: function() {
+            upcomingInput: function () {
               var e = this.match;
               return (
                 e.length < 20 && (e += this._input.substr(0, 20 - e.length)),
-                (e.substr(0, 20) + (e.length > 20 ? '...' : '')).replace(/\n/g, '')
+                (e.substr(0, 20) + (e.length > 20 ? "..." : "")).replace(/\n/g, "")
               );
             },
-            showPosition: function() {
+            showPosition: function () {
               var e = this.pastInput(),
-                t = new Array(e.length + 1).join('-');
-              return e + this.upcomingInput() + '\n' + t + '^';
+                t = new Array(e.length + 1).join("-");
+              return e + this.upcomingInput() + "\n" + t + "^";
             },
-            test_match: function(e, t) {
+            test_match: function (e, t) {
               var s, i, r;
               if (
                 (this.options.backtrack_lexer &&
@@ -1430,11 +1430,11 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               }
               return !1;
             },
-            next: function() {
+            next: function () {
               if (this.done) return this.EOF;
               this._input || (this.done = !0);
               var e, t, s, i;
-              this._more || ((this.yytext = ''), (this.match = ''));
+              this._more || ((this.yytext = ""), (this.match = ""));
               for (var r = this._currentRules(), n = 0; n < r.length; n++)
                 if (((s = this._input.match(this.rules[r[n]])), s && (!t || s[0].length > t[0].length))) {
                   if (((t = s), (i = n), this.options.backtrack_lexer)) {
@@ -1449,49 +1449,49 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 }
               return t
                 ? ((e = this.test_match(t, r[i])), e !== !1 ? e : !1)
-                : '' === this._input
+                : "" === this._input
                 ? this.EOF
-                : this.parseError('Lexical error on line ' + (this.yylineno + 1) + '. Unrecognized text.\n' + this.showPosition(), {
-                    text: '',
+                : this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {
+                    text: "",
                     token: null,
                     line: this.yylineno,
                   });
             },
-            lex: function() {
+            lex: function () {
               var e = this.next();
               return e ? e : this.lex();
             },
-            begin: function(e) {
+            begin: function (e) {
               this.conditionStack.push(e);
             },
-            popState: function() {
+            popState: function () {
               var e = this.conditionStack.length - 1;
               return e > 0 ? this.conditionStack.pop() : this.conditionStack[0];
             },
-            _currentRules: function() {
+            _currentRules: function () {
               return this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]
                 ? this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules
                 : this.conditions.INITIAL.rules;
             },
-            topState: function(e) {
-              return (e = this.conditionStack.length - 1 - Math.abs(e || 0)), e >= 0 ? this.conditionStack[e] : 'INITIAL';
+            topState: function (e) {
+              return (e = this.conditionStack.length - 1 - Math.abs(e || 0)), e >= 0 ? this.conditionStack[e] : "INITIAL";
             },
-            pushState: function(e) {
+            pushState: function (e) {
               this.begin(e);
             },
-            stateStackSize: function() {
+            stateStackSize: function () {
               return this.conditionStack.length;
             },
             options: {},
-            performAction: function(e, t, s, i) {
+            performAction: function (e, t, s, i) {
               switch (s) {
                 case 0:
                   var r = /\\+$/,
                     n = t.yytext.match(r),
                     a = n ? n[0].length : null;
                   if (
-                    (a && a % 2 ? ((t.yytext = t.yytext.replace(/\\$/, '')), this.begin('esc')) : this.begin('mu'),
-                    a > 1 && (t.yytext = t.yytext.replace(/(\\\\)+$/, '\\')),
+                    (a && a % 2 ? ((t.yytext = t.yytext.replace(/\\$/, "")), this.begin("esc")) : this.begin("mu"),
+                    a > 1 && (t.yytext = t.yytext.replace(/(\\\\)+$/, "\\")),
                     t.yytext)
                   )
                     return 79;
@@ -1501,8 +1501,8 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                     n = t.yytext.match(r),
                     a = n ? n[0].length : null;
                   if (
-                    (a && a % 2 ? ((t.yytext = t.yytext.replace(/\\$/, '')), this.begin('esc')) : this.begin('h'),
-                    a > 1 && (t.yytext = t.yytext.replace(/(\\\\)+$/, '\\')),
+                    (a && a % 2 ? ((t.yytext = t.yytext.replace(/\\$/, "")), this.begin("esc")) : this.begin("h"),
+                    a > 1 && (t.yytext = t.yytext.replace(/(\\\\)+$/, "\\")),
                     t.yytext)
                   )
                     return 79;
@@ -1512,7 +1512,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 case 3:
                   return this.popState(), 10;
                 case 4:
-                  return this.popState(), (t.yytext = t.yytext.replace(/^#\[\[|\]\]#$/g, '')), 79;
+                  return this.popState(), (t.yytext = t.yytext.replace(/^#\[\[|\]\]#$/g, "")), 79;
                 case 5:
                   return this.popState(), 10;
                 case 6:
@@ -1567,7 +1567,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                   return 46;
                 case 31:
                   var c = this.stateStackSize();
-                  if (c >= 2 && 'c' === this.topState() && 'run' === this.topState(1)) return 44;
+                  if (c >= 2 && "c" === this.topState() && "run" === this.topState(1)) return 44;
                   break;
                 case 32:
                   break;
@@ -1582,24 +1582,24 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 case 37:
                   return this.popState(), e.begin === !0 ? ((e.begin = !1), 71) : 79;
                 case 38:
-                  return this.begin('c'), 21;
+                  return this.begin("c"), 21;
                 case 39:
-                  if ('c' === this.popState()) {
+                  if ("c" === this.popState()) {
                     var c = this.stateStackSize();
-                    'run' === this.topState() && (this.popState(), (c -= 1));
+                    "run" === this.topState() && (this.popState(), (c -= 1));
                     var o = this.topState(c - 2);
                     return (
-                      2 === c && 'h' === o
+                      2 === c && "h" === o
                         ? this.popState()
-                        : 3 === c && 'mu' === o && 'h' === this.topState(c - 3) && (this.popState(), this.popState()),
+                        : 3 === c && "mu" === o && "h" === this.topState(c - 3) && (this.popState(), this.popState()),
                       22
                     );
                   }
                   return 79;
                 case 40:
-                  return this.begin('i'), 80;
+                  return this.begin("i"), 80;
                 case 41:
-                  return 'i' === this.popState() ? 81 : 79;
+                  return "i" === this.popState() ? 81 : 79;
                 case 42:
                   return 91;
                 case 43:
@@ -1623,9 +1623,9 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 case 52:
                   return 34;
                 case 53:
-                  return this.begin('run'), 34;
+                  return this.begin("run"), 34;
                 case 54:
-                  return this.begin('h'), 19;
+                  return this.begin("h"), 19;
                 case 55:
                   return this.popState(), 79;
                 case 56:
@@ -1704,77 +1704,15 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               mu: { rules: [5, 27, 28, 36, 37, 38, 39, 40, 41, 43, 52, 54, 55, 56, 58], inclusive: !1 },
               c: {
                 rules: [
-                  18,
-                  19,
-                  20,
-                  21,
-                  22,
-                  23,
-                  24,
-                  25,
-                  26,
-                  27,
-                  28,
-                  29,
-                  30,
-                  31,
-                  32,
-                  33,
-                  34,
-                  35,
-                  38,
-                  39,
-                  40,
-                  41,
-                  43,
-                  44,
-                  45,
-                  46,
-                  47,
-                  48,
-                  49,
-                  50,
-                  51,
-                  52,
+                  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50,
+                  51, 52,
                 ],
                 inclusive: !1,
               },
               i: {
                 rules: [
-                  18,
-                  19,
-                  20,
-                  21,
-                  22,
-                  23,
-                  24,
-                  25,
-                  26,
-                  27,
-                  28,
-                  29,
-                  30,
-                  32,
-                  33,
-                  33,
-                  34,
-                  34,
-                  35,
-                  38,
-                  39,
-                  40,
-                  41,
-                  42,
-                  43,
-                  44,
-                  45,
-                  46,
-                  47,
-                  48,
-                  49,
-                  50,
-                  51,
-                  52,
+                  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 33, 34, 34, 35, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+                  49, 50, 51, 52,
                 ],
                 inclusive: !1,
               },
@@ -1794,22 +1732,22 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         })();
       return (lt.lexer = ut), (e.prototype = lt), (lt.Parser = e), new e();
     })();
-    'undefined' != typeof e &&
-      'undefined' != typeof t &&
+    "undefined" != typeof e &&
+      "undefined" != typeof t &&
       ((t.parser = i),
       (t.Parser = i.Parser),
-      (t.parse = function() {
+      (t.parse = function () {
         return i.parse.apply(i, arguments);
       }),
-      (t.main = function(s) {
-        s[1] || (console.log('Usage: ' + s[0] + ' FILE'), process.exit(1));
-        var i = e('fs').readFileSync(e('path').normalize(s[1]), 'utf8');
+      (t.main = function (s) {
+        s[1] || (console.log("Usage: " + s[0] + " FILE"), process.exit(1));
+        var i = e("fs").readFileSync(e("path").normalize(s[1]), "utf8");
         return t.parser.parse(i);
       }),
-      'undefined' != typeof s && e.main === s && t.main(process.argv.slice(1)));
+      "undefined" != typeof s && e.main === s && t.main(process.argv.slice(1)));
   }),
-  define('velocityjs/0.4.10/src/utils', [], function(e, t, s) {
-    'use strict';
+  define("velocityjs/0.4.10/src/utils", [], function (e, t, s) {
+    "use strict";
     function i(e, t) {
       var s = { if: 1, foreach: 1, macro: 1, noescape: 1, define: 1 },
         r = e.length;
@@ -1818,8 +1756,8 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         if (!(a >= c)) {
           var o = e[c],
             h = o.type;
-          if (s[h] || 'end' === h) {
-            if ('end' === h) return { arr: n, step: c };
+          if (s[h] || "end" === h) {
+            if ("end" === h) return { arr: n, step: c };
             var l = i(e, c + 1);
             (a = l.step), l.arr.unshift(e[c]), n.push(l.arr);
           } else n.push(o);
@@ -1827,36 +1765,36 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       return n;
     }
     var r = {};
-    ['forEach', 'some', 'every', 'filter', 'map'].forEach(function(e) {
-      r[e] = function(t, s, i) {
-        if (!t || 'string' == typeof t) return t;
+    ["forEach", "some", "every", "filter", "map"].forEach(function (e) {
+      r[e] = function (t, s, i) {
+        if (!t || "string" == typeof t) return t;
         if (((i = i || this), t[e])) return t[e](s, i);
         var r = Object.keys(t);
-        return r[e](function(e) {
+        return r[e](function (e) {
           return s.call(i, t[e], e, t);
         }, i);
       };
     });
     var n = 0;
-    (r.guid = function() {
+    (r.guid = function () {
       return n++;
     }),
-      (r.mixin = function(e, t) {
+      (r.mixin = function (e, t) {
         return (
-          r.forEach(t, function(t, s) {
+          r.forEach(t, function (t, s) {
             ({}.toString.call(t));
             e[s] = r.isArray(t) || r.isObject(t) ? r.mixin(t, e[s] || {}) : t;
           }),
           e
         );
       }),
-      (r.isArray = function(e) {
-        return '[object Array]' === {}.toString.call(e);
+      (r.isArray = function (e) {
+        return "[object Array]" === {}.toString.call(e);
       }),
-      (r.isObject = function(e) {
-        return '[object Object]' === {}.toString.call(e);
+      (r.isObject = function (e) {
+        return "[object Object]" === {}.toString.call(e);
       }),
-      (r.indexOf = function(e, t) {
+      (r.indexOf = function (e, t) {
         return r.isArray(t) ? t.indexOf(e) : void 0;
       }),
       (r.keys = Object.keys),
@@ -1864,85 +1802,85 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       (r.makeLevel = i),
       (s.exports = r);
   }),
-  define('velocityjs/0.4.10/src/compile/index', [], function(e, t, s) {
+  define("velocityjs/0.4.10/src/compile/index", [], function (e, t, s) {
     function i(e, t) {
       (this.asts = e), (this.config = { escape: !0, unescape: {} }), r.mixin(this.config, t), this.init();
     }
-    var r = e('velocityjs/0.4.10/src/utils'),
-      n = e('velocityjs/0.4.10/src/helper/index');
+    var r = e("velocityjs/0.4.10/src/utils"),
+      n = e("velocityjs/0.4.10/src/helper/index");
     (i.Helper = n),
       (i.prototype = { constructor: i }),
-      e('velocityjs/0.4.10/src/compile/blocks')(i, r),
-      e('velocityjs/0.4.10/src/compile/literal')(i, r),
-      e('velocityjs/0.4.10/src/compile/references')(i, r),
-      e('velocityjs/0.4.10/src/compile/set')(i, r),
-      e('velocityjs/0.4.10/src/compile/expression')(i, r),
-      e('velocityjs/0.4.10/src/compile/compile')(i, r),
+      e("velocityjs/0.4.10/src/compile/blocks")(i, r),
+      e("velocityjs/0.4.10/src/compile/literal")(i, r),
+      e("velocityjs/0.4.10/src/compile/references")(i, r),
+      e("velocityjs/0.4.10/src/compile/set")(i, r),
+      e("velocityjs/0.4.10/src/compile/expression")(i, r),
+      e("velocityjs/0.4.10/src/compile/compile")(i, r),
       (s.exports = i);
   }),
-  define('velocityjs/0.4.10/src/helper/index', [], function(e, t, s) {
+  define("velocityjs/0.4.10/src/helper/index", [], function (e, t, s) {
     var i = {},
-      r = e('velocityjs/0.4.10/src/utils');
-    e('velocityjs/0.4.10/src/helper/text')(i, r), (s.exports = i);
+      r = e("velocityjs/0.4.10/src/utils");
+    e("velocityjs/0.4.10/src/helper/text")(i, r), (s.exports = i);
   }),
-  define('velocityjs/0.4.10/src/helper/text', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define("velocityjs/0.4.10/src/helper/text", [], function (e, t, s) {
+    s.exports = function (e, t) {
       function s(e) {
         var r = e.leader,
           n = void 0 !== e.args;
         return (
-          'macro_call' === e.type && (r = '#'),
-          e.isWraped && (r += '{'),
+          "macro_call" === e.type && (r = "#"),
+          e.isWraped && (r += "{"),
           (r += n ? i(e) : e.id),
           t.forEach(
             e.path,
-            function(e) {
-              if ('method' == e.type) r += '.' + i(e);
-              else if ('index' == e.type) {
-                var t = '',
+            function (e) {
+              if ("method" == e.type) r += "." + i(e);
+              else if ("index" == e.type) {
+                var t = "",
                   n = e.id;
-                if ('integer' === n.type) t = n.value;
-                else if ('string' === n.type) {
+                if ("integer" === n.type) t = n.value;
+                else if ("string" === n.type) {
                   var a = n.isEval ? '"' : "'";
                   t = a + n.value + a;
                 } else t = s(n);
-                r += '[' + t + ']';
-              } else 'property' == e.type && (r += '.' + e.id);
+                r += "[" + t + "]";
+              } else "property" == e.type && (r += "." + e.id);
             },
             this
           ),
-          e.isWraped && (r += '}'),
+          e.isWraped && (r += "}"),
           r
         );
       }
       function i(e) {
         var s = [],
-          i = '';
+          i = "";
         return (
-          t.forEach(e.args, function(e) {
+          t.forEach(e.args, function (e) {
             s.push(r(e));
           }),
-          (i += e.id + '(' + s.join(',') + ')')
+          (i += e.id + "(" + s.join(",") + ")")
         );
       }
       function r(e) {
-        var i = '';
+        var i = "";
         switch (e.type) {
-          case 'string':
+          case "string":
             var n = e.isEval ? '"' : "'";
             i = n + e.value + n;
             break;
-          case 'integer':
-          case 'bool':
+          case "integer":
+          case "bool":
             i = e.value;
             break;
-          case 'array':
-            i = '[';
+          case "array":
+            i = "[";
             var a = e.value.length - 1;
-            t.forEach(e.value, function(e, t) {
-              (i += r(e)), t !== a && (i += ', ');
+            t.forEach(e.value, function (e, t) {
+              (i += r(e)), t !== a && (i += ", ");
             }),
-              (i += ']');
+              (i += "]");
             break;
           default:
             i = s(e);
@@ -1952,58 +1890,58 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       e.getRefText = s;
     };
   }),
-  define('velocityjs/0.4.10/src/compile/blocks', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define("velocityjs/0.4.10/src/compile/blocks", [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getBlock: function(e) {
+        getBlock: function (e) {
           var t = e[0],
-            s = '';
+            s = "";
           switch (t.type) {
-            case 'if':
+            case "if":
               s = this.getBlockIf(e);
               break;
-            case 'foreach':
+            case "foreach":
               s = this.getBlockEach(e);
               break;
-            case 'macro':
+            case "macro":
               this.setBlockMacro(e);
               break;
-            case 'noescape':
+            case "noescape":
               s = this._render(e.slice(1));
               break;
-            case 'define':
+            case "define":
               this.setBlockDefine(e);
               break;
             default:
               s = this._render(e);
           }
-          return s || '';
+          return s || "";
         },
-        setBlockDefine: function(e) {
+        setBlockDefine: function (e) {
           var t = e[0],
             s = e.slice(1),
             i = this.defines;
           i[t.id] = s;
         },
-        setBlockMacro: function(e) {
+        setBlockMacro: function (e) {
           var t = e[0],
             s = e.slice(1),
             i = this.macros;
           i[t.id] = { asts: s, args: t.args };
         },
-        getMacro: function(s) {
+        getMacro: function (s) {
           var i = this.macros[s.id],
-            r = '';
+            r = "";
           if (i) {
             var n = i.asts,
               a = i.args,
               c = s.args,
               o = {},
               h = t.guid(),
-              l = 'macro:' + s.id + ':' + h;
+              l = "macro:" + s.id + ":" + h;
             t.forEach(
               a,
-              function(e, t) {
+              function (e, t) {
                 o[e.id] = c[t] ? this.getLiteral(c[t]) : void 0;
               },
               this
@@ -2016,7 +1954,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             if (i && i.apply) {
               t.forEach(
                 s.args,
-                function(e) {
+                function (e) {
                   p.push(this.getLiteral(e));
                 },
                 this
@@ -2026,39 +1964,39 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               } catch (y) {
                 var f = s.pos,
                   g = e.Helper.getRefText(s),
-                  d = '\n      at ' + g + ' L/N ' + f.first_line + ':' + f.first_column;
-                throw ((y.name = ''), (y.message += d), new Error(y));
+                  d = "\n      at " + g + " L/N " + f.first_line + ":" + f.first_column;
+                throw ((y.name = ""), (y.message += d), new Error(y));
               }
             }
           }
           return r;
         },
-        eval: function(s, i, r) {
+        eval: function (s, i, r) {
           if (!i) return t.isArray(s) ? this._render(s) : this.evalStr(s);
           var n = [],
             a = e.Parser;
-          if (((r = r || 'eval:' + t.guid()), t.isArray(s) ? (n = s) : a && (n = a.parse(s)), n.length)) {
+          if (((r = r || "eval:" + t.guid()), t.isArray(s) ? (n = s) : a && (n = a.parse(s)), n.length)) {
             this.local[r] = i;
             var c = this._render(n, r);
-            return (this.local[r] = {}), this.conditions.shift(), (this.condition = this.conditions[0] || ''), c;
+            return (this.local[r] = {}), this.conditions.shift(), (this.condition = this.conditions[0] || ""), c;
           }
         },
-        getBlockEach: function(e) {
+        getBlockEach: function (e) {
           var s = e[0],
             i = this.getLiteral(s.from),
             r = e.slice(1),
             n = s.to,
             a = { foreach: { count: 0 } },
-            c = '',
+            c = "",
             o = t.guid(),
-            h = 'foreach:' + o,
+            h = "foreach:" + o,
             l = {}.toString.call(i);
-          if (i && ('[object Array]' === l || '[object Object]' === l)) {
+          if (i && ("[object Array]" === l || "[object Object]" === l)) {
             var u = t.isArray(i) ? i.length : t.keys(i).length;
             return (
               t.forEach(
                 i,
-                function(e, t) {
+                function (e, t) {
                   this.setBreak ||
                     ((a[n] = e),
                     (a.foreach.count = t + 1),
@@ -2073,22 +2011,22 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               (this.setBreak = !1),
               (this.local[h] = {}),
               this.conditions.shift(),
-              (this.condition = this.conditions[0] || ''),
+              (this.condition = this.conditions[0] || ""),
               c
             );
           }
         },
-        getBlockIf: function(e) {
+        getBlockIf: function (e) {
           var s = !1,
             i = [];
           return (
             t.some(
               e,
-              function(e) {
+              function (e) {
                 if (e.condition) {
                   if (s) return !0;
                   s = this.getExpression(e.condition);
-                } else if ('else' === e.type) {
+                } else if ("else" === e.type) {
                   if (s) return !0;
                   s = !0;
                 } else s && i.push(e);
@@ -2102,44 +2040,44 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/literal', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define("velocityjs/0.4.10/src/compile/literal", [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getLiteral: function(e) {
+        getLiteral: function (e) {
           var s = e.type,
-            i = '';
-          if ('string' == s) i = this.getString(e);
-          else if ('integer' == s) i = parseInt(e.value, 10);
-          else if ('decimal' == s) i = parseFloat(e.value, 10);
-          else if ('array' == s) i = this.getArray(e);
-          else if ('map' == s) {
+            i = "";
+          if ("string" == s) i = this.getString(e);
+          else if ("integer" == s) i = parseInt(e.value, 10);
+          else if ("decimal" == s) i = parseFloat(e.value, 10);
+          else if ("array" == s) i = this.getArray(e);
+          else if ("map" == s) {
             i = {};
             var r = e.value;
             t.forEach(
               r,
-              function(e, t) {
+              function (e, t) {
                 i[t] = this.getLiteral(e);
               },
               this
             );
           } else {
-            if ('bool' != s) return this.getReferences(e);
-            'null' === e.value ? (i = null) : 'false' === e.value ? (i = !1) : 'true' === e.value && (i = !0);
+            if ("bool" != s) return this.getReferences(e);
+            "null" === e.value ? (i = null) : "false" === e.value ? (i = !1) : "true" === e.value && (i = !0);
           }
           return i;
         },
-        getString: function(e) {
+        getString: function (e) {
           var t = e.value,
             s = t;
-          return !e.isEval || (-1 === t.indexOf('#') && -1 === t.indexOf('$')) || (s = this.evalStr(t)), s;
+          return !e.isEval || (-1 === t.indexOf("#") && -1 === t.indexOf("$")) || (s = this.evalStr(t)), s;
         },
-        getArray: function(e) {
+        getArray: function (e) {
           var s = [];
           if (e.isRange) {
             var i = e.value[0];
-            'references' === i.type && (i = this.getReferences(i));
+            "references" === i.type && (i = this.getReferences(i));
             var r = e.value[1];
-            'references' === r.type && (r = this.getReferences(r)), (r = parseInt(r, 10)), (i = parseInt(i, 10));
+            "references" === r.type && (r = this.getReferences(r)), (r = parseInt(r, 10)), (i = parseInt(i, 10));
             var n;
             if (!isNaN(i) && !isNaN(r))
               if (r > i) for (n = i; r >= n; n++) s.push(n);
@@ -2147,66 +2085,66 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           } else
             t.forEach(
               e.value,
-              function(e) {
+              function (e) {
                 s.push(this.getLiteral(e));
               },
               this
             );
           return s;
         },
-        evalStr: function(t) {
+        evalStr: function (t) {
           var s = e.Parser.parse(t);
           return this._render(s);
         },
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/references', [], function(e, t, s) {
-    s.exports = function(e, t) {
-      'use strict';
+  define("velocityjs/0.4.10/src/compile/references", [], function (e, t, s) {
+    s.exports = function (e, t) {
+      "use strict";
       function s(e) {
         return t.isArray(e) ? e.length : t.isObject(e) ? t.keys(e).length : void 0;
       }
       function i(e) {
-        if ('string' != typeof e) return e;
+        if ("string" != typeof e) return e;
         var t,
           s,
           i,
-          r = '',
+          r = "",
           n = !1;
         for (t = 0; t < e.length; t++)
           (s = e.charAt(t)),
-            (s >= ' ' && '~' >= s) || '\r' == s || '\n' == s
-              ? '&' == s
-                ? ((i = '&amp;'), (n = !0))
-                : '<' == s
-                ? ((i = '&lt;'), (n = !0))
-                : '>' == s
-                ? ((i = '&gt;'), (n = !0))
+            (s >= " " && "~" >= s) || "\r" == s || "\n" == s
+              ? "&" == s
+                ? ((i = "&amp;"), (n = !0))
+                : "<" == s
+                ? ((i = "&lt;"), (n = !0))
+                : ">" == s
+                ? ((i = "&gt;"), (n = !0))
                 : (i = s.toString())
-              : (i = '&#' + s.charCodeAt().toString() + ';'),
+              : (i = "&#" + s.charCodeAt().toString() + ";"),
             (r += i);
         return n ? r : e;
       }
       t.mixin(e.prototype, {
-        addIgnoreEscpape: function(e) {
+        addIgnoreEscpape: function (e) {
           t.isArray(e) || (e = [e]),
             t.forEach(
               e,
-              function(e) {
+              function (e) {
                 this.config.unescape[e] = !0;
               },
               this
             );
         },
-        getReferences: function(s, r) {
+        getReferences: function (s, r) {
           if (s.prue) {
             var n = this.defines[s.id];
             if (t.isArray(n)) return this._render(n);
             s.id in this.config.unescape && (s.prue = !1);
           }
           var a = this.config.escape,
-            c = this.silence || '$!' === s.leader,
+            c = this.silence || "$!" === s.leader,
             o = void 0 !== s.args,
             h = this.context,
             l = h[s.id],
@@ -2222,21 +2160,21 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 void 0 !== l &&
                 t.some(
                   s.path,
-                  function(e) {
+                  function (e) {
                     l = this.getAttributes(e, l, s);
                   },
                   this
                 ),
-              r && void 0 === l && (l = c ? '' : e.Helper.getRefText(s)),
+              r && void 0 === l && (l = c ? "" : e.Helper.getRefText(s)),
               (l = s.prue && a ? i(l) : l));
         },
-        getLocal: function(e) {
+        getLocal: function (e) {
           var s = e.id,
             i = this.local,
             r = !1,
             n = t.some(
               this.conditions,
-              function(e) {
+              function (e) {
                 var t = i[e];
                 return s in t ? ((r = t[s]), !0) : !1;
               },
@@ -2244,47 +2182,47 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             );
           return { value: r, isLocaled: n };
         },
-        getAttributes: function(e, t, s) {
+        getAttributes: function (e, t, s) {
           var i,
             r = e.type,
             n = e.id;
-          return (i = 'method' === r ? this.getPropMethod(e, t, s) : 'property' === r ? t[n] : this.getPropIndex(e, t));
+          return (i = "method" === r ? this.getPropMethod(e, t, s) : "property" === r ? t[n] : this.getPropIndex(e, t));
         },
-        getPropIndex: function(e, t) {
+        getPropIndex: function (e, t) {
           var s,
             i = e.id;
-          return (s = 'references' === i.type ? this.getReferences(i) : 'integer' === i.type ? i.value : i.value), t[s];
+          return (s = "references" === i.type ? this.getReferences(i) : "integer" === i.type ? i.value : i.value), t[s];
         },
-        getPropMethod: function(i, r, n) {
+        getPropMethod: function (i, r, n) {
           var a = i.id,
-            c = '',
+            c = "",
             o = a.slice(3);
-          if (!(0 !== a.indexOf('get') || a in r)) return o ? (c = r[o]) : ((o = this.getLiteral(i.args[0])), (c = r[o])), c;
-          if (0 === a.indexOf('set') && !r[a])
+          if (!(0 !== a.indexOf("get") || a in r)) return o ? (c = r[o]) : ((o = this.getLiteral(i.args[0])), (c = r[o])), c;
+          if (0 === a.indexOf("set") && !r[a])
             return (
               (r[o] = this.getLiteral(i.args[0])),
-              (r.toString = function() {
-                return '';
+              (r.toString = function () {
+                return "";
               }),
               r
             );
-          if (!(0 !== a.indexOf('is') || a in r)) return (o = a.slice(2)), (c = r[o]);
-          if ('keySet' === a) return t.keys(r);
-          if ('entrySet' === a)
+          if (!(0 !== a.indexOf("is") || a in r)) return (o = a.slice(2)), (c = r[o]);
+          if ("keySet" === a) return t.keys(r);
+          if ("entrySet" === a)
             return (
               (c = []),
-              t.forEach(r, function(e, t) {
+              t.forEach(r, function (e, t) {
                 c.push({ key: t, value: e });
               }),
               c
             );
-          if ('size' === a) return s(r);
+          if ("size" === a) return s(r);
           c = r[a];
           var h = [];
           if (
             (t.forEach(
               i.args,
-              function(e) {
+              function (e) {
                 h.push(this.getLiteral(e));
               },
               this
@@ -2292,7 +2230,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             c && c.call)
           ) {
             var l = this;
-            r.eval = function() {
+            r.eval = function () {
               return l.eval.apply(l, arguments);
             };
             try {
@@ -2300,8 +2238,8 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             } catch (u) {
               var p = n.pos,
                 y = e.Helper.getRefText(n),
-                f = ' on ' + y + ' at L/N ' + p.first_line + ':' + p.first_column;
-              throw ((u.name = ''), (u.message += f), new Error(u));
+                f = " on " + y + " at L/N " + p.first_line + ":" + p.first_column;
+              throw ((u.name = ""), (u.message += f), new Error(u));
             }
           } else c = void 0;
           return c;
@@ -2309,88 +2247,88 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/set', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define("velocityjs/0.4.10/src/compile/set", [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getContext: function() {
+        getContext: function () {
           var e = this.condition,
             t = this.local;
           return e ? t[e] : this.context;
         },
-        setValue: function(e) {
+        setValue: function (e) {
           var s = e.equal[0],
             i = this.getContext();
-          this.condition && 0 === this.condition.indexOf('macro:') ? (i = this.context) : null != this.context[s.id] && (i = this.context);
+          this.condition && 0 === this.condition.indexOf("macro:") ? (i = this.context) : null != this.context[s.id] && (i = this.context);
           var r,
             n = e.equal[1];
-          if (((r = 'math' === n.type ? this.getExpression(n) : this.getLiteral(e.equal[1])), s.path)) {
+          if (((r = "math" === n.type ? this.getExpression(n) : this.getLiteral(e.equal[1])), s.path)) {
             var a = i[s.id];
-            'object' != typeof a && (a = {}), (i[s.id] = a);
+            "object" != typeof a && (a = {}), (i[s.id] = a);
             var c = s.path ? s.path.length : 0;
-            t.forEach(s.path, function(e, t) {
+            t.forEach(s.path, function (e, t) {
               var s = c === t + 1,
                 i = e.id;
-              'index' === e.type && (i = i.value), (a[i] = s ? r : {}), (a = a[i]);
+              "index" === e.type && (i = i.value), (a[i] = s ? r : {}), (a = a[i]);
             });
           } else i[s.id] = r;
         },
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/expression', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define("velocityjs/0.4.10/src/compile/expression", [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getExpression: function(e) {
+        getExpression: function (e) {
           var t,
             s = e.expression;
-          if ('math' === e.type) {
+          if ("math" === e.type) {
             switch (e.operator) {
-              case '+':
+              case "+":
                 t = this.getExpression(s[0]) + this.getExpression(s[1]);
                 break;
-              case '-':
+              case "-":
                 t = this.getExpression(s[0]) - this.getExpression(s[1]);
                 break;
-              case '/':
+              case "/":
                 t = this.getExpression(s[0]) / this.getExpression(s[1]);
                 break;
-              case '%':
+              case "%":
                 t = this.getExpression(s[0]) % this.getExpression(s[1]);
                 break;
-              case '*':
+              case "*":
                 t = this.getExpression(s[0]) * this.getExpression(s[1]);
                 break;
-              case '||':
+              case "||":
                 t = this.getExpression(s[0]) || this.getExpression(s[1]);
                 break;
-              case '&&':
+              case "&&":
                 t = this.getExpression(s[0]) && this.getExpression(s[1]);
                 break;
-              case '>':
+              case ">":
                 t = this.getExpression(s[0]) > this.getExpression(s[1]);
                 break;
-              case '<':
+              case "<":
                 t = this.getExpression(s[0]) < this.getExpression(s[1]);
                 break;
-              case '==':
+              case "==":
                 t = this.getExpression(s[0]) == this.getExpression(s[1]);
                 break;
-              case '>=':
+              case ">=":
                 t = this.getExpression(s[0]) >= this.getExpression(s[1]);
                 break;
-              case '<=':
+              case "<=":
                 t = this.getExpression(s[0]) <= this.getExpression(s[1]);
                 break;
-              case '!=':
+              case "!=":
                 t = this.getExpression(s[0]) != this.getExpression(s[1]);
                 break;
-              case 'minus':
+              case "minus":
                 t = -this.getExpression(s[0]);
                 break;
-              case 'not':
+              case "not":
                 t = !this.getExpression(s[0]);
                 break;
-              case 'parenthesis':
+              case "parenthesis":
                 t = this.getExpression(s[0]);
                 break;
               default:
@@ -2403,10 +2341,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/compile', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define("velocityjs/0.4.10/src/compile/compile", [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        init: function() {
+        init: function () {
           (this.context = {}),
             (this.macros = {}),
             (this.defines = {}),
@@ -2415,7 +2353,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             (this.silence = !1),
             (this.unescape = {});
         },
-        render: function(e, s, i) {
+        render: function (e, s, i) {
           (this.silence = !!i), (this.context = e || {}), (this.jsmacros = s || {});
           var r = t.now(),
             n = this._render(),
@@ -2423,8 +2361,8 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             c = a - r;
           return (this.cost = c), n;
         },
-        _render: function(e, s) {
-          var i = '';
+        _render: function (e, s) {
+          var i = "";
           return (
             (e = e || this.asts),
             s
@@ -2432,24 +2370,24 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               : (this.condition = null),
             t.forEach(
               e,
-              function(e) {
+              function (e) {
                 switch (e.type) {
-                  case 'references':
+                  case "references":
                     i += this.getReferences(e, !0);
                     break;
-                  case 'set':
+                  case "set":
                     this.setValue(e);
                     break;
-                  case 'break':
+                  case "break":
                     this.setBreak = !0;
                     break;
-                  case 'macro_call':
+                  case "macro_call":
                     i += this.getMacro(e);
                     break;
-                  case 'comment':
+                  case "comment":
                     break;
                   default:
-                    i += 'string' == typeof e ? e : this.getBlock(e);
+                    i += "string" == typeof e ? e : this.getBlock(e);
                 }
               },
               this

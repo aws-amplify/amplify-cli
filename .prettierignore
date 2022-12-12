@@ -1,2 +1,4 @@
 packages/**/lib/**
 **/**.js
+node_modules/
+**/API.md

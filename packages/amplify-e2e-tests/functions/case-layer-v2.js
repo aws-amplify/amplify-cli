@@ -1,4 +1,4 @@
-const titleCaseModule = require('title-case');
+const titleCaseModule = require("title-case");
 
 function convertString(s) {
   return titleCaseModule.titleCase(s);

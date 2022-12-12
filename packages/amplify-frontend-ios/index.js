@@ -1,11 +1,11 @@
-const path = require('path');
-const fs = require('fs');
-const { FeatureFlags, pathManager, JSONUtilities } = require('amplify-cli-core');
-const { importConfig, importModels } = require('./lib/amplify-xcode');
-const initializer = require('./lib/initializer');
-const projectScanner = require('./lib/project-scanner');
-const configManager = require('./lib/configuration-manager');
-const constants = require('./lib/constants');
+const path = require("path");
+const fs = require("fs");
+const { FeatureFlags, pathManager, JSONUtilities } = require("amplify-cli-core");
+const { importConfig, importModels } = require("./lib/amplify-xcode");
+const initializer = require("./lib/initializer");
+const projectScanner = require("./lib/project-scanner");
+const configManager = require("./lib/configuration-manager");
+const constants = require("./lib/constants");
 const {
   createAmplifyConfig,
   getNewAWSConfigObject,
@@ -13,9 +13,9 @@ const {
   deleteAmplifyConfig,
   getAmplifyConfig,
   writeToFile,
-} = require('./lib/frontend-config-creator');
+} = require("./lib/frontend-config-creator");
 
-const pluginName = 'ios';
+const pluginName = "ios";
 
 function scanProject(projectPath) {
   return projectScanner.run(projectPath);
@@ -74,8 +74,8 @@ function run(context) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, pluginName);
   } else {
     commandPath = path.join(commandPath, pluginName, context.input.command);
@@ -85,9 +85,9 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-const postInitQuickStart = projectPath => {
-  const awsConfigFilePath = path.join(projectPath, 'awsconfiguration.json');
-  const amplifyConfigFilePath = path.join(projectPath, 'amplifyconfiguration.json');
+const postInitQuickStart = (projectPath) => {
+  const awsConfigFilePath = path.join(projectPath, "awsconfiguration.json");
+  const amplifyConfigFilePath = path.join(projectPath, "amplifyconfiguration.json");
   if (!fs.existsSync(awsConfigFilePath)) {
     JSONUtilities.writeJson(awsConfigFilePath, {});
   }
@@ -99,32 +99,32 @@ const postInitQuickStart = projectPath => {
 
 async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
-  const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
-  const isFrontendiOS = frontend === 'ios';
-  const isMacOs = process.platform === 'darwin';
-  const successMessage = 'Amplify setup completed successfully.';
+  const isXcodeIntegrationEnabled = FeatureFlags.getBoolean("frontend-ios.enableXcodeIntegration");
+  const isFrontendiOS = frontend === "ios";
+  const isMacOs = process.platform === "darwin";
+  const successMessage = "Amplify setup completed successfully.";
   if (!isFrontendiOS || !isXcodeIntegrationEnabled) {
     return;
   }
   // Xcode integration is a MacOS-only binary, skip on other platforms
   if (!isMacOs) {
-    context.print.info('Skipping Xcode project setup.');
+    context.print.info("Skipping Xcode project setup.");
     context.print.info(successMessage);
     return;
   }
-  context.print.info('Updating Xcode project:');
+  context.print.info("Updating Xcode project:");
   const projectPath = pathManager.findProjectRoot();
   switch (args.event) {
-    case 'PostInit':
+    case "PostInit":
       if (context.input && context.input.options && context.input.options.quickstart) {
         postInitQuickStart(projectPath);
       }
       await importConfig({ path: projectPath });
       break;
-    case 'PostCodegenModels':
+    case "PostCodegenModels":
       await importModels({ path: projectPath });
       break;
-    case 'PostPull':
+    case "PostPull":
       await importConfig({ path: projectPath });
       await importModels({ path: projectPath });
       break;
@@ -134,7 +134,7 @@ async function handleAmplifyEvent(context, args) {
   context.print.info(successMessage);
 }
 
-const getPackageAssetPaths = async () => ['resources'];
+const getPackageAssetPaths = async () => ["resources"];
 
 module.exports = {
   constants,

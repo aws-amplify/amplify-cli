@@ -1,9 +1,9 @@
-const configManager = require('../../configuration-manager');
+const configManager = require("../../configuration-manager");
 
 module.exports = {
-  name: 'resetCache',
-  alias: ['reset-cache'],
-  run: async context => {
+  name: "resetCache",
+  alias: ["reset-cache"],
+  run: async (context) => {
     await configManager.resetCache(context);
   },
 };

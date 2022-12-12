@@ -5,20 +5,20 @@ const inferAccess = {
   prompt(options) {
     return [
       {
-        type: 'list',
-        name: 'access',
-        message: 'Who should have access?',
+        type: "list",
+        name: "access",
+        message: "Who should have access?",
         choices: [
           {
-            name: 'Auth users only',
-            value: 'auth',
+            name: "Auth users only",
+            value: "auth",
           },
           {
-            name: 'Auth and Guest users',
-            value: 'authAndGuest',
+            name: "Auth and Guest users",
+            value: "authAndGuest",
           },
         ],
-        default: options.access ? options.access : 'auth',
+        default: options.access ? options.access : "auth",
       },
     ];
   },
@@ -28,13 +28,13 @@ const setup = {
   type() {
     return [
       {
-        type: 'list',
-        name: 'inferType',
-        message: 'What would you like to infer?',
+        type: "list",
+        name: "inferType",
+        message: "What would you like to infer?",
         choices: [
           {
-            name: 'Infer model',
-            value: 'inferModel',
+            name: "Infer model",
+            value: "inferModel",
           },
         ],
       },
@@ -43,11 +43,11 @@ const setup = {
   name(defaultName) {
     return [
       {
-        name: 'resourceName',
-        message: 'Provide a friendly name for your resource',
-        validate: value => {
-          const regex = new RegExp('^[a-zA-Z0-9]+$');
-          return regex.test(value) ? true : 'Resource name should be alphanumeric!';
+        name: "resourceName",
+        message: "Provide a friendly name for your resource",
+        validate: (value) => {
+          const regex = new RegExp("^[a-zA-Z0-9]+$");
+          return regex.test(value) ? true : "Resource name should be alphanumeric!";
         },
         default: defaultName,
       },
@@ -59,17 +59,17 @@ const inferModel = {
   endpointPrompt(options) {
     return [
       {
-        type: 'list',
-        name: 'endpointConfig',
-        message: 'Would you like to create your endpoint or load an use an existing endpoint?',
+        type: "list",
+        name: "endpointConfig",
+        message: "Would you like to create your endpoint or load an use an existing endpoint?",
         choices: [
           {
-            name: 'Create an endpoint',
-            value: 'create',
+            name: "Create an endpoint",
+            value: "create",
           },
           {
-            name: 'Import an existing endpoint',
-            value: 'import',
+            name: "Import an existing endpoint",
+            value: "import",
           },
         ],
         default: options.endpointConfig,
@@ -79,9 +79,9 @@ const inferModel = {
   importPrompt(options) {
     return [
       {
-        type: 'list',
-        name: 'endpoint',
-        message: 'Select an endpoint: ',
+        type: "list",
+        name: "endpoint",
+        message: "Select an endpoint: ",
         choices: options.endpoints,
         default: options.endpointName,
       },

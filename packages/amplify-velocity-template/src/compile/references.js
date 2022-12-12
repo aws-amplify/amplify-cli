@@ -1,5 +1,5 @@
 module.exports = function (Velocity, utils) {
-  'use strict';
+  "use strict";
 
   function getSize(obj) {
     if (utils.isArray(obj)) {
@@ -15,29 +15,29 @@ module.exports = function (Velocity, utils) {
    * unicode转码
    */
   function convert(str) {
-    if (typeof str !== 'string') return str;
+    if (typeof str !== "string") return str;
 
-    var result = '';
+    var result = "";
     var escape = false;
     var i, c, cstr;
 
     for (i = 0; i < str.length; i++) {
       c = str.charAt(i);
-      if ((' ' <= c && c <= '~') || c === '\r' || c === '\n') {
-        if (c === '&') {
-          cstr = '&amp;';
+      if ((" " <= c && c <= "~") || c === "\r" || c === "\n") {
+        if (c === "&") {
+          cstr = "&amp;";
           escape = true;
-        } else if (c === '<') {
-          cstr = '&lt;';
+        } else if (c === "<") {
+          cstr = "&lt;";
           escape = true;
-        } else if (c === '>') {
-          cstr = '&gt;';
+        } else if (c === ">") {
+          cstr = "&gt;";
           escape = true;
         } else {
           cstr = c.toString();
         }
       } else {
-        cstr = '&#' + c.charCodeAt().toString() + ';';
+        cstr = "&#" + c.charCodeAt().toString() + ";";
       }
 
       result = result + cstr;
@@ -48,7 +48,7 @@ module.exports = function (Velocity, utils) {
 
   function getter(base, property) {
     // get(1)
-    if (typeof property === 'number') {
+    if (typeof property === "number") {
       return base[property];
     }
 
@@ -83,7 +83,7 @@ module.exports = function (Velocity, utils) {
         function (key) {
           this.config.unescape[key] = true;
         },
-        this,
+        this
       );
     },
 
@@ -103,7 +103,7 @@ module.exports = function (Velocity, utils) {
       }
       var escape = this.config.escape;
 
-      var isSilent = this.silence || ast.leader === '$!';
+      var isSilent = this.silence || ast.leader === "$!";
       var isfn = ast.args !== undefined;
       var context = this.context;
       var ret = context[ast.id];
@@ -119,7 +119,7 @@ module.exports = function (Velocity, utils) {
         ret = this.getPropMethod(ast, context, ast);
       }
 
-      if (local.isLocaled) ret = local['value'];
+      if (local.isLocaled) ret = local["value"];
 
       if (ast.path) {
         utils.some(
@@ -132,15 +132,15 @@ module.exports = function (Velocity, utils) {
             // 第三个参数，返回后面的参数ast
             ret = this.getAttributes(property, ret, ast);
           },
-          this,
+          this
         );
       }
 
       if (isVal && ret === undefined) {
-        ret = isSilent ? '' : Velocity.Helper.getRefText(ast);
+        ret = isSilent ? "" : Velocity.Helper.getRefText(ast);
       }
 
-      ret = ast.prue && escape ? convert(ret) : typeof ret === 'function' ? ret() : ret;
+      ret = ast.prue && escape ? convert(ret) : typeof ret === "function" ? ret() : ret;
 
       return ret;
     },
@@ -164,7 +164,7 @@ module.exports = function (Velocity, utils) {
 
           return false;
         },
-        this,
+        this
       );
 
       return {
@@ -191,9 +191,9 @@ module.exports = function (Velocity, utils) {
       var type = property.type;
       var ret;
       var id = property.id;
-      if (type === 'method') {
+      if (type === "method") {
         ret = this.getPropMethod(property, baseRef, ast);
-      } else if (type === 'property') {
+      } else if (type === "property") {
         ret = baseRef[id];
       } else {
         ret = this.getPropIndex(property, baseRef);
@@ -208,9 +208,9 @@ module.exports = function (Velocity, utils) {
     getPropIndex: function (property, baseRef) {
       var ast = property.id;
       var key;
-      if (ast.type === 'references') {
+      if (ast.type === "references") {
         key = this.getReferences(ast);
-      } else if (ast.type === 'integer') {
+      } else if (ast.type === "integer") {
         key = ast.value;
       } else {
         key = ast.value;
@@ -224,53 +224,53 @@ module.exports = function (Velocity, utils) {
      */
     getPropMethod: function (property, baseRef, ast) {
       var id = property.id;
-      var ret = '';
+      var ret = "";
 
       // get(xxx)
-      if (id === 'get' && !(id in baseRef)) {
+      if (id === "get" && !(id in baseRef)) {
         return getter(baseRef, this.getLiteral(property.args[0]));
       }
 
-      if (id === 'set' && !(id in baseRef)) {
+      if (id === "set" && !(id in baseRef)) {
         baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]);
-        return '';
+        return "";
       }
 
       // getter for example: getAddress()
-      if (id.indexOf('get') === 0 && !(id in baseRef)) {
+      if (id.indexOf("get") === 0 && !(id in baseRef)) {
         return getter(baseRef, id.slice(3));
       }
 
       // setter 处理
-      if (id.indexOf('set') === 0 && !baseRef[id]) {
+      if (id.indexOf("set") === 0 && !baseRef[id]) {
         baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
         // $page.setName(123)
         baseRef.toString = function () {
-          return '';
+          return "";
         };
         return baseRef;
-      } else if (id.indexOf('is') === 0 && !(id in baseRef)) {
+      } else if (id.indexOf("is") === 0 && !(id in baseRef)) {
         return getter(baseRef, id.slice(2));
-      } else if (id === 'keySet' && !baseRef[id]) {
+      } else if (id === "keySet" && !baseRef[id]) {
         return utils.keys(baseRef);
-      } else if (id === 'entrySet' && !baseRef[id]) {
+      } else if (id === "entrySet" && !baseRef[id]) {
         ret = [];
         utils.forEach(baseRef, function (value, key) {
           ret.push({ key: key, value: value });
         });
 
         return ret;
-      } else if (id === 'size' && !baseRef[id]) {
+      } else if (id === "size" && !baseRef[id]) {
         return getSize(baseRef);
-      } else if (id === 'put' && !baseRef[id]) {
+      } else if (id === "put" && !baseRef[id]) {
         return (baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]));
-      } else if (id === 'add' && !baseRef[id] && typeof baseRef.push === 'function') {
+      } else if (id === "add" && !baseRef[id] && typeof baseRef.push === "function") {
         return baseRef.push(this.getLiteral(property.args[0]));
-      } else if (id === 'remove') {
+      } else if (id === "remove") {
         if (utils.isArray(baseRef)) {
           const itemToRemove = this.getLiteral(property.args[0]);
           let indexToRemove;
-          if (typeof itemToRemove === 'number') {
+          if (typeof itemToRemove === "number") {
             indexToRemove = itemToRemove;
           } else {
             indexToRemove = baseRef.indexOf(itemToRemove);
@@ -286,7 +286,7 @@ module.exports = function (Velocity, utils) {
         }
 
         return undefined;
-      } else if (id === 'subList' && !baseRef[id]) {
+      } else if (id === "subList" && !baseRef[id]) {
         return baseRef.slice(this.getLiteral(property.args[0]), this.getLiteral(property.args[1]));
       } else {
         ret = baseRef[id];
@@ -297,13 +297,13 @@ module.exports = function (Velocity, utils) {
           function (exp) {
             args.push(this.getLiteral(exp));
           },
-          this,
+          this
         );
 
         if (ret && ret.call) {
           var that = this;
 
-          if (typeof baseRef === 'object' && baseRef) {
+          if (typeof baseRef === "object" && baseRef) {
             baseRef.eval = function () {
               return that.eval.apply(that, arguments);
             };
@@ -314,13 +314,13 @@ module.exports = function (Velocity, utils) {
           } catch (e) {
             var pos = ast.pos;
             var text = Velocity.Helper.getRefText(ast);
-            var err = ' on ' + text + ' at L/N ' + pos.first_line + ':' + pos.first_column;
-            e.name = '';
+            var err = " on " + text + " at L/N " + pos.first_line + ":" + pos.first_column;
+            e.name = "";
             e.message += err;
             throw new Error(e);
           }
         } else {
-          this._throw(ast, property, 'TypeError');
+          this._throw(ast, property, "TypeError");
           ret = undefined;
         }
       }
@@ -329,21 +329,21 @@ module.exports = function (Velocity, utils) {
     },
 
     _throw: function (ast, property, errorName) {
-      if (this.config.env !== 'development') {
+      if (this.config.env !== "development") {
         return;
       }
 
       var text = Velocity.Helper.getRefText(ast);
       var pos = ast.pos;
-      var propertyName = property.type === 'index' ? property.id.value : property.id;
-      var errorMsg = 'get property ' + propertyName + ' of undefined';
-      if (errorName === 'TypeError') {
-        errorMsg = propertyName + ' is not method';
+      var propertyName = property.type === "index" ? property.id.value : property.id;
+      var errorMsg = "get property " + propertyName + " of undefined";
+      if (errorName === "TypeError") {
+        errorMsg = propertyName + " is not method";
       }
 
-      errorMsg += '\n  at L/N ' + text + ' ' + pos.first_line + ':' + pos.first_column;
+      errorMsg += "\n  at L/N " + text + " " + pos.first_line + ":" + pos.first_column;
       var e = new Error(errorMsg);
-      e.name = errorName || 'ReferenceError';
+      e.name = errorName || "ReferenceError";
       throw e;
     },
   });

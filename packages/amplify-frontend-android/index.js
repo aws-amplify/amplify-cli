@@ -1,9 +1,9 @@
-const path = require('path');
+const path = require("path");
 
-const initializer = require('./lib/initializer');
-const configManager = require('./lib/configuration-manager');
-const projectScanner = require('./lib/project-scanner');
-const constants = require('./lib/constants');
+const initializer = require("./lib/initializer");
+const configManager = require("./lib/configuration-manager");
+const projectScanner = require("./lib/project-scanner");
+const constants = require("./lib/constants");
 const {
   createAmplifyConfig,
   getAmplifyConfig,
@@ -11,9 +11,9 @@ const {
   getNewAWSConfigObject,
   deleteAmplifyConfig,
   writeToFile,
-} = require('./lib/frontend-config-creator');
+} = require("./lib/frontend-config-creator");
 
-const pluginName = 'android';
+const pluginName = "android";
 
 function scanProject(projectPath) {
   return projectScanner.run(projectPath);
@@ -72,8 +72,8 @@ function setFrontendDefaults(context) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, pluginName);
   } else {
     commandPath = path.join(commandPath, pluginName, context.input.command);

@@ -1,6 +1,6 @@
-const inquirer = require('inquirer');
-const { uniq, flatten } = require('lodash');
-const chalk = require('chalk');
+const inquirer = require("inquirer");
+const { uniq, flatten } = require("lodash");
+const chalk = require("chalk");
 
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) {
   // eslint-disable-line max-len
@@ -14,7 +14,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   // Uncool implementation here
 
   const questionChalk = input.prefixColor ? chalk[input.prefixColor] : chalk.green;
-  const prefix = input.prefix ? `${'\n'} ${questionChalk(input.prefix)} ${'\n'}` : '';
+  const prefix = input.prefix ? `${"\n"} ${questionChalk(input.prefix)} ${"\n"}` : "";
 
   let question = {
     name: input.key,
@@ -27,7 +27,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
-        if (input.key === 'triggers') {
+        if (input.key === "triggers") {
           return triggerDefaults(context, input, getAllMaps(context.updatingAuth)[input.map]);
         }
         return context.updatingAuth[input.key];
@@ -37,7 +37,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
     },
   };
 
-  if (input.type && ['list', 'multiselect'].includes(input.type)) {
+  if (input.type && ["list", "multiselect"].includes(input.type)) {
     if (context.updatingAuth && input.iterator) {
       question = iteratorQuestion(input, question, context);
       // if selecting existing value to edit it's not require to validate inputs
@@ -51,38 +51,38 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         {
           choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
         },
-        question,
+        question
       );
     }
   }
 
-  if (input.type && input.type === 'list') {
+  if (input.type && input.type === "list") {
     question = Object.assign(
       {
-        type: 'list',
+        type: "list",
       },
-      question,
+      question
     );
-  } else if (input.type && input.type === 'multiselect') {
+  } else if (input.type && input.type === "multiselect") {
     question = Object.assign(
       {
-        type: 'checkbox',
+        type: "checkbox",
       },
-      question,
+      question
     );
-  } else if (input.type && input.type === 'confirm') {
+  } else if (input.type && input.type === "confirm") {
     question = Object.assign(
       {
-        type: 'confirm',
+        type: "confirm",
       },
-      question,
+      question
     );
   } else {
     question = Object.assign(
       {
-        type: 'input',
+        type: "input",
       },
-      question,
+      question
     );
   }
 
@@ -93,12 +93,12 @@ function iteratorQuestion(input, question, context) {
   if (context.updatingAuth[input.iterator]) {
     question = Object.assign(
       {
-        choices: context.updatingAuth[input.iterator].map(i => ({
+        choices: context.updatingAuth[input.iterator].map((i) => ({
           name: i,
           value: i,
         })),
       },
-      question,
+      question
     );
   } else if (input.iterator) {
     // TODO: make iterator key useful for non-update actions
@@ -106,7 +106,7 @@ function iteratorQuestion(input, question, context) {
       {
         choices: [],
       },
-      question,
+      question
     );
   }
   return question;
@@ -114,37 +114,37 @@ function iteratorQuestion(input, question, context) {
 
 function getRequiredOptions(input, question, getAllMaps, context, currentAnswers) {
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
-  const sourceArray = uniq(flatten(input.requiredOptions.map(i => sourceValues[i] || [])));
-  const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
-  const trueOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => !sourceArray.includes(x.value)) : [];
+  const sourceArray = uniq(flatten(input.requiredOptions.map((i) => sourceValues[i] || [])));
+  const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter((x) => sourceArray.includes(x.value)) : [];
+  const trueOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter((x) => !sourceArray.includes(x.value)) : [];
   const msg =
     requiredOptions && requiredOptions.length > 0
-      ? `--- ${input.requiredOptionsMsg} ${requiredOptions.map(t => t.name).join(', ')}   ---`
-      : '';
+      ? `--- ${input.requiredOptionsMsg} ${requiredOptions.map((t) => t.name).join(", ")}   ---`
+      : "";
   question = Object.assign(question, {
     choices: [new inquirer.Separator(msg), ...trueOptions],
-    filter: userInput => {
-      return userInput.concat(...requiredOptions.map(z => z.value));
+    filter: (userInput) => {
+      return userInput.concat(...requiredOptions.map((z) => z.value));
     },
   });
   return question;
 }
 
 function filterInputs(input, question, getAllMaps, context, currentAnswers) {
-  if (input.filter === 'providers') {
+  if (input.filter === "providers") {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const { requiredAttributes } = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
     if (requiredAttributes) {
       const attrMap = getAllMaps().attributeProviderMap;
-      requiredAttributes.forEach(attr => {
-        choices.forEach(choice => {
+      requiredAttributes.forEach((attr) => {
+        choices.forEach((choice) => {
           choice.missingAttributes = [];
           if (!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) {
             choice.missingAttributes = choice.missingAttributes.length < 1 ? [attr] : choice.missingAttributes.concat(attr);
-            const newList = choice.missingAttributes.join(', ');
+            const newList = choice.missingAttributes.join(", ");
             choice.disabled = `Your userpool is configured to require ${newList.substring(
               0,
-              newList.length,
+              newList.length
             )}, which cannot be retrieved from ${choice.name}`;
           }
         });
@@ -152,47 +152,47 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     }
     question = Object.assign({ choices }, question);
   }
-  if (input.filter === 'attributes') {
+  if (input.filter === "attributes") {
     let choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     choices = JSON.parse(JSON.stringify(choices));
     const attrMap = getAllMaps().attributeProviderMap;
-    choices.forEach(choice => {
+    choices.forEach((choice) => {
       choice.missingProviders = [];
       if (attrMap[choice.value]) {
         Object.values(attrMap[choice.value]).forEach((provider, index) => {
           if (!provider.attr) {
             const providerKey = Object.keys(attrMap[choice.value])[index];
             let providerName = providerKey.charAt(0).toUpperCase() + providerKey.slice(1);
-            if (providerName === 'Loginwithamazon') {
-              providerName = 'Login With Amazon';
+            if (providerName === "Loginwithamazon") {
+              providerName = "Login With Amazon";
             }
-            if (providerName === 'Signinwithapple') {
-              providerName = 'Sign in with Apple';
+            if (providerName === "Signinwithapple") {
+              providerName = "Sign in with Apple";
             }
             choice.missingProviders = choice.missingProviders.length < 1 ? [providerName] : choice.missingProviders.concat(providerName);
           }
         });
         if (choice.missingProviders && choice.missingProviders.length > 0) {
-          const newList = choice.missingProviders.join(', ');
+          const newList = choice.missingProviders.join(", ");
           choice.name = `${choice.name} (This attribute is not supported by ${newList.substring(0, newList.length)}.)`;
         }
       }
     });
     question = Object.assign({ choices }, question);
   }
-  if (input.filter === 'updateOptions' && context.updatingAuth) {
+  if (input.filter === "updateOptions" && context.updatingAuth) {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const newChoices = JSON.parse(JSON.stringify(choices));
-    choices.forEach(c => {
-      if (c.conditionKey === 'useDefault' && context.updatingAuth[c.conditionKey] === c.value && !c.conditionMsg) {
-        const index = newChoices.findIndex(i => i.name === c.name);
+    choices.forEach((c) => {
+      if (c.conditionKey === "useDefault" && context.updatingAuth[c.conditionKey] === c.value && !c.conditionMsg) {
+        const index = newChoices.findIndex((i) => i.name === c.name);
         newChoices.splice(index, 1);
       } else if (c.conditionMsg && !context.updatingAuth[c.conditionKey]) {
-        if (context.updatingAuth.useDefault === 'defaultSocial') {
-          const index = newChoices.findIndex(i => i.name === c.name);
+        if (context.updatingAuth.useDefault === "defaultSocial") {
+          const index = newChoices.findIndex((i) => i.name === c.name);
           newChoices[index].disabled = `Disabled: ${c.conditionMsg}`;
         } else {
-          const index = newChoices.findIndex(i => i.name === c.name);
+          const index = newChoices.findIndex((i) => i.name === c.name);
           newChoices.splice(index, 1);
         }
       }
@@ -206,14 +206,14 @@ function triggerDefaults(context, input, availableOptions) {
   const capabilityDefaults = [];
   if (context.updatingAuth.triggers) {
     const current =
-      typeof context.updatingAuth[input.key] === 'string' ? JSON.parse(context.updatingAuth[input.key]) : context.updatingAuth[input.key];
+      typeof context.updatingAuth[input.key] === "string" ? JSON.parse(context.updatingAuth[input.key]) : context.updatingAuth[input.key];
     try {
       if (current) {
-        availableOptions.forEach(a => {
+        availableOptions.forEach((a) => {
           let match = true;
-          Object.keys(a.triggers).forEach(t => {
+          Object.keys(a.triggers).forEach((t) => {
             if (current[t]) {
-              const test = a.triggers[t].every(c => current[t].includes(c));
+              const test = a.triggers[t].every((c) => current[t].includes(c));
               if (!test) {
                 match = false;
               }
@@ -227,7 +227,7 @@ function triggerDefaults(context, input, availableOptions) {
         });
       }
     } catch (e) {
-      throw new Error('Error parsing capability defaults');
+      throw new Error("Error parsing capability defaults");
     }
   }
   return capabilityDefaults;

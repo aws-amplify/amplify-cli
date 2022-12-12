@@ -1,15 +1,15 @@
 // disabling eslint until this file is migrated to TS
 /* eslint-disable */
-const fs = require('fs-extra');
-const path = require('path');
-const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
-const glob = require('glob');
-const constants = require('../constants/plugin-constants');
-const utils = require('../utils/amplify-context-utils');
-const clientFactory = require('../utils/client-factory');
-const consolePathManager = require('../utils/path-manager');
-const buildUtils = require('./build-utils');
-const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
+const fs = require("fs-extra");
+const path = require("path");
+const { pathManager, PathConstants, stateManager } = require("amplify-cli-core");
+const glob = require("glob");
+const constants = require("../constants/plugin-constants");
+const utils = require("../utils/amplify-context-utils");
+const clientFactory = require("../utils/client-factory");
+const consolePathManager = require("../utils/path-manager");
+const buildUtils = require("./build-utils");
+const { ensureEnvParamManager } = require("@aws-amplify/amplify-environment-parameters");
 
 function initCFNTemplate(context, templateFilePath) {
   const templateContent = context.amplify.readJsonFile(templateFilePath);
@@ -19,7 +19,7 @@ function initCFNTemplate(context, templateFilePath) {
   fs.ensureDirSync(serviceDirPath);
 
   const jsonString = JSON.stringify(templateContent, null, 4);
-  fs.writeFileSync(consolePathManager.getTemplatePath(context), jsonString, 'utf8');
+  fs.writeFileSync(consolePathManager.getTemplatePath(context), jsonString, "utf8");
 }
 
 async function initMetaFile(context, category, resourceName, type) {
@@ -135,17 +135,19 @@ function initBackendConfig(context, category, resourceName, type) {
 }
 
 async function loadConsoleConfigFromTeamProviderinfo() {
-  return (await ensureEnvParamManager()).instance.getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).getAllParams();
+  return (await ensureEnvParamManager()).instance
+    .getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME)
+    .getAllParams();
 }
 
 async function storeCurrentCloudBackend(context) {
   const s3 = await clientFactory.getS3Client(context);
-  const zipFilename = '#current-cloud-backend.zip';
+  const zipFilename = "#current-cloud-backend.zip";
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-  const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-  const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
+  const amplifyMetaFilePath = path.join(currentCloudBackendDir, "amplify-meta.json");
+  const backendConfigFilePath = path.join(currentCloudBackendDir, "backend-config.json");
 
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
@@ -160,8 +162,8 @@ async function storeCurrentCloudBackend(context) {
 
     await buildUtils.zipFile(currentCloudBackendDir, zipFilePath, cliJSONFiles);
     await uploadFile(s3, zipFilePath, zipFilename);
-    await uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json');
-    await uploadFile(s3, backendConfigFilePath, 'backend-config.json');
+    await uploadFile(s3, amplifyMetaFilePath, "amplify-meta.json");
+    await uploadFile(s3, backendConfigFilePath, "backend-config.json");
   } finally {
     fs.removeSync(tempDir);
   }
@@ -173,7 +175,7 @@ async function uploadFile(s3, filePath, key) {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName
+    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
     await s3.putObject(s3Params).promise();
     return projectBucket;

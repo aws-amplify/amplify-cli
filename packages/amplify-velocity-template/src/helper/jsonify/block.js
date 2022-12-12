@@ -1,15 +1,15 @@
-module.exports = function(Velocity, utils, BLOCK_TYPES) {
+module.exports = function (Velocity, utils, BLOCK_TYPES) {
   function getUnique(arrs) {
     var objs = {};
-    utils.forEach(arrs, function(arr) {
+    utils.forEach(arrs, function (arr) {
       objs[arr] = 1;
     });
     return utils.keys(objs);
   }
   utils.mixin(Velocity.prototype, {
-    getBlock: function(block) {
+    getBlock: function (block) {
       var ast = block[0];
-      var ret = '';
+      var ret = "";
       var _block = [ast];
       var _inBlock = [];
       var index = 0;
@@ -19,12 +19,12 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
        * _inBlock 最后成为_block的一个元素，_inBlock数组作为一个block数组，求值
        * 过程中，可以通过递归求值，进入下一层嵌套
        */
-      utils.forEach(block, function(ast, i) {
+      utils.forEach(block, function (ast, i) {
         if (i) {
           if (BLOCK_TYPES.indexOf(ast.type) !== -1) {
             index++;
             _inBlock.push(ast);
-          } else if (ast.type === 'end') {
+          } else if (ast.type === "end") {
             index--;
             if (index) {
               _inBlock.push(ast);
@@ -38,29 +38,29 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
         }
       });
 
-      if (ast.type === 'if') {
+      if (ast.type === "if") {
         ret = this.getBlockIf(_block);
-      } else if (ast.type === 'foreach') {
+      } else if (ast.type === "foreach") {
         ret = this.getBlockEach(_block);
-      } else if (ast.type === 'macro') {
+      } else if (ast.type === "macro") {
         this.setBlockMacro(_block);
       }
 
       return ret;
     },
 
-    getBlockIf: function(block) {
-      var str = '';
+    getBlockIf: function (block) {
+      var str = "";
       var asts = [];
       var condition = block[0].condition;
       //console.log(condition);
       this.getExpression(condition);
       utils.forEach(
         block,
-        function(ast, i) {
-          if (ast.type === 'elseif') {
+        function (ast, i) {
+          if (ast.type === "elseif") {
             this.getExpression(ast.condition);
-          } else if (ast.type !== 'else' && i) {
+          } else if (ast.type !== "else" && i) {
             asts.push(ast);
           }
         },
@@ -73,7 +73,7 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
     /**
      * define macro
      */
-    setBlockMacro: function(block) {
+    setBlockMacro: function (block) {
       var ast = block[0];
       var _block = block.slice(1);
       var macros = this.macros;
@@ -84,13 +84,13 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       };
     },
 
-    getBlockEach: function(block) {
+    getBlockEach: function (block) {
       var ast = block[0];
       var guid = utils.guid();
-      var contextId = 'foreach:' + guid;
+      var contextId = "foreach:" + guid;
       var local = {
-        type: 'foreach',
-        variable: [ast.to, 'velocityCount'],
+        type: "foreach",
+        variable: [ast.to, "velocityCount"],
         maps: [ast.from],
         ast: ast,
         context: {},
@@ -106,7 +106,7 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       if (local.objectKeys.length) {
         if (local.real) {
           var vmText = this.getRefText(local.real);
-          var vm = this._callMacro('objects', vmText, getUnique(local.objectKeys));
+          var vm = this._callMacro("objects", vmText, getUnique(local.objectKeys));
           this.setRef(local.real, vm);
         }
       }
@@ -114,13 +114,13 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       this.conditions.pop();
     },
 
-    getMacro: function(ast) {
+    getMacro: function (ast) {
       var macro = this.macros[ast.id];
       if (macro === undefined) {
         macro = this.fns.macros[ast.id];
         if (macro && macro.apply) {
           var _arg = [];
-          utils.forEach(ast.args, function(arg) {
+          utils.forEach(ast.args, function (arg) {
             _arg.push(arg.value);
           });
           macro.apply(this, _arg);
@@ -129,9 +129,9 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
         utils.forEach(ast.args, this.getReferences, this);
 
         var guid = utils.guid();
-        var contextId = 'macro:' + guid;
+        var contextId = "macro:" + guid;
         var local = {
-          type: 'macro',
+          type: "macro",
           variable: this._getArgus(macro.args),
           maps: ast.args || [],
           context: {},
@@ -145,9 +145,9 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       }
     },
 
-    _getArgus: function(args) {
+    _getArgus: function (args) {
       var ret = [];
-      utils.forEach(args, function(arg) {
+      utils.forEach(args, function (arg) {
         ret.push(arg.id);
       });
       return ret;

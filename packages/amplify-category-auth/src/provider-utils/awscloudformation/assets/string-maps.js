@@ -1,76 +1,76 @@
 const messages = {
-  authExists: 'Auth has already been added to this project. To update run amplify update auth.',
+  authExists: "Auth has already been added to this project. To update run amplify update auth.",
   dependenciesExists:
-    '\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n',
+    "\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n",
 };
 
 const learnMoreOption = [
   {
-    name: 'I want to learn more.',
-    value: 'learnMore',
+    name: "I want to learn more.",
+    value: "learnMore",
   },
 ];
 
 const defaultPromptMap = [
   {
-    name: 'Default configuration',
-    value: 'default',
+    name: "Default configuration",
+    value: "default",
   },
   {
-    name: 'Default configuration with Social Provider (Federation)',
-    value: 'defaultSocial',
+    name: "Default configuration with Social Provider (Federation)",
+    value: "defaultSocial",
   },
   {
-    name: 'Manual configuration',
-    value: 'manual',
+    name: "Manual configuration",
+    value: "manual",
   },
   ...learnMoreOption,
 ];
 
 const updateFlowMap = [
   {
-    name: 'Apply default configuration without Social Provider (Federation)',
-    value: 'default',
-    conditionKey: 'useDefault',
+    name: "Apply default configuration without Social Provider (Federation)",
+    value: "default",
+    conditionKey: "useDefault",
   },
   {
-    name: 'Apply default configuration with Social Provider (Federation)',
-    value: 'defaultSocial',
-    conditionKey: 'useDefault',
+    name: "Apply default configuration with Social Provider (Federation)",
+    value: "defaultSocial",
+    conditionKey: "useDefault",
   },
   {
-    name: 'Walkthrough all the auth configurations',
-    value: 'manual',
+    name: "Walkthrough all the auth configurations",
+    value: "manual",
   },
   {
-    name: 'Add/Edit signin and signout redirect URIs',
-    value: 'callbacks',
-    conditionKey: 'CallbackURLs',
-    conditionMsg: 'You have not initially configured OAuth.',
+    name: "Add/Edit signin and signout redirect URIs",
+    value: "callbacks",
+    conditionKey: "CallbackURLs",
+    conditionMsg: "You have not initially configured OAuth.",
   },
   {
-    name: 'Update OAuth social providers',
-    value: 'providers',
-    conditionKey: 'hostedUIProviderCreds',
-    conditionMsg: 'You have not initially configured OAuth.',
+    name: "Update OAuth social providers",
+    value: "providers",
+    conditionKey: "hostedUIProviderCreds",
+    conditionMsg: "You have not initially configured OAuth.",
   },
   {
-    name: 'Create or update Cognito user pool groups',
-    value: 'updateUserPoolGroups',
+    name: "Create or update Cognito user pool groups",
+    value: "updateUserPoolGroups",
   },
   {
-    name: 'Create or update Admin queries API',
-    value: 'updateAdminQueries',
+    name: "Create or update Admin queries API",
+    value: "updateAdminQueries",
   },
 ];
 
 const booleanOptions = [
   {
-    name: 'Yes',
+    name: "Yes",
     value: true,
   },
   {
-    name: 'No',
+    name: "No",
     value: false,
   },
   ...learnMoreOption,
@@ -78,50 +78,50 @@ const booleanOptions = [
 
 const mfaOptions = [
   {
-    name: 'OFF',
-    value: 'OFF',
+    name: "OFF",
+    value: "OFF",
   },
   {
-    name: 'ON (Required for all logins, can not be enabled later)',
-    value: 'ON',
+    name: "ON (Required for all logins, can not be enabled later)",
+    value: "ON",
   },
   {
-    name: 'OPTIONAL (Individual users can use MFA)',
-    value: 'OPTIONAL',
+    name: "OPTIONAL (Individual users can use MFA)",
+    value: "OPTIONAL",
   },
   ...learnMoreOption,
 ];
 
 const mfaMethods = [
   {
-    name: 'SMS Text Message',
-    value: 'SMS Text Message',
+    name: "SMS Text Message",
+    value: "SMS Text Message",
   },
   {
-    name: 'Time-Based One-Time Password (TOTP)',
-    value: 'TOTP',
+    name: "Time-Based One-Time Password (TOTP)",
+    value: "TOTP",
   },
 ];
 
 const emailRegistration = [
   {
-    name: 'Enabled (Requires per-user email entry at registration)',
-    value: ['email'],
+    name: "Enabled (Requires per-user email entry at registration)",
+    value: ["email"],
   },
   {
-    name: 'Disabled (Uses SMS/TOTP as an alternative)',
-    value: ['phone_number'],
+    name: "Disabled (Uses SMS/TOTP as an alternative)",
+    value: ["phone_number"],
   },
 ];
 
 const authSelectionMap = [
   {
-    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
-    value: 'identityPoolAndUserPool',
+    name: "User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)",
+    value: "identityPoolAndUserPool",
   },
   {
-    name: 'User Sign-Up & Sign-In only (Best used with a cloud API only)',
-    value: 'userPoolOnly',
+    name: "User Sign-Up & Sign-In only (Best used with a cloud API only)",
+    value: "userPoolOnly",
   },
   // {
   //   name: 'Identity Pool Only',
@@ -139,89 +139,89 @@ const attributeProviderMap = {
   },
   birthdate: {
     facebook: {
-      attr: 'birthday',
-      scope: 'public_profile',
+      attr: "birthday",
+      scope: "public_profile",
     },
     google: {
-      attr: 'birthdays',
-      scope: 'profile',
+      attr: "birthdays",
+      scope: "profile",
     },
     loginwithamazon: {},
     signinwithapple: {},
   },
   email: {
     facebook: {
-      attr: 'email',
-      scope: 'email',
+      attr: "email",
+      scope: "email",
     },
     google: {
-      attr: 'email',
-      scope: 'email',
+      attr: "email",
+      scope: "email",
     },
     loginwithamazon: {
-      attr: 'email',
-      scope: 'profile',
+      attr: "email",
+      scope: "profile",
     },
     signinwithapple: {
-      attr: 'email',
-      scope: 'email',
+      attr: "email",
+      scope: "email",
     },
   },
   family_name: {
     facebook: {
-      attr: 'last_name',
-      scope: 'public_profile',
+      attr: "last_name",
+      scope: "public_profile",
     },
     google: {
-      attr: 'family_name',
-      scope: 'profile',
+      attr: "family_name",
+      scope: "profile",
     },
     loginwithamazon: {},
     signinwithapple: {
-      attr: 'lastName',
-      scope: 'name',
+      attr: "lastName",
+      scope: "name",
     },
   },
   gender: {
     facebook: {
-      attr: 'gender',
-      scope: 'public_profile',
+      attr: "gender",
+      scope: "public_profile",
     },
     google: {
-      attr: 'genders',
-      scope: 'profile',
+      attr: "genders",
+      scope: "profile",
     },
     loginwithamazon: {},
     signinwithapple: {},
   },
   given_name: {
     facebook: {
-      attr: 'first_name',
-      scope: 'public_profile',
+      attr: "first_name",
+      scope: "public_profile",
     },
     google: {
-      attr: 'given_name',
-      scope: 'profile',
+      attr: "given_name",
+      scope: "profile",
     },
     loginwithamazon: {},
     signinwithapple: {
-      attr: 'firstName',
-      scope: 'name',
+      attr: "firstName",
+      scope: "name",
     },
   },
   locale: {
     facebook: {},
     google: {},
     loginwithamazon: {
-      attr: 'postal_code',
-      scope: 'postal_code',
+      attr: "postal_code",
+      scope: "postal_code",
     },
     signinwithapple: {},
   },
   middle_name: {
     facebook: {
-      attr: 'middle_name',
-      scope: 'public_profile',
+      attr: "middle_name",
+      scope: "public_profile",
     },
     google: {},
     loginwithamazon: {},
@@ -229,20 +229,20 @@ const attributeProviderMap = {
   },
   name: {
     facebook: {
-      attr: 'name',
-      scope: 'public_profile',
+      attr: "name",
+      scope: "public_profile",
     },
     google: {
-      attr: 'name',
-      scope: 'profile',
+      attr: "name",
+      scope: "profile",
     },
     loginwithamazon: {
-      attr: 'name',
-      scope: 'profile',
+      attr: "name",
+      scope: "profile",
     },
     signinwithapple: {
-      attr: 'name',
-      scope: 'name',
+      attr: "name",
+      scope: "name",
     },
   },
   nickname: {
@@ -254,20 +254,20 @@ const attributeProviderMap = {
   phone_number: {
     facebook: {},
     google: {
-      attr: 'phoneNumbers',
-      scope: 'profile',
+      attr: "phoneNumbers",
+      scope: "profile",
     },
     loginwithamazon: {},
     signinwithapple: {},
   },
   picture: {
     facebook: {
-      attr: 'picture',
-      scope: 'public_profile',
+      attr: "picture",
+      scope: "public_profile",
     },
     google: {
-      attr: 'picture',
-      scope: 'profile',
+      attr: "picture",
+      scope: "profile",
     },
     loginwithamazon: {},
     signinwithapple: {},
@@ -298,23 +298,23 @@ const attributeProviderMap = {
   },
   username: {
     facebook: {
-      attr: 'id',
-      scope: 'public_profile',
+      attr: "id",
+      scope: "public_profile",
     },
     google: {
-      attr: 'sub',
-      scope: 'profile',
+      attr: "sub",
+      scope: "profile",
     },
     loginwithamazon: {
-      attr: 'user_id',
-      scope: 'profile:user_id',
+      attr: "user_id",
+      scope: "profile:user_id",
     },
     signinwithapple: {},
   },
   updated_at: {
     facebook: {
-      attr: 'updated_at',
-      scope: 'public_profile',
+      attr: "updated_at",
+      scope: "public_profile",
     },
     google: {},
     loginwithamazon: {},
@@ -324,301 +324,301 @@ const attributeProviderMap = {
 
 const coreAttributes = [
   {
-    name: 'Address',
-    value: 'address',
+    name: "Address",
+    value: "address",
   },
   {
-    name: 'Birthdate',
-    value: 'birthdate',
+    name: "Birthdate",
+    value: "birthdate",
   },
   {
-    name: 'Email',
-    value: 'email',
+    name: "Email",
+    value: "email",
   },
   {
-    name: 'Family Name',
-    value: 'family_name',
+    name: "Family Name",
+    value: "family_name",
   },
   {
-    name: 'Middle Name',
-    value: 'middle_name',
+    name: "Middle Name",
+    value: "middle_name",
   },
   {
-    name: 'Gender',
-    value: 'gender',
+    name: "Gender",
+    value: "gender",
   },
   {
-    name: 'Locale',
-    value: 'locale',
+    name: "Locale",
+    value: "locale",
   },
   {
-    name: 'Given Name',
-    value: 'given_name',
+    name: "Given Name",
+    value: "given_name",
   },
   {
-    name: 'Name',
-    value: 'name',
+    name: "Name",
+    value: "name",
   },
   {
-    name: 'Nickname',
-    value: 'nickname',
+    name: "Nickname",
+    value: "nickname",
   },
   {
-    name: 'Phone Number',
-    value: 'phone_number',
+    name: "Phone Number",
+    value: "phone_number",
   },
   {
-    name: 'Preferred Username',
-    value: 'preferred_username',
+    name: "Preferred Username",
+    value: "preferred_username",
   },
   {
-    name: 'Picture',
-    value: 'picture',
+    name: "Picture",
+    value: "picture",
   },
   {
-    name: 'Profile',
-    value: 'profile',
+    name: "Profile",
+    value: "profile",
   },
   {
-    name: 'Updated At',
-    value: 'updated_at',
+    name: "Updated At",
+    value: "updated_at",
   },
   {
-    name: 'Website',
-    value: 'website',
+    name: "Website",
+    value: "website",
   },
   {
-    name: 'Zone Info',
-    value: 'zoneinfo',
+    name: "Zone Info",
+    value: "zoneinfo",
   },
 ];
 
 const aliasAttributes = [
   {
-    name: 'Email',
-    value: 'email',
+    name: "Email",
+    value: "email",
     checked: true,
   },
   {
-    name: 'Username',
-    value: 'preferred_username',
+    name: "Username",
+    value: "preferred_username",
   },
   {
-    name: 'Phone number',
-    value: 'phone_number',
+    name: "Phone number",
+    value: "phone_number",
   },
 ];
 
 const appClientReadAttributes = [
   ...coreAttributes,
   {
-    name: 'Email Verified?',
-    value: 'email_verified',
+    name: "Email Verified?",
+    value: "email_verified",
   },
   {
-    name: 'Phone Number Verified?',
-    value: 'phone_number_verified',
+    name: "Phone Number Verified?",
+    value: "phone_number_verified",
   },
 ];
 
 const authProviders = [
   {
-    name: 'Facebook',
-    value: 'graph.facebook.com',
-    answerHashKey: 'facebookAppId',
+    name: "Facebook",
+    value: "graph.facebook.com",
+    answerHashKey: "facebookAppId",
   },
   {
-    name: 'Google',
-    value: 'accounts.google.com',
-    answerHashKey: 'googleClientId',
+    name: "Google",
+    value: "accounts.google.com",
+    answerHashKey: "googleClientId",
   },
   {
-    name: 'Amazon',
-    value: 'www.amazon.com',
-    answerHashKey: 'amazonAppId',
+    name: "Amazon",
+    value: "www.amazon.com",
+    answerHashKey: "amazonAppId",
   },
   {
-    name: 'Apple',
-    value: 'appleid.apple.com',
-    answerHashKey: 'appleAppId',
+    name: "Apple",
+    value: "appleid.apple.com",
+    answerHashKey: "appleAppId",
   },
 ];
 
 const hostedUIProviders = [
   {
-    name: 'Facebook',
-    value: 'Facebook',
-    key: 'FACEBOOK',
+    name: "Facebook",
+    value: "Facebook",
+    key: "FACEBOOK",
   },
   {
-    name: 'Google',
-    value: 'Google',
-    key: 'GOOGLE',
+    name: "Google",
+    value: "Google",
+    key: "GOOGLE",
   },
   {
-    name: 'Login With Amazon',
-    value: 'LoginWithAmazon',
-    key: 'AMAZON',
+    name: "Login With Amazon",
+    value: "LoginWithAmazon",
+    key: "AMAZON",
   },
   {
-    name: 'Sign in with Apple',
-    value: 'SignInWithApple',
-    key: 'APPLE',
+    name: "Sign in with Apple",
+    value: "SignInWithApple",
+    key: "APPLE",
   },
 ];
 
 const authorizeScopes = [
   {
-    name: 'Email',
-    value: 'email',
+    name: "Email",
+    value: "email",
   },
   {
-    name: 'Public Profile',
-    value: 'public_profile',
+    name: "Public Profile",
+    value: "public_profile",
   },
 ];
 
 const signInOptions = [
   {
-    name: 'Username',
-    value: 'username',
+    name: "Username",
+    value: "username",
   },
   {
-    name: 'Email',
-    value: 'email',
+    name: "Email",
+    value: "email",
   },
   {
-    name: 'Phone Number',
-    value: 'phone_number',
+    name: "Phone Number",
+    value: "phone_number",
   },
   {
-    name: 'Email or Phone Number',
-    value: 'email, phone_number',
+    name: "Email or Phone Number",
+    value: "email, phone_number",
   },
   ...learnMoreOption,
 ];
 
 const socialLoginOptions = [
   {
-    name: 'Identity Pool',
-    value: 'identityPool',
+    name: "Identity Pool",
+    value: "identityPool",
   },
   {
-    name: 'User Pool',
-    value: 'userPool',
+    name: "User Pool",
+    value: "userPool",
   },
   {
-    name: 'Neither',
+    name: "Neither",
     value: null,
   },
 ];
 
 const oAuthFlows = [
   {
-    name: 'Authorization code grant',
-    value: 'code',
+    name: "Authorization code grant",
+    value: "code",
   },
   {
-    name: 'Implicit grant',
-    value: 'implicit',
+    name: "Implicit grant",
+    value: "implicit",
   },
 ];
 
 const oAuthScopes = [
   {
-    name: 'Phone',
-    value: 'phone',
+    name: "Phone",
+    value: "phone",
   },
   {
-    name: 'Email',
-    value: 'email',
+    name: "Email",
+    value: "email",
   },
   {
-    name: 'OpenID',
-    value: 'openid',
+    name: "OpenID",
+    value: "openid",
   },
   {
-    name: 'Profile',
-    value: 'profile',
+    name: "Profile",
+    value: "profile",
   },
   {
-    name: 'aws.cognito.signin.user.admin',
-    value: 'aws.cognito.signin.user.admin',
+    name: "aws.cognito.signin.user.admin",
+    value: "aws.cognito.signin.user.admin",
   },
 ];
 
 const capabilities = [
   {
-    name: 'Add Google reCaptcha Challenge',
-    value: 'mfaWithCaptcha',
+    name: "Add Google reCaptcha Challenge",
+    value: "mfaWithCaptcha",
     triggers: {
-      DefineAuthChallenge: ['captcha-define-challenge'],
-      CreateAuthChallenge: ['captcha-create-challenge'],
-      VerifyAuthChallengeResponse: ['captcha-verify'],
+      DefineAuthChallenge: ["captcha-define-challenge"],
+      CreateAuthChallenge: ["captcha-create-challenge"],
+      VerifyAuthChallengeResponse: ["captcha-verify"],
     },
   },
   {
-    name: 'Email Verification Link with Redirect',
-    value: 'confirmationRedirect',
+    name: "Email Verification Link with Redirect",
+    value: "confirmationRedirect",
     triggers: {
-      CustomMessage: ['verification-link'],
+      CustomMessage: ["verification-link"],
     },
   },
   {
-    name: 'Add User to Group',
-    value: 'addUserToGroup',
+    name: "Add User to Group",
+    value: "addUserToGroup",
     triggers: {
-      PostConfirmation: ['add-to-group'],
+      PostConfirmation: ["add-to-group"],
     },
   },
   {
-    name: 'Email Domain Filtering (denylist)',
-    value: 'emailDenylist',
+    name: "Email Domain Filtering (denylist)",
+    value: "emailDenylist",
     triggers: {
-      PreSignup: ['email-filter-denylist'],
+      PreSignup: ["email-filter-denylist"],
     },
   },
   {
-    name: 'Email Domain Filtering (allowlist)',
-    value: 'emailAllowlist',
+    name: "Email Domain Filtering (allowlist)",
+    value: "emailAllowlist",
     triggers: {
-      PreSignup: ['email-filter-allowlist'],
+      PreSignup: ["email-filter-allowlist"],
     },
   },
   {
-    name: 'Custom Auth Challenge Flow (basic scaffolding - not for production)',
-    value: 'customAuthScaffolding',
+    name: "Custom Auth Challenge Flow (basic scaffolding - not for production)",
+    value: "customAuthScaffolding",
     triggers: {
-      DefineAuthChallenge: ['boilerplate-define-challenge'],
-      CreateAuthChallenge: ['boilerplate-create-challenge'],
-      VerifyAuthChallengeResponse: ['boilerplate-verify'],
+      DefineAuthChallenge: ["boilerplate-define-challenge"],
+      CreateAuthChallenge: ["boilerplate-create-challenge"],
+      VerifyAuthChallengeResponse: ["boilerplate-verify"],
     },
   },
   {
-    name: 'Override ID Token Claims',
-    value: 'alter-claims',
+    name: "Override ID Token Claims",
+    value: "alter-claims",
     triggers: {
-      PreTokenGeneration: ['alter-claims'],
+      PreTokenGeneration: ["alter-claims"],
     },
   },
 ];
 
 const additonalConfigMap = [
   {
-    name: 'No, I am done.',
+    name: "No, I am done.",
     value: [],
   },
   {
-    name: 'Yes, I want to make some additional changes.',
-    value: ['requiredAttributes', 'triggers'],
+    name: "Yes, I want to make some additional changes.",
+    value: ["requiredAttributes", "triggers"],
   },
 ];
 
 const disableOptionsOnEdit = () => {
-  mfaOptions.find(i => i.value === 'ON').disabled = true;
+  mfaOptions.find((i) => i.value === "ON").disabled = true;
 };
 
-const getAllMaps = edit => {
+const getAllMaps = (edit) => {
   if (edit) {
     disableOptionsOnEdit();
   }

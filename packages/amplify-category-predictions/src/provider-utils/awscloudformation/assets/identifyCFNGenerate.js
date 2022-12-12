@@ -6,39 +6,39 @@
 const generateStorageCFNForLambda = (storageCFNFile, functionName, prefixForAdminTrigger) => {
   // Add reference for the new triggerFunction
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}Arn`,
   };
 
   storageCFNFile.Parameters[`function${functionName}Name`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}Name`,
   };
 
   storageCFNFile.Parameters[`function${functionName}LambdaExecutionRole`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}LambdaExecutionRole`,
   };
 
   storageCFNFile.Parameters.triggerFunction = {
-    Type: 'String',
+    Type: "String",
   };
 
   storageCFNFile.Parameters.adminTriggerFunction = {
-    Type: 'String',
+    Type: "String",
   };
 
-  storageCFNFile.Resources.S3Bucket.DependsOn = ['AdminTriggerPermissions'];
+  storageCFNFile.Resources.S3Bucket.DependsOn = ["AdminTriggerPermissions"];
 
   storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration = {
     LambdaConfigurations: [
       {
-        Event: 's3:ObjectCreated:*',
+        Event: "s3:ObjectCreated:*",
         Filter: {
           S3Key: {
             Rules: [
               {
-                Name: 'prefix',
+                Name: "prefix",
                 Value: prefixForAdminTrigger,
               },
             ],
@@ -49,12 +49,12 @@ const generateStorageCFNForLambda = (storageCFNFile, functionName, prefixForAdmi
         },
       },
       {
-        Event: 's3:ObjectRemoved:*',
+        Event: "s3:ObjectRemoved:*",
         Filter: {
           S3Key: {
             Rules: [
               {
-                Name: 'prefix',
+                Name: "prefix",
                 Value: prefixForAdminTrigger,
               },
             ],
@@ -68,37 +68,37 @@ const generateStorageCFNForLambda = (storageCFNFile, functionName, prefixForAdmi
   };
 
   storageCFNFile.Resources.AdminTriggerPermissions = {
-    Type: 'AWS::Lambda::Permission',
+    Type: "AWS::Lambda::Permission",
     Properties: {
-      Action: 'lambda:InvokeFunction',
+      Action: "lambda:InvokeFunction",
       FunctionName: {
         Ref: `function${functionName}Name`,
       },
-      Principal: 's3.amazonaws.com',
+      Principal: "s3.amazonaws.com",
       SourceAccount: {
-        Ref: 'AWS::AccountId',
+        Ref: "AWS::AccountId",
       },
       SourceArn: {
-        'Fn::Join': [
-          '',
+        "Fn::Join": [
+          "",
           [
-            'arn:aws:s3:::',
+            "arn:aws:s3:::",
             {
-              'Fn::If': [
-                'ShouldNotCreateEnvResources',
+              "Fn::If": [
+                "ShouldNotCreateEnvResources",
                 {
-                  Ref: 'bucketName',
+                  Ref: "bucketName",
                 },
                 {
-                  'Fn::Join': [
-                    '',
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Ref: 'bucketName',
+                        Ref: "bucketName",
                       },
-                      '-',
+                      "-",
                       {
-                        Ref: 'env',
+                        Ref: "env",
                       },
                     ],
                   ],
@@ -112,31 +112,31 @@ const generateStorageCFNForLambda = (storageCFNFile, functionName, prefixForAdmi
   };
 
   storageCFNFile.Resources.S3TriggerBucketPolicy = {
-    Type: 'AWS::IAM::Policy',
-    DependsOn: ['S3Bucket'],
+    Type: "AWS::IAM::Policy",
+    DependsOn: ["S3Bucket"],
     Properties: {
-      PolicyName: 's3-trigger-lambda-execution-policy',
+      PolicyName: "s3-trigger-lambda-execution-policy",
       Roles: [
         {
           Ref: `function${functionName}LambdaExecutionRole`,
         },
       ],
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
+            Effect: "Allow",
+            Action: ["s3:PutObject", "s3:GetObject", "s3:ListBucket", "s3:DeleteObject"],
             Resource: [
               {
-                'Fn::Join': [
-                  '',
+                "Fn::Join": [
+                  "",
                   [
-                    'arn:aws:s3:::',
+                    "arn:aws:s3:::",
                     {
-                      Ref: 'S3Bucket',
+                      Ref: "S3Bucket",
                     },
-                    '/*',
+                    "/*",
                   ],
                 ],
               },
@@ -155,34 +155,34 @@ const generateStorageCFNForLambda = (storageCFNFile, functionName, prefixForAdmi
  */
 const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, prefixForAdminTrigger) => {
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}Arn`,
   };
 
   storageCFNFile.Parameters[`function${functionName}Name`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}Name`,
   };
 
   storageCFNFile.Parameters[`function${functionName}LambdaExecutionRole`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}LambdaExecutionRole`,
   };
 
   storageCFNFile.Parameters.triggerFunction = {
-    Type: 'String',
+    Type: "String",
   };
 
   storageCFNFile.Parameters.adminTriggerFunction = {
-    Type: 'String',
+    Type: "String",
   };
 
-  storageCFNFile.Resources.S3Bucket.DependsOn.push('AdminTriggerPermissions');
+  storageCFNFile.Resources.S3Bucket.DependsOn.push("AdminTriggerPermissions");
 
   // Modify existing notification configuration here//
 
   const lambdaConfigurations = [];
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach(triggers => {
+  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers) => {
     if (!triggers.Filter) {
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -190,14 +190,14 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
             S3Key: {
               Rules: [
                 {
-                  Name: 'prefix',
+                  Name: "prefix",
                   Value: {
-                    'Fn::Join': [
-                      '',
+                    "Fn::Join": [
+                      "",
                       [
-                        'protected/',
+                        "protected/",
                         {
-                          Ref: 'AWS::Region',
+                          Ref: "AWS::Region",
                         },
                       ],
                     ],
@@ -206,7 +206,7 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
               ],
             },
           },
-        }),
+        })
       );
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -214,14 +214,14 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
             S3Key: {
               Rules: [
                 {
-                  Name: 'prefix',
+                  Name: "prefix",
                   Value: {
-                    'Fn::Join': [
-                      '',
+                    "Fn::Join": [
+                      "",
                       [
-                        'private/',
+                        "private/",
                         {
-                          Ref: 'AWS::Region',
+                          Ref: "AWS::Region",
                         },
                       ],
                     ],
@@ -230,7 +230,7 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
               ],
             },
           },
-        }),
+        })
       );
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -238,14 +238,14 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
             S3Key: {
               Rules: [
                 {
-                  Name: 'prefix',
+                  Name: "prefix",
                   Value: {
-                    'Fn::Join': [
-                      '',
+                    "Fn::Join": [
+                      "",
                       [
-                        'public/',
+                        "public/",
                         {
-                          Ref: 'AWS::Region',
+                          Ref: "AWS::Region",
                         },
                       ],
                     ],
@@ -254,7 +254,7 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
               ],
             },
           },
-        }),
+        })
       );
     } else {
       lambdaConfigurations.push(triggers);
@@ -263,12 +263,12 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
 
   lambdaConfigurations.push(
     {
-      Event: 's3:ObjectCreated:*',
+      Event: "s3:ObjectCreated:*",
       Filter: {
         S3Key: {
           Rules: [
             {
-              Name: 'prefix',
+              Name: "prefix",
               Value: prefixForAdminTrigger,
             },
           ],
@@ -279,12 +279,12 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
       },
     },
     {
-      Event: 's3:ObjectRemoved:*',
+      Event: "s3:ObjectRemoved:*",
       Filter: {
         S3Key: {
           Rules: [
             {
-              Name: 'prefix',
+              Name: "prefix",
               Value: prefixForAdminTrigger,
             },
           ],
@@ -293,43 +293,43 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
       Function: {
         Ref: `function${functionName}Arn`,
       },
-    },
+    }
   );
 
   storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConfigurations;
 
   storageCFNFile.Resources.AdminTriggerPermissions = {
-    Type: 'AWS::Lambda::Permission',
+    Type: "AWS::Lambda::Permission",
     Properties: {
-      Action: 'lambda:InvokeFunction',
+      Action: "lambda:InvokeFunction",
       FunctionName: {
         Ref: `function${functionName}Name`,
       },
-      Principal: 's3.amazonaws.com',
+      Principal: "s3.amazonaws.com",
       SourceAccount: {
-        Ref: 'AWS::AccountId',
+        Ref: "AWS::AccountId",
       },
       SourceArn: {
-        'Fn::Join': [
-          '',
+        "Fn::Join": [
+          "",
           [
-            'arn:aws:s3:::',
+            "arn:aws:s3:::",
             {
-              'Fn::If': [
-                'ShouldNotCreateEnvResources',
+              "Fn::If": [
+                "ShouldNotCreateEnvResources",
                 {
-                  Ref: 'bucketName',
+                  Ref: "bucketName",
                 },
                 {
-                  'Fn::Join': [
-                    '',
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Ref: 'bucketName',
+                        Ref: "bucketName",
                       },
-                      '-',
+                      "-",
                       {
-                        Ref: 'env',
+                        Ref: "env",
                       },
                     ],
                   ],
@@ -354,42 +354,42 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
  */
 const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3ResourceName) => {
   identifyCFNFile.Parameters[`function${functionName}Arn`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}Arn`,
   };
 
   identifyCFNFile.Parameters[`function${functionName}Name`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}Name`,
   };
 
   identifyCFNFile.Parameters[`function${functionName}LambdaExecutionRole`] = {
-    Type: 'String',
+    Type: "String",
     Default: `function${functionName}LambdaExecutionRole`,
   };
 
   identifyCFNFile.Parameters[`storage${s3ResourceName}BucketName`] = {
-    Type: 'String',
+    Type: "String",
     Default: `storage${s3ResourceName}BucketName`,
   };
 
   identifyCFNFile.Outputs.collectionId = {
     Value: {
-      'Fn::If': [
-        'ShouldNotCreateEnvResources',
+      "Fn::If": [
+        "ShouldNotCreateEnvResources",
         {
-          Ref: 'resourceName',
+          Ref: "resourceName",
         },
         {
-          'Fn::Join': [
-            '',
+          "Fn::Join": [
+            "",
             [
               {
-                Ref: 'resourceName',
+                Ref: "resourceName",
               },
-              '-',
+              "-",
               {
-                Ref: 'env',
+                Ref: "env",
               },
             ],
           ],
@@ -399,51 +399,51 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
   };
 
   identifyCFNFile.Resources.LambdaRekognitionAccessPolicy = {
-    Type: 'AWS::IAM::Policy',
+    Type: "AWS::IAM::Policy",
     Properties: {
-      PolicyName: 'amplify-lambda-execution-rekognition-policy',
+      PolicyName: "amplify-lambda-execution-rekognition-policy",
       Roles: [
         {
           Ref: `function${functionName}LambdaExecutionRole`,
         },
       ],
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: ['rekognition:ListFaces', 'rekognition:IndexFaces', 'rekognition:DeleteFaces'],
+            Effect: "Allow",
+            Action: ["rekognition:ListFaces", "rekognition:IndexFaces", "rekognition:DeleteFaces"],
             Resource: [
               {
-                'Fn::Join': [
-                  '',
+                "Fn::Join": [
+                  "",
                   [
-                    'arn:aws:rekognition:',
+                    "arn:aws:rekognition:",
                     {
-                      Ref: 'AWS::Region',
+                      Ref: "AWS::Region",
                     },
-                    ':',
+                    ":",
                     {
-                      Ref: 'AWS::AccountId',
+                      Ref: "AWS::AccountId",
                     },
-                    ':',
-                    'collection/',
+                    ":",
+                    "collection/",
                     {
-                      'Fn::If': [
-                        'ShouldNotCreateEnvResources',
+                      "Fn::If": [
+                        "ShouldNotCreateEnvResources",
                         {
-                          Ref: 'resourceName',
+                          Ref: "resourceName",
                         },
                         {
-                          'Fn::Join': [
-                            '',
+                          "Fn::Join": [
+                            "",
                             [
                               {
-                                Ref: 'resourceName',
+                                Ref: "resourceName",
                               },
-                              '-',
+                              "-",
                               {
-                                Ref: 'env',
+                                Ref: "env",
                               },
                             ],
                           ],
@@ -461,116 +461,116 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
   };
 
   identifyCFNFile.Resources.CollectionCreationFunction = {
-    Type: 'AWS::Lambda::Function',
+    Type: "AWS::Lambda::Function",
     Properties: {
       Code: {
         ZipFile: {
-          'Fn::Join': [
-            '\n',
+          "Fn::Join": [
+            "\n",
             [
               "const response = require('cfn-response');",
               "const aws = require('aws-sdk');",
-              'let responseData = {};',
-              'exports.handler = function(event, context) {',
-              '  try {',
+              "let responseData = {};",
+              "exports.handler = function(event, context) {",
+              "  try {",
               "    if (event.RequestType == 'Delete') {",
-              '        let params = {',
-              '           CollectionId: event.ResourceProperties.collectionId',
-              '        };',
+              "        let params = {",
+              "           CollectionId: event.ResourceProperties.collectionId",
+              "        };",
               "        const rekognition = new aws.Rekognition({ apiVersion: '2016-06-27', region: event.ResourceProperties.region });",
-              '        rekognition.deleteCollection(params).promise()',
-              '        .then((res) => {',
+              "        rekognition.deleteCollection(params).promise()",
+              "        .then((res) => {",
               '        console.log("delete" + res);',
               '        console.log("response data" + JSON.stringify(res));',
-              '        response.send(event, context, response.SUCCESS, res);',
-              '     }).catch(err => {',
-              '        if (err.code !== \'ParameterNotFound\') {',
-              '          response.send(event, context, response.FAILED);',
-              '        } else {',
-              '          response.send(event, context, response.SUCCESS);',
-              '        }',
-              '     });',
-              '    }',
+              "        response.send(event, context, response.SUCCESS, res);",
+              "     }).catch(err => {",
+              "        if (err.code !== 'ParameterNotFound') {",
+              "          response.send(event, context, response.FAILED);",
+              "        } else {",
+              "          response.send(event, context, response.SUCCESS);",
+              "        }",
+              "     });",
+              "    }",
               "    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
-              '       const collectionId = event.ResourceProperties.collectionId;',
-              '       const params = {',
-              '          CollectionId: collectionId',
-              '       };',
+              "       const collectionId = event.ResourceProperties.collectionId;",
+              "       const params = {",
+              "          CollectionId: collectionId",
+              "       };",
               "       const rekognition = new aws.Rekognition({ apiVersion: '2016-06-27', region: event.ResourceProperties.region });",
-              '       rekognition.listCollections({}).promise()',
-              '       .then((res) => {',
-              '       let {CollectionIds} = res;',
+              "       rekognition.listCollections({}).promise()",
+              "       .then((res) => {",
+              "       let {CollectionIds} = res;",
               '       console.log("CollectionIds" + CollectionIds);',
-              '       if(CollectionIds.indexOf(collectionId) !== -1) {',
-              '         response.send(event, context, response.SUCCESS, responseData);',
-              '       } else {',
-              '           rekognition.createCollection(params).promise()',
-              '           .then((res1) => {',
-              '           responseData = res1;',
+              "       if(CollectionIds.indexOf(collectionId) !== -1) {",
+              "         response.send(event, context, response.SUCCESS, responseData);",
+              "       } else {",
+              "           rekognition.createCollection(params).promise()",
+              "           .then((res1) => {",
+              "           responseData = res1;",
               '           console.log("responseData" + JSON.stringify(responseData)); console.log(collectionId);',
-              '           let s3 = new aws.S3();',
-              '           let params = {',
-              '           Bucket: event.ResourceProperties.bucketName,',
+              "           let s3 = new aws.S3();",
+              "           let params = {",
+              "           Bucket: event.ResourceProperties.bucketName,",
               '           Key: "protected/predictions/index-faces/admin/"',
-              '           };',
-              '           s3.putObject(params).promise()',
-              '           .then((s3Res) => {',
-              '           if (s3Res.ETag) {',
-              '              response.send(event, context, response.SUCCESS, responseData);',
-              '           }',
-              '           else {',
-              '               response.send(event, context, response.FAILED, s3Res);',
-              '           }',
-              '           });',
-              '       });',
-              '    }',
-              '    });',
-              '    }',
-              '  } catch(err) {',
-              '       console.log(err.stack);',
-              '       responseData = {Error: err};',
-              '       response.send(event, context, response.FAILED, responseData);',
-              '       throw err;',
-              '  }',
-              '};',
+              "           };",
+              "           s3.putObject(params).promise()",
+              "           .then((s3Res) => {",
+              "           if (s3Res.ETag) {",
+              "              response.send(event, context, response.SUCCESS, responseData);",
+              "           }",
+              "           else {",
+              "               response.send(event, context, response.FAILED, s3Res);",
+              "           }",
+              "           });",
+              "       });",
+              "    }",
+              "    });",
+              "    }",
+              "  } catch(err) {",
+              "       console.log(err.stack);",
+              "       responseData = {Error: err};",
+              "       response.send(event, context, response.FAILED, responseData);",
+              "       throw err;",
+              "  }",
+              "};",
             ],
           ],
         },
       },
-      Handler: 'index.handler',
-      Runtime: 'nodejs14.x',
+      Handler: "index.handler",
+      Runtime: "nodejs14.x",
       Timeout: 300,
       Role: {
-        'Fn::GetAtt': ['CollectionsLambdaExecutionRole', 'Arn'],
+        "Fn::GetAtt": ["CollectionsLambdaExecutionRole", "Arn"],
       },
     },
   };
 
   identifyCFNFile.Resources.CollectionFunctionOutputs = {
-    Type: 'Custom::LambdaCallout',
+    Type: "Custom::LambdaCallout",
     Properties: {
       ServiceToken: {
-        'Fn::GetAtt': ['CollectionCreationFunction', 'Arn'],
+        "Fn::GetAtt": ["CollectionCreationFunction", "Arn"],
       },
       region: {
-        Ref: 'AWS::Region',
+        Ref: "AWS::Region",
       },
       collectionId: {
-        'Fn::If': [
-          'ShouldNotCreateEnvResources',
+        "Fn::If": [
+          "ShouldNotCreateEnvResources",
           {
-            Ref: 'resourceName',
+            Ref: "resourceName",
           },
           {
-            'Fn::Join': [
-              '',
+            "Fn::Join": [
+              "",
               [
                 {
-                  Ref: 'resourceName',
+                  Ref: "resourceName",
                 },
-                '-',
+                "-",
                 {
-                  Ref: 'env',
+                  Ref: "env",
                 },
               ],
             ],
@@ -584,30 +584,26 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
   };
 
   identifyCFNFile.Resources.LambdaCloudWatchPolicy = {
-    Type: 'AWS::IAM::Policy',
+    Type: "AWS::IAM::Policy",
     Properties: {
-      PolicyName: 'CollectionsLambdaCloudWatchPolicy',
+      PolicyName: "CollectionsLambdaCloudWatchPolicy",
       Roles: [
         {
-          Ref: 'CollectionsLambdaExecutionRole',
+          Ref: "CollectionsLambdaExecutionRole",
         },
       ],
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Effect: "Allow",
+            Action: ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
             Resource: {
-              'Fn::Sub': [
-                'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*',
+              "Fn::Sub": [
+                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*",
                 {
                   lambdaName: {
-                    Ref: 'CollectionCreationFunction',
+                    Ref: "CollectionCreationFunction",
                   },
                 },
               ],
@@ -619,24 +615,24 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
   };
 
   identifyCFNFile.Resources.CollectionsLambdaExecutionRole = {
-    Type: 'AWS::IAM::Role',
+    Type: "AWS::IAM::Role",
     Properties: {
       RoleName: {
-        'Fn::If': [
-          'ShouldNotCreateEnvResources',
+        "Fn::If": [
+          "ShouldNotCreateEnvResources",
           {
-            Ref: 'resourceName',
+            Ref: "resourceName",
           },
           {
-            'Fn::Join': [
-              '',
+            "Fn::Join": [
+              "",
               [
                 {
-                  Ref: 'resourceName',
+                  Ref: "resourceName",
                 },
-                '-',
+                "-",
                 {
-                  Ref: 'env',
+                  Ref: "env",
                 },
               ],
             ],
@@ -644,55 +640,55 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
         ],
       },
       AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
+            Effect: "Allow",
             Principal: {
-              Service: ['lambda.amazonaws.com'],
+              Service: ["lambda.amazonaws.com"],
             },
-            Action: ['sts:AssumeRole'],
+            Action: ["sts:AssumeRole"],
           },
         ],
       },
       Policies: [
         {
           PolicyName: {
-            Ref: 'identifyPolicyName',
+            Ref: "identifyPolicyName",
           },
           PolicyDocument: {
-            Version: '2012-10-17',
+            Version: "2012-10-17",
             Statement: [
               {
-                Effect: 'Allow',
-                Action: ['rekognition:CreateCollection', 'rekognition:DeleteCollection', 's3:PutObject'],
+                Effect: "Allow",
+                Action: ["rekognition:CreateCollection", "rekognition:DeleteCollection", "s3:PutObject"],
                 Resource: [
                   {
-                    'Fn::Join': [
-                      '',
+                    "Fn::Join": [
+                      "",
                       [
-                        'arn:aws:rekognition:',
-                        { Ref: 'AWS::Region' },
-                        ':',
-                        { Ref: 'AWS::AccountId' },
-                        ':',
-                        'collection/',
+                        "arn:aws:rekognition:",
+                        { Ref: "AWS::Region" },
+                        ":",
+                        { Ref: "AWS::AccountId" },
+                        ":",
+                        "collection/",
                         {
-                          'Fn::If': [
-                            'ShouldNotCreateEnvResources',
+                          "Fn::If": [
+                            "ShouldNotCreateEnvResources",
                             {
-                              Ref: 'resourceName',
+                              Ref: "resourceName",
                             },
                             {
-                              'Fn::Join': [
-                                '',
+                              "Fn::Join": [
+                                "",
                                 [
                                   {
-                                    Ref: 'resourceName',
+                                    Ref: "resourceName",
                                   },
-                                  '-',
+                                  "-",
                                   {
-                                    Ref: 'env',
+                                    Ref: "env",
                                   },
                                 ],
                               ],
@@ -703,23 +699,23 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
                     ],
                   },
                   {
-                    'Fn::Join': [
-                      '',
+                    "Fn::Join": [
+                      "",
                       [
-                        'arn:aws:s3:::',
+                        "arn:aws:s3:::",
                         {
                           Ref: `storage${s3ResourceName}BucketName`,
                         },
-                        '/*',
+                        "/*",
                       ],
                     ],
                   },
                 ],
               },
               {
-                Effect: 'Allow',
-                Action: ['rekognition:ListCollections'],
-                Resource: '*',
+                Effect: "Allow",
+                Action: ["rekognition:ListCollections"],
+                Resource: "*",
               },
             ],
           },
@@ -736,38 +732,38 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
  */
 const generateStorageAccessForRekognition = (identifyCFNFile, s3ResourceName, prefixForAdminTrigger) => {
   identifyCFNFile.Parameters[`storage${s3ResourceName}BucketName`] = {
-    Type: 'String',
+    Type: "String",
     Default: `storage${s3ResourceName}BucketName`,
   };
 
   // eslint-disable-next-line spellcheck/spell-checker
   identifyCFNFile.Resources.S3AuthPredicitionsAdminProtectedPolicy = {
-    Condition: 'CreateAdminAuthProtected',
-    Type: 'AWS::IAM::Policy',
+    Condition: "CreateAdminAuthProtected",
+    Type: "AWS::IAM::Policy",
     Properties: {
-      PolicyName: 'S3RekognitionAuthAdminFolderAccess',
+      PolicyName: "S3RekognitionAuthAdminFolderAccess",
       Roles: [
         {
-          Ref: 'authRoleName',
+          Ref: "authRoleName",
         },
       ],
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: ['s3:DeleteObject', 's3:GetObject', 's3:PutObject'],
+            Effect: "Allow",
+            Action: ["s3:DeleteObject", "s3:GetObject", "s3:PutObject"],
             Resource: [
               {
-                'Fn::Join': [
-                  '',
+                "Fn::Join": [
+                  "",
                   [
-                    'arn:aws:s3:::',
+                    "arn:aws:s3:::",
                     {
                       Ref: `storage${s3ResourceName}BucketName`,
                     },
                     `/${prefixForAdminTrigger}`,
-                    '${cognito-identity.amazonaws.com:sub}/*', //eslint-disable-line
+                    "${cognito-identity.amazonaws.com:sub}/*", //eslint-disable-line
                   ],
                 ],
               },
@@ -778,47 +774,47 @@ const generateStorageAccessForRekognition = (identifyCFNFile, s3ResourceName, pr
     },
   };
   identifyCFNFile.Resources.IdentifyEntitiesSearchFacesPolicy = {
-    Type: 'AWS::IAM::Policy',
+    Type: "AWS::IAM::Policy",
     Properties: {
       PolicyName: {
-        'Fn::Join': ['', [{ Ref: 'identifyPolicyName' }, '-', 'searchFaces']],
+        "Fn::Join": ["", [{ Ref: "identifyPolicyName" }, "-", "searchFaces"]],
       },
       Roles: {
-        'Fn::If': ['AuthGuestRoleAccess', [{ Ref: 'authRoleName' }, { Ref: 'unauthRoleName' }], [{ Ref: 'authRoleName' }]],
+        "Fn::If": ["AuthGuestRoleAccess", [{ Ref: "authRoleName" }, { Ref: "unauthRoleName" }], [{ Ref: "authRoleName" }]],
       },
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: ['rekognition:SearchFacesByImage'],
+            Effect: "Allow",
+            Action: ["rekognition:SearchFacesByImage"],
             Resource: [
               {
-                'Fn::Join': [
-                  '',
+                "Fn::Join": [
+                  "",
                   [
-                    'arn:aws:rekognition:',
-                    { Ref: 'AWS::Region' },
-                    ':',
-                    { Ref: 'AWS::AccountId' },
-                    ':',
-                    'collection/',
+                    "arn:aws:rekognition:",
+                    { Ref: "AWS::Region" },
+                    ":",
+                    { Ref: "AWS::AccountId" },
+                    ":",
+                    "collection/",
                     {
-                      'Fn::If': [
-                        'ShouldNotCreateEnvResources',
+                      "Fn::If": [
+                        "ShouldNotCreateEnvResources",
                         {
-                          Ref: 'resourceName',
+                          Ref: "resourceName",
                         },
                         {
-                          'Fn::Join': [
-                            '',
+                          "Fn::Join": [
+                            "",
                             [
                               {
-                                Ref: 'resourceName',
+                                Ref: "resourceName",
                               },
-                              '-',
+                              "-",
                               {
-                                Ref: 'env',
+                                Ref: "env",
                               },
                             ],
                           ],
@@ -836,32 +832,32 @@ const generateStorageAccessForRekognition = (identifyCFNFile, s3ResourceName, pr
   };
   // eslint-disable-next-line spellcheck/spell-checker
   identifyCFNFile.Resources.S3GuestPredicitionsAdminPublicPolicy = {
-    Condition: 'CreateAdminGuestProtected',
-    Type: 'AWS::IAM::Policy',
+    Condition: "CreateAdminGuestProtected",
+    Type: "AWS::IAM::Policy",
     Properties: {
-      PolicyName: 'S3RekognitionGuestAdminFolderAccess',
+      PolicyName: "S3RekognitionGuestAdminFolderAccess",
       Roles: [
         {
-          Ref: 'unauthRoleName',
+          Ref: "unauthRoleName",
         },
       ],
       PolicyDocument: {
-        Version: '2012-10-17',
+        Version: "2012-10-17",
         Statement: [
           {
-            Effect: 'Allow',
-            Action: ['s3:DeleteObject', 's3:GetObject', 's3:PutObject'],
+            Effect: "Allow",
+            Action: ["s3:DeleteObject", "s3:GetObject", "s3:PutObject"],
             Resource: [
               {
-                'Fn::Join': [
-                  '',
+                "Fn::Join": [
+                  "",
                   [
-                    'arn:aws:s3:::',
+                    "arn:aws:s3:::",
                     {
                       Ref: `storage${s3ResourceName}BucketName`,
                     },
                     `/${prefixForAdminTrigger}`,
-                    '${cognito-identity.amazonaws.com:sub}/*', // eslint-disable-line
+                    "${cognito-identity.amazonaws.com:sub}/*", // eslint-disable-line
                   ],
                 ],
               },
@@ -880,14 +876,14 @@ const addObjectKeys = (original, additional) => ({ ...original, ...additional })
 /**
  * Sets rekognition + textract policies
  */
-const addTextractPolicies = identifyCFNFile => {
+const addTextractPolicies = (identifyCFNFile) => {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
-    'rekognition:DetectText',
-    'rekognition:DetectLabel',
-    'textract:AnalyzeDocument',
-    'textract:DetectDocumentText',
-    'textract:GetDocumentAnalysis',
-    'textract:StartDocumentTextDetection',
+    "rekognition:DetectText",
+    "rekognition:DetectLabel",
+    "textract:AnalyzeDocument",
+    "textract:DetectDocumentText",
+    "textract:GetDocumentAnalysis",
+    "textract:StartDocumentTextDetection",
   ];
   return JSON.stringify(identifyCFNFile, null, 4);
 };
@@ -895,10 +891,10 @@ const addTextractPolicies = identifyCFNFile => {
 /**
  * Sets only rekognition policies
  */
-const removeTextractPolicies = identifyCFNFile => {
+const removeTextractPolicies = (identifyCFNFile) => {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
-    'rekognition:DetectText',
-    'rekognition:DetectLabel',
+    "rekognition:DetectText",
+    "rekognition:DetectLabel",
   ];
   return JSON.stringify(identifyCFNFile, null, 4);
 };

@@ -1,8 +1,9 @@
-const response = require('cfn-response');
-const aws = require('aws-sdk');
+const response = require("cfn-response");
+const aws = require("aws-sdk");
 
 exports.handler = async function (event, context) {
-  const physicalResourceId = event.RequestType === 'Update' ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
+  const physicalResourceId =
+    event.RequestType === "Update" ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
 
   try {
     const userPoolId = event.ResourceProperties.userpoolId;
@@ -33,7 +34,7 @@ exports.handler = async function (event, context) {
     };
 
     // removing undefined keys
-    Object.keys(updateUserPoolConfig).forEach(key => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
+    Object.keys(updateUserPoolConfig).forEach((key) => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
 
     /* removing UnusedAccountValidityDays as deprecated
     InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
@@ -41,8 +42,8 @@ exports.handler = async function (event, context) {
     if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
       delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
     }
-    lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
-    if (event.RequestType === 'Delete') {
+    lambdaConfig.forEach((lambda) => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
+    if (event.RequestType === "Delete") {
       try {
         updateUserPoolConfig.LambdaConfig = {};
         console.log(`${event.RequestType}:`, JSON.stringify(updateUserPoolConfig));
@@ -54,7 +55,7 @@ exports.handler = async function (event, context) {
         await response.send(event, context, response.FAILED, { err }, physicalResourceId);
       }
     }
-    if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+    if (event.RequestType === "Update" || event.RequestType === "Create") {
       updateUserPoolConfig.LambdaConfig = config;
       try {
         const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();

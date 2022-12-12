@@ -2,10 +2,10 @@ import {
   invokeS3GetResourceName,
   invokeS3GetUserInputs,
   invokeS3RemoveAdminLambdaTrigger,
-} from '../../provider-utils/awscloudformation/prediction-category-walkthroughs/storage-api';
-const subcommand = 'remove';
-const category = 'predictions';
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+} from "../../provider-utils/awscloudformation/prediction-category-walkthroughs/storage-api";
+const subcommand = "remove";
+const category = "predictions";
+const { ResourceDoesNotExistError, exitOnNextTick } = require("amplify-cli-core");
 
 async function removePredictionsS3Resources(context) {
   const s3ResourceName = await invokeS3GetResourceName(context);
@@ -14,7 +14,7 @@ async function removePredictionsS3Resources(context) {
   }
   const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName);
   if (!s3UserInputs) {
-    context.usageData.emitError(new ResourceDoesNotExistError('S3 Resource not initialized correctly may require migration'));
+    context.usageData.emitError(new ResourceDoesNotExistError("S3 Resource not initialized correctly may require migration"));
     exitOnNextTick(0);
     return;
   }
@@ -32,7 +32,7 @@ async function removePredictionsResources(context) {
     await removePredictionsS3Resources(context);
   } catch (err) {
     context.print.info(err.stack);
-    context.print.error('An error occurred when removing the predictions resource');
+    context.print.error("An error occurred when removing the predictions resource");
     context.usageData.emitError(err);
     process.exitCode = 1;
   }

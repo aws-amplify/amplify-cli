@@ -1,14 +1,14 @@
-const response = require('cfn-response');
-const aws = require('aws-sdk');
+const response = require("cfn-response");
+const aws = require("aws-sdk");
 const iam = new aws.IAM();
 exports.handler = (event, context) => {
-  if (event.RequestType == 'Delete') {
+  if (event.RequestType == "Delete") {
     response.send(event, context, response.SUCCESS, {});
   }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+  if (event.RequestType == "Update" || event.RequestType == "Create") {
     const params = {
-      ClientIDList: event.ResourceProperties.clientIdList.split(','),
-      ThumbprintList: ['0000000000000000000000000000000000000000'],
+      ClientIDList: event.ResourceProperties.clientIdList.split(","),
+      ThumbprintList: ["0000000000000000000000000000000000000000"],
       Url: event.ResourceProperties.url,
     };
     let exists = false;
@@ -16,10 +16,10 @@ exports.handler = (event, context) => {
     iam
       .listOpenIDConnectProviders({})
       .promise()
-      .then(data => {
+      .then((data) => {
         if (data.OpenIDConnectProviderList && data.OpenIDConnectProviderList.length > 0) {
-          const vals = data.OpenIDConnectProviderList.map(x => x.Arn);
-          existingValue = vals.find(i => i.split('/')[1] === params.Url.split('//')[1]);
+          const vals = data.OpenIDConnectProviderList.map((x) => x.Arn);
+          existingValue = vals.find((i) => i.split("/")[1] === params.Url.split("//")[1]);
           if (!existingValue) {
             exists = true;
           }
@@ -28,13 +28,13 @@ exports.handler = (event, context) => {
           iam
             .createOpenIDConnectProvider(params)
             .promise()
-            .then(data => {
+            .then((data) => {
               response.send(event, context, response.SUCCESS, {
                 providerArn: data.OpenIDConnectProviderArn,
                 providerIds: params.ClientIDList,
               });
             })
-            .catch(err => {
+            .catch((err) => {
               response.send(event, context, response.FAILED, { err });
             });
         } else {
@@ -44,10 +44,10 @@ exports.handler = (event, context) => {
           iam
             .getOpenIDConnectProvider(findParams)
             .promise()
-            .then(data => {
+            .then((data) => {
               const audiences = data.ClientIDList;
               const updateCalls = [];
-              params.ClientIDList.forEach(a => {
+              params.ClientIDList.forEach((a) => {
                 if (!audiences.includes(a)) {
                   const updateParams = {
                     ClientID: a,
@@ -61,16 +61,16 @@ exports.handler = (event, context) => {
                 .then(function (values) {
                   response.send(event, context, response.SUCCESS, { providerArn: existingValue, providerIds: params.ClientIDList });
                 })
-                .catch(err3 => {
+                .catch((err3) => {
                   response.send(event, context, response.FAILED, { err3 });
                 });
             })
-            .catch(err2 => {
+            .catch((err2) => {
               response.send(event, context, response.FAILED, { err2 });
             });
         }
       })
-      .catch(err1 => {
+      .catch((err1) => {
         response.send(event, context, response.FAILED, { err1 });
       });
   }

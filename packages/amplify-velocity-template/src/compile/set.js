@@ -23,7 +23,7 @@ module.exports = function (Velocity, utils) {
       var context = this.getContext();
 
       // @see #25
-      if (this.condition && this.condition.indexOf('macro:') === 0) {
+      if (this.condition && this.condition.indexOf("macro:") === 0) {
         context = this.context;
       } else {
         // set var to global context, see #100
@@ -33,7 +33,7 @@ module.exports = function (Velocity, utils) {
       var valAst = ast.equal[1];
       var val;
 
-      if (valAst.type === 'math') {
+      if (valAst.type === "math") {
         val = this.getExpression(valAst);
       } else {
         val = this.config.valueMapper(this.getLiteral(ast.equal[1]), valAst.type);
@@ -43,7 +43,7 @@ module.exports = function (Velocity, utils) {
         context[ref.id] = val;
       } else {
         var baseRef = context[ref.id];
-        if (typeof baseRef != 'object') {
+        if (typeof baseRef != "object") {
           baseRef = {};
         }
 
@@ -54,7 +54,7 @@ module.exports = function (Velocity, utils) {
         utils.some(ref.path, function (exp, i) {
           var isEnd = len === i + 1;
           var key = exp.id;
-          if (exp.type === 'index') {
+          if (exp.type === "index") {
             if (exp.id) {
               key = self.getLiteral(exp.id);
             } else {

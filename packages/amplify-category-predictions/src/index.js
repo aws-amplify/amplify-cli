@@ -1,21 +1,21 @@
-import { promptConsoleSupportedCategory } from './provider-utils/supportedPredictions';
+import { promptConsoleSupportedCategory } from "./provider-utils/supportedPredictions";
 
-const predictionsConsole = require('./provider-utils/awscloudformation/index');
-const inquirer = require('inquirer');
-const path = require('path');
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+const predictionsConsole = require("./provider-utils/awscloudformation/index");
+const inquirer = require("inquirer");
+const path = require("path");
+import { ResourceDoesNotExistError, exitOnNextTick } from "amplify-cli-core";
 
-const category = 'predictions';
+const category = "predictions";
 
 async function console(context) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
   return promptConsoleSupportedCategory()
-    .then(async result => {
+    .then(async (result) => {
       result = result.category;
       const predictionsResources = [];
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         if (
           result.services.includes(amplifyMeta[category][resourceName].service) &&
           result.types.includes(amplifyMeta[category][resourceName][result.type])
@@ -36,8 +36,8 @@ async function console(context) {
       let resourceObj = predictionsResources[0].value;
       if (predictionsResources.length > 1) {
         const resourceAnswer = await inquirer.prompt({
-          type: 'list',
-          name: 'resource',
+          type: "list",
+          name: "resource",
           messages: `Select an ${result.category} resource`,
           choices: predictionsResources,
         });
@@ -45,14 +45,14 @@ async function console(context) {
       }
       const providerController = require(`./provider-utils/${result.provider}/index`);
       if (!providerController) {
-        context.print.error('Provider not configured for this category');
+        context.print.error("Provider not configured for this category");
         return;
       }
 
       return providerController.console(context, resourceObj, amplifyMeta);
     })
-    .catch(err => {
-      context.print.error('Error opening console.');
+    .catch((err) => {
+      context.print.error("Error opening console.");
       context.print.info(err.message);
       context.usageData.emitError(err);
       process.exitCode = 1;
@@ -60,8 +60,8 @@ async function console(context) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, category);
   } else {
     commandPath = path.join(commandPath, category, context.input.command);

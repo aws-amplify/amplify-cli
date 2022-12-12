@@ -1,34 +1,34 @@
-const ddbSimulator = require('..');
-const fs = require('fs-extra');
+const ddbSimulator = require("..");
+const fs = require("fs-extra");
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock("amplify-cli-core", () => ({
   pathManager: {
-    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('./'),
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue("./"),
   },
 }));
 
-describe('emulator operations', () => {
+describe("emulator operations", () => {
   const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
   // taken from dynamodb examples.
   const dbParams = {
     AttributeDefinitions: [
       {
-        AttributeName: 'Artist',
-        AttributeType: 'S',
+        AttributeName: "Artist",
+        AttributeType: "S",
       },
       {
-        AttributeName: 'SongTitle',
-        AttributeType: 'S',
+        AttributeName: "SongTitle",
+        AttributeType: "S",
       },
     ],
     KeySchema: [
       {
-        AttributeName: 'Artist',
-        KeyType: 'HASH',
+        AttributeName: "Artist",
+        KeyType: "HASH",
       },
       {
-        AttributeName: 'SongTitle',
-        KeyType: 'RANGE',
+        AttributeName: "SongTitle",
+        KeyType: "RANGE",
       },
     ],
     ProvisionedThroughput: {
@@ -41,8 +41,7 @@ describe('emulator operations', () => {
     if (fs.existsSync(dbPath)) {
       try {
         fs.removeSync(dbPath);
-      }
-      catch(err) {
+      } catch (err) {
         console.log(err);
       }
     }
@@ -60,11 +59,11 @@ describe('emulator operations', () => {
 
   afterEach(async () => {
     process.env = { ...realProcessEnv };
-    await Promise.all(emulators.map(emu => emu.terminate()));
+    await Promise.all(emulators.map((emu) => emu.terminate()));
     ensureNoDbPath();
   });
 
-  it('should support in memory operations', async () => {
+  it("should support in memory operations", async () => {
     const emu = await ddbSimulator.launch();
     emulators.push(emu);
     const dynamo = ddbSimulator.getClient(emu);
@@ -73,13 +72,13 @@ describe('emulator operations', () => {
     expect(tables).toEqual({ TableNames: [] });
   });
 
-  it('should preserve state between restarts with dbPath', async () => {
+  it("should preserve state between restarts with dbPath", async () => {
     const emuOne = await ddbSimulator.launch({ dbPath });
     emulators.push(emuOne);
     const dynamoOne = ddbSimulator.getClient(emuOne);
     await dynamoOne
       .createTable({
-        TableName: 'foo',
+        TableName: "foo",
         ...dbParams,
       })
       .promise();
@@ -90,26 +89,26 @@ describe('emulator operations', () => {
     const dynamoTwo = await ddbSimulator.getClient(emuTwo);
     const t = await dynamoTwo.listTables().promise();
     expect(t).toEqual({
-      TableNames: ['foo'],
+      TableNames: ["foo"],
     });
   });
 
-  it('should start on specific port', async () => {
-    const port = await require('get-port')();
+  it("should start on specific port", async () => {
+    const port = await require("get-port")();
     const emu = await ddbSimulator.launch({ port });
     emulators.push(emu);
     expect(emu.port).toBe(port);
   });
 
-  it('reports on invalid dbPath values', async () => {
+  it("reports on invalid dbPath values", async () => {
     expect.assertions(1);
-    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
+    await expect(ddbSimulator.launch({ dbPath: "dynamodb-data" })).rejects.toThrow("invalid directory for database creation");
   });
 
-  it('reports on invalid dbPath values with extra stderr output', async () => {
+  it("reports on invalid dbPath values with extra stderr output", async () => {
     expect.assertions(1);
     // This makes JVM running DynamoDB simulator print an extra line before surfacing real error.
-    process.env.JAVA_TOOL_OPTIONS = '-Dlog4j2.formatMsgNoLookups=true';
-    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
+    process.env.JAVA_TOOL_OPTIONS = "-Dlog4j2.formatMsgNoLookups=true";
+    await expect(ddbSimulator.launch({ dbPath: "dynamodb-data" })).rejects.toThrow("invalid directory for database creation");
   });
 });

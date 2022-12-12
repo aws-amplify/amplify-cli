@@ -1,4 +1,4 @@
-const eventName = 'PostPush';
+const eventName = "PostPush";
 
 async function run(context, args) {
   // insert your code to handle the amplify cli PostPush event

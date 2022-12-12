@@ -1,8 +1,8 @@
 /* eslint-disable */
-const path = require('path');
-const constants = require('../../constants/plugin-constants');
-const configUtils = require('../../utils/config-utils');
-const messageConstants = require('../../constants/question-constants');
+const path = require("path");
+const constants = require("../../constants/plugin-constants");
+const configUtils = require("../../utils/config-utils");
+const messageConstants = require("../../constants/question-constants");
 
 async function enable(context) {
   // Constants
@@ -11,7 +11,7 @@ async function enable(context) {
   const type = constants.TYPE_MANUAL;
 
   // Init template
-  const templateFilePath = path.join(__dirname, '..', constants.TEMPLATE_DIR, constants.TEMPLATE_FILE_NAME);
+  const templateFilePath = path.join(__dirname, "..", constants.TEMPLATE_DIR, constants.TEMPLATE_FILE_NAME);
   configUtils.initCFNTemplate(context, templateFilePath);
 
   // Init backend config
@@ -23,9 +23,9 @@ async function enable(context) {
   // Init team-provider-info
   await configUtils.initHostingEnvParams(context, category, resourceName, type);
 
-  context.print.info('');
+  context.print.info("");
   context.print.info(messageConstants.POST_ADDING_MESSAGE);
-  context.print.info('');
+  context.print.info("");
   context.print.info(messageConstants.POST_PUBLISH_MESSAGE);
 }
 

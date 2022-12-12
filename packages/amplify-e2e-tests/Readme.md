@@ -35,10 +35,10 @@ env VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true yarn e2e
 ```
 
 ```typescript
-import { amplifyPush, deleteProject, initJSProjectWithProfile } from '../init';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
+import { amplifyPush, deleteProject, initJSProjectWithProfile } from "../init";
+import { createNewProjectDir, deleteProjectDir, getProjectMeta } from "../utils";
 
-describe('amplify your test', () => {
+describe("amplify your test", () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir(); // create a new project for each test
@@ -50,8 +50,8 @@ describe('amplify your test', () => {
     deleteProjectDir(projRoot); // delete the project directory
   });
 
-  it('<your test>', async () => {
-    await initJSProjectWithProfile(projRoot, { name: '<project-name>' });
+  it("<your test>", async () => {
+    await initJSProjectWithProfile(projRoot, { name: "<project-name>" });
     // add resources that you want to test
     await amplifyPush(projRoot); // Push it to the cloud
     const { output } = getProjectMeta(projRoot).api.simplemodel;

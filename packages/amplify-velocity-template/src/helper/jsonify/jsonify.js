@@ -1,7 +1,7 @@
-var Parser = require('../../parse/index');
-var Compile = require('../../compile/index');
-var fs = require('fs');
-var macros = Parser.parse(fs.readFileSync(__dirname + '/macros.vm').toString());
+var Parser = require("../../parse/index");
+var Compile = require("../../compile/index");
+var fs = require("fs");
+var macros = Parser.parse(fs.readFileSync(__dirname + "/macros.vm").toString());
 
 function getVmText(macro, vmText, third) {
   var vm = new Compile(macros);
@@ -12,19 +12,19 @@ function getVmText(macro, vmText, third) {
   });
 }
 
-module.exports = function(Velocity, utils, BLOCK_TYPES) {
+module.exports = function (Velocity, utils, BLOCK_TYPES) {
   function getPath(ast) {
     var ret = [ast.id];
 
-    utils.forEach(ast.path, function(a) {
-      var isIgnore = a.type === 'method' && a.id === 'size';
-      var isGet = a.type === 'method' && a.id.indexOf('get') === 0 && a.args === false;
+    utils.forEach(ast.path, function (a) {
+      var isIgnore = a.type === "method" && a.id === "size";
+      var isGet = a.type === "method" && a.id.indexOf("get") === 0 && a.args === false;
       if (isIgnore) {
         return;
       }
 
-      if (a.type === 'index') {
-        if (a.id && (a.id.type === 'integer' || a.id.type === 'string')) ret.push(a.id.value);
+      if (a.type === "index") {
+        if (a.id && (a.id.type === "integer" || a.id.type === "string")) ret.push(a.id.value);
       } else {
         ret.push(isGet ? a.id.slice(3) : a.id);
       }
@@ -34,32 +34,32 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
   }
 
   utils.mixin(Velocity.prototype, {
-    toBasicType: function(astType) {
+    toBasicType: function (astType) {
       if (astType.ignore) return;
 
       var ast = astType.real;
-      if (ast.type === 'foreach') ast = ast.from;
+      if (ast.type === "foreach") ast = ast.from;
 
-      if (astType.foreach === true && astType.type === 'method') {
+      if (astType.foreach === true && astType.type === "method") {
         var isMaps = true;
       }
 
       this.setRef(ast, this.getLeaf(astType), isMaps);
     },
 
-    setRef: function(ast, text, isMaps) {
+    setRef: function (ast, text, isMaps) {
       var paths = getPath(ast);
       var last = paths.pop();
       var context = this.context;
       var leafs = this.leafs;
       var len = leafs.length;
 
-      if (isMaps && (last === 'entrySet' || last === 'keySet')) last = paths.pop();
+      if (isMaps && (last === "entrySet" || last === "keySet")) last = paths.pop();
 
       utils.forEach(
         paths,
-        function(path) {
-          if (!context[path] || typeof context[path] === 'string') {
+        function (path) {
+          if (!context[path] || typeof context[path] === "string") {
             context[path] = {};
           }
 
@@ -69,16 +69,16 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       );
 
       leafs.push(text);
-      context[last] = '{@' + len + '@}';
+      context[last] = "{@" + len + "@}";
     },
 
-    toVTL: function() {
+    toVTL: function () {
       var leafs = this.leafs;
       var context = JSON.stringify(this.context, false, 2);
 
       utils.forEach(
         leafs,
-        function(leaf, i) {
+        function (leaf, i) {
           var tpl = '"{@' + i + '@}"';
           context = context.replace(tpl, leaf);
         },
@@ -88,15 +88,15 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       return context;
     },
 
-    getLeaf: function(leaf) {
-      var ret = '';
+    getLeaf: function (leaf) {
+      var ret = "";
       var real = leaf.real;
 
       if (!leaf.foreach) {
-        if (leaf.type === 'method') {
+        if (leaf.type === "method") {
           ret = this.getMethodCall(leaf);
         } else {
-          ret = this._callMacro('string', this.getRefText(real));
+          ret = this._callMacro("string", this.getRefText(real));
         }
       } else {
         if (leaf.foreach === true && real.from) {
@@ -109,11 +109,11 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       return ret;
     },
 
-    getMethodInEachCall: function(leaf) {
+    getMethodInEachCall: function (leaf) {
       return '"function(){}"';
     },
 
-    getMethodCall: function(leaf) {
+    getMethodCall: function (leaf) {
       return '"function(){}"';
       /*
        *      var ast = leaf.real;
@@ -137,31 +137,31 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
 
     _callMacro: getVmText,
 
-    getEachVTL: function(leaf) {
+    getEachVTL: function (leaf) {
       var real = leaf.real;
       var paths = getPath(real.from);
       var last = paths.pop();
-      var macro = 'lists';
+      var macro = "lists";
       var vmText = this.getRefText(real.from);
 
-      if (leaf.type === 'method' && last === 'entrySet') {
-        macro = 'maps';
-        vmText = vmText.replace(/\.entrySet\(\)$/, '');
-      } else if (leaf.type === 'method' && last === 'keySet') {
-        macro = 'maps';
-        vmText = vmText.replace(/\.keySet\(\)$/, '');
+      if (leaf.type === "method" && last === "entrySet") {
+        macro = "maps";
+        vmText = vmText.replace(/\.entrySet\(\)$/, "");
+      } else if (leaf.type === "method" && last === "keySet") {
+        macro = "maps";
+        vmText = vmText.replace(/\.keySet\(\)$/, "");
       }
 
       return this._callMacro(macro, vmText);
     },
 
-    eval: function(str) {
+    eval: function (str) {
       if (str) {
         var asts = Parser.parse(str);
         if (this instanceof Velocity) {
           this._render(asts);
         } else {
-          throw new Error('不能改变this指向');
+          throw new Error("不能改变this指向");
         }
       }
     },

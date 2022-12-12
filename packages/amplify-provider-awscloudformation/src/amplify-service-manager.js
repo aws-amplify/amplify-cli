@@ -1,17 +1,17 @@
 // disabling lint until this file is converted to TS
 /* eslint-disable */
-const fs = require('fs-extra');
-const path = require('path');
-const inquirer = require('inquirer');
-const sequential = require('promise-sequential');
-const { S3 } = require('./aws-utils/aws-s3');
-const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
-const { ProviderName, AmplifyAppIdLabel } = require('./constants');
-const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
-const { stateManager, AmplifyFault, AmplifyError } = require('amplify-cli-core');
-const { fileLogger } = require('./utils/aws-logger');
-const { loadConfigurationForEnv } = require('./configuration-manager');
-const logger = fileLogger('amplify-service-manager');
+const fs = require("fs-extra");
+const path = require("path");
+const inquirer = require("inquirer");
+const sequential = require("promise-sequential");
+const { S3 } = require("./aws-utils/aws-s3");
+const { getConfiguredAmplifyClient } = require("./aws-utils/aws-amplify");
+const { ProviderName, AmplifyAppIdLabel } = require("./constants");
+const { checkAmplifyServiceIAMPermission } = require("./amplify-service-permission-check");
+const { stateManager, AmplifyFault, AmplifyError } = require("amplify-cli-core");
+const { fileLogger } = require("./utils/aws-logger");
+const { loadConfigurationForEnv } = require("./configuration-manager");
+const logger = fileLogger("amplify-service-manager");
 
 async function init(amplifyServiceParams) {
   const { context, awsConfigInfo, projectName, envName, stackName } = amplifyServiceParams;
@@ -41,7 +41,7 @@ async function init(amplifyServiceParams) {
 
   if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.appId) {
     const inputAmplifyAppId = context.exeInfo.inputParams.amplify.appId;
-    logger('init.amplifyClient.getApp', [
+    logger("init.amplifyClient.getApp", [
       {
         appId: inputAmplifyAppId,
       },
@@ -56,10 +56,14 @@ async function init(amplifyServiceParams) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
-        message: `Amplify AppID ${inputAmplifyAppId} not found.`,
-        resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      }, e)
+      throw new AmplifyError(
+        "ProjectNotFoundError",
+        {
+          message: `Amplify AppID ${inputAmplifyAppId} not found.`,
+          resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
+        },
+        e
+      );
     }
   }
 
@@ -86,7 +90,7 @@ async function init(amplifyServiceParams) {
         let listAppsResponse = {};
 
         do {
-          logger('init.amplifyClient.listApps', [
+          logger("init.amplifyClient.listApps", [
             {
               nextToken: listAppsResponse.nextToken,
               maxResults: 25,
@@ -101,8 +105,8 @@ async function init(amplifyServiceParams) {
           apps = apps.concat(listAppsResponse.apps);
         } while (listAppsResponse.nextToken);
 
-        const verifiedAppIds = apps.map(app => app.appId);
-        appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter(appId => verifiedAppIds.includes(appId));
+        const verifiedAppIds = apps.map((app) => app.appId);
+        appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter((appId) => verifiedAppIds.includes(appId));
 
         if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
           amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
@@ -120,24 +124,28 @@ async function init(amplifyServiceParams) {
       environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
     };
 
-    logger('init.amplifyClient.createApp', [createAppParams])();
+    logger("init.amplifyClient.createApp", [createAppParams])();
     try {
       if (amplifyAppCreationEnabled()) {
         const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
         amplifyAppId = createAppResponse.app.appId;
       }
     } catch (e) {
-      if (e.code === 'LimitExceededException') {
+      if (e.code === "LimitExceededException") {
         // Do nothing
       } else if (
-        e.code === 'BadRequestException' &&
-        e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
+        e.code === "BadRequestException" &&
+        e.message.includes("Rate exceeded while calling CreateApp, please slow down or try again later.")
       ) {
         // Do nothing
       } else {
-        throw new AmplifyFault('ProjectInitFault', {
-          message: e.message,
-        }, e);
+        throw new AmplifyFault(
+          "ProjectInitFault",
+          {
+            message: e.message,
+          },
+          e
+        );
       }
     }
   }
@@ -151,7 +159,7 @@ async function init(amplifyServiceParams) {
   }
 
   let needToCreateNewBackendEnv = false;
-  const log = logger('init.amplifyClient.getBackendEnvironment', [
+  const log = logger("init.amplifyClient.getBackendEnvironment", [
     {
       appId: amplifyAppId,
       environmentName: envName,
@@ -186,7 +194,7 @@ async function init(amplifyServiceParams) {
       stackName,
       deploymentArtifacts: deploymentBucketName,
     };
-    logger('init.amplifyClient.getBackendEnvironment', [createEnvParams])();
+    logger("init.amplifyClient.getBackendEnvironment", [createEnvParams])();
     await amplifyClient.createBackendEnvironment(createEnvParams).promise();
   }
 
@@ -222,16 +230,20 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         appId: amplifyAppId,
         environmentName: envName,
       };
-      logger('deleteEnv.amplifyClient.deleteBackendEnvironment', [deleteEnvParams])();
+      logger("deleteEnv.amplifyClient.deleteBackendEnvironment", [deleteEnvParams])();
       try {
         await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
       } catch (ex) {
-        if (ex.code === 'NotFoundException') {
+        if (ex.code === "NotFoundException") {
           context.print.warning(ex.message);
         } else {
-          throw new AmplifyFault('ProjectDeleteFault', {
-            message: ex.message,
-          }, ex);
+          throw new AmplifyFault(
+            "ProjectDeleteFault",
+            {
+              message: ex.message,
+            },
+            ex
+          );
         }
       }
     }
@@ -286,8 +298,8 @@ async function postPushCheck(context) {
       }
     }
 
-    const verifiedAppIds = searchAmplifyServiceResult.apps.map(app => app.appId);
-    appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter(appId => verifiedAppIds.includes(appId));
+    const verifiedAppIds = searchAmplifyServiceResult.apps.map((app) => app.appId);
+    appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter((appId) => verifiedAppIds.includes(appId));
 
     if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
       amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
@@ -301,24 +313,28 @@ async function postPushCheck(context) {
         name: projectConfig.projectName,
         environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
       };
-      logger('postPushCheck.amplifyClient.createApp', [createAppParams])();
+      logger("postPushCheck.amplifyClient.createApp", [createAppParams])();
       try {
         if (amplifyAppCreationEnabled()) {
           const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
           amplifyAppId = createAppResponse.app.appId;
         }
       } catch (e) {
-        if (e.code === 'LimitExceededException') {
+        if (e.code === "LimitExceededException") {
           // Do nothing
         } else if (
-          e.code === 'BadRequestException' &&
-          e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
+          e.code === "BadRequestException" &&
+          e.message.includes("Rate exceeded while calling CreateApp, please slow down or try again later.")
         ) {
           // Do nothing
         } else {
-          throw new AmplifyFault('ProjectInitFault', {
-            message: e.message,
-          }, e);
+          throw new AmplifyFault(
+            "ProjectInitFault",
+            {
+              message: e.message,
+            },
+            e
+          );
         }
       }
     }
@@ -333,7 +349,7 @@ async function postPushCheck(context) {
       stackName: teamProviderInfo[envName][ProviderName].StackName,
       deploymentArtifacts: teamProviderInfo[envName][ProviderName].DeploymentBucketName,
     };
-    logger('postPushCheck.amplifyClient.createBackendEnvironment', [createEnvParams])();
+    logger("postPushCheck.amplifyClient.createBackendEnvironment", [createEnvParams])();
     await amplifyClient.createBackendEnvironment(createEnvParams).promise();
   }
 
@@ -343,22 +359,21 @@ async function postPushCheck(context) {
   const tpi = stateManager.getTeamProviderInfo();
   tpi[envName][ProviderName][AmplifyAppIdLabel] = amplifyAppId;
   stateManager.setTeamProviderInfo(undefined, tpi);
-
 }
 
 async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion) {
   let amplifyAppId;
 
-  const LEARNMORE = 'Learn More';
-  const NONE = 'None';
+  const LEARNMORE = "Learn More";
+  const NONE = "None";
 
   const options = appIdsInTheSameLocalProjectAndRegion.slice(0);
   options.push(NONE);
   options.push(LEARNMORE);
 
   const answer = await inquirer.prompt({
-    type: 'list',
-    name: 'selection',
+    type: "list",
+    name: "selection",
     message: `Select the app id you want this env to be associated with`,
     choices: options,
     default: options[0],
@@ -378,15 +393,15 @@ async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRe
 
 function displayAppIdSelectionLearnMore(context) {
   // this should rarely happen
-  context.print.info('');
+  context.print.info("");
   context.print.green(
-    'The AWS Amplify Console stores information on your backend environment in the cloud to facilitate collaboration workflows for your team.',
+    "The AWS Amplify Console stores information on your backend environment in the cloud to facilitate collaboration workflows for your team."
   );
-  context.print.green('Select an existing AWS Amplify Console app to associate this backend environment with the app.');
+  context.print.green("Select an existing AWS Amplify Console app to associate this backend environment with the app.");
   context.print.green(
-    'Select None will lead to the creation of a new AWS Amplify Service App that this backend environment will be associated with.',
+    "Select None will lead to the creation of a new AWS Amplify Service App that this backend environment will be associated with."
   );
-  context.print.info('');
+  context.print.info("");
 }
 
 async function searchAmplifyService(amplifyClient, stackName) {
@@ -397,7 +412,7 @@ async function searchAmplifyService(amplifyClient, stackName) {
 
   let listAppsResponse = {};
   do {
-    logger('searchAmplifyService.amplifyClient.listApps', [
+    logger("searchAmplifyService.amplifyClient.listApps", [
       {
         nextToken: listAppsResponse.nextToken,
         maxResults: 25,
@@ -416,7 +431,7 @@ async function searchAmplifyService(amplifyClient, stackName) {
     for (let i = 0; i < listAppsResponse.apps.length; i++) {
       let listEnvResponse = {};
       do {
-        logger('searchAmplifyService.amplifyClient.listBackendEnvironments', [
+        logger("searchAmplifyService.amplifyClient.listBackendEnvironments", [
           {
             appId: listAppsResponse.apps[i].appId,
             nextToken: listEnvResponse.nextToken,
@@ -448,14 +463,14 @@ async function searchAmplifyService(amplifyClient, stackName) {
 }
 
 function storeArtifactsForAmplifyService(context) {
-  return S3.getInstance(context).then(async s3 => {
+  return S3.getInstance(context).then(async (s3) => {
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-    const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-    const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
+    const amplifyMetaFilePath = path.join(currentCloudBackendDir, "amplify-meta.json");
+    const backendConfigFilePath = path.join(currentCloudBackendDir, "backend-config.json");
     const fileUploadTasks = [];
 
-    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
-    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
+    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, "amplify-meta.json"));
+    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, "backend-config.json"));
 
     await sequential(fileUploadTasks);
   });
@@ -467,12 +482,12 @@ async function uploadFile(s3, filePath, key) {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    logger('s3.uploadFile', [{ Key: key }])();
+    logger("s3.uploadFile", [{ Key: key }])();
     await s3.uploadFile(s3Params);
   }
 }
 
-const amplifyAppCreationEnabled = () => !process.env || process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION !== '1';
+const amplifyAppCreationEnabled = () => !process.env || process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION !== "1";
 
 module.exports = {
   init,

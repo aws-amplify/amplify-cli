@@ -1,10 +1,10 @@
-const path = require('path');
+const path = require("path");
 
-const pluginName = 'awscloudformation';
+const pluginName = "awscloudformation";
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, pluginName);
   } else {
     commandPath = path.join(commandPath, pluginName, context.input.command);

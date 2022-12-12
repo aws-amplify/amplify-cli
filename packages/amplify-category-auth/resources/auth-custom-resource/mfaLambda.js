@@ -1,11 +1,11 @@
-const response = require('cfn-response');
-const aws = require('aws-sdk');
+const response = require("cfn-response");
+const aws = require("aws-sdk");
 const identity = new aws.CognitoIdentityServiceProvider();
 exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
+  if (event.RequestType == "Delete") {
     response.send(event, context, response.SUCCESS, {});
   }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+  if (event.RequestType == "Update" || event.RequestType == "Create") {
     let totpParams = {};
     try {
       totpParams = {
@@ -27,10 +27,10 @@ exports.handler = (event, context, callback) => {
     identity
       .setUserPoolMfaConfig(totpParams)
       .promise()
-      .then(res => {
+      .then((res) => {
         response.send(event, context, response.SUCCESS, { res });
       })
-      .catch(err => {
+      .catch((err) => {
         response.send(event, context, response.FAILED, { err });
       });
   }

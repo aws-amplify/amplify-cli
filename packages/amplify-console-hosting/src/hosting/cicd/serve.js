@@ -1,7 +1,7 @@
-const { open } = require('amplify-cli-core');
-const utils = require('../../utils/amplify-context-utils');
-const questions = require('../../modules/questions/question-generator');
-const constants = require('../../constants/plugin-constants');
+const { open } = require("amplify-cli-core");
+const utils = require("../../utils/amplify-context-utils");
+const questions = require("../../modules/questions/question-generator");
+const constants = require("../../constants/plugin-constants");
 
 async function serve(context) {
   const region = utils.getRegionForCurrEnv(context);

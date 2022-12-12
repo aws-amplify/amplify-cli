@@ -1,7 +1,7 @@
 /* eslint-disable */
-const constants = require('../../constants/plugin-constants');
-const configUtils = require('../../utils/config-utils');
-const utils = require('../../utils/amplify-context-utils');
+const constants = require("../../constants/plugin-constants");
+const configUtils = require("../../utils/config-utils");
+const utils = require("../../utils/amplify-context-utils");
 
 async function initEnv(context) {
   // Constants

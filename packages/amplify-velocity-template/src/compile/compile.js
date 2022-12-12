@@ -16,7 +16,7 @@ module.exports = function (Velocity, utils) {
       this.directive = {
         stop: function () {
           self._state.stop = true;
-          return '';
+          return "";
         },
       };
     },
@@ -50,7 +50,7 @@ module.exports = function (Velocity, utils) {
      * @return {string}解析后的字符串
      */
     _render: function (asts, contextId) {
-      var str = '';
+      var str = "";
       asts = asts || this.asts;
 
       if (contextId) {
@@ -77,30 +77,30 @@ module.exports = function (Velocity, utils) {
           }
 
           switch (ast.type) {
-            case 'references':
+            case "references":
               str += this.format(this.getReferences(ast, true));
               break;
 
-            case 'set':
+            case "set":
               this.setValue(ast);
               break;
 
-            case 'break':
+            case "break":
               this._state.break = true;
               break;
 
-            case 'macro_call':
+            case "macro_call":
               str += this.getMacro(ast);
               break;
 
-            case 'comment':
+            case "comment":
               break;
 
-            case 'raw':
+            case "raw":
               str += ast.value;
               break;
 
-            case 'return':
+            case "return":
               this._state.stop = true;
               this._state.return = true;
               if (ast.value) {
@@ -115,29 +115,29 @@ module.exports = function (Velocity, utils) {
               }
               break;
             default:
-              str += typeof ast === 'string' ? ast : this.getBlock(ast);
+              str += typeof ast === "string" ? ast : this.getBlock(ast);
               break;
           }
         },
-        this,
+        this
       );
 
       return str;
     },
     format: function (value) {
       if (utils.isArray(value)) {
-        return '[' + value.map(this.format.bind(this)).join(', ') + ']';
+        return "[" + value.map(this.format.bind(this)).join(", ") + "]";
       }
 
       if (utils.isObject(value)) {
-        if (value.toString.toString().indexOf('[native code]') === -1) {
+        if (value.toString.toString().indexOf("[native code]") === -1) {
           return value;
         }
 
         var kvJoin = function (k) {
-          return k + '=' + this.format(value[k]);
+          return k + "=" + this.format(value[k]);
         }.bind(this);
-        return '{' + Object.keys(value).map(kvJoin).join(', ') + '}';
+        return "{" + Object.keys(value).map(kvJoin).join(", ") + "}";
       }
 
       return value;

@@ -1,4 +1,4 @@
 module.exports = {
   deleteConfig: () => {},
-  handleAmplifyEvent: 'not function',
+  handleAmplifyEvent: "not function",
 };

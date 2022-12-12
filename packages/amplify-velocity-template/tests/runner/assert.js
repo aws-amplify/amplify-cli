@@ -24,12 +24,12 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-(function(global) {
+(function (global) {
   // Object.create compatible in IE
   var create =
     Object.create ||
-    function(p) {
-      if (!p) throw Error('no type');
+    function (p) {
+      if (!p) throw Error("no type");
       function f() {}
       f.prototype = p;
       return new f();
@@ -37,7 +37,7 @@
 
   // UTILITY
   var util = {
-    inherits: function(ctor, superCtor) {
+    inherits: function (ctor, superCtor) {
       ctor.super_ = superCtor;
       ctor.prototype = create(superCtor.prototype, {
         constructor: {
@@ -58,9 +58,9 @@
 
   var assert = ok;
 
-  global['assert'] = assert;
+  global["assert"] = assert;
 
-  if (typeof module === 'object' && typeof module.exports === 'object') {
+  if (typeof module === "object" && typeof module.exports === "object") {
     module.exports = assert;
   }
 
@@ -70,7 +70,7 @@
   //                             expected: expected })
 
   assert.AssertionError = function AssertionError(options) {
-    this.name = 'AssertionError';
+    this.name = "AssertionError";
     this.message = options.message;
     this.actual = options.actual;
     this.expected = options.expected;
@@ -85,35 +85,35 @@
 
   function replacer(key, value) {
     if (value === undefined) {
-      return '' + value;
+      return "" + value;
     }
-    if (typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
+    if (typeof value === "number" && (isNaN(value) || !isFinite(value))) {
       return value.toString();
     }
-    if (typeof value === 'function' || value instanceof RegExp) {
+    if (typeof value === "function" || value instanceof RegExp) {
       return value.toString();
     }
     return value;
   }
 
   function truncate(s, n) {
-    if (typeof s == 'string') {
+    if (typeof s == "string") {
       return s.length < n ? s : s.slice(0, n);
     } else {
       return s;
     }
   }
 
-  assert.AssertionError.prototype.toString = function() {
+  assert.AssertionError.prototype.toString = function () {
     if (this.message) {
-      return [this.name + ':', this.message].join(' ');
+      return [this.name + ":", this.message].join(" ");
     } else {
       return [
-        this.name + ':',
+        this.name + ":",
         truncate(JSON.stringify(this.actual, replacer), 128),
         this.operator,
         truncate(JSON.stringify(this.expected, replacer), 128),
-      ].join(' ');
+      ].join(" ");
     }
   };
 
@@ -153,7 +153,7 @@
   // assert.strictEqual(true, guard, message_opt);.
 
   function ok(value, message) {
-    if (!!!value) fail(value, true, message, '==', assert.ok);
+    if (!!!value) fail(value, true, message, "==", assert.ok);
   }
   assert.ok = ok;
 
@@ -162,7 +162,7 @@
   // assert.equal(actual, expected, message_opt);
 
   assert.equal = function equal(actual, expected, message) {
-    if (actual != expected) fail(actual, expected, message, '==', assert.equal);
+    if (actual != expected) fail(actual, expected, message, "==", assert.equal);
   };
 
   // 6. The non-equality assertion tests for whether two objects are not equal
@@ -170,7 +170,7 @@
 
   assert.notEqual = function notEqual(actual, expected, message) {
     if (actual == expected) {
-      fail(actual, expected, message, '!=', assert.notEqual);
+      fail(actual, expected, message, "!=", assert.notEqual);
     }
   };
 
@@ -179,7 +179,7 @@
 
   assert.deepEqual = function deepEqual(actual, expected, message) {
     if (!_deepEqual(actual, expected)) {
-      fail(actual, expected, message, 'deepEqual', assert.deepEqual);
+      fail(actual, expected, message, "deepEqual", assert.deepEqual);
     }
   };
 
@@ -216,7 +216,7 @@
 
       // 7.4. Other pairs that do not both pass typeof value == 'object',
       // equivalence is determined by ==.
-    } else if (typeof actual != 'object' && typeof expected != 'object') {
+    } else if (typeof actual != "object" && typeof expected != "object") {
       return actual == expected;
 
       // 7.5 For all other Object pairs, including Array objects, equivalence is
@@ -235,7 +235,7 @@
   }
 
   function isArguments(object) {
-    return Object.prototype.toString.call(object) == '[object Arguments]';
+    return Object.prototype.toString.call(object) == "[object Arguments]";
   }
 
   function objEquiv(a, b) {
@@ -285,7 +285,7 @@
 
   assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
     if (_deepEqual(actual, expected)) {
-      fail(actual, expected, message, 'notDeepEqual', assert.notDeepEqual);
+      fail(actual, expected, message, "notDeepEqual", assert.notDeepEqual);
     }
   };
 
@@ -294,7 +294,7 @@
 
   assert.strictEqual = function strictEqual(actual, expected, message) {
     if (actual !== expected) {
-      fail(actual, expected, message, '===', assert.strictEqual);
+      fail(actual, expected, message, "===", assert.strictEqual);
     }
   };
 
@@ -303,7 +303,7 @@
 
   assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
     if (actual === expected) {
-      fail(actual, expected, message, '!==', assert.notStrictEqual);
+      fail(actual, expected, message, "!==", assert.notStrictEqual);
     }
   };
 
@@ -326,7 +326,7 @@
   function _throws(shouldThrow, block, expected, message) {
     var actual;
 
-    if (typeof expected === 'string') {
+    if (typeof expected === "string") {
       message = expected;
       expected = null;
     }
@@ -337,14 +337,14 @@
       actual = e;
     }
 
-    message = (expected && expected.name ? ' (' + expected.name + ').' : '.') + (message ? ' ' + message : '.');
+    message = (expected && expected.name ? " (" + expected.name + ")." : ".") + (message ? " " + message : ".");
 
     if (shouldThrow && !actual) {
-      fail('Missing expected exception' + message);
+      fail("Missing expected exception" + message);
     }
 
     if (!shouldThrow && expectedException(actual, expected)) {
-      fail('Got unwanted exception' + message);
+      fail("Got unwanted exception" + message);
     }
 
     if ((shouldThrow && actual && expected && !expectedException(actual, expected)) || (!shouldThrow && actual)) {
@@ -355,16 +355,16 @@
   // 11. Expected to throw an error:
   // assert.throws(block, Error_opt, message_opt);
 
-  assert.throws = function(block, /*optional*/ error, /*optional*/ message) {
+  assert.throws = function (block, /*optional*/ error, /*optional*/ message) {
     _throws.apply(this, [true].concat(pSlice.call(arguments)));
   };
 
   // EXTENSION! This is annoying to write outside this module.
-  assert.doesNotThrow = function(block, /*optional*/ error, /*optional*/ message) {
+  assert.doesNotThrow = function (block, /*optional*/ error, /*optional*/ message) {
     _throws.apply(this, [false].concat(pSlice.call(arguments)));
   };
 
-  assert.ifError = function(err) {
+  assert.ifError = function (err) {
     if (err) {
       throw err;
     }

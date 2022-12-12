@@ -1,5 +1,5 @@
-var utils = require('../utils');
-var Helper = require('../helper/index');
+var utils = require("../utils");
+var Helper = require("../helper/index");
 function Velocity(asts, config) {
   this.asts = asts;
   this.config = utils.mixin(
@@ -12,7 +12,7 @@ function Velocity(asts, config) {
         return value;
       },
     },
-    config,
+    config
   );
   this._state = { stop: false, break: false, return: false };
   this.init();
@@ -23,10 +23,10 @@ Velocity.prototype = {
   constructor: Velocity,
 };
 
-require('./blocks')(Velocity, utils);
-require('./literal')(Velocity, utils);
-require('./references')(Velocity, utils);
-require('./set')(Velocity, utils);
-require('./expression')(Velocity, utils);
-require('./compile')(Velocity, utils);
+require("./blocks")(Velocity, utils);
+require("./literal")(Velocity, utils);
+require("./references")(Velocity, utils);
+require("./set")(Velocity, utils);
+require("./expression")(Velocity, utils);
+require("./compile")(Velocity, utils);
 module.exports = Velocity;

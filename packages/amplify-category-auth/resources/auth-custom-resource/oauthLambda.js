@@ -1,5 +1,5 @@
-const response = require('cfn-response');
-const aws = require('aws-sdk');
+const response = require("cfn-response");
+const aws = require("aws-sdk");
 const identity = new aws.CognitoIdentityServiceProvider();
 exports.handler = (event, context, callback) => {
   try {
@@ -8,12 +8,12 @@ exports.handler = (event, context, callback) => {
     let nativeClientId = event.ResourceProperties.nativeClientId;
     let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
     let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);
-    let providerList = hostedUIProviderMeta.map(provider => provider.ProviderName);
-    providerList.push('COGNITO');
-    if (event.RequestType == 'Delete') {
+    let providerList = hostedUIProviderMeta.map((provider) => provider.ProviderName);
+    providerList.push("COGNITO");
+    if (event.RequestType == "Delete") {
       response.send(event, context, response.SUCCESS, {});
     }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+    if (event.RequestType == "Update" || event.RequestType == "Create") {
       let params = {
         UserPoolId: userPoolId,
         AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,
@@ -33,7 +33,7 @@ exports.handler = (event, context, callback) => {
         .then(() => {
           response.send(event, context, response.SUCCESS, {});
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.stack);
           response.send(event, context, response.FAILED, { err });
         });

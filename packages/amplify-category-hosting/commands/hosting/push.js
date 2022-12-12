@@ -1,15 +1,15 @@
-const subcommand = 'push';
-const category = 'hosting';
+const subcommand = "push";
+const category = "hosting";
 
 module.exports = {
   name: subcommand,
-  run: async context => {
+  run: async (context) => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
     context.amplify.constructExeInfo(context);
-    return amplify.pushResources(context, category, resourceName).catch(err => {
+    return amplify.pushResources(context, category, resourceName).catch((err) => {
       context.print.info(err.stack);
-      context.print.error('There was an error pushing the hosting resource');
+      context.print.error("There was an error pushing the hosting resource");
       context.usageData.emitError(err);
       process.exitCode = 1;
     });

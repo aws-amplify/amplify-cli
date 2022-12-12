@@ -1,21 +1,21 @@
-const path = require('path');
-const fs = require('fs-extra');
+const path = require("path");
+const fs = require("fs-extra");
 
-const initializer = require('./lib/initializer');
-const configManager = require('./lib/configuration-manager');
-const projectScanner = require('./lib/project-scanner');
-const constants = require('./lib/constants');
+const initializer = require("./lib/initializer");
+const configManager = require("./lib/configuration-manager");
+const projectScanner = require("./lib/project-scanner");
+const constants = require("./lib/constants");
 const {
   createAmplifyConfig,
   createAWSConfig,
   deleteAmplifyConfig,
   getAmplifyConfig,
   writeToFile,
-} = require('./lib/frontend-config-creator');
+} = require("./lib/frontend-config-creator");
 
-const pluginName = 'flutter';
+const pluginName = "flutter";
 
-const emptyAmplifyConfigurationPath = path.join(__dirname, 'lib', 'amplifyconfiguration.empty.dart');
+const emptyAmplifyConfigurationPath = path.join(__dirname, "lib", "amplifyconfiguration.empty.dart");
 
 function scanProject(projectPath) {
   return projectScanner.run(projectPath);
@@ -44,7 +44,7 @@ function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudReso
     context,
     newOutputsForFrontend,
     cloudOutputsForFrontend,
-    path.join(exportPath, constants.amplifyConfigFilename),
+    path.join(exportPath, constants.amplifyConfigFilename)
   );
   writeToFile(exportPath, constants.amplifyConfigFilename, amplifyConfig);
 }
@@ -77,8 +77,8 @@ function setFrontendDefaults(context) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, pluginName);
   } else {
     commandPath = path.join(commandPath, pluginName, context.input.command);
@@ -94,7 +94,7 @@ async function handleAmplifyEvent(context, args) {
 }
 
 async function initializeAmplifyConfiguration(destDir) {
-  const dest = path.resolve(destDir, 'amplifyconfiguration.dart');
+  const dest = path.resolve(destDir, "amplifyconfiguration.dart");
   if (!fs.existsSync(dest)) {
     fs.copySync(emptyAmplifyConfigurationPath, dest);
   }

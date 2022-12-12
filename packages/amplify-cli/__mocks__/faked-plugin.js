@@ -1,4 +1,4 @@
 module.exports = {
   deleteConfig: () => {},
-  fakedPlugin: () => console.log('fakePluginResult'),
+  fakedPlugin: () => console.log("fakePluginResult"),
 };

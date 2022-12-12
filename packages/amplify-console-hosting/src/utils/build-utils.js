@@ -1,10 +1,10 @@
-const chalk = require('chalk');
-const { command: executeCommand } = require('execa');
-const fs = require('fs-extra');
-const path = require('path');
-const archiver = require('archiver');
+const chalk = require("chalk");
+const { command: executeCommand } = require("execa");
+const fs = require("fs-extra");
+const path = require("path");
+const archiver = require("archiver");
 
-const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build artifacts path exists.';
+const DIR_NOT_FOUND_ERROR_MESSAGE = "Please ensure your build artifacts path exists.";
 
 function zipFile(sourceDir, destFilePath, extraFiles) {
   return new Promise((resolve, reject) => {
@@ -13,13 +13,13 @@ function zipFile(sourceDir, destFilePath, extraFiles) {
     }
     const zipFilePath = destFilePath;
     const output = fs.createWriteStream(zipFilePath);
-    const archive = archiver('zip');
+    const archive = archiver("zip");
 
-    output.on('close', () => {
+    output.on("close", () => {
       resolve(zipFilePath);
     });
 
-    archive.on('error', err => {
+    archive.on("error", (err) => {
       reject(err);
     });
     archive.pipe(output);
@@ -39,14 +39,14 @@ function zipFile(sourceDir, destFilePath, extraFiles) {
 
 function run(command, projectDirectory) {
   if (!command) {
-    throw new Error('Missing build command');
+    throw new Error("Missing build command");
   }
 
   return new Promise((resolve, reject) => {
-    const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
+    const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: "inherit" });
 
     let rejectFlag = false;
-    execution.on('exit', code => {
+    execution.on("exit", (code) => {
       if (code === 0) {
         resolve();
       } else if (!rejectFlag) {
@@ -55,8 +55,8 @@ function run(command, projectDirectory) {
       }
     });
 
-    execution.on('error', err => {
-      console.log(chalk.red('command execution terminated with error'));
+    execution.on("error", (err) => {
+      console.log(chalk.red("command execution terminated with error"));
       if (!rejectFlag) {
         rejectFlag = true;
         reject(err);

@@ -1,19 +1,19 @@
-const uuid = require('uuid');
+const uuid = require("uuid");
 
-const getAllDefaults = project => {
-  const name = project.projectConfig.projectName.toLowerCase().replace('-', '_');
-  const [shortId] = uuid.v4().split('-');
+const getAllDefaults = (project) => {
+  const name = project.projectConfig.projectName.toLowerCase().replace("-", "_");
+  const [shortId] = uuid.v4().split("-");
   const botName = `${name}_bot`;
   const authRoleName = {
-    Ref: 'AuthRoleName',
+    Ref: "AuthRoleName",
   };
 
   const unauthRoleName = {
-    Ref: 'UnauthRoleName',
+    Ref: "UnauthRoleName",
   };
 
   const authRoleArn = {
-    'Fn::GetAtt': ['AuthRole', 'Arn'],
+    "Fn::GetAtt": ["AuthRole", "Arn"],
   };
 
   const defaults = {

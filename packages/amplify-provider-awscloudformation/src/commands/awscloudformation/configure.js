@@ -1,6 +1,6 @@
-const configManager = require('../../configuration-manager');
+const configManager = require("../../configuration-manager");
 
 module.exports = {
-  name: 'configure',
-  run: async context => configManager.configure(context),
+  name: "configure",
+  run: async (context) => configManager.configure(context),
 };

@@ -10,11 +10,11 @@ exports.handler = async (event) => {
     requestContext: { apiId, accountId },
   } = event;
   const response = {
-    isAuthorized: authorizationToken === 'custom-authorized',
+    isAuthorized: authorizationToken === "custom-authorized",
     resolverContext: {
-      userid: 'user-id',
-      info: 'contextual information A',
-      more_info: 'contextual information B',
+      userid: "user-id",
+      info: "contextual information A",
+      more_info: "contextual information B",
     },
     deniedFields: [
       `arn:aws:appsync:${process.env.AWS_REGION}:${accountId}:apis/${apiId}/types/Event/fields/comments`,
@@ -25,4 +25,3 @@ exports.handler = async (event) => {
   console.log(`response >`, JSON.stringify(response, null, 2));
   return response;
 };
-

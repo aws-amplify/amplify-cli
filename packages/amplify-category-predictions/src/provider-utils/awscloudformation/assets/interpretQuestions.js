@@ -4,20 +4,20 @@
 function interpretAccess(options) {
   return [
     {
-      type: 'list',
-      name: 'access',
-      message: 'Who should have access?',
+      type: "list",
+      name: "access",
+      message: "Who should have access?",
       choices: [
         {
-          name: 'Auth users only',
-          value: 'auth',
+          name: "Auth users only",
+          value: "auth",
         },
         {
-          name: 'Auth and Guest users',
-          value: 'authAndGuest',
+          name: "Auth and Guest users",
+          value: "authAndGuest",
         },
       ],
-      default: options.access ? options.access : 'auth',
+      default: options.access ? options.access : "auth",
     },
   ];
 }
@@ -26,13 +26,13 @@ const setup = {
   type() {
     return [
       {
-        type: 'list',
-        name: 'interpretType',
-        message: 'What would you like to interpret?',
+        type: "list",
+        name: "interpretType",
+        message: "What would you like to interpret?",
         choices: [
           {
-            name: 'Interpret Text',
-            value: 'interpretText',
+            name: "Interpret Text",
+            value: "interpretText",
           },
         ],
       },
@@ -41,11 +41,11 @@ const setup = {
   name(defaultName) {
     return [
       {
-        name: 'resourceName',
-        message: 'Provide a friendly name for your resource',
-        validate: value => {
-          const regex = new RegExp('^[a-zA-Z0-9]+$');
-          return regex.test(value) ? true : 'Resource name should be alphanumeric!';
+        name: "resourceName",
+        message: "Provide a friendly name for your resource",
+        validate: (value) => {
+          const regex = new RegExp("^[a-zA-Z0-9]+$");
+          return regex.test(value) ? true : "Resource name should be alphanumeric!";
         },
         default: defaultName,
       },
@@ -57,33 +57,33 @@ const interpretText = {
   questions(options) {
     return [
       {
-        type: 'list',
-        name: 'type',
-        message: 'What kind of interpretation would you like?',
+        type: "list",
+        name: "type",
+        message: "What kind of interpretation would you like?",
         choices: [
           {
-            name: 'Language',
-            value: 'LANGUAGE',
+            name: "Language",
+            value: "LANGUAGE",
           },
           {
-            name: 'Entity',
-            value: 'ENTITIES',
+            name: "Entity",
+            value: "ENTITIES",
           },
           {
-            name: 'Keyphrase',
-            value: 'KEY_PHRASES',
+            name: "Keyphrase",
+            value: "KEY_PHRASES",
           },
           {
-            name: 'Sentiment',
-            value: 'SENTIMENT',
+            name: "Sentiment",
+            value: "SENTIMENT",
           },
           {
-            name: 'Syntax',
-            value: 'SYNTAX',
+            name: "Syntax",
+            value: "SYNTAX",
           },
           {
-            name: 'All',
-            value: 'ALL',
+            name: "All",
+            value: "ALL",
           },
         ],
         default: options.type,

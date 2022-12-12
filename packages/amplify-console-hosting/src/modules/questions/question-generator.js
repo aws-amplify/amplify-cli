@@ -1,12 +1,12 @@
-const constants = require('../../constants/question-constants');
-const inquirer = require('inquirer');
-const pluginConstants = require('../../constants/plugin-constants');
+const constants = require("../../constants/question-constants");
+const inquirer = require("inquirer");
+const pluginConstants = require("../../constants/plugin-constants");
 
 async function askDeployType() {
   const { anwser } = await inquirer.prompt([
     {
-      type: 'list',
-      name: 'anwser',
+      type: "list",
+      name: "anwser",
       message: constants.DEPLOY_TYPE_QUESTION,
       choices: [constants.DEPLOY_TYPE_QUESTION_CICD, constants.DEPLOY_TYPE_QUESTION_MANUAL, constants.LEARN_MORE],
       default: constants.DEPLOY_TYPE_QUESTION_MANUAL,
@@ -43,10 +43,10 @@ async function askConfigureAppQuestion() {
 }
 
 async function askConfirmQuestion(message) {
-  const questionKey = 'question';
+  const questionKey = "question";
   const anwser = await inquirer.prompt([
     {
-      type: 'confirm',
+      type: "confirm",
       name: questionKey,
       message,
       default: true,
@@ -56,10 +56,10 @@ async function askConfirmQuestion(message) {
 }
 
 async function askInputQuestion(message) {
-  const questionKey = 'question';
+  const questionKey = "question";
   const anwser = await inquirer.prompt([
     {
-      type: 'input',
+      type: "input",
       name: questionKey,
       message,
     },

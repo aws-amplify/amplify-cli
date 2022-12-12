@@ -1,5 +1,5 @@
-const path = require('path');
-const constants = require('../constants/plugin-constants');
+const path = require("path");
+const constants = require("../constants/plugin-constants");
 
 function getBackendDirPath(context) {
   return context.amplify.pathManager.getBackendDirPath();

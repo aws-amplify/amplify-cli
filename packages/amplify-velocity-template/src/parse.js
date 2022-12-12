@@ -1,7 +1,7 @@
-'use strict';
-var Parser = require('./parse/index');
+"use strict";
+var Parser = require("./parse/index");
 var _parse = Parser.parse;
-var utils = require('./utils');
+var utils = require("./utils");
 
 var blockTypes = {
   if: true,
@@ -20,7 +20,7 @@ var customBlocks = [];
  * @param {boolean} ignoreSpace if set true, then ignore the newline trim.
  * @return {array} ast array
  */
-var parse = function(str, blocks, ignoreSpace) {
+var parse = function (str, blocks, ignoreSpace) {
   var asts = _parse(str);
   customBlocks = blocks || {};
 
@@ -31,10 +31,10 @@ var parse = function(str, blocks, ignoreSpace) {
     utils.forEach(asts, function trim(ast, i) {
       var TRIM_REG = /^[ \t]*\n/;
       // after raw and references, then keep the newline.
-      if (ast.type && ['references', 'raw'].indexOf(ast.type) === -1) {
+      if (ast.type && ["references", "raw"].indexOf(ast.type) === -1) {
         var _ast = asts[i + 1];
-        if (typeof _ast === 'string' && TRIM_REG.test(_ast)) {
-          asts[i + 1] = _ast.replace(TRIM_REG, '');
+        if (typeof _ast === "string" && TRIM_REG.test(_ast)) {
+          asts[i + 1] = _ast.replace(TRIM_REG, "");
         }
       }
     });
@@ -59,15 +59,15 @@ function makeLevel(block, index) {
     var isBlockType = blockTypes[type];
 
     // 自定义类型支持
-    if (!isBlockType && ast.type === 'macro_call' && customBlocks[ast.id]) {
+    if (!isBlockType && ast.type === "macro_call" && customBlocks[ast.id]) {
       isBlockType = true;
       ast.type = ast.id;
       delete ast.id;
     }
 
-    if (!isBlockType && type !== 'end') {
+    if (!isBlockType && type !== "end") {
       ret.push(ast);
-    } else if (type === 'end') {
+    } else if (type === "end") {
       return { arr: ret, step: i };
     } else {
       var _ret = makeLevel(block, i + 1);

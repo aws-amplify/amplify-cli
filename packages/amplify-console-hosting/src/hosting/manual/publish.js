@@ -1,14 +1,14 @@
-const path = require('path');
-const fs = require('fs-extra');
-const utils = require('../../utils/amplify-context-utils');
-const builder = require('../../utils/build-utils');
-const clientFactory = require('../../utils/client-factory');
-const amplifyUtils = require('../../utils/amplify-console-utils');
-const constants = require('../../constants/plugin-constants');
-const ora = require('ora');
+const path = require("path");
+const fs = require("fs-extra");
+const utils = require("../../utils/amplify-context-utils");
+const builder = require("../../utils/build-utils");
+const clientFactory = require("../../utils/client-factory");
+const amplifyUtils = require("../../utils/amplify-console-utils");
+const constants = require("../../constants/plugin-constants");
+const ora = require("ora");
 
-const ZIPPING_MESSAGE = 'Zipping artifacts.. ';
-const ZIPPING_SUCCESS_MESSAGE = 'Zipping artifacts completed.';
+const ZIPPING_MESSAGE = "Zipping artifacts.. ";
+const ZIPPING_SUCCESS_MESSAGE = "Zipping artifacts completed.";
 const ZIPPING_FAILURE_MESSAGE =
   'Zipping artifacts failed. This is often due to an invalid distribution directory path. Run "amplify configure project" to check if your Distribution Directory is pointing to a valid path.';
 
@@ -26,7 +26,7 @@ async function publish(context, doSkipBuild, doSkipPush) {
     const env = utils.getCurrEnv(context);
     const spinner = ora();
     spinner.start(ZIPPING_MESSAGE);
-    artifactsPath = await zipArtifacts(context).catch(err => {
+    artifactsPath = await zipArtifacts(context).catch((err) => {
       spinner.fail(ZIPPING_FAILURE_MESSAGE);
       throw err;
     });

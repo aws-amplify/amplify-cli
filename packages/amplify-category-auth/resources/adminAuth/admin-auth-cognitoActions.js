@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 
-const { CognitoIdentityServiceProvider } = require('aws-sdk');
+const { CognitoIdentityServiceProvider } = require("aws-sdk");
 
 const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
 const userPoolId = process.env.USERPOOL;
@@ -138,7 +138,7 @@ async function listUsers(Limit, PaginationToken) {
     ...(PaginationToken && { PaginationToken }),
   };
 
-  console.log('Attempting to list users');
+  console.log("Attempting to list users");
 
   try {
     const result = await cognitoIdentityServiceProvider.listUsers(params).promise();
@@ -161,7 +161,7 @@ async function listGroups(Limit, PaginationToken) {
     ...(PaginationToken && { PaginationToken }),
   };
 
-  console.log('Attempting to list groups');
+  console.log("Attempting to list groups");
 
   try {
     const result = await cognitoIdentityServiceProvider.listGroups(params).promise();
@@ -193,7 +193,7 @@ async function listGroupsForUser(username, Limit, NextToken) {
      * We are filtering out the results that seem to be innapropriate for client applications
      * to prevent any informaiton disclosure. Customers can modify if they have the need.
      */
-    result.Groups.forEach(val => {
+    result.Groups.forEach((val) => {
       delete val.UserPoolId, delete val.LastModifiedDate, delete val.CreationDate, delete val.Precedence, delete val.RoleArn;
     });
 

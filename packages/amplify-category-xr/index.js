@@ -1,10 +1,10 @@
-const xrManager = require('./lib/xr-manager');
-const inquirer = require('inquirer');
-const path = require('path');
+const xrManager = require("./lib/xr-manager");
+const inquirer = require("inquirer");
+const path = require("path");
 
-const category = 'xr';
-const SUMERIAN_SERVICE_NAME = 'Sumerian';
-const XR_CATEGORY_NAME = 'xr';
+const category = "xr";
+const SUMERIAN_SERVICE_NAME = "Sumerian";
+const XR_CATEGORY_NAME = "xr";
 
 function console(context) {
   return xrManager.console(context);
@@ -22,9 +22,9 @@ async function initEnv(context) {
 
   if (Object.keys(allEnvs).length > 1) {
     const useConfigAnswer = await inquirer.prompt({
-      name: 'useExistingEnvConfig',
-      type: 'confirm',
-      message: 'Would you like to use XR configuration from an existing environment?',
+      name: "useExistingEnvConfig",
+      type: "confirm",
+      message: "Would you like to use XR configuration from an existing environment?",
       default: false,
     });
 
@@ -39,12 +39,12 @@ async function initEnv(context) {
 
       await inquirer
         .prompt({
-          name: 'envToUse',
-          message: 'Choose the environment configuration to use:',
-          type: 'list',
+          name: "envToUse",
+          message: "Choose the environment configuration to use:",
+          type: "list",
           choices: envsWithXR,
         })
-        .then(envAnswer => {
+        .then((envAnswer) => {
           const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
           Object.entries(xrResources).forEach(([resource, config]) => {
             const options = {
@@ -64,7 +64,7 @@ async function initEnv(context) {
   const xrResources = Object.keys(backendConfig.xr);
 
   if (xrResources.length > 0) {
-    context.print.warning('To continue, you will need to add configuration for the following resources:');
+    context.print.warning("To continue, you will need to add configuration for the following resources:");
     context.print.warning(xrResources);
 
     // Hydrate XR resources defined in cloud backend config
@@ -78,7 +78,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     const { policy, attributes } = xrManager.getIAMPolicies(context, resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category: XR_CATEGORY_NAME });
@@ -88,8 +88,8 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
+  let commandPath = path.normalize(path.join(__dirname, "commands"));
+  if (context.input.command === "help") {
     commandPath = path.join(commandPath, category);
   } else {
     commandPath = path.join(commandPath, category, context.input.command);

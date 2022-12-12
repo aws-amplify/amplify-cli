@@ -1,11 +1,11 @@
-const path = require('path');
-const fs = require('fs-extra');
-const uuid = require('uuid');
+const path = require("path");
+const fs = require("fs-extra");
+const uuid = require("uuid");
 
-const authHelper = require('./auth-helper');
+const authHelper = require("./auth-helper");
 
-const parametersFileName = 'lex-params.json';
-const cfnParametersFilename = 'parameters.json';
+const parametersFileName = "lex-params.json";
+const cfnParametersFilename = "parameters.json";
 
 let serviceMetadata;
 
@@ -26,17 +26,17 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     },
     {
       dir: pluginDir,
-      template: 'function-template-dir/index.js.ejs',
+      template: "function-template-dir/index.js.ejs",
       target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
     },
     {
       dir: pluginDir,
-      template: 'function-template-dir/package.json.ejs',
+      template: "function-template-dir/package.json.ejs",
       target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
     },
     {
       dir: pluginDir,
-      template: 'function-template-dir/cfn-response.js',
+      template: "function-template-dir/cfn-response.js",
       target: `${targetDir}/${category}/${options.resourceName}/src/cfn-response.js`,
     },
   ];
@@ -50,9 +50,9 @@ function getTemplateMappings(context) {
     RegionMapping: {},
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = require(providerPlugins['awscloudformation']);
+  const provider = require(providerPlugins["awscloudformation"]);
   const regionMapping = provider.getLexRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     mappings.RegionMapping[region] = {
       lexRegion: regionMapping[region],
     };
@@ -61,7 +61,7 @@ function getTemplateMappings(context) {
 }
 
 async function addResource(context, category, service, options) {
-  await authHelper.ensureAuth(context, ''); // There is no resourceName available this early
+  await authHelper.ensureAuth(context, ""); // There is no resourceName available this early
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
@@ -75,7 +75,7 @@ async function addResource(context, category, service, options) {
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then((answers) => {
     copyCfnTemplate(context, category, answers, cfnFilename);
 
     const parameters = { ...answers };
@@ -90,11 +90,11 @@ async function addResource(context, category, service, options) {
 
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     let jsonString = JSON.stringify(parameters, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    fs.writeFileSync(parametersFilePath, jsonString, "utf8");
 
     const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
     jsonString = JSON.stringify(cfnParameters, null, 4);
-    fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+    fs.writeFileSync(cfnParametersFilePath, jsonString, "utf8");
 
     context.amplify.updateamplifyMetaAfterResourceAdd(category, answers.resourceName, options);
     return answers.resourceName;
@@ -109,7 +109,7 @@ function updateResource(context, category, service) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then((answers) => {
     answers.shortId = uuid.v4().substring(0, 8);
     copyCfnTemplate(context, category, answers, cfnFilename);
 
@@ -118,7 +118,7 @@ function updateResource(context, category, service) {
     fs.ensureDirSync(resourceDirPath);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     const jsonString = JSON.stringify(parameters, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    fs.writeFileSync(parametersFilePath, jsonString, "utf8");
 
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName);
     return answers.resourceName;

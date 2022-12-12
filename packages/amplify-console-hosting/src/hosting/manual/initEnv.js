@@ -1,6 +1,6 @@
 /* eslint-disable */
-const constants = require('../../constants/plugin-constants');
-const configUtils = require('../../utils/config-utils');
+const constants = require("../../constants/plugin-constants");
+const configUtils = require("../../utils/config-utils");
 
 async function initEnv(context) {
   // Constants

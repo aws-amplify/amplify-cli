@@ -71,8 +71,8 @@
     recoverable: (boolean: TRUE when the parser has a error recovery rule available for this particular error)
   }
 */
-var index = (function() {
-  var o = function(k, v, o, l) {
+var index = (function () {
+  var o = function (k, v, o, l) {
       for (o = o || {}, l = k.length; l--; o[k[l]] = v);
       return o;
     },
@@ -200,21 +200,21 @@ var index = (function() {
       EQUAL: 53,
       map: 54,
       math: 55,
-      '||': 56,
-      '&&': 57,
-      '+': 58,
-      '-': 59,
-      '*': 60,
-      '/': 61,
-      '%': 62,
-      '>': 63,
-      '<': 64,
-      '==': 65,
-      '>=': 66,
-      '<=': 67,
-      '!=': 68,
+      "||": 56,
+      "&&": 57,
+      "+": 58,
+      "-": 59,
+      "*": 60,
+      "/": 61,
+      "%": 62,
+      ">": 63,
+      "<": 64,
+      "==": 65,
+      ">=": 66,
+      "<=": 67,
+      "!=": 68,
       parenthesis: 69,
-      '!': 70,
+      "!": 70,
       literal: 71,
       brace_begin: 72,
       attributes: 73,
@@ -247,60 +247,60 @@ var index = (function() {
       $end: 1,
     },
     terminals_: {
-      2: 'error',
-      4: 'EOF',
-      10: 'RAW',
-      11: 'COMMENT',
-      21: 'HASH',
-      22: 'NOESCAPE',
-      23: 'PARENTHESIS',
-      24: 'CLOSE_PARENTHESIS',
-      28: 'SET',
-      30: 'IF',
-      32: 'ELSEIF',
-      33: 'ELSE',
-      34: 'END',
-      35: 'FOREACH',
-      36: 'DOLLAR',
-      37: 'ID',
-      38: 'IN',
-      39: 'MAP_BEGIN',
-      40: 'MAP_END',
-      42: 'BREAK',
-      43: 'RETURN',
-      44: 'DEFINE',
-      45: 'MACRO',
-      48: 'MACRO_BODY',
-      51: 'SPACE',
-      52: 'COMMA',
-      53: 'EQUAL',
-      56: '||',
-      57: '&&',
-      58: '+',
-      59: '-',
-      60: '*',
-      61: '/',
-      62: '%',
-      63: '>',
-      64: '<',
-      65: '==',
-      66: '>=',
-      67: '<=',
-      68: '!=',
-      70: '!',
-      76: 'VAR_BEGIN',
-      77: 'VAR_END',
-      82: 'DOT',
-      84: 'CONTENT',
-      85: 'BRACKET',
-      86: 'CLOSE_BRACKET',
-      89: 'BOOL',
-      91: 'INTEGER',
-      92: 'DECIMAL_POINT',
-      93: 'STRING',
-      94: 'EVAL_STRING',
-      96: 'RANGE',
-      98: 'MAP_SPLIT',
+      2: "error",
+      4: "EOF",
+      10: "RAW",
+      11: "COMMENT",
+      21: "HASH",
+      22: "NOESCAPE",
+      23: "PARENTHESIS",
+      24: "CLOSE_PARENTHESIS",
+      28: "SET",
+      30: "IF",
+      32: "ELSEIF",
+      33: "ELSE",
+      34: "END",
+      35: "FOREACH",
+      36: "DOLLAR",
+      37: "ID",
+      38: "IN",
+      39: "MAP_BEGIN",
+      40: "MAP_END",
+      42: "BREAK",
+      43: "RETURN",
+      44: "DEFINE",
+      45: "MACRO",
+      48: "MACRO_BODY",
+      51: "SPACE",
+      52: "COMMA",
+      53: "EQUAL",
+      56: "||",
+      57: "&&",
+      58: "+",
+      59: "-",
+      60: "*",
+      61: "/",
+      62: "%",
+      63: ">",
+      64: "<",
+      65: "==",
+      66: ">=",
+      67: "<=",
+      68: "!=",
+      70: "!",
+      76: "VAR_BEGIN",
+      77: "VAR_END",
+      82: "DOT",
+      84: "CONTENT",
+      85: "BRACKET",
+      86: "CLOSE_BRACKET",
+      89: "BOOL",
+      91: "INTEGER",
+      92: "DECIMAL_POINT",
+      93: "STRING",
+      94: "EVAL_STRING",
+      96: "RANGE",
+      98: "MAP_SPLIT",
     },
     productions_: [
       0,
@@ -472,7 +472,7 @@ var index = (function() {
           this.$ = [].concat($$[$0 - 1], $$[$0]);
           break;
         case 5:
-          $$[$0]['prue'] = true;
+          $$[$0]["prue"] = true;
           $$[$0].pos = this._$;
           this.$ = $$[$0];
           break;
@@ -517,66 +517,66 @@ var index = (function() {
           this.$ = $$[$0];
           break;
         case 8:
-          this.$ = { type: 'raw', value: $$[$0] };
+          this.$ = { type: "raw", value: $$[$0] };
           break;
         case 9:
-          this.$ = { type: 'comment', value: $$[$0] };
+          this.$ = { type: "comment", value: $$[$0] };
           break;
         case 19:
-          this.$ = { type: 'noescape' };
+          this.$ = { type: "noescape" };
           break;
         case 23:
-          this.$ = { type: 'set', equal: $$[$0 - 1] };
+          this.$ = { type: "set", equal: $$[$0 - 1] };
           break;
         case 24:
-          this.$ = { type: 'if', condition: $$[$0 - 1] };
+          this.$ = { type: "if", condition: $$[$0 - 1] };
           break;
         case 25:
-          this.$ = { type: 'elseif', condition: $$[$0 - 1] };
+          this.$ = { type: "elseif", condition: $$[$0 - 1] };
           break;
         case 26:
-          this.$ = { type: 'else' };
+          this.$ = { type: "else" };
           break;
         case 27:
-          this.$ = { type: 'end' };
+          this.$ = { type: "end" };
           break;
         case 28:
         case 30:
-          this.$ = { type: 'foreach', to: $$[$0 - 3], from: $$[$0 - 1] };
+          this.$ = { type: "foreach", to: $$[$0 - 3], from: $$[$0 - 1] };
           break;
         case 29:
         case 31:
-          this.$ = { type: 'foreach', to: $$[$0 - 4], from: $$[$0 - 1] };
+          this.$ = { type: "foreach", to: $$[$0 - 4], from: $$[$0 - 1] };
           break;
         case 32:
           this.$ = { type: $$[$0] };
           break;
         case 33:
-          this.$ = { type: 'return', value: $$[$0 - 1] };
+          this.$ = { type: "return", value: $$[$0 - 1] };
           break;
         case 34:
-          this.$ = { type: 'return', value: null };
+          this.$ = { type: "return", value: null };
           break;
         case 35:
-          this.$ = { type: 'define', id: $$[$0 - 1] };
+          this.$ = { type: "define", id: $$[$0 - 1] };
           break;
         case 36:
-          this.$ = { type: 'macro', id: $$[$0 - 2], args: $$[$0 - 1] };
+          this.$ = { type: "macro", id: $$[$0 - 2], args: $$[$0 - 1] };
           break;
         case 37:
-          this.$ = { type: 'macro', id: $$[$0 - 1] };
+          this.$ = { type: "macro", id: $$[$0 - 1] };
           break;
         case 40:
-          this.$ = { type: 'macro_call', id: $$[$0 - 3].replace(/^\s+|\s+$/g, ''), args: $$[$0 - 1] };
+          this.$ = { type: "macro_call", id: $$[$0 - 3].replace(/^\s+|\s+$/g, ""), args: $$[$0 - 1] };
           break;
         case 41:
-          this.$ = { type: 'macro_call', id: $$[$0 - 2].replace(/^\s+|\s+$/g, '') };
+          this.$ = { type: "macro_call", id: $$[$0 - 2].replace(/^\s+|\s+$/g, "") };
           break;
         case 42:
-          this.$ = { type: 'macro_body', id: $$[$0 - 3], args: $$[$0 - 1] };
+          this.$ = { type: "macro_body", id: $$[$0 - 3], args: $$[$0 - 1] };
           break;
         case 43:
-          this.$ = { type: 'macro_body', id: $$[$0 - 2] };
+          this.$ = { type: "macro_body", id: $$[$0 - 2] };
           break;
         case 46:
         case 47:
@@ -596,78 +596,78 @@ var index = (function() {
           this.$ = [$$[$0 - 2], $$[$0]];
           break;
         case 58:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '||' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: "||" };
           break;
         case 59:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '&&' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: "&&" };
           break;
         case 60:
         case 61:
         case 62:
         case 63:
         case 64:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: $$[$0 - 1] };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: $$[$0 - 1] };
           break;
         case 65:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '>' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: ">" };
           break;
         case 66:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '<' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: "<" };
           break;
         case 67:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '==' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: "==" };
           break;
         case 68:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '>=' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: ">=" };
           break;
         case 69:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '<=' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: "<=" };
           break;
         case 70:
-          this.$ = { type: 'math', expression: [$$[$0 - 2], $$[$0]], operator: '!=' };
+          this.$ = { type: "math", expression: [$$[$0 - 2], $$[$0]], operator: "!=" };
           break;
         case 72:
-          this.$ = { type: 'math', expression: [$$[$0]], operator: 'minus' };
+          this.$ = { type: "math", expression: [$$[$0]], operator: "minus" };
           break;
         case 73:
-          this.$ = { type: 'math', expression: [$$[$0]], operator: 'not' };
+          this.$ = { type: "math", expression: [$$[$0]], operator: "not" };
           break;
         case 76:
-          this.$ = { type: 'math', expression: [$$[$0 - 1]], operator: 'parenthesis' };
+          this.$ = { type: "math", expression: [$$[$0 - 1]], operator: "parenthesis" };
           break;
         case 77:
-          this.$ = { type: 'references', id: $$[$0 - 2], path: $$[$0 - 1], isWraped: true, leader: $$[$0 - 4] };
+          this.$ = { type: "references", id: $$[$0 - 2], path: $$[$0 - 1], isWraped: true, leader: $$[$0 - 4] };
           break;
         case 78:
-          this.$ = { type: 'references', id: $$[$0 - 1], path: $$[$0], leader: $$[$0 - 2] };
+          this.$ = { type: "references", id: $$[$0 - 1], path: $$[$0], leader: $$[$0 - 2] };
           break;
         case 79:
-          this.$ = { type: 'references', id: $$[$0 - 2].id, path: $$[$0 - 1], isWraped: true, leader: $$[$0 - 4], args: $$[$0 - 2].args };
+          this.$ = { type: "references", id: $$[$0 - 2].id, path: $$[$0 - 1], isWraped: true, leader: $$[$0 - 4], args: $$[$0 - 2].args };
           break;
         case 80:
-          this.$ = { type: 'references', id: $$[$0 - 1].id, path: $$[$0], leader: $$[$0 - 2], args: $$[$0 - 1].args };
+          this.$ = { type: "references", id: $$[$0 - 1].id, path: $$[$0], leader: $$[$0 - 2], args: $$[$0 - 1].args };
           break;
         case 81:
-          this.$ = { type: 'references', id: $$[$0], leader: $$[$0 - 1] };
+          this.$ = { type: "references", id: $$[$0], leader: $$[$0 - 1] };
           break;
         case 82:
-          this.$ = { type: 'references', id: $$[$0 - 1], isWraped: true, leader: $$[$0 - 3] };
+          this.$ = { type: "references", id: $$[$0 - 1], isWraped: true, leader: $$[$0 - 3] };
           break;
         case 83:
-          this.$ = { type: 'references', id: $$[$0].id, leader: $$[$0 - 1], args: $$[$0].args };
+          this.$ = { type: "references", id: $$[$0].id, leader: $$[$0 - 1], args: $$[$0].args };
           break;
         case 84:
-          this.$ = { type: 'references', id: $$[$0 - 1].id, isWraped: true, args: $$[$0 - 1].args, leader: $$[$0 - 3] };
+          this.$ = { type: "references", id: $$[$0 - 1].id, isWraped: true, args: $$[$0 - 1].args, leader: $$[$0 - 3] };
           break;
         case 91:
-          this.$ = { type: 'method', id: $$[$0].id, args: $$[$0].args };
+          this.$ = { type: "method", id: $$[$0].id, args: $$[$0].args };
           break;
         case 92:
-          this.$ = { type: 'index', id: $$[$0] };
+          this.$ = { type: "index", id: $$[$0] };
           break;
         case 93:
-          this.$ = { type: 'property', id: $$[$0] };
-          if ($$[$0].type === 'content') this.$ = $$[$0];
+          this.$ = { type: "property", id: $$[$0] };
+          if ($$[$0].type === "content") this.$ = $$[$0];
           break;
         case 95:
           this.$ = { id: $$[$0 - 3], args: $$[$0 - 1] };
@@ -676,60 +676,60 @@ var index = (function() {
           this.$ = { id: $$[$0 - 2], args: false };
           break;
         case 98:
-          this.$ = [{ type: 'runt', value: $$[$0] }];
+          this.$ = [{ type: "runt", value: $$[$0] }];
           break;
         case 103:
-          this.$ = { type: 'content', value: $$[$0 - 1] + $$[$0] };
+          this.$ = { type: "content", value: $$[$0 - 1] + $$[$0] };
           break;
         case 106:
-          this.$ = { type: 'content', value: $$[$0 - 2] + $$[$0 - 1].value + $$[$0] };
+          this.$ = { type: "content", value: $$[$0 - 2] + $$[$0 - 1].value + $$[$0] };
           break;
         case 107:
         case 108:
-          this.$ = { type: 'content', value: $$[$0 - 1] + $$[$0] };
+          this.$ = { type: "content", value: $$[$0 - 1] + $$[$0] };
           break;
         case 111:
-          this.$ = { type: 'bool', value: $$[$0] };
+          this.$ = { type: "bool", value: $$[$0] };
           break;
         case 112:
-          this.$ = { type: 'integer', value: $$[$0] };
+          this.$ = { type: "integer", value: $$[$0] };
           break;
         case 113:
-          this.$ = { type: 'decimal', value: +($$[$0 - 2] + '.' + $$[$0]) };
+          this.$ = { type: "decimal", value: +($$[$0 - 2] + "." + $$[$0]) };
           break;
         case 114:
-          this.$ = { type: 'decimal', value: -($$[$0 - 2] + '.' + $$[$0]) };
+          this.$ = { type: "decimal", value: -($$[$0 - 2] + "." + $$[$0]) };
           break;
         case 116:
           this.$ = -parseInt($$[$0], 10);
           break;
         case 117:
-          this.$ = { type: 'string', value: $$[$0] };
+          this.$ = { type: "string", value: $$[$0] };
           break;
         case 118:
-          this.$ = { type: 'string', value: $$[$0], isEval: true };
+          this.$ = { type: "string", value: $$[$0], isEval: true };
           break;
         case 119:
         case 120:
           this.$ = $$[$0];
           break;
         case 122:
-          this.$ = { type: 'array', value: $$[$0 - 1] };
+          this.$ = { type: "array", value: $$[$0 - 1] };
           break;
         case 124:
-          this.$ = { type: 'array', value: [] };
+          this.$ = { type: "array", value: [] };
           break;
         case 125:
         case 126:
         case 127:
         case 128:
-          this.$ = { type: 'array', isRange: true, value: [$$[$0 - 3], $$[$0 - 1]] };
+          this.$ = { type: "array", isRange: true, value: [$$[$0 - 3], $$[$0 - 1]] };
           break;
         case 129:
-          this.$ = { type: 'map', value: $$[$0 - 1] };
+          this.$ = { type: "map", value: $$[$0 - 1] };
           break;
         case 130:
-          this.$ = { type: 'map' };
+          this.$ = { type: "map" };
           break;
         case 131:
         case 132:
@@ -1398,7 +1398,7 @@ var index = (function() {
         vstack = [null],
         lstack = [],
         table = this.table,
-        yytext = '',
+        yytext = "",
         yylineno = 0,
         yyleng = 0,
         recovering = 0,
@@ -1415,13 +1415,13 @@ var index = (function() {
       lexer.setInput(input, sharedState.yy);
       sharedState.yy.lexer = lexer;
       sharedState.yy.parser = this;
-      if (typeof lexer.yylloc == 'undefined') {
+      if (typeof lexer.yylloc == "undefined") {
         lexer.yylloc = {};
       }
       var yyloc = lexer.yylloc;
       lstack.push(yyloc);
       var ranges = lexer.options && lexer.options.ranges;
-      if (typeof sharedState.yy.parseError === 'function') {
+      if (typeof sharedState.yy.parseError === "function") {
         this.parseError = sharedState.yy.parseError;
       } else {
         this.parseError = Object.getPrototypeOf(this).parseError;
@@ -1431,10 +1431,10 @@ var index = (function() {
         vstack.length = vstack.length - n;
         lstack.length = lstack.length - n;
       }
-      _token_stack: var lex = function() {
+      _token_stack: var lex = function () {
         var token;
         token = lexer.lex() || EOF;
-        if (typeof token !== 'number') {
+        if (typeof token !== "number") {
           token = self.symbols_[token] || token;
         }
         return token;
@@ -1455,13 +1455,13 @@ var index = (function() {
         if (this.defaultActions[state]) {
           action = this.defaultActions[state];
         } else {
-          if (symbol === null || typeof symbol == 'undefined') {
+          if (symbol === null || typeof symbol == "undefined") {
             symbol = lex();
           }
           action = table[state] && table[state][symbol];
         }
-        if (typeof action === 'undefined' || !action.length || !action[0]) {
-          var errStr = '';
+        if (typeof action === "undefined" || !action.length || !action[0]) {
+          var errStr = "";
           expected = [];
           for (p in table[state]) {
             if (this.terminals_[p] && p > TERROR) {
@@ -1470,21 +1470,21 @@ var index = (function() {
           }
           if (lexer.showPosition) {
             errStr =
-              'Parse error on line ' +
+              "Parse error on line " +
               (yylineno + 1) +
-              ':\n' +
+              ":\n" +
               lexer.showPosition() +
-              '\nExpecting ' +
-              expected.join(', ') +
+              "\nExpecting " +
+              expected.join(", ") +
               ", got '" +
               (this.terminals_[symbol] || symbol) +
               "'";
           } else {
             errStr =
-              'Parse error on line ' +
+              "Parse error on line " +
               (yylineno + 1) +
-              ': Unexpected ' +
-              (symbol == EOF ? 'end of input' : "'" + (this.terminals_[symbol] || symbol) + "'");
+              ": Unexpected " +
+              (symbol == EOF ? "end of input" : "'" + (this.terminals_[symbol] || symbol) + "'");
           }
           this.parseError(errStr, {
             text: lexer.match,
@@ -1495,7 +1495,7 @@ var index = (function() {
           });
         }
         if (action[0] instanceof Array && action.length > 1) {
-          throw new Error('Parse Error: multiple actions possible at state: ' + state + ', token: ' + symbol);
+          throw new Error("Parse Error: multiple actions possible at state: " + state + ", token: " + symbol);
         }
         switch (action[0]) {
           case 1:
@@ -1530,7 +1530,7 @@ var index = (function() {
               yyval._$.range = [lstack[lstack.length - (len || 1)].range[0], lstack[lstack.length - 1].range[1]];
             }
             r = this.performAction.apply(yyval, [yytext, yyleng, yylineno, sharedState.yy, action[1], vstack, lstack].concat(args));
-            if (typeof r !== 'undefined') {
+            if (typeof r !== "undefined") {
               return r;
             }
             if (len) {
@@ -1552,7 +1552,7 @@ var index = (function() {
     },
   };
   /* generated by jison-lex 0.3.4 */
-  var lexer = (function() {
+  var lexer = (function () {
     var lexer = {
       EOF: 1,
 
@@ -1565,13 +1565,13 @@ var index = (function() {
       },
 
       // resets the lexer, sets new input
-      setInput: function(input, yy) {
+      setInput: function (input, yy) {
         this.yy = yy || this.yy || {};
         this._input = input;
         this._more = this._backtrack = this.done = false;
         this.yylineno = this.yyleng = 0;
-        this.yytext = this.matched = this.match = '';
-        this.conditionStack = ['INITIAL'];
+        this.yytext = this.matched = this.match = "";
+        this.conditionStack = ["INITIAL"];
         this.yylloc = {
           first_line: 1,
           first_column: 0,
@@ -1586,7 +1586,7 @@ var index = (function() {
       },
 
       // consumes and returns one char from the input
-      input: function() {
+      input: function () {
         var ch = this._input[0];
         this.yytext += ch;
         this.yyleng++;
@@ -1609,7 +1609,7 @@ var index = (function() {
       },
 
       // unshifts one char (or a string) into the input
-      unput: function(ch) {
+      unput: function (ch) {
         var len = ch.length;
         var lines = ch.split(/(?:\r\n?|\n)/g);
 
@@ -1645,60 +1645,60 @@ var index = (function() {
       },
 
       // When called from action, caches matched text and appends it on next action
-      more: function() {
+      more: function () {
         this._more = true;
         return this;
       },
 
       // When called from action, signals the lexer that this rule fails to match the input, so the next matching rule (regex) should be tested instead.
-      reject: function() {
+      reject: function () {
         if (this.options.backtrack_lexer) {
           this._backtrack = true;
         } else {
           return this.parseError(
-            'Lexical error on line ' +
+            "Lexical error on line " +
               (this.yylineno + 1) +
-              '. You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n' +
+              ". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n" +
               this.showPosition(),
             {
-              text: '',
+              text: "",
               token: null,
               line: this.yylineno,
-            },
+            }
           );
         }
         return this;
       },
 
       // retain first n characters of the match
-      less: function(n) {
+      less: function (n) {
         this.unput(this.match.slice(n));
       },
 
       // displays already matched input, i.e. for error messages
-      pastInput: function() {
+      pastInput: function () {
         var past = this.matched.substr(0, this.matched.length - this.match.length);
-        return (past.length > 20 ? '...' : '') + past.substr(-20).replace(/\n/g, '');
+        return (past.length > 20 ? "..." : "") + past.substr(-20).replace(/\n/g, "");
       },
 
       // displays upcoming input, i.e. for error messages
-      upcomingInput: function() {
+      upcomingInput: function () {
         var next = this.match;
         if (next.length < 20) {
           next += this._input.substr(0, 20 - next.length);
         }
-        return (next.substr(0, 20) + (next.length > 20 ? '...' : '')).replace(/\n/g, '');
+        return (next.substr(0, 20) + (next.length > 20 ? "..." : "")).replace(/\n/g, "");
       },
 
       // displays the character position where the lexing error occurred, i.e. for error messages
-      showPosition: function() {
+      showPosition: function () {
         var pre = this.pastInput();
-        var c = new Array(pre.length + 1).join('-');
-        return pre + this.upcomingInput() + '\n' + c + '^';
+        var c = new Array(pre.length + 1).join("-");
+        return pre + this.upcomingInput() + "\n" + c + "^";
       },
 
       // test the lexed token: return FALSE when not a match, otherwise return token
-      test_match: function(match, indexed_rule) {
+      test_match: function (match, indexed_rule) {
         var token, lines, backup;
 
         if (this.options.backtrack_lexer) {
@@ -1768,7 +1768,7 @@ var index = (function() {
       },
 
       // return next match in input
-      next: function() {
+      next: function () {
         if (this.done) {
           return this.EOF;
         }
@@ -1778,8 +1778,8 @@ var index = (function() {
 
         var token, match, tempMatch, index;
         if (!this._more) {
-          this.yytext = '';
-          this.match = '';
+          this.yytext = "";
+          this.match = "";
         }
         var rules = this._currentRules();
         for (var i = 0; i < rules.length; i++) {
@@ -1811,11 +1811,11 @@ var index = (function() {
           // else: this is a lexer rule which consumes input without producing a token (e.g. whitespace)
           return false;
         }
-        if (this._input === '') {
+        if (this._input === "") {
           return this.EOF;
         } else {
-          return this.parseError('Lexical error on line ' + (this.yylineno + 1) + '. Unrecognized text.\n' + this.showPosition(), {
-            text: '',
+          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {
+            text: "",
             token: null,
             line: this.yylineno,
           });
@@ -1852,7 +1852,7 @@ var index = (function() {
         if (this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]) {
           return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules;
         } else {
-          return this.conditions['INITIAL'].rules;
+          return this.conditions["INITIAL"].rules;
         }
       },
 
@@ -1862,7 +1862,7 @@ var index = (function() {
         if (n >= 0) {
           return this.conditionStack[n];
         } else {
-          return 'INITIAL';
+          return "INITIAL";
         }
       },
 
@@ -1885,12 +1885,12 @@ var index = (function() {
             var _num = _esc ? _esc[0].length : null;
             /*转义实现，非常恶心，暂时没有好的解决方案*/
             if (!_num || !(_num % 2)) {
-              this.begin('mu');
+              this.begin("mu");
             } else {
-              yy_.yytext = yy_.yytext.replace(/\\$/, '');
-              this.begin('esc');
+              yy_.yytext = yy_.yytext.replace(/\\$/, "");
+              this.begin("esc");
             }
-            if (_num > 1) yy_.yytext = yy_.yytext.replace(/(\\\\)+$/, '\\');
+            if (_num > 1) yy_.yytext = yy_.yytext.replace(/(\\\\)+$/, "\\");
             if (yy_.yytext) return 84;
 
             break;
@@ -1899,12 +1899,12 @@ var index = (function() {
             var _esc = yy_.yytext.match(_reg);
             var _num = _esc ? _esc[0].length : null;
             if (!_num || !(_num % 2)) {
-              this.begin('h');
+              this.begin("h");
             } else {
-              yy_.yytext = yy_.yytext.replace(/\\$/, '');
-              this.begin('esc');
+              yy_.yytext = yy_.yytext.replace(/\\$/, "");
+              this.begin("esc");
             }
-            if (_num > 1) yy_.yytext = yy_.yytext.replace(/(\\\\)+$/, '\\');
+            if (_num > 1) yy_.yytext = yy_.yytext.replace(/(\\\\)+$/, "\\");
             if (yy_.yytext) return 84;
 
             break;
@@ -1917,7 +1917,7 @@ var index = (function() {
             break;
           case 4:
             this.popState();
-            yy_.yytext = yy_.yytext.replace(/^#\[\[|\]\]#$/g, '');
+            yy_.yytext = yy_.yytext.replace(/^#\[\[|\]\]#$/g, "");
             return 10;
             break;
           case 5:
@@ -2030,7 +2030,7 @@ var index = (function() {
             break;
           case 39:
             var len = this.stateStackSize();
-            if (len >= 2 && this.topState() === 'c' && this.topState(1) === 'run') {
+            if (len >= 2 && this.topState() === "c" && this.topState(1) === "run") {
               return 51;
             }
 
@@ -2060,23 +2060,23 @@ var index = (function() {
             }
             break;
           case 46:
-            this.begin('c');
+            this.begin("c");
             return 23;
             break;
           case 47:
-            if (this.popState() === 'c') {
+            if (this.popState() === "c") {
               var len = this.stateStackSize();
 
-              if (this.topState() === 'run') {
+              if (this.topState() === "run") {
                 this.popState();
                 len = len - 1;
               }
 
               var tailStack = this.topState(len - 2);
               /** 遇到#set(a = b)括号结束后结束状态h*/
-              if (len === 2 && tailStack === 'h') {
+              if (len === 2 && tailStack === "h") {
                 this.popState();
-              } else if (len === 3 && tailStack === 'mu' && this.topState(len - 3) === 'h') {
+              } else if (len === 3 && tailStack === "mu" && this.topState(len - 3) === "h") {
                 // issue#7 $foo#if($a)...#end
                 this.popState();
                 this.popState();
@@ -2089,11 +2089,11 @@ var index = (function() {
 
             break;
           case 48:
-            this.begin('i');
+            this.begin("i");
             return 85;
             break;
           case 49:
-            if (this.popState() === 'i') {
+            if (this.popState() === "i") {
               return 86;
             } else {
               return 84;
@@ -2136,16 +2136,16 @@ var index = (function() {
             /* return ID */ return 37;
             break;
           case 61:
-            this.begin('run');
+            this.begin("run");
             return 37;
             break;
           case 62:
             this.popState();
-            yy_.yytext = '#';
+            yy_.yytext = "#";
             return 84;
             break;
           case 63:
-            this.begin('h');
+            this.begin("h");
             return 21;
             break;
           case 64:
@@ -2244,126 +2244,21 @@ var index = (function() {
         mu: { rules: [5, 35, 36, 44, 45, 46, 47, 48, 49, 51, 60, 62, 63, 64, 65, 67], inclusive: false },
         c: {
           rules: [
-            21,
-            22,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31,
-            32,
-            33,
-            34,
-            35,
-            36,
-            37,
-            38,
-            39,
-            40,
-            41,
-            42,
-            43,
-            46,
-            47,
-            48,
-            49,
-            51,
-            52,
-            53,
-            54,
-            55,
-            56,
-            57,
-            58,
-            59,
-            60,
+            21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46, 47, 48, 49, 51, 52, 53, 54, 55,
+            56, 57, 58, 59, 60,
           ],
           inclusive: false,
         },
         i: {
           rules: [
-            21,
-            22,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31,
-            32,
-            33,
-            34,
-            35,
-            36,
-            37,
-            38,
-            40,
-            41,
-            41,
-            42,
-            42,
-            43,
-            46,
-            47,
-            48,
-            49,
-            50,
-            51,
-            52,
-            53,
-            54,
-            55,
-            56,
-            57,
-            58,
-            59,
-            60,
+            21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 41, 42, 42, 43, 46, 47, 48, 49, 50, 51, 52, 53,
+            54, 55, 56, 57, 58, 59, 60,
           ],
           inclusive: false,
         },
         h: {
           rules: [
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            35,
-            36,
-            37,
-            38,
-            43,
-            46,
-            47,
-            48,
-            49,
-            51,
-            59,
-            61,
-            62,
-            64,
-            65,
-            67,
+            3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 35, 36, 37, 38, 43, 46, 47, 48, 49, 51, 59, 61, 62, 64, 65, 67,
           ],
           inclusive: false,
         },
@@ -2386,21 +2281,21 @@ var index = (function() {
   return new Parser();
 })();
 
-if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
+if (typeof require !== "undefined" && typeof exports !== "undefined") {
   exports.parser = index;
   exports.Parser = index.Parser;
-  exports.parse = function() {
+  exports.parse = function () {
     return index.parse.apply(index, arguments);
   };
   exports.main = function commonjsMain(args) {
     if (!args[1]) {
-      console.log('Usage: ' + args[0] + ' FILE');
+      console.log("Usage: " + args[0] + " FILE");
       process.exit(1);
     }
-    var source = require('fs').readFileSync(require('path').normalize(args[1]), 'utf8');
+    var source = require("fs").readFileSync(require("path").normalize(args[1]), "utf8");
     return exports.parser.parse(source);
   };
-  if (typeof module !== 'undefined' && require.main === module) {
+  if (typeof module !== "undefined" && require.main === module) {
     exports.main(process.argv.slice(1));
   }
 }

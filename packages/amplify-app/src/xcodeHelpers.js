@@ -1,7 +1,7 @@
-const fs = require('fs-extra');
-const glob = require('glob');
-const path = require('path');
-const xcode = require('xcode');
+const fs = require("fs-extra");
+const glob = require("glob");
+const path = require("path");
+const xcode = require("xcode");
 
 /**
  * @typedef {Object} PBXGroup
@@ -22,13 +22,13 @@ const xcode = require('xcode');
  * @private
  * Xcode project extension.
  */
-const XCODE_PROJ_EXTENSION = '.xcodeproj';
+const XCODE_PROJ_EXTENSION = ".xcodeproj";
 
 /**
  * @private
  * Graphql schema file
  */
-const GRAPHQL_SCHEMA = 'schema.graphql';
+const GRAPHQL_SCHEMA = "schema.graphql";
 
 /**
  * @private
@@ -41,7 +41,7 @@ function getXcodeProjectDir() {
   });
   let projDir;
   if (targetFiles.length) {
-    projDir = path.join(process.cwd(), targetFiles[0], '/project.pbxproj');
+    projDir = path.join(process.cwd(), targetFiles[0], "/project.pbxproj");
   }
   return projDir;
 }
@@ -59,10 +59,10 @@ function getGroupByName(project, name) {
   const groups = Object.entries(project.hash.project.objects.PBXGroup);
   for (let i = 0; i < groups.length; i++) {
     const [key, value] = groups[i];
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
       // only the root pbx group can have no name, path or description
       const isRoot = name === undefined && value.name === undefined && value.path === undefined;
-      const matchesName = typeof name === 'string' && (value.name === name || value.path === name);
+      const matchesName = typeof name === "string" && (value.name === name || value.path === name);
 
       if (isRoot || matchesName) {
         rootGroup = {
@@ -94,7 +94,7 @@ function getRootGroup(project) {
 function getOrCreateGroup(project, name) {
   let group = getGroupByName(project, name);
   if (!group) {
-    group = project.addPbxGroup([], name, '.');
+    group = project.addPbxGroup([], name, ".");
     const rootGroup = getRootGroup(project);
     rootGroup.pbxGroup.children = [{ value: group.uuid, comment: group.pbxGroup.name }, ...rootGroup.pbxGroup.children];
   }
@@ -108,7 +108,7 @@ function getOrCreateGroup(project, name) {
  * @returns {boolean}
  */
 function groupHasFile(group, name) {
-  return group.pbxGroup.children.filter(child => child.comment === name).length > 0;
+  return group.pbxGroup.children.filter((child) => child.comment === name).length > 0;
 }
 
 /**
@@ -117,7 +117,7 @@ function groupHasFile(group, name) {
  * @returns {string?}
  */
 function getSchemaFile(rootDir) {
-  const schemaFilePattern = path.join(rootDir, 'amplify', 'backend', 'api', '*', GRAPHQL_SCHEMA);
+  const schemaFilePattern = path.join(rootDir, "amplify", "backend", "api", "*", GRAPHQL_SCHEMA);
   const [schemaFile] = glob.sync(schemaFilePattern);
   return schemaFile;
 }
@@ -136,13 +136,13 @@ function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
   }
 
   // add generated model
-  const modelsFilePattern = path.join(rootDir, 'amplify', 'generated', 'models', '*.swift');
-  const modelFiles = glob.sync(modelsFilePattern).map(file => {
+  const modelsFilePattern = path.join(rootDir, "amplify", "generated", "models", "*.swift");
+  const modelFiles = glob.sync(modelsFilePattern).map((file) => {
     return path.relative(rootDir, file);
   });
   if (modelFiles && modelFiles.length > 0) {
-    const modelsGroup = getOrCreateGroup(xcodeProject, 'AmplifyModels');
-    modelFiles.forEach(file => {
+    const modelsGroup = getOrCreateGroup(xcodeProject, "AmplifyModels");
+    modelFiles.forEach((file) => {
       const { base: filename } = path.parse(file);
       if (!groupHasFile(modelsGroup, filename)) {
         xcodeProject.addSourceFile(file, {}, modelsGroup.uuid);
@@ -173,18 +173,18 @@ async function addAmplifyFiles() {
     // if not in a xcode project do not move forward with xcode logic
     return;
   }
-  const rootDir = path.resolve(projectDir, '..', '..');
+  const rootDir = path.resolve(projectDir, "..", "..");
   const project = xcode.project(projectDir);
   return new Promise((resolve, reject) => {
-    project.parse(error => {
+    project.parse((error) => {
       if (error) {
         reject(error);
         return;
       }
 
       const rootGroup = getRootGroup(project);
-      if (!rootGroup || typeof rootGroup.uuid !== 'string') {
-        reject(new Error('Could not find root group of Xcode project'));
+      if (!rootGroup || typeof rootGroup.uuid !== "string") {
+        reject(new Error("Could not find root group of Xcode project"));
         return;
       }
 
@@ -199,22 +199,22 @@ async function addAmplifyFiles() {
         hasGeneratedFiles = addAmplifyModels(rootDir, schemaFile, project);
 
         // step 2: add configuration, schema and other amplify resources
-        const amplifyConfigGroup = getOrCreateGroup(project, 'AmplifyConfig');
+        const amplifyConfigGroup = getOrCreateGroup(project, "AmplifyConfig");
 
         // add the amplifytools config file
-        const amplifyToolsConfigFile = 'amplifytools.xcconfig';
+        const amplifyToolsConfigFile = "amplifytools.xcconfig";
         if (!groupHasFile(amplifyConfigGroup, amplifyToolsConfigFile)) {
           project.addFile(amplifyToolsConfigFile, amplifyConfigGroup.uuid);
           hasGeneratedFiles = true;
         }
 
         // adding resources (i.e. files that are added to the app bundle)
-        const resourcesGroup = project.pbxGroupByName('Resources');
+        const resourcesGroup = project.pbxGroupByName("Resources");
         if (!resourcesGroup) {
-          project.addPbxGroup([], 'Resources');
+          project.addPbxGroup([], "Resources");
         }
-        const amplifyConfigFile = 'amplifyconfiguration.json';
-        const awsConfigFile = 'awsconfiguration.json';
+        const amplifyConfigFile = "amplifyconfiguration.json";
+        const awsConfigFile = "awsconfiguration.json";
         if (!groupHasFile(amplifyConfigGroup, amplifyConfigFile)) {
           project.addResourceFile(amplifyConfigFile, null, amplifyConfigGroup.uuid);
           project.addResourceFile(awsConfigFile, null, amplifyConfigGroup.uuid);
@@ -225,7 +225,7 @@ async function addAmplifyFiles() {
         if (!groupHasFile(amplifyConfigGroup, GRAPHQL_SCHEMA) && schemaFile) {
           const schemaFilePath = path.relative(rootDir, schemaFile);
           project.addFile(schemaFilePath, amplifyConfigGroup.uuid, {
-            lastKnownFileType: 'text',
+            lastKnownFileType: "text",
           });
           hasGeneratedFiles = true;
         }

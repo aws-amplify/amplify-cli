@@ -1,22 +1,22 @@
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const ini = require('ini');
-const { spawn } = require('child_process');
-const inquirer = require('inquirer');
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+const ini = require("ini");
+const { spawn } = require("child_process");
+const inquirer = require("inquirer");
 
-const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
-const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
-const configFilePath = path.join(dotAWSDirPath, 'config');
+const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : /^win/.test(process.platform) ? "amplify.cmd" : "amplify";
+const dotAWSDirPath = path.normalize(path.join(os.homedir(), ".aws"));
+const configFilePath = path.join(dotAWSDirPath, "config");
 run();
 
 function getNamedProfiles() {
   let namedProfiles;
   if (fs.existsSync(configFilePath)) {
-    const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
+    const config = ini.parse(fs.readFileSync(configFilePath, "utf-8"));
     namedProfiles = {};
-    Object.keys(config).forEach(key => {
-      const profileName = key.replace('profile', '').trim();
+    Object.keys(config).forEach((key) => {
+      const profileName = key.replace("profile", "").trim();
       if (!namedProfiles[profileName]) {
         namedProfiles[profileName] = config[key];
       }
@@ -27,9 +27,9 @@ function getNamedProfiles() {
 
 async function askForProfile(namedProfiles) {
   const profileQuestion = {
-    type: 'list',
-    name: 'profile',
-    message: 'Choose the profile you would like to use',
+    type: "list",
+    name: "profile",
+    message: "Choose the profile you would like to use",
     choices: Object.keys(namedProfiles),
   };
   const profileAnswer = await inquirer.prompt(profileQuestion);
@@ -50,10 +50,10 @@ async function getValidProfile(profileToUse) {
 }
 
 async function configureProfile() {
-  const amplifyConfigure = spawn(amplify, ['configure'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+  const amplifyConfigure = spawn(amplify, ["configure"], { cwd: process.cwd(), env: process.env, stdio: "inherit" });
 
   return new Promise((resolve, reject) => {
-    amplifyConfigure.on('exit', code => {
+    amplifyConfigure.on("exit", (code) => {
       if (code === 0) {
         resolve();
       } else {
@@ -72,7 +72,7 @@ async function run() {
     buildConfig = JSON.parse(fs.readFileSync(buildConfigFilepath));
   }
 
-  let profileToUse = buildConfig.profile || 'default';
+  let profileToUse = buildConfig.profile || "default";
 
   // If accessKeyId and secretKey not provided in buildConfig, profile needs to exists
   if (!buildConfig.accessKeyId) {
@@ -81,7 +81,7 @@ async function run() {
     while (!foundProfile) {
       foundProfile = await getValidProfile(profileToUse);
       if (!foundProfile) {
-        console.log('Attempting to configure the profile');
+        console.log("Attempting to configure the profile");
         await configureProfile();
       }
     }
@@ -89,7 +89,7 @@ async function run() {
   }
 
   const PROJECT_CONFIG = `{\
-    "envName":"${buildConfig.envName || 'amplify'}"\
+    "envName":"${buildConfig.envName || "amplify"}"\
   }`;
 
   let PROVIDER_CONFIG;
@@ -112,7 +112,7 @@ async function run() {
       } \
     }`;
   } else {
-    console.log('AWS Credentials not configured');
+    console.log("AWS Credentials not configured");
   }
 
   let cloudPush;
@@ -120,18 +120,18 @@ async function run() {
   if (!fs.existsSync(`./amplify/.config/local-env-info.json`)) {
     // init and then push
 
-    cloudPush = spawn(amplify, ['init', '--amplify', PROJECT_CONFIG, '--providers', PROVIDER_CONFIG, '--yes'], {
+    cloudPush = spawn(amplify, ["init", "--amplify", PROJECT_CONFIG, "--providers", PROVIDER_CONFIG, "--yes"], {
       cwd: process.cwd(),
       env: process.env,
-      stdio: 'inherit',
+      stdio: "inherit",
     });
   } else {
     // just push
 
-    cloudPush = spawn(amplify, ['push', '--yes'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    cloudPush = spawn(amplify, ["push", "--yes"], { cwd: process.cwd(), env: process.env, stdio: "inherit" });
   }
 
-  cloudPush.on('exit', code => {
+  cloudPush.on("exit", (code) => {
     if (code === 0) {
       process.exit(0);
     } else {

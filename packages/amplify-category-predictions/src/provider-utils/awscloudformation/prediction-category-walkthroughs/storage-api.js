@@ -3,13 +3,13 @@
  * storage category. (primarily s3 api used by predictions for identity)
  * @param {*} context
  */
-import * as uuid from 'uuid';
+import * as uuid from "uuid";
 
 /**
  * @returns Name of S3 resource or undefined
  */
 export async function invokeS3GetResourceName(context) {
-  const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+  const s3ResourceName = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3GetResourceName", [context]);
   return s3ResourceName;
 }
 
@@ -20,7 +20,7 @@ export async function invokeS3GetResourceName(context) {
  * @returns
  */
 export async function invokeS3GetUserInputs(context, s3ResourceName) {
-  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3GetUserInput", [context, s3ResourceName]);
   return s3UserInputs;
 }
 
@@ -32,8 +32,8 @@ export async function invokeS3GetUserInputs(context, s3ResourceName) {
  */
 export async function invokeS3GetAllDefaults(context, s3AccessType) {
   const project = context.amplify.getProjectDetails();
-  const [shortId] = uuid.v4().split('-');
-  const s3DefaultUserInput = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetBucketUserInputDefault', [
+  const [shortId] = uuid.v4().split("-");
+  const s3DefaultUserInput = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3GetBucketUserInputDefault", [
     project,
     shortId,
     s3AccessType,
@@ -49,7 +49,7 @@ export async function invokeS3GetAllDefaults(context, s3AccessType) {
  * @returns
  */
 export async function invokeS3AddStorageLambdaTrigger(context, s3ResourceName, S3UserInputTriggerFunctionParams) {
-  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3AddStorageLambdaTrigger', [
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3AddStorageLambdaTrigger", [
     context,
     s3ResourceName,
     S3UserInputTriggerFunctionParams,
@@ -65,7 +65,7 @@ export async function invokeS3AddStorageLambdaTrigger(context, s3ResourceName, S
  * @returns
  */
 export async function invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName) {
-  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3RemoveAdminLambdaTrigger', [
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3RemoveAdminLambdaTrigger", [
     context,
     s3ResourceName,
   ]);
@@ -81,7 +81,7 @@ export async function invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName) 
  * @returns
  */
 export async function invokeS3RegisterAdminTrigger(context, s3ResourceName, adminLambdaTrigger) {
-  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3RegisterAdminTrigger', [
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3RegisterAdminTrigger", [
     context,
     s3ResourceName,
     adminLambdaTrigger,
@@ -96,7 +96,7 @@ export async function invokeS3RegisterAdminTrigger(context, s3ResourceName, admi
  * @returns Name of the storage resource.
  */
 export async function invokeS3AddResource(context, storageUserInput) {
-  const storageResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3CreateStorageResource', [
+  const storageResourceName = await context.amplify.invokePluginMethod(context, "storage", undefined, "s3CreateStorageResource", [
     context,
     storageUserInput,
   ]);

@@ -1,12 +1,12 @@
-const axios = require('axios');
+const axios = require("axios");
 
 /**
  * @type {import('@types/aws-lambda').VerifyAuthChallengeResponseTriggerHandler}
  */
-exports.handler = async event => {
+exports.handler = async (event) => {
   const response = await axios.post(
     `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHASECRET}&response=${event.request.challengeAnswer}`,
-    {},
+    {}
   );
   /**
    * Verify that the CAPTCHA challenge succeeded, and if it did, indicate so in
@@ -18,7 +18,7 @@ exports.handler = async event => {
   event.response.answerCorrect = !!challengeSucceeded;
 
   if (!challengeSucceeded) {
-    throw new Error('CAPTCHA verification error');
+    throw new Error("CAPTCHA verification error");
   }
 
   return event;

@@ -1,2 +1,2 @@
-const fs = require('fs');
-fs.writeFileSync('ping', 'testFile');
+const fs = require("fs");
+fs.writeFileSync("ping", "testFile");

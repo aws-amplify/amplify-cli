@@ -1,26 +1,26 @@
 // disabling eslint until this file is migrated to TS
 /* eslint-disable */
-const constants = require('../constants/plugin-constants');
-const pathManager = require('../utils/path-manager');
-const fs = require('fs-extra');
-const utils = require('../utils/amplify-context-utils');
-const configUtils = require('../utils/config-utils');
-const questions = require('../modules/questions/question-generator');
-const ValidationError = require('../error/validation-error').default;
-const clientFactory = require('../utils/client-factory');
-const ora = require('ora');
-const tableUtis = require('../utils/table-utils');
-const {ensureEnvParamManager} = require('@aws-amplify/amplify-environment-parameters');
+const constants = require("../constants/plugin-constants");
+const pathManager = require("../utils/path-manager");
+const fs = require("fs-extra");
+const utils = require("../utils/amplify-context-utils");
+const configUtils = require("../utils/config-utils");
+const questions = require("../modules/questions/question-generator");
+const ValidationError = require("../error/validation-error").default;
+const clientFactory = require("../utils/client-factory");
+const ora = require("ora");
+const tableUtis = require("../utils/table-utils");
+const { ensureEnvParamManager } = require("@aws-amplify/amplify-environment-parameters");
 
 const HELP_INFO_PLACE_HOLDER =
-  'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
-const REMOVE_ERROR_MESSAGE = 'There was an error removing the auth resource';
-const HOSTING_NOT_ENABLED = 'Amplify Console hosting is not enabled.';
+  "Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.";
+const REMOVE_ERROR_MESSAGE = "There was an error removing the auth resource";
+const HOSTING_NOT_ENABLED = "Amplify Console hosting is not enabled.";
 const HOSTING_ENABLED_IN_CONSOLE =
-  'You have enabled hosting in the Amplify Console and not through the CLI. To remove hosting with Amplify Console, please visit the console and disconnect your frontend branches.';
-const HOSTING_ALREADY_ENABLED = 'Amplify Console hosting has already been enabled';
+  "You have enabled hosting in the Amplify Console and not through the CLI. To remove hosting with Amplify Console, please visit the console and disconnect your frontend branches.";
+const HOSTING_ALREADY_ENABLED = "Amplify Console hosting has already been enabled";
 const FRONTEND_EXISTED_WARNING =
-  'You have already connected branches to your Amplify Console app. Please visit the Amplify Console to manage your branches.';
+  "You have already connected branches to your Amplify Console app. Please visit the Amplify Console to manage your branches.";
 
 async function enable(context) {
   await validateHosting(context);
@@ -34,7 +34,7 @@ async function enable(context) {
     } else {
       doesSelectHelp = true;
       context.print.info(HELP_INFO_PLACE_HOLDER);
-      context.print.info('-------------------------------');
+      context.print.info("-------------------------------");
     }
   } while (doesSelectHelp);
 }
@@ -98,7 +98,7 @@ async function remove(context) {
     await configUtils.deleteConsoleConfigFromCurrMeta(context);
   }
 
-  return amplify.removeResource(context, category, resource).catch(err => {
+  return amplify.removeResource(context, category, resource).catch((err) => {
     context.print.info(err.stack);
     context.print.error(REMOVE_ERROR_MESSAGE);
     context.usageData.emitError(err);

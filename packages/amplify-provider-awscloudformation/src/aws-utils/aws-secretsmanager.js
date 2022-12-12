@@ -1,6 +1,6 @@
 // @ts-check
-const aws = require('./aws.js');
-const configurationManager = require('../configuration-manager');
+const aws = require("./aws.js");
+const configurationManager = require("../configuration-manager");
 
 class SecretsManager {
   constructor(context, options = {}) {

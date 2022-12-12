@@ -1,10 +1,10 @@
-const clientFactory = require('./client-factory');
-const ora = require('ora');
-const Table = require('cli-table3');
+const clientFactory = require("./client-factory");
+const ora = require("ora");
+const Table = require("cli-table3");
 
 async function generateTableContentForApp(context, appId) {
   const spinner = ora();
-  spinner.start('Fetching AWS Amplify Console domains');
+  spinner.start("Fetching AWS Amplify Console domains");
   const amplifyClient = await clientFactory.getAmplifyClient(context);
   const domainMap = {};
 
@@ -52,13 +52,13 @@ async function generateTableContentForApp(context, appId) {
     } while (nextToken != null);
     spinner.stop();
     if (Object.keys(domainMap).length === 0) {
-      console.log('No amplify console domain detected');
+      console.log("No amplify console domain detected");
       return;
     }
     // Init table
     const table = new Table({
-      style: { head: ['reset'] }, // "no color"
-      head: ['FrontEnd Env', 'Domain'],
+      style: { head: ["reset"] }, // "no color"
+      head: ["FrontEnd Env", "Domain"],
     });
 
     for (const [branchName, domains] of Object.entries(domainMap)) {
@@ -76,7 +76,7 @@ async function generateTableContentForApp(context, appId) {
         }
       }
     }
-    console.log('Amplify hosting urls: ');
+    console.log("Amplify hosting urls: ");
     console.log(table.toString());
   } catch (err) {
     spinner.fail(err.message);

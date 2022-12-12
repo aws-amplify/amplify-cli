@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 module.exports = function (Velocity, utils) {
   /**
    * blocks语法处理
@@ -9,32 +9,32 @@ module.exports = function (Velocity, utils) {
      */
     getBlock: function (block) {
       var ast = block[0];
-      var ret = '';
+      var ret = "";
 
       switch (ast.type) {
-        case 'if':
+        case "if":
           ret = this.getBlockIf(block);
           break;
-        case 'foreach':
+        case "foreach":
           ret = this.getBlockEach(block);
           break;
-        case 'macro':
+        case "macro":
           this.setBlockMacro(block);
           break;
-        case 'noescape':
+        case "noescape":
           ret = this._render(block.slice(1));
           break;
-        case 'define':
+        case "define":
           this.setBlockDefine(block);
           break;
-        case 'macro_body':
+        case "macro_body":
           ret = this.getMacroBody(block);
           break;
         default:
           ret = this._render(block);
       }
 
-      return ret === undefined ? '' : ret;
+      return ret === undefined ? "" : ret;
     },
 
     /**
@@ -74,7 +74,7 @@ module.exports = function (Velocity, utils) {
      */
     getMacro: function (ast, bodyContent) {
       var macro = this.macros[ast.id];
-      var ret = '';
+      var ret = "";
 
       if (!macro) {
         var jsmacros = this.jsmacros;
@@ -87,7 +87,7 @@ module.exports = function (Velocity, utils) {
             function (a) {
               jsArgs.push(this.getLiteral(a));
             },
-            this,
+            this
           );
 
           var self = this;
@@ -103,8 +103,8 @@ module.exports = function (Velocity, utils) {
             var pos = ast.pos;
             var text = Velocity.Helper.getRefText(ast);
             // throws error tree
-            var err = '\n      at ' + text + ' L/N ' + pos.first_line + ':' + pos.first_column;
-            e.name = '';
+            var err = "\n      at " + text + " L/N " + pos.first_line + ":" + pos.first_column;
+            e.name = "";
             e.message += err;
             throw new Error(e);
           }
@@ -115,7 +115,7 @@ module.exports = function (Velocity, utils) {
         var callArgs = ast.args;
         var local = { bodyContent: bodyContent };
         var guid = utils.guid();
-        var contextId = 'macro:' + ast.id + ':' + guid;
+        var contextId = "macro:" + ast.id + ":" + guid;
 
         utils.forEach(
           args,
@@ -126,7 +126,7 @@ module.exports = function (Velocity, utils) {
               local[ref.id] = undefined;
             }
           },
-          this,
+          this
         );
 
         ret = this.eval(asts, local, contextId);
@@ -152,7 +152,7 @@ module.exports = function (Velocity, utils) {
       } else {
         var asts = [];
         var parse = Velocity.parse;
-        contextId = contextId || 'eval:' + utils.guid();
+        contextId = contextId || "eval:" + utils.guid();
 
         if (utils.isArray(str)) {
           asts = str;
@@ -165,7 +165,7 @@ module.exports = function (Velocity, utils) {
           var ret = this._render(asts, contextId);
           this.local[contextId] = {};
           this.conditions.shift();
-          this.condition = this.conditions[0] || '';
+          this.condition = this.conditions[0] || "";
 
           return ret;
         }
@@ -185,13 +185,13 @@ module.exports = function (Velocity, utils) {
           count: 0,
         },
       };
-      var ret = '';
+      var ret = "";
       var guid = utils.guid();
-      var contextId = 'foreach:' + guid;
+      var contextId = "foreach:" + guid;
 
       var type = {}.toString.call(_from);
-      if (!_from || (type !== '[object Array]' && type !== '[object Object]')) {
-        return '';
+      if (!_from || (type !== "[object Array]" && type !== "[object Object]")) {
+        return "";
       }
 
       if (utils.isArray(_from)) {
@@ -216,7 +216,7 @@ module.exports = function (Velocity, utils) {
             this.local[contextId] = local;
             ret += this._render(_block, contextId);
           },
-          this,
+          this
         );
       } else {
         var len = utils.keys(_from).length;
@@ -238,7 +238,7 @@ module.exports = function (Velocity, utils) {
             this.local[contextId] = local;
             ret += this._render(_block, contextId);
           },
-          this,
+          this
         );
       }
 
@@ -249,7 +249,7 @@ module.exports = function (Velocity, utils) {
         // empty current local context object
         this.local[contextId] = {};
         this.conditions.shift();
-        this.condition = this.conditions[0] || '';
+        this.condition = this.conditions[0] || "";
       }
 
       return ret;
@@ -270,7 +270,7 @@ module.exports = function (Velocity, utils) {
               return true;
             }
             received = this.getExpression(ast.condition);
-          } else if (ast.type === 'else') {
+          } else if (ast.type === "else") {
             if (received) {
               return true;
             }
@@ -281,7 +281,7 @@ module.exports = function (Velocity, utils) {
 
           return false;
         },
-        this,
+        this
       );
 
       // keep current condition fix #77

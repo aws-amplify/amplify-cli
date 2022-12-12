@@ -1,23 +1,23 @@
-const { ApiCategoryFacade, AmplifyFault } = require('amplify-cli-core');
-const awsRegions = require('./aws-regions');
-const { Lambda } = require('./aws-utils/aws-lambda');
-const DynamoDB = require('./aws-utils/aws-dynamodb');
-const AppSync = require('./aws-utils/aws-appsync');
-const { Lex } = require('./aws-utils/aws-lex');
-const Polly = require('./aws-utils/aws-polly');
-const SageMaker = require('./aws-utils/aws-sagemaker');
-const { transformResourceWithOverrides } = require('./override-manager');
-const { updateStackForAPIMigration } = require('./push-resources');
-const SecretsManager = require('./aws-utils/aws-secretsmanager');
-const Route53 = require('./aws-utils/aws-route53');
-const { run: archiver } = require('./utils/archiver');
-const ECR = require('./aws-utils/aws-ecr');
-const { pagedAWSCall } = require('./aws-utils/paged-call');
-const { fileLogger } = require('./utils/aws-logger');
+const { ApiCategoryFacade, AmplifyFault } = require("amplify-cli-core");
+const awsRegions = require("./aws-regions");
+const { Lambda } = require("./aws-utils/aws-lambda");
+const DynamoDB = require("./aws-utils/aws-dynamodb");
+const AppSync = require("./aws-utils/aws-appsync");
+const { Lex } = require("./aws-utils/aws-lex");
+const Polly = require("./aws-utils/aws-polly");
+const SageMaker = require("./aws-utils/aws-sagemaker");
+const { transformResourceWithOverrides } = require("./override-manager");
+const { updateStackForAPIMigration } = require("./push-resources");
+const SecretsManager = require("./aws-utils/aws-secretsmanager");
+const Route53 = require("./aws-utils/aws-route53");
+const { run: archiver } = require("./utils/archiver");
+const ECR = require("./aws-utils/aws-ecr");
+const { pagedAWSCall } = require("./aws-utils/paged-call");
+const { fileLogger } = require("./utils/aws-logger");
 
-const logger = fileLogger('utility-functions');
-const { getAccountId } = require('./amplify-sts');
-const { getAwsConfig } = require('./configuration-manager');
+const logger = fileLogger("utility-functions");
+const { getAccountId } = require("./amplify-sts");
+const { getAwsConfig } = require("./configuration-manager");
 
 module.exports = {
   /**
@@ -38,11 +38,11 @@ module.exports = {
       const { NextMarker, IsTruncated, HostedZones } = await client.route53
         .listHostedZones({
           Marker,
-          MaxItems: '100',
+          MaxItems: "100",
         })
         .promise();
 
-      zoneFound = HostedZones.find(zone => `${domain}.`.endsWith(zone.Name));
+      zoneFound = HostedZones.find((zone) => `${domain}.`.endsWith(zone.Name));
 
       Marker = NextMarker;
       truncated = IsTruncated;
@@ -54,17 +54,17 @@ module.exports = {
    *
    */
   compileSchema: async (context, options) => {
-    const category = 'api';
+    const category = "api";
     let optionsWithUpdateHandler = { ...options };
 
     if (!options.dryRun) {
       const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
       let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
-      resources = resources.filter(resource => resource.service === 'AppSync');
-      resources = resources.map(resource => resource.resourceName);
+      resources = resources.filter((resource) => resource.service === "AppSync");
+      resources = resources.map((resource) => resource.resourceName);
       optionsWithUpdateHandler = {
         ...options,
-        handleMigration: resources.length ? opts => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
+        handleMigration: resources.length ? (opts) => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
       };
     }
 
@@ -86,9 +86,7 @@ module.exports = {
    *
    */
   newSecret: async (context, options) => {
-    const {
-      description, secret, name, version,
-    } = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .createSecret({
@@ -105,9 +103,7 @@ module.exports = {
    *
    */
   updateSecret: async (context, options) => {
-    const {
-      description, secret, name, version,
-    } = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .updateSecret({
@@ -135,10 +131,14 @@ module.exports = {
     } catch (error) {
       const { code } = error;
 
-      if (code !== 'ResourceNotFoundException') {
-        throw new AmplifyFault('ResourceNotFoundFault', {
-          message: error.message,
-        }, error);
+      if (code !== "ResourceNotFoundException") {
+        throw new AmplifyFault(
+          "ResourceNotFoundFault",
+          {
+            message: error.message,
+          },
+          error
+        );
       }
     }
 
@@ -184,8 +184,8 @@ module.exports = {
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {
-      throw new AmplifyFault('ResourceNotFoundFault', {
-        message: 'Missing resource directory.',
+      throw new AmplifyFault("ResourceNotFoundFault", {
+        message: "Missing resource directory.",
       });
     }
     return ApiCategoryFacade.getDirectiveDefinitions(context, resourceDir);
@@ -199,7 +199,7 @@ module.exports = {
    */
   getRegionMappings: () => awsRegions.regionMappings,
   /*eslint-disable*/
-  staticRoles: context => ({
+  staticRoles: (context) => ({
     unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleName,
     authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleName,
     unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleArn,
@@ -209,13 +209,13 @@ module.exports = {
   /**
    *
    */
-  getLambdaFunctions: async context => {
+  getLambdaFunctions: async (context) => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
     const lambdafunctions = [];
 
     do {
-      logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
+      logger("getLambdaFunction.lambdaModel.lambda.listFunctions", {
         MaxItems: 10000,
         Marker: nextMarker,
       })();
@@ -235,22 +235,22 @@ module.exports = {
   /**
    *
    */
-  getPollyVoices: async context => {
+  getPollyVoices: async (context) => {
     const pollyModel = await new Polly(context);
-    logger('getPollyVoices.polluModel.polly.describeVoices', [])();
+    logger("getPollyVoices.polluModel.polly.describeVoices", [])();
     return pollyModel.polly.describeVoices().promise();
   },
   /**
    *
    */
-  getDynamoDBTables: async context => {
+  getDynamoDBTables: async (context) => {
     const dynamodbModel = await new DynamoDB(context);
 
     let nextToken;
     const describeTablePromises = [];
 
     do {
-      logger('getDynamoDBTables.dynamodb.listTables', [
+      logger("getDynamoDBTables.dynamodb.listTables", [
         {
           Limit: 100,
           ExclusiveStartTableName: nextToken,
@@ -260,7 +260,7 @@ module.exports = {
       const dynamodbTables = paginatedTables.TableNames;
       nextToken = paginatedTables.LastEvaluatedTableName;
       for (let i = 0; i < dynamodbTables.length; i += 1) {
-        logger('getDynamoDBTables.dynamodb.describeTables', [
+        logger("getDynamoDBTables.dynamodb.describeTables", [
           {
             TableName: dynamodbTables[i],
           },
@@ -270,7 +270,7 @@ module.exports = {
             .describeTable({
               TableName: dynamodbTables[i],
             })
-            .promise(),
+            .promise()
         );
       }
     } while (nextToken);
@@ -280,7 +280,7 @@ module.exports = {
     const tablesToReturn = [];
     for (let i = 0; i < allTables.length; i += 1) {
       const arn = allTables[i].Table.TableArn;
-      const arnSplit = arn.split(':');
+      const arnSplit = arn.split(":");
       const region = arnSplit[3];
 
       tablesToReturn.push({
@@ -296,19 +296,19 @@ module.exports = {
   /**
    * @deprecated Use getGraphQLAPIs instead
    */
-  getAppSyncAPIs: context => module.exports.getGraphQLAPIs(context),
+  getAppSyncAPIs: (context) => module.exports.getGraphQLAPIs(context),
   /**
    *
    */
-  getGraphQLAPIs: context => {
-    logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 })();
+  getGraphQLAPIs: (context) => {
+    logger("getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis", { maxResults: 25 })();
 
     return new AppSync(context)
-      .then(result => {
+      .then((result) => {
         const appSyncModel = result;
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
       })
-      .then(result => result.graphqlApis);
+      .then((result) => result.graphqlApis);
   },
   /**
    *
@@ -320,17 +320,17 @@ module.exports = {
     }
 
     return new AppSync(context, awsOptions)
-      .then(result => {
+      .then((result) => {
         const appSyncModel = result;
-        logger('getIntrospectionSchema.appSyncModel.appSync.getIntrospectionSchema', [
+        logger("getIntrospectionSchema.appSyncModel.appSync.getIntrospectionSchema", [
           {
             apiId: options.apiId,
-            format: 'JSON',
+            format: "JSON",
           },
         ])();
-        return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' }).promise();
+        return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: "JSON" }).promise();
       })
-      .then(result => result.schema.toString() || null);
+      .then((result) => result.schema.toString() || null);
   },
   /**
    *
@@ -340,45 +340,42 @@ module.exports = {
     if (options.region) {
       awsOptions.region = options.region;
     }
-    logger('getGraphQLApiDetails.appSyncModel.appSync.getGraphqlApi', [
+    logger("getGraphQLApiDetails.appSyncModel.appSync.getGraphqlApi", [
       {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions)
-      .then(result => {
-        const appSyncModel = result;
-        return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
-      });
+    return new AppSync(context, awsOptions).then((result) => {
+      const appSyncModel = result;
+      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+    });
   },
   /**
    *
    */
   getBuiltInSlotTypes: (context, options) => {
     const params = {
-      locale: 'en-US',
+      locale: "en-US",
       maxResults: 50,
     };
     if (options) {
       params.nextToken = options;
     }
-    logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params])();
-    return new Lex(context)
-      .then(result => {
-        log();
-        return result.lex.getBuiltinSlotTypes(params).promise();
-      });
+    logger("getBuiltInSlotTypes.lex.getBuiltinSlotTypes", [params])();
+    return new Lex(context).then((result) => {
+      log();
+      return result.lex.getBuiltinSlotTypes(params).promise();
+    });
   },
   /**
    *
    */
-  getSlotTypes: context => {
+  getSlotTypes: (context) => {
     const params = {
       maxResults: 50,
     };
-    logger('getSlotTypes.lex.getSlotTypes', [params])();
-    return new Lex(context)
-      .then(result => result.lex.getSlotTypes(params).promise());
+    logger("getSlotTypes.lex.getSlotTypes", [params])();
+    return new Lex(context).then((result) => result.lex.getSlotTypes(params).promise());
   },
   /**
    * @deprecated Use getGraphQLApiKeys instead
@@ -392,20 +389,19 @@ module.exports = {
     if (options.region) {
       awsOptions.region = options.region;
     }
-    logger('getGraphQLApiKeys.appSync.listApiKeys', [
+    logger("getGraphQLApiKeys.appSync.listApiKeys", [
       {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions)
-      .then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
+    return new AppSync(context, awsOptions).then((result) => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
   },
   /**
    *
    */
-  getEndpoints: async context => {
+  getEndpoints: async (context) => {
     const sagemakerModel = await new SageMaker(context);
-    logger('getEndpoints.sageMaker.listEndpoints', [])();
+    logger("getEndpoints.sageMaker.listEndpoints", [])();
     return sagemakerModel.sageMaker.listEndpoints().promise();
   },
   /**
@@ -418,7 +414,7 @@ module.exports = {
       async (params, nextToken) => ecr.ecr.describeRepositories({ ...params, nextToken }).promise(),
       options,
       ({ repositories }) => repositories,
-      ({ nextToken }) => nextToken,
+      ({ nextToken }) => nextToken
     );
 
     return results;
@@ -426,5 +422,5 @@ module.exports = {
   /**
    * Provides the same AWS config used to push the amplify project
    */
-  retrieveAwsConfig: async context => getAwsConfig(context),
+  retrieveAwsConfig: async (context) => getAwsConfig(context),
 };
