@@ -145,7 +145,9 @@ export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: 
   });
 
   try {
-    rendererManager.renderSchemaToTemplate(schemas);
+    if(schemas.length) {
+      rendererManager.renderSchemaToTemplate(schemas);
+    }
   } catch (e) {
     printer.debug(e);
     printer.debug('Failed to generate component index file');

@@ -18,7 +18,7 @@ import {
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile,
+  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0
 } from '../../../migration-helpers';
 
 const defaultSettings = {
@@ -49,7 +49,7 @@ describe('amplify auth migration a', () => {
   });
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfile(projRoot, defaultSettings);
+    await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

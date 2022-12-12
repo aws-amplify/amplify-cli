@@ -189,6 +189,11 @@
                 "Ref": "LambdaExecutionRole"
             }
         },
+        "LambdaExecutionRoleArn": {
+            "Value": {
+                "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+            }
+        },
       "Region": {
           "Value": {
               "Ref": "AWS::Region"

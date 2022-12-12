@@ -318,30 +318,26 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   const spinner = new AmplifySpinner();
 
-  return archiver
-    .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
-    .then(result => {
-      const s3Key = `${result.zipFilename}`;
-      spinner.start('Saving deployment state.');
-      return S3.getInstance(context).then(s3 => {
-        spinner.stop('Deployment bucket fetched.');
-        const s3Params = {
-          Body: fs.createReadStream(result.zipFilePath),
-          Key: s3Key,
-        };
-        logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
-        return s3.uploadFile(s3Params);
-      });
-    })
-    .catch(ex => {
-      spinner.stop('Deployment state save failed.', false);
-      throw new AmplifyFault('DeploymentFault', {
-        message: ex.message,
-      }, ex);
-    })
-    .then(() => {
-      fs.removeSync(tempDir);
-    });
+  try {
+    spinner.start('Saving deployment state.');
+    const archive = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
+    const s3Key = `${archive.zipFilename}`;
+    const s3Instance = await S3.getInstance(context);
+    const s3Params = {
+      Body: fs.createReadStream(archive.zipFilePath),
+      Key: s3Key,
+    };
+    logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
+    await s3Instance.uploadFile(s3Params);
+    spinner.stop('Deployment state saved successfully.');
+  } catch (ex) {
+    spinner.stop('Deployment state save failed.', false);
+    throw new AmplifyFault('DeploymentFault', {
+      message: ex.message,
+    }, ex);
+  } finally {
+    fs.removeSync(tempDir);
+  }
 };
 
 const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> => S3.getInstance(context).then(async s3 => {

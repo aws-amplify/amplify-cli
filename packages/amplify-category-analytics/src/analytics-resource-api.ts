@@ -222,11 +222,16 @@ const writeNotificationsTeamProviderInfo = async (pinpointMeta: $TSAny): Promise
   if (!pinpointMeta) {
     return;
   }
-  getEnvParamManager().getResourceParamManager(AmplifyCategories.NOTIFICATIONS, AmplifySupportedService.PINPOINT).setAllParams({
+  const envParamManager = getEnvParamManager();
+  const params = {
     Name: pinpointMeta.Name,
     Id: pinpointMeta.Id,
     Region: pinpointMeta.Region,
-  });
+  };
+  // set params in the notifications and analytics resource param manager
+  [AmplifyCategories.NOTIFICATIONS, AmplifyCategories.ANALYTICS]
+    .map(category => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
+    .forEach(resourceParamManager => { resourceParamManager.setAllParams(params); });
 };
 
 /**
