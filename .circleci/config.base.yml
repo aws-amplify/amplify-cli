@@ -1196,6 +1196,7 @@ workflows:
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
             - upload_pkg_binaries
+            - verify-versions-match
           filters:
             branches:
               only:
