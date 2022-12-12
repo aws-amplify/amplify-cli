@@ -994,6 +994,7 @@ workflows:
             - build_pkg_binaries_macos
             - build_pkg_binaries_win
             - build_pkg_binaries_arm
+            - verify-versions-match
       - build_pkg_binaries_linux:
           requires:
             - publish_to_local_registry
