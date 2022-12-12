@@ -47,12 +47,12 @@ export interface Contributor<T extends Partial<FunctionParameters>, K> {
 export interface ExternalLayer {
     // (undocumented)
     arn: string | {
-        'Fn::Sub': string;
+        "Fn::Sub": string;
     } | {
         Ref: string;
     };
     // (undocumented)
-    type: 'ExternalLayer';
+    type: "ExternalLayer";
 }
 
 // @public (undocumented)
@@ -64,7 +64,7 @@ export interface FunctionBreadcrumbs {
     // (undocumented)
     pluginId: string;
     // (undocumented)
-    scripts?: Record<'build' & 'package', FunctionScript>;
+    scripts?: Record<"build" & "package", FunctionScript>;
     // (undocumented)
     useLegacyBuild: boolean;
 }
@@ -131,7 +131,7 @@ export interface FunctionRuntime {
 // Warning: (ae-forgotten-export) The symbol "FunctionContributorCondition" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, 'provider' | 'services'>;
+export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, "provider" | "services">;
 
 // @public (undocumented)
 export type FunctionRuntimeContributorFactory = (context: any) => Contributor<FunctionRuntimeParameters, RuntimeContributionRequest> & FunctionRuntimeLifecycleManager;
@@ -149,12 +149,12 @@ export interface FunctionRuntimeLifecycleManager {
 }
 
 // @public (undocumented)
-export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>;
+export type FunctionRuntimeParameters = Pick<FunctionParameters, "runtime">;
 
 // @public (undocumented)
 export interface FunctionScript {
     // (undocumented)
-    type: 'file' | 'inline';
+    type: "file" | "inline";
     // (undocumented)
     value: string;
 }
@@ -184,7 +184,7 @@ export type FunctionTemplateCondition = FunctionContributorCondition;
 export type FunctionTemplateContributorFactory = (context: any) => Contributor<Partial<FunctionParameters>, TemplateContributionRequest>;
 
 // @public (undocumented)
-export type FunctionTemplateParameters = Pick<FunctionParameters, 'dependsOn' | 'functionTemplate' | 'triggerEventSourceMappings'>;
+export type FunctionTemplateParameters = Pick<FunctionParameters, "dependsOn" | "functionTemplate" | "triggerEventSourceMappings">;
 
 // @public (undocumented)
 export interface FunctionTriggerParameters {
@@ -280,7 +280,7 @@ export interface ProjectLayer {
     // (undocumented)
     resourceName: string;
     // (undocumented)
-    type: 'ProjectLayer';
+    type: "ProjectLayer";
     // (undocumented)
     version: number | string;
 }
@@ -297,7 +297,7 @@ export interface ProviderContext {
 
 // @public (undocumented)
 export type RemoveSecret = {
-    operation: 'remove';
+    operation: "remove";
 };
 
 // @public (undocumented)
@@ -305,7 +305,7 @@ export const removeSecret: RemoveSecret;
 
 // @public (undocumented)
 export type RetainSecret = {
-    operation: 'retain';
+    operation: "retain";
 };
 
 // @public (undocumented)
@@ -331,7 +331,7 @@ export type SecretName = string;
 
 // @public (undocumented)
 export type SetSecret = {
-    operation: 'set';
+    operation: "set";
     value: string;
 };
 

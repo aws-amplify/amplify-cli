@@ -67,7 +67,7 @@ export interface AppSyncAPIKeyAuthType {
     // (undocumented)
     keyDescription?: string;
     // (undocumented)
-    mode: 'API_KEY';
+    mode: "API_KEY";
 }
 
 // @public (undocumented)
@@ -82,7 +82,7 @@ export type AppSyncAuthType = AppSyncAPIKeyAuthType | AppSyncAWSIAMAuthType | Ap
 // @public (undocumented)
 export interface AppSyncAWSIAMAuthType {
     // (undocumented)
-    mode: 'AWS_IAM';
+    mode: "AWS_IAM";
 }
 
 // @public (undocumented)
@@ -90,7 +90,7 @@ export interface AppSyncCognitoUserPoolsAuthType {
     // (undocumented)
     cognitoUserPoolId?: string;
     // (undocumented)
-    mode: 'AMAZON_COGNITO_USER_POOLS';
+    mode: "AMAZON_COGNITO_USER_POOLS";
 }
 
 // @public (undocumented)
@@ -98,7 +98,7 @@ export interface AppSyncLambdaAuthType {
     // (undocumented)
     lambdaFunction: string;
     // (undocumented)
-    mode: 'AWS_LAMBDA';
+    mode: "AWS_LAMBDA";
     // (undocumented)
     ttlSeconds?: string;
 }
@@ -106,7 +106,7 @@ export interface AppSyncLambdaAuthType {
 // @public (undocumented)
 export interface AppSyncOpenIDConnectAuthType {
     // (undocumented)
-    mode: 'OPENID_CONNECT';
+    mode: "OPENID_CONNECT";
     // (undocumented)
     openIDAuthTTL?: string;
     // (undocumented)
@@ -132,18 +132,18 @@ export interface AppSyncServiceConfiguration {
     // (undocumented)
     defaultAuthType: AppSyncAuthType;
     // (undocumented)
-    serviceName: 'AppSync';
+    serviceName: "AppSync";
     // (undocumented)
     transformSchema: string;
 }
 
 // @public (undocumented)
-export type AppSyncServiceModification = Pick<AppSyncServiceConfiguration, 'serviceName'> & Partial<Pick<AppSyncServiceConfiguration, 'transformSchema' | 'defaultAuthType' | 'additionalAuthTypes' | 'conflictResolution' | 'apiKeyExpiration'>>;
+export type AppSyncServiceModification = Pick<AppSyncServiceConfiguration, "serviceName"> & Partial<Pick<AppSyncServiceConfiguration, "transformSchema" | "defaultAuthType" | "additionalAuthTypes" | "conflictResolution" | "apiKeyExpiration">>;
 
 // @public (undocumented)
 export interface BaseCognitoServiceConfiguration {
     // (undocumented)
-    serviceName: 'Cognito';
+    serviceName: "Cognito";
     // (undocumented)
     userPoolConfiguration: CognitoUserPoolConfiguration;
 }
@@ -151,7 +151,7 @@ export interface BaseCognitoServiceConfiguration {
 // @public (undocumented)
 export interface BaseCognitoServiceModification {
     // (undocumented)
-    serviceName: 'Cognito';
+    serviceName: "Cognito";
     // (undocumented)
     userPoolModification: CognitoUserPoolModification;
 }
@@ -195,7 +195,7 @@ export type CognitoAutoVerifiedAttributesConfiguration = Array<CognitoAutoVerify
 // @public (undocumented)
 export interface CognitoAutoVerifyEmailConfiguration {
     // (undocumented)
-    type: 'EMAIL';
+    type: "EMAIL";
     // (undocumented)
     verificationMessage?: string;
     // (undocumented)
@@ -205,7 +205,7 @@ export interface CognitoAutoVerifyEmailConfiguration {
 // @public (undocumented)
 export interface CognitoAutoVerifyPhoneNumberConfiguration {
     // (undocumented)
-    type: 'PHONE_NUMBER';
+    type: "PHONE_NUMBER";
     // (undocumented)
     verificationMessage?: string;
 }
@@ -229,14 +229,14 @@ export interface CognitoIdentityPoolConfiguration {
 }
 
 // @public (undocumented)
-export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, 'unauthenticatedLogin' | 'identitySocialFederation'>;
+export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, "unauthenticatedLogin" | "identitySocialFederation">;
 
 // @public (undocumented)
 export interface CognitoIdentitySocialFederation {
     // (undocumented)
     clientId: string;
     // (undocumented)
-    provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON' | 'APPLE';
+    provider: "FACEBOOK" | "GOOGLE" | "AMAZON" | "APPLE";
 }
 
 // @public (undocumented)
@@ -245,15 +245,15 @@ export type CognitoMFAConfiguration = CognitoMFAOff | CognitoMFASettings;
 // @public (undocumented)
 export interface CognitoMFAOff {
     // (undocumented)
-    mode: 'OFF';
+    mode: "OFF";
 }
 
 // @public (undocumented)
 export interface CognitoMFASettings {
     // (undocumented)
-    mfaTypes: ('SMS' | 'TOTP')[];
+    mfaTypes: ("SMS" | "TOTP")[];
     // (undocumented)
-    mode: 'ON' | 'OPTIONAL';
+    mode: "ON" | "OPTIONAL";
     // (undocumented)
     smsMessage: string;
 }
@@ -263,9 +263,9 @@ export interface CognitoOAuthConfiguration {
     // (undocumented)
     domainPrefix?: string;
     // (undocumented)
-    oAuthGrantType: 'CODE' | 'IMPLICIT';
+    oAuthGrantType: "CODE" | "IMPLICIT";
     // (undocumented)
-    oAuthScopes: ('PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'AWS.COGNITO.SIGNIN.USER.ADMIN')[];
+    oAuthScopes: ("PHONE" | "EMAIL" | "OPENID" | "PROFILE" | "AWS.COGNITO.SIGNIN.USER.ADMIN")[];
     // (undocumented)
     redirectSigninURIs: string[];
     // (undocumented)
@@ -355,7 +355,7 @@ export interface CognitoUserPoolGroup {
 }
 
 // @public (undocumented)
-export type CognitoUserPoolModification = Pick<CognitoUserPoolConfiguration, 'userPoolGroups' | 'adminQueries' | 'mfa' | 'passwordPolicy' | 'refreshTokenPeriod' | 'readAttributes' | 'writeAttributes' | 'autoVerifiedAttributes'> & {
+export type CognitoUserPoolModification = Pick<CognitoUserPoolConfiguration, "userPoolGroups" | "adminQueries" | "mfa" | "passwordPolicy" | "refreshTokenPeriod" | "readAttributes" | "writeAttributes" | "autoVerifiedAttributes"> & {
     oAuth?: Partial<CognitoOAuthConfiguration>;
 };
 
@@ -444,7 +444,7 @@ export interface ExistingLambdaConflictResolver {
     // (undocumented)
     region?: string;
     // (undocumented)
-    type: 'EXISTING';
+    type: "EXISTING";
 }
 
 // @public (undocumented)
@@ -489,13 +489,13 @@ export interface LambdaResolutionStrategy {
     // (undocumented)
     resolver: LambdaConflictResolver;
     // (undocumented)
-    type: 'LAMBDA';
+    type: "LAMBDA";
 }
 
 // @public (undocumented)
 export interface LambdaTriggerConfig {
     // (undocumented)
-    mode: 'new' | 'existing';
+    mode: "new" | "existing";
     // (undocumented)
     name: string;
 }
@@ -551,7 +551,7 @@ export interface ModifyCognitoIdentityPool {
 // @public (undocumented)
 export interface NewLambdaConflictResolver {
     // (undocumented)
-    type: 'NEW';
+    type: "NEW";
 }
 
 // @public (undocumented)
@@ -577,7 +577,7 @@ export interface PerModelResolutionstrategy {
 // @public (undocumented)
 export interface PredefinedResolutionStrategy {
     // (undocumented)
-    type: 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'NONE';
+    type: "OPTIMISTIC_CONCURRENCY" | "AUTOMERGE" | "NONE";
 }
 
 // @public (undocumented)
@@ -612,7 +612,7 @@ export interface S3Permissions {
 // @public (undocumented)
 export interface S3ServiceConfigurationBase {
     // (undocumented)
-    serviceName: 'S3';
+    serviceName: "S3";
 }
 
 // @public (undocumented)

@@ -252,7 +252,7 @@ export type AppSyncSimulatorRequestContext = {
     jwt?: {
         iss?: string;
         sub?: string;
-        'cognito:username'?: string;
+        "cognito:username"?: string;
     };
     request?: object;
 };
@@ -307,7 +307,7 @@ export type IAMToken = {
     username: string;
     cognitoIdentityPoolId?: string;
     cognitoIdentityId?: string;
-    cognitoIdentityAuthType?: 'authenticated' | 'unauthenticated';
+    cognitoIdentityAuthType?: "authenticated" | "unauthenticated";
     cognitoIdentityAuthProvider?: string;
 };
 
@@ -325,8 +325,8 @@ export type JWTToken = {
     username?: string;
     email?: string;
     groups?: string[];
-    'cognito:username'?: string;
-    'cognito:groups'?: string[];
+    "cognito:username"?: string;
+    "cognito:groups"?: string[];
 };
 
 // @public (undocumented)

@@ -123,7 +123,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryError' | 'DirectoryAlreadyExistsError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'ModelgenError' | 'NestedProjectInitError' | 'NoUpdateBackendError' | 'NotImplementedError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'StackNotFoundError' | 'StackStateError' | 'UserInputError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError';
+export type AmplifyErrorType = "AmplifyStudioError" | "AmplifyStudioLoginError" | "AmplifyStudioNotEnabledError" | "ApiCategorySchemaNotFoundError" | "AuthImportError" | "BackendConfigValidationError" | "BucketAlreadyExistsError" | "BucketNotFoundError" | "CategoryNotEnabledError" | "CloudFormationTemplateError" | "CommandNotSupportedError" | "ConfigurationError" | "DeploymentError" | "DeploymentInProgressError" | "DirectoryError" | "DirectoryAlreadyExistsError" | "DuplicateLogicalIdError" | "EnvironmentConfigurationError" | "EnvironmentNameError" | "EnvironmentNotInitializedError" | "FeatureFlagsValidationError" | "FrameworkNotSupportedError" | "FunctionTooLargeError" | "InputValidationError" | "InvalidAmplifyAppIdError" | "InvalidCustomResourceError" | "InvalidOverrideError" | "InvalidStackError" | "IterativeRollbackError" | "LambdaLayerDeleteError" | "MigrationError" | "MissingAmplifyMetaFileError" | "MissingOverridesInstallationRequirementsError" | "ModelgenError" | "NestedProjectInitError" | "NoUpdateBackendError" | "NotImplementedError" | "OpenSslCertificateError" | "ParameterNotFoundError" | "PermissionsError" | "PluginMethodNotFoundError" | "PluginNotFoundError" | "PluginPolicyAddError" | "ProfileConfigurationError" | "ProjectAppIdResolveError" | "ProjectInitError" | "ProjectNotFoundError" | "ProjectNotInitializedError" | "PushResourcesError" | "RegionNotAvailableError" | "RemoveNotificationAppError" | "ResourceAlreadyExistsError" | "ResourceInUseError" | "ResourceNotReadyError" | "StackNotFoundError" | "StackStateError" | "UserInputError" | "MockProcessError" | "SearchableMockUnsupportedPlatformError" | "SearchableMockUnavailablePortError" | "SearchableMockProcessError";
 
 // @public (undocumented)
 export abstract class AmplifyException extends Error {
@@ -149,7 +149,7 @@ export abstract class AmplifyException extends Error {
 }
 
 // @public (undocumented)
-export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
+export type AmplifyExceptionClassification = "FAULT" | "ERROR";
 
 // @public (undocumented)
 export type AmplifyExceptionOptions = {
@@ -168,7 +168,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
+export type AmplifyFaultType = "AnalyticsCategoryFault" | "AmplifyBackupFault" | "BackendPullFault" | "ConfigurationFault" | "BackendDeleteFault" | "ConfigurationFault" | "DeploymentFault" | "NotificationsChannelAPNSFault" | "NotificationsChannelEmailFault" | "NotificationsChannelFCMFault" | "NotificationsChannelSmsFault" | "NotificationsChannelInAppMessagingFault" | "NotImplementedFault" | "ProjectDeleteFault" | "ProjectInitFault" | "PluginNotLoadedFault" | "PushResourcesFault" | "PullBackendFault" | "ResourceExportFault" | "ResourceNotFoundFault" | "ResourceNotReadyFault" | "ResourceRemoveFault" | "RootStackNotFoundFault" | "ServiceCallFault" | "TimeoutFault" | "TriggerUploadFault" | "UnexpectedS3Fault" | "UnknownFault" | "UnknownNodeJSFault" | "MockProcessFault" | "AuthCategoryFault" | "ZipExtractFault";
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -241,7 +241,7 @@ export class ApiCategoryFacade {
 }
 
 // @public (undocumented)
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL: string;
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
 export const AWS_DOCS_URL = "https://docs.aws.amazon.com/";
@@ -261,7 +261,7 @@ export class BannerMessage {
 
 // @public (undocumented)
 export type BooleanFeatureFlag = {
-    type: 'boolean';
+    type: "boolean";
     name: string;
     defaultValueForExistingProjects: boolean;
     defaultValueForNewProjects: boolean;
@@ -513,7 +513,7 @@ export type DeploymentSecrets = {
 
 // @public (undocumented)
 export type DeploymentState = {
-    version: '1';
+    version: "1";
     startedAt?: string;
     finishedAt?: string;
     status: DeploymentStatus;
@@ -524,17 +524,17 @@ export type DeploymentState = {
 // @public (undocumented)
 export enum DeploymentStatus {
     // (undocumented)
-    'DEPLOYED' = "DEPLOYED",
+    "DEPLOYED" = "DEPLOYED",
     // (undocumented)
-    'DEPLOYING' = "DEPLOYING",
+    "DEPLOYING" = "DEPLOYING",
     // (undocumented)
-    'FAILED' = "FAILED",
+    "FAILED" = "FAILED",
     // (undocumented)
-    'IDLE' = "IDLE",
+    "IDLE" = "IDLE",
     // (undocumented)
-    'ROLLED_BACK' = "ROLLED_BACK",
+    "ROLLED_BACK" = "ROLLED_BACK",
     // (undocumented)
-    'ROLLING_BACK' = "ROLLING_BACK"
+    "ROLLING_BACK" = "ROLLING_BACK"
 }
 
 // @public (undocumented)
@@ -546,19 +546,19 @@ export type DeploymentStepState = {
 // @public (undocumented)
 export enum DeploymentStepStatus {
     // (undocumented)
-    'DEPLOYED' = "DEPLOYED",
+    "DEPLOYED" = "DEPLOYED",
     // (undocumented)
-    'DEPLOYING' = "DEPLOYING",
+    "DEPLOYING" = "DEPLOYING",
     // (undocumented)
-    'ROLLED_BACK' = "ROLLED_BACK",
+    "ROLLED_BACK" = "ROLLED_BACK",
     // (undocumented)
-    'ROLLING_BACK' = "ROLLING_BACK",
+    "ROLLING_BACK" = "ROLLING_BACK",
     // (undocumented)
-    'WAITING_FOR_DEPLOYMENT' = "WAITING_FOR_DEPLOYMENT",
+    "WAITING_FOR_DEPLOYMENT" = "WAITING_FOR_DEPLOYMENT",
     // (undocumented)
-    'WAITING_FOR_ROLLBACK' = "WAITING_FOR_ROLLBACK",
+    "WAITING_FOR_ROLLBACK" = "WAITING_FOR_ROLLBACK",
     // (undocumented)
-    'WAITING_FOR_TABLE_TO_BE_READY' = "WAITING_FOR_TABLE_TO_BE_READY"
+    "WAITING_FOR_TABLE_TO_BE_READY" = "WAITING_FOR_TABLE_TO_BE_READY"
 }
 
 // @public (undocumented)
@@ -577,7 +577,7 @@ export type ErrorParameter = {
 };
 
 // @public (undocumented)
-export type EventPrefix = 'pre' | 'post';
+export type EventPrefix = "pre" | "post";
 
 // @public (undocumented)
 export const executeHooks: (hooksMeta: HooksMeta) => Promise<void>;
@@ -636,7 +636,7 @@ export class FeatureFlags {
 export type FeatureFlagsEntry = Record<string, Record<string, $TSAny>>;
 
 // @public (undocumented)
-export type FeatureFlagType = 'boolean' | 'number';
+export type FeatureFlagType = "boolean" | "number";
 
 // @public (undocumented)
 export const generateAmplifyOverrideProjectBuildFiles: (backendDir: string, srcResourceDirPath: string) => void;
@@ -767,10 +767,10 @@ export class HooksMeta {
 }
 
 // @public (undocumented)
-export type HooksNoun = 'notifications' | 'analytics' | 'api' | 'auth' | 'function' | 'hosting' | 'interactions' | 'predictions' | 'storage' | 'xr' | 'codegen' | 'env';
+export type HooksNoun = "notifications" | "analytics" | "api" | "auth" | "function" | "hosting" | "interactions" | "predictions" | "storage" | "xr" | "codegen" | "env";
 
 // @public (undocumented)
-export type HooksVerb = 'add' | 'update' | 'remove' | 'push' | 'pull' | 'publish' | 'delete' | 'checkout' | 'list' | 'get' | 'mock' | 'build' | 'status' | 'import' | 'gqlcompile' | 'addgraphqldatasource' | 'statements' | 'types';
+export type HooksVerb = "add" | "update" | "remove" | "push" | "pull" | "publish" | "delete" | "checkout" | "list" | "get" | "mock" | "build" | "status" | "import" | "gqlcompile" | "addgraphqldatasource" | "statements" | "types";
 
 // Warning: (ae-forgotten-export) The symbol "TagVariables" needs to be exported by the entry point index.d.ts
 //
@@ -822,7 +822,7 @@ export type IContextPrint = {
     error: (message: string) => void;
     success: (message: string) => void;
     table: (data: string[][], options?: {
-        format?: 'markdown' | 'lean';
+        format?: "markdown" | "lean";
     }) => void;
     debug: (message: string) => void;
     green: (message: string) => void;
@@ -1022,7 +1022,7 @@ export class NotImplementedError extends Error {
 
 // @public (undocumented)
 export type NumberFeatureFlag = {
-    type: 'number';
+    type: "number";
     name: string;
     defaultValueForExistingProjects: number;
     defaultValueForNewProjects: number;
@@ -1043,7 +1043,7 @@ export type PackageManager = {
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export type PackageManagerType = "yarn" | "npm";
 
 // @public (undocumented)
 export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
@@ -1412,7 +1412,7 @@ export class StateManager {
 export const stateManager: StateManager;
 
 // @public (undocumented)
-export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
+export type StepStatusParameters = Omit<DeploymentStepState, "status">;
 
 // @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];
