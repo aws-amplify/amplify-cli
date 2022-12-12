@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-rc.f14440eb3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.1.0...@aws-amplify/amplify-opensearch-simulator@1.1.1-rc.f14440eb3.0) (2022-12-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
+
+
+
+
+
 # 1.1.0 (2022-11-17)
 
 

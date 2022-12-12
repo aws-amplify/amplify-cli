@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-rc.f14440eb3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.5.0...@aws-amplify/amplify-e2e-core@4.6.0-rc.f14440eb3.0) (2022-12-12)
+
+
+### Bug Fixes
+
+* add fallpack for undefined env var ([#11505](https://github.com/aws-amplify/amplify-cli/issues/11505)) ([68505f1](https://github.com/aws-amplify/amplify-cli/commit/68505f10c5a247aea416d587569e3045a4580c48))
+* add human readable names to artifact files ([#11420](https://github.com/aws-amplify/amplify-cli/issues/11420)) ([5c41046](https://github.com/aws-amplify/amplify-cli/commit/5c4104686a1e2ac96a25c02ffec40f34cea70769))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0...@aws-amplify/amplify-e2e-core@4.5.0) (2022-11-17)
 
 
