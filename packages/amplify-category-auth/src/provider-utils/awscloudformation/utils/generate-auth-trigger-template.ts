@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
@@ -22,7 +22,7 @@ const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
  */
 export class CustomResourceAuthStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: CustomResourceAuthStackProps) {
-    super(scope, id, props);
+    super(scope, id, { ...props, synthesizer: new cdk.LegacyStackSynthesizer() });
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
 
     const env = new cdk.CfnParameter(this, 'env', {
@@ -58,10 +58,20 @@ export class CustomResourceAuthStack extends cdk.Stack {
   }
 
   /**
-   * Generates a CFN template from the CDK stack
+   * This function renderers a full CFN template for this stack.
+   * It is inspired by
+   * https://github.com/aws/aws-cdk/blob/bd056d1d38a2d3f43efe4f857c4d38b30fb9b681/packages/%40aws-cdk/assertions/lib/template.ts#L298-L310.
+   * This replaces private prepareApp (from CDK v1) and this._toCloudFormation() (the latter does not function properly without the former).
    */
-  toCloudFormation(): Record<string, unknown> {
-    return this._toCloudFormation();
+  toCloudFormation = (): $TSAny => {
+    const root = this.node.root as cdk.Stage;
+    const assembly = root.synth();
+    if (!this.nestedStackParent) {
+      return assembly.getStackArtifact(this.artifactId).template;
+    }
+    // if this is a nested stack ( i.e. it has a parent), then just read the template as a string
+    const template = fs.readFileSync(path.join(assembly.directory, this.templateFile));
+    return JSON.parse(template.toString('utf-8'));
   }
 }
 

@@ -1,4 +1,3 @@
-import { Construct } from '@aws-cdk/core';
 import { generateNestedAuthTriggerTemplate, createCustomResourceForAuthTrigger, CustomResourceAuthStack } from '../../../../provider-utils/awscloudformation/utils/generate-auth-trigger-template';
 
 jest.mock('uuid', () => {
