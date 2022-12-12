@@ -7,7 +7,7 @@ import {
   deleteProject,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck } from '../../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck } from '../../../migration-helpers';
 import { addLegacySmsNotificationChannel } from '../../../migration-helpers/notifications-helpers';
 import { getShortId } from '../../../migration-helpers/utils';
 
@@ -34,7 +34,7 @@ describe('amplify add notifications', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addPinpointAnalytics(projectRoot, false);
     await amplifyPushAuth(projectRoot, false);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName, true);
@@ -46,7 +46,7 @@ describe('amplify add notifications', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addAuthWithDefault(projectRoot, false);
     await amplifyPushAuth(projectRoot, false);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
@@ -58,7 +58,7 @@ describe('amplify add notifications', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addAuthWithDefault(projectRoot, true);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);

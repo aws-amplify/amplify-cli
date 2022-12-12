@@ -239,6 +239,10 @@ describe('DynamoDB GSI Utils', () => {
               name: 'title',
               type: 'S',
             },
+            sort: {
+              name: 'id',
+              type: 'S',
+            },
           },
         },
       ],
@@ -326,6 +330,22 @@ describe('DynamoDB GSI Utils', () => {
           AttributeName: 'updatedAt',
           AttributeType: 'N',
         },
+      ]);
+    });
+
+    it('should keep the attributes that are in table KeySchema even if the same is used in removed index', () => {
+      const tableWitGSI = makeTableWithGSI({
+        ...tableDefinition
+      });
+      const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
+
+      expect(updatedTable).not.toEqual(tableWitGSI);
+      expect(updatedTable.Properties?.GlobalSecondaryIndexes).toBeUndefined();
+      expect(updatedTable.Properties.AttributeDefinitions).toEqual([
+        {
+          AttributeName: 'id',
+          AttributeType: 'S',
+        }
       ]);
     });
   });

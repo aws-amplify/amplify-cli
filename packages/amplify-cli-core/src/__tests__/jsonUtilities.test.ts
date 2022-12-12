@@ -1,9 +1,9 @@
-import { JSONUtilities } from '../jsonUtilities';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import { v4 as uuid } from 'uuid';
+import { JSONUtilities } from '../jsonUtilities';
 
 describe('JSONUtilities tests', () => {
   const jsonString = `{
@@ -41,13 +41,13 @@ describe('JSONUtilities tests', () => {
 
   test('readJson throws error when fileName is not specified', () => {
     expect(() => {
-      const _ = JSONUtilities.readJson((undefined as unknown) as string);
+      JSONUtilities.readJson((undefined as unknown) as string);
     }).toThrowError(`'fileName' argument missing`);
   });
 
   test('readJson throws error for non-existing file', () => {
     expect(() => {
-      const _ = JSONUtilities.readJson('/test.json');
+      JSONUtilities.readJson('/test.json');
     }).toThrowError(`File at path: '/test.json' does not exist`);
   });
 
@@ -60,6 +60,7 @@ describe('JSONUtilities tests', () => {
   });
 
   test('writeJson successfully writes file and creating nested directories', () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const osTempDir = fs.realpathSync(os.tmpdir());
     const topTempDir = path.join(osTempDir, `amp-${uuid()}`);
     const nestedTempDir = path.join(topTempDir, 'f1', 'f2');
@@ -84,13 +85,13 @@ describe('JSONUtilities tests', () => {
 
   test('writeJson throws error when fileName is not specified', () => {
     expect(() => {
-      const _ = JSONUtilities.writeJson((undefined as unknown) as string, (undefined as unknown) as string);
+      JSONUtilities.writeJson((undefined as unknown) as string, (undefined as unknown) as string);
     }).toThrowError(`'fileName' argument missing`);
   });
 
   test('writeJson throws error when data is not specified', () => {
     expect(() => {
-      const _ = JSONUtilities.writeJson('test.json', (undefined as unknown) as string);
+      JSONUtilities.writeJson('test.json', (undefined as unknown) as string);
     }).toThrowError(`'data' argument missing`);
   });
 
@@ -104,7 +105,8 @@ describe('JSONUtilities tests', () => {
   });
 
   test('JSON parse with BOM', () => {
-    const withBom = '\ufeff' + jsonString;
+    // eslint-disable-next-line spellcheck/spell-checker
+    const withBom = `\ufeff${jsonString}`;
     const data = JSONUtilities.parse(withBom);
 
     expect(data).toMatchObject({
@@ -115,11 +117,9 @@ describe('JSONUtilities tests', () => {
 
   test.skip('JSON roundtrip preserve comments', () => {
     const data = JSONUtilities.parse(jsonString, { preserveComments: true });
-    const roundtrippedString = JSONUtilities.stringify(data, {
-      keepComments: true,
-    });
+    const roundTripString = JSONUtilities.stringify(data);
 
-    expect(jsonString).toEqual(roundtrippedString);
+    expect(jsonString).toEqual(roundTripString);
   });
 
   test('JSON parse returns successfully for non-string parameters', () => {
@@ -144,18 +144,18 @@ describe('JSONUtilities tests', () => {
 
   test('stringify compatible with builtin JSON.stringify', () => {
     const data = JSONUtilities.parse(jsonString);
-    const hjsonString = JSONUtilities.stringify(data);
+    const utilsString = JSONUtilities.stringify(data);
     const builtinJsonString = JSON.stringify(data, null, 2);
 
-    expect(hjsonString).toEqual(builtinJsonString);
+    expect(utilsString).toEqual(builtinJsonString);
   });
 
   test('minified stringify using builtin JSON.stringify', () => {
     const data = JSONUtilities.parse(jsonString);
-    const hjsonString = JSONUtilities.stringify(data, { minify: true });
+    const utilsString = JSONUtilities.stringify(data, { minify: true });
     const builtinJsonString = JSON.stringify(data);
 
-    expect(hjsonString).toEqual(builtinJsonString);
+    expect(utilsString).toEqual(builtinJsonString);
   });
 
   test('JSON parse throws error when jsonString is undefined', () => {
@@ -166,13 +166,13 @@ describe('JSONUtilities tests', () => {
 
   test('JSON parse throws error when jsonString is empty string', () => {
     expect(() => {
-      const _ = JSONUtilities.parse('');
+      JSONUtilities.parse('');
     }).toThrowError(`'jsonString' argument missing or empty`);
   });
 
   test('JSON stringify throws error when data is undefined', () => {
     expect(() => {
-      const _ = JSONUtilities.stringify((undefined as unknown) as any);
+      JSONUtilities.stringify((undefined as unknown) as any);
     }).toThrowError(`'data' argument missing`);
   });
 
@@ -184,7 +184,7 @@ describe('JSONUtilities tests', () => {
   "bar": 1 // Line comments
 `;
 
-      const _ = JSONUtilities.parse(malformedJsonString);
+      JSONUtilities.parse(malformedJsonString);
     }).toThrowError(`Expected ':' instead of '"' at line 3,9 >>>  "foo" "bar",`);
   });
 });

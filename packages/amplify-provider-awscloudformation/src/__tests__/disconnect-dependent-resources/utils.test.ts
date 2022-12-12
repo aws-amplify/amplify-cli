@@ -12,10 +12,10 @@ import { CloudFormation } from 'aws-sdk';
 import { getPreviousDeploymentRecord } from '../../utils/amplify-resource-state-utils';
 import Template from 'cloudform-types/types/template';
 import { DeploymentOp, DeploymentStep } from '../../iterative-deployment';
+import { Redactor } from 'amplify-cli-logger';
 
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core');
-jest.mock('amplify-cli-logger');
 jest.mock('../../utils/amplify-resource-state-utils');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;

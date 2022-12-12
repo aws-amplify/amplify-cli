@@ -6,28 +6,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report! Try to include as much information as you can.
+        Thanks for taking the time to fill out this bug report! Before submitting please read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports), and try to include as much information as you can.
 
         For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />.
-
-        > For **Amplify Console** issues, go [here](https://github.com/aws-amplify/amplify-console/issues/new/choose).
-        > For **Amplify Codegen** issues, go [here](https://github.com/aws-amplify/amplify-codegen/issues/new/choose).
-
-  - type: checkboxes
-    attributes:
-      label: |
-        Before opening, please confirm:
-      options:
-        - label: I have installed the latest version of the Amplify CLI (see above), and confirmed that the issue still persists.
-          required: true
-        - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+).
-          required: true
-        - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports).
-          required: true
-        - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
-          required: true
-        - label: I have removed any sensitive information from my code snippets and submission.
-          required: true
+        - For issues regarding REST API's, GraphQL API's, or containers, please visit [amplify-category-api](https://github.com/aws-amplify/amplify-category-api/issues/new/choose)
+        - For **Amplify Hosting** issues, visit [amplify-hosting](https://github.com/aws-amplify/amplify-hosting/issues/new/choose)
+        - For **Amplify Codegen** issues, visit [amplify-codegen](https://github.com/aws-amplify/amplify-codegen/issues/new/choose)
   - type: markdown
     attributes:
       value: |
@@ -55,57 +39,13 @@ body:
   - type: textarea
     attributes:
       label: Did you make any manual changes to the cloud resources managed by Amplify? Please describe the changes made.
-      description: 'For example: "Deleted DynamoDB GSIs from the AWS Console or using AWS CLI" Or "No manual changes made"'
-    validations:
-      required: true
-  - type: dropdown
-    attributes:
-      label: Amplify Categories
-      description: What [Amplify categories](https://github.com/aws-amplify/amplify-cli#category-specific-commands) are being used?
-      multiple: true
-      options:
-        - auth
-        - custom
-        - storage
-        - function
-        - api
-        - analytics
-        - hosting
-        - notifications
-        - interactions
-        - predictions
-        - xr
-        - Not applicable
+      description: "For example: \"Deleted DynamoDB GSIs from the AWS Console or using AWS CLI\" Or \"No manual changes made\""
     validations:
       required: true
   - type: markdown
     attributes:
       value: |
         ## Details
-  - type: dropdown
-    attributes:
-      label: Amplify Commands
-      description: If applicable, what Amplify CLI commands (`amplify ...`) are surfacing the issue?
-      multiple: true
-      options:
-        - add
-        - codegen
-        - configure
-        - configure project
-        - delete
-        - env
-        - export
-        - init
-        - override
-        - publish
-        - pull
-        - push
-        - serve
-        - status
-        - update
-        - Not applicable
-    validations:
-      required: true
   - type: textarea
     attributes:
       label: Describe the bug
@@ -132,23 +72,6 @@ body:
         ...
     validations:
       required: true
-  - type: textarea
-    attributes:
-      label: GraphQL schema(s)
-      description: |
-        If applicable, please include your GraphQL schema(s).
-
-        **Be sure to remove any sensitive data.**
-      value: |
-        <details>
-
-        ```graphql
-        # Put schemas below this line
-
-
-        ```
-
-        </details>
   - type: textarea
     attributes:
       label: Project Identifier
@@ -186,3 +109,12 @@ body:
         If you have any additional information, workarounds, etc. for us, use the field below.
         Please note, you can attach screenshots or screen recordings here, by
         dragging and dropping files in the field below.
+  - type: checkboxes
+    attributes:
+      label: |
+        Before submitting, please confirm:
+      options:
+        - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
+          required: true
+        - label: I have removed any sensitive information from my code snippets and submission.
+          required: true

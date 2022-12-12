@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [3.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.1...@aws-amplify/amplify-category-auth@3.0.0-beta.2) (2022-12-01)
+## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.1...@aws-amplify/amplify-category-auth@2.13.2) (2022-12-09)
 
 
 ### Bug Fixes
@@ -27,6 +28,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * convert cli to cdk v2
 
 Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+* properly filter cli-inputs ([#11561](https://github.com/aws-amplify/amplify-cli/issues/11561)) ([bbb2479](https://github.com/aws-amplify/amplify-cli/commit/bbb2479081bc4277b68b07114d54105f050bd5c7))
 
 
 

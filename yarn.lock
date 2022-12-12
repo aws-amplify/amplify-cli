@@ -176,21 +176,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@2.5.5":
-  version "2.5.5"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.5.5.tgz#804e0c69258eb337fe23e06aa60c4779f377affb"
-  integrity sha512-5A6+ztnEudXQhjwuDLRykEfQWhk1CxnKVWM05wT5pD2peXEhfb/mmKpcZ4CtWh34ilDHk1QdpP+mM8QPuAd1xA==
+"@aws-amplify/codegen-ui-react@2.5.6":
+  version "2.5.6"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.5.6.tgz#d70416c1f35c0c8fd8d8f7ef70a6fb40a46d9822"
+  integrity sha512-RScybJUc+hUp0z+IXkUecsy0tMPNu0YjKO3eCEDrJZyv31aHGdsbadElgVU61p6l3iYig6SwA9mE+SrKw86ALg==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.5.5"
+    "@aws-amplify/codegen-ui" "2.5.6"
     "@typescript/vfs" "~1.3.5"
     typescript "<=4.5.0"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.5.5":
-  version "2.5.5"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.5.5.tgz#33b31b52240878590dcf230ea7c8a92261143f89"
-  integrity sha512-7OnjqnMVD0AnlcrEmKyu9IL7s5+zPhj5lAH+z6OFCuGYCONGTZgJJkR7RGs48bmayzm9jvpAPMVLwPSQENcqSQ==
+"@aws-amplify/codegen-ui@2.5.6":
+  version "2.5.6"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.5.6.tgz#af61c36c12c19880914cae1601b3387579e87d02"
+  integrity sha512-xbe7Hw5boVzT1aSwrDwIQvZ85pNz25zJDIL4xvt1JyjWt2u5flY2DqxMAutltKmY2EGfDFWEzsz7ze/+NCWBtA==
   dependencies:
     change-case "^4.1.2"
     yup "^0.32.11"
@@ -7786,7 +7786,7 @@
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
   integrity sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==
 
-"@types/json-schema@^7.0.4", "@types/json-schema@^7.0.8":
+"@types/json-schema@^7.0.11", "@types/json-schema@^7.0.4", "@types/json-schema@^7.0.8":
   version "7.0.11"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
   integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
@@ -8769,10 +8769,10 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.3.tgz#47b30826801149c01cac8dd341516fdf5a8cf87a"
-  integrity sha512-mVyT4yYq3sY48YtcTXp1R1sTGGkyDhsu23Xubz9kbmhixqSj8wlkfqUTbGhlgpk44fysvzsKBp1d0TNMgLTEjA==
+amplify-codegen@^3.3.4:
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.4.tgz#2fc8fe25f3302ee6c890874819ad8ff09d7230ea"
+  integrity sha512-fv6/UAIt0TZ+IP+qCTY5d4vA93vJtMRmRaeBj92qt8IerxYrXSD2kexXA96s68FU6aiKntbRy/BrKpgOPQCNZw==
   dependencies:
     "@aws-amplify/appsync-modelgen-plugin" "2.3.1"
     "@aws-amplify/graphql-docs-generator" "3.0.2"
@@ -11839,9 +11839,9 @@ decimal.js@^10.2.1:
   integrity sha512-V0pfhfr8suzyPGOx3nmq4aHqabehUZn6Ch9kyFpV79TGDTWFmHqUqXdabR7QHqxzrYolF4+tVmJhUG4OURg5dQ==
 
 decode-uri-component@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
-  integrity sha512-hjf+xovcEn31w/EUYdTXQh/8smFL/dzYjohQGEIgjyNavaJfBY2p5F527Bo1VPATxv0VYTUC2bOcXvqFwk78Og==
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
+  integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
 decompress-response@^4.2.0:
   version "4.2.1"
@@ -20053,9 +20053,9 @@ qs@6.9.7:
   integrity sha512-IhMFgUmuNpyRfxA90umL7ByLlgRXu6tIfKPpF5TmcfRLlLCckfP/g3IQmju6jjpu+Hh8rA+2p6A27ZSPOOHdKw==
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 querystring@0.2.0:
   version "0.2.0"
@@ -20936,6 +20936,11 @@ safe-stable-stringify@^2.2.0:
   version "2.3.1"
   resolved "https://registry.npmjs.org/safe-stable-stringify/-/safe-stable-stringify-2.3.1.tgz#ab67cbe1fe7d40603ca641c5e765cb942d04fc73"
   integrity sha512-kYBSfT+troD9cDA85VDnHZ1rpHC50O0g1e6WlGHVCz/g+JS+9WKLj+XwFYyR8UbrZN8ll9HUpDAAddY58MGisg==
+
+safe-stable-stringify@^2.4.0:
+  version "2.4.1"
+  resolved "https://registry.npmjs.org/safe-stable-stringify/-/safe-stable-stringify-2.4.1.tgz#34694bd8a30575b7f94792aa51527551bd733d61"
+  integrity sha512-dVHE6bMtS/bnL2mwualjc6IxEv1F+OCUpA46pKUj6F8uDbUM0jCCulPqRNPSnWwGNKx5etqMjZYdXtrm5KJZGA==
 
 "safer-buffer@>= 2.1.2 < 3", "safer-buffer@>= 2.1.2 < 3.0.0", safer-buffer@^2.0.2, safer-buffer@^2.1.0, safer-buffer@~2.1.0:
   version "2.1.2"
@@ -22610,6 +22615,19 @@ ts-jest@^26.4.4:
     semver "7.x"
     yargs-parser "20.x"
 
+ts-json-schema-generator@~1.1.2:
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/ts-json-schema-generator/-/ts-json-schema-generator-1.1.2.tgz#29a0c878733b6a1bb0346fce02b1ebb8b96effa3"
+  integrity sha512-XMnxvndJFJEYv3NBmW7Po5bGajKdK2qH8Q078eDy60srK9+nEvbT9nLCRKd2IV/RQ7a+oc5FNylvZWveqh7jeQ==
+  dependencies:
+    "@types/json-schema" "^7.0.11"
+    commander "^9.4.0"
+    glob "^8.0.3"
+    json5 "^2.2.1"
+    normalize-path "^3.0.0"
+    safe-stable-stringify "^2.4.0"
+    typescript "~4.8.3"
+
 ts-node@^10.2.1:
   version "10.4.0"
   resolved "https://registry.npmjs.org/ts-node/-/ts-node-10.4.0.tgz#680f88945885f4e6cf450e7f0d6223dd404895f7"
@@ -22866,7 +22884,7 @@ typescript@^4.6.3:
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
   integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
 
-typescript@~4.8.4:
+typescript@~4.8.3, typescript@~4.8.4:
   version "4.8.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
   integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
