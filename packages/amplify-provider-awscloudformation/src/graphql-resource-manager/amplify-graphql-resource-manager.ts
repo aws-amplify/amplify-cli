@@ -343,7 +343,7 @@ export class GraphQLResourceManager {
       // Drop resources and outputs for searchable stack if existed
       if (searchableStack) {
         allRecreatedNestedStackNames.push(SEARCHABLE_STACK_NAME);
-        this.dropTemplateResources(searchableStack);
+        this.dropTemplateResourcesForSearchableStack(searchableStack);
         this.templateState.add(SEARCHABLE_STACK_NAME, JSONUtilities.stringify(searchableStack));
       }
       // Update nested stack params in root stack
@@ -446,6 +446,18 @@ export class GraphQLResourceManager {
     template.Resources.PlaceholderNullResource = { Type: 'AWS::CloudFormation::WaitConditionHandle' };
     template.Outputs = {};
   };
+
+  /**
+   * Remove all outputs and resources except for search domain for searchable stack
+   * @param template stack CFN tempalte
+   */
+  private dropTemplateResourcesForSearchableStack = (template: Template): void => {
+    const OpenSearchDomainLogicalID = 'OpenSearchDomain';
+    const searchDomain = template.Resources[OpenSearchDomainLogicalID];
+    template.Resources = {};
+    template.Resources[OpenSearchDomainLogicalID] = searchDomain;
+    template.Outputs = {};
+  }
 
   private clearTemplateState = (stackName: string) => {
     while (this.templateState.has(stackName)) {

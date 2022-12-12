@@ -12,9 +12,6 @@ import {
   amplifyDeleteWithLongerTimeout,
 } from '@aws-amplify/amplify-e2e-core';
 
-// Set longer timeout as the test involves creation and deletion of opensearch domain for twice
-jest.setTimeout(1000 * 60 * 90); // 90 minutes
-
 const projName = 'apitest';
 
 let projRoot;
