@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-cdkv2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-cdkv2.4...amplify-util-mock@4.6.0-cdkv2.5) (2022-12-13)
+
+
+### Bug Fixes
+
+* check java_home variable before starting opensearch emulator ([#11528](https://github.com/aws-amplify/amplify-cli/issues/11528)) ([a150ca2](https://github.com/aws-amplify/amplify-cli/commit/a150ca2f017c7edaf3901a554b4771a02aad21da))
+
+
+
+
+
 # [4.6.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.6.0-cdkv2.4) (2022-12-01)
 
 

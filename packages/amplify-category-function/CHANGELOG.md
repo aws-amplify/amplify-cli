@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0-cdkv2.3...amplify-category-function@4.2.0-cdkv2.4) (2022-12-13)
+
+
+### Bug Fixes
+
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+
+
+
+
+
 # [4.2.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.0-cdkv2.3) (2022-12-01)
 
 

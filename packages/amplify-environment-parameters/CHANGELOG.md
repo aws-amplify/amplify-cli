@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.0-cdkv2.3...@aws-amplify/amplify-environment-parameters@1.2.0-cdkv2.4) (2022-12-13)
+
+
+### Bug Fixes
+
+* broken windows build due to cp command ([07e80a1](https://github.com/aws-amplify/amplify-cli/commit/07e80a19219598736c8f501e58b3a5b165a72c5b))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
 # [1.2.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.1...@aws-amplify/amplify-environment-parameters@1.2.0-cdkv2.3) (2022-12-01)
 
 

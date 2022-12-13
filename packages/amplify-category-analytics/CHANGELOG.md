@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0-cdkv2.3...amplify-category-analytics@4.2.0-cdkv2.4) (2022-12-13)
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
 # [4.2.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.1...amplify-category-analytics@4.2.0-cdkv2.3) (2022-12-01)
 
 **Note:** Version bump only for package amplify-category-analytics

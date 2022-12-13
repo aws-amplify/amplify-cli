@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.3...@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.4) (2022-12-13)
+
+
+### Bug Fixes
+
+* address UI Builder component generation errors ([#11536](https://github.com/aws-amplify/amplify-cli/issues/11536)) ([aceec4c](https://github.com/aws-amplify/amplify-cli/commit/aceec4c098bc85d2e8da0738bbc5e8089ad8ae6e))
+
+
+
+
+
 # [1.6.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.3) (2022-12-01)
 
 

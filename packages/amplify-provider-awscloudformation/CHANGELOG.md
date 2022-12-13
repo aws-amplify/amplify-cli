@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.3...amplify-provider-awscloudformation@7.0.0-cdkv2.4) (2022-12-13)
+
+
+### Bug Fixes
+
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+* iterative gsi deployment - incorrect AttributeDefinitions ([#11532](https://github.com/aws-amplify/amplify-cli/issues/11532)) ([8308751](https://github.com/aws-amplify/amplify-cli/commit/8308751cfc51c5270cc10138330b9bbe65f5673f))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
 # [7.0.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-cdkv2.3) (2022-12-01)
 
 
