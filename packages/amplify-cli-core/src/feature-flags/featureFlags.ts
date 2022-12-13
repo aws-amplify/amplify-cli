@@ -770,7 +770,7 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
       {
-        name: 'generateLazyReferenceAndModelPath',
+        name: 'generateModelsForLazyLoadAndCustomSelectionSet',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
