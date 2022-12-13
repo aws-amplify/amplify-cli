@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.16.0-stack-mapping-dec-22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.1...amplify-e2e-tests@3.16.0-stack-mapping-dec-22.0) (2022-12-13)
+
+
+### Bug Fixes
+
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+* resource usage cost ([#11433](https://github.com/aws-amplify/amplify-cli/issues/11433)) ([a42d017](https://github.com/aws-amplify/amplify-cli/commit/a42d0170b3e84bec4a58a4d3ddab75b47977e07b))
+
+
+### Features
+
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
 ## [3.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.0...amplify-e2e-tests@3.15.1) (2022-12-09)
 
 

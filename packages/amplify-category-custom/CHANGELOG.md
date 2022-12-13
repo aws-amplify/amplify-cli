@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0-stack-mapping-dec-22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.5...@aws-amplify/amplify-category-custom@2.6.0-stack-mapping-dec-22.0) (2022-12-13)
+
+
+### Bug Fixes
+
+* Typescript -> TypeScript in customer-facing errors ([#11404](https://github.com/aws-amplify/amplify-cli/issues/11404)) ([a1e63d8](https://github.com/aws-amplify/amplify-cli/commit/a1e63d83c9366f957f7087273e34e36ceacb1293))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
 ## [2.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.4...@aws-amplify/amplify-category-custom@2.5.5) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

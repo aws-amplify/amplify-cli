@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-stack-mapping-dec-22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1-stack-mapping-dec-22.0) (2022-12-13)
+
+**Note:** Version bump only for package amplify-cli-shared-interfaces
+
+
+
+
+
 # 1.1.0 (2022-05-10)
 
 

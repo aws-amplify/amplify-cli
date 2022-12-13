@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.17-stack-mapping-dec-22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.16...amplify-python-function-template-provider@1.3.17-stack-mapping-dec-22.0) (2022-12-13)
+
+**Note:** Version bump only for package amplify-python-function-template-provider
+
+
+
+
+
 ## [1.3.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.15...amplify-python-function-template-provider@1.3.16) (2022-05-10)
 
 **Note:** Version bump only for package amplify-python-function-template-provider
