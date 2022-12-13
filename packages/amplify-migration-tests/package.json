@@ -29,7 +29,7 @@
     "@aws-amplify/amplify-e2e-core": "4.5.0",
     "amplify-cli-core": "3.4.0",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "^7.6.7",
+    "graphql-transformer-core": "7.6.8-upgrade-graphql15.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   },
