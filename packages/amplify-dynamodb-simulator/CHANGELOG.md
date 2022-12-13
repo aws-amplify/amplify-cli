@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.5.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.1...amplify-dynamodb-simulator@2.5.0-beta.2) (2022-12-01)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 # [2.5.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.0-beta.0...amplify-dynamodb-simulator@2.5.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

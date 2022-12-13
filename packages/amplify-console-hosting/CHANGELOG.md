@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.3.4-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.3.5...amplify-console-hosting@2.3.4-beta.2) (2022-12-01)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
 ## [2.3.4-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.3.4-beta.0...amplify-console-hosting@2.3.4-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package amplify-console-hosting

@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [4.1.4-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.5...amplify-category-interactions@4.1.4-beta.2) (2022-12-01)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
 ## [4.1.4-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.4-beta.0...amplify-category-interactions@4.1.4-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package amplify-category-interactions

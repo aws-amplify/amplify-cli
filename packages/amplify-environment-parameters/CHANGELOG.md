@@ -14,6 +14,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [1.2.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.1...@aws-amplify/amplify-environment-parameters@1.2.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* async persist env params on success ([#11367](https://github.com/aws-amplify/amplify-cli/issues/11367)) ([0433431](https://github.com/aws-amplify/amplify-cli/commit/043343159020b4f7b566e4d3d356aebe68df9b6a))
+
+
+
+
+
 # [1.2.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.0-beta.0...@aws-amplify/amplify-environment-parameters@1.2.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

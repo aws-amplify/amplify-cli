@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.3.15-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-template-provider@1.3.14...amplify-go-function-template-provider@1.3.15-beta.0) (2022-12-01)
+
+**Note:** Version bump only for package amplify-go-function-template-provider
+
+
+
+
+
 ## [1.3.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-template-provider@1.3.13...amplify-go-function-template-provider@1.3.14) (2022-05-10)
 
 **Note:** Version bump only for package amplify-go-function-template-provider

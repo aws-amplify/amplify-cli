@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.6.11-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.10...amplify-dotnet-function-runtime-provider@1.6.11-beta.0) (2022-12-01)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
 ## [1.6.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.9...amplify-dotnet-function-runtime-provider@1.6.10) (2022-08-02)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

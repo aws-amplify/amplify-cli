@@ -24,7 +24,7 @@ export type AmplifyResourceProps = {
 export const executeAmplifyCommand: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
-export const generateDependentResourcesType: (context: $TSContext) => Promise<void>;
+export const generateDependentResourcesType: () => Promise<void>;
 
 // @public (undocumented)
 export const handleAmplifyEvent: (__context: $TSContext, args: $TSAny) => Promise<void>;

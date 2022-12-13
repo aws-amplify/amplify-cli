@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.2.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.1...amplify-cli-logger@1.2.2-beta.0) (2022-12-01)
+
+**Note:** Version bump only for package amplify-cli-logger
+
+
+
+
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.0...amplify-cli-logger@1.2.1) (2022-10-13)
 
 **Note:** Version bump only for package amplify-cli-logger

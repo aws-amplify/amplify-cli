@@ -33,7 +33,7 @@
     "amplify-headless-interface": "1.16.0-cdkv2.0",
     "amplify-prompts": "2.6.2-cdkv2.1",
     "amplify-util-import": "2.3.0-cdkv2.3",
-    "aws-cdk-lib": "~2.44.0",
+    "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "constructs": "^10.0.5",

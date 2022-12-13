@@ -12,7 +12,8 @@
           "package",
           "prepare",
           "extract-api"
-        ]
+        ],
+        "parallel": 8
       }
     }
   },
@@ -20,11 +21,17 @@
     "default": [
       "{projectRoot}/**/*",
       "!{projectRoot}/**/*.md"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/coverage/**",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.tsbuildinfo"
     ]
   },
   "targetDefaults": {
     "build": {
-      "inputs": [ "default", "^default" ],
+      "inputs": [ "default", "^production" ],
       "dependsOn": [ "^build" ]
     },
     "prepare": {
@@ -36,7 +43,7 @@
       "dependsOn": [ "^package" ]
     },
     "test": {
-      "inputs": [ "default", "^default" ],
+      "inputs": [ "default", "^production" ],
       "dependsOn": [ "build" ]
     },
     "extract-api": {

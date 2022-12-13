@@ -14,6 +14,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [1.6.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* **cli:** fix grammar in pull warning message ([#11407](https://github.com/aws-amplify/amplify-cli/issues/11407)) ([984c0f8](https://github.com/aws-amplify/amplify-cli/commit/984c0f8548cec80d0e14269757cd49b031403097))
+
+
+
+
+
 # [1.6.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0-beta.0...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

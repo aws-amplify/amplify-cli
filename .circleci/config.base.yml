@@ -36,6 +36,14 @@ executors:
     environment:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+  l_xlarge: &linux-e2e-executor-xlarge
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: xlarge
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 # If you update this name, make sure to update it in split-e2e-tests.ts as well
   l_large: &linux-e2e-executor-large
     docker:
@@ -98,10 +106,11 @@ jobs:
     parameters:
       os:
         type: executor
-        default: l_large
-    executor: l_large
+        default: l_xlarge
+    executor: l_xlarge
     steps:
       - checkout
+      - run: yarn config set script-shell $(which bash)
       - run: yarn run production-build
       - run:
           name: Build tests
@@ -130,6 +139,7 @@ jobs:
             equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
             - checkout
+            - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
             - run:
                 name: Build tests
@@ -141,7 +151,7 @@ jobs:
                   - .cache
                   - .ssh
   test:
-    <<: *linux-e2e-executor-large
+    <<: *linux-e2e-executor-xlarge
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -178,7 +188,7 @@ jobs:
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   verify-api-extract:
-    <<: *linux-e2e-executor-medium
+    <<: *linux-e2e-executor-xlarge
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -188,6 +198,24 @@ jobs:
           name: extract api
           command: |
             yarn verify-api-extract
+
+  verify-versions-match:
+    <<: *linux-e2e-executor-medium
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: verify versions match
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            checkPackageVersionsInLocalNpmRegistry
 
   mock_e2e_tests:
     <<: *linux-e2e-executor-large
@@ -473,6 +501,8 @@ jobs:
         type: executor
         default: l_large
     executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -496,13 +526,13 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_v6:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     parameters:
       os:
         type: executor
         default: l_large
     executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -517,6 +547,38 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v6.1.0 --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: ~/repo/packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_v10:
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.amplify/bin/amplify
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Run tests migrating from CLI v10.5.1
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            unset IS_AMPLIFY_CI
+            echo $IS_AMPLIFY_CI
+            retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -894,6 +956,9 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - verify-versions-match:
+          requires:
+            - publish_to_local_registry
       - test:
           requires:
             - build
@@ -1019,6 +1084,20 @@ workflows:
           requires:
             - upload_pkg_binaries
             - build_windows_workspace_for_e2e
+      - amplify_migration_tests_v10:
+          context:
+            - e2e-auth-credentials
+            - cleanup-resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - upload_pkg_binaries
       - amplify_migration_tests_v6:
           context:
             - e2e-auth-credentials
@@ -1144,6 +1223,7 @@ workflows:
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests
+            - amplify_migration_tests_v10
             - amplify_migration_tests_v6
             - amplify_migration_tests_v5
             - amplify_migration_tests_non_multi_env_layers
@@ -1245,7 +1325,7 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 45m
+                no_output_timeout: 60m
       - when:
           condition:
             or:
@@ -1259,7 +1339,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 45m
+                no_output_timeout: 60m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:

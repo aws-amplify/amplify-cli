@@ -1029,20 +1029,21 @@ export const formNestedStack = async (
 
     const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
     const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
-
-    stack.Properties.Parameters.userpoolId = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
-    };
-    stack.Properties.Parameters.userpoolArn = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
-    };
+    const authTriggerCfnParameters: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO, 'getAuthTriggerStackCfnParameters',
+      [stack, cognitoResource.resourceName]);
+    stack.Properties.Parameters = { ...stack.Properties.Parameters, ...authTriggerCfnParameters };
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = cognitoResource.resource as { dependsOn: any };
 
     dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any; }) => {
       const dependsOnStackName = `${resource.category}${resource.resourceName}`;
-
+      if (isAuthTrigger(resource)) {
+        const lambdaRoleKey = `function${resource.resourceName}LambdaExecutionRole`;
+        const lambdaRoleValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.LambdaExecutionRoleArn`] };
+        stack.Properties.Parameters[lambdaRoleKey] = lambdaRoleValue;
+      }
       stack.DependsOn.push(dependsOnStackName);
 
       const dependsOnAttributes = resource?.attributes;

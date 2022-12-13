@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.3.17-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.16...amplify-python-function-template-provider@1.3.17-beta.0) (2022-12-01)
+
+**Note:** Version bump only for package amplify-python-function-template-provider
+
+
+
+
+
 ## [1.3.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.15...amplify-python-function-template-provider@1.3.16) (2022-05-10)
 
 **Note:** Version bump only for package amplify-python-function-template-provider

@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import {
   AddAuthRequest,
   CognitoUserAliasAttributes,
@@ -15,8 +16,10 @@ import {
   CognitoIdentityPoolModification,
   CognitoAutoVerifiedAttributesConfiguration,
 } from 'amplify-headless-interface';
-import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { isEmpty, merge } from 'lodash';
+import { pascalCase } from 'change-case';
+import { FeatureFlags } from 'amplify-cli-core';
+import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import {
   OAuthResult,
@@ -32,8 +35,6 @@ import {
   ServiceQuestionHeadlessResult,
   AutoVerifiedAttributesResult,
 } from '../service-walkthrough-types/cognito-user-input-types';
-import { pascalCase } from 'change-case';
-import { FeatureFlags } from 'amplify-cli-core';
 
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
@@ -42,48 +43,42 @@ export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestion
  * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguation output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
-export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
-  projectType =>
-  ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
-    const userPoolConfig = cognitoConfig.userPoolConfiguration;
-    const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
-    const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
-    return {
-      serviceName: cognitoConfig.serviceName,
-      resourceName,
-      requiredAttributes,
-      ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
-      ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
-    };
-  };
-
-export const getUpdateAuthRequestAdaptor =
-  (projectType: string, requiredAttributes: string[]) =>
-  ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
-    const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
-    return {
-      serviceName: serviceModification.serviceName,
-      requiredAttributes,
-      ...mutableAttributeAdaptor(
-        projectType,
-        requiredAttributes,
-        serviceModification.userPoolModification,
-        serviceModification.includeIdentityPool,
-        idPoolModification,
-      ),
-    };
-  };
-
-const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => {
+export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
+  const userPoolConfig = cognitoConfig.userPoolConfiguration;
+  const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
+  const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
   return {
-    userPoolName: userPoolConfig.userPoolName,
-    usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
-    aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
-      ? userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? []
-      : [],
-    ...immutableIdentityPoolMap(identityPoolConfig),
+    serviceName: cognitoConfig.serviceName,
+    resourceName,
+    requiredAttributes,
+    ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
+    ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
   };
 };
+
+export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
+  const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
+  return {
+    serviceName: serviceModification.serviceName,
+    requiredAttributes,
+    ...mutableAttributeAdaptor(
+      projectType,
+      requiredAttributes,
+      serviceModification.userPoolModification,
+      serviceModification.includeIdentityPool,
+      idPoolModification,
+    ),
+  };
+};
+
+const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => ({
+  userPoolName: userPoolConfig.userPoolName,
+  usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
+  aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
+    ? userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? []
+    : [],
+  ...immutableIdentityPoolMap(identityPoolConfig),
+});
 
 const mutableAttributeAdaptor = (
   projectType: string,
@@ -91,30 +86,29 @@ const mutableAttributeAdaptor = (
   userPoolConfig: CognitoUserPoolConfiguration | CognitoUserPoolModification,
   includeIdentityPool: boolean,
   identityPoolConfig?: CognitoIdentityPoolConfiguration | CognitoIdentityPoolModification,
-) => {
-  return {
-    useDefault: 'manual' as const,
-    updateFlow: 'manual' as const,
-    authSelections: includeIdentityPool ? 'identityPoolAndUserPool' : ('userPoolOnly' as 'userPoolOnly' | 'identityPoolAndUserPool'),
-    userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
-    userPoolGroupList: (userPoolConfig.userPoolGroups || []).map(group => group.groupName), // TODO may need to map "customPolicy"
-    userpoolClientRefreshTokenValidity: userPoolConfig.refreshTokenPeriod,
-    userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map(att => att.toLowerCase()),
-    userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map(att => att.toLowerCase()),
-    ...adminQueriesMap(userPoolConfig.adminQueries),
-    ...mfaMap(userPoolConfig.mfa),
-    ...autoVerifiedAttributesMap(userPoolConfig.autoVerifiedAttributes),
-    ...passwordPolicyMap(userPoolConfig.passwordPolicy),
-    ...mutableIdentityPoolMap(projectType, identityPoolConfig),
-    ...oauthMap(userPoolConfig.oAuth, requiredAttributes),
-  };
-};
+) => ({
+  useDefault: 'manual' as const,
+  updateFlow: 'manual' as const,
+  authSelections: includeIdentityPool ? 'identityPoolAndUserPool' : ('userPoolOnly' as 'userPoolOnly' | 'identityPoolAndUserPool'),
+  userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
+  userPoolGroupList: (userPoolConfig.userPoolGroups || []).map(group => group.groupName), // TODO may need to map "customPolicy"
+  userpoolClientRefreshTokenValidity: userPoolConfig.refreshTokenPeriod,
+  userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map(att => att.toLowerCase()),
+  userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map(att => att.toLowerCase()),
+  ...adminQueriesMap(userPoolConfig.adminQueries),
+  ...mfaMap(userPoolConfig.mfa),
+  ...autoVerifiedAttributesMap(userPoolConfig.autoVerifiedAttributes),
+  ...passwordPolicyMap(userPoolConfig.passwordPolicy),
+  ...mutableIdentityPoolMap(projectType, identityPoolConfig),
+  ...oauthMap(userPoolConfig.oAuth, requiredAttributes),
+});
 
 // converts the oauth config to the existing format
 const oauthMap = (
   oauthConfig?: Partial<CognitoOAuthConfiguration>,
   requiredAttributes: string[] = [],
-): (OAuthResult & SocialProviderResult) | {} => {
+): (OAuthResult & SocialProviderResult
+) | Record<string, unknown> => {
   if (!oauthConfig) return {};
   if (isEmpty(oauthConfig)) {
     return {
@@ -174,11 +168,12 @@ const mutableIdentityPoolMap = (
   projectType: string,
   idPoolConfig?: CognitoIdentityPoolConfiguration | CognitoIdentityPoolModification,
 ): IdentityPoolResult => {
-  if (!idPoolConfig)
+  if (!idPoolConfig) {
     return {
       thirdPartyAuth: false,
       authProviders: [],
     };
+  }
   type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId' | 'appleAppId'>;
   const result = {
     allowUnauthenticatedIdentities: idPoolConfig.unauthenticatedLogin,
@@ -213,12 +208,10 @@ const passwordPolicyMap = (pwPolicy?: CognitoPasswordPolicy): PasswordPolicyResu
 };
 
 // converts admin queries config to existing format
-const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult => {
-  return {
-    adminQueries: !!adminQueries,
-    adminQueryGroup: adminQueries?.permissions.groupName,
-  };
-};
+const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult => ({
+  adminQueries: !!adminQueries,
+  adminQueryGroup: adminQueries?.permissions.groupName,
+});
 
 // converts mfa config to existing format
 const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult => {
