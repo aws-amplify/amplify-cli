@@ -49,6 +49,7 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'datastore-modelgen_pkg',
   'delete_pkg',
   'diagnose_pkg',
+  'dotnet_runtime_update_migration_v10',
   'env-2_pkg',
   'export_pkg',
   'function_3a_pkg',
