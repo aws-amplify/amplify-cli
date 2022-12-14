@@ -164,7 +164,15 @@ export const run = async (startTime: number): Promise<void> => {
     notify({ defer: true, isGlobal: true });
   }
 
-  await saveAllEnvParams();
+  if (context.input.command === 'push') {
+    // TODO replace provider name with real logic
+    const provider = 'awscloudformation';
+    const uploaderHandler = await context.amplify.invokePluginMethod(context, provider, undefined, 'getEnvParametersUploadHandler', [context]);
+    await saveAllEnvParams(uploaderHandler);
+  }
+  else {
+    await saveAllEnvParams();
+  }
 };
 
 const ensureFilePermissions = (filePath: string): void => {

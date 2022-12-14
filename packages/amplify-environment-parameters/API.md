@@ -18,7 +18,7 @@ export type IEnvironmentParameterManager = {
     removeResourceParamManager: (category: string, resource: string) => void;
     hasResourceParamManager: (category: string, resource: string) => boolean;
     getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-    save: () => void;
+    save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
 };
 
 // @public (undocumented)
@@ -42,7 +42,10 @@ export class ResourceParameterManager {
 }
 
 // @public (undocumented)
-export const saveAll: () => Promise<void>;
+export const saveAll: (serviceUploadHandler?: ServiceUploadHandler | undefined) => Promise<void>;
+
+// @public (undocumented)
+export type ServiceUploadHandler = (key: string, value: string) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 

@@ -39,10 +39,10 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
 /**
  * Execute the save method of all currently initialized IEnvironmentParameterManager instances
  */
-export const saveAll = async (): Promise<void> => {
+export const saveAll = async (serviceUploadHandler?: ServiceUploadHandler): Promise<void> => {
   for (const envParamManager of Object.values(envParamManagerMap)) {
     // save methods must be executed in sequence to avoid race conditions writing to the tpi file
-    await envParamManager.save();
+    await envParamManager.save(serviceUploadHandler);
   }
 };
 
@@ -87,7 +87,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  async save(): Promise<void> {
+  async save(serviceUploadHandler?: ServiceUploadHandler): Promise<void> {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
       return;
@@ -112,15 +112,17 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     // update param mapping
     this.parameterMapController
       .removeAllParameters();
-    Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
+    for (const [resourceKey, paramManager] of Object.entries(this.resourceParamManagers)) {
       const [category, resourceName] = splitResourceKey(resourceKey);
       const resourceParams = paramManager.getAllParams();
-      Object.entries(resourceParams)
-        .forEach(([paramName]) => {
-          const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
-          this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
-        });
-    });
+      for (const [paramName, paramValue] of Object.entries(resourceParams)) {
+        const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
+        this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
+        if (serviceUploadHandler) {
+          await serviceUploadHandler(ssmParamName, paramValue);
+        }
+      }
+    }
     // uploading values to PS will go here
     this.parameterMapController.save();
   }
@@ -149,8 +151,10 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  save: () => void;
+  save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
 }
+
+export type ServiceUploadHandler = (key: string, value: string) => Promise<void>;
 
 const getParameterStoreKey = (
   categoryName: string,
