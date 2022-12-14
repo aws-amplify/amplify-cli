@@ -12,7 +12,7 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager, pathManager, AmplifyError, AmplifyException, AmplifyFault } = require('amplify-cli-core');
+const { stateManager, pathManager, AmplifyError, AmplifyFault } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
@@ -384,13 +384,9 @@ class CloudFormation {
         });
     } catch (error) {
       this.progressBar?.stop();
-
-      if (error instanceof AmplifyException) {
-        throw error;
-      }
-
       throw new AmplifyFault('ResourceNotReadyFault', {
-        message: error.message
+        message: error.message,
+        code: error.code,
       }, error);
     }
   }
