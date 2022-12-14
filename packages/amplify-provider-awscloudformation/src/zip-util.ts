@@ -13,11 +13,9 @@ const logger = fileLogger('zip-util');
 export const downloadZip = async (s3: S3, tempDir: string, zipFileName: string, envName: string): Promise<string> => {
   const log = logger('downloadZip.s3.getFile', [{ Key: zipFileName }, envName]);
   log();
-  const objectResult = await s3.getFile({ Key: zipFileName }, envName);
   fs.ensureDirSync(tempDir);
-  const buff = Buffer.from(objectResult);
   const tempFile = `${tempDir}/${zipFileName}`;
-  await fs.writeFile(tempFile, buff);
+  await s3.downloadFile({ Key: zipFileName }, envName, tempFile);
 
   return tempFile;
 };
