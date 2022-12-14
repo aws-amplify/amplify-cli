@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.6.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* check java_home variable before starting opensearch emulator ([#11528](https://github.com/aws-amplify/amplify-cli/issues/11528)) ([a150ca2](https://github.com/aws-amplify/amplify-cli/commit/a150ca2f017c7edaf3901a554b4771a02aad21da))
+* searchable mock packaging ([#11472](https://github.com/aws-amplify/amplify-cli/issues/11472)) ([7e3e399](https://github.com/aws-amplify/amplify-cli/commit/7e3e3998caf0fd3cfa9e995b1ddd7dd2410a33e8))
+
+
+
+
+
 # [4.6.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.6.0-beta.2) (2022-12-01)
 
 
