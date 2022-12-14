@@ -460,7 +460,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw new AmplifyFault(context.input.command === 'push' ? 'PushDeploymentFault' : 'PullDeploymentFault', {
+    throw new AmplifyFault('DeploymentFault', {
       message: error.message,
       code: error.code,
     }, error);
