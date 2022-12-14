@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
@@ -114,9 +114,6 @@ export const pushResources = async (
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {
-        if (err instanceof AmplifyException) {
-          throw err;
-        }
         throw new AmplifyFault('PushResourcesFault', {
           message: err.message,
           link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
