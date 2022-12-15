@@ -129,12 +129,6 @@ const USE_PARENT_ACCOUNT = [
   'auth_2',
   'import_dynamodb_1',
   'import_s3_1',
-  'api-key-migration2',
-  'api-key-migration3',
-  'api-key-migration4',
-  'api-key-migration5',
-  'searchable-migration',
-  'storage',
 ];
 
 export type WorkflowJob =
