@@ -294,7 +294,7 @@ export type $TSCopyJob = $TSAny;
    * Use a validator from amplify-prompts or add a new validator in that module
    * @deprecated
    */
-  inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
+  inputValidation: (input: $TSAny) => (value: $TSAny) => true | string;
   listCategories: () => $TSAny;
 
   /**

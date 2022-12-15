@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsdoc/require-jsdoc */
-import inquirer from 'inquirer';
 import _ from 'lodash';
 import {
   stateManager, open, $TSContext, $TSObject,
 } from 'amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { byValue, printer, prompter } from 'amplify-prompts';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
 import {
@@ -370,7 +370,7 @@ export const console = async (context: $TSContext, amplifyMeta: any): Promise<an
 
       if (isAdminApp) {
         if (region !== Region) {
-          context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+          printer.warn(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
         }
         if (!AmplifyAppId) {
           throw new Error('Missing AmplifyAppId in amplify-meta.json');
@@ -378,15 +378,8 @@ export const console = async (context: $TSContext, amplifyMeta: any): Promise<an
         choices = [AmplifyAdmin, ...choices];
       }
 
-      const answer = await inquirer.prompt({
-        name: 'selection',
-        type: 'list',
-        message: 'Which console',
-        choices,
-        default: isAdminApp ? AmplifyAdmin : BothPools,
-      });
-
-      switch (answer.selection) {
+      const answer = await prompter.pick('Which console', choices, { initial: byValue(isAdminApp ? AmplifyAdmin : BothPools) });
+      switch (answer) {
         case AmplifyAdmin:
           await openAdminUI(context, AmplifyAppId, Region);
           break;
@@ -407,9 +400,9 @@ export const console = async (context: $TSContext, amplifyMeta: any): Promise<an
     } else {
       await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
     }
-    context.print.info('');
+    printer.info('');
   } else {
-    context.print.error('Amazon Cognito resources have NOT been created for your project.');
+    printer.error('Amazon Cognito resources have NOT been created for your project.');
   }
 };
 
@@ -433,21 +426,21 @@ const openAdminUI = async (context: $TSContext, appId: string, region: string): 
   const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
   const adminUrl = `${baseUrl}/admin/${appId}/${envName}/auth`;
   await open(adminUrl, { wait: false });
-  context.print.success(adminUrl);
+  printer.success(adminUrl);
 };
 
 const openUserPoolConsole = async (context: $TSContext, region: string, userPoolId: string): Promise<void> => {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await open(userPoolConsoleUrl, { wait: false });
-  context.print.info('User Pool console:');
-  context.print.success(userPoolConsoleUrl);
+  printer.info('User Pool console:');
+  printer.success(userPoolConsoleUrl);
 };
 
 const openIdentityPoolConsole = async (context: $TSContext, region: string, identityPoolId: string): Promise<void> => {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await open(identityPoolConsoleUrl, { wait: false });
-  context.print.info('Identity Pool console:');
-  context.print.success(identityPoolConsoleUrl);
+  printer.info('Identity Pool console:');
+  printer.success(identityPoolConsoleUrl);
 };
 
 export const getPermissionPolicies = (context: $TSContext, service: string, resourceName: string, crudOptions: any): any => {
@@ -458,7 +451,7 @@ export const getPermissionPolicies = (context: $TSContext, service: string, reso
   /* eslint-enable */
 
   if (!getPermissionPolicies) {
-    context.print.info(`No policies found for ${resourceName}`);
+    printer.info(`No policies found for ${resourceName}`);
     return undefined;
   }
 
