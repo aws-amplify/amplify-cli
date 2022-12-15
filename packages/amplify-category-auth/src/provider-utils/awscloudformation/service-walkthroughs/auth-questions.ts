@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsdoc/require-jsdoc */
+import inquirer from 'inquirer';
 import chalk from 'chalk';
 import _, { uniq, pullAll } from 'lodash';
 import path from 'path';
@@ -9,7 +10,6 @@ import { Sort } from 'enquirer';
 import { $TSContext } from 'amplify-cli-core';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
 import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
-import { prompter } from '../../../../../amplify-prompts/src/prompter';
 
 const category = 'auth';
 
@@ -41,7 +41,7 @@ export const serviceWalkthrough = async (
     const question = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
 
     // ASK QUESTION
-    const answer = await prompter.input(question.message);
+    const answer: any = await inquirer.prompt(question);
 
     /* eslint-disable spellcheck/spell-checker */
     if ('signinwithapplePrivateKeyUserPool' in answer) {
@@ -98,8 +98,12 @@ export const serviceWalkthrough = async (
       const replacementArray = context.updatingAuth[questionObj.iterator];
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
         questionObj.validation = questionObj.iteratorValidation;
-        const newValue = await prompter.input(`Update ${answer[questionObj.key][t]}`, { validate: amplify.inputValidation(questionObj) });
-        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue);
+        const newValue = await inquirer.prompt({
+          name: 'updated',
+          message: `Update ${answer[questionObj.key][t]}`,
+          validate: amplify.inputValidation(questionObj),
+        });
+        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
       }
       j += 1;
       // ADD-ANOTHER BLOCK
@@ -117,8 +121,13 @@ export const serviceWalkthrough = async (
       } else {
         coreAnswers[questionObj.key].push(answer[questionObj.key]);
       }
-      const addAnother = await prompter.yesOrNo(`Do you want to add another ${questionObj.addAnotherLoop}`, false);
-      if (!addAnother) {
+      const addAnother = await inquirer.prompt({
+        name: 'repeater',
+        type: 'confirm',
+        default: false,
+        message: `Do you want to add another ${questionObj.addAnotherLoop}`,
+      });
+      if (!addAnother.repeater) {
         j += 1;
       }
     } else if (questionObj.key === 'updateFlow') {
@@ -237,21 +246,30 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
       return { name: e.groupName, value: e.groupName };
     });
 
-    const groups2BeDeleted = await prompter.pick<'many', string>(
-      'Select any user pool groups you want to delete:',
-      deletionChoices,
-      { returnSize: 'many' },
-    );
-    userPoolGroupList = userPoolGroupList.filter((i: any) => !groups2BeDeleted.includes(i));
+    const deletionAnswer = await inquirer.prompt([
+      {
+        name: 'groups2BeDeleted',
+        type: 'checkbox',
+        message: 'Select any user pool groups you want to delete:',
+        choices: deletionChoices,
+      },
+    ]);
+
+    userPoolGroupList = userPoolGroupList.filter((i: any) => !deletionAnswer.groups2BeDeleted.includes(i));
   }
+
+  let answer;
 
   /* Must be sure to ask this question in the event that it is the
   first time in the user pool group flow, or it is an update but
   the user has deleted all existing groups. If they want to delete
   all groups they should just delete the resource */
   if (userPoolGroupList.length < 1) {
-    const userPoolGroupName = await prompter.input('Provide a name for your user pool group:',
+    answer = await inquirer.prompt([
       {
+        name: 'userPoolGroupName',
+        type: 'input',
+        message: 'Provide a name for your user pool group:',
         validate: context.amplify.inputValidation({
           validation: {
             operator: 'regex',
@@ -260,14 +278,24 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
           },
           required: true,
         }),
-      });
-    userPoolGroupList.push(userPoolGroupName);
+      },
+    ]);
+    userPoolGroupList.push(answer.userPoolGroupName);
   }
 
-  let addAnother = await prompter.yesOrNo('Do you want to add another User Pool Group', false);
-  while (addAnother === true) {
-    const userPoolGroupName = await prompter.input('Provide a name for your user pool group:',
+  let addAnother = await inquirer.prompt({
+    name: 'repeater',
+    type: 'confirm',
+    default: false,
+    message: 'Do you want to add another User Pool Group',
+  });
+
+  while (addAnother.repeater === true) {
+    answer = await inquirer.prompt([
       {
+        name: 'userPoolGroupName',
+        type: 'input',
+        message: 'Provide a name for your user pool group:',
         validate: context.amplify.inputValidation({
           validation: {
             operator: 'regex',
@@ -276,10 +304,17 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
           },
           required: true,
         }),
-      });
+      },
+    ]);
 
-    userPoolGroupList.push(userPoolGroupName);
-    addAnother = await prompter.yesOrNo('Do you want to add another User Pool Group', false);
+    userPoolGroupList.push(answer.userPoolGroupName);
+
+    addAnother = await inquirer.prompt({
+      name: 'repeater',
+      type: 'confirm',
+      default: false,
+      message: 'Do you want to add another User Pool Group',
+    });
   }
 
   // Get distinct list
@@ -309,16 +344,27 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
 };
 
 const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): Promise<string> => {
+  let adminGroup;
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
   if (await context.amplify.confirmPrompt('Do you want to restrict access to the admin queries API to a specific Group')) {
     userPoolGroupListClone.push('Enter a custom group');
 
-    let adminGroup = await prompter.pick('Select the group to restrict access with:', userPoolGroupListClone);
-    if (adminGroup === 'Enter a custom group') {
-      adminGroup = await prompter.input(
-        'Provide a group name:',
+    const adminGroupAnswer = await inquirer.prompt([
+      {
+        name: 'adminGroup',
+        type: 'list',
+        message: 'Select the group to restrict access with:',
+        choices: userPoolGroupListClone,
+      },
+    ]);
+
+    if (adminGroupAnswer.adminGroup === 'Enter a custom group') {
+      const temp = await inquirer.prompt([
         {
+          name: 'userPoolGroupName',
+          type: 'input',
+          message: 'Provide a group name:',
           validate: context.amplify.inputValidation({
             validation: {
               operator: 'regex',
@@ -328,13 +374,13 @@ const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): 
             required: true,
           }),
         },
-      );
+      ]);
+      adminGroup = temp.userPoolGroupName;
+    } else {
+      ({ adminGroup } = adminGroupAnswer);
     }
-
-    return adminGroup;
   }
-
-  return '';
+  return adminGroup;
 };
 
 /*
