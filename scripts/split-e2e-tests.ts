@@ -16,7 +16,6 @@ const CONCURRENCY = 35;
 // Todo: update the split test strategy to use parallelization so circleci results dont go over the limits of github payload size
 const WINDOWS_TEST_SKIP_LIST: string[] = [
   'amplify-app_pkg',
-  'analytics_pkg',
   'analytics-2_pkg',
   'api_migration_update_v5',
   'api_migration_update_v6',
