@@ -47,8 +47,8 @@ describe('storage category migration from v10 to latest', () => {
   });
 
   afterEach(async () => {
-    //await deleteProject(projRoot, null, true);
-    //deleteProjectDir(projRoot);
+    await deleteProject(projRoot, null, true);
+    deleteProjectDir(projRoot);
   });
 
   it('...pull and push should not drift with new amplify version', async () => {
@@ -63,7 +63,7 @@ describe('storage category migration from v10 to latest', () => {
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
     } finally {
-      //deleteProjectDir(projRoot2);
+      deleteProjectDir(projRoot2);
     }
   });
 });
