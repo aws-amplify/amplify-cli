@@ -134,7 +134,6 @@ const USE_PARENT_ACCOUNT = [
   'api-key-migration4',
   'api-key-migration5',
   'searchable-migration',
-  'storage',
 ];
 
 export type WorkflowJob =
