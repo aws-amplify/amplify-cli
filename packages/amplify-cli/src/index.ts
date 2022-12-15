@@ -33,7 +33,7 @@ import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
-import { init as initErrorHandler, handleException } from './amplify-exception-handler';
+import { init as initErrorHandler, handleException, handleUnhandledRejection } from './amplify-exception-handler';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -47,19 +47,17 @@ Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 process.on('uncaughtException', handleException);
 
 // In this handler we have to re-throw the error otherwise the process hangs there.
-process.on('unhandledRejection', error => {
-  throw error;
-});
+process.on('unhandledRejection', handleUnhandledRejection);
 
 /**
  * Disable the CDK deprecation warning in production but not in CI/debug mode
  */
- const disableCDKDeprecationWarning = () => {
+const disableCDKDeprecationWarning = () => {
   const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
   if (!isDebug) {
     process.env.JSII_DEPRECATED = 'quiet';
   }
-}
+};
 
 /**
  * Command line entry point
@@ -67,7 +65,7 @@ process.on('unhandledRejection', error => {
 export const run = async (startTime: number): Promise<void> => {
   deleteOldVersion();
 
-  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
   // Most of these warning messages are targetting searchable directive, which needs to migrate from elastic search to open search
   // This is not diabled in debug mode
   disableCDKDeprecationWarning();
