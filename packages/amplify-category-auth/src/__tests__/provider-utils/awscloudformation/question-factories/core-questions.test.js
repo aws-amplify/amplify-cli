@@ -123,158 +123,131 @@ describe('When generating auth questions...', () => {
   };
 
   describe('...and when generating simple inputs...', () => {
-    it('it should return a question object when passed a simple input without getWhen conditions.', () => {
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+    it('it should return a question object when passed a simple input without getWhen conditions.', async () => {
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res).toBeInstanceOf(Object);
       expect(res.type).toEqual('input');
       expect(res.name).toEqual(key);
       expect(res.message).toEqual(question);
     });
 
-    it('should try calling getWhen.', () => {
-      coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+    it('should try calling getWhen.', async () => {
+      await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(mockAmplify.getWhen).toHaveBeenCalled();
     });
 
-    it('should try calling inputValidation.', () => {
-      coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+    it('should try calling inputValidation.', async () => {
+      await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(mockAmplify.inputValidation).toHaveBeenCalled();
     });
 
-    it('should try calling getAllDefaults if updatingAuth is not present in the context.', () => {
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+    it('should try calling getAllDefaults if updatingAuth is not present in the context.', async () => {
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       res.default();
       expect(defaults.getAllDefaults).toHaveBeenCalled();
     });
 
-    it('should not getAllDefaults if updatingAuth is present in the context.', () => {
+    it('should not getAllDefaults if updatingAuth is present in the context.', async () => {
       mockContext.updatingAuth = { Q1: 'my old answer' };
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       res.default();
       expect(defaults.getAllDefaults).not.toHaveBeenCalled();
     });
 
-    it('should return the answer from context.updatingAuth if updatingAuth is present.', () => {
+    it('should return the answer from context.updatingAuth if updatingAuth is present.', async () => {
       mockContext.updatingAuth = { Q1: 'my old answer' };
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const def = res.default();
       expect(def).toEqual('my old answer');
     });
 
-    // it('should return the choices from the input.options if getWhen is false', () => {
-    //   mockAmplify.getWhen.mockReturnValue(() => false);
-    //   input.type = 'list';
-    //   input.requiredOptions = [{ key: ['required1'] }];
-    //   input.options = [{ key: 'testkey', val: 'testval' }];
-    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-    //   expect(res.choices).toEqual(input.options);
-    // });
-
-    it('should render inputs of type "multiselect" as type "checkbox"', () => {
+    it('should render inputs of type "multiselect" as type "checkbox"', async () => {
       input.type = 'multiselect';
       input.when = () => true;
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('checkbox');
     });
 
-    it('should render inputs of type "confirm" as type "confirm"', () => {
+    it('should render inputs of type "confirm" as type "confirm"', async () => {
       input.type = 'confirm';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('confirm');
     });
 
-    it('should render inputs of type "input" as type "input"', () => {
+    it('should render inputs of type "input" as type "input"', async () => {
       input.type = 'input';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('input');
     });
 
-    it('should render inputs without a type as type "input"', () => {
+    it('should render inputs without a type as type "input"', async () => {
       input.type = undefined;
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('input');
     });
   });
 
   describe('...and when generating complex inputs', () => {
-    // it('should get mapped option values for list inputs with map values when getWhen is false but requiredOptions are present', () => {
-    //   mockAmplify.getWhen.mockReturnValue(() => false);
-    //   input.requiredOptions = 'keyone';
-    //   input.type = 'list';
-    //   input.map = 'mappedOptions1';
-    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-    //   expect(res.choices).toEqual(mappedOptions1);
-    // });
-
-    // it('should get mapped option values for list inputs with map value when getWhen is false and requiredOptions are missing ', () => {
-    //   mockAmplify.getWhen.mockReturnValue(() => false);
-    //   input.requiredOptions = [undefined];
-    //   input.type = 'list';
-    //   input.map = 'mappedOptions1';
-    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-    //   expect(res.choices).toEqual(mappedOptions1);
-    // });
-
-    it('should add required options to the inputs answers using the filter method', () => {
+    it('should add required options to the inputs answers using the filter method', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions1';
       input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'valueone';
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.filter).toBeTruthy();
     });
 
-    it('should remove required options from the choices presented to the user (currentAnswers variant)', () => {
+    it('should remove required options from the choices presented to the user (currentAnswers variant)', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions3';
       input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'value2';
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const requiredPresent = res.choices.filter(a => a.name === 'name2').length > 0;
       expect(requiredPresent).toBe(false);
     });
 
-    it('should remove required options from the choices presented to the user (updatingAuth variant)', () => {
+    it('should remove required options from the choices presented to the user (updatingAuth variant)', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions3';
       input.requiredOptions = ['mappedOptions2'];
       Object.assign(mockContext, { updatingAuth: { mappedOptions2: 'value2' } });
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const requiredPresent = res.choices.filter(a => a.name === 'name2').length > 0;
       expect(requiredPresent).toBe(false);
     });
 
-    it('should display as choices for the current question those values entered for the question corresponding to the iterator key', () => {
+    it('should display as choices for the current question those values entered for the question corresponding to the iterator key', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.iterator = 'iteratorkey';
       Object.assign(mockContext, { updatingAuth: { iteratorkey: ['val1', 'val2'] } });
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const requiredChoices = res.choices && res.choices.length === 2 && res.choices[0].name === 'val1' && res.choices[0].value === 'val1';
       expect(requiredChoices).toBe(true);
     });
 
-    it('should filter list of available providers according to the requiredAttributes of the userpool and whether these attributes are available for the provider in the attribute map', () => {
+    it('should filter list of available providers according to the requiredAttributes of the userpool and whether these attributes are available for the provider in the attribute map', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.filter = 'providers';
       Object.assign(mockContext, { updatingAuth: { requiredAttributes: ['email', 'address'] } });
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const correctChoices = res.choices && res.choices.length === 4 && res.choices.filter(i => i.disabled).length === 2;
       expect(correctChoices).toBe(true);
     });
 
-    it('should transform the text in the list of available attributes according to those available for each provider in the attribute map', () => {
+    it('should transform the text in the list of available attributes according to those available for each provider in the attribute map', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       Object.assign(mockContext, { updatingAuth: { requiredAttributes: ['email', 'address'] } });
       input.type = 'multiselect';
       input.filter = 'attributes';
       input.map = 'coreAttributes';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const emailChoice = res.choices.find(i => i.value === 'email');
       const addressChoice = res.choices.find(i => i.value === 'address');
       const localeChoice = res.choices.find(i => i.value === 'locale');
@@ -285,14 +258,14 @@ describe('When generating auth questions...', () => {
       expect(nameChoice.name).toEqual('Name (This attribute is not supported by Prov1, Prov2, Login With Amazon, Sign in with Apple.)');
     });
 
-    it('should disable options based on the update flow (without social options)', () => {
+    it('should disable options based on the update flow (without social options)', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.filter = 'providers';
       input.type = 'multiselect';
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
       Object.assign(mockContext, { updatingAuth: {} });
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.choices.length).toEqual(5);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
@@ -301,14 +274,14 @@ describe('When generating auth questions...', () => {
       expect(res.choices[4].value).toEqual('updateAdminQueries');
     });
 
-    it('should disable options based on the update flow (with social options)', () => {
+    it('should disable options based on the update flow (with social options)', async () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       Object.assign(mockContext, { updatingAuth: { useDefualt: 'defaultSocial', CallbackURLs: {}, hostedUIProviderCreds: {} } });
       input.filter = 'providers';
       input.type = 'multiselect';
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
+      const res = await coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.choices.length).toEqual(7);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
