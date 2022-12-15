@@ -1,19 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`storage category migration from v10 to latest ...pull and push should not drift with new amplify version 1`] = `
-"Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"storage-DynamoDB\\",\\"metadata\\":{}} to DDB Resource for AWS Amplify CLI
-
-Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"storage-DynamoDB\\",\\"metadata\\":{}} to DDB Resource for AWS Amplify CLI
-
-Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"storage-S3\\",\\"metadata\\":{}} to S3 Resource for AWS Amplify CLI
-
-Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"auth-Cognito\\",\\"metadata\\":{}} to Amplify Cognito Stack for AWS Amplify CLI
-
-Resources
+"Resources
 [~] AWS::Lambda::Function UserPoolClientLambda 
  └─ [~] Runtime
      ├─ [-] nodejs14.x
@@ -23,20 +11,8 @@ Resources
 `;
 
 exports[`storage category migration from v10 to latest ...pull and push should not drift with new amplify version 2`] = `
-"Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"storage-DynamoDB\\",\\"metadata\\":{}} to DDB Resource for AWS Amplify CLI
-
-Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"storage-DynamoDB\\",\\"metadata\\":{}} to DDB Resource for AWS Amplify CLI
-
-Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"storage-S3\\",\\"metadata\\":{}} to S3 Resource for AWS Amplify CLI
-
-Outputs
+"Outputs
 [+] Output LambdaExecutionRoleArn: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"LambdaExecutionRole\\",\\"Arn\\"]}}
-
-Template
-[~] Description Description: {\\"createdOn\\":\\"Mac\\",\\"createdBy\\":\\"Amplify\\",\\"createdWith\\":\\"10.5.1\\",\\"stackType\\":\\"auth-Cognito\\",\\"metadata\\":{}} to Amplify Cognito Stack for AWS Amplify CLI
 
 Resources
 [~] AWS::Lambda::Function UserPoolClientLambda 

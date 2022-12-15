@@ -77,6 +77,11 @@ export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, p
     for (const resourceKey of Object.keys(category)) {
       const template1 = getCloudFormationTemplate(projectRoot1, categoryKey, resourceKey);
       const template2 = getCloudFormationTemplate(projectRoot2, categoryKey, resourceKey);
+
+      // Description does not matter much and it can contain os/runtime specific words.
+      delete template1.Description;
+      delete template2.Description;
+
       const templateDiff = cfnDiff.diffTemplate(template1, template2);
       if (!templateDiff.isEmpty) {
         cfnDiff.formatDifferences(stream, templateDiff);
