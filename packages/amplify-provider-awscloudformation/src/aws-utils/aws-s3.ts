@@ -15,8 +15,6 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import ora from 'ora';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
-import { promisify } from 'util';
-import { finished } from 'stream';
 import { pagedAWSCall } from './paged-call';
 import { loadConfiguration } from '../configuration-manager';
 import aws from './aws';
@@ -163,22 +161,6 @@ export class S3 {
 
     const result = await this.s3.getObject(s3Params).promise();
     return result.Body;
-  }
-
-  /**
-   * Download a specified object from the Amplify deployment bucket to the local path.
-   * @param s3Params - input parameters of GetObjectCommandInput type.
-   * @param envName - environment name to be attached to the input-params
-   * @param localPath - local path to which the object needs to be downloaded.
-   */
-  async downloadFile(s3Params: $TSAny, envName: string, localPath: string) {
-    s3Params = this.attachBucketToParams(s3Params, envName);
-    const rs = this.s3.getObject(s3Params).createReadStream();
-    const ws = fs.createWriteStream(localPath);
-    rs.pipe(ws);
-
-    const finishedAsync = promisify(finished);
-    await finishedAsync(rs);
   }
 
   /**
