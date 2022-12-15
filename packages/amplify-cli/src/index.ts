@@ -153,11 +153,6 @@ export const run = async (startTime: number): Promise<void> => {
   await displayBannerMessages(input);
   await executeCommand(context);
 
-  const exitCode = process.exitCode || 0;
-  if (exitCode === 0) {
-    context.usageData.emitSuccess();
-  }
-
   // no command supplied defaults to help, give update notification at end of execution
   if (input.command === 'help') {
     // Checks for available update, defaults to a 1 day interval for notification
@@ -172,6 +167,11 @@ export const run = async (startTime: number): Promise<void> => {
   }
   else {
     await saveAllEnvParams();
+  }
+
+  const exitCode = process.exitCode || 0;
+  if (exitCode === 0) {
+    context.usageData.emitSuccess();
   }
 };
 
