@@ -35,7 +35,6 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'api-migration-d_v6',
   'apigw-ext-migration_v5',
   'apigw-ext-migration_v6',
-  'auth_2_pkg',
   'auth_migration_update_v5',
   'auth_migration_update_v6',
   'auth-migration-a_v5',
@@ -146,7 +145,6 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'auth_2',
   'import_dynamodb_1',
   'import_s3_1',
   'searchable-migration',
