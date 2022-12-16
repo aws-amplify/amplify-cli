@@ -115,11 +115,7 @@ export function initEnv(context: any): Promise<void>;
 export function isSMSWorkflowEnabled(context: any, resourceName: any): Promise<boolean>;
 
 // @public (undocumented)
-<<<<<<< HEAD
-export function migrate(context: any): Promise<void>;
-=======
 export const migrate: (context: $TSContext) => Promise<void>;
->>>>>>> dev
 
 // @public (undocumented)
 export function migrateAuthResource(context: any, resourceName: any): Promise<boolean>;
