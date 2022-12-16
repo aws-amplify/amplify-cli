@@ -103,6 +103,7 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'scaffold_v10',
   'schema-iterative-rollback-1_pkg',
   'schema-iterative-rollback-2_pkg',
+  'searchable-migration_pkg',
   'storage_migration_update_v5',
   'storage_migration_update_v6',
   'studio-modelgen_pkg',
