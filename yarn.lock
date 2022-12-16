@@ -48,24 +48,24 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^4.0.9":
-  version "4.0.9"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-api/-/amplify-category-api-4.0.9.tgz#a3541dbe547450625d146b43254d5f3f7b97403e"
-  integrity sha512-i+3Ba0YmTxIIQ1hjanTB+KWOVYjK9Wwwy/UvWn8B92MOffV2o3pqLlvQTLE71IxQkEgqYjr75t2VwxIF4eLpJQ==
+"@aws-amplify/amplify-category-api@4.1.3-circular-dep-fix.2":
+  version "4.1.3-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.3-circular-dep-fix.2.tgz#f470073636654263bf43c0d3533c32ff6de1d738"
+  integrity sha512-dKm0ujm4s6r64C9gSCfqFMyfkuGvrnN8DKagh4c+GQ+hMkct/Js8p11tRfN4X2A0KKoGuOuDOWZV1QoohL5mAA==
   dependencies:
-    "@aws-amplify/graphql-auth-transformer" "1.1.4"
-    "@aws-amplify/graphql-default-value-transformer" "0.7.3"
-    "@aws-amplify/graphql-function-transformer" "0.7.31"
-    "@aws-amplify/graphql-http-transformer" "0.8.31"
-    "@aws-amplify/graphql-index-transformer" "0.14.3"
-    "@aws-amplify/graphql-maps-to-transformer" "1.1.35"
-    "@aws-amplify/graphql-model-transformer" "0.16.3"
-    "@aws-amplify/graphql-predictions-transformer" "0.6.31"
-    "@aws-amplify/graphql-relational-transformer" "0.12.4"
-    "@aws-amplify/graphql-searchable-transformer" "0.16.3"
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
-    "@aws-amplify/graphql-transformer-migrator" "1.4.10"
+    "@aws-amplify/graphql-auth-transformer" "1.2.3-circular-dep-fix.2"
+    "@aws-amplify/graphql-default-value-transformer" "0.7.5-circular-dep-fix.2"
+    "@aws-amplify/graphql-function-transformer" "0.7.33-circular-dep-fix.2"
+    "@aws-amplify/graphql-http-transformer" "0.8.33-circular-dep-fix.2"
+    "@aws-amplify/graphql-index-transformer" "0.14.6-circular-dep-fix.2"
+    "@aws-amplify/graphql-maps-to-transformer" "1.1.39-circular-dep-fix.2"
+    "@aws-amplify/graphql-model-transformer" "0.16.5-circular-dep-fix.2"
+    "@aws-amplify/graphql-predictions-transformer" "0.6.33-circular-dep-fix.2"
+    "@aws-amplify/graphql-relational-transformer" "0.12.7-circular-dep-fix.2"
+    "@aws-amplify/graphql-searchable-transformer" "0.16.6-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
+    "@aws-amplify/graphql-transformer-migrator" "1.4.13-circular-dep-fix.2"
     "@aws-cdk/assets" "~1.172.0"
     "@aws-cdk/aws-apigateway" "~1.172.0"
     "@aws-cdk/aws-apigatewayv2" "~1.172.0"
@@ -115,18 +115,18 @@
     constructs "^3.3.125"
     fs-extra "^8.1.0"
     graphql "^14.5.8"
-    graphql-auth-transformer "7.2.44"
-    graphql-connection-transformer "5.2.43"
-    graphql-dynamodb-transformer "7.2.43"
-    graphql-elasticsearch-transformer "5.2.44"
-    graphql-function-transformer "3.3.34"
-    graphql-http-transformer "5.2.43"
-    graphql-key-transformer "3.2.43"
-    graphql-predictions-transformer "3.2.43"
-    graphql-relational-schema-transformer "2.21.10"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
-    graphql-versioned-transformer "5.2.43"
+    graphql-auth-transformer "7.2.46-circular-dep-fix.1"
+    graphql-connection-transformer "5.2.45-circular-dep-fix.1"
+    graphql-dynamodb-transformer "7.2.45-circular-dep-fix.1"
+    graphql-elasticsearch-transformer "5.2.46-circular-dep-fix.1"
+    graphql-function-transformer "3.3.36-circular-dep-fix.1"
+    graphql-http-transformer "5.2.45-circular-dep-fix.1"
+    graphql-key-transformer "3.2.45-circular-dep-fix.1"
+    graphql-predictions-transformer "3.2.45-circular-dep-fix.1"
+    graphql-relational-schema-transformer "2.21.12-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
+    graphql-versioned-transformer "5.2.45-circular-dep-fix.1"
     import-from "^3.0.0"
     import-global "^0.1.0"
     inquirer "^7.3.3"
@@ -275,33 +275,34 @@
     "@aws-sdk/client-location" "3.41.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-auth-transformer@1.1.4", "@aws-amplify/graphql-auth-transformer@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.1.4.tgz#9bf83cb4fc27757ce9dd9583ea871eb86c27ab32"
-  integrity sha512-TXOMpeTovpSiEm0ac72IKMN53U4xqnOTnMyvY7VLzMvBrP29rvPNbjHQHpzGe97gtCkake5hMMTrI5r5Z67cqA==
+"@aws-amplify/graphql-auth-transformer@1.2.3-circular-dep-fix.2":
+  version "1.2.3-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.3-circular-dep-fix.2.tgz#f4ed56fbeae73a6ff552b432eb7cb9d7d2c9e8ab"
+  integrity sha512-ptHk/gb+0Q5ikW7FnUg7ATR8hEe/qlS+hAV985euIz+N5mcTnsE0jytUz6TlnTU0VPG/Oq9/IptiOK+IA2g9GQ==
   dependencies:
-    "@aws-amplify/graphql-model-transformer" "0.16.3"
-    "@aws-amplify/graphql-relational-transformer" "0.12.4"
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-model-transformer" "0.16.5-circular-dep-fix.2"
+    "@aws-amplify/graphql-relational-transformer" "0.12.7-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     constructs "^3.3.125"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
     lodash "^4.17.21"
     md5 "^2.3.0"
 
-"@aws-amplify/graphql-default-value-transformer@0.7.3", "@aws-amplify/graphql-default-value-transformer@^0.7.3":
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-0.7.3.tgz#f0ea6acbfaf284995c73781431e18cd5fc19be7c"
-  integrity sha512-3e3A7usdzvrv8Anp3Wcez0FoACOZFsK30BVObJSnxX9lv+/P7u5438qM0JMg1SgX5M05jZEFbvEiV07hIQ6v3Q==
+"@aws-amplify/graphql-default-value-transformer@0.7.5-circular-dep-fix.2":
+  version "0.7.5-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-0.7.5-circular-dep-fix.2.tgz#1fc49d3aaf1efb5b715d402c4db702913feb2879"
+  integrity sha512-txqHaezO1ZarFENwqHIOu7T8P0m11Dl7D5VzJgJqWAeQ2Ft/4SyK/QuU+cRy0KEp8OztU5PiQ0fscqOhozDHlQ==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
     libphonenumber-js "1.9.47"
 
 "@aws-amplify/graphql-docs-generator@3.0.2":
@@ -314,69 +315,69 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
-"@aws-amplify/graphql-function-transformer@0.7.31", "@aws-amplify/graphql-function-transformer@^0.7.31":
-  version "0.7.31"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-0.7.31.tgz#d9671cdb23d85f6b7ebd702e6e0f238cb50d744d"
-  integrity sha512-f4eKjJ50IModzJvDiQWse9RpO+juwD8qZMRO4kI07jZoc7g0mngi7NrHOva3j4vSG9zSQFQYUrUfkTOtVFhwZw==
+"@aws-amplify/graphql-function-transformer@0.7.33-circular-dep-fix.2":
+  version "0.7.33-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-0.7.33-circular-dep-fix.2.tgz#d3b94798b3e8525ad9c8205a918b6763e7722c9f"
+  integrity sha512-6k0Yg3nnEqt4oz/Z9sqnGjDibAG/ARqYOOwyt14uqonk4BOuW+vf30y5nBKtQM+LESgwf1xFeIrFGTZ7KlvFlA==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-http-transformer@0.8.31", "@aws-amplify/graphql-http-transformer@^0.8.31":
-  version "0.8.31"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-0.8.31.tgz#583ac5bb5a13660fca06fcb0281bd174ddb0c1c5"
-  integrity sha512-Yjgwt/sapvJGKqvmfwZiPC3jsqlv5IDImDfaDTBPmQ2zMutdO2I+cvT+MgFvgynNJ9EEo27VAw0KjFblQ+e0yA==
+"@aws-amplify/graphql-http-transformer@0.8.33-circular-dep-fix.2":
+  version "0.8.33-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-0.8.33-circular-dep-fix.2.tgz#6e6af43613b3b29a1d2e28e9287f88c0eb879d78"
+  integrity sha512-CinuR6nTDMYubMM2OollWbCSqh8+HdOc7D0NDbuxgSp8ekRGjTP46/RgRnno3lo+Fwnz2oUPsGeuwvrz7sUBRw==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-index-transformer@0.14.3", "@aws-amplify/graphql-index-transformer@^0.14.3":
-  version "0.14.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.14.3.tgz#fcccc94eed62e9cba9ad592979b0e5923d21e63c"
-  integrity sha512-RezDxl+5TKe8U9gMogVxejbuzSoRlj7FP19ATqrMuv/d4RP9VIT4jgiS90AKwlVj7etxvGUkPMQkOTOBzAIEJw==
+"@aws-amplify/graphql-index-transformer@0.14.6-circular-dep-fix.2":
+  version "0.14.6-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.14.6-circular-dep-fix.2.tgz#ebb210e561a0aea4b25b34800da730a3cc301ec6"
+  integrity sha512-x9G8uq5BAt5Nn9D36PF64aAs1pjENcOtptqpIhFB8ZfBxUU7lEDq/QAgfq5jqv33RC/m7fKRfeBnF51jSz8xdQ==
   dependencies:
-    "@aws-amplify/graphql-model-transformer" "0.16.3"
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-model-transformer" "0.16.5-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-dynamodb" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-maps-to-transformer@1.1.35", "@aws-amplify/graphql-maps-to-transformer@^1.1.35":
-  version "1.1.35"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-1.1.35.tgz#2aaed40332b4ad6811461f5865711147b0e7ec06"
-  integrity sha512-aZfsFWLfsHdEb++WiE2zOB2a3vuqzBs6gcbJ5+C76orcgUv4rFYEC8K/Bb+y5JT8eXqEj6O6+AAQbZliFktJVQ==
+"@aws-amplify/graphql-maps-to-transformer@1.1.39-circular-dep-fix.2":
+  version "1.1.39-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-1.1.39-circular-dep-fix.2.tgz#2d3135261cb1d0cac360e0e06ba7efdc0ccefa48"
+  integrity sha512-8qqiQW5vh7+WRdzlEPUQXMmPT3LzPTd/GNVexWigIxr+V7m7AclAylAHmSsJdFEnsZ0aSgz/5jJmP3E6XjiJiw==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-model-transformer@0.16.3", "@aws-amplify/graphql-model-transformer@^0.16.3":
-  version "0.16.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-0.16.3.tgz#b4c89877cb3de2b98552a8b00f603657b54ce9a2"
-  integrity sha512-bVASPV4/QJ7fYwpxexQiIi63kCAy4RyXZAUGVwte/DI1E9PwNARAo6ghvwNa9mkWHKcoWf/mbH9QZ2Vroo6gQw==
+"@aws-amplify/graphql-model-transformer@0.16.5-circular-dep-fix.2":
+  version "0.16.5-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-0.16.5-circular-dep-fix.2.tgz#27d15f01f6a106fd2f4dcd054e412a8b577a92d1"
+  integrity sha512-1aXCSi4nzKOk+nH9+abO73zCwWTdgZa02UdHQWCHa4DuUoeYWuv6Ajrv3UwFilJTcOcSgBFtX1AxmTyhjbVJpg==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-cloudwatch" "~1.172.0"
@@ -393,47 +394,47 @@
     "@aws-cdk/region-info" "~1.172.0"
     constructs "^3.3.125"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-predictions-transformer@0.6.31", "@aws-amplify/graphql-predictions-transformer@^0.6.31":
-  version "0.6.31"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-0.6.31.tgz#97338aa1d6e183cf74793b40b373df2049ae1262"
-  integrity sha512-pkfArtt0BcF2t+S9dqB6TWS030tKqQD4QqxLlYY5tS4O4v0Q4G4K8fumQLPYusdGWFEzm0b3MyZYzvkZYY1+Ww==
+"@aws-amplify/graphql-predictions-transformer@0.6.33-circular-dep-fix.2":
+  version "0.6.33-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-0.6.33-circular-dep-fix.2.tgz#95c50100352e7990deb7791829afae7df062bbbf"
+  integrity sha512-d54Ct1LwxmtGwP7XtkCx8u4GFqrOxiFO/Sx0JGIm6yhFxW8KwiqpqdjVFkf+FcRVNzaY+4EJwcL5tzdUSh3ffQ==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-relational-transformer@0.12.4", "@aws-amplify/graphql-relational-transformer@^0.12.4":
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-0.12.4.tgz#1a172d5ee60f11790e0a1386965d4871ba2d3430"
-  integrity sha512-x3ygO8g9ebioHjrlyXnni8kNpFTWg+SvMauQhYV95ThXwwQWwxvh4gFsTZ0a4hjYeZQyUF+ysJ0D7yZkyK/sQA==
+"@aws-amplify/graphql-relational-transformer@0.12.7-circular-dep-fix.2":
+  version "0.12.7-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-0.12.7-circular-dep-fix.2.tgz#fd3569e5f0dbe757d059a8746271c0713b77e032"
+  integrity sha512-kp7IZGPwstauLeuuuj9CptfzI7aInrbLGoXSbta7M+3T1Yf0pMBv6tYQtk6+u5PRNTrUCnwg1ZzkScOFRsuw/Q==
   dependencies:
-    "@aws-amplify/graphql-index-transformer" "0.14.3"
-    "@aws-amplify/graphql-model-transformer" "0.16.3"
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-index-transformer" "0.14.6-circular-dep-fix.2"
+    "@aws-amplify/graphql-model-transformer" "0.16.5-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/core" "~1.172.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
     immer "^9.0.12"
 
-"@aws-amplify/graphql-searchable-transformer@0.16.3", "@aws-amplify/graphql-searchable-transformer@^0.16.3":
-  version "0.16.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-0.16.3.tgz#43d4439ad206089db88ca87d6c07ea46153e4859"
-  integrity sha512-KCv66QceotO81/3rHSiBGUREg2jT+1WC6R+r9cYw7zZd/5nMp2XAJJZAI8ecjzLmrO5q0plBbJ2wwtjBlUIYxQ==
+"@aws-amplify/graphql-searchable-transformer@0.16.6-circular-dep-fix.2":
+  version "0.16.6-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-0.16.6-circular-dep-fix.2.tgz#e9cb5f3ed921387c58d215e318d8a7d03d68c449"
+  integrity sha512-X3nI7nHs5789zpuR5xCb+rwim/I2hzV+F6t5vfp3NnPQ6igvOw5CBmdbaKJndaMrenG4pMh2WKubc5ztgSQxHA==
   dependencies:
-    "@aws-amplify/graphql-model-transformer" "0.16.3"
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-model-transformer" "0.16.5-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-dynamodb" "~1.172.0"
     "@aws-cdk/aws-ec2" "~1.172.0"
@@ -442,15 +443,15 @@
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
-"@aws-amplify/graphql-transformer-core@0.17.15", "@aws-amplify/graphql-transformer-core@^0.17.15":
-  version "0.17.15"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.17.15.tgz#f5f6bffc3520dd2f05419a040fbe29a8384a1c6f"
-  integrity sha512-B+zyht8Z7N/emjyeXJ5nh/YYSy2PBDPVz3i6RQqoxa24AYqc/fo0+Tz6bw5RzqbKE3K50pJnfb9MfV08lYqUNg==
+"@aws-amplify/graphql-transformer-core@0.18.1-circular-dep-fix.2":
+  version "0.18.1-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.18.1-circular-dep-fix.2.tgz#10772d64e1413a72b772626f204b3072cf185e79"
+  integrity sha512-F5tbxE2D2Oujba6tpUepFuucl+/7ykW3BWtGZblUMiSwOuKqNSJ5SfbkrZNh9jNwiGQEw9EB0IQxOx0zzpArCQ==
   dependencies:
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.10-circular-dep-fix.0"
     "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-certificatemanager" "~1.172.0"
@@ -478,17 +479,17 @@
     constructs "^3.3.125"
     fs-extra "^8.1.0"
     graphql "^14.5.8"
-    graphql-transformer-common "4.24.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
     lodash "^4.17.21"
     md5 "^2.3.0"
     object-hash "^3.0.0"
     ts-dedent "^2.0.0"
     vm2 "^3.9.8"
 
-"@aws-amplify/graphql-transformer-interfaces@1.14.9", "@aws-amplify/graphql-transformer-interfaces@^1.14.9":
-  version "1.14.9"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.14.9.tgz#ec5e09ca88f30dcc592bb65a04313124e7f8a78b"
-  integrity sha512-n+99kuk/VhZTC82fz/6lGeQFcnYajE4FpSVi5JtW5EnvnGCk6HZsQWU4THnX5JcNe7BArodM4KntZu0lYIoAVg==
+"@aws-amplify/graphql-transformer-interfaces@1.14.10-circular-dep-fix.0":
+  version "1.14.10-circular-dep-fix.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.14.10-circular-dep-fix.0.tgz#b077741379ab7e6feae78ec12a0464b845be29ee"
+  integrity sha512-iC47LDR5ovrcJDo3R6NOPxSWECOpVuQhJTEJ+m3vbuWgLeMfUnaQFKd5xGh+NvIxRedRbAU21W4v8wXZ8nCDJQ==
   dependencies:
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-cloudwatch" "~1.172.0"
@@ -508,16 +509,16 @@
     constructs "^3.3.125"
     graphql "^14.5.8"
 
-"@aws-amplify/graphql-transformer-migrator@1.4.10", "@aws-amplify/graphql-transformer-migrator@^1.4.10":
-  version "1.4.10"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-1.4.10.tgz#3ef80099b581133afc010a24792871ce6e5ea309"
-  integrity sha512-Hqoc5qTzhkmmyefIPidFPzd/PCVCq4x16haL/b0StfeoWdN9o2K6X1mnCWj1MOIAbXQycnpg6nQt/XKi5Np0jA==
+"@aws-amplify/graphql-transformer-migrator@1.4.13-circular-dep-fix.2":
+  version "1.4.13-circular-dep-fix.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-1.4.13-circular-dep-fix.2.tgz#a57441f65788247ebe86a013c10f699eb446dc10"
+  integrity sha512-gxejb99X1B9ZCejGwL06hG6Zpz6Pud1dx4NxjNNQny8j4xW0HC86t9PO+0Cbub+Fb8gFK6VCJY+0Z/RAW7kE+A==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.17.15"
+    "@aws-amplify/graphql-transformer-core" "0.18.1-circular-dep-fix.2"
     fs-extra "^8.1.0"
     glob "^7.2.0"
     graphql "^14.5.8"
-    graphql-transformer-common "4.24.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
     lodash "^4.17.21"
 
 "@aws-amplify/graphql-types-generator@3.0.0":
@@ -15000,16 +15001,16 @@ graphiql@^1.3.2:
     graphql-language-service "^4.1.4"
     markdown-it "^12.2.0"
 
-graphql-auth-transformer@7.2.44, graphql-auth-transformer@^7.2.44:
-  version "7.2.44"
-  resolved "https://registry.npmjs.org/graphql-auth-transformer/-/graphql-auth-transformer-7.2.44.tgz#7421534b4433a1690ef669166936aa02436e0f91"
-  integrity sha512-g3tP453IZenm1Y2+DdIOC+rELuEbvsE6RJAH4/iJGNCp9VoLvQ4f0iWkgGU+saJob/ciRIX/l+gUZTIqgb48sw==
+graphql-auth-transformer@7.2.46-circular-dep-fix.1:
+  version "7.2.46-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-auth-transformer/-/graphql-auth-transformer-7.2.46-circular-dep-fix.1.tgz#cb8b38a750c559733db55ea1e2b2e0a847e0f7e3"
+  integrity sha512-nJ6bi2zjZnRnFoHyPvtsujtsxzafeprYl+/FMyv26BEg2oCTKFhw9IZYoMccjjPtabGevpZGFRUeDqX+PyQt8A==
   dependencies:
     graphql "^14.5.8"
-    graphql-connection-transformer "5.2.43"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-connection-transformer "5.2.45-circular-dep-fix.1"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
 graphql-config@^2.2.1:
   version "2.2.2"
@@ -15039,65 +15040,65 @@ graphql-config@^4.1.0:
     minimatch "3.0.4"
     string-env-interpolation "1.0.1"
 
-graphql-connection-transformer@5.2.43, graphql-connection-transformer@^5.2.43:
-  version "5.2.43"
-  resolved "https://registry.npmjs.org/graphql-connection-transformer/-/graphql-connection-transformer-5.2.43.tgz#276854095763579e145c90c0711aaf6ccce544da"
-  integrity sha512-jZ+9xqOceom6ogELgSUAv5m91xAYyrK6jw+q1awf6AsmYYs9Jg6SKmClVPaml4889ZxqxvWORMb+KnY98cXPrQ==
+graphql-connection-transformer@5.2.45-circular-dep-fix.1:
+  version "5.2.45-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-connection-transformer/-/graphql-connection-transformer-5.2.45-circular-dep-fix.1.tgz#72ce3767e5b4a660a62beae7f584e976f184a5fc"
+  integrity sha512-xiZP1vBZxs+zK9a73eLZLkmda8jzhmrqm7rh5jMYD9X4KArCd3EtPLfRvuioq1XlbRvaCDGr2ZT1JSWQjEuekQ==
   dependencies:
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-dynamodb-transformer "7.2.43"
-    graphql-key-transformer "3.2.43"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-dynamodb-transformer "7.2.45-circular-dep-fix.1"
+    graphql-key-transformer "3.2.45-circular-dep-fix.1"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
-graphql-dynamodb-transformer@7.2.43, graphql-dynamodb-transformer@^7.2.43:
-  version "7.2.43"
-  resolved "https://registry.npmjs.org/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.43.tgz#e47384e3bf5a0cebf7cc6cd396030a8fbe49b77d"
-  integrity sha512-pzUZ0J3eiTT8qNdkb/qNc/Ni3RaiwVi6TmUSqXjn4p5VozAnhhuyoUZ8JtaivEbZ2QqS89X+0sG1hbAmIHMNJw==
+graphql-dynamodb-transformer@7.2.45-circular-dep-fix.1:
+  version "7.2.45-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.45-circular-dep-fix.1.tgz#b4d204da611f2569069ce0f2750a97cac70b9518"
+  integrity sha512-vI9ANm2IgnTuLB+ZFbhlxXn74Z6Npl6nMogzOfCqAndhPX33ae1mwdGmziZwrKuusszFQ63mlUowwGIzenjHIA==
   dependencies:
     "@types/pluralize" "^0.0.29"
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
     md5 "^2.2.1"
     pluralize "^8.0.0"
 
-graphql-elasticsearch-transformer@5.2.44, graphql-elasticsearch-transformer@^5.2.44:
-  version "5.2.44"
-  resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.44.tgz#7b345dc2c0d1b8c5d3d54917c5a1c0963f54312f"
-  integrity sha512-wp34yGHsdwOErU+H5w5q5StRh7s8ZbHmV6/CBqWjo+RwcFgajx73SVtM950wNCLJU6oHdwyGjCohfT/YVjB05A==
+graphql-elasticsearch-transformer@5.2.46-circular-dep-fix.1:
+  version "5.2.46-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.46-circular-dep-fix.1.tgz#31cce6be389eeafe243838f4b4045948d9bdc060"
+  integrity sha512-QeaDacz6U7m+9Y1WjcfyZEhTH4DsNuCCfvjKz7i9FxqkRvE6VfPhAQYXrY0wROo/1kJ9WfxSn+2imawuqp/1mQ==
   dependencies:
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
-graphql-function-transformer@3.3.34, graphql-function-transformer@^3.3.34:
-  version "3.3.34"
-  resolved "https://registry.npmjs.org/graphql-function-transformer/-/graphql-function-transformer-3.3.34.tgz#03db72ddd645b494449341b89f867202adb61891"
-  integrity sha512-UQ3fNTFWlDsT3amA/jFnJY/IY9I6ee02pZ3/kQc7H8ldnv89WAzO4rKbrWtYxgq6Q8FmW5GzEZ6VB/buxyQugQ==
+graphql-function-transformer@3.3.36-circular-dep-fix.1:
+  version "3.3.36-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-function-transformer/-/graphql-function-transformer-3.3.36-circular-dep-fix.1.tgz#6cdef606a78763b517fc624de7e25d6cdfd184ba"
+  integrity sha512-o2qWPAiGuh8csCJiEcn9/51cTYJxoD3GSPI/Zx/vaLxQ1ptY0bg9Hc+Op9RcYokJfmRrzM8wnOdsVo/A1VIjjA==
   dependencies:
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
-graphql-http-transformer@5.2.43, graphql-http-transformer@^5.2.43:
-  version "5.2.43"
-  resolved "https://registry.npmjs.org/graphql-http-transformer/-/graphql-http-transformer-5.2.43.tgz#dadc309bbf06c5c685565c42c04b1718c41db844"
-  integrity sha512-8oF4TenlfGIh9pvEkhm3U9LuosiCP4hJeNw8SODQdZnw2jn9Zz3l+bBCV4NQJ0x7v4pBopHyEXr/9D8fnNhZwA==
+graphql-http-transformer@5.2.45-circular-dep-fix.1:
+  version "5.2.45-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-http-transformer/-/graphql-http-transformer-5.2.45-circular-dep-fix.1.tgz#1481862018456d3202f454415290fbdd7d44fae6"
+  integrity sha512-a3U812Rx/tROwpZnbrcp55I+YiQceYeZJ+6iI/NrNfcDeKW1UEtS4FavMpkq02utQDrkJWmSSvfSH11mYjyO+A==
   dependencies:
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
 graphql-import@^0.7.1:
   version "0.7.1"
@@ -15112,17 +15113,17 @@ graphql-iso-date@^3.6.1:
   resolved "https://registry.npmjs.org/graphql-iso-date/-/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
   integrity sha512-AwFGIuYMJQXOEAgRlJlFL4H1ncFM8n8XmoVDTNypNOZyQ8LFDG2ppMFlsS862BSTCDcSUfHp8PD3/uJhv7t59Q==
 
-graphql-key-transformer@3.2.43, graphql-key-transformer@^3.2.43:
-  version "3.2.43"
-  resolved "https://registry.npmjs.org/graphql-key-transformer/-/graphql-key-transformer-3.2.43.tgz#0e37d298216ca593d621896835a412c1c60badb1"
-  integrity sha512-0ZLQoR4E7oP0HWJk0mJvzjam/pRvcqUVegYIaU4VopqB/68sgBEnWUjRQkkbV+h1VrNwUm/y+MGY+LrTebFIsw==
+graphql-key-transformer@3.2.45-circular-dep-fix.1:
+  version "3.2.45-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-key-transformer/-/graphql-key-transformer-3.2.45-circular-dep-fix.1.tgz#4bdd8b0310920f514ae5707689e946d700e44f8e"
+  integrity sha512-BFMcjLRdz110N/N0vYHxGRid8BIDiAXMeDDlr9o/fZGkocqjWmsDrFzWldYCkCi1c7MhUj72qvL92O6v1+Y0/w==
   dependencies:
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-dynamodb-transformer "7.2.43"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-dynamodb-transformer "7.2.45-circular-dep-fix.1"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
     lodash "^4.17.21"
 
 graphql-language-service-interface@^2.10.2:
@@ -15170,33 +15171,33 @@ graphql-language-service@^4.1.4:
     graphql-language-service-types "^1.8.7"
     graphql-language-service-utils "^2.7.1"
 
-graphql-mapping-template@4.20.5:
-  version "4.20.5"
-  resolved "https://registry.npmjs.org/graphql-mapping-template/-/graphql-mapping-template-4.20.5.tgz#17ed2967d665bf06135e82181db6766366bfbc32"
-  integrity sha512-bjouJJGZ67cIV0VjzUPsM4/q44inLprEsNpSZAfmdpQ3V7sKU5gKXpkJ5m+ftVsgOQ1RE3/t7SqABXwvx8NNSg==
+graphql-mapping-template@4.20.6-circular-dep-fix.0:
+  version "4.20.6-circular-dep-fix.0"
+  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.20.6-circular-dep-fix.0.tgz#491626b551836bf6baaf1b829c1ed10d270bc6bc"
+  integrity sha512-EIY1CvjhPGF53ZmNCfoyk2XmM7A5KpWfFPdOjFIJZS8ShTmlmDWGJseZpFlpoU8QzuGLYccn1xZ2O1PjZLwANg==
 
-graphql-predictions-transformer@3.2.43, graphql-predictions-transformer@^3.2.43:
-  version "3.2.43"
-  resolved "https://registry.npmjs.org/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.43.tgz#2b186bee6f590bb4531a399dd0997acfe68b9682"
-  integrity sha512-6txM9mO5D5h3qan9U9VHr+zW2HzBNivyJdmyG0Dc0vUFJ38+JTB/nDHofjKxOGsW3/yLlR78ejDfMZ+uTlwHSw==
+graphql-predictions-transformer@3.2.45-circular-dep-fix.1:
+  version "3.2.45-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.45-circular-dep-fix.1.tgz#6f8e58aa52f586c8b2274f26d988c85250b6afc3"
+  integrity sha512-fQsjwjC32AxgqWmgBoAWQHQ8g/vUgllVT2no3ZxagKscnxXgXQqHx14vdyBJZjBQ63RR5RYEm8xenzWUKEP00A==
   dependencies:
     cloudform-types "^4.2.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
-graphql-relational-schema-transformer@2.21.10:
-  version "2.21.10"
-  resolved "https://registry.yarnpkg.com/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.10.tgz#ce5bd3266c3eb969e272fa9e57598af6651300b3"
-  integrity sha512-mp2Q9NqPJI5dqZ/DQBuqXqTbAscKyXJamA/imHK/inO+R/ZeVeicwlvkBJ+C+tY921s2Ew4osdFsLYuaPO8HYw==
+graphql-relational-schema-transformer@2.21.12-circular-dep-fix.0:
+  version "2.21.12-circular-dep-fix.0"
+  resolved "https://registry.yarnpkg.com/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.12-circular-dep-fix.0.tgz#de7d2cd15bf346ba77ea059965f8fbc064110411"
+  integrity sha512-Xgd2UYpgSDRIEMKq0axlr40M3GvgRXjKmU4CeJhnzmX71XRIsBg+5+FVLH7gTIPuDO2t7ECdmqUQWL+Nex0nhQ==
   dependencies:
     cloudform "^4.2.0"
     cloudform-types "^4.2.0"
     fs-extra "^8.1.0"
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
 
 graphql-request@^1.5.0:
   version "1.8.2"
@@ -15224,38 +15225,38 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   dependencies:
     tslib "^2.1.0"
 
-graphql-transformer-common@4.24.0:
-  version "4.24.0"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.24.0.tgz#f3be95c4b5ca2ada23fc3d0b01810810ad87810d"
-  integrity sha512-wleRNCFJLrqhYUT4j3KOfh2zTkvVjA6MX/s0HBIFWbNfnzd/W0VDAvpE9q8sMipOvXJ4zcVIZggI7TttrA/fOw==
+graphql-transformer-common@4.24.2-circular-dep-fix.0:
+  version "4.24.2-circular-dep-fix.0"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.24.2-circular-dep-fix.0.tgz#ef332367dccc2c0614b9dfa6776cd31a8664eefe"
+  integrity sha512-XDMeGjblIllm8DNiH56lY0B8sSrXL+fFptTM+fOAi+xu3uhB2k5ildimcHRsd9YyCskzm+1KJGPTo+wDsoBxCQ==
   dependencies:
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
     md5 "^2.2.1"
     pluralize "8.0.0"
 
-graphql-transformer-core@7.6.6, graphql-transformer-core@^7.6.6:
-  version "7.6.6"
-  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-7.6.6.tgz#dcd92976e11aab71bdd2609e1b1f1a376b798b73"
-  integrity sha512-9oDYyQ8fOewNIJ9+cAUdQ0VbuVnIISNFgvlxalNepdolskjbBvf6n71JpNDympjCXk8aITqAGWNWnbu/JsDb7A==
+graphql-transformer-core@7.6.8-circular-dep-fix.1:
+  version "7.6.8-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-7.6.8-circular-dep-fix.1.tgz#46d824c9012f2f937decfdeba9809c66f1403e90"
+  integrity sha512-hXdcS5EsQ8Dc8+BcKbIofsMrcas04OkfmwjTFjcv+UlFdGfOdZFsKElBmKsNG/wPyUInqw8ni0nRj28ScoXNVw==
   dependencies:
     cloudform-types "^4.2.0"
     deep-diff "^1.0.2"
     fs-extra "^8.1.0"
     glob "^7.2.0"
     graphql "^14.5.8"
-    graphql-transformer-common "4.24.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
     lodash "^4.17.21"
 
-graphql-versioned-transformer@5.2.43, graphql-versioned-transformer@^5.2.43:
-  version "5.2.43"
-  resolved "https://registry.npmjs.org/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.43.tgz#b46778c4d0486dadda7db333dc0a9c4941680980"
-  integrity sha512-1pUKAU6uzm9B49tzwjFZf41RjsT0pyM9X/vRkBXCYEuJaFrGEM4hd+GwCjPOfxXY4u2l+MQAd8Hq9S5QUM6tnA==
+graphql-versioned-transformer@5.2.45-circular-dep-fix.1:
+  version "5.2.45-circular-dep-fix.1"
+  resolved "https://registry.yarnpkg.com/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.45-circular-dep-fix.1.tgz#494ed350301fdd99511b9ecfd2e67eb1a8935265"
+  integrity sha512-GeRW3wF45D3f0jUU3NOIxRMFXeEudK61d55KPGxDsd+OtOUBcx63jifPKha+Pg03FbuoPFfrRuCENBpNl/Ic/w==
   dependencies:
     graphql "^14.5.8"
-    graphql-mapping-template "4.20.5"
-    graphql-transformer-common "4.24.0"
-    graphql-transformer-core "7.6.6"
+    graphql-mapping-template "4.20.6-circular-dep-fix.0"
+    graphql-transformer-common "4.24.2-circular-dep-fix.0"
+    graphql-transformer-core "7.6.8-circular-dep-fix.1"
 
 graphql-ws@^5.4.1:
   version "5.5.5"
