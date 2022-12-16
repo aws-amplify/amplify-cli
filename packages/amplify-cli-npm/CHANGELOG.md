@@ -11,7 +11,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
->>>>>>> dev
 ## [10.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.5.0...@aws-amplify/cli@10.5.1) (2022-11-21)
 
 **Note:** Version bump only for package @aws-amplify/cli
