@@ -109,15 +109,6 @@ export const amplifyPushForce = (cwd: string, testingWithLatestCodebase = false)
 });
 
 /**
- * Function to test amplify push with --force and --yes flag
- */
-export const amplifyPushForceWithYesFlag = (cwd: string, testingWithLatestCodebase = false): Promise<void> => spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
-  cwd,
-  stripColors: true,
-  noOutputTimeout: pushTimeoutMS,
-}).runAsync();
-
-/**
  * * Used to stop an iterative deployment
  * * Waits on the table stack to be complete and for the next stack to update in order to cancel the push
  */
