@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.2...@aws-amplify/amplify-category-auth@3.0.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* add a dependsOn to custom resource for auth trigger ([#11504](https://github.com/aws-amplify/amplify-cli/issues/11504)) ([1ee69a4](https://github.com/aws-amplify/amplify-cli/commit/1ee69a4dba4adb1264ddec513ba9888c1296d7b4))
+* added getPermissionPolicies and exported ([61b77b9](https://github.com/aws-amplify/amplify-cli/commit/61b77b9e2702ffe7845e1adb045e627ac1dc2583))
+* additional type information, removed unnecessary try/catch block ([218a345](https://github.com/aws-amplify/amplify-cli/commit/218a3458e5d61cf00bc5521f37768f25394a98c2))
+* additional variable renamings, more specific return values ([18a5ffd](https://github.com/aws-amplify/amplify-cli/commit/18a5ffdaeca0df0c57dee9a3ea74bb74dcf265cb))
+* auth dependency with cdkv2 ([#11587](https://github.com/aws-amplify/amplify-cli/issues/11587)) ([f109c39](https://github.com/aws-amplify/amplify-cli/commit/f109c39c0b5bb2566ddcffb9899bdfc778bd1abc)), closes [#11504](https://github.com/aws-amplify/amplify-cli/issues/11504)
+* **category-auth:** prevent overwriting local changes to admin queries function ([#11520](https://github.com/aws-amplify/amplify-cli/issues/11520)) ([74d98a0](https://github.com/aws-amplify/amplify-cli/commit/74d98a09550de1e0c343c6684d37bc1f02a17c9d))
+* coerce provider type ([1da880f](https://github.com/aws-amplify/amplify-cli/commit/1da880f136a45bb424f8f8f38fd5fcc5baf8ece6))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* more descriptive function parameter name ([3088664](https://github.com/aws-amplify/amplify-cli/commit/308866470e4f6dfdbe39b57c5ae123cd4966c631))
+* more specific return types in auth-questions.ts ([19153b9](https://github.com/aws-amplify/amplify-cli/commit/19153b914883ae1176015d453379698bd4eb03d2))
+* pr comment resolution ([c8cd19f](https://github.com/aws-amplify/amplify-cli/commit/c8cd19f2639d572f8c0fbb18c76747ae7249c19e))
+* pr comment resolution ([30552c0](https://github.com/aws-amplify/amplify-cli/commit/30552c0f043f2563308b155bfa29dd0b8f8de784))
+* provider name transform in map ([54b5a74](https://github.com/aws-amplify/amplify-cli/commit/54b5a74ec3dc8a0c73c6f71565a217389bdbf635))
+* return null ([7ccf9a1](https://github.com/aws-amplify/amplify-cli/commit/7ccf9a199b88d1ba0caedf10aff17dab37699d69))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* use more specific return type ([9a2c8d2](https://github.com/aws-amplify/amplify-cli/commit/9a2c8d285a296196deb214415642d32841582fb6))
+* use require to keep synchronous behavior ([fe25cfe](https://github.com/aws-amplify/amplify-cli/commit/fe25cfe842b13fce04b2b68584c192caa719c4ba))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [3.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.1...@aws-amplify/amplify-category-auth@3.0.0-beta.2) (2022-12-01)
 ## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.1...@aws-amplify/amplify-category-auth@2.13.2) (2022-12-09)
 
