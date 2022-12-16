@@ -136,9 +136,8 @@ const providersPush = async (
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  await Promise.all(providers.map(async provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
     return providerModule.pushResources(context, resourceDefinition, rebuild);
   }));
@@ -151,9 +150,8 @@ export const storeCurrentCloudBackend = async (context: $TSContext): Promise<voi
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  Promise.all(providers.map(provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     return providerModule.storeCurrentCloudBackend(context);
   }));
 };
