@@ -70,14 +70,6 @@ type PinpointAppInfo = {
   createTime: Date;
 };
 
-type PinpointAppInfo = {
-  id: string;
-  name: string;
-  arn: string;
-  region: string;
-  cciInfo?: CircleCIJobDetails;
-};
-
 type IamRoleInfo = {
   name: string;
   cciInfo?: CircleCIJobDetails;
@@ -146,12 +138,6 @@ const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationRespon
   return isTestResource && isStaleResource;
 };
 
-const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
-  const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
-  const isStaleResource = (Date.now() - new Date(resource.CreationDate).getTime()) > STALE_DURATION_MS;
-  return isTestResource && isStaleResource;
-};
-
 /**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
@@ -183,25 +169,6 @@ const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: st
     }).promise();
     apps.push(...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
       id: it.Id, name: it.Name, arn: it.Arn, region, createTime: new Date(it.CreationDate),
-    })));
-
-    nextToken = result.ApplicationsResponse.NextToken;
-  } while (nextToken);
-
-  return apps;
-};
-
-const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: string): Promise<PinpointAppInfo[]> => {
-  const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
-  const apps: PinpointAppInfo[] = [];
-  let nextToken = null;
-
-  do {
-    const result = await pinpoint.getApps({
-      Token: nextToken,
-    }).promise();
-    apps.push(...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
-      id: it.Id, name: it.Name, arn: it.Arn, region,
     })));
 
     nextToken = result.ApplicationsResponse.NextToken;
