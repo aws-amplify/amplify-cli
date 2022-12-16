@@ -202,18 +202,6 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
-          name: extract api
-          command: |
-            yarn verify-api-extract
-
-  mock_e2e_tests:
-    <<: *linux-e2e-executor-large
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
           name: Run Transformer end-to-end tests with mock server
           command: |
             source .circleci/local_publish_helpers.sh
