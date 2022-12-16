@@ -145,6 +145,8 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
+  'auth_2b',
+  'auth_2d',
   'import_dynamodb_1',
   'import_s3_1',
   'searchable-migration',
