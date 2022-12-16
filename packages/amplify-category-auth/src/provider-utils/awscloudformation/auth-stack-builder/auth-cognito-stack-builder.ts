@@ -16,8 +16,8 @@ import {
   openIdLambdaFilePath,
   userPoolClientLambdaFilePath,
 } from '../constants';
-import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { configureSmsOption } from '../utils/configure-sms';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
@@ -213,10 +213,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         .concat(props.aliasAttributes ? props.aliasAttributes : [])
         .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
       : [];
-    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
-      || (props.mfaConfiguration !== 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
-      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
-      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = configureSmsOption(props);
 
     if (props.verificationBucketName) {
       this.customMessageConfirmationBucket = new s3.CfnBucket(this, 'CustomMessageConfirmationBucket', {
@@ -536,7 +533,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         && !_.isEmpty(props.authProviders)
         && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
       ) {
-        this.identityPool.supportedLoginProviders = cdk.Lazy.anyValue({
+        this.identityPool.supportedLoginProviders = cdk.Lazy.any({
           produce: () => {
             const supportedProvider: $TSAny = {};
             props.authProviders?.forEach(provider => {

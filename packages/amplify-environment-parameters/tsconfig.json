@@ -8,6 +8,11 @@
     "lib",
     "src/__tests__"
   ],
+  "include": [
+    // I'm not sure why this is necessary but the json import was failing without this config
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
   "references": [
     {
       "path": "../amplify-cli-core"

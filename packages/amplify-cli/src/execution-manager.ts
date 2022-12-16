@@ -245,6 +245,9 @@ const raisePreEvent = async (context: Context): Promise<void> => {
     case 'models':
       await raisePreCodegenModelsEvent(context);
       break;
+    case 'export':
+      await raisePreExportEvent(context);
+      break;
     default:
       // fall through
   }
@@ -260,6 +263,10 @@ const raisePrePushEvent = async (context: Context): Promise<void> => {
 
 const raisePrePullEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData()));
+};
+
+const raisePreExportEvent = async (context: Context): Promise<void> => {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreExport));
 };
 
 const raisePreCodegenModelsEvent = async (context: Context): Promise<void> => {

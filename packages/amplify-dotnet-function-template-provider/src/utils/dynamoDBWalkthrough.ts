@@ -1,7 +1,12 @@
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+import {
+  AmplifyCategories,
+  stateManager,
+  ResourceDoesNotExistError,
+  exitOnNextTick,
+} from 'amplify-cli-core';
 
 export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
@@ -83,17 +88,9 @@ export async function getTableParameters(context: any, dynamoAnswers: any): Prom
       sortKeyType: rangeType.AttributeType,
     };
   } // Looking for table parameters on local configuration
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
-  let parameters;
-  try {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    parameters = {};
-  }
-
-  return parameters;
+  return stateManager.getResourceParametersJson(
+    undefined, AmplifyCategories.STORAGE, dynamoAnswers.resourceName, { throwIfNotExist: false, default: {} },
+  );
 }
 
 export async function askAPICategoryDynamoDBQuestions(context: any) {

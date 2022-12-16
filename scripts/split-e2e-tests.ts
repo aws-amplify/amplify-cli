@@ -3,6 +3,8 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
+import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 
 const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -29,7 +31,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'notifications_pkg',
   'interactions_pkg',
   'analytics_pkg',
-  'schema-auth-7_pkg',
+  'schema-auth-7a_pkg',
+  'schema-auth-7b_pkg',
+  'schema-auth-7c_pkg',
   'schema-auth-11-a_pkg',
   'schema-auth-11-b_pkg',
   'schema-auth-11-c_pkg',
@@ -51,7 +55,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-10_pkg',
   'schema-searchable_pkg',
   'schema-auth-6_pkg',
-  'auth_8_pkg',
+  'auth_8a_pkg',
+  'auth_8b_pkg',
+  'auth_8c_pkg',
   's3-sse_pkg',
   'storage-2_pkg',
   'schema-auth-4a_pkg',
@@ -67,8 +73,10 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_1a_pkg',
   'auth_1b_pkg',
   'auth_1c_pkg',
-  'schema-auth-1_pkg',
-  'schema-auth-2_pkg',
+  'schema-auth-1a_pkg',
+  'schema-auth-1b_pkg',
+  'schema-auth-2a_pkg',
+  'schema-auth-2b_pkg',
   'container-hosting_pkg',
   'schema-auth-13_pkg',
   'init_a_pkg',
@@ -91,8 +99,6 @@ const JOBS_RUNNING_ON_LINUX_LARGE_VM: string[] = [
   'auth_migration_update_v6',
   'function-migration_pkg',
   'geo-add-f_pkg',
-  'geo-import-1_pkg',
-  'import_auth_2_pkg',
   'import_s3_2a_pkg',
   'model-migration_pkg',
   'notifications-migration-2_v5',
@@ -189,12 +195,15 @@ function splitTests(
   workflowName: string,
   jobRootDir: string,
   concurrency: number = CONCURRENCY,
-  isMigration: boolean = false,
+  pickTests: ((testSuites: string[]) => string[]) | undefined,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
   const job = jobs[jobName];
-  const testSuites = getTestFiles(jobRootDir);
+  let testSuites = getTestFiles(jobRootDir);
+  if(pickTests && typeof pickTests === 'function'){
+    testSuites = pickTests(testSuites);
+  }
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
     const newJobName = generateJobName(jobName, suite);
@@ -210,20 +219,6 @@ function splitTests(
         ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
     };
-    const isPkg = newJobName.endsWith('_pkg');
-    if (!isPkg) {
-      (newJob.environment as any) = {
-        ...newJob.environment,
-        ...(isMigration
-          ? {
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
-            }
-          : {
-              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
-            }),
-      };
-    }
     return { ...acc, [newJobName]: newJob };
   }, {});
 
@@ -258,13 +253,18 @@ function splitTests(
           } else {
             // for the most up-to-date list of executors for e2e, see the config.base.yml file
             let linuxVMSize = JOBS_RUNNING_ON_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
+            let requiredJobs = workflowJob[jobName].requires || [];
+            const allowWindows = WINDOWS_TEST_ALLOWLIST.includes(newJobName);
+            if(!allowWindows) {
+              requiredJobs = requiredJobs.filter(j => j !== 'build_windows_workspace_for_e2e');
+            }
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
-                requires: workflowJob[jobName].requires || [],
+                requires: requiredJobs,
                 matrix: {
                   parameters: {
-                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? [linuxVMSize, 'w_medium'] : [linuxVMSize],
+                    os: allowWindows ? [linuxVMSize, 'w_medium'] : [linuxVMSize],
                   },
                 },
               },
@@ -378,14 +378,69 @@ function verifyConfig() {
   }
 }
 
+function validateArtifactStoragePaths(config: CircleCIConfig) {
+  // make sure that only valid paths are used to store artifacts/results
+  const storagePathsUsedInConfig = new Set();
+  const unregisteredPaths = new Set();
+  const invalidPaths = new Set();
+  for(let key of Object.keys(config.jobs)) {
+    const job = config.jobs[key];
+    const steps = job.steps;
+
+    for(let i = 0; i < steps.length; i ++){
+      const resultsPath = steps[i].store_test_results;
+      const artifactsPath = steps[i].store_artifacts;
+      if(resultsPath){
+        storagePathsUsedInConfig.add(resultsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
+          unregisteredPaths.add(resultsPath.path);
+        }
+        if (!resultsPath.path.startsWith("~/")){
+          invalidPaths.add(resultsPath.path);
+        }
+      }
+      if(artifactsPath){
+        storagePathsUsedInConfig.add(artifactsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
+          unregisteredPaths.add(artifactsPath.path);
+        }
+        if (!artifactsPath.path.startsWith("~/")){
+          invalidPaths.add(artifactsPath.path);
+        }
+      }
+    }
+  }
+  if(unregisteredPaths.size > 0 || invalidPaths.size > 0){
+    console.log("There are errors in your configuration.\n");
+
+    if(invalidPaths.size > 0){
+      const errors = Array.from(invalidPaths);
+      console.log("Fix these paths. They must start with ~/",errors, "\n");
+    }
+    if(unregisteredPaths.size > 0){
+      const newList = Array.from(storagePathsUsedInConfig);
+      const unregisteredList = Array.from(unregisteredPaths);
+      console.log("You are storing artifacts in an unregistered location.");
+      console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths.");
+      console.log("Update the list to match this:", newList);
+      console.log("Doing so will register these unregistered paths:", unregisteredList);
+    }
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
+
+  validateArtifactStoragePaths(config);
+
   const splitPkgTests = splitTests(
     config,
     'amplify_e2e_tests_pkg',
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
+    undefined
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
@@ -393,6 +448,7 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
+    undefined
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
@@ -400,7 +456,9 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
-    true,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
+    }
   );
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
@@ -408,9 +466,21 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
-    true,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
+    }
   );
-  saveConfig(splitV6MigrationTests);
+  const splitV10MigrationTests = splitTests(
+    splitV6MigrationTests,
+    'amplify_migration_tests_v10',
+    'build_test_deploy_v3',
+    join(repoRoot, 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+    (tests: string[]) => {
+      return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
+    }
+  );
+  saveConfig(splitV10MigrationTests);
   verifyConfig();
 }
 main();

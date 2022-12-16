@@ -26,8 +26,13 @@ describe('transformer model searchable migration test', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    if (process.env.CIRCLECI) {
+      console.log('Skipping cloud deletion since we are in CI, and cleanup script will delete this stack in cleanup step.');
+      deleteProjectDir(projRoot);
+    } else {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    }
   });
 
   it('migration of searchable directive - search should return expected results', async () => {

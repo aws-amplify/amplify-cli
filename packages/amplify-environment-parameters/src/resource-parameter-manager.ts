@@ -11,19 +11,27 @@ export class ResourceParameterManager {
     return this.params[name];
   }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
+  /**
+   * Set the key value pair. If value is undefined, the key is removed from the map.
+   */
   setParam(name: string, value: string): void {
-    this.params[name] = value;
+    if (value === undefined) {
+      delete this.params[name];
+    } else {
+      this.params[name] = value;
+    }
   }
 
   /**
-   * Set the given parameters. This will only add / update parameters present in the input. It will not remove any existing parameters.
+   * Convenience method for iteratively calling setParam on multiple key/value pairs.
+   * This will only add / update parameters present in the input. It will not remove any existing parameters.
    * (see setAllParams)
    */
   setParams(params: Record<string, string>): void {
-    Object.entries(params).forEach(([key, value]) => {
-      this.params[key] = value;
-    });
+    Object.entries(params)
+      .forEach(([key, value]) => {
+        this.setParam(key, value);
+      });
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc
@@ -42,7 +50,8 @@ export class ResourceParameterManager {
    * Set the resource parameters equal to the given parameters. This will remove any parameters that are not present in the input.
    */
   setAllParams(params: Record<string, string>): void {
-    this.params = { ...params };
+    this.params = {};
+    this.setParams(params);
   }
 
   /**

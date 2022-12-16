@@ -1,6 +1,11 @@
+/* eslint-disable max-classes-per-file */
+/**
+ * amplify events enum type
+ */
 export enum AmplifyEvent {
   PreInit = 'PreInit',
   PostInit = 'PostInit',
+  PreExport = 'PreExport',
   PrePush = 'PrePush',
   PostPush = 'PostPush',
   PrePull = 'PrePull',
