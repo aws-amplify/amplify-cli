@@ -160,9 +160,18 @@ export const run = async (startTime: number): Promise<void> => {
   }
 
   if (context.input.command === 'push') {
-    // TODO replace provider name with real logic
-    const provider = 'awscloudformation';
-    const uploaderHandler = await context.amplify.invokePluginMethod(context, provider, undefined, 'getEnvParametersUploadHandler', [context]);
+    const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
+    const CloudFormationProviderName = 'awscloudformation';
+    let uploaderHandler = undefined;
+    if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
+      uploaderHandler = await context.amplify.invokePluginMethod(
+        context,
+        CloudFormationProviderName,
+        undefined,
+        'getEnvParametersUploadHandler',
+        [context],
+      );
+    }
     await saveAllEnvParams(uploaderHandler);
   }
   else {
