@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.15.2-circular-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.1...amplify-e2e-tests@3.15.2-circular-dep-fix.0) (2022-12-16)
+
+
+### Bug Fixes
+
+* **api:** circular dependencies tagged release ([47c020c](https://github.com/aws-amplify/amplify-cli/commit/47c020c3b96c7a29209c195f1a81bb24c9340476))
+
+
+
+
+
 ## [3.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.0...amplify-e2e-tests@3.15.1) (2022-12-09)
 
 

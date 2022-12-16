@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2-circular-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.1...@aws-amplify/amplify-migration-tests@5.2.2-circular-dep-fix.0) (2022-12-16)
+
+
+### Bug Fixes
+
+* **api:** circular dependencies tagged release ([47c020c](https://github.com/aws-amplify/amplify-cli/commit/47c020c3b96c7a29209c195f1a81bb24c9340476))
+
+
+
+
+
 ## [5.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0...@aws-amplify/amplify-migration-tests@5.2.1) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

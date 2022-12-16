@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.1-circular-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.8.0...@aws-amplify/amplify-appsync-simulator@2.8.1-circular-dep-fix.0) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
 # [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.7.0...@aws-amplify/amplify-appsync-simulator@2.8.0) (2022-11-17)
 
 

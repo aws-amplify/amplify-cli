@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.2-circular-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.2-circular-dep-fix.0) (2022-12-16)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
 ## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0...amplify-category-notifications@2.21.1) (2022-11-17)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.2.1",
+  "version": "4.2.2-circular-dep-fix.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
     "aws"
   ],
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.2.1",
-    "amplify-cli-core": "3.4.0",
+    "@aws-amplify/amplify-environment-parameters": "1.2.2-circular-dep-fix.0",
+    "amplify-cli-core": "3.4.1-circular-dep-fix.0",
     "amplify-function-plugin-interface": "1.9.5",
     "amplify-prompts": "2.6.1",
     "archiver": "^5.3.0",

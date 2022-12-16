@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1-circular-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.4.0...amplify-cli-core@3.4.1-circular-dep-fix.0) (2022-12-16)
+
+
+### Bug Fixes
+
+* **api:** circular dependencies tagged release ([47c020c](https://github.com/aws-amplify/amplify-cli/commit/47c020c3b96c7a29209c195f1a81bb24c9340476))
+
+
+
+
+
 # [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.3.0...amplify-cli-core@3.4.0) (2022-11-17)
 
 

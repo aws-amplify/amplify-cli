@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.9.1",
+  "version": "6.9.2-circular-dep-fix.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -24,9 +24,9 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.5.5",
-    "@aws-amplify/amplify-environment-parameters": "1.2.1",
-    "@aws-amplify/cli-extensibility-helper": "2.4.5",
+    "@aws-amplify/amplify-category-custom": "2.5.6-circular-dep-fix.0",
+    "@aws-amplify/amplify-environment-parameters": "1.2.2-circular-dep-fix.0",
+    "@aws-amplify/cli-extensibility-helper": "2.4.6-circular-dep-fix.0",
     "@aws-amplify/graphql-transformer-core": "0.18.1-circular-dep-fix.2",
     "@aws-amplify/graphql-transformer-interfaces": "1.14.10-circular-dep-fix.0",
     "@aws-cdk/assert": "~1.172.0",
@@ -53,7 +53,7 @@
     "@aws-cdk/aws-sqs": "~1.172.0",
     "@aws-cdk/core": "~1.172.0",
     "@aws-cdk/region-info": "~1.172.0",
-    "amplify-cli-core": "3.4.0",
+    "amplify-cli-core": "3.4.1-circular-dep-fix.0",
     "amplify-cli-logger": "1.2.1",
     "amplify-codegen": "^3.3.2",
     "amplify-prompts": "2.6.1",

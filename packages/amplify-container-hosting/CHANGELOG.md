@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.7-circular-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.6...amplify-container-hosting@2.5.7-circular-dep-fix.0) (2022-12-16)
+
+
+### Bug Fixes
+
+* **api:** circular dependencies tagged release ([47c020c](https://github.com/aws-amplify/amplify-cli/commit/47c020c3b96c7a29209c195f1a81bb24c9340476))
+
+
+### Reverts
+
+* Revert "chore: update snapshots and api category version (#11466)" (#11542) ([4aa536d](https://github.com/aws-amplify/amplify-cli/commit/4aa536d9772a28926b1279eb19fbe276ae5e5e0e)), closes [#11466](https://github.com/aws-amplify/amplify-cli/issues/11466) [#11542](https://github.com/aws-amplify/amplify-cli/issues/11542)
+
+
+
+
+
 ## [2.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.5...amplify-container-hosting@2.5.6) (2022-11-17)
 
 **Note:** Version bump only for package amplify-container-hosting
