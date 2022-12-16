@@ -321,7 +321,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
-
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
 
         try {
@@ -330,10 +329,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
           await context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
-          if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-            return;
-          }
-          throw err;
+          handleCloudFormationError(err);
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -466,6 +462,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     rollbackLambdaLayers(layerResources);
     throw new AmplifyFault('DeploymentFault', {
       message: error.message,
+      code: error.code,
     }, error);
   }
 };
@@ -1029,20 +1026,21 @@ export const formNestedStack = async (
 
     const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
     const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
-
-    stack.Properties.Parameters.userpoolId = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
-    };
-    stack.Properties.Parameters.userpoolArn = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
-    };
+    const authTriggerCfnParameters: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO, 'getAuthTriggerStackCfnParameters',
+      [stack, cognitoResource.resourceName]);
+    stack.Properties.Parameters = { ...stack.Properties.Parameters, ...authTriggerCfnParameters };
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = cognitoResource.resource as { dependsOn: any };
 
     dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any; }) => {
       const dependsOnStackName = `${resource.category}${resource.resourceName}`;
-
+      if (isAuthTrigger(resource)) {
+        const lambdaRoleKey = `function${resource.resourceName}LambdaExecutionRole`;
+        const lambdaRoleValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.LambdaExecutionRoleArn`] };
+        stack.Properties.Parameters[lambdaRoleKey] = lambdaRoleValue;
+      }
       stack.DependsOn.push(dependsOnStackName);
 
       const dependsOnAttributes = resource?.attributes;
@@ -1286,4 +1284,20 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
 
     stateManager.setMeta(projectRoot, meta);
   }
+};
+
+const handleCloudFormationError = (err: Error): void => {
+  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
+    return;
+  }
+
+  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
+    throw new AmplifyError('DeploymentInProgressError', {
+      message: 'Deployment is already in progress.',
+      resolution: 'Wait for the other deployment to finish and try again.',
+      code: (err as $TSAny).code,
+    }, err);
+  }
+
+  throw err;
 };

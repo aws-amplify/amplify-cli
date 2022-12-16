@@ -13,8 +13,9 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { configureSmsOption } from '../utils/configure-sms';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
@@ -302,10 +303,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    * generate cfn outputs
    */
   private generateCfnOutputs = (props: CognitoStackOptions): void => {
-    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
-      || (props.mfaConfiguration !== 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
-      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
-      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = configureSmsOption(props);
 
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(

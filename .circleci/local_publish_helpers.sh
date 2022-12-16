@@ -64,6 +64,9 @@ function generatePkgCli {
   # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
   cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
 
+  # replace DEV binary entry point with production one
+  cp ../node_modules/@aws-amplify/cli-internal/bin/amplify.production.template node_modules/@aws-amplify/cli-internal/bin/amplify
+
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
 
@@ -102,33 +105,35 @@ function verifyPkgCli {
     echo "Sizes in bytes"
     wc -c out/*
 
-    linux_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
-    linux_compressed_binary_size=$(wc -c out/amplify-pkg-linux-x64.tgz | awk '{print $1}')
-    if (( linux_compressed_binary_size > linux_compressed_binary_threshold_in_bytes )); then
-      echo "Linux compressed binary size has grown over $linux_compressed_binary_threshold_in_bytes bytes"
-      exit 1
-    fi
+    function verifySinglePkg {
+      binary_name=$1
+      compressed_binary_name=$2
+      binary_threshold_in_bytes=$3
 
-    macos_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
-    macos_compressed_binary_size=$(wc -c out/amplify-pkg-macos-x64.tgz | awk '{print $1}')
-    if (( macos_compressed_binary_size > macos_compressed_binary_threshold_in_bytes )); then
-      echo "MacOS compressed binary size has grown over $macos_compressed_binary_threshold_in_bytes bytes"
-      exit 1
-    fi
+      # Compressed binary size is not deterministic enough to have stricter threshold.
+      # I.e. it depends on how compression algorithm can compress bytecode and there are cases where compressed size
+      # grows even if uncompressed size drops. We don't have control on bytecode and compression.
+      # Therefore we check if compression gets past half of original size as sanity check.
+      compressed_binary_threshold_in_bytes=$((binary_threshold_in_bytes/2))
 
-    win_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
-    win_compressed_binary_size=$(wc -c out/amplify-pkg-win-x64.tgz | awk '{print $1}')
-    if (( win_compressed_binary_size > win_compressed_binary_threshold_in_bytes )); then
-      echo "Windows compressed binary size has grown over $win_compressed_binary_threshold_in_bytes bytes"
-      exit 1
-    fi
+      binary_size=$(wc -c out/$binary_name | awk '{print $1}')
+      compressed_binary_size=$(wc -c out/$compressed_binary_name | awk '{print $1}')
 
-    arm_compressed_binary_threshold_in_bytes=$((150 * 1024 * 1024))
-    arm_compressed_binary_size=$(wc -c out/amplify-pkg-linux-arm64.tgz | awk '{print $1}')
-    if (( arm_compressed_binary_size > arm_compressed_binary_threshold_in_bytes )); then
-      echo "Windows compressed binary size has grown over $arm_compressed_binary_threshold_in_bytes bytes"
-      exit 1
-    fi
+      if (( binary_size > binary_threshold_in_bytes )); then
+        echo "$binary_name size has grown over $binary_threshold_in_bytes bytes"
+        exit 1
+      fi
+
+      if (( compressed_binary_size > compressed_binary_threshold_in_bytes )); then
+        echo "$compressed_binary_name size has grown over $compressed_binary_threshold_in_bytes bytes"
+        exit 1
+      fi
+    }
+
+    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((700 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((700 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((700 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((550 * 1024 * 1024))
 }
 
 function unsetNpmRegistryUrl {
@@ -244,8 +249,8 @@ function setAwsAccountCredentials {
     export AWS_ACCESS_KEY_ID_ORIG=$AWS_ACCESS_KEY_ID
     export AWS_SECRET_ACCESS_KEY_ORIG=$AWS_SECRET_ACCESS_KEY
     export AWS_SESSION_TOKEN_ORIG=$AWS_SESSION_TOKEN
-    # introduce a delay of up to 3 minutes to allow for more even spread aws list-accounts calls due to throttling
-    sleep $[ ( $RANDOM % 180 )  + 1 ]s
+    # introduce a delay of up to 5 minutes to allow for more even spread aws list-accounts calls due to throttling
+    sleep $[ ( $RANDOM % 300 )  + 1 ]s
     if [[ "$OSTYPE" == "msys" ]]; then
         # windows provided by circleci has this OSTYPE
         useChildAccountCredentials
@@ -271,8 +276,25 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        # adding --force-exit per https://github.com/facebook/jest/issues/9473
+        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+    fi
+}
+
+function checkPackageVersionsInLocalNpmRegistry {
+    cli_internal_version=$(npm view @aws-amplify/cli-internal version)
+    cli_version=$(npm view @aws-amplify/cli version)
+
+    echo "@aws-amplify/cli-internal version: $cli_internal_version"
+    echo "@aws-amplify/cli version: $cli_version"
+
+    if [[ $cli_internal_version != $cli_version ]]; then
+        echo "Versions did not match."
+        echo "Manual fix: add a proper conventional commit that touches the amplify-cli-npm package to correct its version bump. For example https://github.com/aws-amplify/amplify-cli/commit/6f14792d1db424aa428ec4836fed7d6dd5cccfd0"
+        exit 1
+    else
+        echo "Versions matched."
     fi
 }

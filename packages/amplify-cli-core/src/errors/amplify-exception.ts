@@ -9,6 +9,7 @@ export abstract class AmplifyException extends Error {
   public readonly resolution?: string;
   public readonly details?: string;
   public readonly link?: string;
+  public readonly code?: string;
 
   /**
    * You should use AmplifyError or AmplifyFault to throw an exception.
@@ -41,6 +42,7 @@ export abstract class AmplifyException extends Error {
     this.message = options.message;
     this.details = options.details;
     this.resolution = options.resolution;
+    this.code = options.code;
     this.link = options.link ?? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url;
   }
 
@@ -68,6 +70,9 @@ export type AmplifyExceptionOptions = {
   details?: string,
   resolution?: string,
   link?: string,
+
+  // CloudFormation or NodeJS error codes
+  code?: string,
 };
 
 /**
@@ -91,6 +96,7 @@ export type AmplifyErrorType =
   | 'AmplifyStudioNotEnabledError'
   | 'ApiCategorySchemaNotFoundError'
   | 'AuthImportError'
+  | 'BackendConfigValidationError'
   | 'BucketAlreadyExistsError'
   | 'BucketNotFoundError'
   | 'CategoryNotEnabledError'
@@ -175,9 +181,12 @@ export type AmplifyFaultType =
   | 'ResourceRemoveFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
+  | 'SnsSandboxModeCheckFault'
   | 'TimeoutFault'
   | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault'
-  | 'MockProcessFault';
+  | 'MockProcessFault'
+  | 'AuthCategoryFault'
+  | 'ZipExtractFault';
