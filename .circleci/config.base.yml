@@ -1324,20 +1324,3 @@ commands:
               exit 1
             fi
           when: always
-<<<<<<< HEAD
-  clean_e2e_resources:
-    description: Cleanup resources
-    parameters:
-      os:
-        type: executor
-        default: l_large
-    steps:
-      - run:
-          name: Clean job resources
-          command: |
-            pwd
-            cd packages/amplify-e2e-tests
-            yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-          when: always
-=======
->>>>>>> dev
