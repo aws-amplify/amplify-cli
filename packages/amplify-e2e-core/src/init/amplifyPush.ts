@@ -44,7 +44,7 @@ export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false
     .wait('Do you want to generate code for your newly created GraphQL API')
     .sendConfirmNo()
     .wait(/.*/)
-    .runAsync;
+    .runAsync();
 };
 
 /**
