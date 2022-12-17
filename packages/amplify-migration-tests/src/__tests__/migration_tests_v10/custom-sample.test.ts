@@ -13,6 +13,7 @@ import {
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
+import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 
 describe('adding custom resources test', () => {
   let projRoot: string;
@@ -29,7 +30,7 @@ describe('adding custom resources test', () => {
     const cdkResourceName = `custom${uuid().split('-')[0]}`;
     const cfnResourceName = `custom${uuid().split('-')[0]}`;
 
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV10(projRoot, {});
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
 
     // this is where we will write our custom cdk stack logic to
