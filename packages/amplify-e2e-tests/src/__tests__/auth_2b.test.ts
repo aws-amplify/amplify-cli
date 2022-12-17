@@ -32,7 +32,7 @@ describe('amplify add auth...', () => {
     await amplifyPushAuth(projRoot);
     const appId = getAppId(projRoot);
     const projRoot2 = await createNewProjectDir('auth2');
-    await amplifyPull(projRoot2, { yesFlag: true, appId, envName: 'integtest' });
+    await amplifyPull(projRoot2, { emptyDir: true, appId, envName: 'integtest' });
     deleteProjectDir(projRoot2);
     await removeAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
