@@ -1,21 +1,39 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import inquirer, { QuestionCollection } from 'inquirer';
+import inquirer from 'inquirer';
 import { uniq, flatten } from 'lodash';
 import chalk, { Chalk } from 'chalk';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 /**
+ * Input object for parseInputs
+ */
+export type Input = {
+  when?: () => boolean;
+  prefixColor?: $TSAny;
+  prefix?: $TSAny;
+  key: $TSAny;
+  question?: $TSAny;
+  suffix?: $TSAny;
+  map?: $TSAny;
+  type?: $TSAny;
+  iterator?: $TSAny;
+  filter?: $TSAny;
+  requiredOptions?: $TSAny;
+  options?: $TSAny;
+}
+
+/**
  * parses input object and returns a question object
  */
 export const parseInputs = async (
-  input: $TSAny,
+  input: Input,
   amplify: $TSAny,
   defaultValuesFilename: $TSAny,
   stringMapsFilename: $TSAny,
   currentAnswers: $TSAny,
   context: $TSContext,
-): Promise<QuestionCollection> => {
+): Promise<$TSAny> => {
   // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`;
