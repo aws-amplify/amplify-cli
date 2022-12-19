@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { AmplifyNodeJsDetectorProps, AmplifyNodePkgDetector } from '../../amplify-lockfile-dependency-detector';
 
-describe.skip('parsing yarn lock files', () => {
+describe('parsing yarn lock files', () => {
   it('parses yarn lock file correctly', async () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({

@@ -180,6 +180,42 @@ export enum AmplifyFrontend {
 }
 
 // @public (undocumented)
+export type AmplifyNodeJsDetectorProps = {
+    projectRoot: string;
+    dependencyToSearch: string;
+    dependencyVersion: string;
+    packageManager: PackageManager;
+};
+
+// @public (undocumented)
+export class AmplifyNodePkgDetector {
+    constructor(amplifyDetectorProps: AmplifyNodeJsDetectorProps);
+    // (undocumented)
+    dependencyToSearch: string;
+    // (undocumented)
+    dependencyVersion: string;
+    // Warning: (ae-forgotten-export) The symbol "YarnLockDependencyType" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "PackageLockDep" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    getDependentPackage(packageName: string): YarnLockDependencyType | PackageLockDep | undefined;
+    // (undocumented)
+    lockFileContents: string;
+    // (undocumented)
+    lockFileType: PackageManagerType;
+    // (undocumented)
+    packageManager: PackageManager;
+    // Warning: (ae-forgotten-export) The symbol "Lockfile" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    parseLockFile(): Lockfile;
+    // (undocumented)
+    parsePkgJson: (projectRoot: string) => PkgJsonType;
+    // (undocumented)
+    pkgJsonObj: PkgJsonType;
+}
+
+// @public (undocumented)
 export interface AmplifyProjectConfig {
     // (undocumented)
     frontend: AmplifyFrontend;
@@ -1186,6 +1222,14 @@ export class PathManager {
 
 // @public (undocumented)
 export const pathManager: PathManager;
+
+// @public (undocumented)
+export type PkgJsonType = {
+    name: string;
+    version: string;
+    dependencies: Record<string, string>;
+    devDependencies?: Record<string, string>;
+};
 
 // @public (undocumented)
 export enum PluginAPIError {
