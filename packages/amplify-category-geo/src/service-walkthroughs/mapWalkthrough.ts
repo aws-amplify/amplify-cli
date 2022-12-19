@@ -92,7 +92,8 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
         { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },
         { name: 'DarkGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriDarkGrayCanvas },
-        { name: 'Imagery (data provided by Esri)', value: MapStyle.RasterEsriImagery }
+        { name: 'Imagery (data provided by Esri)', value: MapStyle.RasterEsriImagery },
+        { name: 'StandardLight (data provided by OpenStreetMap)', value: MapStyle.VectorOpenDataStandardLight }
     ];
     const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ?
         getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorEsriStreets';

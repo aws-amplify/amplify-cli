@@ -96,7 +96,8 @@
                 "VectorHereExplore",
                 "VectorHereExploreTruck",
                 "RasterHereExploreSatellite",
-                "HybridHereExploreSatellite"
+                "HybridHereExploreSatellite",
+                "VectorOpenDataStandardLight"
             ],
             "type": "string"
         }
