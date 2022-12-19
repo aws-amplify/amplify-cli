@@ -10,13 +10,13 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
  */
 export type Input = {
   when?: () => boolean;
-  prefixColor?: $TSAny;
-  prefix?: $TSAny;
-  key: $TSAny;
-  question?: $TSAny;
-  suffix?: $TSAny;
+  prefixColor?: string;
+  prefix?: string;
+  key: string;
+  question?: string;
+  suffix?: string;
   map?: $TSAny;
-  type?: $TSAny;
+  type?: string;
   iterator?: $TSAny;
   filter?: $TSAny;
   requiredOptions?: $TSAny;
@@ -44,7 +44,7 @@ export const parseInputs = async (
   // Can also have some validations here based on the input json
   // Uncool implementation here
 
-  const color: keyof Chalk = input.prefixColor ?? 'green';
+  const color: keyof Chalk = input.prefixColor as keyof Chalk ?? 'green';
   const questionChalk = chalk[color] as Chalk;
   const prefix = input.prefix ? `${'\n'} ${questionChalk(input.prefix)} ${'\n'}` : '';
 
