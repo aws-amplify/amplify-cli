@@ -157,7 +157,7 @@ class CloudFormation {
     const self = this;
     let delay = CFN_POLL_TIME;
     let readStackEventsCalls = 0;
-    let invoker = function() {
+    const invoker = () => {
       self.addToPollQueue(stackName, 3);
       if (delay < CFN_POLL_TIME_MAX) {
         delay = Math.min(Math.pow(2, readStackEventsCalls) * CFN_POLL_TIME, CFN_POLL_TIME_MAX);
