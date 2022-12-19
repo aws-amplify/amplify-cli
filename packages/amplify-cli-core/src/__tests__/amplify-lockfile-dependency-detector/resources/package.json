@@ -1,0 +1,16 @@
+{
+    "name": "test",
+    "version": "10.5.1",
+    "description": "Amplify CLI",
+    "license": "Apache-2.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "keywords": [
+        "graphql",
+        "appsync",
+        "aws"
+    ],
+    "dependencies": {
+        "@aws-amplify/amplify-category-api": "^4.1.2"
+    }
+}
