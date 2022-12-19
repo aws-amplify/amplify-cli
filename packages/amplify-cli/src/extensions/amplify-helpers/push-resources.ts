@@ -2,6 +2,7 @@ import {
   $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from 'amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
@@ -83,6 +84,10 @@ export const pushResources = async (
     context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
   }
+
+  // Verify any environment parameters before push operation
+  const envParamManager = (await ensureEnvParamManager()).instance;
+  envParamManager.verifyExpectedEnvParameters();
 
   // rebuild has an upstream confirmation prompt so no need to prompt again here
   let continueToPush = !!context?.exeInfo?.inputParams?.yes || rebuild;

@@ -123,6 +123,7 @@ export type AmplifyErrorType =
   | 'LambdaLayerDeleteError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
+  | 'MissingExpectedParameterError'
   | 'MissingOverridesInstallationRequirementsError'
   | 'ModelgenError'
   | 'NestedProjectInitError'

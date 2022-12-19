@@ -1,5 +1,5 @@
 import {
-  AmplifyFault, pathManager, stateManager,
+  AmplifyError, AmplifyFault, pathManager, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
@@ -123,8 +123,36 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
         }
       }
     }
-    // uploading values to PS will go here
+
     this.parameterMapController.save();
+  }
+
+  /**
+   * Throw an error if expected parameters are missing
+   */
+  async verifyExpectedEnvParameters(): Promise<void> {
+    const expectedParameters = this.parameterMapController.getParameters();
+    const allEnvParams = new Set();
+    const missingParameterNames: string[] = [];
+
+    for (const paramManager of Object.values(this.resourceParamManagers)) {
+      const resourceParams = paramManager.getAllParams();
+      for (const paramName of Object.keys(resourceParams)) {
+        allEnvParams.add(paramName);
+      }
+    }
+
+    Object.keys(expectedParameters).forEach(paramName => {
+      if (!allEnvParams.has(paramName)) {
+        missingParameterNames.push(paramName);
+      }
+    });
+
+    if (missingParameterNames.length > 0) {
+      throw new AmplifyError('MissingExpectedParameterError', {
+        message: `Expected parameter${missingParameterNames.length === 1 ? '' : 's'} ${missingParameterNames.join(', ')}`,
+      });
+    }
   }
 
   private serializeTPICategories(): Record<string, unknown> {
@@ -152,6 +180,7 @@ export type IEnvironmentParameterManager = {
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+  verifyExpectedEnvParameters: () => Promise<void>;
 }
 
 export type ServiceUploadHandler = (key: string, value: string) => Promise<void>;
