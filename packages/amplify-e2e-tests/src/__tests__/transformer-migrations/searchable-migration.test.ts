@@ -13,6 +13,8 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 (global as any).fetch = require('node-fetch');
 
+jest.setTimeout(120 * 60 * 1000); // Set timeout to 2 hour because of creating/deleting searchable instance
+
 describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
