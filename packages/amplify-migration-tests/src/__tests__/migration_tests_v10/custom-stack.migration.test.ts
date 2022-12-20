@@ -50,7 +50,7 @@ describe('adding custom resources migration test', () => {
       'build',
       `${cdkResourceName}-cloudformation-template.json`,
     );
-    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
+    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources-v10', 'custom-cdk-stack-v10.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
     await buildCustomResources(projRoot, {});
     await amplifyPushAuth(projRoot);

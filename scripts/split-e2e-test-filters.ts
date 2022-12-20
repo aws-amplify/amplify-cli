@@ -43,6 +43,7 @@ export const migrationFromV6Tests = [
 export const migrationFromV10Tests = [
     "src/__tests__/migration_tests_v10/auth-add-all.migration.test.ts",
     "src/__tests__/migration_tests_v10/auth-override.migration.test.ts",
+    "src/__tests__/migration_tests_v10/custom-stack.migration.test.ts",
     "src/__tests__/migration_tests_v10/scaffold.test.ts",
     "src/__tests__/migration_tests_v10/storage.migration.test.ts",
 ]
