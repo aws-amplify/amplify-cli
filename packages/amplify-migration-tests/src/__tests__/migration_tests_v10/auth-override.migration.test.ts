@@ -54,7 +54,7 @@ import * as fs from 'fs-extra';
       await amplifyOverrideAuth(projRoot1);
       // this is where we will write our override logic to
       const destOverrideFilePath = path.join(projRoot1, 'amplify', 'backend', 'auth', `${authResourceName}`, 'override.ts');
-      const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'overrides-v10', 'override-auth.ts');
+      const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'overrides', 'override-auth.ts');
       fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
       await amplifyPushOverride(projRoot1);
 

@@ -50,7 +50,7 @@ describe('adding custom resources migration test', () => {
       'build',
       `${cdkResourceName}-cloudformation-template.json`,
     );
-    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources-v10', 'custom-cdk-stack-v10.ts');
+    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-v10.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
     await buildCustomResources(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -69,50 +69,54 @@ describe('adding custom resources migration test', () => {
 
     // using latest code, pull down the project
     const projRoot2 = await createNewProjectDir('customMigration2');
+    const usingLatestCode = true;
     try {
-      await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
+      await amplifyPull(projRoot2, { emptyDir: true, appId }, usingLatestCode);
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
-      await amplifyPushAuth(projRoot2, true);
+      await amplifyPushAuth(projRoot2, usingLatestCode);
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
 
-      // building custom resources succeeds against a v10 cdk stack, even when using v11 to build
-      await expect(buildCustomResources(projRoot2, {}, true));
+      // building custom resources succeeds against a v10 cdk stack, even when using vLatest to build
+      await expect(buildCustomResources(projRoot2, {}, usingLatestCode)).resolves.not.toThrow();
 
-      // migrate overrides to use v11
-      const srcV11CustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources-v10', 'custom-cdk-stack-v11.ts');
-      const destV11CustomResourceFilePath = path.join(projRoot2, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
-      fs.copyFileSync(srcV11CustomResourceFilePath, destV11CustomResourceFilePath);
+      // migrate overrides to use vLatest
+      const srcVLatestCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-vLatest.ts');
+      const destVLatestCustomResourceFilePath = path.join(projRoot2, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
+      fs.copyFileSync(srcVLatestCustomResourceFilePath, destVLatestCustomResourceFilePath);
 
       // this should fail because customer also needs to update package.json dependencies for cdkv2
-      await expect(buildCustomResources(projRoot2, {}, true)).rejects.toThrow();
+      await expect(buildCustomResources(projRoot2, {}, usingLatestCode)).rejects.toThrow();
 
       // TODO: emulate updating the package.json dependencies
-      
+      const srcVLatestCustomPackageJSONFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-vLatest.package.json');
+      const destVLatestCustomPackageJSONFilePath = path.join(projRoot2, 'amplify', 'backend', 'custom', cdkResourceName, 'package.json');
+      fs.copyFileSync(srcVLatestCustomPackageJSONFilePath, destVLatestCustomPackageJSONFilePath);
+
       // this should pass now
-      // await buildCustomResources(projRoot2, {}, true);
-      // await amplifyPushAuth(projRoot2, true);
+      await buildCustomResources(projRoot2, {}, usingLatestCode);
+      await amplifyPushAuth(projRoot2, usingLatestCode);
 
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN
-      // await addCFNCustomResource(projRoot2, { name: cfnResourceName }, true);
-      // const customCFNFilePath = path.join(
-      //   projRoot2,
-      //   'amplify',
-      //   'backend',
-      //   'custom',
-      //   cfnResourceName,
-      //   `${cfnResourceName}-cloudformation-template.json`,
-      // );
-      // const customCFNFileJSON: any = JSONUtilities.readJson(customCFNFilePath);
-      // // Make sure input params has params from the resource dependency
-      // expect(customCFNFileJSON?.Parameters).toEqual({
-      //   env: { Type: 'String' },
-      //   [`custom${cdkResourceName}snsTopicArn`]: {
-      //     Type: 'String',
-      //     Description: `Input parameter describing snsTopicArn attribute for custom/${cdkResourceName} resource`,
-      //   },
-      // });
+      await addCFNCustomResource(projRoot2, { name: cfnResourceName }, usingLatestCode);
+      const customCFNFilePath = path.join(
+        projRoot2,
+        'amplify',
+        'backend',
+        'custom',
+        cfnResourceName,
+        `${cfnResourceName}-cloudformation-template.json`,
+      );
+      const customCFNFileJSON: any = JSONUtilities.readJson(customCFNFilePath);
+      // Make sure input params has params from the resource dependency
+      expect(customCFNFileJSON?.Parameters).toEqual({
+        env: { Type: 'String' },
+        [`custom${cdkResourceName}snsTopicArn`]: {
+          Type: 'String',
+          Description: `Input parameter describing snsTopicArn attribute for custom/${cdkResourceName} resource`,
+        },
+      });
 
     } finally {
       deleteProjectDir(projRoot2);
