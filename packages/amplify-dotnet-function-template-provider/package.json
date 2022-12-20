@@ -14,8 +14,7 @@
     "aws",
     "amplify",
     "lambda",
-    "dotnet",
-    "dotnetcore"
+    "dotnet"
   ],
   "scripts": {
     "build": "tsc",

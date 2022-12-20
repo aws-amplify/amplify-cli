@@ -11,6 +11,10 @@ jest.mock('../commands/diagnose', () => ({
   reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => { /* no-op */ }),
 }));
 
+const processExit = jest
+  .spyOn(process, 'exit')
+  .mockImplementation((__code?: number) => undefined as never);
+
 jest.mock('amplify-prompts');
 
 describe('test exception handler', () => {
@@ -54,6 +58,7 @@ describe('test exception handler', () => {
     await handleException(amplifyError);
 
     expect(reportErrorMock).toHaveBeenCalledWith(contextMock, amplifyError);
+    expect(processExit).toHaveBeenCalledWith(1);
   });
 
   it('error handler should print error', async () => {

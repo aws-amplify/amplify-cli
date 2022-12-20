@@ -175,7 +175,7 @@ function setSudoNpmRegistryUrlToLocal {
 function useChildAccountCredentials {
     if [[ ! -z "$USE_PARENT_ACCOUNT" ]]; then
         echo "Using parent account credentials"
-        exit 0
+        return
     fi
     export AWS_PAGER=""
     parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
@@ -185,11 +185,12 @@ function useChildAccountCredentials {
     session_id=$((1 + $RANDOM % 10000))
     if [[ -z "$pick_acct" || -z "$session_id" ]]; then
         echo "Unable to find a child account. Falling back to parent AWS account"
-        exit 0
+        return
     fi
     creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
     if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
         echo "Unable to assume child account role. Falling back to parent AWS account"
+        return
     fi
     echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
     export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")

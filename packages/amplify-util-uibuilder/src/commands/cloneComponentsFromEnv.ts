@@ -11,7 +11,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const args = extractArgs(context);
   const sourceEnvName = args.sourceEnvName ? args.sourceEnvName : context.exeInfo.sourceEnvName;
   const newEnvName = args.newEnvName ? args.newEnvName : context.exeInfo.localEnvInfo.envName;
-  const appId = args.appId ?? context.exeInfo.teamProviderInfo[sourceEnvName].awscloudformation.AmplifyAppId;
+  const appId = args.appId ?? context.exeInfo?.teamProviderInfo?.[sourceEnvName]?.awscloudformation?.AmplifyAppId;
   const studioClient = await AmplifyStudioClient.setClientInfo(context, sourceEnvName, appId);
 
   const [existingComponents, existingComponentsNewEnv] = await Promise.all([

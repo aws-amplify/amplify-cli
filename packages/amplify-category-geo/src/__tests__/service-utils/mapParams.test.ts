@@ -12,7 +12,8 @@ describe('map style construction works as expected', () => {
         "VectorHereExplore",
         "VectorHereExploreTruck",
         "RasterHereExploreSatellite",
-        "HybridHereExploreSatellite"
+        "HybridHereExploreSatellite",
+        "VectorOpenDataStandardLight"
     ];
 
     it('parses various supported map styles', () => {
