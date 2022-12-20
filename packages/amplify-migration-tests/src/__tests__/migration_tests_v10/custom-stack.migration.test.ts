@@ -89,7 +89,7 @@ describe('adding custom resources migration test', () => {
       // this should fail because customer also needs to update package.json dependencies for cdkv2
       await expect(buildCustomResources(projRoot2, {}, usingLatestCode)).rejects.toThrow();
 
-      // TODO: emulate updating the package.json dependencies
+      // emulate updating the package.json dependencies
       const srcVLatestCustomPackageJSONFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-vLatest.package.json');
       const destVLatestCustomPackageJSONFilePath = path.join(projRoot2, 'amplify', 'backend', 'custom', cdkResourceName, 'package.json');
       fs.copyFileSync(srcVLatestCustomPackageJSONFilePath, destVLatestCustomPackageJSONFilePath);
