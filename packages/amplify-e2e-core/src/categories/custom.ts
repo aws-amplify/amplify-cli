@@ -20,9 +20,9 @@ export function addCDKCustomResource(cwd: string, settings: any): Promise<void> 
   });
 }
 
-export function addCFNCustomResource(cwd: string, settings: any): Promise<void> {
+export function addCFNCustomResource(cwd: string, settings: any, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'custom'], { cwd, stripColors: true })
       .wait('How do you want to define this custom resource?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
