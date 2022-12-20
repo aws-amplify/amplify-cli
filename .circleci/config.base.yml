@@ -9,9 +9,6 @@ parameters:
   nightly_console_integration_tests:
     type: boolean
     default: false
-  e2e_resource_cleanup:
-    type: boolean
-    default: false
   setup:
     type: boolean
     default: true
@@ -70,14 +67,6 @@ defaults: &defaults
       type: executor
       default: l_medium
   executor: << parameters.os >>
-
-clean_e2e_resources: &clean_e2e_resources
-  name: Cleanup resources
-  command: |
-    pwd
-    cd packages/amplify-e2e-tests
-    yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-  working_directory: ~/repo
 
 scan_e2e_test_artifacts: &scan_e2e_test_artifacts
   name: Scan And Cleanup E2E Test Artifacts
@@ -492,8 +481,6 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-      # - clean_e2e_resources:
-      #     os: << parameters.os >>
 
   amplify_migration_tests_v5:
     parameters:
@@ -884,23 +871,18 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
 
-  cleanup_resources_after_e2e_runs:
-    <<: *linux-e2e-executor-large
+  trigger_e2e_workflow_cleanup:
+    <<: *linux-e2e-executor-medium
     steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
-          name: 'Run cleanup script'
+          name: 'Trigger Cleanup for this Workflow'
           command: |
-            cd packages/amplify-e2e-tests
-            yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
-          no_output_timeout: 90m
-      - run: *scan_e2e_test_artifacts
-      - store_artifacts:
-          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-    working_directory: ~/repo
+            echo "Triggering cleanup for Workflow $CIRCLE_WORKFLOW_ID"
+            curl --request POST \
+              --url https://circleci.com/api/v2/project/gh/aws-amplify/amplify-cli/pipeline \
+              --header "Circle-Token: $AMPLIFY_CLI_CIRCLECI_TRIGGER_TOKEN" \
+              --header "content-type: application/json" \
+              --data '{"branch":"'$CIRCLE_BRANCH'","parameters":{"e2e_workflow_cleanup":true,"setup":false,"e2e_workflow_cleanup_workflow_id":"'$CIRCLE_WORKFLOW_ID'"}}'
 
   wait_for_all:
     <<: *linux-e2e-executor-medium
@@ -1195,7 +1177,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
-      - cleanup_resources_after_e2e_runs:
+      - trigger_e2e_workflow_cleanup:
           context:
             - cleanup-resources
             - e2e-test-context
@@ -1230,6 +1212,7 @@ workflows:
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
             - upload_pkg_binaries
+            - verify-versions-match
           filters:
             branches:
               only:
@@ -1339,7 +1322,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 60m
+                no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:
@@ -1349,25 +1332,11 @@ commands:
     steps:
       - run:
           name: Scan E2E artifacts
-          no_output_timeout: 90m
+          no_output_timeout: 2m
           command: |
             if ! yarn ts-node .circleci/scan_artifacts.ts; then
               echo "Cleaning the repository"
               git clean -fdx
               exit 1
             fi
-          when: always
-  clean_e2e_resources:
-    description: Cleanup resources
-    parameters:
-      os:
-        type: executor
-        default: l_large
-    steps:
-      - run:
-          name: Clean job resources
-          command: |
-            pwd
-            cd packages/amplify-e2e-tests
-            yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
           when: always

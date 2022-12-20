@@ -74,5 +74,6 @@ export enum AccessType {
   VectorHereExplore = "VectorHereExplore",
   VectorHereExploreTruck = "VectorHereExploreTruck",
   RasterHereExploreSatellite = "RasterHereExploreSatellite",
-  HybridHereExploreSatellite = "HybridHereExploreSatellite"
+  HybridHereExploreSatellite = "HybridHereExploreSatellite",
+  VectorOpenDataStandardLight = "VectorOpenDataStandardLight"
 }

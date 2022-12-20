@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
@@ -114,9 +114,6 @@ export const pushResources = async (
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {
-        if (err instanceof AmplifyException) {
-          throw err;
-        }
         throw new AmplifyFault('PushResourcesFault', {
           message: err.message,
           link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
@@ -139,9 +136,8 @@ const providersPush = async (
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  await Promise.all(providers.map(async provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
     return providerModule.pushResources(context, resourceDefinition, rebuild);
   }));
@@ -154,9 +150,8 @@ export const storeCurrentCloudBackend = async (context: $TSContext): Promise<voi
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  Promise.all(providers.map(provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     return providerModule.storeCurrentCloudBackend(context);
   }));
 };
