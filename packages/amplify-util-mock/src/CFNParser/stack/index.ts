@@ -99,7 +99,7 @@ export function getDependencyResources(node: object | any[], params: Record<stri
       const resourceName = fnArgs[0];
       result.push(resourceName);
     } else if (typeof fnArgs !== 'string') {
-      for (var i = 0; i < fnArgs.length; i++) {
+      for (let i = 0; i < fnArgs.length; i++) {
         result = [...result, ...getDependencyResources(fnArgs[i], params)];
       }
     }

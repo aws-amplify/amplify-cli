@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 3001;
 
@@ -8,15 +8,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Enable CORS for all methods
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*")
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
     next()
 });
 
-app.get("/password", async (req, res, next) => {
+app.get('/password', async (req, res, next) => {
     try {
         const result = process.env.PASSWORD;
-        res.contentType("application/json").send(result);
+        res.contentType('application/json').send(result);
     } catch (err) {
         next(err);
     }

@@ -24,7 +24,7 @@ type TemplateDescription = {
 };
 
 export async function prePushTemplateDescriptionHandler(context: $TSContext, resourcesToBeCreated: $TSAny) {
-  let promises = [];
+  const promises = [];
 
   for (const { category, resourceName, service } of resourcesToBeCreated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
@@ -74,7 +74,7 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
 
   // get deployment mchanism "createdBy"
 
-  if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+  if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
     deploymentTypeDescription = DeploymentTypes.AMPLIFY_ADMIN;
   } else {
     deploymentTypeDescription = DeploymentTypes.AMPLIFY_CLI;

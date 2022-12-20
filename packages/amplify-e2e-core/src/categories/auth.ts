@@ -1452,7 +1452,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
   settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .sendKeyDown(2)
       .sendCarriageReturn()
@@ -1626,7 +1626,7 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings: any = {}): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName = 'adminQueriesGroup', settings: any = {}): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });

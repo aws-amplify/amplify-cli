@@ -153,12 +153,12 @@ describe('@searchable transformer', () => {
       const { resultItems } = await searchTodos(
         {
           or: [ 
-            { name: { eq: "name101" } }, 
+            { name: { eq: 'name101' } }, 
             {
               name: { 
-                ne: "name101", exists: true, gt: "aaaa102", lt: "zzzz102", 
-                gte: "name102", lte: "name102", wildcard: "*102", 
-                regexp: "na[a-z].[0-9].2", range: ["name102", "name102"]
+                ne: 'name101', exists: true, gt: 'aaaa102', lt: 'zzzz102', 
+                gte: 'name102', lte: 'name102', wildcard: '*102', 
+                regexp: 'na[a-z].[0-9].2', range: ['name102', 'name102']
               }
           }]
         }, 
@@ -174,10 +174,10 @@ describe('@searchable transformer', () => {
     test('filter using match operations on string array type', async () => {
       const { resultItems } = await searchTodos(
         {
-          descriptions: { matchPhrasePrefix: "desc" },
+          descriptions: { matchPhrasePrefix: 'desc' },
           or: [ 
-            { name: { matchPhrase: "name102" } },
-            { name: { match: "name101" } },
+            { name: { matchPhrase: 'name102' } },
+            { name: { match: 'name101' } },
           ]
         }, 
         [], 
@@ -252,13 +252,13 @@ describe('@searchable transformer', () => {
       const { resultItems } = await searchTodos(
         {
           or: [ 
-            { myenum: { eq: "yes" } }, 
+            { myenum: { eq: 'yes' } }, 
             {
               myenum: { 
-                ne: "yes", exists: true, gt: "aa", lt: "zz", 
-                gte: "no", lte: "no", wildcard: "*o", 
-                regexp: "n[a-z]+", range: ["no", "no"], match: "no",
-                matchPhrase: "no", matchPhrasePrefix: "n"
+                ne: 'yes', exists: true, gt: 'aa', lt: 'zz', 
+                gte: 'no', lte: 'no', wildcard: '*o', 
+                regexp: 'n[a-z]+', range: ['no', 'no'], match: 'no',
+                matchPhrase: 'no', matchPhrasePrefix: 'n'
               }
           }]
         }, 
@@ -315,14 +315,14 @@ describe('@searchable transformer', () => {
         { descriptions: { matchPhrasePrefix: 'desc' } }, 
         [], 
         [
-          {field: "myint", name: "minMyInt", type: "min"},
-          {field: "myint", name: "maxMyInt", type: "max"},
-          {field: "myint", name: "avgMyInt", type: "avg"},
-          {field: "myint", name: "sumMyInt", type: "sum"},
-          {field: "myfloat", name: "minMyFloat", type: "min"},
-          {field: "myfloat", name: "maxMyFloat", type: "max"},
-          {field: "myfloat", name: "avgMyFloat", type: "avg"},
-          {field: "myfloat", name: "sumMyFloat", type: "sum"}
+          {field: 'myint', name: 'minMyInt', type: 'min'},
+          {field: 'myint', name: 'maxMyInt', type: 'max'},
+          {field: 'myint', name: 'avgMyInt', type: 'avg'},
+          {field: 'myint', name: 'sumMyInt', type: 'sum'},
+          {field: 'myfloat', name: 'minMyFloat', type: 'min'},
+          {field: 'myfloat', name: 'maxMyFloat', type: 'max'},
+          {field: 'myfloat', name: 'avgMyFloat', type: 'avg'},
+          {field: 'myfloat', name: 'sumMyFloat', type: 'sum'}
         ]
       );
   
@@ -346,8 +346,8 @@ describe('@searchable transformer', () => {
         { descriptions: { matchPhrasePrefix: 'desc' } }, 
         [], 
         [
-          {field: "name", name: "nameTerms", type: "terms"},
-          {field: "descriptions", name: "descriptionsTerms", type: "terms"}
+          {field: 'name', name: 'nameTerms', type: 'terms'},
+          {field: 'descriptions', name: 'descriptionsTerms', type: 'terms'}
         ]
       );
   
@@ -358,31 +358,31 @@ describe('@searchable transformer', () => {
       // check correctness of aggregate results
       const expectedNameTerms = [
         {
-          "doc_count": 1,
-          "key": todo101.name
+          'doc_count': 1,
+          'key': todo101.name
         },
         {
-          "doc_count": 1,
-          "key": todo102.name
+          'doc_count': 1,
+          'key': todo102.name
         }
       ];
   
       const expectedDescriptionsTerms = [
         {
-          "doc_count": 1,
-          "key": todo101.descriptions[0]
+          'doc_count': 1,
+          'key': todo101.descriptions[0]
         },
         {
-          "doc_count": 1,
-          "key": todo101.descriptions[1]
+          'doc_count': 1,
+          'key': todo101.descriptions[1]
         },
         {
-          "doc_count": 1,
-          "key": todo102.descriptions[0]
+          'doc_count': 1,
+          'key': todo102.descriptions[0]
         },
         {
-          "doc_count": 1,
-          "key": todo102.descriptions[1]
+          'doc_count': 1,
+          'key': todo102.descriptions[1]
         }
       ];
   
@@ -440,7 +440,7 @@ describe('@searchable transformer', () => {
     if (openSearchSimulator.url) {
       const url = openSearchSimulator.url.replace(/\/+$/, '') + '/_bulk';
       const payload = [
-        JSON.stringify({ "index": { "_index": "todo", "_id": todoId } }), 
+        JSON.stringify({ 'index': { '_index': 'todo', '_id': todoId } }), 
         JSON.stringify({ id: todoId, descriptions: descriptions, myint: myint, name: name, myfloat: myfloat, myenum: myenum, mybool: mybool }), 
         ''
       ].join('\n');

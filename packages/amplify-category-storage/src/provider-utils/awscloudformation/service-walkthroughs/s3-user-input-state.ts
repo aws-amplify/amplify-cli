@@ -174,7 +174,7 @@ export class S3InputState {
   genInputParametersForMigration(oldS3Params: MigrationParams): S3UserInputs {
     const oldParams = oldS3Params.parameters;
     const storageParams = oldS3Params.storageParams;
-    let userInputs: S3UserInputs = {
+    const userInputs: S3UserInputs = {
       resourceName: this._resourceName,
       bucketName: oldParams.bucketName,
       policyUUID: buildShortUUID(), //Since UUID is unique for every resource, we re-create the policy names with new UUID.
@@ -457,7 +457,7 @@ export class S3InputState {
 
   public static getPolicyMapFromCfnPolicyMap(groupCFNPolicyMap: GroupCFNAccessType) {
     if (groupCFNPolicyMap) {
-      let result: GroupAccessType = {};
+      const result: GroupAccessType = {};
       for (const groupName of Object.keys(groupCFNPolicyMap)) {
         result[groupName] = S3InputState.getInputPermissionsFromCfnPermissions(groupCFNPolicyMap[groupName]);
       }
@@ -471,7 +471,7 @@ export class S3InputState {
     groupStorageParamsPolicyMap: GroupStorageParamsAccessType,
   ): GroupAccessType | undefined {
     if (groupStorageParamsPolicyMap) {
-      let result: GroupAccessType = {};
+      const result: GroupAccessType = {};
       for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
         result[groupName] = S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName]);
       }
@@ -483,7 +483,7 @@ export class S3InputState {
 
   public static getPolicyMapFromStorageParamsPolicyMap(groupStorageParamsPolicyMap: GroupStorageParamsAccessType) {
     if (groupStorageParamsPolicyMap) {
-      let result: GroupAccessType = {};
+      const result: GroupAccessType = {};
       for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
         result[groupName] = S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName]);
       }

@@ -164,7 +164,7 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
@@ -588,7 +588,7 @@ export const functionMockAssert = (
     const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
       settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
-    let chain = spawn(getCLIPath(testingWithLatestCodebase), cliArgs, { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), cliArgs, { cwd, stripColors: true });
     chain.wait('Result:');
     if (settings.successString) {
       chain.wait(settings.successString);
@@ -653,7 +653,7 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
 };
 
 export function validateNodeModulesDirRemoval(projRoot) {
-  let functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
+  const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: functionDir,
     absolute: true,
