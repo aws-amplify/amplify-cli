@@ -47,11 +47,11 @@ export function addCFNCustomResource(cwd: string, settings: any, testingWithLate
   });
 }
 
-export function buildCustomResources(cwd: string, settings: {}) {
+export function buildCustomResources(cwd: string, settings: {}, usingLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];
 
-    spawn(getCLIPath(), args, { cwd, stripColors: true })
+    spawn(getCLIPath(usingLatestCodebase), args, { cwd, stripColors: true })
       .sendEof()
       .run((err: Error) => {
         if (!err) {
