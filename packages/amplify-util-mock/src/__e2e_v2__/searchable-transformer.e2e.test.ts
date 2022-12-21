@@ -66,10 +66,9 @@ describe('@searchable transformer', () => {
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
 
       if (!isWindowsPlatform) {
-        while (true) {
+        do {
           pathToSearchableMockResources = path.join('/tmp', `amplify-cli-emulator-opensearch-${v4()}`);
-          if (!fs.existsSync(pathToSearchableMockResources)) break;
-        }
+        } while (fs.existsSync(pathToSearchableMockResources))
         jest.spyOn(openSearchEmulator, 'getOpensearchLocalDirectory').mockReturnValue(path.join(pathToSearchableMockResources, openSearchEmulator.relativePathToOpensearchLocal));
         ({ emulator: openSearchSimulator } = await setupSearchableMockResources(pathToSearchableMockResources));
       }
