@@ -74,7 +74,7 @@ describe('@model with relational transformer', () => {
       });
     } catch (e) {
       console.error(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 
@@ -86,7 +86,7 @@ describe('@model with relational transformer', () => {
       await terminateDDB(ddbEmulator, dbPath);
     } catch (e) {
       logDebug(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 
