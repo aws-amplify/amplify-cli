@@ -72,11 +72,11 @@ export class OperationServer {
       };
       switch (getOperationType(doc, operationName)) {
         case 'query':
-        case 'mutation':
+        case 'mutation': {
           const gqlResult = await runQueryOrMutation(this.simulatorContext.schema, doc, variables, operationName, context);
           return response.send(gqlResult);
-
-        case 'subscription':
+        }
+        case 'subscription': {
           const subscriptionResult = await runSubscription(this.simulatorContext.schema, doc, variables, operationName, context);
           if ((subscriptionResult as ExecutionResult).errors) {
             return response.send(subscriptionResult);
@@ -85,6 +85,7 @@ export class OperationServer {
             `Subscription request is only supported in realtime url. Send requests to ${REALTIME_SUBSCRIPTION_PATH} path instead`,
           );
           break;
+        }
 
         default:
           throw new Error(`unknown operation`);

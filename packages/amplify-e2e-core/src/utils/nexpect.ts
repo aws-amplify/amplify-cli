@@ -17,11 +17,13 @@ import { Recorder } from '../asciinema-recorder';
 import { generateRandomShortId, getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 
 declare global {
+  /* eslint-disable @typescript-eslint/no-namespace */
   namespace NodeJS {
     interface Global {
       storeCLIExecutionLog: (data: any) => void;
     }
   }
+  /* eslint-enable */
 }
 export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
@@ -156,7 +158,12 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
 
-    wait(expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
+    wait(
+      expectation: string | RegExp,
+      callback = (data: string) => {
+        // empty
+      },
+    ): ExecutionContext {
       const _wait: ExecutionStep = {
         fn: data => {
           const val = testExpectation(data, expectation, context);

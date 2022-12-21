@@ -49,7 +49,9 @@ export type WebsocketSubscriptionServerOptions = {
 };
 
 const DEFAULT_OPTIONS: Partial<WebsocketSubscriptionServerOptions> = {
-  onConnectHandler: async () => {},
+  onConnectHandler: async () => {
+    // empty
+  },
   keepAlive: KEEP_ALIVE_TIMEOUT,
   connectionTimeoutDuration: CONNECTION_TIMEOUT_DURATION,
 };
@@ -75,11 +77,13 @@ export class WebsocketSubscriptionServer {
     if (!this.webSocketServer) {
       throw new Error('No server is attached');
     }
+    /* eslint-disable @typescript-eslint/no-misused-promises */
     this.webSocketServer.on('connection', this.onSocketConnection);
   }
 
   stop() {
     this.webSocketServer?.off('connection', this.onSocketConnection);
+    /* eslint-enable */
     this.connections?.forEach(connection => {
       this.onClose(connection);
     });

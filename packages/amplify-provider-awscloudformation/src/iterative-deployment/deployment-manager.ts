@@ -198,12 +198,13 @@ export class DeploymentManager {
             case 'deployed':
               return resolve();
             case 'rolledBack':
-            case 'failed':
+            case 'failed': {
               this.printer.stopBars();
               promptsPrinter.info(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
               const deploymentErrors = new DeploymentError(state.context.errors);
               this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
+            }
             default:
             // intentionally left blank as we don't care about intermediate states
           }
@@ -264,11 +265,12 @@ export class DeploymentManager {
           switch (state.value) {
             case 'rolledBack':
               return resolve();
-            case 'failed':
+            case 'failed': {
               this.printer.stopBars();
               const deploymentErrors = new DeploymentError(state.context.errors);
               this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
+            }
             default:
             // intentionally left blank as we don't care about intermediate states
           }
@@ -410,12 +412,13 @@ export class DeploymentManager {
     const waiters = tables.map(
       name =>
         new Promise(resolve => {
-          const interval = setInterval(async () => {
-            const areIndexesReady = await throttledGetTableStatus(name);
-            if (areIndexesReady) {
-              clearInterval(interval);
-              resolve(undefined);
-            }
+          const interval = setInterval(() => {
+            void throttledGetTableStatus(name).then(areIndexesReady => {
+              if (areIndexesReady) {
+                clearInterval(interval);
+                resolve(undefined);
+              }
+            });
           }, this.options.throttleDelay);
         }),
     );
