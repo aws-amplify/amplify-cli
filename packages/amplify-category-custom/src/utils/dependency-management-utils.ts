@@ -29,7 +29,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
   if (fs.existsSync(resourceBuildDir)) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
-      ignore: [AUTH_TRIGGER_TEMPLATE]
+      ignore: [AUTH_TRIGGER_TEMPLATE],
     });
 
     if (cfnFiles.length > 0) {
@@ -48,7 +48,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     // For categories which do not store cfn files in build/ dir
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
-      ignore: [AUTH_TRIGGER_TEMPLATE]
+      ignore: [AUTH_TRIGGER_TEMPLATE],
     });
     if (cfnFiles.length > 1) {
       printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
@@ -125,7 +125,7 @@ export function addCDKResourceDependency(
   stack: cdk.Stack,
   category: string,
   resourceName: string,
-  dependentResources: AmplifyDependentResourceDefinition[]
+  dependentResources: AmplifyDependentResourceDefinition[],
 ) {
   const dependsOn: AmplifyDependentResourceDefinition[] = [];
   const dependentParameters: any = {};
@@ -145,14 +145,14 @@ export function addCDKResourceDependency(
       dependentParameters[`${resource.category}`][`${resource.resourceName}`][`${attr}`] = parameterName;
 
       new cdk.CfnParameter(stack, parameterName, {
-        type: 'String'
+        type: 'String',
       });
     });
     if (attributeList.length > 0) {
       dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
-        attributes: attributeList
+        attributes: attributeList,
       });
     }
   });
@@ -180,7 +180,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   const selectResourcesInCategory = (
     choices: DistinctChoice<any>[],
     currentResourceDependencyMap: $TSObject,
-    category: string
+    category: string,
   ): CheckboxQuestion => ({
     type: 'checkbox',
     name: 'resources',
@@ -188,7 +188,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
       choices.length
     } resources in this project. Select the one you would like your custom resource to access`,
     choices,
-    default: currentResourceDependencyMap[category]
+    default: currentResourceDependencyMap[category],
   });
 
   const selectCategories = (choices: DistinctChoice<any>[], currentCategoryDependencyMap: object): CheckboxQuestion => ({
@@ -197,7 +197,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
     message: 'Select the categories you want this custom resource to have access to.',
     choices,
     validate: answers => (_.isEmpty(answers) ? 'You must select at least one category' : true),
-    default: Object.keys(currentCategoryDependencyMap)
+    default: Object.keys(currentCategoryDependencyMap),
   });
 
   const amplifyMeta = stateManager.getMeta();
@@ -267,7 +267,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
           const resourceDefinition: AmplifyDependentResourceDefinition = {
             category: selectedCategory,
             resourceName: resourceName,
-            attributes: resourceCfnOutputAttributes
+            attributes: resourceCfnOutputAttributes,
           };
 
           resources.push(resourceDefinition);
@@ -299,7 +299,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   Object.assign(customResourceCFNTemplate.cfnTemplate.Parameters, dependencyInputParams);
 
   await writeCFNTemplate(customResourceCFNTemplate.cfnTemplate, customResourceCFNFilepath, {
-    templateFormat: customResourceCFNTemplate.templateFormat
+    templateFormat: customResourceCFNTemplate.templateFormat,
   });
 
   // Update meta and backend-config.json files
@@ -335,7 +335,7 @@ function generateInputParametersForDependencies(resources: AmplifyDependentResou
     for (const attribute of resource.attributes || []) {
       parameters[`${resource.category}${resource.resourceName}${attribute}`] = {
         Type: 'String',
-        Description: `Input parameter describing ${attribute} attribute for ${resource.category}/${resource.resourceName} resource`
+        Description: `Input parameter describing ${attribute} attribute for ${resource.category}/${resource.resourceName} resource`,
       };
     }
   }
