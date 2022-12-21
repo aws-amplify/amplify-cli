@@ -6,14 +6,14 @@ const amplify = isWin ? 'amplify.cmd' : 'amplify';
 const amplifyDev = isWin ? 'amplify-dev.cmd' : 'amplify-dev';
 
 const defaultOpts = {
-  inheritIO: true,
+  inheritIO: true
 };
 
 const callPkgAmplifyWin = async (args, opts) => {
   opts = { ...defaultOpts, ...opts };
   const { stdout, stderr } = await execa.command(`cmd /V /C "set PKG_EXECPATH= && ${process.argv[0]} ${args.join(' ')}"`, {
     stdio: opts.inheritIO ? 'inherit' : undefined,
-    shell: 'cmd.exe',
+    shell: 'cmd.exe'
   });
   if (stderr) {
     throw new Error(`Amplify failed due to ${stderr}`);
@@ -25,7 +25,7 @@ const callPkgAmplifyNix = async (args, opts) => {
   opts = { ...defaultOpts, ...opts };
   const { stdout, stderr } = await execa.command(`PKG_EXECPATH=; ${process.argv[0]} ${args.join(' ')}`, {
     stdio: opts.inheritIO ? 'inherit' : undefined,
-    shell: 'bash',
+    shell: 'bash'
   });
   if (stderr) {
     throw new Error(`Amplify failed due to ${stderr}`);
@@ -45,8 +45,8 @@ const callNodeAmplify = async (args, opts) => {
 
 const callPkgAmplify = isWin ? callPkgAmplifyWin : callPkgAmplifyNix;
 
-const callAmplify = process.pkg ? callPkgAmplify : callNodeAmplify;
+const callAmplify = !process.pkg ? callNodeAmplify : callPkgAmplify;
 
 module.exports = {
-  callAmplify,
+  callAmplify
 };
