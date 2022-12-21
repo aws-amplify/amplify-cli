@@ -18,14 +18,11 @@ const STATIC_ROOT = join(__dirname, '..', '..', 'public');
 export class OperationServer {
   private _app: express.Application;
 
-  constructor(
-    private config: AppSyncSimulatorServerConfig,
-    private simulatorContext: AmplifyAppSyncSimulator
-  ) {
+  constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._app = express();
     this._app.use(express.json({ limit: MAX_BODY_SIZE }));
     this._app.use(cors());
-    this._app.post('/graphql', this.handleRequest);
+    this._app.post('/graphql', (...args) => void this.handleRequest(...((args as unknown) as Parameters<typeof this.handleRequest>)));
     this._app.get('/api-config', this.handleAPIInfoRequest);
     this._app.use('/', express.static(STATIC_ROOT));
   }
@@ -84,7 +81,9 @@ export class OperationServer {
           if ((subscriptionResult as ExecutionResult).errors) {
             return response.send(subscriptionResult);
           }
-          throw new Error(`Subscription request is only supported in realtime url. Send requests to ${REALTIME_SUBSCRIPTION_PATH} path instead`);
+          throw new Error(
+            `Subscription request is only supported in realtime url. Send requests to ${REALTIME_SUBSCRIPTION_PATH} path instead`,
+          );
           break;
 
         default:
