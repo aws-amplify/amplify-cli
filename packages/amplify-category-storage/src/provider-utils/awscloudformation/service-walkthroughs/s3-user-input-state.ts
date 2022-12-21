@@ -534,10 +534,6 @@ export class S3InputState {
 
     fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
 
-    try {
-      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
-    } catch (e) {
-      throw e;
-    }
+    JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
   }
 }
