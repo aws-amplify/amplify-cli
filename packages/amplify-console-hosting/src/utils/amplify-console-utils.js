@@ -51,7 +51,9 @@ async function cancelAllPendingJob(appId, branchName, amplifyClient) {
 }
 
 function waitJobToSucceed(job, amplifyClient) {
-  return new Promise((resolve, reject) => {
+  /* eslint-disable no-async-promise-executor */
+  /* eslint-disable @typescript-eslint/no-misused-promises */
+  return new Promise(async (resolve, reject) => {
     const timeout = setTimeout(() => {
       console.log('Job Timeout before succeeded');
       reject();
@@ -79,6 +81,7 @@ function waitJobToSucceed(job, amplifyClient) {
       reject(err);
     }
   });
+  /* eslint-enable */
 }
 
 async function httpPutFile(filePath, url) {
