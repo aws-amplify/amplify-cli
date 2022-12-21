@@ -70,8 +70,6 @@ export class DynamoDBInputState {
   }
 
   public migrate() {
-    let cliInputs: DynamoDBCLIInputs;
-
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
     const backendDir = pathManager.getBackendDirPath();
@@ -137,7 +135,7 @@ export class DynamoDBInputState {
         gsi.push(gsiValue);
       });
     }
-    cliInputs = {
+    const cliInputs: DynamoDBCLIInputs = {
       resourceName: this._resourceName,
       tableName: oldParameters.tableName,
       partitionKey,

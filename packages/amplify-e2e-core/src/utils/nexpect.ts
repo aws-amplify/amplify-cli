@@ -372,7 +372,6 @@ function chain(context: Context): ExecutionContext {
     let errState: any = null;
     let responded = false;
     let stdout: string[] = [];
-    let options;
     let noOutputTimer;
 
     let logDumpFile: fs.WriteStream;
@@ -617,7 +616,7 @@ function chain(context: Context): ExecutionContext {
       return true;
     }
 
-    options = {
+    const options = {
       cwd: context.cwd,
       env: context.env,
     };

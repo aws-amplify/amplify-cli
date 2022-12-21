@@ -483,9 +483,8 @@ export class CronExpression {
       }
       c = s.charAt(i);
     }
-    let val: [number, number];
 
-    val = [i < s.length ? i : i + 1, Number(s1)];
+    const val: [number, number] = [i < s.length ? i : i + 1, Number(s1)];
     return val;
   };
 
