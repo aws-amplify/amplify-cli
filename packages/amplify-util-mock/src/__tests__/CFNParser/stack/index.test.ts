@@ -697,5 +697,20 @@ describe('CloudFormation stack', () => {
       };
       expect(getDependencyResources(propValue, {})).toEqual(['Fn1', 'Fn2']);
     });
+    it('should get Fn::GetAtt resource name inside resource parameters as a dependency', () => {
+      const propValue = {
+        Parameters: {
+          Functions: [
+            {
+              'Fn::GetAtt': ['Fn1', 'FunctionId'],
+            },
+            {
+              'Fn::GetAtt': ['Fn2', 'FunctionId'],
+            },
+          ],
+        }
+      };
+      expect(getDependencyResources(propValue, {})).toEqual(['Fn1', 'Fn2']);
+    })
   });
 });
