@@ -51,7 +51,7 @@ async function cancelAllPendingJob(appId, branchName, amplifyClient) {
 }
 
 function waitJobToSucceed(job, amplifyClient) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       console.log('Job Timeout before succeeded');
       reject();

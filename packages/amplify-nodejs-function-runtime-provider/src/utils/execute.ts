@@ -51,7 +51,7 @@ const invokeFunction = async (options: InvokeOptions) => {
     ...options.context,
   };
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const callback = (error: any, response: any) => {
       if (error) {
         reject(error);
@@ -62,7 +62,7 @@ const invokeFunction = async (options: InvokeOptions) => {
     try {
       const lambdaPromise = lambdaHandler(event, lambdaMockContext, callback);
       if (typeof lambdaPromise === 'object' && typeof lambdaPromise.then === 'function') {
-        resolve(await lambdaPromise);
+        resolve(lambdaPromise);
       }
     } catch (e) {
       reject(e);
