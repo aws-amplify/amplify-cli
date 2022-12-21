@@ -418,7 +418,7 @@ async function getS3ResourceNameFromMeta(amplifyMeta: $TSAny): Promise<string | 
  * @returns { resourceName => resourceData in Amplify metafile}
  */
 function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TSAny> | undefined {
-  if (!amplifyMeta.hasOwnProperty(AmplifyCategories.STORAGE)) {
+  if (!Object.prototype.hasOwnProperty.call(amplifyMeta, AmplifyCategories.STORAGE)) {
     return undefined;
   }
   const resources: Record<string, $TSAny> = {}; //maps cx resource to

@@ -9,9 +9,7 @@ import { getLogger } from '../logger/index';
 import { HooksMeta } from './hooksMeta';
 import { skipHooks } from './skipHooks';
 import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
-import {
-  HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter,
-} from './hooksTypes';
+import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { pathManager, stateManager } from '../state-manager';
 
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
@@ -125,7 +123,7 @@ const getHookFileMetas = (
     .readdirSync(hooksDirPath)
     .filter(relFilePath => fs.lstatSync(path.join(hooksDirPath, relFilePath)).isFile())
     .map(relFilePath => splitFileName(relFilePath))
-    .filter(fileMeta => fileMeta.extension && extensionsSupported.hasOwnProperty(fileMeta.extension))
+    .filter(fileMeta => fileMeta.extension && Object.prototype.hasOwnProperty.call(extensionsSupported, fileMeta.extension))
     .map(fileMeta => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
 
   const commandType = hookEvent.eventPrefix ? [hookEvent.eventPrefix, hookEvent.command].join(hookFileSeparator) : hookEvent.command;

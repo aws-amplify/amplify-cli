@@ -43,7 +43,8 @@ function verifyEventHandlers(manifest: any, pluginModule: any): boolean {
   let isVerified = true;
 
   if (manifest.eventHandlers && manifest.eventHandlers.length > 0) {
-    isVerified = pluginModule.hasOwnProperty('handleAmplifyEvent') && typeof pluginModule['handleAmplifyEvent'] === 'function';
+    isVerified =
+      Object.prototype.hasOwnProperty.call(pluginModule, 'handleAmplifyEvent') && typeof pluginModule['handleAmplifyEvent'] === 'function';
   }
   return isVerified;
 }
