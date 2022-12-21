@@ -22,7 +22,9 @@ export class OperationServer {
     this._app = express();
     this._app.use(express.json({ limit: MAX_BODY_SIZE }));
     this._app.use(cors());
-    this._app.post('/graphql', (...args) => void this.handleRequest(...((args as unknown) as Parameters<typeof this.handleRequest>)));
+    /* eslint-disable @typescript-eslint/no-misused-promises */
+    this._app.post('/graphql', this.handleRequest);
+    /* eslint-enable */
     this._app.get('/api-config', this.handleAPIInfoRequest);
     this._app.use('/', express.static(STATIC_ROOT));
   }
