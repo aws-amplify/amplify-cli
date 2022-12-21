@@ -49,12 +49,9 @@ export const parseInputs = async (
   const prefix = input.prefix ? `${'\n'} ${questionChalk(input.prefix)} ${'\n'}` : '';
 
   let question: $TSAny = {
-    name: input.key,
-    message: input.question,
     prefix,
     suffix: input.suffix,
     when: amplify.getWhen(input, currentAnswers, context.updatingAuth, amplify),
-    validate: amplify.inputValidation(input),
     default: () => {
       // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
@@ -84,28 +81,6 @@ export const parseInputs = async (
         ...question,
       };
     }
-  }
-
-  if (input.type && input.type === 'list') {
-    question = {
-      type: 'list',
-      ...question,
-    };
-  } else if (input.type && input.type === 'multiselect') {
-    question = {
-      type: 'checkbox',
-      ...question,
-    };
-  } else if (input.type && input.type === 'confirm') {
-    question = {
-      type: 'confirm',
-      ...question,
-    };
-  } else {
-    question = {
-      type: 'input',
-      ...question,
-    };
   }
 
   return question;

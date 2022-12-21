@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsdoc/require-jsdoc */
+import inquirer from 'inquirer';
 import chalk from 'chalk';
 import _, { uniq, pullAll } from 'lodash';
 import path from 'path';
@@ -8,7 +9,7 @@ import { Sort } from 'enquirer';
 import { $TSContext } from 'amplify-cli-core';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
 import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
-import { prompter } from '../../../../../amplify-prompts/src/prompter';
+import { prompter } from 'amplify-prompts';
 
 const category = 'auth';
 
@@ -46,39 +47,46 @@ export const serviceWalkthrough = async (
   // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
-    const questionObj = inputs[j];
+    const input = inputs[j];
 
     // CREATE QUESTION OBJECT
-    const question = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
+    const question = await parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
 
     // ASK QUESTION
-    const answer = await prompter.input(question.message);
+    let answer =
+      input.type && input.type === 'list'
+        ? await prompter.pick(input.question, question.choices, { validate: amplify.inputValidation(input) })
+        : input.type && input.type === 'multiselect'
+        ? await prompter.pick<'many', string>(input.question, question.choices, { returnSize: 'many', validate: amplify.inputValidation(input) })
+        : input.type && input.type === 'confirm'
+        ? await prompter.yesOrNo(input.question)
+        : await prompter.input(input.question, { validate: amplify.inputValidation(input) } );
 
     /* eslint-disable spellcheck/spell-checker */
-    if ('signinwithapplePrivateKeyUserPool' in answer) {
-      answer.signinwithapplePrivateKeyUserPool = extractApplePrivateKey(answer.signinwithapplePrivateKeyUserPool);
+    if (input.key === 'signinwithapplePrivateKeyUserPool') {
+      answer = extractApplePrivateKey(answer);
     }
     /* eslint-enable spellcheck/spell-checker */
-    if (answer.userPoolGroups === true) {
+    if (input.key === 'userPoolGroups' && answer) {
       userPoolGroupList = await updateUserPoolGroups(context);
     }
 
-    if (answer.adminQueries === true) {
+    if (input.key === 'adminQueries' && answer) {
       adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
     }
 
-    if (answer.triggers && answer.triggers !== '{}') {
+    if (input.key === 'triggers' && answer.length > 0) {
       const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
       selectionMetadata.forEach((selection: { [key: string]: any }) => {
         Object.keys(selection.triggers).forEach(t => {
-          if (!tempTriggers[t] && answer.triggers.includes(selection.value)) {
+          if (!tempTriggers[t] && answer.includes(selection.value)) {
             tempTriggers[t] = selection.triggers[t];
-          } else if (tempTriggers[t] && answer.triggers.includes(selection.value)) {
+          } else if (tempTriggers[t] && answer.includes(selection.value)) {
             tempTriggers[t] = uniq(tempTriggers[t].concat(selection.triggers[t]));
-          } else if (tempTriggers[t] && !answer.triggers.includes(selection.value)) {
+          } else if (tempTriggers[t] && !answer.includes(selection.value)) {
             const tempForDiff = Object.assign([], tempTriggers[t]);
             const remainder = pullAll(tempForDiff, selection.triggers[t]);
             if (remainder && remainder.length > 0) {
@@ -89,81 +97,78 @@ export const serviceWalkthrough = async (
           }
         });
       });
-      answer.triggers = tempTriggers;
+      answer = tempTriggers;
     }
 
     // LEARN MORE BLOCK
-    if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
-      const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-      questionObj.prefix = chalk.green(helpText);
+    if (new RegExp(/learn/i).test(answer[input.key]) && input.learnMore) {
+      const helpText = `\n${input.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
+      input.prefix = chalk.green(helpText);
       // ITERATOR BLOCK
     } else if (
       /*
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
         key to find the array of values it should splice into.
       */
-      questionObj.iterator &&
-      answer[questionObj.key] &&
-      answer[questionObj.key].length > 0
+      input.iterator &&
+      answer[input.key] &&
+      answer[input.key].length > 0
     ) {
-      const replacementArray = context.updatingAuth[questionObj.iterator];
-      for (let t = 0; t < answer[questionObj.key].length; t += 1) {
-        questionObj.validation = questionObj.iteratorValidation;
-        const newValue = await prompter.input(`Update ${answer[questionObj.key][t]}`, { validate: amplify.inputValidation(questionObj) });
-        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue);
+      const replacementArray = context.updatingAuth[input.iterator];
+      for (let t = 0; t < answer[input.key].length; t += 1) {
+        input.validation = input.iteratorValidation;
+        const newValue = await prompter.input(`Update ${answer[input.key][t]}`, { validate: amplify.inputValidation(input) });
+        replacementArray.splice(replacementArray.indexOf(answer[input.key][t]), 1, newValue);
       }
       j += 1;
       // ADD-ANOTHER BLOCK
-    } else if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
+    } else if (input.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
         will be recorded as an array index, and if it is already an array we push the new value.
         We then ask the user if they want to add another url.  If not, we increment our counter (j)
         so that the next question is appears in the prompt.  If the counter isn't incremented,
-        the same question is reapated.
+        the same question is repeated.
       */
-      if (!coreAnswers[questionObj.key]) {
-        answer[questionObj.key] = [answer[questionObj.key]];
-        coreAnswers = { ...coreAnswers, ...answer };
+      if (!coreAnswers[input.key]) {
+        coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
       } else {
-        coreAnswers[questionObj.key].push(answer[questionObj.key]);
+        coreAnswers[input.key].push(answer);
       }
-      const addAnother = await prompter.yesOrNo(`Do you want to add another ${questionObj.addAnotherLoop}`, false);
+      const addAnother = await prompter.yesOrNo(`Do you want to add another ${input.addAnotherLoop}`, false);
       if (!addAnother) {
         j += 1;
       }
-    } else if (questionObj.key === 'updateFlow') {
+    } else if (input.key === 'updateFlow') {
       /*
         if the user selects a default or fully manual config option during an update,
         we set the useDefault value so that the appropriate questions are displayed
       */
-      if (answer.updateFlow === 'updateUserPoolGroups') {
+      if (input.key === 'updateFlow' && answer === 'updateUserPoolGroups') {
         userPoolGroupList = await updateUserPoolGroups(context);
-      } else if (answer.updateFlow === 'updateAdminQueries') {
+      } else if (input.key === 'updateFlow' && answer === 'updateAdminQueries') {
         adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
-      } else if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
-        answer.useDefault = answer.updateFlow;
-        if (answer.useDefault === 'defaultSocial') {
+      } else if (input.key === 'updateFlow' && ['manual', 'defaultSocial', 'default'].includes(answer)) {
+        if (answer === 'defaultSocial') {
           coreAnswers.hostedUI = true;
         }
 
-        if (answer.useDefault === 'default') {
+        if (answer === 'default') {
           coreAnswers.hostedUI = false;
         }
-        delete answer.updateFlow;
       }
-      coreAnswers = { ...coreAnswers, ...answer };
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
       j += 1;
-    } else if (!context.updatingAuth && answer.useDefault && ['default', 'defaultSocial'].includes(answer.useDefault)) {
+    } else if (!context.updatingAuth && input.useDefault && ['default', 'defaultSocial'].includes(answer)) {
       // if the user selects defaultSocial, we set hostedUI to true to avoid re-asking this question
-      coreAnswers = { ...coreAnswers, ...answer };
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
       coreAnswers.authSelections = 'identityPoolAndUserPool';
       if (coreAnswers.useDefault === 'defaultSocial') {
         coreAnswers.hostedUI = true;
       }
       j += 1;
     } else {
-      coreAnswers = { ...coreAnswers, ...answer };
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
       j += 1;
     }
   }
