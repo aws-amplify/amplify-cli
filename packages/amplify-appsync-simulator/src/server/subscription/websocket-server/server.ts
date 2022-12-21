@@ -266,8 +266,10 @@ export class WebsocketSubscriptionServer {
 
   private attachAsyncIterator = async (connectionContext: ConnectionContext, sub: WebsocketSubscription): Promise<void> => {
     const { asyncIterator, id } = sub;
-    for (;;) {
-      const { value, done } = await asyncIterator.next();
+    let done = false;
+    while (!done) {
+      const { value, done: doneResult } = await asyncIterator.next();
+      done = doneResult;
       if (done) {
         break;
       }
