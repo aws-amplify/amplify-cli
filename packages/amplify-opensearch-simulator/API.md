@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import { $TSAny } from 'amplify-cli-core';
 import execa from 'execa';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
