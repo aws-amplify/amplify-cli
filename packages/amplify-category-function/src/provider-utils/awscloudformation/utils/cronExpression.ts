@@ -71,7 +71,9 @@ export class CronExpression {
       //assume the expression doesn't contain seconds
       this.buildExpression('0 ' + cronExpression);
       parsesWithMissingSeconds = true;
-    } catch (e) {}
+    } catch (e) {
+      // empty
+    }
     let parsesWithOriginal = false;
     this.resetState();
     try {
@@ -333,7 +335,9 @@ export class CronExpression {
   };
 
   skipWhiteSpace = function(i: number, s: string): number {
-    for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {}
+    for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {
+      // empty
+    }
 
     return i;
   };
@@ -492,7 +496,9 @@ export class CronExpression {
   };
 
   findNextWhiteSpace = function(i: number, s: string) {
-    for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {}
+    for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {
+      // empty
+    }
     return i;
   };
   checkNext = function(pos: number, s: string, val: number, type: number): number {

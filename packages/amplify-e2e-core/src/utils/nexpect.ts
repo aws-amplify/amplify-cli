@@ -258,7 +258,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] Y <CR>',
+        description: "'[send] Y <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -272,7 +272,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] Y <CR>',
+        description: "'[send] Y <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -286,7 +286,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] N <CR>',
+        description: "'[send] N <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -300,7 +300,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] Y <CR>',
+        description: "'[send] Y <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -353,7 +353,9 @@ function chain(context: Context): ExecutionContext {
         fn: () => {
           const startCallback = Date.now();
 
-          while (Date.now() - startCallback < milliseconds) {}
+          while (Date.now() - startCallback < milliseconds) {
+            // empty
+          }
 
           return true;
         },
@@ -394,19 +396,20 @@ function chain(context: Context): ExecutionContext {
           const recordings = context.process?.getRecordingFrames() || [];
           const lastScreen = recordings.length
             ? recordings
-              .filter(f => f[1] === 'o')
-              .map(f => f[2])
-              .slice(-10)
-              .join('\n')
+                .filter(f => f[1] === 'o')
+                .map(f => f[2])
+                .slice(-10)
+                .join('\n')
             : 'No output';
           const err = new Error(
-            `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
-              context.noOutputTimeout / 1000
-            } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
+            `Killed the process as no output receive for ${context.noOutputTimeout /
+              1000} Sec. The no output timeout is set to ${context.noOutputTimeout /
+              1000} seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
           err.stack = undefined;
           return onError(err, true);
-        } if (code === 127) {
+        }
+        if (code === 127) {
           // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
           // but it appears node does not, or not in all conditions, blithely
           // return 127 to user, it emits an 'error' from the child_process.
@@ -443,7 +446,9 @@ function chain(context: Context): ExecutionContext {
       if (kill) {
         try {
           context.process.kill();
-        } catch (ex) {}
+        } catch (ex) {
+          // ignore error
+        }
       }
 
       callback(err, errorCode);
@@ -464,9 +469,10 @@ function chain(context: Context): ExecutionContext {
         //
         onError(new Error('Cannot process non-function on nexpect stack.'), true);
         return false;
-      } if (
-        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName)
-        === -1
+      }
+      if (
+        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
+        -1
       ) {
         //
         // If the `currentFn` is a function, but not those set by `.sendline()` or
@@ -512,7 +518,8 @@ function chain(context: Context): ExecutionContext {
         // to evaluate the next function (in case it is a `_sendline` function).
         //
         return currentFn(data) === true ? evalContext(data, '_expect') : onError(createExpectationError(step.expectation, data), true);
-      } if (currentFnName === '_wait') {
+      }
+      if (currentFnName === '_wait') {
         //
         // If this is a `_wait` function, then evaluate it and if it returns true,
         // then evaluate the function (in case it is a `_sendline` function).
@@ -587,16 +594,20 @@ function chain(context: Context): ExecutionContext {
       if (!lastLine) {
         onError(createUnexpectedEndError('No data from child with non-empty queue.', remainingQueue), false);
         return false;
-      } if (context.queue.length > 0) {
+      }
+      if (context.queue.length > 0) {
         onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
         return false;
-      } if (!validateFnType(step)) {
+      }
+      if (!validateFnType(step)) {
         // onError was called
         return false;
-      } if (currentFnName === '_sendline') {
+      }
+      if (currentFnName === '_sendline') {
         onError(new Error('Cannot call sendline after the process has exited'), false);
         return false;
-      } if (currentFnName === '_wait' || currentFnName === '_expect') {
+      }
+      if (currentFnName === '_wait' || currentFnName === '_expect') {
         if (currentFn(lastLine) !== true) {
           onError(createExpectationError(step.expectation, lastLine), false);
           return false;
@@ -649,7 +660,8 @@ function chain(context: Context): ExecutionContext {
 function testExpectation(data: string, expectation: string | RegExp, context: Context): boolean {
   if (types.isRegExp(expectation)) {
     return expectation.test(data);
-  } if (context.ignoreCase) {
+  }
+  if (context.ignoreCase) {
     return data.toLowerCase().indexOf(expectation.toLowerCase()) > -1;
   }
   return data.indexOf(expectation) > -1;
