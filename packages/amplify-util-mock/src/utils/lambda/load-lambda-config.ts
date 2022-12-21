@@ -30,7 +30,7 @@ export const loadLambdaConfig = async (
   );
   const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
   if (!lambdaDef) {
-    return;
+    return undefined;
   }
   const cfnParams = populateCfnParams(resourceName, overrideApiToLocal);
   const processedLambda = lambdaFunctionHandler(lambdaDef[0], lambdaDef[1], {

@@ -105,7 +105,7 @@ export async function removeResource(
     const confirm = await promptConfirmationRemove(context, serviceType);
 
     if (!confirm) {
-      return;
+      return undefined;
     }
   }
 
@@ -119,6 +119,7 @@ export async function removeResource(
     await context.usageData.emitError(err);
     process.exitCode = 1;
   }
+  return undefined;
 }
 
 const deleteResourceFiles = async (context: $TSContext, category: string, resourceName: string, resourceDir: string, force = false) => {

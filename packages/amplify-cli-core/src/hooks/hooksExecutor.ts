@@ -149,6 +149,7 @@ const throwOnDuplicateHooksFiles = (files: HookFileMeta[]): HookFileMeta | undef
   } else if (files.length === 1) {
     return files[0];
   }
+  return undefined;
 };
 
 const splitFileName = (filename: string): HookFileMeta => {
@@ -164,7 +165,7 @@ const splitFileName = (filename: string): HookFileMeta => {
 const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | undefined => {
   const { extension } = fileMeta;
   if (!extension) {
-    return;
+    return undefined;
   }
   const isWin = process.platform === 'win32' || process.env.OSTYPE === 'cygwin' || process.env.OSTYPE === 'msys';
   const extensionObj = getSupportedExtensions(hooksConfig);
@@ -173,7 +174,7 @@ const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | 
   if (isWin) runtime = extensionObj?.[extension]?.runtime_windows;
   runtime = runtime ?? extensionObj?.[extension]?.runtime;
   if (!runtime) {
-    return;
+    return undefined;
   }
 
   const executablePath = which.sync(runtime, {

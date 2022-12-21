@@ -45,7 +45,7 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
       }
     }
     if (requestPayload && requestPayload.version !== '2018-05-29' && result === null) {
-      return;
+      return undefined;
     }
 
     const { result: responseTemplateResult, errors: responseTemplateErrors } = responseMappingTemplate.render(

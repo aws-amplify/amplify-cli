@@ -332,7 +332,7 @@ export function migrateResource(context: $TSContext, projectPath: string, servic
 
   if (!serviceConfig.walkthroughs.migrate) {
     context.print.info(`No migration required for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return serviceConfig.walkthroughs.migrate(context, projectPath, resourceName);
@@ -347,7 +347,7 @@ export function getPermissionPolicies(context: $TSContext, service: ServiceName,
 
   if (!serviceConfig.walkthroughs.getIAMPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return serviceConfig.walkthroughs.getIAMPolicies(resourceName, crudOptions);
@@ -423,6 +423,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       }
     }
   }
+  return undefined;
 }
 
 async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {

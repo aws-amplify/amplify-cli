@@ -38,6 +38,7 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata, undefined);
   }
+  return undefined
 };
 
 const configure = (
@@ -349,6 +350,7 @@ const replaceRef = (node: $TSAny, refName: string, refReplacement: $TSAny): $TSA
       replaceRef(n, refName, refReplacement);
     });
   }
+  return undefined
 };
 
 const isRefNode = (node: $TSAny, refName: string): boolean => {

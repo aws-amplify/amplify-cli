@@ -429,10 +429,11 @@ function chain(context: Context): ExecutionContext {
       }
       if (context.queue.length && !flushQueue()) {
         // if flushQueue returned false, onError was called
-        return;
+        return undefined;
       }
       recordOutputs(code);
       callback(null, signal || code);
+      return undefined;
     };
     //
     // **onError**
@@ -507,7 +508,7 @@ function chain(context: Context): ExecutionContext {
         // If there is nothing left on the context or we are trying to
         // evaluate two consecutive `_expect` functions, return.
         //
-        return;
+        return undefined;
       }
 
       if (shift) {
@@ -515,7 +516,7 @@ function chain(context: Context): ExecutionContext {
       }
 
       if (!validateFnType(step)) {
-        return;
+        return undefined;
       }
 
       if (currentFnName === '_expect') {
@@ -544,6 +545,7 @@ function chain(context: Context): ExecutionContext {
           if (nextFn && !nextFn.requiresInput) evalContext(data);
         }
       }
+      return undefined;
     }
 
     const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
@@ -655,6 +657,7 @@ function chain(context: Context): ExecutionContext {
     } catch (e) {
       onError(e, true);
     }
+    return undefined;
   };
   return {
     ...partialExecutionContext,
@@ -774,6 +777,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
       if (context.process) {
         return context.process.getRecording();
       }
+      return undefined;
     },
   };
 

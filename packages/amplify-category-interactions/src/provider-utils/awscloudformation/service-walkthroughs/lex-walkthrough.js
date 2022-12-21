@@ -39,8 +39,8 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
       name: 'resourceName',
       message: 'Specify the resource that you would want to update',
       type: 'list',
-      choices: resources
-    }
+      choices: resources,
+    },
   ];
 
   return inquirer.prompt(question).then(answer => configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName));
@@ -75,7 +75,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     default: answer => {
       const defaultValue = defaultValues[inputs[0].key];
       return answer.resourceName || defaultValue;
-    }
+    },
   };
 
   let answer = {};
@@ -90,7 +90,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       type: inputs[1].type,
       name: inputs[1].key,
       message: inputs[1].question,
-      choices: inputs[1].options
+      choices: inputs[1].options,
     };
 
     startChoice = await inquirer.prompt(startQuestion);
@@ -102,7 +102,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     type: inputs[3].type,
     name: inputs[3].key,
     message: inputs[3].question,
-    validate: amplify.inputValidation(inputs[3])
+    validate: amplify.inputValidation(inputs[3]),
     // default: defaultValues[inputs[3].key]
   };
 
@@ -110,7 +110,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     type: inputs[4].type,
     name: inputs[4].key,
     message: inputs[4].question,
-    default: inputs[4].default
+    default: inputs[4].default,
   };
 
   let botName;
@@ -126,7 +126,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       type: inputs[2].type,
       name: inputs[2].key,
       message: inputs[2].question,
-      choices: inputs[2].options
+      choices: inputs[2].options,
     };
     botName = await inquirer.prompt(sampleChatbotQuestion);
     botName = botName[inputs[2].key];
@@ -146,7 +146,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       intents,
       outputVoice: 'Matthew',
       botName,
-      coppa
+      coppa,
     };
   } else if (startChoice[inputs[1].key] === 'Update an existing chatbot') {
     if (resourceName) {
@@ -165,7 +165,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       type: inputs[6].type,
       name: inputs[6].key,
       message: inputs[6].question,
-      choices: inputs[6].options
+      choices: inputs[6].options,
     };
     let utterances = [];
     const intents = [];
@@ -178,7 +178,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         type: inputs[7].type,
         name: inputs[7].key,
         message: inputs[7].question,
-        choices: intentList
+        choices: intentList,
       };
       intentName = await inquirer.prompt(chooseIntent);
       intentName = intentName[inputs[7].key];
@@ -187,7 +187,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         type: inputs[8].type,
         name: inputs[8].key,
         message: inputs[8].question,
-        default: inputs[8].default
+        default: inputs[8].default,
       };
       const addUtteranceAnswer = await inquirer.prompt(addUtteranceQuestion);
       if (addUtteranceAnswer[inputs[8].key]) {
@@ -198,7 +198,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         type: inputs[9].type,
         name: inputs[9].key,
         message: inputs[9].question,
-        default: inputs[9].default
+        default: inputs[9].default,
       };
       const addSlotAnswer = await inquirer.prompt(addSlotQuestion);
 
@@ -216,7 +216,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         type: inputs[23].type,
         name: inputs[23].key,
         message: inputs[23].question,
-        default: inputs[23].default
+        default: inputs[23].default,
       };
       while (continueAddingIntents) {
         intents.push(await addIntent(context, botName, resourceName, serviceMetadata, intents, parameters));
@@ -229,7 +229,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         type: inputs[7].type,
         name: inputs[7].key,
         message: inputs[7].question,
-        choices: intentList
+        choices: intentList,
       };
       intentName = await inquirer.prompt(chooseIntent);
       intentName = intentName[inputs[7].key];
@@ -237,7 +237,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       const deleteIntentConfirmation = {
         type: inputs[31].type,
         name: inputs[31].key,
-        message: inputs[31].question
+        message: inputs[31].question,
       };
       deleteIntentConfirmed = await inquirer.prompt(deleteIntentConfirmation);
       deleteIntentConfirmed = deleteIntentConfirmed[inputs[31].key];
@@ -251,7 +251,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       utterances,
       intents,
       slots,
-      newSlotTypes
+      newSlotTypes,
     };
   } else if (startChoice[inputs[1].key] === 'Start from scratch') {
     botName = await inquirer.prompt(botNameQuestion);
@@ -261,7 +261,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       type: inputs[10].type,
       name: inputs[10].key,
       message: inputs[10].question,
-      choices: inputs[10].options
+      choices: inputs[10].options,
     };
     let outputVoice = await inquirer.prompt(outputVoiceQuestion);
     outputVoice = outputVoice[inputs[10].key];
@@ -270,7 +270,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       type: inputs[11].type,
       name: inputs[11].key,
       message: inputs[11].question,
-      default: defaultValues[inputs[11].key]
+      default: defaultValues[inputs[11].key],
     };
     let sessionTimeout = await inquirer.prompt(sessionTimeoutQuestion);
     sessionTimeout = sessionTimeout[inputs[11].key];
@@ -292,7 +292,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       type: inputs[23].type,
       name: inputs[23].key,
       message: inputs[23].question,
-      default: inputs[23].default
+      default: inputs[23].default,
     };
     const intents = [];
     while (continueAddingIntents) {
@@ -307,7 +307,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       intents,
       outputVoice,
       sessionTimeout,
-      coppa
+      coppa,
     };
   } else {
     context.print.error('Valid option not chosen');
@@ -354,7 +354,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
     type: inputs[12].type,
     name: inputs[12].key,
     message: inputs[12].question,
-    validate: amplify.inputValidation(inputs[12])
+    validate: amplify.inputValidation(inputs[12]),
   };
 
   let intentName;
@@ -391,7 +391,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
     type: inputs[18].type,
     name: inputs[18].key,
     message: inputs[18].question,
-    default: inputs[18].default
+    default: inputs[18].default,
   };
   let confirmationQuestion;
   let cancelMessage;
@@ -401,7 +401,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
       type: inputs[19].type,
       name: inputs[19].key,
       message: inputs[19].question,
-      validate: amplify.inputValidation(inputs[19])
+      validate: amplify.inputValidation(inputs[19]),
     };
     confirmationQuestion = await inquirer.prompt(confirmationQuestionQuestion);
     confirmationQuestion = confirmationQuestion[inputs[19].key];
@@ -410,7 +410,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
       type: inputs[20].type,
       name: inputs[20].key,
       message: inputs[20].question,
-      validate: amplify.inputValidation(inputs[20])
+      validate: amplify.inputValidation(inputs[20]),
     };
     cancelMessage = await inquirer.prompt(cancelMessageQuestion);
     cancelMessage = cancelMessage[inputs[20].key];
@@ -420,7 +420,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
     type: inputs[21].type,
     name: inputs[21].key,
     message: inputs[21].question,
-    choices: inputs[21].options
+    choices: inputs[21].options,
   };
   let intentFulfillment = await inquirer.prompt(intentFulfillmentQuestion);
   intentFulfillment = intentFulfillment[inputs[21].key];
@@ -437,7 +437,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
     slots,
     utterances,
     intentName,
-    newSlotTypes
+    newSlotTypes,
   };
 }
 
@@ -448,13 +448,13 @@ async function addUtterance(context, intentName, botName, resourceName, serviceM
     type: inputs[24].type,
     name: inputs[24].key,
     message: inputs[24].question,
-    default: inputs[24].default
+    default: inputs[24].default,
   };
   const utteranceQuestion = {
     type: inputs[13].type,
     name: inputs[13].key,
     message: inputs[13].question,
-    validate: amplify.inputValidation(inputs[13])
+    validate: amplify.inputValidation(inputs[13]),
   };
   let addAnotherUtterance = true;
   const utterances = [];
@@ -476,25 +476,25 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     type: inputs[25].type,
     name: inputs[25].key,
     message: inputs[25].question,
-    default: inputs[25].default
+    default: inputs[25].default,
   };
   const slotNameQuestion = {
     type: inputs[14].type,
     name: inputs[14].key,
     message: inputs[14].question,
-    validate: amplify.inputValidation(inputs[14])
+    validate: amplify.inputValidation(inputs[14]),
   };
   const slotPromptQuestion = {
     type: inputs[16].type,
     name: inputs[16].key,
     message: inputs[16].question,
-    validate: amplify.inputValidation(inputs[16])
+    validate: amplify.inputValidation(inputs[16]),
   };
   const slotRequiredQuestion = {
     type: inputs[17].type,
     name: inputs[17].key,
     message: inputs[17].question,
-    default: inputs[17].default
+    default: inputs[17].default,
   };
   let addAnotherSlot = true;
   const slots = [];
@@ -506,7 +506,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
       type: '',
       prompt: '',
       required: true,
-      customType: false
+      customType: false,
     };
     slot.name = await inquirer.prompt(slotNameQuestion);
     slot.name = slot.name[inputs[14].key];
@@ -532,7 +532,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
       newSlotTypes.push({
         slotType: slot.type.slotType,
         slotTypeDescription: slot.type.slotTypeDescription,
-        slotValues: slot.type.slotValues
+        slotValues: slot.type.slotValues,
       });
       slot.customType = true;
       newSlotTypeAdded = true;
@@ -571,7 +571,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     type: inputs[26].type,
     name: inputs[26].key,
     message: inputs[26].question,
-    choices: inputs[26].options
+    choices: inputs[26].options,
   };
   const slotTypeChoice = await inquirer.prompt(slotTypeChoiceQuestion);
   function searchSlotTypes(builtInSlotTypes) {
@@ -591,7 +591,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
         context,
         'awscloudformation',
         'getBuiltInSlotTypes',
-        slotTypeOptions
+        slotTypeOptions,
       );
       builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn.slotTypes.map(builtinSlotType => builtinSlotType.signature));
       slotTypeOptions = builtInSlotTypesReturn.nextToken;
@@ -601,7 +601,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
       type: 'autocomplete',
       name: inputs[15].key,
       message: inputs[15].question,
-      source: searchSlotTypes(builtInSlotTypes)
+      source: searchSlotTypes(builtInSlotTypes),
     };
     slotType = await inquirer.prompt(slotTypeQuestion);
     return [slotType[inputs[15].key], false];
@@ -626,7 +626,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
       type: 'list',
       name: inputs[15].key,
       message: inputs[15].question,
-      choices: slotTypes
+      choices: slotTypes,
     };
     slotType = await inquirer.prompt(slotTypeQuestion);
     return [slotType[inputs[15].key], true];
@@ -635,25 +635,25 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
       type: inputs[27].type,
       name: inputs[27].key,
       message: inputs[27].question,
-      validate: amplify.inputValidation(inputs[27])
+      validate: amplify.inputValidation(inputs[27]),
     };
     const slotTypeDescriptionQuestion = {
       type: inputs[28].type,
       name: inputs[28].key,
       message: inputs[28].question,
-      validate: amplify.inputValidation(inputs[28])
+      validate: amplify.inputValidation(inputs[28]),
     };
     const slotTypeValueQuestion = {
       type: inputs[29].type,
       name: inputs[29].key,
       message: inputs[29].question,
-      validate: amplify.inputValidation(inputs[29])
+      validate: amplify.inputValidation(inputs[29]),
     };
     const continueAddingSlotValuesQuestion = {
       type: inputs[30].type,
       name: inputs[30].key,
       message: inputs[30].question,
-      default: inputs[30].default
+      default: inputs[30].default,
     };
     slotType = await inquirer.prompt(slotTypeNameQuestion);
     slotType = slotType[inputs[27].key];
@@ -685,11 +685,12 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     return {
       slotType,
       slotTypeDescription,
-      slotValues
+      slotValues,
     };
   }
 
   context.print.error('Valid option not chosen');
+  return undefined;
 }
 
 async function askLambda(context) {
@@ -697,16 +698,16 @@ async function askLambda(context) {
   const accountID = context.exeInfo.amplifyMeta.providers.awscloudformation.AuthRoleArn.split(':')[4];
 
   const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', {
-    region: projectRegion
+    region: projectRegion,
   });
 
   const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
     value: {
       resourceName: lambdaFunction.FunctionName.replace(/[^0-9a-zA-Z]/gi, ''),
       Arn: lambdaFunction.FunctionArn,
-      FunctionName: lambdaFunction.FunctionName
+      FunctionName: lambdaFunction.FunctionName,
     },
-    name: `${lambdaFunction.FunctionName}`
+    name: `${lambdaFunction.FunctionName}`,
   }));
 
   if (lambdaOptions.length === 0) {
@@ -718,7 +719,7 @@ async function askLambda(context) {
     type: 'list',
     name: 'lambdaChoice',
     message: 'Select a Lambda function',
-    choices: lambdaOptions
+    choices: lambdaOptions,
   };
 
   const lambdaCloudOptionAnswer = await inquirer.prompt([lambdaCloudOptionQuestion]);
@@ -727,7 +728,7 @@ async function askLambda(context) {
     region: projectRegion,
     accountId: accountID,
     lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn,
-    lambdaName: lambdaCloudOptionAnswer.lambdaChoice.FunctionName
+    lambdaName: lambdaCloudOptionAnswer.lambdaChoice.FunctionName,
   };
 }
 
@@ -754,8 +755,8 @@ async function migrate(context, projectPath, resourceName) {
     {
       dir: pluginDir,
       template: 'cloudformation-templates/lex-cloudformation-template.json.ejs',
-      target: `${targetDir}/${category}/${resourceName}/${resourceName}-cloudformation-template.json`
-    }
+      target: `${targetDir}/${category}/${resourceName}/${resourceName}-cloudformation-template.json`,
+    },
   ];
 
   // copy over the files
@@ -764,14 +765,14 @@ async function migrate(context, projectPath, resourceName) {
   // Create parameters.json file
   const cfnParameters = {
     authRoleArn: {
-      'Fn::GetAtt': ['AuthRole', 'Arn']
+      'Fn::GetAtt': ['AuthRole', 'Arn'],
     },
     authRoleName: {
-      Ref: 'AuthRoleName'
+      Ref: 'AuthRoleName',
     },
     unauthRoleName: {
-      Ref: 'UnauthRoleName'
-    }
+      Ref: 'UnauthRoleName',
+    },
   };
 
   const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
@@ -816,13 +817,13 @@ function getIAMPolicies(resourceName, crudOptions) {
             { Ref: 'AWS::AccountId' },
             ':bot:',
             {
-              Ref: `${category}${resourceName}BotName`
+              Ref: `${category}${resourceName}BotName`,
             },
-            ':*'
-          ]
-        ]
-      }
-    ]
+            ':*',
+          ],
+        ],
+      },
+    ],
   };
 
   const attributes = ['BotName'];
@@ -834,5 +835,5 @@ module.exports = {
   addWalkthrough,
   updateWalkthrough,
   migrate,
-  getIAMPolicies
+  getIAMPolicies,
 };

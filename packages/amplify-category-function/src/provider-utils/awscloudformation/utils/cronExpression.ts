@@ -469,6 +469,7 @@ export class CronExpression {
       case YEAR:
         return this.years;
     }
+    return undefined;
   };
 
   // get the string value

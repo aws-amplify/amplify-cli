@@ -113,6 +113,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
     }
     return cliInputs.resourceName;
   }
+  return undefined;
 }
 
 /**
@@ -131,7 +132,7 @@ export async function updateWalkthrough(context: $TSContext) {
     // For better DX check if the storage is imported
     if (amplifyMeta[AmplifyCategories.STORAGE][storageResourceName].serviceType === 'imported') {
       printer.error('Updating of an imported storage resource is not supported.');
-      return;
+      return undefined;
     }
     //load existing cliInputs
     const cliInputsState = new S3InputState(context, storageResourceName, undefined);
@@ -148,7 +149,7 @@ export async function updateWalkthrough(context: $TSContext) {
         const stackGenerator = new AmplifyS3ResourceStackTransform(storageResourceName, context);
         await stackGenerator.transform(CLISubCommandType.UPDATE); //generates cloudformation
       } else {
-        return;
+        return undefined;
       }
     }
 
@@ -195,6 +196,7 @@ export async function updateWalkthrough(context: $TSContext) {
     await stackGenerator.transform(CLISubCommandType.UPDATE);
     return cliInputs.resourceName;
   }
+  return undefined;
 }
 
 /**
@@ -636,6 +638,7 @@ async function interactiveAskTriggerTypeFlow(
       return newTriggerFunction;
     }
   } //Existing function or New function
+  return undefined;
 }
 
 /**

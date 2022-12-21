@@ -208,6 +208,7 @@ export class DeploymentManager {
             default:
             // intentionally left blank as we don't care about intermediate states
           }
+          return undefined;
         })
         .start();
       service.send({ type: 'DEPLOY' });
@@ -274,6 +275,7 @@ export class DeploymentManager {
             default:
             // intentionally left blank as we don't care about intermediate states
           }
+          return undefined;
         })
         .start();
       service.send({ type: 'ROLLBACK' });

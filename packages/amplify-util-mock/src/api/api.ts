@@ -17,7 +17,12 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { describeTables } from '../utils/dynamo-db/utils';
-import { findModelLambdaTriggers, findSearchableLambdaTriggers, getSearchableLambdaTriggerConfig, LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
+import {
+  findModelLambdaTriggers,
+  findSearchableLambdaTriggers,
+  getSearchableLambdaTriggerConfig,
+  LambdaTrigger,
+} from '../utils/lambda/find-lambda-triggers';
 import { getMockConfig } from '../utils/mock-config-file';
 import { getInvoker } from 'amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
@@ -58,7 +63,7 @@ export class APITest {
       // check java version
       await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
-      const isLocalDBEmpty = !(fs.existsSync(getMockDataDirectory(context)));
+      const isLocalDBEmpty = !fs.existsSync(getMockDataDirectory(context));
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
       this.resolverOverrideManager = new ResolverOverrides(resolverDirectory);
@@ -71,9 +76,9 @@ export class APITest {
       await this.resolverOverrideManager.start();
       await this.watch(context);
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
-      
+
       // If any of the model types are searchable, start opensearch local instance
-      if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable) && (!isWindowsPlatform)) {
+      if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform) {
         this.opensearchURL = await this.startOpensearchLocalServer(context, isLocalDBEmpty);
       }
       this.appSyncSimulator.init(appSyncConfig);
@@ -89,7 +94,7 @@ export class APITest {
       await this.stop(context);
       throw new AmplifyFault('MockProcessFault', {
         message: `${errMessage}. Reason: ${e?.message}`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
   }
@@ -119,7 +124,9 @@ export class APITest {
       }
     } catch (e) {
       // failed to stop opensearch emulator
-      printer.error(`Failed to stop OpenSearch Local Server ${e.message}. Kill the mock process using "kill -9 ${this.opensearchEmulator?.pid}" and restart it.`);
+      printer.error(
+        `Failed to stop OpenSearch Local Server ${e.message}. Kill the mock process using "kill -9 ${this.opensearchEmulator?.pid}" and restart it.`,
+      );
     }
 
     await this.appSyncSimulator.stop();
@@ -206,7 +213,7 @@ export class APITest {
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
         await this.startDDBListeners(context, config, true);
-      } else if (filePath?.includes(getMockDataDirectory(context)) && (action === 'unlink')) {
+      } else if (filePath?.includes(getMockDataDirectory(context)) && action === 'unlink') {
         printer.info('Mock DB deletion detected. Clearing the OpenSearch indices...');
         await this.clearAllIndices(this.opensearchURL);
       }
@@ -237,41 +244,39 @@ export class APITest {
     if (onlyNewTables) {
       tables = config?.tables?.filter(table => table?.isNewlyAdded);
     }
-    const tableNames = tables?.map( (t: $TSAny) => t?.Properties?.TableName);
+    const tableNames = tables?.map((t: $TSAny) => t?.Properties?.TableName);
 
     // enable triggers for newly added searchable tables
     let newlyAddedSearchableTableNames: string[] = [];
-    if(!(_.isEmpty(searchableEnabledTableNames))) {
-      newlyAddedSearchableTableNames = searchableEnabledTableNames.filter( tableName => !(this.searchableTables.includes(tableName)) );
+    if (!_.isEmpty(searchableEnabledTableNames)) {
+      newlyAddedSearchableTableNames = searchableEnabledTableNames.filter(tableName => !this.searchableTables.includes(tableName));
     }
     this.searchableTables = searchableEnabledTableNames;
 
-    if(!(_.isEmpty(tableNames))) {
-      const modelLambdaTriggers: {[index: string]: LambdaTrigger[];} = await findModelLambdaTriggers(context, tableNames);
-      const searchableLambdaTriggers: {[index: string]: LambdaTrigger;} = await findSearchableLambdaTriggers(context, newlyAddedSearchableTableNames, this.opensearchURL);
+    if (!_.isEmpty(tableNames)) {
+      const modelLambdaTriggers: { [index: string]: LambdaTrigger[] } = await findModelLambdaTriggers(context, tableNames);
+      const searchableLambdaTriggers: { [index: string]: LambdaTrigger } = await findSearchableLambdaTriggers(
+        context,
+        newlyAddedSearchableTableNames,
+        this.opensearchURL,
+      );
       const allLambdaTriggers = modelLambdaTriggers;
       Object.entries(searchableLambdaTriggers)?.forEach(([tableName, lambdaTrigger]) => {
         if (allLambdaTriggers[tableName]) {
           allLambdaTriggers[tableName].push(lambdaTrigger);
-        }
-        else {
+        } else {
           allLambdaTriggers[tableName] = [lambdaTrigger];
         }
       });
 
       const allTablesWithTriggers = Object.keys(allLambdaTriggers);
-      const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, allTablesWithTriggers);
+      const tableStreamArns: { [index: string]: TableDescription } = await describeTables(this.ddbClient, allTablesWithTriggers);
       const allListeners = [];
       Object.entries(allLambdaTriggers)?.forEach(([tableName, lambdaTriggers]) => {
-        if(!(_.isEmpty(lambdaTriggers))) {
-          lambdaTriggers.forEach( (lambdaTrigger: LambdaTrigger) => {
+        if (!_.isEmpty(lambdaTriggers)) {
+          lambdaTriggers.forEach((lambdaTrigger: LambdaTrigger) => {
             allListeners.push(
-              ddbLambdaTriggerHandler(
-                context, 
-                tableStreamArns[tableName].LatestStreamArn, 
-                lambdaTrigger, 
-                this.ddbEmulator.url
-              )
+              ddbLambdaTriggerHandler(context, tableStreamArns[tableName].LatestStreamArn, lambdaTrigger, this.ddbEmulator.url),
             );
           });
         }
@@ -337,7 +342,7 @@ export class APITest {
             },
           };
         }),
-      )
+      ),
     };
   }
 
@@ -370,11 +375,12 @@ export class APITest {
         name = entry[0];
         return true;
       }
+      return undefined;
     });
     if (!name) {
       throw new AmplifyFault('MockProcessFault', {
         message: 'No AppSync API is added to the project',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
     return name;
@@ -397,13 +403,10 @@ export class APITest {
       const mockConfig = await getMockConfig(context);
       await this.createMockSearchableArtifacts(context);
       checkJavaHome();
-      this.opensearchEmulator = await opensearchEmulator.launch(
-        getMockOpenseachDataDirectory(context), 
-        {
-          port: null, // let the emulator choose the default
-          ...mockConfig,
-        }
-      );
+      this.opensearchEmulator = await opensearchEmulator.launch(getMockOpenseachDataDirectory(context), {
+        port: null, // let the emulator choose the default
+        ...mockConfig,
+      });
       if (isLocalDBEmpty) {
         await this.clearAllIndices(this.opensearchEmulator.url);
       }
@@ -412,12 +415,12 @@ export class APITest {
       throw new AmplifyFault('MockProcessFault', {
         message: 'Unable to start the local OpenSearch Instance.',
         details: error?.message || '',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
   }
 
-  private async clearAllIndices(openSearchURL:URL) {
+  private async clearAllIndices(openSearchURL: URL) {
     if (!openSearchURL) {
       return;
     }
@@ -425,24 +428,27 @@ export class APITest {
     try {
       const url = openSearchURL.toString() + '*';
       const result = await fetch(url, {
-          method: 'DELETE',
-          headers: {
-              'Content-type': 'application/json',
-          }
+        method: 'DELETE',
+        headers: {
+          'Content-type': 'application/json',
+        },
       });
       const status = await result.json();
-      if (!(status?.acknowledged)) {
+      if (!status?.acknowledged) {
         throw new AmplifyFault('MockProcessFault', {
           message: 'The action to delete all items in an index is not acknowledged by the Opensearch server.',
-          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
         });
       }
-    }
-    catch(error) {
-      throw new AmplifyFault('MockProcessFault', {
-        message: errMessage,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-      }, error);
+    } catch (error) {
+      throw new AmplifyFault(
+        'MockProcessFault',
+        {
+          message: errMessage,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+        },
+        error,
+      );
     }
   }
 
@@ -456,18 +462,14 @@ export class APITest {
 
     // copy the Pipfile first
     const pipFileName = 'Pipfile';
-    fs.copySync(
-      path.join(searchableLambdaResourceDir, pipFileName), 
-      path.join(mockSearchableTriggerDirectory, pipFileName),
-      { overwrite: true }
-    );
+    fs.copySync(path.join(searchableLambdaResourceDir, pipFileName), path.join(mockSearchableTriggerDirectory, pipFileName), {
+      overwrite: true,
+    });
 
     // copy the source files
-    fs.copySync(
-      path.join(searchableLambdaResourceDir, 'source-files'), 
-      path.join(mockSearchableTriggerDirectory, 'src'),
-      { overwrite: true }
-    );
+    fs.copySync(path.join(searchableLambdaResourceDir, 'source-files'), path.join(mockSearchableTriggerDirectory, 'src'), {
+      overwrite: true,
+    });
 
     // build the searchable lambda trigger
     const triggerConfig = getSearchableLambdaTriggerConfig(context, null);

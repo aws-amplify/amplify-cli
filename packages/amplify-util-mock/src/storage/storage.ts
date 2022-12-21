@@ -70,6 +70,7 @@ export class StorageTest {
     } catch (e) {
       console.error('Failed to start Mock Storage server', e);
     }
+    return undefined;
   }
 
   async stop() {
@@ -200,6 +201,7 @@ export class StorageTest {
         name = entry[0];
         return true;
       }
+      return undefined;
     });
     return name;
   }

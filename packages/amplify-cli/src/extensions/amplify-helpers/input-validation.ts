@@ -45,5 +45,6 @@ export function inputValidation(validation) {
     if (validation.required) {
       return input ? true : 'A response is required for this field';
     }
+    return undefined;
   };
 }

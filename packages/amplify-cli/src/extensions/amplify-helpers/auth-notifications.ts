@@ -1,11 +1,7 @@
-import {
-  $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import fs from 'fs-extra';
-import {
-  DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse,
-} from 'graphql';
+import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
 import { collectDirectivesByType, collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
 
@@ -49,8 +45,8 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
   if (displayAuthNotification(directiveMap, fieldDirectives)) {
     printer.blankLine();
     const continueChange = await prompter.yesOrNo(
-      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. `
-        + `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
     );
 
     if (!continueChange) {
@@ -112,8 +108,8 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
   if (hasV2AuthDirectives(doc)) {
     printer.blankLine();
     const continueChange = await prompter.yesOrNo(
-      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. `
-        + `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
     );
 
     if (!continueChange) {
@@ -223,10 +219,13 @@ export const displayAuthNotification = (directiveMap: $TSAny, fieldDirectives: S
     const subscriptionOff: boolean = (modelDirective?.arguments || []).some((arg: $TSAny) => {
       if (arg.name.value === 'subscriptions') {
         const subscriptionNull = arg.value.kind === 'NullValue';
-        const levelFieldOffOrNull = arg.value?.fields?.some(({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'));
+        const levelFieldOffOrNull = arg.value?.fields?.some(
+          ({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'),
+        );
 
         return levelFieldOffOrNull || subscriptionNull;
       }
+      return undefined;
     });
 
     return subscriptionOff && fieldDirectives.has(typeName);

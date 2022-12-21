@@ -190,6 +190,7 @@ export class WebsocketSubscriptionServer {
     } catch (e) {
       this.sendError(connectionContext, '', { errors: [{ message: e.message }] });
     }
+    return undefined;
   };
 
   private sendMessage = (connectionContext: ConnectionContext, subscriptionId: string, type: MESSAGE_TYPES, data: any): void => {

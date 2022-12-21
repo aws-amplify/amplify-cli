@@ -37,6 +37,7 @@ function verifyAmplifyManifest(pluginDirPath: string, pluginModule: any): boolea
   } catch (err) {
     false;
   }
+  return undefined;
 }
 
 function verifyEventHandlers(manifest: any, pluginModule: any): boolean {

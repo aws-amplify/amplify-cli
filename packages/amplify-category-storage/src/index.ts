@@ -69,7 +69,7 @@ export async function add(context: any, providerName: any, service: any) {
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
 
   return providerController.addResource(context, AmplifyCategories.STORAGE, service, options);

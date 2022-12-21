@@ -267,7 +267,7 @@ function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, e
   const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
   if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
-    return;
+    return undefined;
   }
 
   JSONUtilities.writeJson(cfnPath, cfn);
