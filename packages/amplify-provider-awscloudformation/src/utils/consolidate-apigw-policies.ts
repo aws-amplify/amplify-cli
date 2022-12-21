@@ -144,7 +144,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
 
   private createPoliciesFromResources(options: ApiGatewayPolicyCreationState) {
     const { apiRef, env, roleName, path, methods, namePrefix, envName } = options;
-    const apiPath = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
+    const apiPath = String(path.name).replace(/{[a-zA-Z0-9-]+}/g, '*');
 
     methods.forEach((method: string) => {
       const policySizeIncrease = computePolicySizeIncrease(envName.length, method.length, apiPath.length);

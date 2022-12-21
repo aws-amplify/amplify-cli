@@ -209,7 +209,7 @@ export class S3InputState {
       }
     }
 
-    if (storageParams && storageParams.hasOwnProperty('groupPermissionMap')) {
+    if (storageParams && Object.prototype.hasOwnProperty.call(storageParams, 'groupPermissionMap')) {
       userInputs.groupAccess = S3InputState.getPolicyMapFromStorageParamPolicyMap(storageParams.groupPermissionMap);
     }
 
