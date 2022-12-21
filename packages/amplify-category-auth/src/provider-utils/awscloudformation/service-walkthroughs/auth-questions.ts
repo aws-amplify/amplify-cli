@@ -45,133 +45,7 @@ export const serviceWalkthrough = async (
   handleUpdates(context, coreAnswers);
 
   // QUESTION LOOP
-  let j = 0;
-  while (j < inputs.length) {
-    const input = inputs[j];
-
-    // CREATE QUESTION OBJECT
-    const question = await parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
-
-    // ASK QUESTION
-    let answer =
-      input.type && input.type === 'list'
-        ? await prompter.pick(input.question, question.choices, { validate: amplify.inputValidation(input) })
-        : input.type && input.type === 'multiselect'
-        ? await prompter.pick<'many', string>(input.question, question.choices, { returnSize: 'many', validate: amplify.inputValidation(input) })
-        : input.type && input.type === 'confirm'
-        ? await prompter.yesOrNo(input.question)
-        : await prompter.input(input.question, { validate: amplify.inputValidation(input) } );
-
-    /* eslint-disable spellcheck/spell-checker */
-    if (input.key === 'signinwithapplePrivateKeyUserPool') {
-      answer = extractApplePrivateKey(answer);
-    }
-    /* eslint-enable spellcheck/spell-checker */
-    if (input.key === 'userPoolGroups' && answer) {
-      userPoolGroupList = await updateUserPoolGroups(context);
-    }
-
-    if (input.key === 'adminQueries' && answer) {
-      adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
-    }
-
-    if (input.key === 'triggers' && answer.length > 0) {
-      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
-      const selectionMetadata = capabilities;
-
-      /* eslint-disable no-loop-func */
-      selectionMetadata.forEach((selection: { [key: string]: any }) => {
-        Object.keys(selection.triggers).forEach(t => {
-          if (!tempTriggers[t] && answer.includes(selection.value)) {
-            tempTriggers[t] = selection.triggers[t];
-          } else if (tempTriggers[t] && answer.includes(selection.value)) {
-            tempTriggers[t] = uniq(tempTriggers[t].concat(selection.triggers[t]));
-          } else if (tempTriggers[t] && !answer.includes(selection.value)) {
-            const tempForDiff = Object.assign([], tempTriggers[t]);
-            const remainder = pullAll(tempForDiff, selection.triggers[t]);
-            if (remainder && remainder.length > 0) {
-              tempTriggers[t] = remainder;
-            } else {
-              delete tempTriggers[t];
-            }
-          }
-        });
-      });
-      answer = tempTriggers;
-    }
-
-    // LEARN MORE BLOCK
-    if (new RegExp(/learn/i).test(answer[input.key]) && input.learnMore) {
-      const helpText = `\n${input.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-      input.prefix = chalk.green(helpText);
-      // ITERATOR BLOCK
-    } else if (
-      /*
-        if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
-        key to find the array of values it should splice into.
-      */
-      input.iterator &&
-      answer[input.key] &&
-      answer[input.key].length > 0
-    ) {
-      const replacementArray = context.updatingAuth[input.iterator];
-      for (let t = 0; t < answer[input.key].length; t += 1) {
-        input.validation = input.iteratorValidation;
-        const newValue = await prompter.input(`Update ${answer[input.key][t]}`, { validate: amplify.inputValidation(input) });
-        replacementArray.splice(replacementArray.indexOf(answer[input.key][t]), 1, newValue);
-      }
-      j += 1;
-      // ADD-ANOTHER BLOCK
-    } else if (input.addAnotherLoop && Object.keys(answer).length > 0) {
-      /*
-        if the input has an 'addAnotherLoop' value, we first make sure that the answer
-        will be recorded as an array index, and if it is already an array we push the new value.
-        We then ask the user if they want to add another url.  If not, we increment our counter (j)
-        so that the next question is appears in the prompt.  If the counter isn't incremented,
-        the same question is repeated.
-      */
-      if (!coreAnswers[input.key]) {
-        coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
-      } else {
-        coreAnswers[input.key].push(answer);
-      }
-      const addAnother = await prompter.yesOrNo(`Do you want to add another ${input.addAnotherLoop}`, false);
-      if (!addAnother) {
-        j += 1;
-      }
-    } else if (input.key === 'updateFlow') {
-      /*
-        if the user selects a default or fully manual config option during an update,
-        we set the useDefault value so that the appropriate questions are displayed
-      */
-      if (input.key === 'updateFlow' && answer === 'updateUserPoolGroups') {
-        userPoolGroupList = await updateUserPoolGroups(context);
-      } else if (input.key === 'updateFlow' && answer === 'updateAdminQueries') {
-        adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
-      } else if (input.key === 'updateFlow' && ['manual', 'defaultSocial', 'default'].includes(answer)) {
-        if (answer === 'defaultSocial') {
-          coreAnswers.hostedUI = true;
-        }
-
-        if (answer === 'default') {
-          coreAnswers.hostedUI = false;
-        }
-      }
-      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
-      j += 1;
-    } else if (!context.updatingAuth && input.useDefault && ['default', 'defaultSocial'].includes(answer)) {
-      // if the user selects defaultSocial, we set hostedUI to true to avoid re-asking this question
-      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
-      coreAnswers.authSelections = 'identityPoolAndUserPool';
-      if (coreAnswers.useDefault === 'defaultSocial') {
-        coreAnswers.hostedUI = true;
-      }
-      j += 1;
-    } else {
-      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer} };
-      j += 1;
-    }
-  }
+  ({ coreAnswers, userPoolGroupList, adminQueryGroup } = await loopQuestions(inputs, parseInputs, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context, userPoolGroupList, adminQueryGroup));
 
   // POST-QUESTION LOOP PARSING
 
@@ -721,3 +595,143 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
 
   return { policy, attributes };
 };
+
+const loopQuestions = async (
+  inputs: any,
+  parseInputs: any,
+  amplify: $TSContext,
+  defaultValuesFilename: any,
+  stringMapsFilename: any,
+  coreAnswers: { [key: string]: any; },
+  context: $TSContext,
+  userPoolGroupList: any,
+  adminQueryGroup: any
+) => {
+  let j = 0;
+  while (j < inputs.length) {
+    const input = inputs[j];
+
+    // CREATE QUESTION OBJECT
+    const question = await parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
+
+    // ASK QUESTION
+    let answer = input.type && input.type === 'list'
+      ? await prompter.pick(input.question, question.choices)
+      : input.type && input.type === 'multiselect'
+        ? await prompter.pick<'many', string>(input.question, question.choices, { returnSize: 'many' })
+        : input.type && input.type === 'confirm'
+          ? await prompter.yesOrNo(input.question)
+          : await prompter.input(input.question, { validate: amplify.inputValidation(input) });
+
+    /* eslint-disable spellcheck/spell-checker */
+    if (input.key === 'signinwithapplePrivateKeyUserPool') {
+      answer = extractApplePrivateKey(answer);
+    }
+    /* eslint-enable spellcheck/spell-checker */
+    if (input.key === 'userPoolGroups' && answer) {
+      userPoolGroupList = await updateUserPoolGroups(context);
+    }
+
+    if (input.key === 'adminQueries' && answer) {
+      adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
+    }
+
+    if (input.key === 'triggers' && answer.length > 0) {
+      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
+      const selectionMetadata = capabilities;
+
+      /* eslint-disable no-loop-func */
+      selectionMetadata.forEach((selection: { [key: string]: any; }) => {
+        Object.keys(selection.triggers).forEach(t => {
+          if (!tempTriggers[t] && answer.includes(selection.value)) {
+            tempTriggers[t] = selection.triggers[t];
+          } else if (tempTriggers[t] && answer.includes(selection.value)) {
+            tempTriggers[t] = uniq(tempTriggers[t].concat(selection.triggers[t]));
+          } else if (tempTriggers[t] && !answer.includes(selection.value)) {
+            const tempForDiff = Object.assign([], tempTriggers[t]);
+            const remainder = pullAll(tempForDiff, selection.triggers[t]);
+            if (remainder && remainder.length > 0) {
+              tempTriggers[t] = remainder;
+            } else {
+              delete tempTriggers[t];
+            }
+          }
+        });
+      });
+      answer = tempTriggers;
+    }
+
+    // LEARN MORE BLOCK
+    if (new RegExp(/learn/i).test(answer) && input.learnMore) {
+      const helpText = `\n${input.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
+      input.prefix = chalk.green(helpText);
+      // ITERATOR BLOCK
+    } else if (
+      /*
+        if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
+        key to find the array of values it should splice into.
+      */
+      input.iterator &&
+      answer &&
+      answer.length > 0) {
+      const replacementArray = context.updatingAuth[input.iterator];
+      for (let t = 0; t < answer.length; t += 1) {
+        input.validation = input.iteratorValidation;
+        const newValue = await prompter.input(`Update ${answer[t]}`, { validate: amplify.inputValidation(input) });
+        replacementArray.splice(replacementArray.indexOf(answer[t]), 1, newValue);
+      }
+      j += 1;
+      // ADD-ANOTHER BLOCK
+    } else if (input.addAnotherLoop && Object.keys(answer).length > 0) {
+      /*
+        if the input has an 'addAnotherLoop' value, we first make sure that the answer
+        will be recorded as an array index, and if it is already an array we push the new value.
+        We then ask the user if they want to add another url.  If not, we increment our counter (j)
+        so that the next question is appears in the prompt.  If the counter isn't incremented,
+        the same question is repeated.
+      */
+      if (!coreAnswers[input.key]) {
+        coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
+      } else {
+        coreAnswers[input.key].push(answer);
+      }
+      const addAnother = await prompter.yesOrNo(`Do you want to add another ${input.addAnotherLoop}`, false);
+      if (!addAnother) {
+        j += 1;
+      }
+    } else if (input.key === 'updateFlow') {
+      /*
+        if the user selects a default or fully manual config option during an update,
+        we set the useDefault value so that the appropriate questions are displayed
+      */
+      if (input.key === 'updateFlow' && answer === 'updateUserPoolGroups') {
+        userPoolGroupList = await updateUserPoolGroups(context);
+      } else if (input.key === 'updateFlow' && answer === 'updateAdminQueries') {
+        adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
+      } else if (input.key === 'updateFlow' && ['manual', 'defaultSocial', 'default'].includes(answer)) {
+        if (answer === 'defaultSocial') {
+          coreAnswers.hostedUI = true;
+        }
+
+        if (answer === 'default') {
+          coreAnswers.hostedUI = false;
+        }
+      }
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
+      j += 1;
+    } else if (!context.updatingAuth && input.useDefault && ['default', 'defaultSocial'].includes(answer)) {
+      // if the user selects defaultSocial, we set hostedUI to true to avoid re-asking this question
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
+      coreAnswers.authSelections = 'identityPoolAndUserPool';
+      if (coreAnswers.useDefault === 'defaultSocial') {
+        coreAnswers.hostedUI = true;
+      }
+      j += 1;
+    } else {
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
+      j += 1;
+    }
+  }
+  return { coreAnswers, userPoolGroupList, adminQueryGroup };
+}
+
