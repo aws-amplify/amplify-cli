@@ -137,7 +137,7 @@ export class WebsocketSubscriptionServer {
       this.connections.add(connectionContext);
 
       const onMessage = message => {
-        this.onMessage(connectionContext, message);
+        void this.onMessage(connectionContext, message);
       };
 
       const onClose = (error?: Error | string) => {
@@ -267,13 +267,13 @@ export class WebsocketSubscriptionServer {
   private attachAsyncIterator = async (connectionContext: ConnectionContext, sub: WebsocketSubscription): Promise<void> => {
     const { asyncIterator, id } = sub;
     let done = false;
-    while (!done) {
+    do {
       const { value, done: doneResult } = await asyncIterator.next();
       done = doneResult;
       if (done) {
         break;
       }
       this.sendMessage(connectionContext, id, MESSAGE_TYPES.GQL_DATA, value);
-    }
+    } while (!done);
   };
 }
