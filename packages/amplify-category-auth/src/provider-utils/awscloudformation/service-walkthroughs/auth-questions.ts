@@ -12,6 +12,11 @@ import { authProviders, attributeProviderMap, capabilities } from '../assets/str
 
 const category = 'auth';
 
+/**
+ * The enquirer module has a type declaration file that does not match its actual api.
+ * The package is no longer maintained, so a fix to the file cannot be expected.
+ * This declaration overrides the types exported from the package.
+ */
 declare module 'enquirer' {
   export class Sort {
     constructor(sortParameters: any);
@@ -25,7 +30,7 @@ export const serviceWalkthrough = async (
   defaultValuesFilename: any,
   stringMapsFilename: any,
   serviceMetadata: any,
-  coreAnswers: { [key: string]: any } = {}
+  coreAnswers: { [key: string]: any } = {},
 ): Promise<Record<string, unknown>> => {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
@@ -177,7 +182,7 @@ export const serviceWalkthrough = async (
   // if user selects user pool only, ensure that we clean id pool options
   if (coreAnswers.authSelections === 'userPoolOnly' && context.updatingAuth) {
     context.print.warning(
-      `Warning! Your existing IdentityPool: ${context.updatingAuth.identityPoolName} will be deleted upon the next “amplify push”!`
+      `Warning! Your existing IdentityPool: ${context.updatingAuth.identityPoolName} will be deleted upon the next “amplify push”!`,
     );
     delete context.updatingAuth.identityPoolName;
     delete context.updatingAuth.allowUnauthenticatedIdentities;
@@ -236,7 +241,7 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
     context.amplify.pathManager.getBackendDirPath(),
     'auth',
     'userPoolGroups',
-    'user-pool-group-precedence.json'
+    'user-pool-group-precedence.json',
   );
 
   try {
@@ -465,7 +470,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
           authorize_scopes: scopes.join(delimiter),
           AttributeMapping: maps,
         };
-      })
+      }),
     );
     res.hostedUIProviderCreds = JSON.stringify(
       oAuthProviders.map((el: any) => {
@@ -484,7 +489,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
           client_id: coreAnswers[`${lowerCaseEl}AppIdUserPool`],
           client_secret: coreAnswers[`${lowerCaseEl}AppSecretUserPool`],
         };
-      })
+      }),
     );
   }
   return res;
@@ -556,7 +561,7 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
       .map(providerName => providerName.toLowerCase())
       .forEach((providerName: string) => {
         const provider: { authorize_scopes: string } | undefined = parsedMetaData.find(
-          (currentProvider: any) => currentProvider.ProviderName === providerName
+          (currentProvider: any) => currentProvider.ProviderName === providerName,
         );
         const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
         if (providerName === 'SignInWithApple') {
@@ -663,7 +668,7 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
           'cognito-idp:ChangePassword',
           'cognito-idp:ConfirmDevice',
           'cognito-idp:AdminResetUserPassword',
-          'cognito-idp:ResendConfirmationCode'
+          'cognito-idp:ResendConfirmationCode',
         );
         break;
       case 'update':
@@ -679,7 +684,7 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
           'cognito-idp:UpdateGroup',
           'cognito-idp:AdminUpdateAuthEventFeedback',
           'cognito-idp:UpdateDeviceStatus',
-          'cognito-idp:UpdateUserPool'
+          'cognito-idp:UpdateUserPool',
         );
         break;
       case 'read':
@@ -697,7 +702,7 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
           'cognito-sync:List*',
           'iam:ListOpenIdConnectProviders',
           'iam:ListRoles',
-          'sns:ListPlatformApplications'
+          'sns:ListPlatformApplications',
         );
         break;
       case 'delete':
@@ -711,7 +716,7 @@ export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptio
           'cognito-idp:DeleteUserPool',
           'cognito-idp:AdminDeleteUser',
           'cognito-idp:DeleteIdentityProvider',
-          'cognito-idp:DeleteUser'
+          'cognito-idp:DeleteUser',
         );
         break;
       default:
