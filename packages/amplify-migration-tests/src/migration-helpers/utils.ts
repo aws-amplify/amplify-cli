@@ -1,6 +1,11 @@
 import { v4 as uuid } from 'uuid';
 import {
+  amplifyPull,
+  amplifyPushWithoutCodegen,
   cliInputsExists,
+  createNewProjectDir,
+  deleteProjectDir,
+  getAppId,
   getBackendConfig,
   getCLIInputs,
   getCloudFormationTemplate,
@@ -89,4 +94,26 @@ export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, p
     }
   }
   return strip(stream.toString());
+};
+
+/**
+ * Pulls and pushes project with latest codebase. Validates parameter and cfn drift.
+ */
+export const pullPushWithLatestCodebaseValidateParameterAndCfnDrift = async (
+  projRoot: string,
+  projName: string,
+): Promise<void> => {
+  const appId = getAppId(projRoot);
+  expect(appId).toBeDefined();
+  const projRoot2 = await createNewProjectDir(`${projName}2`);
+  try {
+    await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
+    assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+    expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+    await amplifyPushWithoutCodegen(projRoot2, true);
+    assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+    expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+  } finally {
+    deleteProjectDir(projRoot2);
+  }
 };
