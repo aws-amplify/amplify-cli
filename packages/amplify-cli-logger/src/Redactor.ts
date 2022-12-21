@@ -1,4 +1,4 @@
-const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token'];
+const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token', 'secret'];
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
@@ -25,6 +25,7 @@ export const Redactor = (arg: string | undefined): string => {
     } while (m !== null);
     valuesToRedact.forEach(val => {
       // replace value using string Masker
+      // eslint-disable-next-line no-param-reassign
       arg = arg?.replace(val, stringMasker);
     });
   }

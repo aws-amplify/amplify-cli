@@ -268,7 +268,7 @@ export type $TSCopyJob = $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: $TSObject, force?: boolean, writeParams?: boolean | $TSObject) => $TSAny;
   crudFlow: (role: string, permissionMap?: $TSObject, defaults?: string[]) => Promise<string[]>;
-  deleteProject: () => $TSAny;
+  deleteProject: (context: $TSContext) => Promise<void>;
   executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options?: $TSAny) => Promise<$TSAny>;
   getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
@@ -313,7 +313,7 @@ export type $TSCopyJob = $TSAny;
     filteredResources?: { category: string; resourceName: string }[],
     rebuild?: boolean,
   ) => $TSAny;
-  storeCurrentCloudBackend: () => $TSAny;
+  storeCurrentCloudBackend: (context: $TSContext) => $TSAny;
 
   /**
    * use stateManager or JSONUtilities from amplify-cli-core
@@ -361,8 +361,8 @@ export type $TSCopyJob = $TSAny;
   ) => void;
   updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
   /* eslint-disable-next-line spellcheck/spell-checker */
-  updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
-  updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
+  updateProviderAmplifyMeta: (providerName: string, options: $TSObject) => void;
+  updateamplifyMetaAfterPush: (resources: $TSObject[]) => Promise<void>;
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
   updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
   updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: { resourceKey: string; hashValue: string }) => void;
@@ -372,7 +372,7 @@ export type $TSCopyJob = $TSAny;
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
   saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
   removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
-  triggerFlow: () => $TSAny;
+  triggerFlow: (...args: unknown[]) => $TSAny;
   addTrigger: () => $TSAny;
   updateTrigger: () => $TSAny;
   deleteTrigger: (context: $TSContext, name: string, dir: string) => Promise<void>;
@@ -383,7 +383,7 @@ export type $TSCopyJob = $TSAny;
   getTriggerPermissions: (context: $TSContext, triggers: $TSAny, category: string, resourceName: string) => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
-  getUserPoolGroupList: () => $TSAny[];
+  getUserPoolGroupList: (context?: $TSContext) => $TSAny[];
   forceRemoveResource: (context: $TSContext, categoryName: string, name: string, dir: string) => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: (dir: string, exclude: string[]) => Promise<string>;

@@ -1,6 +1,9 @@
-import { logger } from 'amplify-cli-logger';
+import { getAmplifyLogger } from 'amplify-cli-logger';
 
-export function exitOnNextTick(code: number): void {
-  logger.loggerEnd();
+/**
+ * closes the logger and exits the process
+ */
+export const exitOnNextTick = (code: number): void => {
+  getAmplifyLogger().loggerEnd();
   process.exit(code);
-}
+};

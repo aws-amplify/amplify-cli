@@ -4,7 +4,8 @@
     "strict": true,
     "noImplicitAny": false,
     "rootDir": "src",
-    "outDir": "lib"
+    "outDir": "lib",
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*"
@@ -15,6 +16,9 @@
     },
     {
       "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-cli-logger"
     },
     {
       "path": "../amplify-prompts"
@@ -30,6 +34,9 @@
     },
     {
       "path": "../amplify-category-custom"
+    },
+    {
+      "path": "../amplify-cli-shared-interfaces"
     }
   ]
 }

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable jsdoc/require-jsdoc */
+/* eslint-disable no-return-await */
 import {
   config,
   DynamoDB,
@@ -18,12 +21,15 @@ import {
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
+import { $TSAny } from 'amplify-cli-core';
+import { getProjectMeta } from './projectMeta';
 
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   if (tableName) {
     return await service.describeTable({ TableName: tableName }).promise();
   }
+  return undefined;
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
@@ -72,9 +78,20 @@ export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
   }
 };
 
+export const getDeploymentBucketObject = async (projectRoot: string, objectKey: string) => {
+  const meta = getProjectMeta(projectRoot);
+  const deploymentBucket = meta.providers.awscloudformation.DeploymentBucketName;
+  const s3 = new S3();
+  const result = await s3.getObject({
+    Bucket: deploymentBucket,
+    Key: objectKey,
+  }).promise();
+  return result.Body.toLocaleString();
+};
+
 export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined) => {
-  const s3 = providedS3Client ? providedS3Client : new S3();
-  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
+  const s3 = providedS3Client || new S3();
+  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>>;
   const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
   let truncated = false;
   do {
@@ -98,15 +115,13 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
   } while (truncated);
   const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
   const deleteReq = chunkedResult
-    .map(r => {
-      return {
-        Bucket: bucket,
-        Delete: {
-          Objects: r,
-          Quiet: true,
-        },
-      };
-    })
+    .map(r => ({
+      Bucket: bucket,
+      Delete: {
+        Objects: r,
+        Quiet: true,
+      },
+    }))
     .map(delParams => s3.deleteObjects(delParams).promise());
   await Promise.all(deleteReq);
   await s3
@@ -143,6 +158,7 @@ export const getLambdaFunction = async (functionName: string, region: string) =>
   } catch (e) {
     console.log(e);
   }
+  return undefined;
 };
 
 export const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
@@ -162,6 +178,32 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
     console.log(e);
   }
   return res;
+};
+
+export const addUserToUserPool = async (userPoolId: string, region: string) => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId,
+    UserAttributes: [{ Name: 'email', Value: 'username@amazon.com' }],
+    Username: 'testUser',
+    MessageAction: 'SUPPRESS',
+    TemporaryPassword: 'password',
+  };
+  await provider.adminCreateUser(params).promise();
+};
+
+/**
+ * list all userPool groups to which a user belongs to
+ */
+export const listUserPoolGroupsForUser = async (userPoolId: string, userName: string, region: string): Promise<string[]> => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId, /* required */
+    Username: userName, /* required */
+  };
+  const res = await provider.adminListGroupsForUser(params).promise();
+  const groups = res.Groups.map(group => group.GroupName);
+  return groups;
 };
 
 export const getBot = async (botName: string, region: string) => {
@@ -225,25 +267,25 @@ export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
 };
 
 export const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
-  const cloudwatchlogs = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
+  const cloudWatchLogsClient = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
 
   let targetStreamName = logStreamName;
   if (targetStreamName === undefined) {
-    const describeStreamsResp = await cloudwatchlogs
+    const describeStreamsResp = await cloudWatchLogsClient
       .describeLogStreams({ logGroupName, descending: true, orderBy: 'LastEventTime' })
       .promise();
-    if (describeStreamsResp.logStreams === undefined || describeStreamsResp.logStreams.length == 0) {
+    if (describeStreamsResp.logStreams === undefined || describeStreamsResp.logStreams.length === 0) {
       return [];
     }
 
     targetStreamName = describeStreamsResp.logStreams[0].logStreamName;
   }
 
-  const logsResp = await cloudwatchlogs.getLogEvents({ logGroupName, logStreamName: targetStreamName }).promise();
+  const logsResp = await cloudWatchLogsClient.getLogEvents({ logGroupName, logStreamName: targetStreamName }).promise();
   return logsResp.events || [];
 };
 
-export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
+export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: $TSAny) => {
   const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
     stack => stack.StackName === stackName || stack.StackId === stackName,
@@ -301,7 +343,7 @@ export const putKinesisRecords = async (data: string, partitionKey: string, stre
 export const getCloudWatchEventRule = async (targetName: string, region: string) => {
   config.update({ region });
   const service = new CloudWatchEvents();
-  var params = {
+  const params = {
     TargetArn: targetName /* required */,
   };
   let ruleName;
@@ -358,27 +400,28 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     })
     .promise();
 };
-//Amazon location service calls
+
+// Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
-  const service = new Location({region});
+  const service = new Location({ region });
   return await service.describeMap({
-    MapName: mapName
-  }).promise()
-}
+    MapName: mapName,
+  }).promise();
+};
 
 export const getPlaceIndex = async (placeIndexName: string, region: string) => {
-  const service = new Location({region});
+  const service = new Location({ region });
   return await service.describePlaceIndex({
-    IndexName: placeIndexName
-  }).promise()
-}
+    IndexName: placeIndexName,
+  }).promise();
+};
 
 export const getGeofenceCollection = async (geofenceCollectionName: string, region: string) => {
-  const service = new Location({region});
+  const service = new Location({ region });
   return await service.describeGeofenceCollection({
-    CollectionName: geofenceCollectionName
-  }).promise()
-}
+    CollectionName: geofenceCollectionName,
+  }).promise();
+};
 
 export const getGeofence = async (geofenceCollectionName: string, geofenceId: string, region: string) => {
   const service = new Location({ region });
@@ -388,8 +431,10 @@ export const getGeofence = async (geofenceCollectionName: string, geofenceId: st
   })).promise();
 };
 
+// eslint-disable-next-line spellcheck/spell-checker
 export const listGeofences = async (geofenceCollectionName: string, region: string, nextToken: string = null) => {
   const service = new Location({ region });
+  // eslint-disable-next-line spellcheck/spell-checker
   return (await service.listGeofences({
     CollectionName: geofenceCollectionName,
     NextToken: nextToken,

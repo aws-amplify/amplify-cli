@@ -1,14 +1,14 @@
 import { $TSContext, Template } from 'amplify-cli-core';
 import { AmplifyRootStackTransform } from '../root-stack-builder';
 
+// eslint-disable-next-line import/no-cycle
 export * from './transform-resource';
 
+/**
+ * transform the amplify root stack
+ */
 export const transformRootStack = async (context: $TSContext): Promise<Template> => {
-  try {
-    const resourceName = 'awscloudformation';
-    const rootStack = new AmplifyRootStackTransform(resourceName);
-    return await rootStack.transform(context);
-  } catch (error) {
-    throw new Error(error);
-  }
+  const resourceName = 'awscloudformation';
+  const rootStack = new AmplifyRootStackTransform(resourceName);
+  return rootStack.transform(context);
 };

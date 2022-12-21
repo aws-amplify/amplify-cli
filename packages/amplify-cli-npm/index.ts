@@ -1,7 +1,7 @@
 import { Binary } from './binary';
 
 /**
- * proxies commands to the downloaded binary
+ * Proxies commands to the downloaded binary
  */
 export const run = async (): Promise<void> => {
   const binary = new Binary();
@@ -9,9 +9,11 @@ export const run = async (): Promise<void> => {
 };
 
 /**
- * downloads the amplify cli binary
+ * Downloads the amplify cli binary
  */
 export const install = async (): Promise<void> => {
   const binary = new Binary();
   return binary.install();
 };
+
+// force minor version bump to 10.6

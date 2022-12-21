@@ -3,6 +3,119 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.0...amplify-provider-awscloudformation@6.9.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [6.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.8.1...amplify-provider-awscloudformation@6.9.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+
+
+
+
+
+## [6.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.8.0...amplify-provider-awscloudformation@6.8.1) (2022-10-21)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [6.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.7.2...amplify-provider-awscloudformation@6.8.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* Await Metadata file updates to avoid race conditions ([#11074](https://github.com/aws-amplify/amplify-cli/issues/11074)) ([0c745c4](https://github.com/aws-amplify/amplify-cli/commit/0c745c44773db3dfd09e75eaeb60ab2be97b91b7))
+* detect added sort key ([#11013](https://github.com/aws-amplify/amplify-cli/issues/11013)) ([bd175f6](https://github.com/aws-amplify/amplify-cli/commit/bd175f6d687d75191ec51f21aabf23a2ffe4476d))
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* pretty-print for iterative deployment ([#11051](https://github.com/aws-amplify/amplify-cli/issues/11051)) ([4184164](https://github.com/aws-amplify/amplify-cli/commit/418416420756273f286d81384f4e63924deda4a9))
+* show warning when the cloud backend build dir does not match local backend build dir ([#10960](https://github.com/aws-amplify/amplify-cli/issues/10960)) ([bec3b22](https://github.com/aws-amplify/amplify-cli/commit/bec3b222fa96c82460da859a3133ed3e1c5177d9))
+
+
+
+
+
+## [6.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.7.1...amplify-provider-awscloudformation@6.7.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [6.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.6.0...amplify-provider-awscloudformation@6.7.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* refactor bugs caught by console integ tests ([#10896](https://github.com/aws-amplify/amplify-cli/issues/10896)) ([33c800b](https://github.com/aws-amplify/amplify-cli/commit/33c800b0046c3df97de0daad780c09fef4b5eb2c))
+* support for minify flag in CFNUtilities ([#10955](https://github.com/aws-amplify/amplify-cli/issues/10955)) ([bc76bd1](https://github.com/aws-amplify/amplify-cli/commit/bc76bd11784bac76750ad3ddf8a0c88d6020744c))
+* upload files spinner when executing amplify push command ([#10982](https://github.com/aws-amplify/amplify-cli/issues/10982)) ([ca5030a](https://github.com/aws-amplify/amplify-cli/commit/ca5030a88c079d9e234ca0882ddbc18e9810eed3))
+
+
+
+
+
+# [6.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.6.0-rc.224a2e0e4.0...amplify-provider-awscloudformation@6.6.0) (2022-09-06)
+
+
+
+# 10.0.0-rc.0 (2022-08-24)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [6.6.0-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.1...amplify-provider-awscloudformation@6.6.0-rc.224a2e0e4.0) (2022-08-15)
+
+
+### Features
+
+* pretty print cloudformation event logs  ([#10720](https://github.com/aws-amplify/amplify-cli/issues/10720)) ([aaf2210](https://github.com/aws-amplify/amplify-cli/commit/aaf22103548a329b3092f52736c28c9b5c5b8b8b))
+
+
+
+
+
+## [6.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.0...amplify-provider-awscloudformation@6.5.1) (2022-08-06)
+
+
+### Bug Fixes
+
+* pass httpProxy agent to node-fetch. ([#10620](https://github.com/aws-amplify/amplify-cli/issues/10620)) ([6a22f9a](https://github.com/aws-amplify/amplify-cli/commit/6a22f9a7e2850579330c5212ed57d0e144b0eb23))
+
+
+
+
+
 # [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.5.0) (2022-08-02)
 
 

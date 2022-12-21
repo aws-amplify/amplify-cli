@@ -1,5 +1,6 @@
-const constants = require('../../constants/plugin-constants');
+/* eslint-disable */
 const path = require('path');
+const constants = require('../../constants/plugin-constants');
 const configUtils = require('../../utils/config-utils');
 const messageConstants = require('../../constants/question-constants');
 
@@ -20,7 +21,7 @@ async function enable(context) {
   await configUtils.initMetaFile(context, category, resourceName, type);
 
   // Init team-provider-info
-  configUtils.initTeamProviderInfo(context, category, resourceName, type);
+  await configUtils.initHostingEnvParams(context, category, resourceName, type);
 
   context.print.info('');
   context.print.info(messageConstants.POST_ADDING_MESSAGE);

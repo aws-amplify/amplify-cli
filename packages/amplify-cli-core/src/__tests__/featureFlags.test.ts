@@ -402,9 +402,15 @@ describe('feature flags', () => {
         await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toMatchObject({
         message: 'Invalid feature flag configuration',
-        name: 'JSONValidationError',
-        unknownFlags: ['graphqltransformer.foo', 'graphqltransformer.bar'],
-        otherErrors: ['graphqltransformer.customtransformerversion: should be number'],
+        name: 'FeatureFlagsValidationError',
+        link: 'https://docs.amplify.aws/cli/reference/feature-flags',
+        classification: 'ERROR',
+        details:
+`These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:
+- graphqltransformer.foo,
+- graphqltransformer.bar
+The following feature flags have validation errors:
+- graphqltransformer.customtransformerversion: should be number`,
       });
     });
 

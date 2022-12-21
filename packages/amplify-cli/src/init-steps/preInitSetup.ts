@@ -1,5 +1,5 @@
 import {
-  $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError, pathManager,
+  $TSContext, AmplifyError, getPackageManager, pathManager,
 } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
@@ -15,8 +15,8 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
     const repoUrl = context.parameters.options.app;
 
-    await validateGithubRepo(context, repoUrl);
-    await cloneRepo(context, repoUrl);
+    await validateGithubRepo(repoUrl);
+    await cloneRepo(repoUrl);
     cleanAmplifyArtifacts();
     await installPackage();
     await setLocalEnvDefaults(context);
@@ -29,36 +29,40 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
  *
  * @throws error if url is not a valid remote github url
  */
-const validateGithubRepo = async (context: $TSContext, repoUrl: string): Promise<void> => {
+const validateGithubRepo = async (repoUrl: string): Promise<void> => {
   try {
     url.parse(repoUrl);
 
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
   } catch (e) {
-    context.print.error('Invalid remote github url');
-    await context.usageData.emitError(e);
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: 'Invalid remote github url',
+      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+    }, e);
   }
 };
 
 /**
  * Clones repo from url to current directory (must be empty)
  */
-const cloneRepo = async (context: $TSContext, repoUrl: string): Promise<void> => {
+const cloneRepo = async (repoUrl: string): Promise<void> => {
   const files = fs.readdirSync(process.cwd());
 
   if (files.length > 0) {
-    const errMessage = 'Please ensure you run this command in an empty directory';
-    context.print.error(errMessage);
-    await context.usageData.emitError(new NonEmptyDirectoryError(errMessage));
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: 'Unable to clone repository',
+      resolution: 'Please ensure you run this command in an empty directory',
+    });
   }
 
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
-    await context.usageData.emitError(e);
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: 'Unable to clone repository',
+      details: e.message,
+      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+    }, e);
   }
 };
 

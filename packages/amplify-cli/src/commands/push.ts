@@ -1,38 +1,38 @@
 import {
-  $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager, spinner,
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  spinner,
+  stateManager,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
-import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { showTroubleshootingURL } from './help';
-import { reportError } from './diagnose';
-import { Context } from '../domain/context';
+import {
+  notifyFieldAuthSecurityChange,
+  notifyListQuerySecurityChange,
+  notifySecurityEnhancement,
+} from '../extensions/amplify-helpers/auth-notifications';
+import {
+  getProviderPlugins,
+} from '../extensions/amplify-helpers/get-provider-plugins';
+import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 
-// The following code pulls the latest backend to #current-cloud-backend
-// so the amplify status is correctly shown to the user before the user confirms
-// to push his local developments
+/**
+ * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
+ */
 const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
-
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
   try {
-    const { projectPath } = context.exeInfo.localEnvInfo;
-    const amplifyMeta: $TSObject = {};
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-
-    amplifyMeta.providers = teamProviderInfo[currentEnv];
-
+    const amplifyMeta = stateManager.getMeta();
     const providerPlugins = getProviderPlugins(context);
-
     const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
-    context.exeInfo.projectConfig.providers.forEach(provider => {
-      // eslint-disable-next-line
-      const providerModule = require(providerPlugins[provider]);
+    for (const provider of context.exeInfo.projectConfig.providers) {
+      const providerModule = await import(providerPlugins[provider]);
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-    });
+    }
 
     await notifySecurityEnhancement(context);
 
@@ -48,44 +48,29 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
   } catch (e) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
-    throw e;
+    throw new AmplifyFault('BackendPullFault', { message: e.message }, e);
   }
 };
 
-const pushHooks = async (context: $TSContext): Promise<void> => {
-  context.exeInfo.pushHooks = true;
-  const providerPlugins = getProviderPlugins(context);
-  const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
-  context.exeInfo.projectConfig.providers.forEach(provider => {
-    // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
-    pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
-  });
-  await sequential(pushHooksTasks);
+/**
+ * Updates tracked files for auto updates in the build directory that will not be detected for 'amplify push'
+ */
+const updateTrackedFiles = async (): Promise<void> => {
+  await updateCognitoTrackedFiles();
 };
 
 /**
  * Runs push command
  */
-export const run = async (context: $TSContext): Promise<$TSAny|void> => {
-  try {
-    context.amplify.constructExeInfo(context);
-    if (context.exeInfo.localEnvInfo.noUpdateBackend) {
-      throw new ConfigurationError('The local environment configuration does not allow backend updates.');
-    }
-    if (context.parameters.options.force) {
-      context.exeInfo.forcePush = true;
-    }
-    await pushHooks(context);
-    await syncCurrentCloudBackend(context);
-    return await context.amplify.pushResources(context);
-  } catch (e) {
-    const message = (e.name === 'GraphQLError' || e.name === 'InvalidMigrationError') ? e.toString() : e.message;
-    printer.error(`An error occurred during the push operation: /\n${message}`);
-    await reportError(context as unknown as Context, e);
-    await context.usageData.emitError(e);
-    showTroubleshootingURL();
-    exitOnNextTick(1);
-    return undefined;
+export const run = async (context: $TSContext): Promise<$TSAny> => {
+  context.amplify.constructExeInfo(context);
+  if (context.exeInfo.localEnvInfo.noUpdateBackend) {
+    throw new AmplifyError('NoUpdateBackendError', { message: 'The local environment configuration does not allow backend updates.' });
   }
+  if (context.parameters.options.force) {
+    context.exeInfo.forcePush = true;
+  }
+  await syncCurrentCloudBackend(context);
+  await updateTrackedFiles();
+  return context.amplify.pushResources(context);
 };

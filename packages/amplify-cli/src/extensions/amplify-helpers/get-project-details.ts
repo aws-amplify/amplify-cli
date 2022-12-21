@@ -2,29 +2,38 @@ import { $TSAny, stateManager } from 'amplify-cli-core';
 import { getEnvInfo } from './get-env-info';
 
 /**
+ * Amplify project's persistent state
+ */
+export interface IAmplifyProjectDetails {
+  projectConfig : $TSAny,
+  amplifyMeta: $TSAny,
+  localEnvInfo: $TSAny,
+  backendConfig: $TSAny,
+}
+
+/**
  * Gets metadata about the project
  */
-export const getProjectDetails = (): { projectConfig: $TSAny; amplifyMeta: $TSAny; localEnvInfo: $TSAny; teamProviderInfo: $TSAny; } => {
+export const getProjectDetails = (): IAmplifyProjectDetails => {
   const projectConfig = stateManager.getProjectConfig();
 
   let amplifyMeta = {};
+  let backendConfig = {};
 
   if (stateManager.metaFileExists()) {
     amplifyMeta = stateManager.getMeta();
   }
 
-  const localEnvInfo = getEnvInfo();
-
-  let teamProviderInfo = {};
-
-  if (stateManager.teamProviderInfoExists()) {
-    teamProviderInfo = stateManager.getTeamProviderInfo();
+  if (stateManager.backendConfigFileExists()) {
+    backendConfig = stateManager.getBackendConfig();
   }
+
+  const localEnvInfo = getEnvInfo();
 
   return {
     projectConfig,
     amplifyMeta,
     localEnvInfo,
-    teamProviderInfo,
+    backendConfig,
   };
 };

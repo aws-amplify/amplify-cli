@@ -1,11 +1,13 @@
 import Ajv, { AdditionalPropertiesParams } from 'ajv';
+import { isCI } from 'ci-info';
 import * as fs from 'fs-extra';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema'; // eslint-disable-line import/no-extraneous-dependencies
 import _ from 'lodash';
 import * as path from 'path';
 import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
+import { AmplifyError } from '../errors/amplify-error';
+import { AmplifyFault } from '../errors/amplify-fault';
 import { JSONUtilities } from '../jsonUtilities';
-import { JSONValidationError } from '../jsonValidationError';
 import { pathManager, stateManager } from '../state-manager'; // eslint-disable-line import/no-cycle
 /* eslint-disable import/no-cycle */
 import { FeatureFlagEnvironmentProvider } from './featureFlagEnvironmentProvider';
@@ -157,7 +159,11 @@ export class FeatureFlags {
     FeatureFlags.ensureInitialized();
 
     if (!envNames) {
-      throw new Error("'envNames' argument is required");
+      // this is an internal issue, we either couldn't load the environment names
+      // or their configuration is invalid, further troubleshooting is needed
+      throw new AmplifyFault('ConfigurationFault', {
+        message: 'Environment names could not be loaded or were not provided.',
+      });
     }
 
     if (removeProjectConfiguration) {
@@ -377,7 +383,15 @@ export class FeatureFlags {
         });
 
         if (unknownFlags.length > 0 || otherErrors.length > 0) {
-          throw new JSONValidationError('Invalid feature flag configuration', unknownFlags, otherErrors);
+          throw new AmplifyError('FeatureFlagsValidationError', {
+            message: 'Invalid feature flag configuration',
+            details:
+              (unknownFlags.length > 0 ? `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:\n${unknownFlags.map(el => `- ${el}`).join(',\n')}\n` : '')
+              + (otherErrors.length > 0 ? `The following feature flags have validation errors:\n${otherErrors.map(el => `- ${el}`).join(',\n')}` : ''),
+            resolution: `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.${
+              isCI ? '\nEnsure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.' : ''}`,
+            link: 'https://docs.amplify.aws/cli/reference/feature-flags',
+          });
         }
       }
     };
@@ -630,13 +644,13 @@ export class FeatureFlags {
         name: 'enableAutoIndexQueryNames',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'respectPrimaryKeyAttributesOnConnectionField',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'shouldDeepMergeDirectiveConfigDefaults',
@@ -648,7 +662,7 @@ export class FeatureFlags {
         name: 'populateOwnerFieldForStaticGroupAuth',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
 

@@ -1,15 +1,17 @@
-import * as os from 'os';
 import { isCI } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
+import * as os from 'os';
 import { Input } from '../input';
-import { getLatestPayloadVersion } from './VersionManager';
+import {
+  InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath,
+} from './UsageDataTypes';
 import { SerializableError } from './SerializableError';
-import { ProjectSettings, TimedCodePath } from './IUsageData';
+import { getLatestPayloadVersion } from './VersionManager';
 
 /**
  * Metadata that is sent to the usage data endpoint
  */
-export class UsageDataPayload {
+export class UsageDataPayload implements IUsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
   amplifyCliVersion: string;
@@ -28,6 +30,7 @@ export class UsageDataPayload {
   codePathDurations: Partial<Record<TimedCodePath, number>>;
   flowReport: IFlowReport;
   pushNormalizationFactor = 1;
+
   constructor(
     sessionUuid: string,
     installationUuid: string,
@@ -39,7 +42,7 @@ export class UsageDataPayload {
     project: ProjectSettings,
     inputOptions: InputOptions,
     codePathDurations: Partial<Record<TimedCodePath, number>>,
-    flowReport : IFlowReport,
+    flowReport: IFlowReport,
   ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
@@ -62,8 +65,3 @@ export class UsageDataPayload {
     }
   }
 }
-
-/**
- * Command-line args that were specified to the currently running command
- */
-export type InputOptions = Record<string, string | boolean>;

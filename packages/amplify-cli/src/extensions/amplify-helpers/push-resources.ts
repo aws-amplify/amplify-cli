@@ -1,5 +1,5 @@
 import {
-  $TSContext, EnvironmentDoesNotExistError, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
@@ -11,7 +11,9 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
-import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/IUsageData';
+import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
+import { showBuildDirChangesMessage } from './auto-updates';
+
 /**
  * Entry point for pushing resources to the cloud
  */
@@ -23,15 +25,18 @@ export const pushResources = async (
   rebuild = false,
 ): Promise<boolean> => {
   context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
+
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
     if (context.parameters.options.force) {
-      throw new Error(
-        "'--iterative-rollback' and '--force' cannot be used together. Consider running 'amplify push --force' to iteratively rollback and redeploy.",
-      );
+      throw new AmplifyError('CommandNotSupportedError', {
+        message: '--iterative-rollback and --force are not supported together',
+        resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
+      });
     }
     context.exeInfo.iterativeRollback = true;
   }
+
   if (context.parameters.options.env) {
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
@@ -51,17 +56,15 @@ export const pushResources = async (
       }
       await initializeEnv(context);
     } else {
-      const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
-
-      context.print.error(errMessage);
-      await context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
-
-      exitOnNextTick(1);
+      throw new AmplifyError('EnvironmentNotInitializedError', {
+        message: 'Current environment cannot be determined.',
+        resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
+      });
     }
   }
 
   // building all CFN stacks here to get the resource Changes
-  await generateDependentResourcesType(context);
+  await generateDependentResourcesType();
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
@@ -77,7 +80,7 @@ export const pushResources = async (
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     printer.info('\nNo changes detected');
-
+    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
   }
 
@@ -88,6 +91,7 @@ export const pushResources = async (
     if (context.exeInfo.iterativeRollback) {
       printer.info('The CLI will rollback the last known iterative deployment.');
     }
+    await showBuildDirChangesMessage();
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
@@ -101,23 +105,20 @@ export const pushResources = async (
     try {
       // Get current-cloud-backend's amplify-meta
       const currentAmplifyMeta = stateManager.getCurrentMeta();
-
       await providersPush(context, rebuild, category, resourceName, filteredResources);
-
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
+      // TODO PL: this needs to be removed once the api category is using the new amplify error class
       const isAuthError = isValidGraphQLAuthError(err.message);
       if (isAuthError) {
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {
-        if (isAuthError) {
-          printer.warn(
-            'You defined authorization rules (@auth) but haven\'t enabled their authorization providers on your GraphQL API. Run "amplify update api" to configure your GraphQL API to include the appropriate authorization providers as an authorization mode.',
-          );
-          printer.error(err.message);
-        }
-        throw err;
+        throw new AmplifyFault('PushResourcesFault', {
+          message: err.message,
+          link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+          resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
+        }, err);
       }
     }
   } while (retryPush);
@@ -135,9 +136,8 @@ const providersPush = async (
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  await Promise.all(providers.map(async provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
     return providerModule.pushResources(context, resourceDefinition, rebuild);
   }));
@@ -150,9 +150,8 @@ export const storeCurrentCloudBackend = async (context: $TSContext): Promise<voi
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  Promise.all(providers.map(provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     return providerModule.storeCurrentCloudBackend(context);
   }));
 };

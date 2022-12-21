@@ -1,6 +1,21 @@
-import { DeploymentStatus, DeploymentStepStatus, IDeploymentStateManager } from 'amplify-cli-core';
+import {
+  DeploymentStatus, DeploymentStepStatus, IDeploymentStateManager,
+} from 'amplify-cli-core';
 import { DeploymentStateManager } from '../../iterative-deployment/deployment-state-manager';
 import { S3 } from '../../aws-utils/aws-s3';
+
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+  stateManager: {
+    getMeta: jest.fn().mockReturnValue({
+      providers: {
+        awscloudformation: {
+          DeploymentBucketName: 'bucket',
+        },
+      },
+    }),
+  },
+}));
 
 describe('deployment state manager', () => {
   let deploymentStateManager: IDeploymentStateManager;
@@ -28,20 +43,18 @@ describe('deployment state manager', () => {
     const getInstanceSpy = jest.spyOn(S3, 'getInstance');
 
     getInstanceSpy.mockReturnValue(
-      new Promise((resolve, _) => {
+      new Promise((resolve, __) => {
         resolve(({
-          uploadFile: async (s3Params: any, showSpinner: boolean): Promise<string> => {
-            return new Promise((resolve, _) => {
-              s3Files[s3Params.Key] = s3Params.Body;
+          // eslint-disable-next-line
+          uploadFile: async (s3Params: any, showSpinner: boolean): Promise<string> => new Promise((resolve, _) => {
+            s3Files[s3Params.Key] = s3Params.Body;
 
-              resolve('');
-            });
-          },
-          getStringObjectFromBucket: async (bucketName: string, objectKey: string): Promise<string> => {
-            return new Promise((resolve, _) => {
-              resolve(s3Files[objectKey]);
-            });
-          },
+            resolve('');
+          }),
+          // eslint-disable-next-line
+          getStringObjectFromBucket: async (bucketName: string, objectKey: string): Promise<string> => new Promise((resolve, _) => {
+            resolve(s3Files[objectKey]);
+          }),
         } as unknown) as S3);
       }),
     );
@@ -83,7 +96,7 @@ describe('deployment state manager', () => {
   });
 
   it('should not advance forward without starting step', async () => {
-    let started = await deploymentStateManager.startDeployment([
+    const started = await deploymentStateManager.startDeployment([
       {
         status: DeploymentStepStatus.WAITING_FOR_DEPLOYMENT,
       },
@@ -92,12 +105,12 @@ describe('deployment state manager', () => {
     expect(started).toBe(true);
 
     await expect(deploymentStateManager.advanceStep()).rejects.toThrow(
-      'Cannot advance step then the current step is in WAITING_FOR_DEPLOYMENT status.',
+      'Cannot advance step when the current step is in WAITING_FOR_DEPLOYMENT status.',
     );
   });
 
   it('should not advance backward without starting step', async () => {
-    let started = await deploymentStateManager.startDeployment([
+    const started = await deploymentStateManager.startDeployment([
       {
         status: DeploymentStepStatus.WAITING_FOR_DEPLOYMENT,
       },
@@ -108,7 +121,7 @@ describe('deployment state manager', () => {
     await deploymentStateManager.startRollback();
 
     await expect(deploymentStateManager.advanceStep()).rejects.toThrow(
-      'Cannot advance step then the current step is in WAITING_FOR_ROLLBACK status.',
+      'Cannot advance step when the current step is in WAITING_FOR_ROLLBACK status.',
     );
   });
 
@@ -284,7 +297,7 @@ describe('deployment state manager', () => {
   });
 
   it('cannot rollback non-started deployment', async () => {
-    expect(deploymentStateManager.startRollback()).rejects.toThrow(
+    await expect(deploymentStateManager.startRollback()).rejects.toThrow(
       'To rollback a deployment, the deployment must be in progress and not already rolling back.',
     );
   });
@@ -298,7 +311,7 @@ describe('deployment state manager', () => {
 
     await deploymentStateManager.startRollback();
 
-    expect(deploymentStateManager.startRollback()).rejects.toThrow(
+    await expect(deploymentStateManager.startRollback()).rejects.toThrow(
       'To rollback a deployment, the deployment must be in progress and not already rolling back.',
     );
   });

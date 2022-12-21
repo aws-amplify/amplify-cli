@@ -1,9 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
-import { NotInitializedError } from '../errors';
 // eslint-disable-next-line import/no-cycle
-import { overriddenCategories, stateManager } from '..';
+import { overriddenCategories, projectNotInitializedError, stateManager } from '..';
 
 export const PathConstants = {
   // in home directory
@@ -82,7 +81,8 @@ export class PathManager {
   }
 
   getAmplifyPackageLibDirPath = (packageName: string): string => {
-    const result = path.join(this.getAmplifyLibRoot(), packageName);
+    const descopedPackageName = packageName.replace(/^@/, '').replace(/\//, '-');
+    const result = path.join(this.getAmplifyLibRoot(), descopedPackageName);
     if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
       throw new Error(`Package lib at ${result} does not exist.`);
     }
@@ -125,6 +125,10 @@ export class PathManager {
 
   getGitIgnoreFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.GitIgnoreFileName]);
 
+  /**
+   * Returns the full path to the `team-provider-info.json` file
+   * @deprecated Use envParamManager from amplify-environment-parameters
+   */
   getTeamProviderInfoFilePath = (projectPath?: string): string => this.constructPath(
     projectPath, [PathConstants.AmplifyDirName, PathConstants.TeamProviderInfoFileName],
   );
@@ -273,7 +277,7 @@ export class PathManager {
       return path.normalize(path.join(projectPath, ...segments));
     }
 
-    throw new NotInitializedError();
+    throw projectNotInitializedError();
   };
 
   private validateProjectPath = (projectPath: string): boolean => {

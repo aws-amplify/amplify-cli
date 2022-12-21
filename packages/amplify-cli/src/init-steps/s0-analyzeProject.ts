@@ -1,5 +1,5 @@
 import {
-  $TSContext, exitOnNextTick, InvalidEnvironmentNameError, stateManager,
+  $TSContext, AmplifyError, stateManager,
 } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
@@ -11,9 +11,9 @@ import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-
 import { getSuitableFrontend } from './s1-initFrontend';
 
 /**
- *
+ * Analyzes the project
  */
-export async function analyzeProjectHeadless(context: $TSContext) {
+export const analyzeProjectHeadless = async (context: $TSContext): Promise<void> => {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
   const env = getDefaultEnv(context);
@@ -76,18 +76,17 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   context.print.success('The following configuration will be applied:');
   context.print.info('');
 
-  await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
+  displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 
   const frontendPlugins = getFrontendPlugins(context);
   const defaultFrontend = getSuitableFrontend(context, frontendPlugins, projectPath);
-  // eslint-disable-next-line
-  const frontendModule = require(frontendPlugins[defaultFrontend]);
+  const frontendModule = await import(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
-    await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
+    setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
 };
@@ -133,7 +132,6 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
 
   setProjectConfig(context, projectName);
   setExeInfo(context, projectPath, defaultEditor, envName);
-
 
   return context;
 };
@@ -220,9 +218,10 @@ const getDefaultEnv = (context: $TSContext): string | undefined => {
       defaultEnv = context.exeInfo.inputParams.amplify.envName;
       return defaultEnv;
     }
-    context.print.error(INVALID_ENV_NAME_MSG);
-    context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    exitOnNextTick(1);
+    throw new AmplifyError('EnvironmentNameError', {
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
+    });
   }
 
   if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
@@ -239,13 +238,15 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error(INVALID_ENV_NAME_MSG);
-    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
+    });
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-    context.print.error('Environment name missing');
-    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
+    });
   }
 
   const newEnvQuestion = async (): Promise<void> => {
@@ -290,19 +291,26 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
   return envName;
 };
 
+/**
+ * TODO this currently checks both local-aws-info and team-provider-info for environments
+ *
+ * We need to remove the check from team-provider-info and instead use a service call
+ * but this is a breaking change because it means that some init flows will now require additional arguments to correctly
+ * attach to existing environments.
+ * Specifically we need the appId, region and AWS credentials to make a service call to get existing environments
+ *
+ * Most likely we should make a breaking change for this where init can no longer be use to pull existing projects and instead customers
+ * can only use pull for this use case
+ * @param envName the envName to check
+ * @returns whether the env already exists
+ */
 const isNewEnv = (envName: string): boolean => {
-  let newEnv = true;
-  const projectPath = process.cwd();
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
-    throwIfNotExist: false,
-    default: {},
-  });
-
-  if (teamProviderInfo[envName]) {
-    newEnv = false;
-  }
-
-  return newEnv;
+  const cwd = process.cwd();
+  const readOptions = { throwIfNotExist: false, default: {} };
+  const localAwsInfoEnvs = Object.keys(stateManager.getLocalAWSInfo(cwd, readOptions));
+  const tpiEnvs = Object.keys(stateManager.getTeamProviderInfo(cwd, readOptions));
+  const allEnvs = Array.from(new Set([...localAwsInfoEnvs, ...tpiEnvs]));
+  return !allEnvs.includes(envName);
 };
 
 const isNewProject = (context: $TSContext): boolean => {

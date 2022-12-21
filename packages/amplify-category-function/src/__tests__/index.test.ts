@@ -1,22 +1,12 @@
 import sequential from 'promise-sequential';
 import { stateManager } from 'amplify-cli-core';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv, isMockable } from '..';
 import { getLocalFunctionSecretNames } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { getAppId, secretsPathAmplifyAppIdKey } from '../provider-utils/awscloudformation/secrets/secretName';
 
 jest.mock('promise-sequential');
-jest.mock('amplify-cli-core', () => ({
-  stateManager: {
-    getCurrentMeta: jest.fn(),
-    getMeta: jest.fn(),
-    getTeamProviderInfo: jest.fn(),
-    setMeta: jest.fn(),
-    setTeamProviderInfo: jest.fn(),
-  },
-  pathManager: {
-    findProjectRoot: jest.fn(),
-  },
-}));
+jest.mock('amplify-cli-core');
 
 jest.mock('../provider-utils/awscloudformation/secrets/functionSecretsStateManager');
 jest.mock('../provider-utils/awscloudformation/secrets/secretName');
@@ -28,6 +18,9 @@ const getAppIdMock = getAppId as jest.MockedFunction<typeof getAppId>;
 const sequentialMock = sequential as jest.MockedFunction<typeof sequential>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
+stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'dev' });
+stateManagerMock.getTeamProviderInfo.mockReturnValue({});
+
 describe('function category provider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,7 +28,6 @@ describe('function category provider', () => {
 
   describe('initialize environment', () => {
     it('sets secretsPathAmplifyAppId in team-provider-info if function has secrets configured', async () => {
-      stateManagerMock.getTeamProviderInfo.mockReturnValueOnce({});
       getLocalFunctionSecretNamesMock.mockReturnValueOnce(['TEST_SECRET']);
       getAppIdMock.mockReturnValueOnce('testAppId');
       const contextStub = {
@@ -56,17 +48,8 @@ describe('function category provider', () => {
         },
       } as any;
       await initEnv(contextStub);
-      expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(1);
-      expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchObject({
-        dev: {
-          categories: {
-            function: {
-              testFunction: {
-                [secretsPathAmplifyAppIdKey]: 'testAppId',
-              },
-            },
-          },
-        },
+      expect(getEnvParamManager('dev').getResourceParamManager('function', 'testFunction').getAllParams()).toEqual({
+        [secretsPathAmplifyAppIdKey]: 'testAppId',
       });
     });
 

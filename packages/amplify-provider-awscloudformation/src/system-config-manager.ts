@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, JSONUtilities, pathManager, SecretFileMode, spinner,
+  $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner,
 } from 'amplify-cli-core';
 
 import * as aws from 'aws-sdk';
@@ -106,9 +106,9 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
       validateCredentials(awsConfigInfo, profileName);
     }
   } else {
-    const err = new Error(`Profile configuration is missing for: ${profileName}`);
-    logger('getProfiledAwsConfig', [profileName])(err);
-    throw err;
+    throw new AmplifyError('ProfileConfigurationError', {
+      message: `Profile configuration is missing for: ${profileName}`,
+    });
   }
 
   if (httpProxy) {
@@ -332,10 +332,9 @@ const validateCredentials = (credentials: $TSAny, profileName: string): void => 
     missingKeys.push('aws_secret_access_key');
   }
   if (missingKeys.length > 0) {
-    const err = new Error(`Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`);
-    logger('validateCredentials', [profileName])(err);
-    err.stack = undefined;
-    throw err;
+    throw new AmplifyError('ProfileConfigurationError', {
+      message: `Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`,
+    });
   }
 };
 

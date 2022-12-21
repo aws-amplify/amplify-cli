@@ -25,6 +25,8 @@ type AuthStackMetadata = {
   breakCircularDependency: boolean;
   permissions?: AuthTriggerPermissions[];
   authTriggerConnections?: AuthTriggerConnection[];
+  userAutoVerifiedAttributeUpdateSettings?: string[];
+  authTriggerPermissions?: AuthTriggerPermissions[];
 };
 
 export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &
@@ -59,6 +61,7 @@ export interface ServiceQuestionsBaseResult {
   verificationBucketName?: string;
   resourceNameTruncated?: string;
   sharedId?: string;
+  permissions?: string;
 }
 
 export interface OAuthResult {
@@ -162,4 +165,5 @@ export type AuthTriggerConnection = {
 export type AuthTriggerConfig = {
   triggers: $TSObject;
   authTriggerConnections: AuthTriggerConnection[];
+  authTriggerPermissions?: AuthTriggerPermissions[];
 };

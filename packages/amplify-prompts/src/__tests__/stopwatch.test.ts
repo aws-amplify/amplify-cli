@@ -6,12 +6,12 @@ describe('stopwatch test', () => {
     stopwatch.start();
     await new Promise((resolve, __reject) => { setTimeout(resolve, 300); });
     stopwatch.pause();
-    expect(stopwatch.getElapsedMilliseconds()).toBeGreaterThanOrEqual(300);
-    expect(stopwatch.getElapsedMilliseconds()).toBeLessThan(305);
+    expect(stopwatch.getElapsedMilliseconds()).toBeGreaterThanOrEqual(295);
+    expect(stopwatch.getElapsedMilliseconds()).toBeLessThan(350);
     stopwatch.start();
     await new Promise((resolve, __reject) => { setTimeout(resolve, 300); });
     stopwatch.pause();
-    expect(stopwatch.getElapsedMilliseconds()).toBeGreaterThanOrEqual(600);
-    expect(stopwatch.getElapsedMilliseconds()).toBeLessThanOrEqual(605);
+    expect(stopwatch.getElapsedMilliseconds()).toBeGreaterThanOrEqual(595);
+    expect(stopwatch.getElapsedMilliseconds()).toBeLessThanOrEqual(700);
   });
 });

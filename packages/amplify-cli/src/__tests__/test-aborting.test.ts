@@ -29,6 +29,7 @@ describe('test SIGINT with execute', () => {
         getMeta: jest.fn(),
         projectConfigExists: jest.fn(),
         localEnvInfoExists: jest.fn().mockReturnValue(true),
+        teamProviderInfoExists: jest.fn().mockReturnValue(true),
       },
       FeatureFlags: {
         initialize: jest.fn(),
@@ -61,9 +62,9 @@ describe('test SIGINT with execute', () => {
       }),
     });
     jest.setMock('amplify-cli-logger', {
-      logger: {
+      getAmplifyLogger: jest.fn().mockReturnValue({
         logInfo: jest.fn(),
-      },
+      }),
       Redactor: jest.fn(),
     });
 
@@ -87,6 +88,7 @@ describe('test SIGINT with execute', () => {
       assignProjectIdentifier: jest.fn(),
       getUsageDataPayload: jest.fn(),
       calculatePushNormalizationFactor: jest.fn(),
+      getSessionUuid: jest.fn(),
     };
     mockContext.projectHasMobileHubResources = false;
 
@@ -105,6 +107,8 @@ describe('test SIGINT with execute', () => {
         await sleep(2000);
       },
     });
+
+    jest.mock('@aws-amplify/amplify-environment-parameters');
 
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');

@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.3.4...amplify-console-hosting@2.3.5) (2022-11-17)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.3.3...amplify-console-hosting@2.3.4) (2022-10-27)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.3.2...amplify-console-hosting@2.3.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.3.1...amplify-console-hosting@2.3.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.2.37...amplify-console-hosting@2.3.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* refactor bugs caught by console integ tests ([#10896](https://github.com/aws-amplify/amplify-cli/issues/10896)) ([33c800b](https://github.com/aws-amplify/amplify-cli/commit/33c800b0046c3df97de0daad780c09fef4b5eb2c))
+
+
+
+
+
+## [2.2.37](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.2.37-rc.224a2e0e4.0...amplify-console-hosting@2.2.37) (2022-09-06)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [2.2.37-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.2.36...amplify-console-hosting@2.2.37-rc.224a2e0e4.0) (2022-08-15)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
 ## [2.2.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.2.34...amplify-console-hosting@2.2.36) (2022-08-02)
 
 **Note:** Version bump only for package amplify-console-hosting

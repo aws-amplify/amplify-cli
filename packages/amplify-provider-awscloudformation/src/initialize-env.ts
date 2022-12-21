@@ -24,7 +24,6 @@ import { S3 } from './aws-utils/aws-s3';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
-import { pullHooks } from './utils/hooks-manager';
 import { downloadZip, extractZip } from './zip-util';
 
 const logger = fileLogger('initialize-env');
@@ -41,15 +40,15 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
 
     const s3 = await S3.getInstance(context);
     const cfnItem = await new Cloudformation(context);
-    const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
-    const unzippeddir = await extractZip(tempDir, file);
+    const file = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
+    const unzippedDir = await extractZip(tempDir, file);
 
     fs.removeSync(currentCloudBackendDir);
 
-    // Move out cli.*json if exists in the temp directory into the amplify directory before copying backand and
+    // Move out cli.*json if exists in the temp directory into the amplify directory before copying backend and
     // current cloud backend directories.
     const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
-      cwd: unzippeddir,
+      cwd: unzippedDir,
       absolute: true,
     });
 
@@ -67,18 +66,13 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
       }
     }
 
-    fs.copySync(unzippeddir, currentCloudBackendDir);
+    fs.copySync(unzippedDir, currentCloudBackendDir);
     if (context.exeInfo.restoreBackend) {
       fs.removeSync(backendDir);
-      fs.copySync(unzippeddir, backendDir);
+      fs.copySync(unzippedDir, backendDir);
     }
 
     fs.removeSync(tempDir);
-
-    // pull hooks directory
-    if (!context.exeInfo.pushHooks) {
-      await pullHooks(context);
-    }
 
     logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
     await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);

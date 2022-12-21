@@ -18,8 +18,7 @@ import { DebugConfig } from '../app-config/debug-config';
  */
 export const onHeadlessSuccess = async (context: $TSContext): Promise<void> => {
   const frontendPlugins = getFrontendPlugins(context);
-  // eslint-disable-next-line
-  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+  const frontendModule = await import(frontendPlugins[context.exeInfo.projectConfig.frontend]);
   await frontendModule.onInitSuccessful(context);
 };
 
@@ -49,7 +48,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   const frontendPlugins = getFrontendPlugins(context);
   // eslint-disable-next-line
-  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+  const frontendModule = await import(frontendPlugins[context.exeInfo.projectConfig.frontend]);
 
   await frontendModule.onInitSuccessful(context);
 
@@ -72,12 +71,12 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     DebugConfig.Instance.setAndWriteShareProject(actualResult);
   }
 
-  context.exeInfo.projectConfig.providers.forEach(provider => {
+  for (const provider of context.exeInfo.projectConfig.providers) {
     // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
+    const providerModule = await import(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
-  });
- 
+  }
+
   await sequential(providerOnSuccessTasks);
 
   // Get current-cloud-backend's amplify-meta

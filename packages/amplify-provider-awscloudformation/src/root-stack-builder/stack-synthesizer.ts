@@ -1,8 +1,11 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
-import { Template } from 'amplify-cli-core';
+import { ISynthesisSession, LegacyStackSynthesizer, Stack } from '@aws-cdk/core';
+import { AmplifyFault, JSONUtilities, Template } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 
-export class RootStackSythesizer extends LegacyStackSynthesizer {
+/**
+ * RootStackSynthesizer class
+ */
+export class RootStackSynthesizer extends LegacyStackSynthesizer {
   private stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
@@ -13,19 +16,28 @@ export class RootStackSythesizer extends LegacyStackSynthesizer {
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
     } else {
-      throw new Error('Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack');
+      throw new AmplifyFault('UnknownFault', {
+        message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack',
+      });
     }
   }
 
-  setStackAsset(templateName: string, template: string): void {
-    RootStackSythesizer.stackAssets.set(templateName, JSON.parse(template));
+  /**
+   * set a specific stack
+   */
+  setStackAsset = (templateName: string, template: string): void => {
+    RootStackSynthesizer.stackAssets.set(templateName, JSONUtilities.parse(template));
   }
 
-  collectStacks(): Map<string, Template> {
-    return new Map(RootStackSythesizer.stackAssets.entries());
-  }
+  /**
+   * get all stacks
+   */
+  collectStacks = (): Map<string, Template> => new Map(RootStackSynthesizer.stackAssets.entries())
 
-  addStack(stack: Stack) {
+  /**
+   * add a stack
+   */
+  addStack(stack: Stack): void {
     this.stacks.set(stack.node.id, stack);
   }
 
@@ -33,6 +45,9 @@ export class RootStackSythesizer extends LegacyStackSynthesizer {
     if (this.stacks.has(stackName)) {
       return this.stacks.get(stackName)!;
     }
-    throw new Error(`Stack ${stackName} is not created`);
+
+    throw new AmplifyFault('UnknownFault', {
+      message: `Stack ${stackName} is not created`,
+    });
   };
 }

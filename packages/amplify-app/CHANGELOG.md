@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.4...amplify-app@4.3.5) (2022-11-17)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.3...amplify-app@4.3.4) (2022-10-27)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.2...amplify-app@4.3.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.1...amplify-app@4.3.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.39...amplify-app@4.3.1) (2022-09-21)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.2.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.39-rc.224a2e0e4.0...amplify-app@4.2.39) (2022-09-06)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.2.39-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.38...amplify-app@4.2.39-rc.224a2e0e4.0) (2022-08-15)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [4.2.38](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.36...amplify-app@4.2.38) (2022-08-02)
 
 **Note:** Version bump only for package amplify-app

@@ -34,9 +34,9 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<void> {
+export function addAuthWithDefault(cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
@@ -117,6 +117,41 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<voi
         }
       });
   });
+}
+
+export async function addAuthWithEmailVerificationAndUserPoolGroupTriggers(cwd: string): Promise<void> {
+  await spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication and security configuration?')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendKeyDown() // Email
+    .sendCarriageReturn()
+    .wait('Do you want to configure advanced settings?')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('What attributes are required for signing up?')
+    .sendKeyDown(8)
+    .send(' ') // Name
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendKeyDown()
+    .send(' ') // Email Verifcation Link with Redirect
+    .sendKeyDown()
+    .send(' ') // Add User to Group
+    .sendCarriageReturn()
+    .wait('Enter the URL that your users will be redirected to upon account confirmation:')
+    .sendCarriageReturn()
+    .wait('Enter the subject for your custom account confirmation email:')
+    .sendCarriageReturn()
+    .wait('Enter the body text for your custom account confirmation email (this will appear before the link URL):')
+    .sendCarriageReturn()
+    .wait('Do you want to edit your verification-link function now?')
+    .sendConfirmNo()
+    .wait('Enter the name of the group to which users will be added.')
+    .sendLine('admin')
+    .wait('Do you want to edit your add-to-group function now?')
+    .sendConfirmNo()
+    .runAsync();
 }
 
 interface AddApiOptions {
@@ -1737,6 +1772,53 @@ export function updateAuthMFAConfiguration(projectDir: string, settings: any = {
     .sendCarriageReturn()
     .wait('Do you want to configure Lambda Triggers for Cognito?')
     .sendNo()
+    .sendCarriageReturn()
+    .runAsync();
+}
+
+export function updateAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
+  return spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Select the authentication/authorization services that you want to use:')
+    .sendCarriageReturn()
+    .wait('Allow unauthenticated logins?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool?')
+    .sendCarriageReturn()
+    .wait('Do you want to add User Pool Groups?')
+    .sendCarriageReturn()
+    .wait('Do you want to add an admin queries API?')
+    .sendCarriageReturn()
+    .wait('Multifactor authentication (MFA) user login options:')
+    .sendCarriageReturn()
+    .wait('Email based user registration/forgot password:')
+    .sendCarriageReturn()
+    .wait('Please specify an email verification subject:')
+    .sendCarriageReturn()
+    .wait('Please specify an email verification message:')
+    .sendCarriageReturn()
+    .wait('Do you want to override the default password policy for this User Pool?')
+    .sendCarriageReturn()
+    .wait("Specify the app's refresh token expiration period (in days):")
+    .sendCarriageReturn()
+    .wait('Do you want to specify the user attributes this app can read and write?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow?')
+    .sendCarriageReturn()
+    .wait('Do you want to configure Lambda Triggers for Cognito?')
+    .sendCarriageReturn()
+    .wait('Which triggers do you want to enable for Cognito')
+    .sendCarriageReturn()
+    .wait('What functionality do you want to use for Pre Sign-up')
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .send(' ')
     .sendCarriageReturn()
     .runAsync();
 }

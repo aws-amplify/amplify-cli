@@ -6,7 +6,9 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager,
+} from 'amplify-cli-core';
 
 import _ from 'lodash';
 
@@ -70,11 +72,12 @@ export class S3 {
    * Populate the uploadState member with the Amplify deployment bucket name
    */
   private populateUploadState(): void {
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const { envName } = this.context.amplify.getEnvInfo();
-    const projectBucket = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const amplifyMeta = stateManager.getMeta();
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
+    const { envName } = stateManager.getLocalEnvInfo();
+    const projectBucket = amplifyMeta.providers
+      ? amplifyMeta.providers[providerName].DeploymentBucketName
+      : teamProviderInfo?.[envName]?.[providerName]?.DeploymentBucketName;
 
     this.uploadState = {
       envName,
@@ -93,9 +96,9 @@ export class S3 {
   private attachBucketToParams(s3Params: $TSAny, envName?: string):$TSAny {
     // eslint-disable-next-line no-prototype-builtins
     if (!s3Params.hasOwnProperty('Bucket')) {
-      const projectDetails = this.context.amplify.getProjectDetails();
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
-      const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+      const teamProviderInfo = stateManager.getTeamProviderInfo();
+      const projectBucket = teamProviderInfo[envName][providerName].DeploymentBucketName;
       s3Params.Bucket = projectBucket;
     }
     return s3Params;
@@ -113,7 +116,7 @@ export class S3 {
     if (this.uploadState === undefined) {
       this.populateUploadState();
     }
-    const spinner = showSpinner ? ora('Uploading files...') : undefined;
+    const spinner = showSpinner ? ora('Uploading files.') : undefined;
 
     const augmentedS3Params = {
       ...s3Params,
@@ -124,7 +127,7 @@ export class S3 {
     let uploadTask;
     try {
       // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.start('Uploading files...');
+      showSpinner && spinner.start('Uploading files.');
       if (
         (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize)
         || (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
@@ -140,9 +143,6 @@ export class S3 {
       }
       await uploadTask.promise();
       return this.uploadState.s3Params.Bucket;
-    } catch (ex) {
-      logger('uploadFile.s3', [others])(ex);
-      throw ex;
     } finally {
       // eslint-disable-next-line no-unused-expressions
       showSpinner && spinner.stop();
@@ -157,15 +157,10 @@ export class S3 {
    */
   async getFile(s3Params: $TSAny, envName?: string) {
     s3Params = this.attachBucketToParams(s3Params, envName);
-    const log = logger('s3.getFile', [s3Params]);
-    try {
-      log();
-      const result = await this.s3.getObject(s3Params).promise();
-      return result.Body;
-    } catch (ex) {
-      log(ex);
-      throw ex;
-    }
+    logger('s3.getFile', [s3Params])();
+
+    const result = await this.s3.getObject(s3Params).promise();
+    return result.Body;
   }
 
   /**
@@ -191,7 +186,9 @@ export class S3 {
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
     } else if (throwIfExists) {
-      throw new Error(`Bucket ${bucketName} already exists`);
+      throw new AmplifyError('BucketAlreadyExistsError', {
+        message: `Bucket ${bucketName} already exists`,
+      });
     }
     return bucketName;
   }
@@ -346,10 +343,17 @@ export class S3 {
       return true;
     } catch (e) {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
-      if (e.statusCode === 404) {
-        return false;
+
+      if (e.code === 'NotFound') {
+        throw new AmplifyError('BucketNotFoundError', {
+          message: e.message,
+          resolution: `Check that bucket name is correct: ${bucketName}`,
+        }, e);
       }
-      throw e;
+
+      throw new AmplifyFault('UnknownFault', {
+        message: e.message,
+      }, e);
     }
   }
 
@@ -374,7 +378,9 @@ export class S3 {
         return undefined;
       }
 
-      throw e;
+      throw new AmplifyFault('UnexpectedS3Fault', {
+        message: e.message,
+      }, e);
     }
   };
 }

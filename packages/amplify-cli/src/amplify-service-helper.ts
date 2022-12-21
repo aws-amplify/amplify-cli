@@ -7,9 +7,9 @@ import _ from 'lodash';
 import { normalizeInputParams } from './input-params-manager';
 
 /**
- *
+ * Construct the input params for the amplify init command
  */
-export function constructInputParams(context: $TSContext) {
+export const constructInputParams = (context: $TSContext): $TSObject => {
   const inputParams: $TSObject = normalizeInputParams(context);
 
   if (inputParams.appId) {
@@ -28,7 +28,7 @@ export function constructInputParams(context: $TSContext) {
   }
 
   return inputParams;
-}
+};
 
 /**
  * runs codegen related post pull tasks

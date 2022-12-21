@@ -47,7 +47,7 @@ export class AmplifyToolkit {
   private _updateamplifyMetaAfterResourceUpdate: any;
   private _updateamplifyMetaAfterResourceAdd: any;
   private _updateamplifyMetaAfterResourceDelete: any;
-  private _updateProvideramplifyMeta: any;
+  private _updateProviderAmplifyMeta: any;
   private _updateamplifyMetaAfterPush: any;
   private _updateamplifyMetaAfterBuild: any;
   private _updateAmplifyMetaAfterPackage: any;
@@ -293,10 +293,10 @@ export class AmplifyToolkit {
       require(path.join(this._amplifyHelpersDirPath, 'update-amplify-meta')).updateamplifyMetaAfterResourceDelete;
     return this._updateamplifyMetaAfterResourceDelete;
   }
-  get updateProvideramplifyMeta(): any {
-    this._updateProvideramplifyMeta =
-      this._updateProvideramplifyMeta || require(path.join(this._amplifyHelpersDirPath, 'update-amplify-meta')).updateProvideramplifyMeta;
-    return this._updateProvideramplifyMeta;
+  get updateProviderAmplifyMeta(): any {
+    this._updateProviderAmplifyMeta =
+      this._updateProviderAmplifyMeta || require(path.join(this._amplifyHelpersDirPath, 'update-amplify-meta')).updateProviderAmplifyMeta;
+    return this._updateProviderAmplifyMeta;
   }
   get updateamplifyMetaAfterPush(): any {
     this._updateamplifyMetaAfterPush =

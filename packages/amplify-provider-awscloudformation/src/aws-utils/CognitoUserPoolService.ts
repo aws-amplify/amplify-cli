@@ -66,18 +66,13 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
 
   public async getUserPoolDetails(userPoolId: string): Promise<UserPoolType> {
     logger('getUserPoolDetails.cognito.describeUserPool', [{ userPoolId }])();
-    try {
-      const result = await this.cognito
-        .describeUserPool({
-          UserPoolId: userPoolId,
-        })
-        .promise();
+    const result = await this.cognito
+      .describeUserPool({
+        UserPoolId: userPoolId,
+      })
+      .promise();
 
-      return result.UserPool;
-    } catch (ex) {
-      logger('getUserPoolDetails.cognito.describeUserPool', [{ userPoolId }])(ex);
-      throw ex;
-    }
+    return result.UserPool;
   }
 
   public async listUserPoolClients(userPoolId: string): Promise<UserPoolClientType[]> {

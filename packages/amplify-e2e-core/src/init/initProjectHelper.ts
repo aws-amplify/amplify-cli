@@ -1,3 +1,7 @@
+/* eslint-disable import/no-cycle */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable jsdoc/require-jsdoc */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
 import {
@@ -8,6 +12,7 @@ import { amplifyRegions } from '../configure';
 
 const defaultSettings = {
   name: EOL,
+  // eslint-disable-next-line spellcheck/spell-checker
   envName: 'integtest',
   editor: EOL,
   appType: EOL,
@@ -25,7 +30,6 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
 };
-
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
@@ -85,30 +89,35 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
         .sendLine(s.profileName);
     }
     chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
-    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
+      .sendYes()
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
   });
 }
 
-
-export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
+
+  let env;
+
+  if (s.disableAmplifyAppCreation) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -142,19 +151,13 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
   });
 }
 
-/**
- *
- */
-export function createRandomName() {
+export function createRandomName(): string {
   const length = 20;
   const regExp = new RegExp('-', 'g');
   return uuid().replace(regExp, '').substring(0, length);
 }
 
-/**
- *
- */
-export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initIosProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -197,8 +200,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
   });
 }
 
-
-export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -226,17 +228,16 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
 
     singleSelect(chain, s.region, amplifyRegions);
     chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
-    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .sendYes()
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
-
 
 export function initProjectWithAccessKey(
   cwd: string,
@@ -288,17 +289,16 @@ export function initProjectWithAccessKey(
 
     singleSelect(chain, s.region, amplifyRegions);
     chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
-    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .sendYes()
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
-
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
   addCircleCITags(cwd);
@@ -338,7 +338,6 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
   });
 }
 
-
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
@@ -370,7 +369,6 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
   });
 }
 
-
 export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
@@ -379,8 +377,6 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
       cwd,
       stripColors: true,
     })
-      .wait('Do you want to use an existing environment?')
-      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -401,8 +397,7 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
   });
 }
 
-
-export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
+export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -436,25 +431,6 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   });
 }
 
-/**
- *
- */
-export function amplifyInitYes(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--yes'], {
-      cwd,
-      stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
-    }).run((err: Error) => (err
-      ? reject(err)
-      : (() => {
-        resolve();
-      })()));
-  });
-}
-
 export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
@@ -469,7 +445,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
   });
 }
 
-// Can be called only if detects teamprovider change
+// Can be called only if detects team-provider-info change
 export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     const regex = new RegExp(`.*${expectedStatus}*`);
@@ -487,7 +463,6 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
       });
   });
 }
-
 
 export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {

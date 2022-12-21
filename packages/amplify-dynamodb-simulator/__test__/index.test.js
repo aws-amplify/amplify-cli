@@ -48,14 +48,18 @@ describe('emulator operations', () => {
     }
   };
 
+  const realProcessEnv = process.env;
+
   let emulators;
   beforeEach(async () => {
+    jest.resetModules();
     ensureNoDbPath();
     emulators = [];
     jest.setTimeout(40 * 1000);
   });
 
   afterEach(async () => {
+    process.env = { ...realProcessEnv };
     await Promise.all(emulators.map(emu => emu.terminate()));
     ensureNoDbPath();
   });
@@ -99,6 +103,13 @@ describe('emulator operations', () => {
 
   it('reports on invalid dbPath values', async () => {
     expect.assertions(1);
+    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
+  });
+
+  it('reports on invalid dbPath values with extra stderr output', async () => {
+    expect.assertions(1);
+    // This makes JVM running DynamoDB simulator print an extra line before surfacing real error.
+    process.env.JAVA_TOOL_OPTIONS = '-Dlog4j2.formatMsgNoLookups=true';
     await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
   });
 });

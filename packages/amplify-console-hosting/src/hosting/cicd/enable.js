@@ -1,14 +1,19 @@
-const utils = require('../../utils/amplify-context-utils');
+// TODO disable lint until file is converted to TS
+/* eslint-disable */
 const { open } = require('amplify-cli-core');
+const fs = require('fs-extra');
+const utils = require('../../utils/amplify-context-utils');
 const questions = require('../../modules/questions/question-generator');
 const configUtils = require('../../utils/config-utils');
 const constants = require('../../constants/plugin-constants');
 const clientFactory = require('../../utils/client-factory');
 const pathManager = require('../../utils/path-manager');
-const fs = require('fs-extra');
 const ValidationError = require('../../error/validation-error').default;
 const statusMod = require('../index');
 
+/**
+ * Entry point to enable CI/CD hosting
+ */
 async function enable(context) {
   const region = utils.getRegionForCurrEnv(context);
   const appId = utils.getAppIdForCurrEnv(context);
@@ -32,7 +37,7 @@ async function enable(context) {
   await configUtils.initMetaFile(context, category, resourceName, type);
 
   // Init team-provider-info
-  configUtils.initTeamProviderInfo(context, category, resourceName, type);
+  await configUtils.initHostingEnvParams(context, category, resourceName, type);
   await statusMod.status(context);
 }
 

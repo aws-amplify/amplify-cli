@@ -1,3 +1,4 @@
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny, $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager,
 } from 'amplify-cli-core';
@@ -333,13 +334,13 @@ export const importedS3EnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const sourceEnvParams = getSourceEnvParameters(context.exeInfo.sourceEnvName, 'storage', resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager('storage', resourceName);
 
-    if (sourceEnvParams) {
+    if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.ImportPreviousBucket(resourceName, sourceEnvParams.bucketName, context.exeInfo.sourceEnvName),
+        message: importMessages.ImportPreviousBucket(resourceName, resourceParamManager.getParam('bucketName')!, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -353,8 +354,8 @@ export const importedS3EnvInit = async (
 
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.bucketName = sourceEnvParams.bucketName;
-      currentEnvSpecificParameters.region = sourceEnvParams.region;
+      currentEnvSpecificParameters.bucketName = resourceParamManager.getParam('bucketName')!;
+      currentEnvSpecificParameters.region = resourceParamManager.getParam('region')!;
       /* eslint-enable */
     }
   }
@@ -465,22 +466,4 @@ const ensureHeadlessParameters = (
   };
 
   return envSpecificParameters;
-};
-
-const getSourceEnvParameters = (
-  envName: string,
-  categoryName: string,
-  resourceName: string,
-): S3EnvSpecificResourceParameters | undefined => {
-  const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
-    throwIfNotExist: false,
-  });
-
-  if (teamProviderInfo) {
-    const envParameters = _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], undefined);
-
-    return envParameters;
-  }
-
-  return undefined;
 };

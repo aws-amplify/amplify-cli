@@ -189,7 +189,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (!fs.existsSync(resourceBuildDir)) {
       return;
     }
-    const spinner = new ora('Uploading files...');
+    const spinner = new ora('Uploading files.');
     spinner.start();
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,

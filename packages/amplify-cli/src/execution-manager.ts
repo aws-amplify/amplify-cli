@@ -27,7 +27,7 @@ import {
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 import {
   FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath,
-} from './domain/amplify-usageData/IUsageData';
+} from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command
@@ -161,7 +161,7 @@ const executePluginModuleCommand = async (context: Context, plugin: PluginInfo):
   }
 
   const handler = await getHandler(plugin, context);
-  attachContextExtensions(context, plugin);
+  await attachContextExtensions(context, plugin);
   await raisePreEvent(context);
   context.usageData.stopCodePathTimer(FromStartupTimedCodePaths.PLATFORM_STARTUP);
   context.usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
@@ -216,7 +216,7 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo): Prom
   }
 
   if (commandModule) {
-    attachContextExtensions(context, plugin);
+    await attachContextExtensions(context, plugin);
     await commandModule.run(context);
   } else {
     const { showAllHelp } = await import('./extensions/amplify-helpers/show-all-help');
@@ -245,6 +245,9 @@ const raisePreEvent = async (context: Context): Promise<void> => {
     case 'models':
       await raisePreCodegenModelsEvent(context);
       break;
+    case 'export':
+      await raisePreExportEvent(context);
+      break;
     default:
       // fall through
   }
@@ -260,6 +263,10 @@ const raisePrePushEvent = async (context: Context): Promise<void> => {
 
 const raisePrePullEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData()));
+};
+
+const raisePreExportEvent = async (context: Context): Promise<void> => {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreExport));
 };
 
 const raisePreCodegenModelsEvent = async (context: Context): Promise<void> => {
@@ -292,11 +299,11 @@ const raisePostEvent = async (context: Context): Promise<void> => {
 };
 
 const raisePostInitEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostPushEventData()));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostInitEventData()));
 };
 
 const raisePostPushEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostInitEventData()));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostPushEventData()));
 };
 
 const raisePostPullEvent = async (context: Context): Promise<void> => {
@@ -338,9 +345,8 @@ export const raiseEvent = async (context: Context, args: AmplifyEventArgs): Prom
       .map(plugin => {
         const eventHandler = async (): Promise<void> => {
           try {
-            attachContextExtensions(context, plugin);
-            // eslint-disable-next-line global-require, import/no-dynamic-require, @typescript-eslint/no-var-requires
-            const pluginModule = require(plugin.packageLocation);
+            await attachContextExtensions(context, plugin);
+            const pluginModule = await import(plugin.packageLocation);
             await pluginModule.handleAmplifyEvent(context, args);
           } catch {
             // no need to need anything
@@ -353,23 +359,21 @@ export const raiseEvent = async (context: Context, args: AmplifyEventArgs): Prom
 };
 
 // for backward compatibility, adds extensions to the context object
-const attachContextExtensions = (context: Context, plugin: PluginInfo): void => {
+const attachContextExtensions = async (context: Context, plugin: PluginInfo): Promise<void> => {
   const extensionsDirPath = path.normalize(path.join(plugin.packageLocation, 'extensions'));
   if (fs.existsSync(extensionsDirPath)) {
     const stats = fs.statSync(extensionsDirPath);
     if (stats.isDirectory()) {
       const itemNames = fs.readdirSync(extensionsDirPath);
-      itemNames.forEach(itemName => {
+      for (const itemName of itemNames) {
         const itemPath = path.join(extensionsDirPath, itemName);
-        let itemModule;
         try {
-          // eslint-disable-next-line global-require, import/no-dynamic-require
-          itemModule = require(itemPath);
+          const itemModule = await import(itemPath);
           itemModule(context);
         } catch (e) {
           // do nothing
         }
-      });
+      }
     }
   }
 };

@@ -3,6 +3,112 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.1...amplify-util-mock@4.7.0) (2022-11-17)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+## [4.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0...amplify-util-mock@4.6.1) (2022-11-11)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.4...amplify-util-mock@4.6.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
+## [4.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.3...amplify-util-mock@4.5.4) (2022-10-21)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.2...amplify-util-mock@4.5.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.1...amplify-util-mock@4.5.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.11...amplify-util-mock@4.5.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** mock websocket subscriptions ([#10870](https://github.com/aws-amplify/amplify-cli/issues/10870)) ([5881e95](https://github.com/aws-amplify/amplify-cli/commit/5881e95ad7394781b4e479af34340855efc46175))
+
+
+
+
+
+## [4.4.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.11-rc.224a2e0e4.0...amplify-util-mock@4.4.11) (2022-09-06)
+
+
+
+# 10.0.0-rc.0 (2022-08-24)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.4.11-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.10...amplify-util-mock@4.4.11-rc.224a2e0e4.0) (2022-08-15)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.9...amplify-util-mock@4.4.10) (2022-08-06)
+
+
+### Bug Fixes
+
+* support AWS::S3::Bucket FilterRule properly in the mock mode ([#10799](https://github.com/aws-amplify/amplify-cli/issues/10799)) ([0273dc0](https://github.com/aws-amplify/amplify-cli/commit/0273dc045218b11e69da36af147d679fdf03a545))
+
+
+
+
+
 ## [4.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.7...amplify-util-mock@4.4.9) (2022-08-02)
 
 

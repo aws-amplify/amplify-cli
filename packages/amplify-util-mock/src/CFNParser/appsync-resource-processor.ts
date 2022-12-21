@@ -8,6 +8,8 @@ import {
 import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
 import { processCloudFormationStack } from './stack/index';
 import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
+import { $TSAny } from 'amplify-cli-core';
+import _ from 'lodash';
 
 const CFN_DEFAULT_PARAMS = {
   'AWS::Region': 'us-east-1-fake',
@@ -110,6 +112,10 @@ export function processCloudFormationResults(resources, transformResult) {
     });
   });
 
+  if (searchableModelExists(transformResult)) {
+    return configureSearchEnabledTables(transformResult, processedResources);
+  }
+
   return processedResources;
 }
 export function processTransformerStacks(transformResult, params = {}): AmplifyAppSyncSimulatorConfig {
@@ -149,4 +155,21 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
     cfnTemplateFetcher,
   );
   return processCloudFormationResults(processedStacks.resources, transformResult);
+}
+
+export function configureSearchEnabledTables(transformResult: $TSAny, processedResources: AmplifyAppSyncSimulatorConfig): AmplifyAppSyncSimulatorConfig {
+  const searchableStackResources = Object.keys(transformResult?.stacks?.SearchableStack?.Resources);
+  processedResources.tables = processedResources?.tables?.map( (table: $TSAny) => {
+    const tableName = table?.Properties?.TableName;
+    const eventSourceMappingPrefix = `Searchable${tableName.substring(0, tableName.lastIndexOf('Table'))}LambdaMapping`;
+    return {
+      ...table,
+      isSearchable: searchableStackResources?.findIndex(resource => resource?.startsWith(eventSourceMappingPrefix)) !== -1
+    }
+  });
+  return processedResources;
+}
+
+export function searchableModelExists(transformResult: $TSAny): boolean {
+  return !(_.isEmpty(transformResult?.stacks?.SearchableStack));
 }

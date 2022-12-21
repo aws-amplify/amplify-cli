@@ -1,13 +1,18 @@
-import ora from 'ora';
-import AWS from 'aws-sdk';
-import { $TSContext, stateManager, pathManager, $TSAny } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, pathManager, stateManager,
+} from 'amplify-cli-core';
+import * as fs from 'fs-extra';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
+import _ from 'lodash';
 import * as path from 'path';
+import { S3 } from './aws-utils/aws-s3';
 import { ProviderName as providerName } from './constants';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { AmplifyBackend } from './aws-utils/aws-amplify-backend';
 
-export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
+/**
+ * Generates DataStore Models for Admin UI CMS to consume
+ */
+export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   const appSyncResources = resources.filter(resource => resource.service === 'AppSync');
 
   if (appSyncResources.length === 0) {
@@ -18,7 +23,6 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
   const { resourceName } = appSyncResource;
 
   const amplifyMeta = stateManager.getMeta();
-  const localEnvInfo = stateManager.getLocalEnvInfo();
 
   const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
 
@@ -26,7 +30,6 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
     return;
   }
 
-  const envName = localEnvInfo.envName;
   const { isAdminApp } = await isAmplifyAdminApp(appId);
   const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
 
@@ -34,77 +37,77 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
     return;
   }
 
-  // Generate DataStore Models for Admin UI CMS to consume
-  const spinner = ora('Generating models in the cloud...\n').start();
-  const amplifyBackendInstance = await AmplifyBackend.getInstance(context);
+  // the following is a hack to enable us to upload assets needed by studio CMS to the deployment bucket without
+  // calling AmplifyBackend.generateBackendAPIModels.
+  // Calling this API introduces a circular dependency because this API in turn executes the CLI to generate codegen assets
 
+  const originalProjectConfig = stateManager.getProjectConfig();
+  const relativeTempOutputDir = 'amplify-codegen-temp';
+  const absoluteTempOutputDir = path.join(pathManager.findProjectRoot(), relativeTempOutputDir);
+  const forceJSCodegenProjectConfig = {
+    frontend: 'javascript',
+    javascript: {
+      framework: 'none',
+      config: {
+        SourceDir: relativeTempOutputDir,
+      },
+    },
+  };
+  const originalStdoutWrite = process.stdout.write;
   try {
-    const jobStartDetails = await amplifyBackendInstance.amplifyBackend
-      .generateBackendAPIModels({
-        AppId: appId,
-        BackendEnvironmentName: envName,
-        ResourceName: resourceName,
-      })
-      .promise();
+    // overwrite project config with config that forces codegen to output js to a temp location
+    stateManager.setProjectConfig(undefined, forceJSCodegenProjectConfig);
 
-    const jobCompletionDetails = await pollUntilDone(
-      jobStartDetails.JobId,
-      appId,
-      envName,
-      2 * 1000,
-      2000 * 1000,
-      amplifyBackendInstance.amplifyBackend,
-    );
-    if (jobCompletionDetails.Status === 'COMPLETED') {
-      spinner.succeed('Successfully generated models in the cloud.');
-    } else {
-      throw new Error('Modelgen job creation failed');
-    }
-  } catch (e) {
-    spinner.stop();
-    context.print.error(`Failed to create models in the cloud: ${e.message}`);
+    // generateModels and generateModelIntrospection print confusing and duplicate output when executing these codegen paths
+    // so pipe stdout to a file and then reset it at the end to suppress this output
+    await fs.ensureDir(absoluteTempOutputDir);
+    const tempStdoutWrite = fs.createWriteStream(path.join(absoluteTempOutputDir, 'temp-console-log.txt'));
+    process.stdout.write = tempStdoutWrite.write.bind(tempStdoutWrite);
+
+    // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/models.js#L60
+    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
+
+    // generateModelIntrospection expects --output-dir option to be set
+    _.set(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
+
+    // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
+    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
+
+    const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
+    const localSchemaJsPath = path.join(absoluteTempOutputDir, 'models', 'schema.js');
+    const localModelIntrospectionPath = path.join(absoluteTempOutputDir, 'model-introspection.json');
+
+    // ==================== DO NOT MODIFY THIS MAP UNLESS YOU ARE 100% SURE OF THE IMPLICATIONS ====================
+    // this map represents an implicit interface between the CLI and the Studio CMS frontend
+    const s3ApiModelsPrefix = `models/${resourceName}/`;
+    const cmsArtifactLocalToS3KeyMap: Record<LocalPath, S3Key> = {
+      [localSchemaPath]: `${s3ApiModelsPrefix}schema.graphql`,
+      [localSchemaJsPath]: `${s3ApiModelsPrefix}schema.js`,
+      [localModelIntrospectionPath]: `${s3ApiModelsPrefix}modelIntrospection.json`,
+    };
+    // ==================== DO NOT MODIFY THIS MAP UNLESS YOU ARE 100% SURE OF THE IMPLICATIONS ====================
+
+    await uploadCMSArtifacts(await S3.getInstance(context), cmsArtifactLocalToS3KeyMap);
+  } finally {
+    stateManager.setProjectConfig(undefined, originalProjectConfig);
+    process.stdout.write = originalStdoutWrite;
+    await fs.remove(absoluteTempOutputDir);
   }
-}
+};
 
-// interval is how often to poll
-// timeout is how long to poll waiting for a result (0 means try forever)
+/**
+ * Uploads the files specified in uploadMap to the corresponding S3 key
+ */
+const uploadCMSArtifacts = async (s3Client: S3, uploadMap: Record<LocalPath, S3Key>): Promise<void> => {
+  const doNotShowSpinner = false;
+  const uploadPromises = Object.entries(uploadMap)
+    .map(([localPath, s3Key]) => ({
+      Body: fs.createReadStream(localPath),
+      Key: s3Key,
+    }))
+    .map(uploadParams => s3Client.uploadFile(uploadParams, doNotShowSpinner));
+  await Promise.all(uploadPromises);
+};
 
-async function pollUntilDone(
-  jobId: string,
-  appId: string,
-  backendEnvironmentName: string,
-  interval: number,
-  timeout: number,
-  amplifyBackendClient: AWS.AmplifyBackend,
-) {
-  const start = Date.now();
-  while (true) {
-    const jobDetails = await amplifyBackendClient
-      .getBackendJob({
-        JobId: jobId,
-        AppId: appId,
-        BackendEnvironmentName: backendEnvironmentName,
-      })
-      .promise();
-
-    if (jobDetails.Status === 'FAILED' || jobDetails.Status === 'COMPLETED') {
-      // we know we're done here, return from here whatever you
-      // want the final resolved value of the promise to be
-      return jobDetails;
-    } else {
-      if (timeout !== 0 && Date.now() - start > timeout) {
-        throw new Error(`Job Timed out for ${jobId}`);
-      } else {
-        // run again with a short delay
-        await delay(interval);
-      }
-    }
-  }
-}
-
-// create a promise that resolves after a short delay
-function delay(t: number) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, t);
-  });
-}
+type LocalPath = string;
+type S3Key = string;

@@ -1,8 +1,22 @@
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
+import { AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
-  load(request): any {
-    console.error('@searchable mocking is not supported.');
-    return null;
+  constructor(private _config) {}
+
+  async load(payload, extraData) {
+    try {
+      if (process?.platform?.startsWith('win')) {
+        return null;
+      }
+      return await this._config.invoke(payload);
+    } catch (e) {
+      printer.info('Opensearch Data source failed with the following error:' + e?.message);
+      throw new AmplifyFault('MockProcessFault', {
+        message: 'Failed to load data from Opensearch data source',
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      }, e);
+    }
   }
 }
