@@ -87,7 +87,7 @@ export const handleUnhandledRejection = (reason: Error | $TSAny): void => {
     throw reason;
   } else if (reason !== null && typeof reason === 'string') {
     throw new Error(reason);
-  } else if (reason !== null && typeof reason === 'object') {
+  } else if (reason !== null) {
     throw new Error(JSON.stringify(reason));
   } else {
     throw new Error('Unhandled promise rejection');

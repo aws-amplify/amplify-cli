@@ -137,6 +137,14 @@ describe('test unhandled rejection handler', () => {
     }).toThrowError(testError);
   });
 
+  it('should return error with message when unhandled promise rejected with a number', async () => {
+    const testNumber = 1;
+    const testError = new Error(testNumber.toString());
+    expect(() => {
+      handleUnhandledRejection(testNumber);
+    }).toThrowError(testError);
+  });
+
   it('should return error with unknown message when unhandled promise rejected with null', async () => {
     const testString = 'Unhandled promise rejection';
     const testError = new Error(testString);
