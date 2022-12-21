@@ -1,12 +1,15 @@
 import {
   addAuthWithDefault,
+  addGeofenceCollectionWithDefault,
   addMapWithDefault,
+  addPlaceIndexWithDefault,
   amplifyPull,
   amplifyPushWithoutCodegen,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
+  updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
@@ -33,7 +36,11 @@ describe('geo category migration from v10 to latest', () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfileV10(projRoot, { name: 'geoMigration', disableAmplifyAppCreation: false });
     await addAuthWithDefault(projRoot);
-    await addMapWithDefault(projRoot, { isFirstGeoResource: true });
+    await addMapWithDefault(projRoot);
+    await addPlaceIndexWithDefault(projRoot);
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups);
     await amplifyPushWithoutCodegen(projRoot);
   });
 
