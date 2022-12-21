@@ -92,7 +92,7 @@ export async function installAmplifyCLI(version = 'latest') {
     stdio: 'inherit',
   });
   
-  console.log("SETTING PATH:");
+  console.log('SETTING PATH:');
   if(gt(version, '10.0.0')){
     process.env.AMPLIFY_PATH = process.platform === 'win32'
     ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
@@ -103,7 +103,7 @@ export async function installAmplifyCLI(version = 'latest') {
     : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
   }
   
-  console.log("PATH SET:", process.env.AMPLIFY_PATH);
+  console.log('PATH SET:', process.env.AMPLIFY_PATH);
 }
 
 export async function createNewProjectDir(

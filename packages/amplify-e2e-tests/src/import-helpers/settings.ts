@@ -40,7 +40,7 @@ export const createIDPAndUserPoolWithOAuthSettings = (
   projectPrefix: string,
   shortId: string,
 ): AddAuthIdentityPoolAndUserPoolWithOAuthSettings => {
-  let settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
+  const settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
 
   return {
     ...settings,

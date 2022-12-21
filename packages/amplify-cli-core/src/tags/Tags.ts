@@ -17,7 +17,7 @@ export function ReadTags(tagsFilePath: string): Tag[] {
   return tags;
 }
 
-export function validate(tags: Tag[], skipProjectEnv: boolean = false): void {
+export function validate(tags: Tag[], skipProjectEnv = false): void {
   const allowedKeySet = new Set(['Key', 'Value']);
 
   //check if Tags have the right format
@@ -57,7 +57,7 @@ export function validate(tags: Tag[], skipProjectEnv: boolean = false): void {
   });
 }
 
-export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv: boolean = false): Tag[] {
+export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv = false): Tag[] {
   const { envName, projectName } = tagVariables;
   const replace: any = {
     '{project-name}': projectName,

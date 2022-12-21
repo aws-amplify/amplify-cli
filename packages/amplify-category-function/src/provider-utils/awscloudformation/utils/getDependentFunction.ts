@@ -11,7 +11,7 @@ export async function lambdasWithApiDependency(
   modelsDeleted: string[],
 ) {
   //get the List of functions dependent on deleted model
-  let dependentFunctions = [];
+  const dependentFunctions = [];
   const lambdaFuncResources = allResources.filter(
     resource =>
       resource.service === ServiceName.LambdaFunction &&

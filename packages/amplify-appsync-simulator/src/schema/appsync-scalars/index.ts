@@ -17,7 +17,7 @@ const phoneValidator = (ast, options) => {
     throw new GraphQLError(`Query error: Can only parse strings got a: ${kind}`, [ast]);
   }
 
-  let isValid = isValidNumber(value, country);
+  const isValid = isValidNumber(value, country);
   if (!isValid) {
     throw new GraphQLError('Query error: Not a valid phone number', [ast]);
   }

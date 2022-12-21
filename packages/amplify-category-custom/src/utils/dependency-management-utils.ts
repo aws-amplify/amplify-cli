@@ -62,7 +62,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const { cfnTemplate } = readCFNTemplate(cfnFilePath);
     if (cfnTemplate && cfnTemplate.Outputs) {
       const allOutputs: $TSObject = cfnTemplate.Outputs;
-      let outputsWithoutConditions: any = {};
+      const outputsWithoutConditions: any = {};
 
       for (const key in allOutputs) {
         if (!allOutputs[key]['Condition']) {
@@ -84,7 +84,7 @@ export function getAllResources() {
   const allResources: $TSObject = {};
 
   for (const category of categories) {
-    let resourcesList = category in meta ? Object.keys(meta[category]) : [];
+    const resourcesList = category in meta ? Object.keys(meta[category]) : [];
 
     if (_.isEmpty(resourcesList)) {
       continue;
@@ -251,7 +251,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
         selectedResources = _.concat(resourcesList);
       }
 
-      for (let resourceName of selectedResources) {
+      for (const resourceName of selectedResources) {
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
@@ -329,7 +329,7 @@ function showUsageInformation(resources: AmplifyDependentResourceDefinition[]) {
 }
 
 function generateInputParametersForDependencies(resources: AmplifyDependentResourceDefinition[]) {
-  let parameters: $TSObject = {};
+  const parameters: $TSObject = {};
 
   for (const resource of resources) {
     for (const attribute of resource.attributes || []) {

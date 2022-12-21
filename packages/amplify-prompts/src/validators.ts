@@ -13,7 +13,7 @@ export type Validator = (value: string) => true | string | Promise<true | string
 */
 
 export const alphanumeric =
-  (message: string = 'Input must be alphanumeric'): Validator =>
+  (message = 'Input must be alphanumeric'): Validator =>
   (input: string) =>
     /^[a-zA-Z0-9]+$/.test(input) ? true : message;
 
@@ -23,7 +23,7 @@ export const matchRegex =
     validatorRegex.test(input) ? true : message || `Input does not match the regular expression ${validatorRegex}`;
 
 export const integer =
-  (message: string = 'Input must be a number'): Validator =>
+  (message = 'Input must be a number'): Validator =>
   (input: string) =>
     /^[0-9]+$/.test(input) ? true : message;
 

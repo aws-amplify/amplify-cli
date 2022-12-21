@@ -18,7 +18,7 @@ export async function analyzeProject(context) {
   const projectPath = process.cwd();
   Object.assign(context.exeInfo.localEnvInfo, { projectPath });
 
-  let { projectName } = context.exeInfo.projectConfig;
+  const { projectName } = context.exeInfo.projectConfig;
   const { defaultEditor, envName } = context.exeInfo.localEnvInfo;
 
   context.print.info('');

@@ -3,24 +3,24 @@
  */
 class ElasticsearchUtils {
   private static readonly ONE: number = 1;
-  private static readonly BOOL: string = "bool";
-  private static readonly MUST: string = "must";
-  private static readonly MUST_NOT: string = "must_not";
-  private static readonly SHOULD: string = "should";
-  private static readonly MATCH: string = "match";
-  private static readonly MATCH_PHRASE: string = "match_phrase";
-  private static readonly MATCH_PHRASE_PREFIX: string = "match_phrase_prefix";
-  private static readonly MULTI_MATCH: string = "multi_match";
-  private static readonly EXISTS: string = "exists";
-  private static readonly WILDCARD: string = "wildcard";
-  private static readonly REGEXP: string = "regexp";
-  private static readonly RANGE: string = "range";
-  private static readonly GT: string = "gt";
-  private static readonly GTE: string = "gte";
-  private static readonly LT: string = "lt";
-  private static readonly LTE: string = "lte";
-  private static readonly MINIMUM_SHOULD_MATCH: string = "minimum_should_match";
-  private static readonly FIELD: string = "field";
+  private static readonly BOOL: string = 'bool';
+  private static readonly MUST: string = 'must';
+  private static readonly MUST_NOT: string = 'must_not';
+  private static readonly SHOULD: string = 'should';
+  private static readonly MATCH: string = 'match';
+  private static readonly MATCH_PHRASE: string = 'match_phrase';
+  private static readonly MATCH_PHRASE_PREFIX: string = 'match_phrase_prefix';
+  private static readonly MULTI_MATCH: string = 'multi_match';
+  private static readonly EXISTS: string = 'exists';
+  private static readonly WILDCARD: string = 'wildcard';
+  private static readonly REGEXP: string = 'regexp';
+  private static readonly RANGE: string = 'range';
+  private static readonly GT: string = 'gt';
+  private static readonly GTE: string = 'gte';
+  private static readonly LT: string = 'lt';
+  private static readonly LTE: string = 'lte';
+  private static readonly MINIMUM_SHOULD_MATCH: string = 'minimum_should_match';
+  private static readonly FIELD: string = 'field';
 
   /**
    * Convert a field and a value into Elasticsearch "match" expression.
@@ -37,7 +37,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    const updatedFieldName: string = ((typeof value) === "string") ? (fieldName + ".keyword") : fieldName;
+    const updatedFieldName: string = ((typeof value) === 'string') ? (fieldName + '.keyword') : fieldName;
 
     return this.toMatchExpression(updatedFieldName, value);
   }
@@ -381,7 +381,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.MUST]: filterClauses
       }
@@ -403,7 +403,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.SHOULD]: filterClauses,
         [ElasticsearchUtils.MINIMUM_SHOULD_MATCH]: ElasticsearchUtils.ONE
@@ -426,7 +426,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.MUST_NOT]: expression
       }

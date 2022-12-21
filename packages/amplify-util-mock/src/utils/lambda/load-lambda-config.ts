@@ -21,7 +21,7 @@ const CFN_DEFAULT_CONDITIONS = {
 export const loadLambdaConfig = async (
   context: $TSContext,
   resourceName: string,
-  overrideApiToLocal: boolean = false,
+  overrideApiToLocal = false,
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
   const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
