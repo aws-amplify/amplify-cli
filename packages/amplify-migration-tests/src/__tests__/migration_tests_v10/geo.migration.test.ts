@@ -1,21 +1,22 @@
 import {
   addAuthWithDefault,
-  addDDBWithTrigger,
-  addDynamoDBWithGSIWithSettings,
-  addS3StorageWithSettings,
+  addGeofenceCollectionWithDefault,
+  addMapWithDefault,
+  addPlaceIndexWithDefault,
   amplifyPushWithoutCodegen,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import {
-  getShortId, pullPushWithLatestCodebaseValidateParameterAndCfnDrift,
+  pullPushWithLatestCodebaseValidateParameterAndCfnDrift,
 } from '../../migration-helpers/utils';
 
-describe('storage category migration from v10 to latest', () => {
-  const projectName = 'storageMigration';
+describe('geo category migration from v10 to latest', () => {
+  const projectName = 'geoMigration';
   let projRoot: string;
 
   beforeAll(async () => {
@@ -24,15 +25,13 @@ describe('storage category migration from v10 to latest', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
-    await initJSProjectWithProfileV10(projRoot, { name: 'storageMigration', disableAmplifyAppCreation: false });
-    await addDynamoDBWithGSIWithSettings(projRoot, {
-      resourceName: `${projectName}res${getShortId()}`,
-      tableName: `${projectName}tbl${getShortId()}`,
-      gsiName: `${projectName}gsi${getShortId()}`,
-    });
-    await addDDBWithTrigger(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3StorageWithSettings(projRoot, { });
+    await initJSProjectWithProfileV10(projRoot, { name: 'geoMigration', disableAmplifyAppCreation: false });
+    await addAuthWithDefault(projRoot);
+    await addMapWithDefault(projRoot);
+    await addPlaceIndexWithDefault(projRoot);
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups);
     await amplifyPushWithoutCodegen(projRoot);
   });
 

@@ -64,6 +64,7 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'function_migration_update_v6',
   'geo-add-e_pkg',
   'geo-add-f_pkg',
+  'geo-migration_v10',
   'geo-remove-2_pkg',
   'geo-remove-3_pkg',
   'geo-update-1_pkg',
