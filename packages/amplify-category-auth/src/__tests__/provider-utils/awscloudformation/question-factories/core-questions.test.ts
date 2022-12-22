@@ -130,19 +130,11 @@ describe('When generating auth questions...', () => {
     it('should return a question object when passed a simple input without getWhen conditions.', async () => {
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res).toBeInstanceOf(Object);
-      expect(res.type).toEqual('input');
-      expect(res.name).toEqual(key);
-      expect(res.message).toEqual(question);
     });
 
     it('should try calling getWhen.', async () => {
       await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(mockAmplify.getWhen).toHaveBeenCalled();
-    });
-
-    it('should try calling inputValidation.', async () => {
-      await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      expect(mockAmplify.inputValidation).toHaveBeenCalled();
     });
 
     it('should try calling getAllDefaults if updatingAuth is not present in the context.', async () => {
@@ -163,31 +155,6 @@ describe('When generating auth questions...', () => {
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const def = res.default();
       expect(def).toEqual('my old answer');
-    });
-
-    it('should render inputs of type "multiselect" as type "checkbox"', async () => {
-      input.type = 'multiselect';
-      input.when = () => true;
-      const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      expect(res.type).toEqual('checkbox');
-    });
-
-    it('should render inputs of type "confirm" as type "confirm"', async () => {
-      input.type = 'confirm';
-      const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      expect(res.type).toEqual('confirm');
-    });
-
-    it('should render inputs of type "input" as type "input"', async () => {
-      input.type = 'input';
-      const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      expect(res.type).toEqual('input');
-    });
-
-    it('should render inputs without a type as type "input"', async () => {
-      input.type = undefined;
-      const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      expect(res.type).toEqual('input');
     });
   });
 

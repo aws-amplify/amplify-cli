@@ -83,27 +83,6 @@ export const parseInputs = async (
     }
   }
 
-  if (input.type && input.type === 'list') {
-    question = {
-      type: 'list',
-      ...question,
-    };
-  } else if (input.type && input.type === 'multiselect') {
-    question = {
-      type: 'checkbox',
-      ...question,
-    };
-  } else if (input.type && input.type === 'confirm') {
-    question = {
-      type: 'confirm',
-      ...question,
-    };
-  } else {
-    question = {
-      type: 'input',
-      ...question,
-    };
-  }
 
   return question;
 };

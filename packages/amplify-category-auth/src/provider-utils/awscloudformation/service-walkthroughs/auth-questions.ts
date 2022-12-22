@@ -726,20 +726,20 @@ const askQuestion = async (question: any, input: any, context: $TSContext): Prom
       printer.info(question.prefix);
     }
 
-    if (question.type === 'list') {
+    if (input.type && input.type === 'list') {
       answer = await prompter.pick<'one', string>(input.question, question.choices, {
         initial: byValue(question.default()),
         returnSize: 'one',
       });
-    } else if (question.type === 'checkbox') {
+    } else if (input.type && input.type === 'multiselect') {
       answer = await prompter.pick<'many', string>(input.question, question.choices, {
         initial: byValues(question.default()),
         returnSize: 'many',
         pickAtLeast: 1
       });
-    } else if (question.type === 'confirm') {
+    } else if (input.type && input.type === 'confirm') {
       answer = await prompter.yesOrNo(input.question, question.default());
-    } else {
+    } else { // input
       answer = await prompter.input(input.question, {
         initial: question.default(),
         validate: amplify.inputValidation(input)
