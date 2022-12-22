@@ -81,11 +81,6 @@ describe('amplify migration test auth', () => {
         await amplifyPushWithoutCodegen(projRoot2, true);
         assertNoParameterChangesBetweenProjects(projRoot1, projRoot2);
         expect(collectCloudformationDiffBetweenProjects(projRoot1, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
-
-        // should be able to remove & add auth after pulling down an older project
-        await removeAuthWithDefault(projRoot2, true);
-        await addAuthWithDefault(projRoot2, {}, true);
-        await amplifyPushAuth(projRoot2, true);
       } finally {
         deleteProjectDir(projRoot2);
       }
