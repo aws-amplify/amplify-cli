@@ -17,7 +17,7 @@ import { importResource, importedAuthEnvInit } from './import';
 
 export { importResource } from './import';
 
-const serviceQuestions = async (context:any,
+export const serviceQuestions = async (context:any,
   defaultValuesFilename:any,
   stringMapsFilename: any,
   serviceWalkthroughFilename: any,
