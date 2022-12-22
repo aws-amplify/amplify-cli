@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsdoc/require-jsdoc */
-import inquirer from 'inquirer';
 import chalk from 'chalk';
 import _, { uniq, pullAll } from 'lodash';
 import path from 'path';
@@ -47,67 +46,47 @@ export const serviceWalkthrough = async (
   // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
-    const questionObj = inputs[j];
+    const input = inputs[j];
 
-    const question = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
-    let answer: string | boolean | string[];
-    if (question.type === 'list') {
-      answer = await prompter.pick<'one', string>(question.message, question.choices, {
-        initial: byValue(question.default),
-        returnSize: 'one',
-      });
-    } else if (question.type === 'checkbox') {
-      answer = await prompter.pick<'many', string>(question.message, question.choices, {
-        initial: byValues(question.default),
-        returnSize: 'many',
-        pickAtLeast: 1
-      });
-    } else if (question.type === 'confirm') {
-      answer = await prompter.yesOrNo(question.message, question.default);
-    } else {
-      answer = await prompter.input(question.message, {
-        initial: question.default,
-        validate: amplify.inputValidation(questionObj)
-      });
-    }
-
+    const question = await parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
+    let answer: string | boolean | string[] | undefined = await askQuestion(question, input, context);
 
     /* eslint-disable spellcheck/spell-checker */
-    if (question.name === 'signinwithapplePrivateKeyUserPool' && typeof answer === 'string') {
+    if (input.key === 'signinwithapplePrivateKeyUserPool' && typeof answer === 'string') {
       answer = extractApplePrivateKey(answer);
     }
     /* eslint-enable spellcheck/spell-checker */
-    if (question.name === 'userPoolGroups' && answer === true) {
+    if (input.key === 'userPoolGroups' && answer === true) {
       userPoolGroupList = await updateUserPoolGroups(context);
     }
 
-    if (question.name === 'adminQueries' && answer === true) {
+    if (input.key === 'adminQueries' && answer === true) {
       adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
     }
 
-    if (question.name === 'triggers' && Array.isArray(answer)) {
+    if (input.key === 'triggers' && Array.isArray(answer)) {
       answer = handleTriggers(context, answer);
     }
 
     // LEARN MORE BLOCK
-    if (typeof answer === 'string' && new RegExp(/learn/i).test(answer) && questionObj.learnMore) {
-      const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-      questionObj.prefix = chalk.green(helpText);
+    if (typeof answer === 'string' && new RegExp(/learn/i).test(answer) && input.learnMore) {
+      const helpText = `\n${input.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
+      input.prefix = chalk.green(helpText);
       // ITERATOR BLOCK
     } else if (
       /*
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
         key to find the array of values it should splice into.
       */
-      questionObj.iterator
+      input.iterator
       && answer
       && Array.isArray(answer)
       && answer.length > 0
     ) {
-      await handleIteratorValues(context, questionObj, answer);
+      await handleIteratorValues(context, input, answer);
       j += 1;
       // ADD-ANOTHER BLOCK
-    } else if (questionObj.addAnotherLoop && typeof answer === 'string' && answer) {
+    } else if (input.addAnotherLoop && typeof answer === 'string' && answer) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
         will be recorded as an array index, and if it is already an array we push the new value.
@@ -115,17 +94,17 @@ export const serviceWalkthrough = async (
         so that the next question is appears in the prompt.  If the counter isn't incremented,
         the same question is repeated.
       */
-      if (!coreAnswers[questionObj.key]) {
+      if (!coreAnswers[input.key]) {
         answer = [answer];
-        coreAnswers = { ...coreAnswers, ...{[questionObj.key]: answer} };
+        coreAnswers = { ...coreAnswers, ...{[input.key]: answer} };
       } else {
-        coreAnswers[questionObj.key].push(answer);
+        coreAnswers[input.key].push(answer);
       }
-      const addAnother = await prompter.yesOrNo(`Do you want to add another ${questionObj.addAnotherLoop}`, false);
+      const addAnother = await prompter.yesOrNo(`Do you want to add another ${input.addAnotherLoop}`, false);
       if (!addAnother) {
         j += 1;
       }
-    } else if (questionObj.key === 'updateFlow' && typeof answer === 'string') {
+    } else if (input.key === 'updateFlow' && typeof answer === 'string') {
       /*
         if the user selects a default or fully manual config option during an update,
         we set the useDefault value so that the appropriate questions are displayed
@@ -146,16 +125,19 @@ export const serviceWalkthrough = async (
       }
       coreAnswers = { ...coreAnswers, ...{ ['useDefault']: answer } };
       j += 1;
-    } else if (!context.updatingAuth && typeof answer === 'string' && ['default', 'defaultSocial'].includes(answer)) {
+    } else if (!context.updatingAuth && input.key === 'useDefault' && typeof answer === 'string' && ['default', 'defaultSocial'].includes(answer)) {
       // if the user selects defaultSocial, we set hostedUI to true to avoid re-asking this question
-      coreAnswers = { ...coreAnswers, ...{ [questionObj.key]: answer } };
+      coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
       coreAnswers.authSelections = 'identityPoolAndUserPool';
       if (coreAnswers.useDefault === 'defaultSocial') {
         coreAnswers.hostedUI = true;
       }
       j += 1;
     } else {
-      coreAnswers = { ...coreAnswers, ...{ [questionObj.key]: answer } };
+      if (answer) {
+        coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
+      }
+
       j += 1;
     }
   }
@@ -733,6 +715,43 @@ const handleTriggers = (context: $TSContext, answer: string[]): string[] => {
   });
 
   return tempTriggers;
+}
+
+const askQuestion = async (question: any, input: any, context: $TSContext): Promise<string | boolean | string[] | undefined> => {
+  const { amplify } = context;
+  let answer: string | boolean | string[] | undefined;
+
+  if (question.when()) {
+    if (question.prefix) {
+      printer.info(question.prefix);
+    }
+
+    if (question.type === 'list') {
+      answer = await prompter.pick<'one', string>(input.question, question.choices, {
+        initial: byValue(question.default()),
+        returnSize: 'one',
+      });
+    } else if (question.type === 'checkbox') {
+      answer = await prompter.pick<'many', string>(input.question, question.choices, {
+        initial: byValues(question.default()),
+        returnSize: 'many',
+        pickAtLeast: 1
+      });
+    } else if (question.type === 'confirm') {
+      answer = await prompter.yesOrNo(input.question, question.default());
+    } else {
+      answer = await prompter.input(input.question, {
+        initial: question.default(),
+        validate: amplify.inputValidation(input)
+      });
+    }
+
+    if (question.suffix) {
+      printer.info(question.suffix);
+    }
+  }
+
+  return answer;
 }
 
 async function handleIteratorValues(context: $TSContext, questionObj: any, answers: string[]) {

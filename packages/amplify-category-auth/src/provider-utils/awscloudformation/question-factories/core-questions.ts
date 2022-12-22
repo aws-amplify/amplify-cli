@@ -49,12 +49,9 @@ export const parseInputs = async (
   const prefix = input.prefix ? `${'\n'} ${questionChalk(input.prefix)} ${'\n'}` : '';
 
   let question: $TSAny = {
-    name: input.key,
-    message: input.question,
     prefix,
     suffix: input.suffix,
     when: amplify.getWhen(input, currentAnswers, context.updatingAuth, amplify),
-    validate: amplify.inputValidation(input),
     default: () => {
       // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
