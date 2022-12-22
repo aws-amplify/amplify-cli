@@ -2,7 +2,8 @@ import inferAssets from '../assets/inferQuestions';
 import getAllDefaults from '../default-values/infer-defaults';
 import regionMapper from '../assets/regionMapping';
 import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick, open } from 'amplify-cli-core';
-const inquirer = require('inquirer');
+import { byValue, prompter } from 'amplify-prompts';
+
 const path = require('path');
 const fs = require('fs-extra');
 import { enableGuestAuth } from './enable-guest-auth';
@@ -55,13 +56,7 @@ async function updateWalkthrough(context) {
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      messages: 'Which infer resource would you like to update?',
-      choices: predictionsResources,
-    });
-    resourceObj = resourceAnswer.resource;
+    resourceObj = await prompter.pick('Which infer resource would you like to update?', predictionsResources);
   }
 
   return configure(context, resourceObj);
@@ -89,7 +84,9 @@ async function configure(context, resourceObj) {
   let answers = {};
 
   if (!parameters.resourceName) {
-    answers = await inquirer.prompt(inferAssets.setup.type());
+    const inferAssetsTypeInput = inferAssets.setup.type();
+    answers[inferAssetsTypeInput.name] = await prompter.pick(inferAssetsTypeInput.message, inferAssetsTypeInput.choices);
+
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.inferType);
     if (resourceType) {
@@ -99,7 +96,13 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(inferAssets.setup.name(`${answers.inferType}${defaultValues.resourceName}`)));
+    const inferAssetsNameInput = inferAssets.setup.name(`${answers.inferType}${defaultValues.resourceName}`);
+    Object.assign(answers, {
+      [inferAssetsNameInput.name]: await prompter.input(inferAssetsNameInput.message, {
+        validate: inferAssetsNameInput.validate,
+        initial: inferAssetsNameInput.default,
+      })
+    });
     inferType = answers.inferType;
     if (inferType === 'modelInfer') {
       defaultValues.region = regionMapper.getAvailableRegion(context, 'SageMaker', defaultValues.region);
@@ -164,7 +167,19 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 }
 
 async function followUpQuestions(context, questionObj, inferType, defaultValues, parameters) {
-  const answers = await inquirer.prompt(questionObj.endpointPrompt(parameters));
+  const answers = {
+    [questionObj.endpointPrompt(parameters).name]: await prompter.pick(
+      questionObj.endpointPrompt(parameters).message,
+      questionObj.endpointPrompt(parameters).choices,
+      { initial: byValue(questionObj.endpointPrompt(parameters).default) },
+    ),
+    [questionObj.authAccess(parameters).name]: await prompter.pick(
+      questionObj.authAccess(parameters).message,
+      questionObj.authAccess(parameters).choices,
+      { initial: byValue(questionObj.authAccess(parameters).default) },
+    ),
+  };
+
   if (answers.endpointConfig === 'import') {
     // attempt to get existing endpoints
     Object.assign(answers, await getEndpoints(context, questionObj, parameters));
@@ -176,7 +191,6 @@ async function followUpQuestions(context, questionObj, inferType, defaultValues,
     Object.assign(answers, await getEndpoints(context, questionObj, parameters));
   }
 
-  Object.assign(answers, await inquirer.prompt(questionObj.authAccess.prompt(parameters)));
   return answers;
 }
 
@@ -228,7 +242,8 @@ async function getEndpoints(context, questionObj, params) {
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
-  const { endpoint } = await inquirer.prompt(questionObj.importPrompt({ ...params, endpoints }));
+  const endpointPromptInput = questionObj.importPrompt({ ...params, endpoints });
+  const endpoint = await prompter.pick(endpointPromptInput.message, endpointPromptInput.choices, { initial: byValue(endpointPromptInput.default) });
   return endpointMap[endpoint];
 }
 
@@ -237,11 +252,7 @@ async function createEndpoint(context, defaultValues) {
   await open(endpointConsoleUrl, { wait: false });
   context.print.info('SageMaker Console:');
   context.print.success(endpointConsoleUrl);
-  await inquirer.prompt({
-    type: 'input',
-    name: 'pressKey',
-    message: 'Press enter to continue',
-  });
+  await prompter.input('Press enter to continue');
 }
 
 module.exports = { addWalkthrough, updateWalkthrough };

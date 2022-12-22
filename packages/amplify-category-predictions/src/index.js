@@ -1,10 +1,9 @@
 import { promptConsoleSupportedCategory } from './provider-utils/supportedPredictions';
-
-const predictionsConsole = require('./provider-utils/awscloudformation/index');
-const inquirer = require('inquirer');
-const path = require('path');
+import { prompter } from 'amplify-prompter';
 import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
+const predictionsConsole = require('./provider-utils/awscloudformation/index');
+const path = require('path');
 const category = 'predictions';
 
 async function console(context) {
@@ -35,13 +34,7 @@ async function console(context) {
       }
       let resourceObj = predictionsResources[0].value;
       if (predictionsResources.length > 1) {
-        const resourceAnswer = await inquirer.prompt({
-          type: 'list',
-          name: 'resource',
-          messages: `Select an ${result.category} resource`,
-          choices: predictionsResources,
-        });
-        resourceObj = resourceAnswer.resource;
+        resourceObj = await prompter.pick(`Select an ${result} resource`, predictionsResources);
       }
       const providerController = require(`./provider-utils/${result.provider}/index`);
       if (!providerController) {

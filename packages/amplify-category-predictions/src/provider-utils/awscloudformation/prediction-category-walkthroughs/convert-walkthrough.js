@@ -2,8 +2,8 @@ import convertAssets from '../assets/convertQuestions';
 import getAllDefaults from '../default-values/convert-defaults';
 import regionMapper from '../assets/regionMapping';
 import { enableGuestAuth } from './enable-guest-auth';
+import { prompter, byValue } from 'amplify-prompts';
 
-const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
@@ -55,13 +55,7 @@ async function updateWalkthrough(context) {
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      message: 'Which convert resource would you like to update',
-      choices: predictionsResources,
-    });
-    resourceObj = resourceAnswer.resource;
+    resourceObj = await prompter.pick('Which convert resource would you like to update', predictionsResources);
   }
 
   return configure(context, resourceObj);
@@ -91,7 +85,8 @@ async function configure(context, resourceObj) {
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers = await inquirer.prompt(convertAssets.setup.type());
+    const convertTypeQuestion = convertAssets.setup.type();
+    answers.convertType = await prompter.pick(convertTypeQuestion.message, convertTypeQuestion.choices);
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.convertType);
     if (resourceType) {
@@ -101,7 +96,13 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`)));
+    const convertNameQuestion = convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`);
+    Object.assign(answers, {
+      resourceName: await prompter.input(convertNameQuestion, {
+        validate: convertNameQuestion.validate,
+        initial: convertNameQuestion.default,
+      })
+    });
     defaultValues.convertPolicyName = `${answers.convertType}${defaultValues.convertPolicyName}`;
     convertType = answers.convertType;
   }
@@ -167,16 +168,40 @@ async function followupQuestions(context, convertType, parameters) {
   if (convertType === 'speechGenerator') {
     Object.assign(parameters, await getVoiceOptions(context));
   }
-  const answers = await inquirer.prompt(typeQuestions.questions(parameters));
+  const answers = {
+    [typeQuestions.questions(parameters).name]: await prompter.pick(
+      typeQuestions.questions(parameters).message,
+      typeQuestions.questions(parameters).choices,
+      { initial: byValue(typeQuestions.questions(parameters).default) }
+    ),
+    [typeQuestions.authAccess(parameters).name]: await prompter.pick(
+      typeQuestions.authAccess(parameters).message,
+      typeQuestions.authAccess(parameters).choices,
+      { initial: byValue(typeQuestions.authAccess(parameters).default) }
+    ),
+  };
   // ask questions based on convert type
   if (convertType === 'speechGenerator') {
-    Object.assign(answers, await inquirer.prompt(typeQuestions.voiceQuestion(answers.language, parameters)));
+    Object.assign(answers, {
+      [typeQuestions.voiceQuestion(answers.language, parameters).name]: await prompter.pick(
+        typeQuestions.voiceQuestion(answers.language, parameters).message,
+        typeQuestions.voiceQuestion(answers.language, parameters).choices,
+        { initial: byValue(typeQuestions.voiceQuestion(answers.language, parameters).default) }
+      ),
+    });
   }
+
   if (convertType === 'translateText') {
     const targetOptions = filterLang(answers.sourceLang);
-    Object.assign(answers, await inquirer.prompt(typeQuestions.targetQuestion(targetOptions, parameters)));
+    Object.assign(answers, {
+      [typeQuestions.targetQuestion(targetOptions, parameters).name]: await prompter.pick(
+        typeQuestions.targetQuestion(targetOptions, parameters).message,
+        typeQuestions.targetQuestion(targetOptions, parameters).choices,
+        { initial: byValue(typeQuestions.targetQuestion(targetOptions, parameters).default) }
+      ),
+    });
   }
-  Object.assign(answers, await inquirer.prompt(typeQuestions.authAccess.prompt(parameters)));
+
   return answers;
 }
 

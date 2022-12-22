@@ -26,7 +26,8 @@ import {
   invokeS3RegisterAdminTrigger,
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
-const inquirer = require('inquirer');
+import { byValue, prompter } from 'amplify-prompts';
+
 const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
@@ -89,13 +90,7 @@ async function updateWalkthrough(context) {
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      message: 'Which identify resource would you like to update?',
-      choices: predictionsResources,
-    });
-    resourceObj = resourceAnswer.resource;
+    resourceObj = await prompter.pick('Which identify resource would you like to update?', predictionsResources);
   }
 
   return await configure(context, resourceObj, PREDICTIONS_WALKTHROUGH_MODE.UPDATE);
@@ -141,7 +136,8 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers = await inquirer.prompt(identifyAssets.setup.type());
+    const identityAssetTypeInput = identifyAssets.setup.type();
+    answers[identityAssetTypeInput.name] = await prompter.pick(identityAssetTypeInput.message, identityAssetTypeInput.choices);
 
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
@@ -152,7 +148,11 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
       exitOnNextTick(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
+    const identityAssetNameInput = identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`);
+    answers[identityAssetNameInput.name] = await prompter.input(identityAssetNameInput.message, {
+      initial: identityAssetNameInput.default,
+      validate: identityAssetNameInput.validate,
+    });
     identifyType = answers.identifyType;
     parameters.resourceName = answers.resourceName;
   }
@@ -326,8 +326,30 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 }
 
 async function followUpQuestions(typeObj, identifyType, parameters) {
-  const answers = await inquirer.prompt(typeObj.questions(parameters));
-  Object.assign(answers, await inquirer.prompt(typeObj.auth(parameters)));
+  const answers = {};
+
+  if (typeObj.questions(parameters).when()) {
+    answers[typeObj.questions(parameters).name] = await prompter.pick(
+      typeObj.questions(parameters).message,
+      typeObj.questions(parameters).choices,
+      {
+        initial: byValue(typeObj.questions(parameters).default),
+        validate: typeObj.questions(parameters).validate,
+      }
+    );
+  }
+
+  if (typeObj.auth(parameters).when()) {
+    answers[typeObj.auth(parameters).name] = await prompter.pick(
+      typeObj.auth(parameters).message,
+      typeObj.auth(parameters).choices,
+      {
+        initial: byValue(typeObj.auth(parameters).default),
+        validate: typeObj.auth(parameters).validate,
+      }
+    );
+  }
+
   if (answers.setup && answers.setup === 'default') {
     Object.assign(answers, typeObj.defaults);
   }
@@ -409,13 +431,11 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
         const regex = new RegExp('^[a-zA-Z0-9-]+$');
         return regex.test(value) ? true : 'Bucket name can only use the following characters: a-z 0-9 -';
       },
-      default: () => {
-        const defaultValue = s3UserInputs.bucketName;
-        return defaultValue;
-      },
     };
-    const answers1 = await inquirer.prompt(question);
-    s3UserInputs.bucketName = answers1.bucketName;
+    s3UserInputs.bucketName = await prompter.input(question.message, {
+      validate: question.validate,
+      initial: s3UserInputs.bucketName,
+    });
   } else {
     s3UserInputs.bucketName = bucketName;
   }

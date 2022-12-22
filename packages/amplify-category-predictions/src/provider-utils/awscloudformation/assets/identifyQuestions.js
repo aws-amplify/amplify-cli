@@ -1,6 +1,8 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable no-multi-str */
 
+import { alphanumeric } from 'amplify-prompts';
+
 // defaults for text, entity, and label categories
 
 function identifyAccess(options) {
@@ -53,10 +55,7 @@ const setup = {
       {
         name: 'resourceName',
         message: 'Provide a friendly name for your resource',
-        validate: value => {
-          const regex = new RegExp('^[a-zA-Z0-9]+$');
-          return regex.test(value) ? true : 'Resource name should be alphanumeric!';
-        },
+        validate: alphanumeric,
         default: defaultName,
       },
     ];
