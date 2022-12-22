@@ -37,9 +37,5 @@ Outputs
 [-] Output AmazonWebClient: {\\"Value\\":{\\"Ref\\":\\"amazonAppId\\"}}
 [-] Output AppleWebClient: {\\"Value\\":{\\"Ref\\":\\"appleAppId\\"}}
 
-Resources
-[-] AWS::ApiGateway::Deployment DeploymentAPIGWAdminQueries97c92c5d destroy
-[+] AWS::ApiGateway::Deployment DeploymentAPIGWAdminQueries935b745b 
-
 "
 `;
