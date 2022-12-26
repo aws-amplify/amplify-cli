@@ -70,22 +70,46 @@ class InMemoryWritable extends Writable {
 }
 
 /**
+ * Given the CFN templates of each project for the provided category & resource key, 
+ * you can modify the CFN templates objects before the diff is performed.
+ * 
+ * You can use conditional logic to delete attributes on the CFN object before they are diffed, if
+ * you want to exclude those attributes from the comparison. Make sure to return the modified objects
+ * that you want to be diffed.
+ */
+export type ExcludeFromCFNDiff = (
+  currentCategory: string, 
+  currentResourceKey: string,
+  cfnTemplates: {
+    project1: any,
+    project2: any,
+  }) => { project1: any, project2: any };
+
+/**
  * Collects all differences between cloud formation templates into a single string.
  */
-export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, projectRoot2: string): string => {
+export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, projectRoot2: string, excludeFn?: ExcludeFromCFNDiff): string => {
   const backendConfig1 = getBackendConfig(projectRoot1);
   const backendConfig2 = getBackendConfig(projectRoot2);
   expect(backendConfig2).toMatchObject(backendConfig1);
   const stream = new InMemoryWritable();
   for (const categoryKey of Object.keys(backendConfig1)) {
     const category = backendConfig1[categoryKey];
+    console.log("CategoryKey:", categoryKey)
     for (const resourceKey of Object.keys(category)) {
-      const template1 = getCloudFormationTemplate(projectRoot1, categoryKey, resourceKey);
-      const template2 = getCloudFormationTemplate(projectRoot2, categoryKey, resourceKey);
+      console.log("ResourceKey:", resourceKey)
+      let template1 = getCloudFormationTemplate(projectRoot1, categoryKey, resourceKey);
+      let template2 = getCloudFormationTemplate(projectRoot2, categoryKey, resourceKey);
 
       // Description does not matter much and it can contain os/runtime specific words.
       delete template1.Description;
       delete template2.Description;
+
+      if(excludeFn){
+        const afterExclusions = excludeFn(categoryKey, resourceKey, { project1: template1, project2: template2 });
+        template1 = afterExclusions.project1;
+        template2 = afterExclusions.project2;
+      }
 
       const templateDiff = cfnDiff.diffTemplate(template1, template2);
       if (!templateDiff.isEmpty) {
