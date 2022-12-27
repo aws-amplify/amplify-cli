@@ -107,7 +107,7 @@ export function cfnRef(valNode, { params, resources }: CloudFormationParseContex
     throw new Error(`Ref expects a string or an array with 1 item. Instead got ${JSON.stringify(valNode)}`);
   }
 
-  if (params.hasOwnProperty(key)) {
+  if (Object.prototype.hasOwnProperty.call(params, key)) {
     return params[key];
   }
 

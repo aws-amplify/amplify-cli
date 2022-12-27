@@ -84,7 +84,7 @@ export async function updateWalkthrough(context: $TSContext) {
     printer.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   }
 
   const resources = Object.keys(dynamoDbResources);
@@ -100,7 +100,7 @@ export async function updateWalkthrough(context: $TSContext) {
       const stackGenerator = new DDBStackTransform(context, resourceName);
       stackGenerator.transform();
     } else {
-      return;
+      return undefined;
     }
   }
 
@@ -244,10 +244,7 @@ async function askGSIQuestion(
 
     while (continuewithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
-        const gsiNameValidator =
-          (message: string): Validator =>
-          (input: string) =>
-            /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
+        const gsiNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
 
         const gsiName = await prompter.input('Provide the GSI name', {
           validate: gsiNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
@@ -316,7 +313,7 @@ async function askSortKeyQuestion(
       printer.error('You must add additional keys in order to select a sort key.');
     }
   }
-  return;
+  return undefined;
 }
 
 async function askPrimaryKeyQuestion(indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[]) {
@@ -379,10 +376,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
   }
 
   while (continueAttributeQuestion) {
-    const attributeNameValidator =
-      (message: string): Validator =>
-      (input: string) =>
-        /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
+    const attributeNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
 
     const attributeName = await prompter.input('What would you like to name this column', {
       validate: attributeNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
@@ -413,10 +407,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
 }
 
 async function askTableNameQuestion(defaultValues: any, resourceName: string) {
-  const tableNameValidator =
-    (message: string): Validator =>
-    (input: string) =>
-      /^[a-zA-Z0-9._-]+$/.test(input) ? true : message;
+  const tableNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9._-]+$/.test(input) ? true : message);
 
   const tableName = await prompter.input('Provide table name', {
     validate: tableNameValidator('You can use the following characters: a-z A-Z 0-9 . - _'),

@@ -23,9 +23,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
   if (editorSelected !== 'none') {
     const editorArguments: string[] = [];
 
-    let editor: envEditor.Editor;
-
-    editor = envEditor.getEditor(editorSelected);
+    const editor: envEditor.Editor = envEditor.getEditor(editorSelected);
 
     if (!editor) {
       context.print.error(

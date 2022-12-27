@@ -13,7 +13,7 @@ app.use(function (req, res, next) {
     next()
 });
 
-app.get('/password', async (req, res, next) => {
+app.get('/password', (req, res, next) => {
     try {
         const result = process.env.PASSWORD;
         res.contentType('application/json').send(result);

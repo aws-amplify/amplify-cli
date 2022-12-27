@@ -52,13 +52,10 @@ export async function setDefaultTemplateDescription(
 }
 
 export function getDefaultTemplateDescription(context: $TSContext, category: string, service?: string): string {
-  let descriptionJson: TemplateDescription;
-
   // get platform "createdOn"
 
   let platformDescription: SupportedPlatforms;
   let deploymentTypeDescription: DeploymentTypes;
-  let stackTypeDescription: string;
 
   const platform = os.platform();
 
@@ -84,9 +81,9 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
   const cliVersion = context.pluginPlatform.plugins.core[0].packageVersion;
 
   // get stack type "stackType"
-  stackTypeDescription = service ? `${category}-${service}` : category;
+  const stackTypeDescription = service ? `${category}-${service}` : category;
 
-  descriptionJson = {
+  const descriptionJson: TemplateDescription = {
     createdOn: platformDescription,
     createdBy: deploymentTypeDescription,
     createdWith: cliVersion,

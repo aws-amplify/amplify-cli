@@ -47,4 +47,5 @@ export async function run(context: $TSContext) {
   context.amplify.showHelp(header, commands);
 
   printer.info('');
+  return undefined;
 }

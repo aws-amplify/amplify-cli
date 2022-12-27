@@ -12,10 +12,10 @@ const port = 20005; // port for S3
 /**
  * @returns Name of S3 resource or undefined
  */
- async function invokeS3GetResourceName(context) {
-   const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
-   return s3ResourceName;
- }
+async function invokeS3GetResourceName(context) {
+  const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+  return s3ResourceName;
+}
 
 /**
  * Return the cli-inputs.json
@@ -23,13 +23,10 @@ const port = 20005; // port for S3
  * @param s3ResourceName
  * @returns
  */
- async function invokeS3GetUserInputs(context, s3ResourceName) {
-   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [
-     context,
-     s3ResourceName,
-   ]);
-   return s3UserInputs;
- }
+async function invokeS3GetUserInputs(context, s3ResourceName) {
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
+  return s3UserInputs;
+}
 
 export class StorageTest {
   private storageName: string;
@@ -73,6 +70,7 @@ export class StorageTest {
     } catch (e) {
       console.error('Failed to start Mock Storage server', e);
     }
+    return undefined;
   }
 
   async stop() {
@@ -82,7 +80,7 @@ export class StorageTest {
   // to fire s3 triggers attached on the bucket
   async trigger(context: $TSContext) {
     const region = this.storageRegion;
-    this.storageSimulator.getServer.on('event', async (eventObj: any) => {
+    this.storageSimulator.getServer.on('event', (eventObj: any) => {
       const meta = context.amplify.getProjectDetails().amplifyMeta;
       const existingStorage = meta.storage;
       const backendPath = context.amplify.pathManager.getBackendDirPath();
@@ -103,7 +101,9 @@ export class StorageTest {
         if (prefix_arr === undefined) {
           const eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
           if (eventName === 'ObjectRemoved' || eventName === 'ObjectCreated') {
-            triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
+            triggerName = String(obj.Function.Ref)
+              .split('function')[1]
+              .split('Arn')[0];
             break;
           }
         } else {
@@ -120,11 +120,15 @@ export class StorageTest {
             }
 
             if (rules.Name === 'prefix' && keyName.startsWith(node)) {
-              triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
+              triggerName = String(obj.Function.Ref)
+                .split('function')[1]
+                .split('Arn')[0];
               break;
             }
             if (rules.Name === 'suffix' && keyName.endsWith(node)) {
-              triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
+              triggerName = String(obj.Function.Ref)
+                .split('function')[1]
+                .split('Arn')[0];
               break;
             }
           }
@@ -137,15 +141,17 @@ export class StorageTest {
       if (triggerName === undefined) {
         return;
       }
-
-      const config = await loadLambdaConfig(context, triggerName);
-      const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName, envVars: config.environment });
-      try {
-        await invoker({ event: eventObj });
-      } catch (err) {
-        context.print.error('Error executing lambda trigger');
-        context.print.error(err);
-      }
+      loadLambdaConfig(context, triggerName)
+        .then(config => {
+          return getInvoker(context, { handler: config.handler, resourceName: triggerName, envVars: config.environment });
+        })
+        .then(invoker => {
+          return invoker({ event: eventObj });
+        })
+        .catch(err => {
+          context.print.error('Error executing lambda trigger');
+          context.print.error(err);
+        });
     });
   }
 
@@ -195,6 +201,7 @@ export class StorageTest {
         name = entry[0];
         return true;
       }
+      return undefined;
     });
     return name;
   }

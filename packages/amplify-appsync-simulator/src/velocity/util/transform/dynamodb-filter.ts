@@ -34,7 +34,7 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
 
       switch (name) {
         case 'or':
-        case 'and':
+        case 'and': {
           const JOINER = name === 'or' ? 'OR' : 'AND';
           if (Array.isArray(value)) {
             subExpr = scopeExpression(
@@ -47,11 +47,13 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             subExpr = generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_'));
           }
           break;
-        case 'not':
+        }
+        case 'not': {
           subExpr = scopeExpression(generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_')));
           subExpr.expressions.unshift('NOT');
           break;
-        case 'between':
+        }
+        case 'between': {
           const expr1 = createExpressionValueName(parent, 'between_1', prefix);
           const expr2 = createExpressionValueName(parent, 'between_2', prefix);
           const exprName = createExpressionName(parent);
@@ -66,12 +68,13 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: exprValues,
           };
           break;
+        }
         case 'ne':
         case 'eq':
         case 'gt':
         case 'ge':
         case 'lt':
-        case 'le':
+        case 'le': {
           const operator = OPERATOR_MAP[name];
           subExpr = {
             expressions: [`${fieldName} ${operator} ${filedValueName}`],
@@ -79,7 +82,8 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
-        case 'attributeExists':
+        }
+        case 'attributeExists': {
           const existsName = value === true ? 'attribute_exists' : 'attribute_not_exists';
           subExpr = {
             expressions: [`${existsName}(${fieldName})`],
@@ -87,9 +91,10 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
+        }
         case 'contains':
         case 'notContains':
-        case 'beginsWith':
+        case 'beginsWith': {
           const functionName = FUNCTION_MAP[name];
           subExpr = {
             expressions: [`${functionName}(${fieldName}, ${filedValueName})`],
@@ -97,14 +102,16 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
-        case 'in':
-            const operatorName = OPERATOR_MAP[name];
-            subExpr = {
-              expressions: [`${operatorName}(${filedValueName}, ${fieldName})`],
-              expressionNames: createExpressionName(parent),
-              expressionValues: createExpressionValue(parent, name, value, prefix),
-            };
-            break;
+        }
+        case 'in': {
+          const operatorName = OPERATOR_MAP[name];
+          subExpr = {
+            expressions: [`${operatorName}(${filedValueName}, ${fieldName})`],
+            expressionNames: createExpressionName(parent),
+            expressionValues: createExpressionValue(parent, name, value, prefix),
+          };
+          break;
+        }
         default:
           subExpr = scopeExpression(generateFilterExpression(value, prefix, name));
       }

@@ -61,7 +61,7 @@ describe('@function transformer', () => {
       }
     } catch (e) {
       console.error(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 
