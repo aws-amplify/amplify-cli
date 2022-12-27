@@ -1,2 +1,2 @@
-export { AmplifyNodePkgDetector, AmplifyNodeJsDetectorProps } from './amplify-nodejs-detector';
-export { PkgJsonType } from './lock-file-types';
+// eslint-disable-next-line import/no-cycle
+export { AmplifyNodePkgDetector, AmplifyNodeJsDetectorProps, DetectedDependencies } from './amplify-nodejs-detector';

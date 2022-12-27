@@ -1,5 +1,6 @@
 import * as yarnLockfileParser from '@yarnpkg/lockfile';
 import _ from 'lodash';
+import { AmplifyFault } from '../errors/amplify-fault';
 import { LockfileType } from './lock-file-types';
 
 /**
@@ -61,30 +62,26 @@ export class YarnLockParser {
         yarnLock.dependencies = yarnLock.object;
         return yarnLock;
       } catch (e) {
-        throw new Error(
-          `yarn.lock parsing failed with an error: ${(e as Error).message}`,
-        );
+        throw new AmplifyFault('LockFileParsingFault', {
+          message: `yarn.lock parsing failed with an error: ${e.message}`,
+        }, e);
       }
     }
 
     /**
      * getDependentNpmPackage()
      */
-    getDependentPackage(packageName: string, packageVersion: string,
+    getDependentPackage(packageName: string,
       lockFileContents: string): Record<string, Record<string, YarnLockDependencyType>> | undefined {
       const lockFileDependenciesMap = this.parseLockFile(lockFileContents);
-      const dependencyToSearchActual = this.getDependencyKey(packageName, packageVersion);
-      const payload = lockFileDependenciesMap.dependencies![dependencyToSearchActual];
-      if (_.isEmpty(payload)) {
-        return undefined;
-      }
       for (const dependency of Object.keys(lockFileDependenciesMap.dependencies!)) {
+        const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
         if (_.isEmpty(this.dependenciesMap[dependency])) {
-          if (dependency === dependencyToSearchActual) {
+          if (dependencyPkgKey === packageName) {
             this.dependenciesMap[packageName] = {};
-            this.dependenciesMap[dependency.substring(0, dependency.lastIndexOf('@'))][packageName] = payload;
+            this.dependenciesMap[packageName][dependencyPkgKey] = lockFileDependenciesMap.dependencies![dependency];
           }
-          this.dfs(dependency, lockFileDependenciesMap, packageName, packageVersion);
+          this.dfs(dependency, lockFileDependenciesMap, packageName);
         }
       }
       return this.dependenciesMap;
@@ -93,26 +90,25 @@ export class YarnLockParser {
     /**
      * traverses dependency tree
      */
-    private dfs(dependency: string, lockFileDependenciesMap: YarnLock, dependencyToSearch: string, dependencyVersion: string): void {
+    private dfs(dependency: string, lockFileDependenciesMap: YarnLock, dependencyToSearch: string): void {
       const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
-      const dependencyToSearchActual = this.getDependencyKey(dependencyToSearch, dependencyVersion);
-      const payload = lockFileDependenciesMap.dependencies![dependencyToSearchActual];
       const dependencyObj = lockFileDependenciesMap.dependencies![dependency];
       if (!_.isEmpty(dependencyObj) && !_.isEmpty(dependencyObj.dependencies)) {
         const dependencyObjDeps = dependencyObj.dependencies!;
         if (!_.isEmpty(dependencyObjDeps)) {
           for (const nestedDependency of Object.keys(dependencyObjDeps)) {
             const nestedDependencyActual = this.getDependencyKey(nestedDependency, `${dependencyObjDeps![nestedDependency]}`);
-            if (dependencyToSearch === nestedDependency
+            if (nestedDependency === dependencyToSearch
                || !_.isEmpty(this.dependenciesMap?.[nestedDependency]?.[dependencyToSearch])) {
               // mark as dependency
               this.dependenciesMap[dependencyPkgKey] = {};
-              this.dependenciesMap[dependencyPkgKey][dependencyToSearch] = payload;
+              this.dependenciesMap[dependencyPkgKey][dependencyToSearch] = this.dependenciesMap?.[nestedDependency]?.[dependencyToSearch]
+               ?? lockFileDependenciesMap.dependencies![nestedDependencyActual];
               return;
             }
             if (_.isEmpty(this.dependenciesMap[nestedDependency])) {
               // un visited node
-              this.dfs(nestedDependencyActual, lockFileDependenciesMap, dependencyToSearch, dependencyVersion);
+              this.dfs(nestedDependencyActual, lockFileDependenciesMap, dependencyToSearch);
             }
           }
         }
@@ -123,27 +119,4 @@ export class YarnLockParser {
     * get dependency key from package name
     */
     private getDependencyKey = (packageName: string, version?: string): string => `${packageName}@${version}`;
-
-  // /**
-  //       * get dependency obj dependencies if found else undefined
-  //       */
-  //  getDependencyObjDeps = (dependencyObj: YarnLockDependencyType) => {  [depName: string]: string;
-  //          } | undefined {
-  //   return (dependencyObj as YarnLockDependencyType).dependencies;
-  // }
-
-  // private getDependencyObj(dependency: string, parent: string): YarnLockDependencyType | PackageLockDep {
-  //   if (this.lockFileType === LockfileType.YARN) {
-  //     return this.lockFileDependenciesMap.dependencies![dependency];
-  //   }
-  //   if (this.lockFileType === LockfileType.NPM) {
-  //     const dependencyObj = this.lockFileDependenciesMap.dependencies![dependency];
-  //     if (_.isEmpty(dependencyObj)) {
-  //       const parentObj = this.lockFileDependenciesMap.dependencies![parent].dependencies;
-  //       return (parentObj![dependency] as PackageLockDep);
-  //     }
-  //     return dependencyObj;
-  //   }
-  //   throw new Error('not supported package manager');
-  // }
 }

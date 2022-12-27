@@ -1,12 +1,23 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { PackageManager, PackageManagerType } from '../utils/packageManager';
-import { Lockfile } from './lock-file-interface';
+import { AmplifyError } from '../errors/amplify-error';
+import { AmplifyFault } from '../errors/amplify-fault';
+import { getPackageManager, PackageManager } from '../utils/packageManager';
+import { Lockfile, LockfileParser } from './lock-file-interface';
 import { PkgJsonType } from './lock-file-types';
-import { PackageLockDep } from './package-lock-parser';
 import { LockFileParserFactory } from './parser-factory';
-import { YarnLockDependencyType } from './yarn-lock-parser';
+
+/**
+ * return type of detectAffectedDirectDependencies
+ */
+export type DetectedDependencies = {
+  packageName: string;
+  dependentPackage:{
+    name: string,
+    version: string,
+  }
+}
 
 /**
  * props required by amplify detector
@@ -14,8 +25,6 @@ import { YarnLockDependencyType } from './yarn-lock-parser';
 export type AmplifyNodeJsDetectorProps = {
     projectRoot: string,
     dependencyToSearch: string,
-    dependencyVersion: string,
-    packageManager: PackageManager,
   }
 
 /**
@@ -24,33 +33,37 @@ export type AmplifyNodeJsDetectorProps = {
  * by parsing lock files
  */
 export class AmplifyNodePkgDetector {
-     packageManager: PackageManager;
-     dependencyToSearch: string;
-     dependencyVersion: string;
-     pkgJsonObj: PkgJsonType;
-     lockFileType: PackageManagerType;
-     lockFileContents: string;
+     private readonly packageManager: PackageManager | null;
+     private readonly dependencyToSearch: string;
+     private readonly pkgJsonObj: PkgJsonType;
+     private readonly lockFileContents: string;
+     private readonly lockFileParser: LockfileParser;
 
      constructor(amplifyDetectorProps: AmplifyNodeJsDetectorProps) {
-       this.packageManager = amplifyDetectorProps.packageManager;
-       this.lockFileType = this.packageManager.packageManager;
+       this.packageManager = getPackageManager(amplifyDetectorProps.projectRoot);
+       if (this.packageManager === null) {
+         throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
+           message: 'No package manager found.',
+           resolution: 'Please install npm or yarn to compile overrides for this project.',
+         });
+       }
        this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
        this.dependencyToSearch = amplifyDetectorProps.dependencyToSearch;
-       this.dependencyVersion = amplifyDetectorProps.dependencyVersion;
        this.lockFileContents = this.getFileContent(amplifyDetectorProps.projectRoot);
+       this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager!.packageManager);
      }
 
      /**
       * parses lock file
       */
      parseLockFile():Lockfile {
-       return LockFileParserFactory.getLockFileParser(this.lockFileType).parseLockFile(this.lockFileContents);
+       return this.lockFileParser.parseLockFile(this.lockFileContents);
      }
 
      /**
     * parses package.json project files
     */
-     parsePkgJson = (projectRoot: string): PkgJsonType => {
+     private parsePkgJson = (projectRoot: string): PkgJsonType => {
        const pkgJsonFullPath = path.resolve(projectRoot, 'package.json');
        return <PkgJsonType>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
      }
@@ -59,34 +72,37 @@ export class AmplifyNodePkgDetector {
       * get file content as string
       */
      private getFileContent = (projectRoot: string) : string => {
-       const lockFileFullPath = path.resolve(projectRoot, this.packageManager.lockFile);
-       console.log(lockFileFullPath);
+       const lockFileFullPath = path.resolve(projectRoot, this.packageManager!.lockFile);
        if (!fs.existsSync(lockFileFullPath)) {
-         throw new Error(
-           `   Lockfile not found at location: ${lockFileFullPath}`,
-         );
+         throw new AmplifyFault('FileNotFoundFault', {
+           message: 'Lockfile not found at location: ${lockFileFullPath}',
+         });
        }
        return fs.readFileSync(lockFileFullPath, 'utf-8');
      };
 
      /**
-     * returns  dependent package if lock file package depends on passed dependency else undefined
+     * returns  explicit dependencies from package.json if lock file package depends on passed dependency else undefined
      */
-     getDependentPackage(packageName: string): YarnLockDependencyType | PackageLockDep | undefined {
-       // compare with pkgJson version
-       const lockFileType: PackageManagerType = this.packageManager.packageManager;
-       const obj = LockFileParserFactory.getLockFileParser(lockFileType)
-         .getDependentPackage(this.dependencyToSearch, this.dependencyVersion, this.lockFileContents);
-       return obj?.[packageName]?.[this.dependencyToSearch];
+     detectAffectedDirectDependencies(): Array<DetectedDependencies> | undefined {
+       const allPackagesWithDependency = this.lockFileParser.getDependentPackage(this.dependencyToSearch, this.lockFileContents);
+       const explicitDependencies = Object.keys(allPackagesWithDependency!).map(pkg => {
+         if (Object.keys(this.pkgJsonObj.dependencies).includes(pkg)) {
+           const obj: DetectedDependencies = {
+             packageName: pkg,
+             dependentPackage: {
+               name: this.dependencyToSearch,
+               version: allPackagesWithDependency![pkg][this.dependencyToSearch].version,
+
+             },
+           };
+           return obj;
+         }
+         return undefined;
+       }).filter(key => !!key);
+       if (!_.isEmpty(explicitDependencies)) {
+         return explicitDependencies as Array<DetectedDependencies>;
+       }
+       return undefined;
      }
-
-  /**
-      * returns a list of packages depending on dependency to search
-      */
-
-  //  getAllDependentPackages(packageName: string): Array< YarnLockDependencyType | PackageLockDep > {
-  //     return Object.keys(this.dependenciesMap[packageName]).filter(pkg => {
-  //         const pkg = this.dependenciesMap[pkg].dependencies;
-  //     })
-  //  }
 }

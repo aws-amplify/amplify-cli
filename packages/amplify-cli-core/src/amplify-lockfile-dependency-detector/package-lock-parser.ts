@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { AmplifyFault } from '../errors/amplify-fault';
 import { JSONUtilities } from '../jsonUtilities';
 import { LockfileType } from './lock-file-types';
 
@@ -8,7 +9,7 @@ import { LockfileType } from './lock-file-types';
 export interface PackageLock {
     name: string;
     version: string;
-    dependencies?: PackageLockDeps;
+    dependencies?: PackageLockDependency;
     lockfileVersion: 1 | 2;
     type: LockfileType.NPM;
 }
@@ -16,19 +17,19 @@ export interface PackageLock {
 /**
  * package lock dependency interface
  */
-export interface PackageLockDeps {
-    [depName: string]: PackageLockDep;
+export interface PackageLockDependency {
+    [depName: string]: PackageLockDependencyType;
 }
 
 /**
  * package lock dependencies type
  */
-export interface PackageLockDep {
+export interface PackageLockDependencyType {
     version: string;
     requires?: {
       [depName: string]: string;
     };
-    dependencies?: PackageLockDeps;
+    dependencies?: PackageLockDependency;
     dev?: boolean;
 }
 
@@ -37,7 +38,7 @@ export interface PackageLockDep {
  */
 export class PackageLockParser {
   type: LockfileType;
-  dependenciesMap:Record<string, Record<string, PackageLockDep>>;
+  dependenciesMap:Record<string, Record<string, PackageLockDependencyType>>;
 
   constructor() {
     this.type = LockfileType.NPM;
@@ -53,18 +54,17 @@ export class PackageLockParser {
       packageLock.type = LockfileType.NPM;
       return packageLock;
     } catch (e) {
-      throw new Error(
-        'package-lock.json parsing failed with '
-              + `error ${(e as Error).message}`,
-      );
+      throw new AmplifyFault('LockFileParsingFault', {
+        message: `package-lock.json parsing failed with an error: ${e.message}`,
+      }, e);
     }
   }
 
   /**
      * getDependentNpmPackage()
      */
-   public getDependentPackage = (packageName: string, packageVersion: string,
-     lockFileContents: string): Record<string, Record<string, PackageLockDep>> | undefined => {
+   public getDependentPackage = (packageName: string,
+     lockFileContents: string): Record<string, Record<string, PackageLockDependencyType>> | undefined => {
      const lockFileDependenciesMap = this.parseLockFile(lockFileContents);
      for (const dependency of Object.keys(lockFileDependenciesMap.dependencies!)) {
        if (_.isEmpty(this.dependenciesMap[dependency])) {
@@ -72,33 +72,18 @@ export class PackageLockParser {
            this.dependenciesMap[packageName] = {};
            this.dependenciesMap[dependency][packageName] = lockFileDependenciesMap.dependencies![dependency];
          }
-         this.dfs(dependency, lockFileDependenciesMap, packageName, '');
+         this.dfs(dependency, lockFileDependenciesMap, packageName);
        }
      }
      return this.dependenciesMap;
    };
 
-   private getDependencyObj = (dependency: string, lockFileDependenciesMap: PackageLock, parent: string): PackageLockDep => {
-     const dependencyObj = lockFileDependenciesMap.dependencies![dependency];
-     console.log(Object.keys(lockFileDependenciesMap.dependencies!).filter(ans => ans.includes('json')));
-     if (_.isEmpty(dependencyObj)) {
-       // should be present here
-       console.log('parent', parent);
-       console.log('dependnecy', dependency);
-       console.log('depenndeyObj', dependencyObj);
-       console.log('depenndeyObjActual', lockFileDependenciesMap.dependencies![dependency]);
-       const parentDependencyObj = lockFileDependenciesMap.dependencies![parent]!.dependencies![dependency];
-       return parentDependencyObj;
-     }
-     return dependencyObj;
-   }
-
    /**
      * traverses dependency tree
      */
    private dfs = (dependency: string, lockFileDependenciesMap: PackageLock,
-     dependencyToSearch: string, parent: string): void => {
-     const dependencyObj = this.getDependencyObj(dependency, lockFileDependenciesMap, parent);
+     dependencyToSearch: string): void => {
+     const dependencyObj = lockFileDependenciesMap.dependencies![dependency];
      if (!_.isEmpty(dependencyObj) && !_.isEmpty(dependencyObj.requires)) {
        const dependencyObjDeps = dependencyObj.requires!;
        if (!_.isEmpty(dependencyObjDeps)) {
@@ -110,7 +95,7 @@ export class PackageLockParser {
              return;
            }
            if (_.isEmpty(this.dependenciesMap[nestedDependency]?.[dependencyToSearch])) {
-             this.dfs(nestedDependency, lockFileDependenciesMap, dependencyToSearch, dependency);
+             this.dfs(nestedDependency, lockFileDependenciesMap, dependencyToSearch);
            }
          }
        }
