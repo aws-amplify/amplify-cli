@@ -731,9 +731,6 @@ export function nspawn(command: string | string[], params: string[] = [], option
   let childEnv;
   let pushEnv;
 
-  // add debug flag to all commands
-  params.push('--debug');
-
   // For push operations in E2E we have to explicitly disable the Amplify Console App creation
   // as for the tests that need it, it is already enabled for init, setting the env var here
   // disables the post push check we have in the CLI.
