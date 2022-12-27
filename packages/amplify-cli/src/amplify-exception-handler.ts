@@ -79,6 +79,21 @@ export const handleException = async (exception: unknown): Promise<void> => {
   process.exit(1);
 };
 
+/**
+ * Handle rejected promises that weren't caught or awaited anywhere in the code.
+ */
+export const handleUnhandledRejection = (reason: Error | $TSAny): void => {
+  if (reason instanceof Error) {
+    throw reason;
+  } else if (reason !== null && typeof reason === 'string') {
+    throw new Error(reason);
+  } else if (reason !== null) {
+    throw new Error(JSON.stringify(reason));
+  } else {
+    throw new Error('Unhandled promise rejection');
+  }
+};
+
 const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
   let deepestAmplifyException = amplifyException;
   while (deepestAmplifyException.downstreamException && deepestAmplifyException.downstreamException instanceof AmplifyException) {
