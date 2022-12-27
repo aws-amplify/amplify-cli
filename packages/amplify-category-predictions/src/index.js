@@ -1,5 +1,5 @@
 import { promptConsoleSupportedCategory } from './provider-utils/supportedPredictions';
-import { prompter } from 'amplify-prompter';
+import { prompter } from 'amplify-prompts';
 import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 const predictionsConsole = require('./provider-utils/awscloudformation/index');
@@ -12,7 +12,6 @@ async function console(context) {
 
   return promptConsoleSupportedCategory()
     .then(async result => {
-      result = result.category;
       const predictionsResources = [];
       Object.keys(amplifyMeta[category]).forEach(resourceName => {
         if (

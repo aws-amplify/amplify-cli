@@ -6,72 +6,64 @@ import { alphanumeric } from 'amplify-prompts';
 // defaults for text, entity, and label categories
 
 function identifyAccess(options) {
-  return [
-    {
-      type: 'list',
-      name: 'access',
-      message: 'Who should have access?',
-      choices: [
-        {
-          name: 'Auth users only',
-          value: 'auth',
-        },
-        {
-          name: 'Auth and Guest users',
-          value: 'authAndGuest',
-        },
-      ],
-      default: options.access ? options.access : 'auth',
-    },
-  ];
+  return {
+    type: 'list',
+    name: 'access',
+    message: 'Who should have access?',
+    choices: [
+      {
+        name: 'Auth users only',
+        value: 'auth',
+      },
+      {
+        name: 'Auth and Guest users',
+        value: 'authAndGuest',
+      },
+    ],
+    default: options.access ? options.access : 'auth',
+  };
 }
 
 const setup = {
   type() {
-    return [
-      {
-        type: 'list',
-        name: 'identifyType',
-        message: 'What would you like to identify?',
-        choices: [
-          {
-            name: 'Identify Text',
-            value: 'identifyText',
-          },
-          {
-            name: 'Identify Entities',
-            value: 'identifyEntities',
-          },
-          {
-            name: 'Identify Labels',
-            value: 'identifyLabels',
-          },
-        ],
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'identifyType',
+      message: 'What would you like to identify?',
+      choices: [
+        {
+          name: 'Identify Text',
+          value: 'identifyText',
+        },
+        {
+          name: 'Identify Entities',
+          value: 'identifyEntities',
+        },
+        {
+          name: 'Identify Labels',
+          value: 'identifyLabels',
+        },
+      ],
+    };
   },
   name(defaultName) {
-    return [
-      {
-        name: 'resourceName',
-        message: 'Provide a friendly name for your resource',
-        validate: alphanumeric,
-        default: defaultName,
-      },
-    ];
+    return {
+      name: 'resourceName',
+      message: 'Provide a friendly name for your resource',
+      validate: alphanumeric,
+      default: defaultName,
+    };
   },
 };
 
 const identifyText = {
   questions(options) {
-    return [
-      {
-        type: 'confirm',
-        name: 'identifyDoc',
-        message: 'Would you also like to identify documents?',
-        default: options.identifyDoc ? options.identifyDoc : false,
-      },
-    ];
+    return {
+      type: 'confirm',
+      name: 'identifyDoc',
+      message: 'Would you also like to identify documents?',
+      default: options.identifyDoc ? options.identifyDoc : false,
+    };
   },
   formatFlag(flag) {
     if (flag) return { format: 'ALL' };

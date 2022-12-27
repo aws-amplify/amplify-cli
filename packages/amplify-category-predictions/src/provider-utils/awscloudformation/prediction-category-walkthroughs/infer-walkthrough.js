@@ -173,11 +173,6 @@ async function followUpQuestions(context, questionObj, inferType, defaultValues,
       questionObj.endpointPrompt(parameters).choices,
       { initial: byValue(questionObj.endpointPrompt(parameters).default) },
     ),
-    [questionObj.authAccess(parameters).name]: await prompter.pick(
-      questionObj.authAccess(parameters).message,
-      questionObj.authAccess(parameters).choices,
-      { initial: byValue(questionObj.authAccess(parameters).default) },
-    ),
   };
 
   if (answers.endpointConfig === 'import') {
@@ -190,6 +185,14 @@ async function followUpQuestions(context, questionObj, inferType, defaultValues,
     // import existing endpoint
     Object.assign(answers, await getEndpoints(context, questionObj, parameters));
   }
+
+  Object.assign(answers, {
+    [questionObj.authAccess(parameters).name]: await prompter.pick(
+      questionObj.authAccess(parameters).message,
+      questionObj.authAccess(parameters).choices,
+      { initial: byValue(questionObj.authAccess(parameters).default) },
+    ),
+  });
 
   return answers;
 }

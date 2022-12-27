@@ -174,11 +174,6 @@ async function followupQuestions(context, convertType, parameters) {
       typeQuestions.questions(parameters).choices,
       { initial: byValue(typeQuestions.questions(parameters).default) }
     ),
-    [typeQuestions.authAccess(parameters).name]: await prompter.pick(
-      typeQuestions.authAccess(parameters).message,
-      typeQuestions.authAccess(parameters).choices,
-      { initial: byValue(typeQuestions.authAccess(parameters).default) }
-    ),
   };
   // ask questions based on convert type
   if (convertType === 'speechGenerator') {
@@ -201,6 +196,14 @@ async function followupQuestions(context, convertType, parameters) {
       ),
     });
   }
+
+  Object.assign(answers, {
+    [typeQuestions.authAccess(parameters).name]: await prompter.pick(
+      typeQuestions.authAccess(parameters).message,
+      typeQuestions.authAccess(parameters).choices,
+      { initial: byValue(typeQuestions.authAccess(parameters).default) }
+    ),
+  });
 
   return answers;
 }

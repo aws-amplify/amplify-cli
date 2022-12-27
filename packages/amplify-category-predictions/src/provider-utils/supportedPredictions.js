@@ -50,8 +50,8 @@ const consoleCategoryChoices = [
 
 export async function promptCategory() {
   const message = 'Please select from one of the categories below';
-  const answers = await prompter.pick(message, categoryChoices);
-  while (answers.predictionsCategory === 'learnMore') {
+  let answers = await prompter.pick(message, categoryChoices);
+  while (answers === 'learnMore') {
     let helpText =
       'Identify allows you to identify text (words, tables, pages from a book), entities (faces and/or celebrities) from images. You can also identify real world objects such as chairs, desks, etc. which are referred to as “labels” from images.\n\
   Convert allows you to translate text from one source language to a target language, using Amazon Translate. You can also generate speech audio from text input, using Amazon Polly. Lastly, you can take an audio input and transcribe it, using Amazon Transcribe.\n\
@@ -61,7 +61,7 @@ export async function promptCategory() {
     helpText = `\n${helpText.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
     printer.info(chalk.green(helpText));
 
-    Object.assign(answers, await prompter.pick(message, categoryChoices));
+    answers = await prompter.pick(message, categoryChoices);
   }
   return answers;
 }
