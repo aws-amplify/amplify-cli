@@ -4,6 +4,8 @@ module.exports = {
   name: featureName,
   alias: ['XR'],
   run: async context => {
+    context.print.warning(`The ${featureName} package is depricated and will be removed in a future version.`);
+
     const header = `amplify ${featureName} <subcommand>`;
 
     const commands = [

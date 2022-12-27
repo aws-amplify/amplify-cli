@@ -6,6 +6,7 @@ import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { pathManager, stateManager } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
+import { runHelp, commandsInfo } from 'amplify-cli-core';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   const result = new Input(process.argv);
@@ -63,10 +64,39 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   return result;
 }
 
+function preserveHelpInformation(input: Input): Input {
+  // preserve non-help command in subcommands
+  if (input.command! && input.command.toLocaleLowerCase() !== constants.HELP) {
+    input.subCommands = input.subCommands! ? [input.command.toLocaleLowerCase(), ...input.subCommands] : [input.command.toLocaleLowerCase()];
+  }
+
+  // prevent information in help option from being overwritten to true by saving it in subcommands
+  if (input.options && input.options[constants.HELP] && typeof input.options[constants.HELP] === "string") {
+    input.subCommands = input.subCommands! ? [...input.subCommands, input.options[constants.HELP] as string] : [input.options[constants.HELP] as string];
+  } else if (input.options && input.options[constants.HELP_SHORT] && typeof input.options[constants.HELP_SHORT] === "string") {
+    input.subCommands = input.subCommands! ? [...input.subCommands, input.options[constants.HELP_SHORT] as string] : [input.options[constants.HELP_SHORT] as string];
+  }
+
+  // preserve command information in plugin field
+  if (input.plugin! && input.plugin !== "core") {
+    if (input.subCommands! && input.subCommands!.length && input.argv.indexOf(input.plugin) > input.argv.indexOf(input.subCommands![0])) {
+      input.subCommands = [...input.subCommands!, input.plugin];
+    } else {
+      input.subCommands = input.subCommands! ? [input.plugin, ...input.subCommands] : [input.plugin];
+    }
+  }
+  if (input.options) {
+    input.options[constants.HELP] = true;
+    delete input.options[constants.HELP_SHORT];
+  }
+  input.command = constants.HELP;
+  return input;
+}
+
 function normalizeInput(input: Input): Input {
   // -v --version => version command
   // -h --help => help command
-  // -y --yes => yes option
+  // -y --yes => yes option  
   if (input.options) {
     if (input.options[constants.VERSION] || input.options[constants.VERSION_SHORT]) {
       input.options[constants.VERSION] = true;
@@ -74,8 +104,7 @@ function normalizeInput(input: Input): Input {
     }
 
     if (input.options[constants.HELP] || input.options[constants.HELP_SHORT]) {
-      input.options[constants.HELP] = true;
-      delete input.options[constants.HELP_SHORT];
+      preserveHelpInformation(input);
     }
 
     if (input.options[constants.YES] || input.options[constants.YES_SHORT]) {

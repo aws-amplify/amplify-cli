@@ -1,9 +1,10 @@
 import { $TSContext } from 'amplify-cli-core';
-import { showAllHelp } from '../extensions/amplify-helpers/show-all-help';
+import { runHelp, commandsInfo } from 'amplify-cli-core';
+// import commands from 'amplify-cli-core/commands.json';
 
 /**
  * displays amplify help menu
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  showAllHelp(context);
+  runHelp(context, commandsInfo);
 };
