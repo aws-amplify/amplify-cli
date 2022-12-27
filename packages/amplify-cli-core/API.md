@@ -651,7 +651,7 @@ export function generateCustomPoliciesInTemplate(template: Template_2, resourceN
 export const generateOverrideSkeleton: (context: $TSContext, srcResourceDirPath: string, destDirPath: string) => Promise<void>;
 
 // @public (undocumented)
-export const generateTsConfigforProject: (srcResourceDirPath: string, destDirPath: string) => void;
+export const generateTsConfigForProject: (srcResourceDirPath: string, destDirPath: string) => void;
 
 // @public (undocumented)
 export function getAmplifyResourceByCategories(category: string): string[];
@@ -1489,7 +1489,7 @@ export function validateExportDirectoryPath(directoryPath: any, defaultPath: str
 export class ViewResourceTableParams {
     constructor(cliParams: CLIParams);
     // (undocumented)
-    get categoryList(): string[] | [];
+    get categoryList(): [] | string[];
     // (undocumented)
     get command(): string;
     // (undocumented)
