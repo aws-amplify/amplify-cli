@@ -185,6 +185,8 @@ export enum AmplifyFrontend {
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
     constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
+    // Warning: (ae-forgotten-export) The symbol "DetectedDependencies" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
     detectAffectedDirectDependencies(): Array<DetectedDependencies> | undefined;
     // Warning: (ae-forgotten-export) The symbol "Lockfile" needs to be exported by the entry point index.d.ts
@@ -579,15 +581,6 @@ export enum DeploymentStepStatus {
     // (undocumented)
     'WAITING_FOR_TABLE_TO_BE_READY' = "WAITING_FOR_TABLE_TO_BE_READY"
 }
-
-// @public (undocumented)
-export type DetectedDependencies = {
-    packageName: string;
-    dependentPackage: {
-        name: string;
-        version: string;
-    };
-};
 
 // @public (undocumented)
 export class DiagnoseReportUploadError extends Error {

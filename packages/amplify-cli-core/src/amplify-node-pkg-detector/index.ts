@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/no-cycle
-export { AmplifyNodePkgDetector, AmplifyNodePkgDetectorProps, DetectedDependencies } from './amplify-nodejs-detector';
+export { AmplifyNodePkgDetector, AmplifyNodePkgDetectorProps } from './amplify-nodejs-detector';

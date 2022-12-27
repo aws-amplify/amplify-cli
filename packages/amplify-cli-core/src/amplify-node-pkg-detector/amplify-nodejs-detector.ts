@@ -11,7 +11,7 @@ import { LockFileParserFactory } from './parser-factory';
 /**
  * return type of detectAffectedDirectDependencies
  */
-export type DetectedDependencies = {
+type DetectedDependencies = {
   packageName: string;
   dependentPackage:{
     name: string,
