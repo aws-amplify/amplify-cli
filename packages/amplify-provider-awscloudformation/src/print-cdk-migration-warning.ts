@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyCategories, AmplifyNodeJsDetectorProps, AmplifyNodePkgDetector, IAmplifyResource, pathManager,
+  $TSContext, AmplifyCategories, AmplifyNodePkgDetectorProps, AmplifyNodePkgDetector, IAmplifyResource, pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -41,7 +41,7 @@ const getOverridesWarningObj = (resourcesToBuild: IAmplifyResource[]): AmplifyWa
     const overrideFilePath = path.join(backendDir, resource.category, resource.resourceName, 'override.ts');
     // this checks is overrides are enabled on resource and cdkV1OverrideWarningObj should be empty
     if (fs.existsSync(overrideFilePath) && _.isEmpty(overridesWarningObject)) {
-      const amplifyDetectorProps: AmplifyNodeJsDetectorProps = {
+      const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
         projectRoot: backendDir,
         dependencyToSearch: '@aws-cdk/core',
       };
@@ -64,7 +64,7 @@ const getCustomResourcesWarningObj = (resourcesToBuild: IAmplifyResource[]): Amp
   const customCategoryResources = resourcesToBuild.filter(resource => resource.category === AmplifyCategories.CUSTOM);
   customCategoryResources.forEach(resource => {
     const targetDir = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-    const amplifyDetectorProps: AmplifyNodeJsDetectorProps = {
+    const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot: targetDir,
       dependencyToSearch: '@aws-cdk/core',
     };

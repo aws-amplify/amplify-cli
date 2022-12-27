@@ -5,7 +5,7 @@ import { AmplifyError } from '../errors/amplify-error';
 import { AmplifyFault } from '../errors/amplify-fault';
 import { getPackageManager, PackageManager } from '../utils/packageManager';
 import { Lockfile, LockfileParser } from './lock-file-interface';
-import { PkgJsonType } from './lock-file-types';
+import { PackageJson } from './lock-file-types';
 import { LockFileParserFactory } from './parser-factory';
 
 /**
@@ -22,7 +22,7 @@ export type DetectedDependencies = {
 /**
  * props required by amplify detector
  */
-export type AmplifyNodeJsDetectorProps = {
+export type AmplifyNodePkgDetectorProps = {
     projectRoot: string,
     dependencyToSearch: string,
   }
@@ -35,16 +35,16 @@ export type AmplifyNodeJsDetectorProps = {
 export class AmplifyNodePkgDetector {
      private readonly packageManager: PackageManager | null;
      private readonly dependencyToSearch: string;
-     private readonly pkgJsonObj: PkgJsonType;
+     private readonly pkgJsonObj: PackageJson;
      private readonly lockFileContents: string;
      private readonly lockFileParser: LockfileParser;
 
-     constructor(amplifyDetectorProps: AmplifyNodeJsDetectorProps) {
+     constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps) {
        this.packageManager = getPackageManager(amplifyDetectorProps.projectRoot);
        if (this.packageManager === null) {
          throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
            message: 'No package manager found.',
-           resolution: 'Please install npm or yarn to compile overrides for this project.',
+           resolution: 'Install npm or yarn to compile overrides for this project.',
          });
        }
        this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
@@ -63,9 +63,9 @@ export class AmplifyNodePkgDetector {
      /**
     * parses package.json project files
     */
-     private parsePkgJson = (projectRoot: string): PkgJsonType => {
+     private parsePkgJson = (projectRoot: string): PackageJson => {
        const pkgJsonFullPath = path.resolve(projectRoot, 'package.json');
-       return <PkgJsonType>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
+       return <PackageJson>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
      }
 
      /**

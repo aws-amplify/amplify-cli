@@ -170,7 +170,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
+export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'FileNotFoundFault' | 'LockFileParsingFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -183,16 +183,8 @@ export enum AmplifyFrontend {
 }
 
 // @public (undocumented)
-export type AmplifyNodeJsDetectorProps = {
-    projectRoot: string;
-    dependencyToSearch: string;
-};
-
-// @public (undocumented)
 export class AmplifyNodePkgDetector {
-    constructor(amplifyDetectorProps: AmplifyNodeJsDetectorProps);
-    // Warning: (ae-forgotten-export) The symbol "DetectedDependencies" needs to be exported by the entry point index.d.ts
-    //
+    constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
     // (undocumented)
     detectAffectedDirectDependencies(): Array<DetectedDependencies> | undefined;
     // Warning: (ae-forgotten-export) The symbol "Lockfile" needs to be exported by the entry point index.d.ts
@@ -200,6 +192,12 @@ export class AmplifyNodePkgDetector {
     // (undocumented)
     parseLockFile(): Lockfile;
 }
+
+// @public (undocumented)
+export type AmplifyNodePkgDetectorProps = {
+    projectRoot: string;
+    dependencyToSearch: string;
+};
 
 // @public (undocumented)
 export interface AmplifyProjectConfig {
@@ -581,6 +579,15 @@ export enum DeploymentStepStatus {
     // (undocumented)
     'WAITING_FOR_TABLE_TO_BE_READY' = "WAITING_FOR_TABLE_TO_BE_READY"
 }
+
+// @public (undocumented)
+export type DetectedDependencies = {
+    packageName: string;
+    dependentPackage: {
+        name: string;
+        version: string;
+    };
+};
 
 // @public (undocumented)
 export class DiagnoseReportUploadError extends Error {

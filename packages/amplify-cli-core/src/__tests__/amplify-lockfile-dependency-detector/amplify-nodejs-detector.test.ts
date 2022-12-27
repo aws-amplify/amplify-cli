@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { AmplifyNodeJsDetectorProps, AmplifyNodePkgDetector } from '../../amplify-lockfile-dependency-detector';
+import { AmplifyNodePkgDetectorProps, AmplifyNodePkgDetector } from '../../amplify-node-pkg-detector';
 import { getPackageManager } from '../../utils/packageManager';
 
 jest.mock('../../utils/packageManager');
@@ -53,7 +53,7 @@ describe('parsing yarn lock files', () => {
       packageManager: 'yarn',
     });
     const projectRoot = path.join(__dirname, 'resources');
-    const amplifyDetectorProps: AmplifyNodeJsDetectorProps = {
+    const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
       dependencyToSearch: '@aws-cdk/core',
     };
@@ -233,7 +233,7 @@ describe('parsing package lock files', () => {
       packageManager: 'npm',
     });
     const projectRoot = path.join(__dirname, 'resources');
-    const amplifyDetectorProps: AmplifyNodeJsDetectorProps = {
+    const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
       dependencyToSearch: '@aws-cdk/core',
     };

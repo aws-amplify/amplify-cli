@@ -9,7 +9,7 @@ export enum LockfileType {
 /**
 * package.json type
 */
-export type PkgJsonType = {
+export type PackageJson = {
     name : string,
     version: string,
     dependencies: Record<string, string>,
