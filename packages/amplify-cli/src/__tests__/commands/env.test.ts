@@ -1,8 +1,17 @@
 describe('amplify env: ', () => {
   const mockExit = jest.fn();
   jest.mock('amplify-cli-core', () => ({
+    ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
     exitOnNextTick: mockExit,
-    pathManager: { getAmplifyMetaFilePath: jest.fn().mockReturnValue('test_file_does_not_exist') },
+    pathManager: {
+      getAmplifyMetaFilePath: jest.fn().mockReturnValue('test_file_does_not_exist'),
+      getAWSCredentialsFilePath: jest.fn(),
+      getAWSConfigFilePath: jest.fn(),
+    },
+    FeatureFlags: {
+      getBoolean: jest.fn().mockReturnValue(true),
+      getNumber: jest.fn().mockReturnValue(1),
+    },
   }));
   const { run: runEnvCmd } = require('../../commands/env');
   const { run: runAddEnvCmd } = require('../../commands/env/add');

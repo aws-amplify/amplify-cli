@@ -1,10 +1,9 @@
-import {
-  $TSObject, $TSContext, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSObject, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import * as path from 'path';
 import _ from 'lodash';
 import { normalizeInputParams } from './input-params-manager';
+import { getResourceStatus } from './extensions/amplify-helpers/resource-status';
 
 /**
  * Construct the input params for the amplify init command
@@ -44,6 +43,16 @@ export const postPullCodegen = async (context: $TSContext): Promise<void> => {
     return;
   }
   if (await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', gqlApiName))) {
-    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted } = await getResourceStatus(
+      'api',
+      undefined,
+      undefined,
+      undefined,
+    );
+    const apiHasChanges =
+      resourcesToBeCreated.length || resourcesToBeUpdated.length || resourcesToBeSynced.length || resourcesToBeDeleted.length;
+    if (apiHasChanges) {
+      await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
+    }
   }
 };
