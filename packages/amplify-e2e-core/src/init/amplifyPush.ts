@@ -437,22 +437,3 @@ export const amplifyPushOverride = (cwd: string, testingWithLatestCodebase = fal
       }
     });
 });
-
-/**
- * Function to test amplify push with overrides functionality
- */
-export const amplifyPushOverrideWithMigration = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
-  // Test detailed status
-  // Test amplify push
-  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait('Are you sure you want to continue?')
-    .sendConfirmYes()
-    .wait('We detect you are using CDK v1 with custom stacks and overrides')
-    .run((error: Error) => {
-      if (!error) {
-        resolve();
-      } else {
-        reject(error);
-      }
-    });
-});

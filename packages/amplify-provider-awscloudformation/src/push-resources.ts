@@ -325,7 +325,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
-
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
 
         try {
@@ -334,10 +333,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
           await context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
-          if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-            return;
-          }
-          throw err;
+          handleCloudFormationError(err);
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -470,6 +466,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     rollbackLambdaLayers(layerResources);
     throw new AmplifyFault('DeploymentFault', {
       message: error.message,
+      code: error.code,
     }, error);
   }
 };
@@ -1291,4 +1288,20 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
 
     stateManager.setMeta(projectRoot, meta);
   }
+};
+
+const handleCloudFormationError = (err: Error): void => {
+  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
+    return;
+  }
+
+  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
+    throw new AmplifyError('DeploymentInProgressError', {
+      message: 'Deployment is already in progress.',
+      resolution: 'Wait for the other deployment to finish and try again.',
+      code: (err as $TSAny).code,
+    }, err);
+  }
+
+  throw err;
 };
