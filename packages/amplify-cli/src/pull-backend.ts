@@ -1,14 +1,13 @@
-import {
-  exitOnNextTick, stateManager, $TSAny, $TSContext,
-} from 'amplify-cli-core';
+import { exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import { initializeEnv } from './initialize-env';
 import { postPullCodegen } from './amplify-service-helper';
 import { printer } from 'amplify-prompts';
+import runBuildCommand from './utils/run-build-command';
 
 /**
  * pull backend from the cloud
  */
- export const pullBackend = async (context: $TSContext, inputParams: $TSAny): Promise<void> => {
+export const pullBackend = async (context: $TSContext, inputParams: $TSAny): Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = inputParams;
   printer.info('');
@@ -42,6 +41,8 @@ import { printer } from 'amplify-prompts';
   context.print.info('Post-pull status:');
   await context.amplify.showResourceTable();
   context.print.info('');
+
+  await runBuildCommand(context);
 };
 
 const ensureBackendConfigFile = (context: $TSContext): void => {

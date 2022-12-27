@@ -1,21 +1,13 @@
-import {
-  $TSAny,
-  $TSContext,
-  AmplifyError,
-  AmplifyFault,
-  spinner,
-  stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, spinner, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,
   notifySecurityEnhancement,
 } from '../extensions/amplify-helpers/auth-notifications';
-import {
-  getProviderPlugins,
-} from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
+import runBuildCommand from '../utils/run-build-command';
 
 /**
  * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
@@ -72,5 +64,6 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
   }
   await syncCurrentCloudBackend(context);
   await updateTrackedFiles();
+  await runBuildCommand(context);
   return context.amplify.pushResources(context);
 };
