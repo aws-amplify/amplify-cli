@@ -197,7 +197,7 @@
                     "description": "Strategies that will be used for individual models.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/PerModelResolutionstrategy"
+                        "$ref": "#/definitions/PerModelResolutionStrategy"
                     }
                 }
             }
@@ -289,7 +289,7 @@
                 "type"
             ]
         },
-        "PerModelResolutionstrategy": {
+        "PerModelResolutionStrategy": {
             "description": "Defines a resolution strategy for a single model.",
             "type": "object",
             "properties": {

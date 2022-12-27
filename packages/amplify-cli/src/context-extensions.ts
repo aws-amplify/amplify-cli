@@ -115,8 +115,8 @@ function attachRuntime(context: Context) {
     plugins: [],
   };
   Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
-    const pluginInfos = context.pluginPlatform.plugins[pluginShortName];
-    pluginInfos.forEach(pluginInfo => {
+    const pluginInfo = context.pluginPlatform.plugins[pluginShortName];
+    pluginInfo.forEach(pluginInfo => {
       const name = path.basename(pluginInfo.packageLocation);
       const directory = pluginInfo.packageLocation;
       const pluginName = pluginInfo.manifest.name;

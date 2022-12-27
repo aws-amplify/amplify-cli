@@ -105,7 +105,7 @@ async function createAndRegisterAdminLambdaS3Trigger(context, predictionsResourc
   //In Add mode, predictions cloudformation is not yet created, hence do not use this in add-function
   const predictionsResourceSavedName = configMode === PREDICTIONS_WALKTHROUGH_MODE.ADD ? undefined : predictionsResourceName;
   let predictionsTriggerFunctionName = await createNewFunction(context, predictionsResourceSavedName, s3ResourceName);
-  // adding additinal lambda trigger
+  // adding additional lambda trigger
   const adminTriggerFunctionParams = {
     tag: 'adminTriggerFunction',
     category: 'predictions', //function is owned by storage category
@@ -188,7 +188,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
     } else {
       //create S3 bucket
       s3Resource = await addS3ForIdentity(context, answers.access, undefined, predictionsResourceName);
-      //create admin lamda and register with s3 as trigger
+      //create admin lambda and register with s3 as trigger
       const s3UserInputs = await createAndRegisterAdminLambdaS3Trigger(
         context,
         predictionsResourceName,
@@ -211,8 +211,8 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
       functionParameters = {};
     }
     functionParameters.resourceName = answers.resourceName || parameters.resourceName;
-    const functionjsonString = JSON.stringify(functionParameters, null, 4);
-    fs.writeFileSync(functionparametersFilePath, functionjsonString, 'utf8');
+    const functionJsonString = JSON.stringify(functionParameters, null, 4);
+    fs.writeFileSync(functionparametersFilePath, functionJsonString, 'utf8');
   } else if (parameters.resourceName) {
     const s3ResourceName = s3ResourceAlreadyExists();
     if (s3ResourceName) {

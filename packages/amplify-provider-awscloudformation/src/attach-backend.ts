@@ -5,12 +5,7 @@ import glob from 'glob';
 import extract from 'extract-zip';
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import {
-  exitOnNextTick,
-  pathManager,
-  PathConstants,
-  AmplifyError,
-} from 'amplify-cli-core';
+import { exitOnNextTick, pathManager, PathConstants, AmplifyError } from 'amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
@@ -49,9 +44,13 @@ export const run = async (context): Promise<void> => {
       try {
         await adminLoginFlow(context, appId, envName, res.region);
       } catch (e) {
-        throw new AmplifyError('AmplifyStudioLoginError', {
-          message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
-        }, e);
+        throw new AmplifyError(
+          'AmplifyStudioLoginError',
+          {
+            message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
+          },
+          e,
+        );
       }
     }
   }
@@ -161,14 +160,17 @@ async function getAmplifyApp(context, amplifyClient) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       return getAppResult.app;
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
-        message: e.message && e.name && e.name === 'NotFoundException'
-          ? e.message
-          : `Amplify AppID: ${inputAmplifyAppId} not found.`,
-        resolution: e.name && e.name === 'NotFoundException'
-          ? 'Check that the region of the Amplify App is matching the configured region.'
-          : 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
-      }, e);
+      throw new AmplifyError(
+        'ProjectNotFoundError',
+        {
+          message: e.message && e.name && e.name === 'NotFoundException' ? e.message : `Amplify AppID: ${inputAmplifyAppId} not found.`,
+          resolution:
+            e.name && e.name === 'NotFoundException'
+              ? 'Check that the region of the Amplify App is matching the configured region.'
+              : 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
+        },
+        e,
+      );
     }
   }
 
@@ -241,10 +243,14 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
       context.print.info(`Backend environment ${inputEnvName} found in Amplify Console app: ${amplifyApp.name}`);
       return getBackendEnvironmentResult.backendEnvironment;
     } catch (e) {
-      throw new AmplifyError('EnvironmentNotInitializedError', {
-        message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
-        details: e.message,
-      }, e);
+      throw new AmplifyError(
+        'EnvironmentNotInitializedError',
+        {
+          message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
+          details: e.message,
+        },
+        e,
+      );
     }
   }
 
@@ -287,7 +293,8 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
     });
 
     return selection;
-  } if (backendEnvs.length === 1) {
+  }
+  if (backendEnvs.length === 1) {
     context.print.info(`Backend environment '${backendEnvs[0].environmentName}' found. Initializing...`);
     return backendEnvs[0];
   }
@@ -340,7 +347,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
 
     await extract(tempFilePath, { dir: unzippedDirPath });
 
-    // Move out cli.*json if exists in the temp directory into the amplify directory before copying backand and
+    // Move out cli.*json if exists in the temp directory into the amplify directory before copying backend and
     // current cloud backend directories.
     const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
       cwd: unzippedDirPath,

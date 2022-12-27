@@ -223,26 +223,26 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
       resolvedJSFramework = guessFramework(process.cwd());
 
       if (resolvedJSFramework === 'none') {
-        const platformComfirmation = {
+        const platformConfirmation = {
           type: 'list',
           name: 'platform',
           message: 'What type of app are you building',
           choices: validFrontends,
         };
 
-        const { platform } = await inquirer.prompt(platformComfirmation);
+        const { platform } = await inquirer.prompt(platformConfirmation);
         suitableFrontend = platform;
         isInferredPlatform = false;
 
         if (suitableFrontend === 'javascript') {
-          const frameworkComfirmation = {
+          const frameworkConfirmation = {
             type: 'list',
             name: 'framework',
             message: 'What javascript framework are you using',
             choices: validJSFrameworks,
           };
 
-          const { framework } = await inquirer.prompt(frameworkComfirmation);
+          const { framework } = await inquirer.prompt(frameworkConfirmation);
           resolvedJSFramework = framework;
           isInferredFramework = false;
         }

@@ -152,7 +152,7 @@ const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionC
     message: removeLayerQuestion,
     type: 'checkbox',
     choices: layerVersionList
-      .sort((versiona, versionb) => versiona.Version - versionb.Version)
+      .sort((versionA, versionB) => versionA.Version - versionB.Version)
       .map(version => ({
         disabled:
           Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0

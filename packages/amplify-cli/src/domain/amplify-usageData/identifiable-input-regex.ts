@@ -5,7 +5,7 @@ const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'ap
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
-//matches any string with contiansToRedact in it
+//matches any string with containsToRedact in it
 const keyregex = new RegExp(keyMatcher, 'gmi');
 // matches any json and gives values in json
 const jsonregex = new RegExp(completeMatch, 'gmi');

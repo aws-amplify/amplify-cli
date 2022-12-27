@@ -205,7 +205,7 @@ function aliasArgs(argv: string[]) {
   if (argv.length >= 4 && argv[2] === 'override' && argv[3] === 'project') {
     argv[3] = 'root';
 
-    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitingore for older projects
+    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitignore for older projects
     const { projectPath } = stateManager.getLocalEnvInfo();
     const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
     insertAmplifyIgnore(gitIgnoreFilePath);

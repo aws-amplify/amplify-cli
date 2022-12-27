@@ -57,13 +57,13 @@ export interface ConflictResolution {
   /**
    * Strategies that will be used for individual models.
    */
-  perModelResolutionStrategy?: PerModelResolutionstrategy[];
+  perModelResolutionStrategy?: PerModelResolutionStrategy[];
 }
 
 /**
  * Defines a resolution strategy for a single model.
  */
-export interface PerModelResolutionstrategy {
+export interface PerModelResolutionStrategy {
   /**
    * The resolution strategy for the model.
    */
@@ -179,7 +179,7 @@ export interface AppSyncOpenIDConnectAuthType {
 /**
  * Specifies that the AppSync API should be secured using Lambda.
  */
- export interface AppSyncLambdaAuthType {
+export interface AppSyncLambdaAuthType {
   mode: 'AWS_LAMBDA';
   lambdaFunction: string;
   ttlSeconds?: string;

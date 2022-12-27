@@ -23,7 +23,7 @@ export async function checkProjectConfigVersion(context: Context): Promise<void>
       default: undefined,
     });
 
-    // If we do not have a projectConig, just bail out, probably it is an
+    // If we do not have a projectConfig, just bail out, probably it is an
     // uninitialized project
     if (!projectConfig?.version) {
       return;

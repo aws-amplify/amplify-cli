@@ -79,7 +79,7 @@ export const askExecRolePermissionsQuestions = async (
       }
     } else if (selectedCategory === category || selectedCategory === categoryName) {
       // A Lambda function cannot depend on itself
-      // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
+      // Lambda layer dependencies are handled separately, also apply the filter if the selected resource is within the function category
       // but serviceName argument was no passed in
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
         const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
@@ -131,9 +131,7 @@ export const askExecRolePermissionsQuestions = async (
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
-          printer.warn(
-            `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
-          );
+          printer.warn(`Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
         } else {
           const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName);
@@ -159,10 +157,14 @@ export const askExecRolePermissionsQuestions = async (
       if (e.name === 'PluginMethodNotFoundError') {
         printer.warn(`${selectedCategory} category does not support resource policies yet.`);
       } else {
-        throw new AmplifyError('PluginPolicyAddError', {
-          message: `Policies cannot be added for ${selectedCategory}`,
-          details: e.message,
-        }, e);
+        throw new AmplifyError(
+          'PluginPolicyAddError',
+          {
+            message: `Policies cannot be added for ${selectedCategory}`,
+            details: e.message,
+          },
+          e,
+        );
       }
     }
   }
@@ -245,7 +247,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
             category: 'api',
             attributes: ['GraphQLAPIIdOutput'],
             needsAdditionalDynamoDBResourceProps: true,
-            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+            // data to pass so we construct additional resourceProps for lambda environment variables for @model back dynamoDB tables
             _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
             _cfJoinComponentTableName: await constructCFModelTableNameComponent(
               appsyncResourceName,
@@ -313,7 +315,9 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
     });
   }
 
-  const envVarStringList = Array.from(envVars).sort().join('\n\t');
+  const envVarStringList = Array.from(envVars)
+    .sort()
+    .join('\n\t');
 
   if (envVarStringList) {
     printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);

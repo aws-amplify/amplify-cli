@@ -173,7 +173,7 @@ export class StorageServer extends EventEmitter {
         keyName = keyName.slice(1);
       }
 
-      if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
+      if (delimiter !== '' && util.checkFile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
           prefix: request.params.path + keyName,
         });

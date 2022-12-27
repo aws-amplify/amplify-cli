@@ -63,8 +63,8 @@ describe('get-when helper: ', () => {
         required: true,
       };
       answers = {
-        answer1: 'iamvalue1',
-        answer2: 'iamvalue2',
+        answer1: 'iamValue1',
+        answer2: 'iamValue2',
         answer3: ['index1', 'index2'],
       };
     });
@@ -85,7 +85,7 @@ describe('get-when helper: ', () => {
       input.andConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '=',
         },
       ];
@@ -124,7 +124,7 @@ describe('get-when helper: ', () => {
       input.andConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '!=',
         },
       ];
@@ -175,12 +175,12 @@ describe('get-when helper: ', () => {
       input.andConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '=',
         },
         {
           key: 'answer2',
-          value: 'iamvalue2',
+          value: 'iamValue2',
           operator: '=',
         },
       ];
@@ -192,7 +192,7 @@ describe('get-when helper: ', () => {
       input.andConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '=',
         },
         {
@@ -231,8 +231,8 @@ describe('get-when helper: ', () => {
         required: true,
       };
       answers = {
-        answer1: 'iamvalue1',
-        answer2: 'iamvalue2',
+        answer1: 'iamValue1',
+        answer2: 'iamValue2',
         answer3: ['index1', 'index2'],
       };
     });
@@ -253,7 +253,7 @@ describe('get-when helper: ', () => {
       input.orConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '=',
         },
       ];
@@ -292,7 +292,7 @@ describe('get-when helper: ', () => {
       input.orConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '!=',
         },
       ];
@@ -343,12 +343,12 @@ describe('get-when helper: ', () => {
       input.andConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '=',
         },
         {
           key: 'answer2',
-          value: 'iamvalue2',
+          value: 'iamValue2',
           operator: '=',
         },
       ];
@@ -360,7 +360,7 @@ describe('get-when helper: ', () => {
       input.orConditions = [
         {
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
           operator: '=',
         },
         {
@@ -399,12 +399,12 @@ describe('get-when helper: ', () => {
         required: true,
       };
       answers = {
-        answer1: 'iamvalue1',
-        answer2: 'iamvalue2',
+        answer1: 'iamValue1',
+        answer2: 'iamValue2',
         answer3: ['index1', 'index2'],
       };
       previousValues = {
-        answer1: 'iamvalue1',
+        answer1: 'iamValue1',
         answer2: 'iamoldervalue2',
         answer3: ['index1', 'index2'],
       };
@@ -436,7 +436,7 @@ describe('get-when helper: ', () => {
         {
           preventEdit: '=',
           key: 'answer1',
-          value: 'iamvalue1',
+          value: 'iamValue1',
         },
       ];
       const asking = getWhen(input, answers, null, null)();

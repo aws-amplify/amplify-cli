@@ -1,4 +1,4 @@
-// responsible for interacting with the python shim that invokes the customer labmda function
+// responsible for interacting with the python shim that invokes the customer lambda function
 
 import { InvocationRequest } from 'amplify-function-plugin-interface';
 import execa from 'execa';

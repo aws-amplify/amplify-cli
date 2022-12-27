@@ -422,7 +422,7 @@ export interface ConflictResolution {
     // (undocumented)
     defaultResolutionStrategy?: ResolutionStrategy;
     // (undocumented)
-    perModelResolutionStrategy?: PerModelResolutionstrategy[];
+    perModelResolutionStrategy?: PerModelResolutionStrategy[];
 }
 
 // @public (undocumented)
@@ -569,7 +569,7 @@ export interface PermissionGroups {
 }
 
 // @public (undocumented)
-export interface PerModelResolutionstrategy {
+export interface PerModelResolutionStrategy {
     // (undocumented)
     entityName: string;
     // (undocumented)

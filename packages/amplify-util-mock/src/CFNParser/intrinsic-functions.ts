@@ -87,14 +87,14 @@ export function cfnSplit(valNode, { params, conditions, resources, exports }: Cl
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Split expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
-  const delim: string = valNode[0];
+  const delimiter: string = valNode[0];
   const str: string = processValue(valNode[1], {
     params,
     conditions,
     resources,
     exports,
   });
-  return str.split(delim);
+  return str.split(delimiter);
 }
 
 export function cfnRef(valNode, { params, resources }: CloudFormationParseContext, processValue) {

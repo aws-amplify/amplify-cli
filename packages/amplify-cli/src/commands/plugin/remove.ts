@@ -53,11 +53,11 @@ export const run = async (context: Context) => {
   }
 };
 
-async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfos: Array<PluginInfo>) {
-  if (pluginInfos.length === 1) {
-    removePluginPackage(pluginPlatform, pluginInfos[0]);
-  } else if (pluginInfos.length > 1) {
-    const options = pluginInfos.map((pluginInfo: PluginInfo) => {
+async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfo: Array<PluginInfo>) {
+  if (pluginInfo.length === 1) {
+    removePluginPackage(pluginPlatform, pluginInfo[0]);
+  } else if (pluginInfo.length > 1) {
+    const options = pluginInfo.map((pluginInfo: PluginInfo) => {
       const optionObject = {
         name: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
         value: pluginInfo,

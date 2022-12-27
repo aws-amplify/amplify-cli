@@ -234,15 +234,15 @@ async function askGSIQuestion(
   if (
     existingGSIList &&
     !!existingGSIList.length &&
-    (await prompter.yesOrNo('Do you want to keep existing global seconday indexes created on your table?', true))
+    (await prompter.yesOrNo('Do you want to keep existing global secondary indexes created on your table?', true))
   ) {
     gsiList = existingGSIList;
   }
 
   if (await prompter.yesOrNo('Do you want to add global secondary indexes to your table?', true)) {
-    let continuewithGSIQuestions = true;
+    let continueWithGSIQuestions = true;
 
-    while (continuewithGSIQuestions) {
+    while (continueWithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
         const gsiNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
 
@@ -281,7 +281,7 @@ async function askGSIQuestion(
         }
 
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
+        continueWithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
       } else {
         printer.error('You do not have any other attributes remaining to configure');
         break;

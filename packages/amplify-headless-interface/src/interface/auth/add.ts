@@ -40,7 +40,7 @@ export interface BaseCognitoServiceConfiguration {
  */
 export interface NoCognitoIdentityPool {
   /**
-   * Indicates an indentity pool should not be configured.
+   * Indicates an identity pool should not be configured.
    */
   includeIdentityPool: false;
 }

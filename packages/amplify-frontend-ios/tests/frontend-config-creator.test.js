@@ -20,7 +20,7 @@ describe('test config creator', () => {
   const amplifyConfigFilePath = path.join(dir, constants.amplifyConfigFilename);
   const files = constants.fileNames.map(filename => path.join(dir, 'graphql', `${filename}.${constants.FILE_EXTENSION_MAP['javascript']}`));
 
-  it('should not attempt deleted generatedfile name if empty', () => {
+  it('should not attempt deleted generatedFile name if empty', () => {
     fs.removeSync = jest.fn();
     fs.existsSync = jest.fn().mockReturnValue(true);
     gqlConfig.getGraphQLConfig = jest.fn().mockReturnValue({

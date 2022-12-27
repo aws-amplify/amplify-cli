@@ -91,8 +91,8 @@ export class ResourceExport extends ResourcePackager {
    */
   fixNestedStackParameters(transformedCfnResources: TransformedCfnResource[], stackParameters: StackParameters): StackParameters {
     const projectPath = pathManager.findProjectRoot();
-    const { StackName: rootstackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
-    const nestedStack = stackParameters[rootstackName].nestedStacks;
+    const { StackName: rootStackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
+    const nestedStack = stackParameters[rootStackName].nestedStacks;
     for (const resource of transformedCfnResources) {
       const fileParameters = stateManager.getResourceParametersJson(projectPath, resource.category, resource.resourceName, {
         default: {},
@@ -258,7 +258,7 @@ export class ResourceExport extends ResourcePackager {
 
   private async copyResource(sourcePath: string, destinationPath: string) {
     let dir = destinationPath;
-    if(!fs.existsSync(sourcePath)){
+    if (!fs.existsSync(sourcePath)) {
       return;
     }
     // if there is an extension then get the dir path
@@ -335,7 +335,7 @@ export class ResourceExport extends ResourcePackager {
     }
 
     if (this.resourcesHasContainers(resources)) {
-      // create network resouce
+      // create network resource
       const template = (await getNetworkResourceCfn(this.context, stackName)) as Template;
       const destinationPath = path.join(this.exportDirectoryPath, AMPLIFY_CFN_TEMPLATES, NETWORK_STACK_FILENAME);
       stackParameters[stackName].nestedStacks[NETWORK_STACK_LOGICAL_ID] = {

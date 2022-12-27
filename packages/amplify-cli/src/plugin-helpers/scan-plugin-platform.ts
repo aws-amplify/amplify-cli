@@ -46,7 +46,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
         //adding subDir based on amplify-
         const subDirNames = await fs.readdir(directory);
         await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform!);
-        //ading plugin based on @aws-amplify/amplify-
+        //adding plugin based on @aws-amplify/amplify-
         if (subDirNames.includes('@aws-amplify')) {
           const nameSpacedDir = path.join(directory, '@aws-amplify');
           const nameSpacedPackages = await fs.readdir(nameSpacedDir);

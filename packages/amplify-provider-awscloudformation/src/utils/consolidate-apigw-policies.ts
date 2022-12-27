@@ -199,7 +199,7 @@ function computePolicySizeIncrease(stageLength: number, methodLength: number, pa
   // "arn:aws:execute-api:us-west-1:032500605820:hjrmfzed5l/dev/PATCH/bbb-p03/*",
   //
   // Each path + HTTP method increases the policy size by roughly:
-  // - 2 * 64 chars for arn, wildcards, path separators, quotes and comma (region is calculated with 16 max length)
+  // - 2 * 64 chars for arn, wildcard, path separators, quotes and comma (region is calculated with 16 max length)
   // - 2 * the length of the stage length (amplify env name)
   // - 2 * the length of the method length
   // - 2 * the length of the path length
@@ -296,7 +296,7 @@ export async function loadApiCliInputs(context: $TSContext, resourceName: string
             context,
             AmplifyCategories.API,
             AmplifySupportedService.APIGW,
-            'convertDeperecatedRestApiPaths',
+            'convertDeprecatedRestApiPaths',
             [deprecatedParamsFileName, deprecatedParamsFilePath, resourceName],
           ),
         };

@@ -283,7 +283,7 @@ time has passed for longer than max-scan-interval-in-seconds.');
     default: pluginPlatform.maxScanIntervalInSeconds,
     validate: (input: string) => {
       if (isNaN(Number(input))) {
-        return 'must enter nubmer';
+        return 'must enter number';
       }
       return true;
     },

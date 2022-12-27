@@ -33,7 +33,7 @@ export interface S3Permissions {
  */
 export interface PermissionGroups {
   /**
-   * Each key is a Cognito user group name and each value is the CRUD opterations permitted for that group
+   * Each key is a Cognito user group name and each value is the CRUD operations permitted for that group
    */
   [k: string]: CrudOperation[];
 }

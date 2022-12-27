@@ -30,7 +30,7 @@ import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
-import { getMockOpenseachDataDirectory } from '../utils/mock-directory';
+import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
 import { printer } from 'amplify-prompts';
 
@@ -403,7 +403,7 @@ export class APITest {
       const mockConfig = await getMockConfig(context);
       await this.createMockSearchableArtifacts(context);
       checkJavaHome();
-      this.opensearchEmulator = await opensearchEmulator.launch(getMockOpenseachDataDirectory(context), {
+      this.opensearchEmulator = await opensearchEmulator.launch(getMockOpensearchDataDirectory(context), {
         port: null, // let the emulator choose the default
         ...mockConfig,
       });
@@ -476,7 +476,7 @@ export class APITest {
     const runtimeManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
     printer.info('Building the searchable lambda trigger');
     await buildLambdaTrigger(runtimeManager, triggerConfig);
-    fs.ensureDirSync(getMockOpenseachDataDirectory(context));
+    fs.ensureDirSync(getMockOpensearchDataDirectory(context));
   }
 
   private async getAPIBackendDirectory(context) {

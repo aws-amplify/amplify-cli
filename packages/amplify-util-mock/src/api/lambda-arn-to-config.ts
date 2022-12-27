@@ -10,8 +10,8 @@ import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
  */
 export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promise<ProcessedLambdaFunction> => {
   const version = await ApiCategoryFacade.getTransformerVersion(context);
-  const doclink = getGraphQLTransformerFunctionDocLink(version);
-  const errorSuffix = `\nSee ${doclink} for information on how to configure Lambda resolvers.`;
+  const docLink = getGraphQLTransformerFunctionDocLink(version);
+  const errorSuffix = `\nSee ${docLink} for information on how to configure Lambda resolvers.`;
   let searchString = '';
   if (typeof arn === 'string') {
     searchString = arn;

@@ -5,7 +5,6 @@ class ElasticsearchHelper {
 
   private static readonly ERROR_FORMAT: string = 'Could not construct an Elasticsearch Query DSL from {0} and {1}';
 
-
   /**
    * This method is used by the ModelTransformUtils.
    *
@@ -13,7 +12,7 @@ class ElasticsearchHelper {
    *
    * filter: {
    *   title: {
-   *     eq: "hihihi",
+   *     eq: "hi",
    *     wildcard: "h*i"
    *   },
    *   upvotes: {
@@ -38,7 +37,7 @@ class ElasticsearchHelper {
    *       "must":[
    *       {
    *         "term":{
-   *         "title":"hihihi"
+   *         "title":"hi"
    *         }
    *       },
    *       {
@@ -68,7 +67,7 @@ class ElasticsearchHelper {
   public getQueryDSL(filterInput: any): any {
     const results: any[] = this.getQueryDSLRecursive(filterInput);
 
-    return this.getOrAndSubexpressions(results)
+    return this.getOrAndSubexpressions(results);
   }
 
   public getScalarQueryDSL(fieldName: string, conditions: any): any[] {
@@ -81,7 +80,7 @@ class ElasticsearchHelper {
 
       if ('range' === condition) {
         if (value.length && value.length < 1) {
-          return
+          return;
         }
 
         results.push(ElasticsearchHelper.ES_UTILS.toRangeExpression(fieldName, value[0], value[1]));
@@ -150,17 +149,14 @@ class ElasticsearchHelper {
           subexpressions.push(this.getOrAndSubexpressions(siblingChildExpressions));
         });
 
-        if ('and' === (key.toLowerCase())) {
+        if ('and' === key.toLowerCase()) {
           results.push(ElasticsearchHelper.ES_UTILS.toAndExpression(subexpressions));
         } else {
           results.push(ElasticsearchHelper.ES_UTILS.toOrExpression(subexpressions));
         }
-
-      } else if ('not' === (key.toLowerCase())) {
-
+      } else if ('not' === key.toLowerCase()) {
         const combinedDSLQuery: any[] = this.getQueryDSLRecursive(values);
         results.push(ElasticsearchHelper.ES_UTILS.toNotExpression(this.getOrAndSubexpressions(combinedDSLQuery)));
-
       } else {
         const combinedDSLQuery: any[] = this.getScalarQueryDSL(key, values);
         results.push(this.getOrAndSubexpressions(combinedDSLQuery));
@@ -183,10 +179,8 @@ class ElasticsearchHelper {
       return '';
     }
 
-    return format.replace(/{(\d+)}/g, function (match, number) {
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match;
+    return format.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined' ? args[number] : match;
     });
   }
 }

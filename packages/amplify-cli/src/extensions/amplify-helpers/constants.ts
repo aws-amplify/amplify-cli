@@ -8,7 +8,7 @@ export const amplifyCLIConstants = Object.freeze({
   amplifyMetaFileName: 'amplify-meta.json',
   CliName: 'amplify',
   DateTimeFormatString: 'YYYY-MM-DD-HH-mm-ss',
-  DateTimeFormatStringCompact: 'YYYYMMDDHHmmss',
+  DateTimeFormatStringCompact: 'YYYYMMDDHHMMSS',
   DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',
   DefaultAWSSecretAccessKey: '<YOUR_SECRET_ACCESS_KEY>',
   DefaultAWSRegion: 'us-east-1',
