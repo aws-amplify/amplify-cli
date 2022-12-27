@@ -827,7 +827,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
 
   const allResources = mergeResourcesByCCIJob(
-    apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanPinpointApplications, orphanAppSyncApis,
+    apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanPinpointApplications, orphanAppSyncApis
   );
   const staleResources = _.pickBy(allResources, filterPredicate);
 
