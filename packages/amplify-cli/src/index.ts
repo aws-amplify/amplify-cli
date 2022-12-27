@@ -155,7 +155,7 @@ export const run = async (startTime: number): Promise<void> => {
 
   const exitCode = process.exitCode || 0;
   if (exitCode === 0) {
-    context.usageData.emitSuccess();
+    await context.usageData.emitSuccess();
   }
 
   // no command supplied defaults to help, give update notification at end of execution

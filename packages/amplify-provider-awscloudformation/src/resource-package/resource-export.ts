@@ -258,7 +258,7 @@ export class ResourceExport extends ResourcePackager {
 
   private async copyResource(sourcePath: string, destinationPath: string) {
     let dir = destinationPath;
-    if(!fs.existsSync(sourcePath)){
+    if (!fs.existsSync(sourcePath)) {
       return;
     }
     // if there is an extension then get the dir path
@@ -323,7 +323,7 @@ export class ResourceExport extends ResourcePackager {
             });
           await this.processAndWriteCfnTemplate(cfnTemplate, destination, templateFormat, false);
         } else {
-          this.copyResource(cfnFile, destination);
+          await this.copyResource(cfnFile, destination);
         }
         stackParameters[stackName].nestedStacks[logicalId] = nestedStack;
 
