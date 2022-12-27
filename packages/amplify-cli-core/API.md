@@ -414,23 +414,6 @@ export const commandsInfo: ({
     commandDescription: string;
     commandUsage: string;
     learnMoreLink: string;
-    commandFlags: {
-        short: string;
-        long: string;
-        flagDescription: string;
-    }[];
-    subCommands: {
-        subCommand: string;
-        subCommandDescription: string;
-        subCommandUsage: string;
-        learnMoreLink: string;
-        subCommandFlags: never[];
-    }[];
-} | {
-    command: string;
-    commandDescription: string;
-    commandUsage: string;
-    learnMoreLink: string;
     commandFlags: never[];
     subCommands: {
         subCommand: string;
@@ -442,6 +425,23 @@ export const commandsInfo: ({
             long: string;
             flagDescription: string;
         }[];
+    }[];
+} | {
+    command: string;
+    commandDescription: string;
+    commandUsage: string;
+    learnMoreLink: string;
+    commandFlags: {
+        short: string;
+        long: string;
+        flagDescription: string;
+    }[];
+    subCommands: {
+        subCommand: string;
+        subCommandDescription: string;
+        subCommandUsage: string;
+        learnMoreLink: string;
+        subCommandFlags: never[];
     }[];
 })[];
 
