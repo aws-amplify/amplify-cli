@@ -1,39 +1,5 @@
 export const commandsInfo = [
   {
-    "command": "pull",
-    "commandDescription": "Fetch upstream backend changes from the cloud and updates the local environment",
-    "commandUsage": "amplify pull [flags]",
-    "learnMoreLink": "https://docs.amplify.aws/cli/commands/pull",
-    "commandFlags": [
-      {
-        "short": "y",
-        "long": "yes",
-        "flagDescription": "Skip all interactive prompts by selecting default options"
-      },
-      {
-        "short": "",
-        "long": "restore",
-        "flagDescription": "Overwrite your local backend changes with configurations from the cloud"
-      },
-      {
-        "short": "",
-        "long": "amplify",
-        "flagDescription": "Basic information of the project"
-      },
-      {
-        "short": "",
-        "long": "frontend",
-        "flagDescription": "Information for the project's frontend appliction"
-      },
-      {
-        "short": "",
-        "long": "providers",
-        "flagDescription": "Configuration settings for provider plugins"
-      }
-    ],
-    "subCommands": []
-  },
-  {
     "command": "init",
     "commandDescription": "Initialize a new Amplify project",
     "commandUsage": "amplify init [flags]",
@@ -78,6 +44,57 @@ export const commandsInfo = [
     "subCommands": []
   },
   {
+    "command": "configure",
+    "commandDescription": "Configure the CLI to work with your AWS profile",
+    "commandUsage": "amplify configure <subcommand>",
+    "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
+    "commandFlags": [],
+    "subCommands": [
+      {
+        "subCommand": "project",
+        "subCommandDescription": "Configure the attributes of your project",
+        "subCommandUsage": "amplify configure project [flags]",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
+        "subCommandFlags": [
+          {
+            "short": "y",
+            "long": "yes",
+            "flagDescription": "Skip all interactive prompts by selecting default options"
+          },
+          {
+            "short": "",
+            "long": "amplify",
+            "flagDescription": "Basic information of the project"
+          },
+          {
+            "short": "",
+            "long": "frontend",
+            "flagDescription": "Information for the project's frontend appliction"
+          },
+          {
+            "short": "",
+            "long": "providers",
+            "flagDescription": "Configuration settings for provider plugins"
+          }
+        ]
+      },
+      {
+        "subCommand": "hosting",
+        "subCommandDescription": "Configure hosting resources for your Amplify project",
+        "subCommandUsage": "amplify configure hosting",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
+        "subCommandFlags": []
+      },
+      {
+        "subCommand": "codegen",
+        "subCommandDescription": "Configure GraphQL codegen for your Amplify project",
+        "subCommandUsage": "amplify configure codegen",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
+        "subCommandFlags": []
+      }
+    ]
+  },
+  {
     "command": "push",
     "commandDescription": "Provisions cloud resources with the latest local changes",
     "commandUsage": "amplify push <category> [flags]",
@@ -118,6 +135,40 @@ export const commandsInfo = [
         "subCommandFlags": []
       }
     ]
+  },
+  {
+    "command": "pull",
+    "commandDescription": "Fetch upstream backend changes from the cloud and updates the local environment",
+    "commandUsage": "amplify pull [flags]",
+    "learnMoreLink": "https://docs.amplify.aws/cli/commands/pull",
+    "commandFlags": [
+      {
+        "short": "y",
+        "long": "yes",
+        "flagDescription": "Skip all interactive prompts by selecting default options"
+      },
+      {
+        "short": "",
+        "long": "restore",
+        "flagDescription": "Overwrite your local backend changes with configurations from the cloud"
+      },
+      {
+        "short": "",
+        "long": "amplify",
+        "flagDescription": "Basic information of the project"
+      },
+      {
+        "short": "",
+        "long": "frontend",
+        "flagDescription": "Information for the project's frontend appliction"
+      },
+      {
+        "short": "",
+        "long": "providers",
+        "flagDescription": "Configuration settings for provider plugins"
+      }
+    ],
+    "subCommands": []
   },
   {
     "command": "env",
@@ -402,57 +453,6 @@ export const commandsInfo = [
       }
     ],
     "subCommands": []
-  },
-  {
-    "command": "configure",
-    "commandDescription": "Configure the CLI to work with your AWS profile",
-    "commandUsage": "amplify configure <subcommand>",
-    "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
-    "commandFlags": [],
-    "subCommands": [
-      {
-        "subCommand": "project",
-        "subCommandDescription": "Configure the attributes of your project",
-        "subCommandUsage": "amplify configure project [flags]",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
-        "subCommandFlags": [
-          {
-            "short": "y",
-            "long": "yes",
-            "flagDescription": "Skip all interactive prompts by selecting default options"
-          },
-          {
-            "short": "",
-            "long": "amplify",
-            "flagDescription": "Basic information of the project"
-          },
-          {
-            "short": "",
-            "long": "frontend",
-            "flagDescription": "Information for the project's frontend appliction"
-          },
-          {
-            "short": "",
-            "long": "providers",
-            "flagDescription": "Configuration settings for provider plugins"
-          }
-        ]
-      },
-      {
-        "subCommand": "hosting",
-        "subCommandDescription": "Configure hosting resources for your Amplify project",
-        "subCommandUsage": "amplify configure hosting",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
-        "subCommandFlags": []
-      },
-      {
-        "subCommand": "codegen",
-        "subCommandDescription": "Configure GraphQL codegen for your Amplify project",
-        "subCommandUsage": "amplify configure codegen",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/configure",
-        "subCommandFlags": []
-      }
-    ]
   },
   {
     "command": "remove",
