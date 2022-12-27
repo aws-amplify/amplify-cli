@@ -409,6 +409,43 @@ export class CloudformationProviderFacade {
 }
 
 // @public (undocumented)
+export const commandsInfo: ({
+    command: string;
+    commandDescription: string;
+    commandUsage: string;
+    learnMoreLink: string;
+    commandFlags: {
+        short: string;
+        long: string;
+        flagDescription: string;
+    }[];
+    subCommands: {
+        subCommand: string;
+        subCommandDescription: string;
+        subCommandUsage: string;
+        learnMoreLink: string;
+        subCommandFlags: never[];
+    }[];
+} | {
+    command: string;
+    commandDescription: string;
+    commandUsage: string;
+    learnMoreLink: string;
+    commandFlags: never[];
+    subCommands: {
+        subCommand: string;
+        subCommandDescription: string;
+        subCommandUsage: string;
+        learnMoreLink: string;
+        subCommandFlags: {
+            short: string;
+            long: string;
+            flagDescription: string;
+        }[];
+    }[];
+})[];
+
+// @public (undocumented)
 export class ConfigurationError extends Error {
 }
 
@@ -982,6 +1019,16 @@ export class JSONUtilities {
     } | undefined) => void;
 }
 
+// Warning: (ae-forgotten-export) The symbol "CommandInfo" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | null;
+
+// Warning: (ae-forgotten-export) The symbol "SubCommandInfo" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | null;
+
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1047,6 +1094,12 @@ export type PackageManager = {
 
 // @public (undocumented)
 export type PackageManagerType = 'yarn' | 'npm';
+
+// @public (undocumented)
+export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
+    command: string;
+    subCommand: string;
+};
 
 // @public (undocumented)
 export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
@@ -1284,6 +1337,9 @@ export interface ResourceTuple {
     // (undocumented)
     resourceName: string;
 }
+
+// @public (undocumented)
+export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): void;
 
 // @public (undocumented)
 export const SecretFileMode = 384;
