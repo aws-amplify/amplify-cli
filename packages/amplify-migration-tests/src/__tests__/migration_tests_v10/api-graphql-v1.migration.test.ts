@@ -73,7 +73,7 @@ describe('api graphql v1 migration tests', () => {
             // the following excludes a parameter "CreateAPIKey", which is only present in the first project
             // because it gets set to '1' when the API is first created
             const excludeCreateAPIKey = (category, resourceKey, parameters) => {
-                if(category === 'api' && resourceKey === projectName){
+                if(category === 'api' && resourceKey === projectName.toLocaleLowerCase()){
                     delete parameters.project1.CreateAPIKey;
                 }
                 return { project1: parameters.project1, project2: parameters.project2 };
