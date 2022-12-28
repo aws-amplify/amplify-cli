@@ -81,7 +81,8 @@ describe('api graphql v1 migration tests', () => {
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2, { excludeFromParameterDiff: excludeCreateAPIKey });
             expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
             await amplifyPushAuth(projRoot2, true);
-            assertNoParameterChangesBetweenProjects(projRoot, projRoot2, { excludeFromParameterDiff: excludeCreateAPIKey });
+            // we don't need to exclude here, because the 2nd project will have "CreateAPIKey" now that it has initiated a push
+            assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
             expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
         } finally {
             deleteProjectDir(projRoot2);
