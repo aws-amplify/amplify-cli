@@ -95,11 +95,11 @@ export const console = async (context: $TSContext): Promise<void> => {
     DynamoDB: 'DynamoDB table - NoSQL Database',
   };
 
-  const servicesMetadata = ((await import('./provider-utils/supported-services')) as $TSAny).supportedServices;
+  const servicesMetadata = ((await import(path.join(__dirname, 'provider-utils', 'supported-services'))) as $TSAny).supportedServices;
 
   const serviceSelection = await amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata, undefined, nameOverrides);
 
-  const providerController = await import(`${__dirname}/provider-utils/${serviceSelection.providerName}/index`);
+  const providerController = await import(path.join(__dirname, 'provider-utils', serviceSelection.providerName, 'index'));
   if (!providerController) {
     printer.error('Provider not configured for this category');
     return;
