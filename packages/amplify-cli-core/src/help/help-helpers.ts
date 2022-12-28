@@ -68,38 +68,38 @@ export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: 
   if (command === null) {
     return null;
   }
-  let retSubcommand: SubCommandInfo | null = null;
+  let foundSubcommand: SubCommandInfo | null = null;
   for (const subCommand of command.subCommands) {
     if (subCommand.subCommand === subcommandName) {
-      retSubcommand = subCommand;
+      foundSubcommand = subCommand;
       break;
     }
   }
-  return retSubcommand; 
+  return foundSubcommand; 
 }
 
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>) {
   // depending on the commands and the order of commands, information is stored in different fields of Input
   let specifiedCommands = {command: '', subCommand: ''};
-    // get all allowed commands/subcommands from json object
-    let acceptableCommands: Array<string> = [];
-    commandsInfo.forEach(command => acceptableCommands.push(command.command));
-    commandsInfo.forEach(command => command.subCommands.forEach(subCommand => acceptableCommands.push(subCommand.subCommand)));
-    let hasSubcommands = input.subCommands! && Array.isArray(input.subCommands) && input.subCommands.length >= 1; // check if subcommands exist
-    if (hasSubcommands) {
-      specifiedCommands = {command: input.subCommands[0], subCommand: ''}; // if just 1 subcommand, set that as command
-      if (input.subCommands.length == 1) {
-        if (input.options!) { // check if subcommands are in options field
-          let subcommandsInOptions = acceptableCommands.filter(i => input.options.hasOwnProperty(i));
-          if (subcommandsInOptions! && subcommandsInOptions.length == 1) {
-            specifiedCommands = {command: input.subCommands[0], subCommand: subcommandsInOptions[0]};
-          }
+  // get all allowed commands/subcommands from json object
+  let acceptableCommands: Array<string> = [];
+  commandsInfo.forEach(command => acceptableCommands.push(command.command));
+  commandsInfo.forEach(command => command.subCommands.forEach(subCommand => acceptableCommands.push(subCommand.subCommand)));
+  let hasSubcommands = input.subCommands && Array.isArray(input.subCommands) && input.subCommands.length >= 1; // check if subcommands exist
+  if (hasSubcommands) {
+    specifiedCommands = {command: input.subCommands[0], subCommand: ''}; // if just 1 subcommand, set that as command
+    if (input.subCommands.length == 1) {
+      if (input.options) { // check if subcommands are in options field
+        let subcommandsInOptions = acceptableCommands.filter(i => input.options.hasOwnProperty(i));
+        if (subcommandsInOptions && subcommandsInOptions.length == 1) {
+          specifiedCommands = {command: input.subCommands[0], subCommand: subcommandsInOptions[0]};
         }
-      } else if (input.subCommands.length == 2) {
-        specifiedCommands = {command: input.subCommands[0], subCommand: input.subCommands[1]};
       }
+    } else if (input.subCommands.length == 2) {
+      specifiedCommands = {command: input.subCommands[0], subCommand: input.subCommands[1]};
     }
-    return specifiedCommands;
+  }
+  return specifiedCommands;
 }
 
 function getHelpFlagRow(flagObject: CommandFlagInfo): [string, string] {

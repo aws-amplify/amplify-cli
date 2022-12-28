@@ -514,7 +514,7 @@ export const commandsInfo = [
   {
     "command": "import",
     "commandDescription": "Imports existing resources to your local backend",
-    "commandUsage": " [flags]",
+    "commandUsage": "amplify import <subcommand> [flags]",
     "learnMoreLink": "https://docs.amplify.aws/cli/commands/import",
     "commandFlags": [
       {
@@ -653,52 +653,49 @@ export const commandsInfo = [
     "subCommands": []
   },
   {
-    "command": "function",
-    "commandDescription": "Configure function resources for your Amplify project",
-    "commandUsage": "amplify function <subcommand>",
-    "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+    "command": "mock",
+    "commandDescription": "Run mock server for testing categories locally",
+    "commandUsage": "amplify mock <subcommand>",
+    "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
     "commandFlags": [],
     "subCommands": [
       {
-        "subCommand": "add",
-        "subCommandDescription": "Takes you through a CLI flow to add a function resource to your local backend",
-        "subCommandUsage": "amplify function add",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommand": "api",
+        "subCommandDescription": "Run mock server for testing API locally",
+        "subCommandUsage": "amplify mock api",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
         "subCommandFlags": []
       },
       {
-        "subCommand": "update",
-        "subCommandDescription": "Takes you through a CLI flow to update an existing function resource",
-        "subCommandUsage": "amplify function update",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommand": "storage",
+        "subCommandDescription": "Run mock server for testing storage locally",
+        "subCommandUsage": "amplify mock storage",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
         "subCommandFlags": []
       },
       {
-        "subCommand": "push",
-        "subCommandDescription": "Provisions only function cloud resources with the latest local developments",
-        "subCommandUsage": "amplify function push",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
-        "subCommandFlags": []
+        "subCommand": "function",
+        "subCommandDescription": "Run mock server for testing functions locally",
+        "subCommandUsage": "amplify mock function [flags]",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
+        "subCommandFlags": [
+          {
+            "short": "",
+            "long": "event <path-to-json-file>",
+            "flagDescription": "Specified JSON file as the event to pass to the Lambda handler"
+          },
+          {
+            "short": "",
+            "long": "timeout <number-of-seconds>",
+            "flagDescription": "Override the default 10-second function response timeout"
+          }
+        ]
       },
       {
-        "subCommand": "build",
-        "subCommandDescription": "Removes function resource from your local backend",
-        "subCommandUsage": "amplify function build",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
-        "subCommandFlags": []
-      },
-      {
-        "subCommand": "remove",
-        "subCommandDescription": "Builds all the functions in the project",
-        "subCommandUsage": "amplify function remove",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
-        "subCommandFlags": []
-      },
-      {
-        "subCommand": "console",
-        "subCommandDescription": "Opens the web console for the function category",
-        "subCommandUsage": "amplify function console",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommand": "function <function-name>",
+        "subCommandDescription": "Run mock server for testing a specific function locally",
+        "subCommandUsage": "amplify mock function <function-name>",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
         "subCommandFlags": []
       }
     ]
@@ -822,54 +819,6 @@ export const commandsInfo = [
         "subCommandDescription": "Provisions cloud resources with the latest local changes",
         "subCommandUsage": "amplify api push",
         "learnMoreLink": "https://docs.amplify.aws/cli/commands/api",
-        "subCommandFlags": []
-      }
-    ]
-  },
-  {
-    "command": "mock",
-    "commandDescription": "Run mock server for testing categories locally",
-    "commandUsage": "amplify mock <subcommand>",
-    "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
-    "commandFlags": [],
-    "subCommands": [
-      {
-        "subCommand": "api",
-        "subCommandDescription": "Run mock server for testing API locally",
-        "subCommandUsage": "amplify mock api",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
-        "subCommandFlags": []
-      },
-      {
-        "subCommand": "storage",
-        "subCommandDescription": "Run mock server for testing storage locally",
-        "subCommandUsage": "amplify mock storage",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
-        "subCommandFlags": []
-      },
-      {
-        "subCommand": "function",
-        "subCommandDescription": "Run mock server for testing functions locally",
-        "subCommandUsage": "amplify mock function [flags]",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
-        "subCommandFlags": [
-          {
-            "short": "",
-            "long": "event <path-to-json-file>",
-            "flagDescription": "Specified JSON file as the event to pass to the Lambda handler"
-          },
-          {
-            "short": "",
-            "long": "timeout <number-of-seconds>",
-            "flagDescription": "Override the default 10-second function response timeout"
-          }
-        ]
-      },
-      {
-        "subCommand": "function <function-name>",
-        "subCommandDescription": "Run mock server for testing a specific function locally",
-        "subCommandUsage": "amplify mock function <function-name>",
-        "learnMoreLink": "https://docs.amplify.aws/cli/commands/mock",
         "subCommandFlags": []
       }
     ]
@@ -1125,6 +1074,57 @@ export const commandsInfo = [
         "subCommandDescription": "Opens the web console for the analytics category",
         "subCommandUsage": "amplify analytics console",
         "learnMoreLink": "https://docs.amplify.aws/cli/commands/analytics",
+        "subCommandFlags": []
+      }
+    ]
+  },
+  {
+    "command": "function",
+    "commandDescription": "Configure function resources for your Amplify project",
+    "commandUsage": "amplify function <subcommand>",
+    "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+    "commandFlags": [],
+    "subCommands": [
+      {
+        "subCommand": "add",
+        "subCommandDescription": "Takes you through a CLI flow to add a function resource to your local backend",
+        "subCommandUsage": "amplify function add",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommandFlags": []
+      },
+      {
+        "subCommand": "update",
+        "subCommandDescription": "Takes you through a CLI flow to update an existing function resource",
+        "subCommandUsage": "amplify function update",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommandFlags": []
+      },
+      {
+        "subCommand": "push",
+        "subCommandDescription": "Provisions only function cloud resources with the latest local developments",
+        "subCommandUsage": "amplify function push",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommandFlags": []
+      },
+      {
+        "subCommand": "build",
+        "subCommandDescription": "Removes function resource from your local backend",
+        "subCommandUsage": "amplify function build",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommandFlags": []
+      },
+      {
+        "subCommand": "remove",
+        "subCommandDescription": "Builds all the functions in the project",
+        "subCommandUsage": "amplify function remove",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
+        "subCommandFlags": []
+      },
+      {
+        "subCommand": "console",
+        "subCommandDescription": "Opens the web console for the function category",
+        "subCommandUsage": "amplify function console",
+        "learnMoreLink": "https://docs.amplify.aws/cli/commands/function",
         "subCommandFlags": []
       }
     ]
