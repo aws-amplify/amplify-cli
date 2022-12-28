@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.6.0-beta.3",
+  "version": "2.6.0-beta.4",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-beta.3",
-    "amplify-function-plugin-interface": "1.9.6-beta.1",
+    "amplify-cli-core": "4.0.0-beta.4",
+    "amplify-function-plugin-interface": "1.9.6-beta.2",
     "graphql-transformer-core": "8.0.0-beta.3",
     "lodash": "^4.17.21"
   },
