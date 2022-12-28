@@ -1,6 +1,15 @@
 {
   "name": "ui-builder",
   "type": "util",
-  "commands": ["version", "cloneComponentsFromEnv", "generateComponents"],
-  "eventHandlers": ["PostEnvAdd"]
+  "commands": [
+    "version",
+    "cloneComponentsFromEnv",
+    "generateComponents"
+  ],
+  "eventHandlers": [
+    "PrePush",
+    "PostEnvAdd",
+    "PostPull",
+    "PostPush"
+  ]
 }

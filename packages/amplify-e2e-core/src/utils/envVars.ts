@@ -22,7 +22,7 @@ export function getEnvVars(): EnvironmentVariables {
   return { ...process.env } as EnvironmentVariables;
 }
 
-export function getSocialProviders(getEnv: boolean = false): SocialProviders {
+export function getSocialProviders(getEnv = false): SocialProviders {
   if (!getEnv) {
     return {
       FACEBOOK_APP_ID: 'fbAppId',

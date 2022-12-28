@@ -70,8 +70,6 @@ export class DynamoDBInputState {
   }
 
   public migrate() {
-    let cliInputs: DynamoDBCLIInputs;
-
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
     const backendDir = pathManager.getBackendDirPath();
@@ -115,11 +113,11 @@ export class DynamoDBInputState {
       return attrType;
     };
 
-    let gsi: DynamoDBCLIInputsGSIType[] = [];
+    const gsi: DynamoDBCLIInputsGSIType[] = [];
 
     if (oldCFN?.Resources?.DynamoDBTable?.Properties?.GlobalSecondaryIndexes) {
       oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: $TSAny) => {
-        let gsiValue: $TSAny = {};
+        const gsiValue: $TSAny = {};
         (gsiValue.name = cfnGSIValue.IndexName),
           cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
             if (keySchema.KeyType === 'HASH') {
@@ -137,7 +135,7 @@ export class DynamoDBInputState {
         gsi.push(gsiValue);
       });
     }
-    cliInputs = {
+    const cliInputs: DynamoDBCLIInputs = {
       resourceName: this._resourceName,
       tableName: oldParameters.tableName,
       partitionKey,

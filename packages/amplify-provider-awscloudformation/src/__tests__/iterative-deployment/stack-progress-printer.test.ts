@@ -1,9 +1,7 @@
+import { MultiProgressBar } from 'amplify-prompts';
+import columnify from 'columnify';
 import { StackProgressPrinter } from '../../iterative-deployment/stack-progress-printer';
 import { IStackProgressPrinter } from '../../iterative-deployment/stack-event-monitor';
-import columnify from 'columnify';
-
-const printer: IStackProgressPrinter = new StackProgressPrinter();
-jest.mock('columnify');
 
 // Make sure that chalk colors are stripped for the test.
 function chalkMock(input) {
@@ -20,8 +18,51 @@ jest.mock('chalk', () => ({
   reset: jest.fn().mockImplementation(chalkMock),
 }));
 
+jest.mock('columnify');
+
 describe('StackProgressPrinter', () => {
-  test('print events order by Timestamp', () => {
+  const eventMap = {
+    projectName: 'test',
+    envName: 'dev',
+    rootStackName: 'root-app',
+    rootResources: [{ key: 'test-app', category: 'api' }],
+    categories: [{ name: 'api', size: 2 }],
+    eventToCategories: new Map(),
+  };
+
+  const isTTYMock = jest.spyOn(MultiProgressBar.prototype, 'isTTY');
+
+  const printer: IStackProgressPrinter = new StackProgressPrinter(eventMap);
+
+  afterEach(() => {
+    printer.stopBars();
+    printer.finishBars();
+    jest.clearAllMocks();
+  });
+
+  test('update events ordered by timestamp in TTY', () => {
+    isTTYMock.mockReturnValue(true);
+
+    printer.addActivity({
+      StackId: 'test',
+      EventId: 'test',
+      StackName: 'test',
+      Timestamp: new Date('2021-01-01'),
+    });
+    printer.addActivity({
+      StackId: 'test',
+      EventId: 'test',
+      StackName: 'test',
+      Timestamp: new Date('2020-01-01'),
+    });
+    printer.print();
+    expect(columnify).not.toBeCalled();
+    expect(isTTYMock).toBeCalledTimes(3);
+  });
+
+  test('print events ordered by timestamp in non-TTY', () => {
+    isTTYMock.mockReturnValue(false);
+
     printer.addActivity({
       StackId: 'test',
       EventId: 'test',
@@ -41,5 +82,6 @@ describe('StackProgressPrinter', () => {
       showHeaders: false,
     };
     expect(columnify).toBeCalledWith(times, columns);
+    expect(isTTYMock).toBeCalledTimes(3);
   });
 });

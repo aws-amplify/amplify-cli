@@ -1,11 +1,15 @@
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { run as generateComponents } from '../commands/generateComponents';
 
-export async function run(context: $TSContext) {
+/**
+ * The code to run after a pull.
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   try {
-    await context.amplify.invokePluginMethod(context, 'ui-builder', undefined, 'executeAmplifyCommand', [context, 'generateComponents']);
+    await generateComponents(context, 'PostPull');
   } catch (e) {
     // Swallow all errors from the uibuilder plugin
     printer.debug(e);
   }
-}
+};

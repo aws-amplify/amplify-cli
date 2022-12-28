@@ -62,9 +62,9 @@ describe('test SIGINT with execute', () => {
       }),
     });
     jest.setMock('amplify-cli-logger', {
-      logger: {
+      getAmplifyLogger: jest.fn().mockReturnValue({
         logInfo: jest.fn(),
-      },
+      }),
       Redactor: jest.fn(),
     });
 
@@ -88,6 +88,7 @@ describe('test SIGINT with execute', () => {
       assignProjectIdentifier: jest.fn(),
       getUsageDataPayload: jest.fn(),
       calculatePushNormalizationFactor: jest.fn(),
+      getSessionUuid: jest.fn(),
     };
     mockContext.projectHasMobileHubResources = false;
 

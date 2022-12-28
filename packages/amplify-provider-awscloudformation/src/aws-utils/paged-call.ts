@@ -21,7 +21,7 @@ export const pagedAWSCall = async <TAPIResult, TData, TNextToken, TParams = $TSO
       result = result.concat(accessor(response));
     }
     nextToken = response ? await getNextToken(response, result) : undefined;
-  } while (!!nextToken);
+  } while (nextToken);
 
   return result;
 };

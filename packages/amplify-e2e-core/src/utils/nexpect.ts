@@ -17,11 +17,13 @@ import { Recorder } from '../asciinema-recorder';
 import { generateRandomShortId, getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 
 declare global {
+  /* eslint-disable @typescript-eslint/no-namespace */
   namespace NodeJS {
     interface Global {
       storeCLIExecutionLog: (data: any) => void;
     }
   }
+  /* eslint-enable */
 }
 export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
@@ -156,7 +158,12 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
 
-    wait(expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
+    wait(
+      expectation: string | RegExp,
+      callback = (data: string) => {
+        // empty
+      },
+    ): ExecutionContext {
       const _wait: ExecutionStep = {
         fn: data => {
           const val = testExpectation(data, expectation, context);
@@ -258,7 +265,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] Y <CR>',
+        description: "'[send] Y <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -272,7 +279,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] Y <CR>',
+        description: "'[send] Y <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -286,7 +293,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] N <CR>',
+        description: "'[send] N <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -300,7 +307,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '\'[send] Y <CR>',
+        description: "'[send] Y <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -323,7 +330,7 @@ function chain(context: Context): ExecutionContext {
     sendCtrlA(): ExecutionContext {
       const _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`${CONTROL_A}${EOL}`);
+          context.process.write(`${CONTROL_A}`);
           return true;
         },
         name: '_send',
@@ -353,7 +360,9 @@ function chain(context: Context): ExecutionContext {
         fn: () => {
           const startCallback = Date.now();
 
-          while (Date.now() - startCallback < milliseconds) {}
+          while (Date.now() - startCallback < milliseconds) {
+            // empty
+          }
 
           return true;
         },
@@ -370,7 +379,6 @@ function chain(context: Context): ExecutionContext {
     let errState: any = null;
     let responded = false;
     let stdout: string[] = [];
-    let options;
     let noOutputTimer;
 
     let logDumpFile: fs.WriteStream;
@@ -394,19 +402,20 @@ function chain(context: Context): ExecutionContext {
           const recordings = context.process?.getRecordingFrames() || [];
           const lastScreen = recordings.length
             ? recordings
-              .filter(f => f[1] === 'o')
-              .map(f => f[2])
-              .slice(-10)
-              .join('\n')
+                .filter(f => f[1] === 'o')
+                .map(f => f[2])
+                .slice(-10)
+                .join('\n')
             : 'No output';
           const err = new Error(
-            `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
-              context.noOutputTimeout / 1000
-            } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
+            `Killed the process as no output receive for ${context.noOutputTimeout /
+              1000} Sec. The no output timeout is set to ${context.noOutputTimeout /
+              1000} seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
           err.stack = undefined;
           return onError(err, true);
-        } if (code === 127) {
+        }
+        if (code === 127) {
           // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
           // but it appears node does not, or not in all conditions, blithely
           // return 127 to user, it emits an 'error' from the child_process.
@@ -420,10 +429,11 @@ function chain(context: Context): ExecutionContext {
       }
       if (context.queue.length && !flushQueue()) {
         // if flushQueue returned false, onError was called
-        return;
+        return undefined;
       }
       recordOutputs(code);
       callback(null, signal || code);
+      return undefined;
     };
     //
     // **onError**
@@ -443,7 +453,9 @@ function chain(context: Context): ExecutionContext {
       if (kill) {
         try {
           context.process.kill();
-        } catch (ex) {}
+        } catch (ex) {
+          // ignore error
+        }
       }
 
       callback(err, errorCode);
@@ -464,9 +476,10 @@ function chain(context: Context): ExecutionContext {
         //
         onError(new Error('Cannot process non-function on nexpect stack.'), true);
         return false;
-      } if (
-        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName)
-        === -1
+      }
+      if (
+        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
+        -1
       ) {
         //
         // If the `currentFn` is a function, but not those set by `.sendline()` or
@@ -495,7 +508,7 @@ function chain(context: Context): ExecutionContext {
         // If there is nothing left on the context or we are trying to
         // evaluate two consecutive `_expect` functions, return.
         //
-        return;
+        return undefined;
       }
 
       if (shift) {
@@ -503,7 +516,7 @@ function chain(context: Context): ExecutionContext {
       }
 
       if (!validateFnType(step)) {
-        return;
+        return undefined;
       }
 
       if (currentFnName === '_expect') {
@@ -512,7 +525,8 @@ function chain(context: Context): ExecutionContext {
         // to evaluate the next function (in case it is a `_sendline` function).
         //
         return currentFn(data) === true ? evalContext(data, '_expect') : onError(createExpectationError(step.expectation, data), true);
-      } if (currentFnName === '_wait') {
+      }
+      if (currentFnName === '_wait') {
         //
         // If this is a `_wait` function, then evaluate it and if it returns true,
         // then evaluate the function (in case it is a `_sendline` function).
@@ -531,6 +545,7 @@ function chain(context: Context): ExecutionContext {
           if (nextFn && !nextFn.requiresInput) evalContext(data);
         }
       }
+      return undefined;
     }
 
     const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
@@ -587,16 +602,20 @@ function chain(context: Context): ExecutionContext {
       if (!lastLine) {
         onError(createUnexpectedEndError('No data from child with non-empty queue.', remainingQueue), false);
         return false;
-      } if (context.queue.length > 0) {
+      }
+      if (context.queue.length > 0) {
         onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
         return false;
-      } if (!validateFnType(step)) {
+      }
+      if (!validateFnType(step)) {
         // onError was called
         return false;
-      } if (currentFnName === '_sendline') {
+      }
+      if (currentFnName === '_sendline') {
         onError(new Error('Cannot call sendline after the process has exited'), false);
         return false;
-      } if (currentFnName === '_wait' || currentFnName === '_expect') {
+      }
+      if (currentFnName === '_wait' || currentFnName === '_expect') {
         if (currentFn(lastLine) !== true) {
           onError(createExpectationError(step.expectation, lastLine), false);
           return false;
@@ -606,7 +625,7 @@ function chain(context: Context): ExecutionContext {
       return true;
     }
 
-    options = {
+    const options = {
       cwd: context.cwd,
       env: context.env,
     };
@@ -638,6 +657,7 @@ function chain(context: Context): ExecutionContext {
     } catch (e) {
       onError(e, true);
     }
+    return undefined;
   };
   return {
     ...partialExecutionContext,
@@ -649,7 +669,8 @@ function chain(context: Context): ExecutionContext {
 function testExpectation(data: string, expectation: string | RegExp, context: Context): boolean {
   if (types.isRegExp(expectation)) {
     return expectation.test(data);
-  } if (context.ignoreCase) {
+  }
+  if (context.ignoreCase) {
     return data.toLowerCase().indexOf(expectation.toLowerCase()) > -1;
   }
   return data.indexOf(expectation) > -1;
@@ -713,7 +734,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   // For push operations in E2E we have to explicitly disable the Amplify Console App creation
   // as for the tests that need it, it is already enabled for init, setting the env var here
   // disables the post push check we have in the CLI.
-  if (params.length > 0 && params[0].toLowerCase() === 'push') {
+  if (params.length > 0 && params.find((param: string) => param.toLowerCase() === 'push')) {
     pushEnv = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -756,6 +777,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
       if (context.process) {
         return context.process.getRecording();
       }
+      return undefined;
     },
   };
 

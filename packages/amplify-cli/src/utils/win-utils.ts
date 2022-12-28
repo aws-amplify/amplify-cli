@@ -61,7 +61,7 @@ export const setRegPendingDelete = async () => {
 const strToLittleEndianHex = (str: string) => {
   const hexArr: string[] = [];
   for (let i = 0; i < str.length; i++) {
-    let hexCode = str.charCodeAt(i).toString(16);
+    const hexCode = str.charCodeAt(i).toString(16);
     switch (hexCode.length) {
       case 1:
         hexArr.push(`0${hexCode}`);

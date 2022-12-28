@@ -1,14 +1,15 @@
 {
   "name": "amplify-prompts",
-  "version": "2.5.0",
+  "version": "2.6.1",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "demo": "yarn build && node lib/demo/demo.js",
-    "test": "jest --color",
-    "watch": "tsc -w"
+    "test": "jest --logHeapUsage --color",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "repository": {
     "type": "git",

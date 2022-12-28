@@ -2,7 +2,7 @@ import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-
 import { DynamoDB, IntrinsicFunction } from 'cloudform';
 
 import _ from 'lodash';
-import { AmplifyError, amplifyErrorWithTroubleshootingLink, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { GSIRecord } from '../utils/amplify-resource-state-utils';
 
 export const MAX_GSI_PER_TABLE = 20;
@@ -38,6 +38,7 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
 
     return { gsi: addedGSI, attributeDefinition };
   }
+  return undefined;
 };
 
 /**
@@ -54,7 +55,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   const existingIndices = getExistingIndexNames(table);
 
   if (existingIndices.length + 1 > MAX_GSI_PER_TABLE) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: `DynamoDB ${table.Properties.TableName || '{UnNamedTable}'} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
     });
   }
@@ -63,7 +64,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   assertNotIntrinsicFunction(indexName);
 
   if (existingIndices.includes(indexName)) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: `An index with name ${indexName} already exists`,
     });
   }
@@ -108,10 +109,13 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
 
   const removedIndices = _.remove(gsis, { IndexName: indexName });
   assertNotIntrinsicFunction(removedIndices);
-  const currentKeySchemas = gsis.reduce((acc, gsi) => {
+  const gsiKeySchemas: Array<KeySchema> = gsis.reduce((acc, gsi) => {
     acc.push(...(gsi.KeySchema as Array<KeySchema>));
     return acc;
   }, []);
+
+  // Add the KeySchema property on table to the currentKeySchemas
+  const currentKeySchemas = _.union(gsiKeySchemas, (updatedTable?.Properties?.KeySchema as Array<KeySchema>) || []);
 
   // Remove the property as it does not have any child
   if (gsis.length == 0) {

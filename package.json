@@ -6,7 +6,7 @@
     "addwords": "node ./scripts/add-to-dict.js",
     "test-changed": "nx affected --target=test",
     "test": "nx run-many --target=test --all",
-    "test-ci": "nx run-many --target=test --all --parallel=1 -- --ci -i",
+    "test-ci": "nx run-many --target=test --all -- --ci -i",
     "e2e": "nx run e2e",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "cloud-e2e-with-rc": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e-with-rc/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
@@ -46,7 +46,9 @@
     "release-rc": "./scripts/release-rc.sh",
     "promote-rc": "./scripts/promote-rc.sh",
     "finish-release": "./scripts/finish-release.sh",
-    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn"
+    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
+    "extract-api": "nx run-many --target=extract-api --all",
+    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -61,8 +63,8 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-      "pre-commit": "yarn verify-commit && yarn lint-fix"
+      "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
+      "pre-commit": "yarn verify-commit"
     }
   },
   "author": "Amazon Web Services",
@@ -91,6 +93,7 @@
     "@commitlint/config-lerna-scopes": "^16.2.2",
     "@commitlint/cz-commitlint": "^16.2.3",
     "@commitlint/prompt": "^16.2.3",
+    "@microsoft/api-extractor": "^7.33.5",
     "@types/glob": "^7.1.1",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
@@ -98,12 +101,14 @@
     "@typescript-eslint/parser": "^5.34.0",
     "@zkochan/cmd-shim": "^5.1.0",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
+    "babel-loader": "^8.3.0",
     "codecov": "^3.7.0",
     "copyfiles": "^2.2.0",
     "eslint": "^7.19.0",
     "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^26.1.1",
     "eslint-plugin-jsdoc": "^37.9.6",
@@ -121,7 +126,7 @@
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
-    "nx": "^14.1.1",
+    "nx": "^14.8.3",
     "pkg": "^5.4.1",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",

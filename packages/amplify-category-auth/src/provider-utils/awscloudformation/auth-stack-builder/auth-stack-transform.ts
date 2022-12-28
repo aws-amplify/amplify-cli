@@ -2,23 +2,23 @@
 import * as cdk from '@aws-cdk/core';
 import {
   $TSAny, $TSContext, AmplifyCategories, AmplifyCategoryTransform,
+  AmplifyError,
   AmplifyStackTemplate, AmplifySupportedService, buildOverrideDir,
   CFNTemplateFormat, FeatureFlags, JSONUtilities, pathManager,
   stateManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { configureSmsOption } from '../utils/configure-sms';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
-import { AuthStackSynthesizer } from './stack-synthesizer';
+import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -38,6 +38,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
+    // eslint-disable-next-line spellcheck/spell-checker
     this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
   }
 
@@ -95,10 +96,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   public applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this.resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    });
+    const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
         formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
@@ -120,10 +118,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
           .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
       }
     }
   };
@@ -276,7 +275,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    * validate cfn Parameters for the bug mentioned below
    */
-  public validateCfnParameters(context: $TSContext, oldParameters: $TSAny, parametersJson: $TSAny) {
+  public validateCfnParameters(context: $TSContext, oldParameters: $TSAny, parametersJson: $TSAny): boolean {
     // There was a bug between v7.3.0 and v7.6.9 where Cognito resources were being created with incorrect `requiredAttributes` parameter
     // Since `requiredAttributes` is immutable, we must adjust this or CloudFormation step will fail
     // More info: https://github.com/aws-amplify/amplify-cli/issues/9525
@@ -285,8 +284,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     const cliInputsFilePath = path.join(pathManager.getBackendDirPath(), this._category, this.resourceName, 'cli-inputs.json');
-    const containsAll = (arr1: string[], arr2: string[]) => arr2.every(arr2Item => arr1.includes(arr2Item));
-    const sameMembers = (arr1: string[], arr2: string[]) => arr1.length === arr2.length && containsAll(arr2, arr1);
+    const containsAll = (arr1: string[], arr2: string[]): boolean => arr2.every(arr2Item => arr1.includes(arr2Item));
+    const sameMembers = (arr1: string[], arr2: string[]): boolean => arr1.length === arr2.length && containsAll(arr2, arr1);
     if (!sameMembers(oldParameters.requiredAttributes ?? [], parametersJson.requiredAttributes ?? [])) {
       context.print.error(
         `Cognito configuration in the cloud has drifted from local configuration. Present changes cannot be pushed until drift is fixed. \`requiredAttributes\` requested is ${JSON.stringify(
@@ -304,12 +303,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    * generate cfn outputs
    */
   private generateCfnOutputs = (props: CognitoStackOptions): void => {
-    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
-      || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
-      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
-      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = configureSmsOption(props);
 
-    if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
+    if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
         {
           value: cdk.Fn.ref('IdentityPool'),

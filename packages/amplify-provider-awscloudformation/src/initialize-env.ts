@@ -40,7 +40,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
 
     const s3 = await S3.getInstance(context);
     const cfnItem = await new Cloudformation(context);
-    const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
+    const file = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
     const unzippedDir = await extractZip(tempDir, file);
 
     fs.removeSync(currentCloudBackendDir);

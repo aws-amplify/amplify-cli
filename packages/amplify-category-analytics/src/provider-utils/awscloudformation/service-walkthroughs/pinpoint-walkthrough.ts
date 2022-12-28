@@ -6,13 +6,10 @@ import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
-import {
-  $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories,
-  $TSAny,
-} from 'amplify-cli-core';
+import { $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories, $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 
-const providerName = 'awscloudformation';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = AmplifyCategories.ANALYTICS;
 const parametersFileName = 'parameters.json';
@@ -26,7 +23,7 @@ const templateFileName = 'pinpoint-cloudformation-template.json';
  * @param serviceMetadata service related metadata from amplify-meta.json
  * @returns resource
  */
-export const addWalkthrough = async (context : $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSAny> => {
+export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSAny> => {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
@@ -37,10 +34,11 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata, undefined);
   }
+  return undefined;
 };
 
 const configure = (
-  context : $TSContext,
+  context: $TSContext,
   defaultValuesFilename: string,
   serviceMetadata: $TSAny,
   resourceName: string | undefined,
@@ -55,7 +53,7 @@ const configure = (
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   if (resourceName) {
-    inputs = inputs.filter((input: { key: string; }) => input.key !== 'resourceName');
+    inputs = inputs.filter((input: { key: string }) => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     const parameters = context.amplify.readJsonFile(parametersFilePath);
@@ -63,7 +61,7 @@ const configure = (
     Object.assign(defaultValues, parameters);
   }
 
-  const pinpointApp = checkIfNotificationsCategoryExists(context);
+  const pinpointApp = getNotificationsCategoryHasPinpointIfExists();
 
   if (pinpointApp) {
     Object.assign(defaultValues, pinpointApp);
@@ -71,7 +69,7 @@ const configure = (
 
   const questions = [];
   for (let i = 1; i < inputs.length; i += 1) {
-    let question : $TSAny = {
+    let question: $TSAny = {
       name: inputs[i].key,
       message: inputs[i].question,
       validate: amplify.inputValidation(inputs[i]),
@@ -102,98 +100,79 @@ const configure = (
     questions.push(question);
   }
 
-  return inquirer.prompt(questions).then(async (answers: $TSAny):Promise<$TSAny> => {
-    answers[inputs[0].key] = answers[inputs[1].key];
-    Object.assign(defaultValues, answers);
-    const resource = defaultValues.resourceName;
+  return inquirer.prompt(questions).then(
+    async (answers: $TSAny): Promise<$TSAny> => {
+      answers[inputs[0].key] = answers[inputs[1].key];
+      Object.assign(defaultValues, answers);
+      const resource = defaultValues.resourceName;
 
-    const analyticsRequirements = {
-      authSelections: 'identityPoolOnly',
-      allowUnauthenticatedIdentities: true,
-    };
+      const analyticsRequirements = {
+        authSelections: 'identityPoolOnly',
+        allowUnauthenticatedIdentities: true,
+      };
 
-    const checkResult : $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
-      analyticsRequirements,
-      context,
-      'analytics',
-      answers.resourceName,
-    ]);
+      const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+        analyticsRequirements,
+        context,
+        'analytics',
+        answers.resourceName,
+      ]);
 
-    // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
-    // configuration.
-    if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-      throw new Error(checkResult.errors.join(os.EOL));
-    }
+      // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+      // configuration.
+      if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+        throw new Error(checkResult.errors.join(os.EOL));
+      }
 
-    if (checkResult.errors && checkResult.errors.length > 0) {
-      printer.warn(checkResult.errors.join(os.EOL));
-    }
+      if (checkResult.errors && checkResult.errors.length > 0) {
+        printer.warn(checkResult.errors.join(os.EOL));
+      }
 
-    // If auth is not imported and there were errors, adjust or enable auth configuration
-    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      printer.warn('Adding analytics would add the Auth category to the project if not already added.');
-      if (
-        await amplify.confirmPrompt(
-          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
-        )
-      ) {
-        try {
-          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-            context,
-            'analytics',
-            answers.resourceName,
-            analyticsRequirements,
-          ]);
-        } catch (error) {
-          printer.error(error);
-          throw error;
-        }
-      } else {
-        try {
-          printer.warn(
-            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
-          );
-          analyticsRequirements.allowUnauthenticatedIdentities = false;
-          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-            context,
-            'analytics',
-            answers.resourceName,
-            analyticsRequirements,
-          ]);
-        } catch (error) {
-          printer.error(error);
-          throw error;
+      // If auth is not imported and there were errors, adjust or enable auth configuration
+      if (!checkResult.authEnabled || !checkResult.requirementsMet) {
+        printer.warn('Adding analytics would add the Auth category to the project if not already added.');
+        if (
+          await amplify.confirmPrompt(
+            'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
+          )
+        ) {
+          try {
+            await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+              context,
+              'analytics',
+              answers.resourceName,
+              analyticsRequirements,
+            ]);
+          } catch (error) {
+            printer.error(error);
+            throw error;
+          }
+        } else {
+          try {
+            printer.warn('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
+            analyticsRequirements.allowUnauthenticatedIdentities = false;
+            await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+              context,
+              'analytics',
+              answers.resourceName,
+              analyticsRequirements,
+            ]);
+          } catch (error) {
+            printer.error(error);
+            throw error;
+          }
         }
       }
-    }
 
-    // At this point we have a valid auth configuration either imported or added/updated.
+      // At this point we have a valid auth configuration either imported or added/updated.
 
-    const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-    delete defaultValues.resourceName;
-    writeParams(resourceDirPath, defaultValues);
-    writeCfnFile(context, resourceDirPath);
-    return resource;
-  });
-};
-
-const checkIfNotificationsCategoryExists = (context: $TSContext): $TSAny => {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let pinpointApp: $TSAny;
-
-  if (amplifyMeta.notifications) {
-    const categoryResources = amplifyMeta.notifications;
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === serviceName && categoryResources[resource].output.Id) {
-        pinpointApp = {};
-        pinpointApp.appId = categoryResources[resource].output.Id;
-        pinpointApp.appName = resource;
-      }
-    });
-  }
-
-  return pinpointApp;
+      const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+      delete defaultValues.resourceName;
+      writeParams(resourceDirPath, defaultValues);
+      await writeCfnFile(context, resourceDirPath);
+      return resource;
+    },
+  );
 };
 
 const resourceAlreadyExists = (context: $TSContext): string | undefined => {
@@ -213,31 +192,15 @@ const resourceAlreadyExists = (context: $TSContext): string | undefined => {
   return resourceName;
 };
 
-const writeCfnFile = (context: $TSContext, resourceDirPath: string, force = false): void => {
+const writeCfnFile = async (context: $TSContext, resourceDirPath: string, force = false): Promise<void> => {
   fs.ensureDirSync(resourceDirPath);
   const templateFilePath = path.join(resourceDirPath, templateFileName);
   if (!fs.existsSync(templateFilePath) || force) {
-    const templateSourceFilePath = `${__dirname}/../cloudformation-templates/${templateFileName}`;
+    const templateSourceFilePath = path.join(__dirname, '..', 'cloudformation-templates', templateFileName);
     const templateSource = context.amplify.readJsonFile(templateSourceFilePath);
-    templateSource.Mappings = getTemplateMappings(context);
-    const jsonString = JSON.stringify(templateSource, null, 4);
-    fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+    templateSource.Mappings = await getPinpointRegionMappings(context);
+    JSONUtilities.writeJson(templateFilePath, templateSource);
   }
-};
-
-const getTemplateMappings = (context:$TSContext):Record<string, $TSAny> => {
-  const Mappings: Record<string, $TSAny> = {
-    RegionMapping: {},
-  };
-  const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = require(providerPlugins[providerName]);
-  const regionMapping = provider.getPinpointRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
-    Mappings.RegionMapping[region] = {
-      pinpointRegion: regionMapping[region],
-    };
-  });
-  return Mappings;
 };
 
 /**
@@ -342,6 +305,7 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
     ],
   };
   Resources.PinpointFunctionOutputs.Properties.appName = newAppName;
+
   // replace all IAMPrefix refs
   replaceRef(Resources, 'IAMPrefix', {
     'Fn::Select': ['4', { 'Fn::Split': [':', { Ref: 'authRoleArn' }] }],
@@ -350,7 +314,7 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
   return cfn;
 };
 
-const migrateParams = (context:$TSContext, params: Record<string, $TSAny>): Record<string, $TSAny> => {
+const migrateParams = (context: $TSContext, params: Record<string, $TSAny>): Record<string, $TSAny> => {
   const { defaultValuesFilename } = require(`${__dirname}/../../supported-services.json`)[serviceName];
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -382,6 +346,7 @@ const replaceRef = (node: $TSAny, refName: string, refReplacement: $TSAny): $TSA
       replaceRef(n, refName, refReplacement);
     });
   }
+  return undefined;
 };
 
 const isRefNode = (node: $TSAny, refName: string): boolean => {
@@ -402,7 +367,7 @@ export const getIAMPolicies = (resourceName: string, crudOptions: $TSAny): $TSAn
   let policy = {};
   const actions: Array<string> = [];
 
-  crudOptions.forEach((crudOption : string) => {
+  crudOptions.forEach((crudOption: string) => {
     switch (crudOption) {
       case 'create':
         actions.push('mobiletargeting:Put*', 'mobiletargeting:Create*', 'mobiletargeting:Send*');

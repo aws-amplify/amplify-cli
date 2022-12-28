@@ -55,6 +55,7 @@ describe('test attachUsageData', () => {
     assignProjectIdentifier: jest.fn(),
     getUsageDataPayload: jest.fn(),
     calculatePushNormalizationFactor: jest.fn(),
+    getSessionUuid: jest.fn(),
   };
 
   const stateManagerMocked = stateManager as jest.Mocked<typeof stateManager>;

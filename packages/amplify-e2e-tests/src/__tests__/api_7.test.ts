@@ -19,6 +19,7 @@ describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
   let projFolderName: string;
   beforeEach(async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     projFolderName = 'graphqlapi';
     projRoot = await createNewProjectDir(projFolderName);
   });
@@ -32,7 +33,9 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project and add the simple_model api with transformer version 1', async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const envName = 'devtest';
+    // eslint-disable-next-line spellcheck/spell-checker
     const projName = 'simplemodel';
     const cliInputsFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'cli-inputs.json');
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
@@ -44,6 +47,7 @@ describe('amplify add api (GraphQL)', () => {
 
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
+    // eslint-disable-next-line spellcheck/spell-checker
     const { output } = meta.api.simplemodel;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
@@ -65,15 +69,16 @@ describe('amplify add api (GraphQL)', () => {
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);
 
-    await amplifyOverrideApi(projRoot, {});
+    await amplifyOverrideApi(projRoot);
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
-    // check overidden config
-    const overridenAppsyncApiOverrided = await getAppSyncApi(GraphQLAPIIdOutput, region);
-    expect(overridenAppsyncApiOverrided.graphqlApi).toBeDefined();
-    expect(overridenAppsyncApiOverrided.graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-    expect(overridenAppsyncApiOverrided.graphqlApi.xrayEnabled).toEqual(true);
+    // check overridden config
+    const overriddenAppsyncApiOverride = await getAppSyncApi(GraphQLAPIIdOutput, region);
+    expect(overriddenAppsyncApiOverride.graphqlApi).toBeDefined();
+    expect(overriddenAppsyncApiOverride.graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    // eslint-disable-next-line spellcheck/spell-checker
+    expect(overriddenAppsyncApiOverride.graphqlApi.xrayEnabled).toEqual(true);
   });
 });

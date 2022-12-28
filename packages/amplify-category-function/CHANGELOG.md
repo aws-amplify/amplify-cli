@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0...amplify-category-function@4.2.1) (2022-11-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.3...amplify-category-function@4.2.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.2...amplify-category-function@4.1.3) (2022-10-13)
+
+
+### Bug Fixes
+
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.1...amplify-category-function@4.1.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.12...amplify-category-function@4.1.1) (2022-09-21)
 
 **Note:** Version bump only for package amplify-category-function

@@ -34,7 +34,7 @@ export async function runTest(projectDir: string, testModule: any) {
     expect(result).toBeDefined();
     const pollyURL = result.data.speakTranslatedImageText;
     // check that return format is a url
-    expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
+    expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/);
   } catch (err) {
     //#error: the query will fail due to an AppSync bug, see below
   }

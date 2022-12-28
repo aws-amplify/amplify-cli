@@ -33,11 +33,11 @@ export const notifyMissingPackages = (context: $TSContext): void => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(dependency.dependencyName);
     if (!packageIsInstalled) {
       printer.warn(
-        `UIBuilder components required "${dependency.dependencyName}" that is not in your package.json. Run \`npm install "${dependency.dependencyName}@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`,
+        `UIBuilder components require "${dependency.dependencyName}" that is not in your package.json. Run \`npm install "${dependency.dependencyName}@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`,
       );
     } else if (!rangeSubset(packageJson.dependencies[dependency.dependencyName], dependency.supportedSemVerPattern)) {
       printer.warn(
-        `UIBuilder components requires version "${dependency.supportedSemVerPattern}" of "${
+        `UIBuilder components require version "${dependency.supportedSemVerPattern}" of "${
           dependency.dependencyName
         }". You currently are on version "${packageJson.dependencies[dependency.dependencyName]}". Run \`npm install "${
           dependency.dependencyName

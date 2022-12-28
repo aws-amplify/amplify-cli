@@ -13,7 +13,7 @@ export const run = async (context: $TSContext) => {
 
   if (result.providerName !== provider) {
     printer.error(`Provider ${result.providerName} not configured for this category`);
-    return;
+    return undefined;
   }
   return openConsole(result.service);
 };

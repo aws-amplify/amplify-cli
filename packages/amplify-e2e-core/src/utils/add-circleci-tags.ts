@@ -1,6 +1,7 @@
 import { stateManager } from 'amplify-cli-core';
 
 declare global {
+  /* eslint-disable @typescript-eslint/no-namespace */
   namespace NodeJS {
     interface Global {
       getTestName?: () => string;
@@ -8,6 +9,7 @@ declare global {
       getDescibeBlocks?: () => string[];
     }
   }
+  /* eslint-enable */
 }
 
 export const addCircleCITags = (projectPath: string): void => {

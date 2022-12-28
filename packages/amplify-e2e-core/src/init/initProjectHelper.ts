@@ -100,18 +100,24 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
+
+  let env;
+
+  if (s.disableAmplifyAppCreation) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -422,22 +428,6 @@ export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown
           reject(err);
         }
       });
-  });
-}
-
-export function amplifyInitYes(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--yes'], {
-      cwd,
-      stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
-    }).run((err: Error) => (err
-      ? reject(err)
-      : (() => {
-        resolve();
-      })()));
   });
 }
 

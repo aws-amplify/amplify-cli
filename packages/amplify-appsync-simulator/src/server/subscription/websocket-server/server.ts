@@ -49,7 +49,9 @@ export type WebsocketSubscriptionServerOptions = {
 };
 
 const DEFAULT_OPTIONS: Partial<WebsocketSubscriptionServerOptions> = {
-  onConnectHandler: async () => {},
+  onConnectHandler: async () => {
+    // empty
+  },
   keepAlive: KEEP_ALIVE_TIMEOUT,
   connectionTimeoutDuration: CONNECTION_TIMEOUT_DURATION,
 };
@@ -75,11 +77,13 @@ export class WebsocketSubscriptionServer {
     if (!this.webSocketServer) {
       throw new Error('No server is attached');
     }
+    /* eslint-disable @typescript-eslint/no-misused-promises */
     this.webSocketServer.on('connection', this.onSocketConnection);
   }
 
   stop() {
     this.webSocketServer?.off('connection', this.onSocketConnection);
+    /* eslint-enable */
     this.connections?.forEach(connection => {
       this.onClose(connection);
     });
@@ -186,6 +190,7 @@ export class WebsocketSubscriptionServer {
     } catch (e) {
       this.sendError(connectionContext, '', { errors: [{ message: e.message }] });
     }
+    return undefined;
   };
 
   private sendMessage = (connectionContext: ConnectionContext, subscriptionId: string, type: MESSAGE_TYPES, data: any): void => {
@@ -261,8 +266,10 @@ export class WebsocketSubscriptionServer {
 
   private attachAsyncIterator = async (connectionContext: ConnectionContext, sub: WebsocketSubscription): Promise<void> => {
     const { asyncIterator, id } = sub;
-    while (true) {
-      const { value, done } = await asyncIterator.next();
+    let done = false;
+    while (!done) {
+      const { value, done: doneResult } = await asyncIterator.next();
+      done = doneResult;
       if (done) {
         break;
       }

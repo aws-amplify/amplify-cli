@@ -101,7 +101,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     const meta = stateManager.getMeta();
     const cloudMeta = stateManager.getCurrentMeta();
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule = require(frontendPlugins[frontend]);
+    const frontendHandlerModule = await import(frontendPlugins[frontend]);
     const validatedExportPath = validateExportDirectoryPath(exportPath, PathConstants.DefaultFrontEndExportFolder);
     await frontendHandlerModule.createFrontendConfigsAtPath(
       context,

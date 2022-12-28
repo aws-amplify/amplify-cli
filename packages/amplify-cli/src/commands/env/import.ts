@@ -57,7 +57,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     throw new AmplifyError('EnvironmentConfigurationError', {
       message: 'Environment configuration was not specified or was formatted incorrectly.',
       resolution: 'You must pass in the configuration of the environment in an object format using the --config flag.',
-    });
+    }, e);
   }
 
   let awsInfo;
@@ -70,7 +70,7 @@ export const run = async (context: $TSContext): Promise<void> => {
         message: 'The AWS credential info was not specified or was incorrectly formatted.',
         resolution: 'Pass in the AWS credential info in an object format using the --awsInfo flag.',
         link: 'https://docs.amplify.aws/cli/teams/commands/#import-an-environment',
-      });
+      }, e);
     }
   }
 

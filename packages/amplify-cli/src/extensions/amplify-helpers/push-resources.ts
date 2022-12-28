@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
@@ -12,6 +12,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
+import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
  * Entry point for pushing resources to the cloud
@@ -63,7 +64,7 @@ export const pushResources = async (
   }
 
   // building all CFN stacks here to get the resource Changes
-  await generateDependentResourcesType(context);
+  await generateDependentResourcesType();
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
@@ -79,7 +80,7 @@ export const pushResources = async (
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     printer.info('\nNo changes detected');
-
+    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
   }
 
@@ -90,6 +91,7 @@ export const pushResources = async (
     if (context.exeInfo.iterativeRollback) {
       printer.info('The CLI will rollback the last known iterative deployment.');
     }
+    await showBuildDirChangesMessage();
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
@@ -112,15 +114,11 @@ export const pushResources = async (
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {
-        if (err instanceof AmplifyException) {
-          throw err;
-        }
         throw new AmplifyFault('PushResourcesFault', {
           message: err.message,
-          stack: err.stack,
           link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
-        });
+        }, err);
       }
     }
   } while (retryPush);
@@ -138,9 +136,8 @@ const providersPush = async (
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  await Promise.all(providers.map(async provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
     return providerModule.pushResources(context, resourceDefinition, rebuild);
   }));
@@ -153,9 +150,8 @@ export const storeCurrentCloudBackend = async (context: $TSContext): Promise<voi
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  Promise.all(providers.map(provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  await Promise.all(providers.map(async (provider: string) => {
+    const providerModule = await import(providerPlugins[provider]);
     return providerModule.storeCurrentCloudBackend(context);
   }));
 };

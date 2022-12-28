@@ -14,6 +14,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   }
 }

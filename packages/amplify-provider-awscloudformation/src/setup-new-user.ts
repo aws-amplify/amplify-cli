@@ -1,4 +1,4 @@
-import { amplifyErrorWithTroubleshootingLink, open } from 'amplify-cli-core';
+import { AmplifyError, open } from 'amplify-cli-core';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import isOnWsl from 'is-wsl';
@@ -23,7 +23,9 @@ export const run = async (context): Promise<string> => {
   context.print.info('');
   context.print.info('Sign in to your AWS administrator account:');
   context.print.info(chalk.green(constants.AWSAmazonConsoleUrl));
-  open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {});
+  open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {
+    // empty
+  });
 
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
@@ -55,7 +57,9 @@ export const run = async (context): Promise<string> => {
   }
   context.print.info('Complete the user creation using the AWS console');
   context.print.info(chalk.green(deepLinkURL.replace('`', '')));
-  open(deepLinkURL, { wait: false }).catch(() => {});
+  open(deepLinkURL, { wait: false }).catch(() => {
+    // empty
+  });
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
   context.print.info('Enter the access key of the newly created user:');
@@ -125,12 +129,11 @@ export const run = async (context): Promise<string> => {
     return profileName;
   }
 
-  throw amplifyErrorWithTroubleshootingLink('InputValidationError', {
+  throw new AmplifyError('InputValidationError', {
     message: 'Invalid AWS credentials',
     resolution: 'Please check your AWS credentials',
   });
 };
 
-const validateAWSConfig = (awsConfigInfo): boolean => (
-  awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey
-);
+const validateAWSConfig = (awsConfigInfo): boolean =>
+  awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey;

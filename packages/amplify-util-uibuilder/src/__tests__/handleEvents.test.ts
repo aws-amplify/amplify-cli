@@ -1,8 +1,12 @@
-import { run as runPostEnvAdd } from '../event-handlers/handle-PostEnvAdd';
 import { run as runPostPull } from '../event-handlers/handle-PostPull';
+import { run as runPostPush } from '../event-handlers/handle-PostPush';
+import { run as generateComponents } from '../commands/generateComponents';
+
+jest.mock('../commands/generateComponents');
 
 describe('can handle events', () => {
   let context: any;
+
   beforeEach(() => {
     context = {
       amplify: {
@@ -10,12 +14,14 @@ describe('can handle events', () => {
       },
     };
   });
-  it('handles postEnvAdd', async () => {
-    await runPostEnvAdd(context);
-    expect(context.amplify.invokePluginMethod).toBeCalledTimes(1);
-  });
+
   it('handles postPull', async () => {
     await runPostPull(context);
-    expect(context.amplify.invokePluginMethod).toBeCalledTimes(1);
+    expect(generateComponents).toHaveBeenCalledWith(context, 'PostPull');
+  });
+
+  it('handles postPush', async () => {
+    await runPostPush(context);
+    expect(generateComponents).toHaveBeenCalledWith(context, 'PostPush');
   });
 });

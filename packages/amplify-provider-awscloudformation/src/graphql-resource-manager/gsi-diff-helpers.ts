@@ -90,7 +90,7 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
 export const isIndexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: GlobalSecondaryIndex): boolean => {
   const diffs = getDiffs(currentIndex, nextIndex);
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
-    return;
+    return undefined;
   }
   return diffs?.some(diff => {
     const leaf = diff.path?.slice(-1)[0];

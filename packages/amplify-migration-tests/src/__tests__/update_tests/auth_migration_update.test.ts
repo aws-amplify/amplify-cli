@@ -15,7 +15,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;
@@ -31,7 +31,7 @@ describe('amplify auth migration', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth migration');
-    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'authMigration' });
   });
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');

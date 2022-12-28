@@ -1,7 +1,7 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext, amplifyFaultWithTroubleshootingLink,
+  stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
@@ -50,12 +50,10 @@ export const initializeEnv = async (
           categoryInitializationTasks.push(() => initEnv(context));
         }
       } catch (e) {
-        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
+        throw new AmplifyFault('PluginNotLoadedFault', {
           message: `Could not load plugin for category ${category}.`,
-          details: e.message,
           resolution: `Review the error message and stack trace for additional information.`,
-          stack: e.stack,
-        });
+        }, e);
       }
     };
     for (const category of availableCategories) {
@@ -74,12 +72,10 @@ export const initializeEnv = async (
         const providerModule = await import(providerPlugins[provider]);
         initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
       } catch (e) {
-        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
+        throw new AmplifyFault('PluginNotLoadedFault', {
           message: `Could not load plugin for provider ${provider}.`,
-          details: e.message,
           resolution: 'Review the error message and stack trace for additional information.',
-          stack: e.stack,
-        });
+        }, e);
       }
     }
 
@@ -91,11 +87,10 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await sequential(initializationTasks);
     } catch (e) {
-      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+      throw new AmplifyFault('ProjectInitFault', {
         message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
-        stack: e.stack,
-      });
+      }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
@@ -113,11 +108,10 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
       await sequential(categoryInitializationTasks);
     } catch (e) {
-      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+      throw new AmplifyFault('ProjectInitFault', {
         message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
-        stack: e.stack,
-      });
+      }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     }
