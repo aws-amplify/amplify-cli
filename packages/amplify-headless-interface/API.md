@@ -537,7 +537,9 @@ export enum MapStyle {
     // (undocumented)
     VectorHereExplore = "VectorHereExplore",
     // (undocumented)
-    VectorHereExploreTruck = "VectorHereExploreTruck"
+    VectorHereExploreTruck = "VectorHereExploreTruck",
+    // (undocumented)
+    VectorOpenDataStandardLight = "VectorOpenDataStandardLight"
 }
 
 // @public (undocumented)

@@ -32,7 +32,14 @@ export enum EsriMapStyleType {
    HybridSatellite = "HybridSatellite"
  }
 
-export type MapStyleType = EsriMapStyleType | HereMapStyleType;
+ /**
+ * The type of Map styles for Open data provider
+ */
+ export enum OpenDataMapStyleType {
+   StandardLight = "StandardLight"
+ }
+
+export type MapStyleType = EsriMapStyleType | HereMapStyleType | OpenDataMapStyleType;
 
 /**
  * Supported Geo Map Styles
@@ -48,7 +55,8 @@ export enum MapStyle {
     VectorHereExplore = "VectorHereExplore",
     VectorHereExploreTruck = "VectorHereExploreTruck",
     RasterHereExploreSatellite = "RasterHereExploreSatellite",
-    HybridHereExploreSatellite = "HybridHereExploreSatellite"
+    HybridHereExploreSatellite = "HybridHereExploreSatellite",
+    VectorOpenDataStandardLight = "VectorOpenDataStandardLight"
 }
 
 /**
@@ -113,6 +121,8 @@ export const getMapStyleComponents = (mapStyle: string): Pick<MapParameters, 'da
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.RasterSatellite };
         case MapStyle.HybridHereExploreSatellite:
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.HybridSatellite };
+        case MapStyle.VectorOpenDataStandardLight:
+            return { dataProvider: DataProvider.OpenData, mapStyleType: OpenDataMapStyleType.StandardLight };
         default:
             throw new Error(`Invalid map style ${mapStyle}`);
     }

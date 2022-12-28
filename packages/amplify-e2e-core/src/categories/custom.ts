@@ -20,9 +20,9 @@ export function addCDKCustomResource(cwd: string, settings: any): Promise<void> 
   });
 }
 
-export function addCFNCustomResource(cwd: string, settings: any): Promise<void> {
+export function addCFNCustomResource(cwd: string, settings: any, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'custom'], { cwd, stripColors: true })
       .wait('How do you want to define this custom resource?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -47,11 +47,11 @@ export function addCFNCustomResource(cwd: string, settings: any): Promise<void> 
   });
 }
 
-export function buildCustomResources(cwd: string, settings: {}) {
+export function buildCustomResources(cwd: string, settings: {}, usingLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];
 
-    spawn(getCLIPath(), args, { cwd, stripColors: true })
+    spawn(getCLIPath(usingLatestCodebase), args, { cwd, stripColors: true })
       .sendEof()
       .run((err: Error) => {
         if (!err) {
