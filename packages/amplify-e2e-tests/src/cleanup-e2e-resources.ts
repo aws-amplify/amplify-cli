@@ -202,7 +202,7 @@ const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: st
  */
 const getOrphanAppSyncApis = async (account: AWSAccountInfo, region: string): Promise<AppSyncApiInfo[]> => {
   const appSyncClient = new aws.AppSync(getAWSConfig(account, region));
-  const listApisResponse = await appSyncClient.listGraphqlApis({ maxResults: 50 }).promise();
+  const listApisResponse = await appSyncClient.listGraphqlApis({ maxResults: 25 }).promise();
   const staleApis = listApisResponse.graphqlApis.filter(testAppSyncApiStalenessFilter);
   return staleApis.map(it => ({ apiId: it.apiId, name: it.name, region }));
 };
