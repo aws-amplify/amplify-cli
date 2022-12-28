@@ -1,9 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { byValue, byValues, printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { glob } from 'glob';
-import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
 import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
@@ -177,29 +176,6 @@ function addDependsOnToResource(category: string, resourceName: string, dependsO
 }
 
 export async function addCFNResourceDependency(context: $TSContext, customResourceName: string) {
-  const selectResourcesInCategory = (
-    choices: DistinctChoice<any>[],
-    currentResourceDependencyMap: $TSObject,
-    category: string,
-  ): CheckboxQuestion => ({
-    type: 'checkbox',
-    name: 'resources',
-    message: `${_.capitalize(category)} has ${
-      choices.length
-    } resources in this project. Select the one you would like your custom resource to access`,
-    choices,
-    default: currentResourceDependencyMap[category],
-  });
-
-  const selectCategories = (choices: DistinctChoice<any>[], currentCategoryDependencyMap: object): CheckboxQuestion => ({
-    type: 'checkbox',
-    name: 'categories',
-    message: 'Select the categories you want this custom resource to have access to.',
-    choices,
-    validate: answers => (_.isEmpty(answers) ? 'You must select at least one category' : true),
-    default: Object.keys(currentCategoryDependencyMap),
-  });
-
   const amplifyMeta = stateManager.getMeta();
   const existingDependentResources: $TSObject = {};
 
@@ -223,9 +199,15 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   }
 
   const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
-  const categoryQuestion = selectCategories(categories, existingDependentResources);
-  const categoryAnswer = await inquirer.prompt(categoryQuestion);
-  const selectedCategories = categoryAnswer.categories as string[];
+  const selectedCategories = await prompter.pick<'many', string>(
+    'Select the categories you want this custom resource to have access to.',
+    categories,
+    {
+      returnSize: 'many',
+      pickAtLeast: 1,
+      initial: byValues(Object.keys(existingDependentResources)),
+    },
+  );
 
   const resources = [];
   for (const selectedCategory of selectedCategories) {
@@ -243,9 +225,17 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
       let selectedResources = [];
       if (resourcesList.length > 1) {
         // There's a few resources in this category. Let's pick some.
-        const resourceQuestion = selectResourcesInCategory(resourcesList, existingDependentResources, selectedCategory);
-        const resourceAnswer = await inquirer.prompt([resourceQuestion]);
-        selectedResources = _.concat(resourceAnswer.resources);
+        const resourceAnswer = await prompter.pick<'many', string>(
+          `${_.capitalize(selectedCategory)} has ${
+            resourcesList.length
+          } resources in this project. Select the one you would like your custom resource to access`,
+          resourcesList,
+          {
+            returnSize: 'many',
+            initial: byValues([existingDependentResources[selectedCategory]]),
+          },
+        );
+        selectedResources = _.concat(resourceAnswer);
       } else {
         // There's only one resource in the category. Let's use that.
         selectedResources = _.concat(resourcesList);
