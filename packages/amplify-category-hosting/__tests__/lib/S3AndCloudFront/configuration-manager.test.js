@@ -1,5 +1,5 @@
-jest.mock('inquirer');
-const inquirer = require('inquirer');
+const prompter = require('amplify-prompts');
+jest.mock('amplify-prompts');
 
 jest.mock('../../../lib/S3AndCloudFront/helpers/configure-Website');
 const configureWebsite = require('../../../lib/S3AndCloudFront/helpers/configure-Website');
@@ -73,17 +73,19 @@ describe('configuration-manager', () => {
   });
 
   test('init', async () => {
-    inquirer.prompt.mockResolvedValueOnce({ HostingBucketName: 'mockHostingBucketName' });
+    prompter.input = jest.fn().mockReturnValue('mockHostingBucketName');
     await configurationManager.init(mockContext);
     expect(mockContext.exeInfo.parameters.bucketName).toBeDefined();
     expect(configureWebsite.configure).toBeCalledWith(mockContext);
   });
 
   test('configure', async () => {
-    inquirer.prompt.mockResolvedValueOnce({ section: 'Website' });
-    inquirer.prompt.mockResolvedValueOnce({ section: 'CloudFront' });
-    inquirer.prompt.mockResolvedValueOnce({ section: 'Publish' });
-    inquirer.prompt.mockResolvedValueOnce({ section: 'exit' });
+    prompter.input = jest.fn()
+      .mockReturnValueOnce('Website')
+      .mockReturnValueOnce('CloudFront')
+      .mockReturnValueOnce('Publish')
+      .mockReturnValueOnce('exit');
+
     await configurationManager.configure(mockContext);
     expect(configureWebsite.configure).toBeCalledWith(mockContext);
     expect(configureCloudFront.configure).toBeCalledWith(mockContext);

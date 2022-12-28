@@ -1,10 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
-
-jest.mock('inquirer');
-const inquirer = require('inquirer');
-
 const configureCloudFront = require('../../../../lib/S3AndCloudFront/helpers/configure-CloudFront');
+const prompter = require('amplify-prompts');
+jest.mock('amplify-prompts');
 
 describe('configure-CloudFront', () => {
   const configActions = {
@@ -52,16 +50,16 @@ describe('configure-CloudFront', () => {
     const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate.json');
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: false,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: false,
-    });
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
+      .mockResolvedValueOnce(false); // Configure Custom Error Responses
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL);
+
     const result = await configureCloudFront.configure(mockContext);
     const { DistributionConfig } = mockContext.exeInfo.template.Resources.CloudFrontDistribution.Properties;
     expect(result).toEqual(mockContext);
@@ -83,13 +81,12 @@ describe('configure-CloudFront', () => {
     const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate.json');
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      IndexDocument: 'index.html',
-      ErrorDocument: 'error.html',
-    });
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(true) // Remove CloudFront from hosting
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce('index.html')
+      .mockResolvedValueOnce('error.html');
+
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
     expect(mockContext.exeInfo.template.Resources.OriginAccessIdentity).not.toBeDefined();
@@ -106,16 +103,16 @@ describe('configure-CloudFront', () => {
     const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate-noCloudFront.json');
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
-    inquirer.prompt.mockResolvedValueOnce({
-      AddCloudFront: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: false,
-    });
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(true) // Add CloudFront to hosting
+      .mockResolvedValueOnce(false); // Configure Custom Error Responses
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL);
+
     result = await configureCloudFront.configure(mockContext);
     const { DistributionConfig } = mockContext.exeInfo.template.Resources.CloudFrontDistribution.Properties;
     expect(result).toEqual(mockContext);
@@ -137,18 +134,20 @@ describe('configure-CloudFront', () => {
     const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate.json');
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: false,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.list });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
+      .mockResolvedValueOnce(true); // Configure Custom Error Responses
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL);
+
+    prompter.pick = jest.fn()
+      .mockResolvedValueOnce(configActions.list)
+      .mockResolvedValueOnce(configActions.done);
+
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
     expect(mockContext.print.info).toBeCalled();
@@ -166,20 +165,28 @@ describe('configure-CloudFront', () => {
       ResponsePagePath: '/',
       ErrorCachingMinTTL: 300,
     };
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: false,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce(mockErrorCode);
-    inquirer.prompt.mockResolvedValueOnce(mockCustomErrorResponses);
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
+      .mockResolvedValueOnce(true) // Configure Custom Error Responses
+      ;
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL)
+      .mockResolvedValueOnce(mockCustomErrorResponses.ResponseCode)
+      .mockResolvedValueOnce(mockCustomErrorResponses.ResponsePagePath)
+      .mockResolvedValueOnce(mockCustomErrorResponses.ErrorCachingMinTTL)
+      ;
+
+    prompter.pick = jest.fn()
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(mockErrorCode.ErrorCode)
+      .mockResolvedValueOnce(configActions.done)
+      ;
+
     const { DistributionConfig } = mockContext.exeInfo.template.Resources.CloudFrontDistribution.Properties;
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
@@ -203,20 +210,27 @@ describe('configure-CloudFront', () => {
       ResponsePagePath: '/mockPack',
       ErrorCachingMinTTL: 333,
     };
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: false,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.edit });
-    inquirer.prompt.mockResolvedValueOnce(mockErrorCode);
-    inquirer.prompt.mockResolvedValueOnce(mockCustomErrorResponses);
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
+      .mockResolvedValueOnce(true) // Configure Custom Error Responses
+      ;
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL)
+      .mockResolvedValueOnce(mockCustomErrorResponses.ResponseCode)
+      .mockResolvedValueOnce(mockCustomErrorResponses.ResponsePagePath)
+      .mockResolvedValueOnce(mockCustomErrorResponses.ErrorCachingMinTTL)
+      ;
+
+    prompter.pick = jest.fn()
+      .mockResolvedValueOnce(configActions.edit)
+      .mockResolvedValueOnce(mockErrorCode.ErrorCode)
+      .mockResolvedValueOnce(configActions.done)
+      ;
+
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
     expect(Array.isArray(DistributionConfig.CustomErrorResponses)).toBeTruthy();
@@ -235,19 +249,25 @@ describe('configure-CloudFront', () => {
     const mockErrorCode = {
       ErrorCode: mockCustomReponseToRemove.ErrorCode,
     };
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: false,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.remove });
-    inquirer.prompt.mockResolvedValueOnce(mockErrorCode);
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
+      .mockResolvedValueOnce(true) // Configure Custom Error Responses
+      ;
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL)
+      ;
+
+    prompter.pick = jest.fn()
+      .mockResolvedValueOnce(configActions.remove)
+      .mockResolvedValueOnce(mockErrorCode.ErrorCode)
+      .mockResolvedValueOnce(configActions.done)
+      ;
+
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
     expect(Array.isArray(DistributionConfig.CustomErrorResponses)).toBeTruthy();
@@ -258,18 +278,25 @@ describe('configure-CloudFront', () => {
     const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate.json');
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
-    inquirer.prompt.mockResolvedValueOnce({
-      RemoveCloudFront: false,
-    });
-    inquirer.prompt.mockResolvedValueOnce({
-      DefaultRootObject: mockDefaultRootObject,
-      DefaultCacheDefaultTTL: mockDefaultCacheDefaultTTL,
-      DefaultCacheMaxTTL: mockDefaultCacheMaxTTL,
-      DefaultCacheMinTTL: mockDefaultCacheMinTTL,
-      ConfigCustomError: true,
-    });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.removeAll });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+
+    prompter.yesOrNo = jest.fn()
+      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
+      .mockResolvedValueOnce(true) // Configure Custom Error Responses
+      ;
+
+    prompter.input = jest.fn()
+      .mockResolvedValueOnce(mockDefaultRootObject)
+      .mockResolvedValueOnce(mockDefaultCacheDefaultTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
+      .mockResolvedValueOnce(mockDefaultCacheMinTTL)
+      ;
+
+    prompter.pick = jest.fn()
+      .mockResolvedValueOnce(configActions.removeAll)
+      .mockResolvedValueOnce(mockErrorCode.ErrorCode)
+      .mockResolvedValueOnce(configActions.done)
+      ;
+
     const { DistributionConfig } = mockContext.exeInfo.template.Resources.CloudFrontDistribution.Properties;
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);

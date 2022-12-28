@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const inquirer = require('inquirer');
 const path = require('path');
 const chalk = require('chalk');
 const { open } = require('amplify-cli-core');
@@ -7,6 +6,7 @@ const configManager = require('./configuration-manager');
 const fileUPloader = require('./helpers/file-uploader');
 const cloudFrontManager = require('./helpers/cloudfront-manager');
 const constants = require('../constants');
+const { prompter, byValue } = require('amplify-prompts');
 
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
@@ -53,14 +53,7 @@ async function enable(context) {
 }
 
 async function checkCDN(context) {
-  const selectEnvironment = {
-    type: 'list',
-    name: 'environment',
-    message: 'Select the environment setup:',
-    choices: Environments,
-    default: DEV,
-  };
-  const answer = await inquirer.prompt(selectEnvironment);
+  const answer = await prompter.pick('Select the environment setup:', Environments, { initial: byValue(DEV), returnSize: 1 });
   if (answer.environment === DEV) {
     removeCDN(context);
   } else {

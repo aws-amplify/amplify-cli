@@ -1,9 +1,9 @@
-jest.mock('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
-const inquirer = require('inquirer');
-
 const configurePublish = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish');
+
+const prompter = require('amplify-prompts');
+jest.mock('amplify-prompts');
 
 describe('configure-Publish', () => {
   const DONE = 'exit';
@@ -45,20 +45,23 @@ describe('configure-Publish', () => {
   });
 
   beforeEach(() => {
-    inquirer.prompt.mockClear();
     fs.existsSync.mockClear();
     fs.writeFileSync.mockClear();
   });
 
   test('configure, flow1', async () => {
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.list });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern1' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern2' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.remove });
-    inquirer.prompt.mockResolvedValueOnce({ patternToRemove: 'mockPattern1' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+    prompter.pick = jest.fn
+      .mockResolvedValueOnce(configActions.list)
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.remove)
+      .mockResolvedValueOnce(configActions.done);
+
+    prompter.input = jest.fn
+      .mockResolvedValueOnce('mockPattern1')
+      .mockResolvedValueOnce('mockPattern2')
+      .mockResolvedValueOnce('mockPattern1');
+
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();
     expect(fs.writeFileSync).toBeCalled();
@@ -68,12 +71,16 @@ describe('configure-Publish', () => {
   });
 
   test('configure, flow2', async () => {
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern1' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern2' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.removeAll });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+    prompter.pick = jest.fn
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.removeAll)
+      .mockResolvedValueOnce(configActions.done);
+
+    prompter.input = jest.fn
+      .mockResolvedValueOnce('mockPattern1')
+      .mockResolvedValueOnce('mockPattern2');
+
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();
     expect(fs.writeFileSync).toBeCalled();
