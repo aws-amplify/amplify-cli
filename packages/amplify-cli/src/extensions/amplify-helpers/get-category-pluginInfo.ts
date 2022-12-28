@@ -7,19 +7,19 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
 
   if (pluginInfoForCategory?.length > 0) {
     if (service) {
-      const pluginInfosForCategoryAndService = pluginInfoForCategory.filter(pluginInfo => {
+      const pluginInfoForCategoryAndService = pluginInfoForCategory.filter(pluginInfo => {
         return pluginInfo.manifest.services && pluginInfo.manifest.services.includes(service);
       });
 
-      if (pluginInfosForCategoryAndService.length > 0) {
-        categoryPluginInfo = pluginInfosForCategoryAndService[0];
+      if (pluginInfoForCategoryAndService.length > 0) {
+        categoryPluginInfo = pluginInfoForCategoryAndService[0];
       } else {
         categoryPluginInfo = pluginInfoForCategory[0];
       }
     } else {
-      const overidenPluigin = pluginInfoForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
-      if (overidenPluigin !== undefined) {
-        return overidenPluigin;
+      const overiddenPlugin = pluginInfoForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
+      if (overiddenPlugin !== undefined) {
+        return overiddenPlugin;
       }
       categoryPluginInfo = pluginInfoForCategory[0];
     }

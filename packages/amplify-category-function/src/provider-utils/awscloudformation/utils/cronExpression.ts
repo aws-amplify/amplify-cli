@@ -45,9 +45,9 @@ export class CronExpression {
   months = new TreeSet();
   daysOfWeek = new TreeSet();
   years = new TreeSet();
-  lastdayOfWeek = false;
-  nthdayOfWeek = 0;
-  lastdayOfMonth = false;
+  lastDayOfWeek = false;
+  nthDayOfWeek = 0;
+  lastDayOfMonth = false;
   nearestWeekday = false;
   expressionParsed = false;
 
@@ -215,15 +215,15 @@ export class CronExpression {
           } else if (c === '#') {
             try {
               i += 4;
-              this.nthdayOfWeek = Number(s.substring(i));
-              if (this.nthdayOfWeek < 1 || this.nthdayOfWeek > 5) {
+              this.nthDayOfWeek = Number(s.substring(i));
+              if (this.nthDayOfWeek < 1 || this.nthDayOfWeek > 5) {
                 throw new Error();
               }
             } catch (e) {
               throw new Error("A numeric value between 1 and 5 must follow the '#' option" + String(i));
             }
           } else if (c === 'L') {
-            this.lastdayOfWeek = true;
+            this.lastDayOfWeek = true;
             i = i + 1;
           }
         }
@@ -245,7 +245,7 @@ export class CronExpression {
       if (type != DAY_OF_WEEK && type != DAY_OF_MONTH) {
         throw new Error("'?' can only be specified for Day-of-Month or Day-of-Week." + String(i));
       }
-      if (type === DAY_OF_WEEK && !this.lastdayOfMonth) {
+      if (type === DAY_OF_WEEK && !this.lastDayOfMonth) {
         const val: number = this.daysOfMonth.last();
         if (val === NO_SPEC_INT) {
           throw new Error("'?' can only be specified for Day-of-Month -OR- Day-of-Week." + String(i));
@@ -299,7 +299,7 @@ export class CronExpression {
     } else if (c === 'L') {
       i++;
       if (type === DAY_OF_MONTH) {
-        this.lastdayOfMonth = true;
+        this.lastDayOfMonth = true;
       }
       if (type === DAY_OF_WEEK) {
         this.addToSet(7, 7, 0, type);
@@ -514,7 +514,7 @@ export class CronExpression {
 
     if (c === 'L') {
       if (type === DAY_OF_WEEK) {
-        this.lastdayOfWeek = true;
+        this.lastDayOfWeek = true;
       } else {
         throw new Error("'L' option is not valid here. (pos=" + i + ')' + i);
       }
@@ -542,8 +542,8 @@ export class CronExpression {
       }
       i++;
       try {
-        this.nthdayOfWeek = Number(s.substring(i));
-        if (this.nthdayOfWeek < 1 || this.nthdayOfWeek > 5) {
+        this.nthDayOfWeek = Number(s.substring(i));
+        if (this.nthDayOfWeek < 1 || this.nthDayOfWeek > 5) {
           throw new Error();
         }
       } catch (e) {
@@ -636,11 +636,10 @@ export class CronExpression {
     this.months = new TreeSet();
     this.daysOfWeek = new TreeSet();
     this.years = new TreeSet();
-
-    this.lastdayOfWeek = false;
-    this.nthdayOfWeek = 0;
-    this.lastdayOfMonth = false;
+    this.lastDayOfWeek = false;
+    this.nthDayOfWeek = 0;
+    this.lastDayOfMonth = false;
     this.nearestWeekday = false;
-    this.lastdayOffset = 0;
+    this.lastDayOffset = 0;
   };
 }

@@ -42,7 +42,7 @@ export const getEnvSecretPrefix = (envName: string = stateManager.getLocalEnvInf
 // NOTE: Even though the following 2 functions are CFN specific, I'm putting them here to colocate all of the secret naming logic
 
 /**
- * Retuns a CFN object that will resolve the the full name of the SSM parameter for secretName in functionName
+ * Returns a CFN object that will resolve the the full name of the SSM parameter for secretName in functionName
  */
 export const getFunctionSecretCfnName = (secretName: string, functionName: string) =>
   Fn.Join('', [getFunctionSecretCfnPrefix(functionName), secretName]);

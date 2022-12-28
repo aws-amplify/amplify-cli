@@ -23,8 +23,8 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
       StreamSpecification: {
         StreamEnabled: true,
-        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES'
-      }
+        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES',
+      },
     },
   };
 
@@ -155,6 +155,7 @@ export function appSyncAPIKeyResourceHandler(
   cfnContext: CloudFormationParseContext,
 ): AppSyncAPIKeyProcessedResource {
   const value = 'da2-fakeApiId123456'; // TODO: Generate
+  // eslint-disable-next-line spellcheck/spell-checker
   const arn = `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/apikey/apikeya1bzhi${value}`;
   const processedResource = {
     cfnExposedAttributes: { ApiKey: 'ApiKey', Arn: 'ref' },

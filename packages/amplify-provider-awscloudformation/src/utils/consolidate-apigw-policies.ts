@@ -196,6 +196,7 @@ function computePolicySizeIncrease(stageLength: number, methodLength: number, pa
   // example:
   //          1         2         3         4         5         6         7         8
   // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+  // eslint-disable-next-line spellcheck/spell-checker
   // "arn:aws:execute-api:us-west-1:032500605820:hjrmfzed5l/dev/PATCH/bbb-p03/*",
   //
   // Each path + HTTP method increases the policy size by roughly:

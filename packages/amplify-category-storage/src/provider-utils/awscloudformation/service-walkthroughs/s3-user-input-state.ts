@@ -440,7 +440,7 @@ export class S3InputState {
       case S3PermissionType.DELETE:
         return S3TriggerEventType.OBJ_REMOVED;
     }
-    throw new Error(`Unkown Trigger Lambda Permission Type ${triggerPermissions}`);
+    throw new Error(`Unknown Trigger Lambda Permission Type ${triggerPermissions}`);
   }
 
   public static getCfnPermissionsFromInputPermissions(selectedPermissions: S3PermissionType[] | undefined) {

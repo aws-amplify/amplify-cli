@@ -593,7 +593,7 @@ describe('TriggerFlow:  ', () => {
 
     it('...should call copySyncSpy once', async () => {
       triggerKey = 'key';
-      val = ['notcustom'];
+      val = ['notCustom'];
       await triggerFlow.copyFunctions(triggerKey, val, category, context, path);
       expect(copySyncSpy).toHaveBeenCalledTimes(1);
     });

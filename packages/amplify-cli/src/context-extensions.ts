@@ -321,8 +321,8 @@ function attachTemplate(context: Context) {
       const data = {
         props,
       };
-      // If a directory was supplied, append a directory seprator.
-      // Otherwise, the template path will be use as-is.
+      // If a directory was supplied, append a directory separator.
+      // Otherwise, the template path will be used as-is.
       const pathToTemplate = opts.directory ? path.join(opts.directory, template) : template;
 
       if (!contextFileSystem.isFile(pathToTemplate)) {

@@ -128,7 +128,7 @@ export type FunctionParameters = {
   functionTemplate?: FunctionTemplate; // fully describes the template that will be used
   categoryPolicies?: object[]; // IAM policies that should be applied to this lambda
   skipEdit?: boolean; // Whether or not to prompt to edit the function after creation
-  mutableParametersState?: any; // Contains the object that is written to function-parameters.json. Kindof a hold-over from older code
+  mutableParametersState?: any; // Contains the object that is written to function-parameters.json. Kind of a hold-over from older code
   environmentMap?: Record<string, any>; // Existing function environment variable map. Should refactor to use dependsOn directly
   triggerEventSourceMappings?: any; // Used for dynamo / kinesis function triggers. May want to refactor
   topLevelComment?: string; // LEGACY Used to write available environment variables at top of template files

@@ -45,6 +45,7 @@ export class StorageServer extends EventEmitter {
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
     this.app.use(cors(corsOptions));
+    // eslint-disable-next-line spellcheck/spell-checker
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
     /* eslint-disable @typescript-eslint/no-misused-promises */
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
@@ -119,7 +120,7 @@ export class StorageServer extends EventEmitter {
         response.send(data);
       });
     } else {
-      // fixup the keyname for proper error message since it is normalized for the given platform
+      // fix up the key name for proper error message since it is normalized for the given platform
       // remove the leading path separator and replace the remaining ones.
       let keyName = request.params.path.replace(/\\/g, '/');
       if (keyName.startsWith('/')) {
@@ -165,7 +166,7 @@ export class StorageServer extends EventEmitter {
       absolute: true,
     });
     for (const file of files) {
-      // We have to normalize glob returned filenames to make sure deriving the keyname will work under every OS.
+      // We have to normalize glob returned filenames to make sure deriving the key name will work under every OS.
       const normalizedFile = path.normalize(file);
       // Remove directory portion, cut starting slash, replace backslash with slash.
       let keyName = normalizedFile.replace(dirPath, '').replace(/\\/g, '/');
@@ -235,7 +236,7 @@ export class StorageServer extends EventEmitter {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
     } else {
       fs.writeFileSync(directoryPath, new_data);
-      // event trigger  to differentitiate between multipart and normal put
+      // event trigger to differentiate between multipart and normal put
       const eventObj = this.createEvent(request);
       this.emit('event', eventObj);
     }
@@ -306,7 +307,7 @@ export class StorageServer extends EventEmitter {
       );
     }
   }
-  // build eevent obj for s3 trigger
+  // build event obj for s3 trigger
   private createEvent(request) {
     const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
     const eventObj = {};
@@ -334,6 +335,7 @@ export class StorageServer extends EventEmitter {
         key: request.params.path,
         size: fs.statSync(filePath).size,
         eTag: etag(filePath),
+        // eslint-disable-next-line spellcheck/spell-checker
         versionId: '096fKKXTRTtl3on89fVO.nfljtsv6qko',
       },
     };

@@ -30,7 +30,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
   const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
 
-  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
 
   const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
@@ -38,7 +38,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
     // we want to run push related hooks when forcePush flag is enabled
     hooksMeta.setEventCommand('push');
     hooksMeta.setEventSubCommand(undefined);
-    const { commandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+    const { commandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
     executionQueue.push(commandHookFileMeta);
   }
 
@@ -109,7 +109,7 @@ const execHelper = async (
   printer.blankLine();
 };
 
-const getHookFileMetas = (
+const getHookFileMetadata = (
   hooksDirPath: string,
   hookEvent: HookEvent,
   hooksConfig: HooksConfig,

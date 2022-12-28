@@ -499,7 +499,7 @@ export async function createNewLambdaAndUpdateCFN(
 }
 
 /**
- * Gets the list of Lambda functions for configuring as trigges on the S3 resource.
+ * Gets the list of Lambda functions for configuring as triggers on the S3 resource.
  * note:- It excludes currently configured trigger function from the list.
  * @param context
  * @param excludeFunctionName
@@ -583,7 +583,7 @@ function getCLITriggerStateEvent(triggerFlowType: S3CLITriggerFlow, existingTrig
  * @returns TriggerFunction name
  */
 async function interactiveCreateNewLambdaAndUpdateCFN(context: $TSContext) {
-  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique shortid*/);
+  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique short id*/);
   await askAndOpenFunctionEditor(context, newTriggerFunction);
   return newTriggerFunction;
 }
@@ -617,7 +617,7 @@ async function interactiveAddExistingLambdaAndUpdateCFN(
  * @param context
  * @param policyID
  * @param existingTriggerFunction - already configured trigger function
- * @param existingLambdaResources - list of all lambda functions avaiable to be configured as triggers
+ * @param existingLambdaResources - list of all lambda functions available to be configured as triggers
  * @returns newTriggerFunction or selectedTriggerFunction
  */
 async function interactiveAskTriggerTypeFlow(
@@ -726,7 +726,7 @@ export function getIAMPolicies(resourceName: $TSAny, crudOptions: $TSAny) {
     }
   });
 
-  // @ts-expect-error ts-migrate(2740) FIXME: Type 'unknown[]' is missing the following properti... Remove this comment to see the full error message
+  // @ts-expect-error ts-migrate(2740) FIXME: Type 'unknown[]' is missing the following properties
   actions = Array.from(actions);
   if ((actions as $TSAny).includes('s3:ListBucket')) {
     let listBucketPolicy = {};
