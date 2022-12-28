@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.2-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.1...amplify-prompts@2.6.2-beta.3) (2022-12-28)
+
+**Note:** Version bump only for package amplify-prompts
+
+
+
+
+
 ## [2.6.2-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.1...amplify-prompts@2.6.2-beta.2) (2022-12-13)
 
 **Note:** Version bump only for package amplify-prompts

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.0...amplify-storage-simulator@1.7.0-beta.4) (2022-12-28)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 # [1.7.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.0...amplify-storage-simulator@1.7.0-beta.3) (2022-12-13)
 
 **Note:** Version bump only for package amplify-storage-simulator
