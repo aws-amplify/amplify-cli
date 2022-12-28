@@ -43,6 +43,7 @@ export function generateResolvers(
           } catch (e) {
             context.appsyncErrors.push(e);
           }
+          return undefined;
         },
         ...(typeName === 'Subscription'
           ? {

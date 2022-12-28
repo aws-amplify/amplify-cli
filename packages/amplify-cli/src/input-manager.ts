@@ -143,7 +143,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         }
 
         // same as above, but check if the first sub-command is an alias.
-        if (commandAliases && commandAliases.hasOwnProperty(input.subCommands[0])) {
+        if (commandAliases && Object.prototype.hasOwnProperty.call(commandAliases, input.subCommands[0])) {
           const command = commandAliases[input.subCommands[0]];
           input.subCommands[0] = input.command!;
           input.command = command;
@@ -214,7 +214,9 @@ function aliasArgs(argv: string[]) {
 
 const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
   const newObj = {};
-  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
+  Object.entries(obj).forEach(([key, value]) => {
+    newObj[key.toLowerCase()] = value;
+  });
   return newObj;
 };
 

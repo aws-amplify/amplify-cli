@@ -637,8 +637,9 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
 
 export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } =
-      getSocialProviders(true);
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders(
+      true,
+    );
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -1108,10 +1109,16 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .send('googleIDPOOL')
       .sendCarriageReturn();
     if (settings.frontend === 'ios') {
-      chain.wait('Enter your Google iOS Client ID for your identity pool').send('googleiosclientId').sendCarriageReturn();
+      chain
+        .wait('Enter your Google iOS Client ID for your identity pool')
+        .send('googleiosclientId')
+        .sendCarriageReturn();
     }
     if (settings.frontend === 'android') {
-      chain.wait('Enter your Google Android Client ID for your identity pool').send('googleandroidclientid').sendCarriageReturn();
+      chain
+        .wait('Enter your Google Android Client ID for your identity pool')
+        .send('googleandroidclientid')
+        .sendCarriageReturn();
     }
     chain
       .wait('Enter your Amazon App ID for your identity pool')
@@ -1303,7 +1310,7 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
 
 export function updateAuthAddUserGroups(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
   if (groupNames.length == 0) {
-    return;
+    return undefined;
   }
   const testingWithLatestCodebase = settings && settings.testingWithLatestCodebase ? settings.testingWithLatestCodebase : false;
   return new Promise((resolve, reject) => {
@@ -1452,7 +1459,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
   settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .sendKeyDown(2)
       .sendCarriageReturn()
@@ -1626,7 +1633,7 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings: any = {}): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName = 'adminQueriesGroup', settings: any = {}): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });

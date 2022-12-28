@@ -6,9 +6,9 @@ const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
 //matches any string with contiansToRedact in it
-const keyregex: RegExp = new RegExp(keyMatcher, 'gmi');
+const keyregex = new RegExp(keyMatcher, 'gmi');
 // matches any json and gives values in json
-const jsonregex: RegExp = new RegExp(completeMatch, 'gmi');
+const jsonregex = new RegExp(completeMatch, 'gmi');
 function testReplaceJsonValues(json: string, redactedInput: string): string {
   if (!json) return json;
   let s: string = json.toString();
@@ -35,11 +35,11 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
   return s;
 }
 
-export default function redactInput(originalInput: Input, deleteArgAndOption: Boolean, replacementString: string = '************'): Input {
+export default function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString = '************'): Input {
   const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
   const argv = input.argv;
   const length = argv.length;
-  let redactString: Boolean = false;
+  let redactString = false;
   if (deleteArgAndOption) {
     input.argv = [];
     delete input.options;
@@ -72,7 +72,7 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: Bo
   return input;
 }
 
-function isJson(s: string): Boolean {
+function isJson(s: string): boolean {
   try {
     JSONUtilities.parse(s);
     return true;

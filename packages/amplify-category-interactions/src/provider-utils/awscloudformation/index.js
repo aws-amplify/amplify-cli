@@ -133,7 +133,7 @@ async function migrateResource(context, projectPath, service, resourceName) {
 
   if (!migrate) {
     context.print.info(`No migration required for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return await migrate(context, projectPath, resourceName);
@@ -147,7 +147,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
 
   if (!getPermissionPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return getIAMPolicies(resourceName, crudOptions);

@@ -29,4 +29,5 @@ export const zipPackage = (zipEntries: ZipEntry[], packageFileName: string): Pro
       zip.finalize();
     });
   }
+  return undefined;
 };

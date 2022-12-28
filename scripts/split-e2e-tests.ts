@@ -19,6 +19,8 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'analytics-2_pkg',
   'api_migration_update_v5',
   'api_migration_update_v6',
+  'api_2_pkg',
+  'api_5_pkg',
   'api-key-migration_v5',
   'api-key-migration_v6',
   'api-key-migration-2_v5',
@@ -51,6 +53,7 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'dotnet_runtime_update_migration_v10',
   'env-2_pkg',
   'export_pkg',
+  'function_1_pkg',
   'function_3a_pkg',
   'function_3b_pkg',
   'function_4_pkg',
@@ -103,6 +106,8 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'scaffold_v10',
   'schema-iterative-rollback-1_pkg',
   'schema-iterative-rollback-2_pkg',
+  'searchable-migration_pkg',
+  'storage-5_pkg',
   'storage_migration_update_v5',
   'storage_migration_update_v6',
   'studio-modelgen_pkg',
@@ -140,17 +145,9 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'api_1',
-  'api_2',
-  'api-key-migration2',
-  'api-key-migration3',
-  'api-key-migration4',
-  'api-key-migration5',
-  'auth_2',
   'import_dynamodb_1',
   'import_s3_1',
   'searchable-migration',
-  'storage',
 ];
 
 export type WorkflowJob =

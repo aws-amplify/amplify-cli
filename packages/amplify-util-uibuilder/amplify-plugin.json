@@ -7,7 +7,9 @@
     "generateComponents"
   ],
   "eventHandlers": [
+    "PrePush",
     "PostEnvAdd",
+    "PostPull",
     "PostPush"
   ]
 }

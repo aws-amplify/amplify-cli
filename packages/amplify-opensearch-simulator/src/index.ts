@@ -113,7 +113,7 @@ export const buildArgs = (options: OpenSearchEmulatorOptions, pathToOpenSearchDa
 export const launch = async (
   pathToOpenSearchData: string,
   givenOptions: OpenSearchEmulatorOptions = {}, 
-  retry:number = 0, 
+  retry = 0, 
   startTime: number = Date.now()
 ): Promise<OpenSearchEmulator> => { 
   if (isWindowsPlatform) {

@@ -35,7 +35,7 @@ const getProviderPlugin = (context: $TSContext): ProviderUtils => {
 
 async function loadResourceParametersLegacyCode(authResourceName: string): Promise<UserPoolMessageConfiguration> {
   const legacyParameters = await stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
-  let userPoolMessageConfig: UserPoolMessageConfiguration = {
+  const userPoolMessageConfig: UserPoolMessageConfiguration = {
     mfaConfiguration: legacyParameters.mfaConfiguration,
     mfaTypes: legacyParameters.mfaTypes,
     usernameAttributes: legacyParameters.usernameAttributes,

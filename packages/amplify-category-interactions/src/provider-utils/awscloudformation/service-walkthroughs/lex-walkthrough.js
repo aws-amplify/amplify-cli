@@ -574,6 +574,14 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     choices: inputs[26].options,
   };
   const slotTypeChoice = await inquirer.prompt(slotTypeChoiceQuestion);
+  function searchSlotTypes(builtInSlotTypes) {
+    return function(answers, input = '') {
+      return new Promise(resolve => {
+        const fuzzyResult = fuzzy.filter(input, builtInSlotTypes);
+        resolve(fuzzyResult.map(el => el.original));
+      });
+    };
+  }
   if (slotTypeChoice[inputs[26].key] === 'Amazon built-in slot type') {
     let slotTypeOptions = '';
     let builtInSlotTypes = [];
@@ -589,19 +597,11 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
       slotTypeOptions = builtInSlotTypesReturn.nextToken;
     } while (slotTypeOptions);
 
-    function searchSlotTypes(answers, input) {
-      input = input || '';
-      return new Promise(resolve => {
-        const fuzzyResult = fuzzy.filter(input, builtInSlotTypes);
-        resolve(fuzzyResult.map(el => el.original));
-      });
-    }
-
     const slotTypeQuestion = {
       type: 'autocomplete',
       name: inputs[15].key,
       message: inputs[15].question,
-      source: searchSlotTypes,
+      source: searchSlotTypes(builtInSlotTypes),
     };
     slotType = await inquirer.prompt(slotTypeQuestion);
     return [slotType[inputs[15].key], false];
@@ -690,6 +690,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
   }
 
   context.print.error('Valid option not chosen');
+  return undefined;
 }
 
 async function askLambda(context) {

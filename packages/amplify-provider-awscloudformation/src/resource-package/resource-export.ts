@@ -239,7 +239,7 @@ export class ResourceExport extends ResourcePackager {
     }
   }
 
-  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters: boolean = true) {
+  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters = true) {
     const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
     return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat, deleteParameters);
   }

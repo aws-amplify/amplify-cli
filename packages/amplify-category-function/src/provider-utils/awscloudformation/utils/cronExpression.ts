@@ -12,8 +12,8 @@ const DAY_OF_WEEK = 5;
 const YEAR = 6;
 const ALL_SPEC_INT = 99; // '*'
 const NO_SPEC_INT = 98; // '?'
-let monthMap = new Map();
-let dayMap = new Map();
+const monthMap = new Map();
+const dayMap = new Map();
 
 monthMap.set('JAN', 0);
 monthMap.set('FEB', 1);
@@ -45,11 +45,11 @@ export class CronExpression {
   months = new TreeSet();
   daysOfWeek = new TreeSet();
   years = new TreeSet();
-  lastdayOfWeek: boolean = false;
-  nthdayOfWeek: Number = 0;
-  lastdayOfMonth: boolean = false;
-  nearestWeekday: boolean = false;
-  expressionParsed: boolean = false;
+  lastdayOfWeek = false;
+  nthdayOfWeek = 0;
+  lastdayOfMonth = false;
+  nearestWeekday = false;
+  expressionParsed = false;
 
   strMinutes: string = null;
   strHours: string = null;
@@ -66,13 +66,15 @@ export class CronExpression {
   }
 
   private buildExpressionSecondOptional = function(cronExpression: string): void {
-    let parsesWithMissingSeconds: boolean = false;
+    let parsesWithMissingSeconds = false;
     try {
       //assume the expression doesn't contain seconds
       this.buildExpression('0 ' + cronExpression);
       parsesWithMissingSeconds = true;
-    } catch (e) {}
-    let parsesWithOriginal: boolean = false;
+    } catch (e) {
+      // empty
+    }
+    let parsesWithOriginal = false;
     this.resetState();
     try {
       // check if the expression can be parsed as is
@@ -120,16 +122,16 @@ export class CronExpression {
 
       let exprOn = SECOND;
 
-      let exprsTok: string[] = cronExpression.split(' ');
+      const exprsTok: string[] = cronExpression.split(' ');
       let len_exprsTok = 0;
       while (len_exprsTok <= exprsTok.length - 1 && exprOn <= YEAR) {
         if (exprsTok[len_exprsTok] != undefined) {
-          let expr: string = exprsTok[len_exprsTok].trim();
-          let vTok: string[] = expr.split(',');
+          const expr: string = exprsTok[len_exprsTok].trim();
+          const vTok: string[] = expr.split(',');
           let len_vTok = 0;
           while (len_vTok <= vTok.length - 1) {
             if (vTok[len_vTok] != undefined) {
-              let v: string = vTok[len_vTok];
+              const v: string = vTok[len_vTok];
               this.storeExpressionVals(0, v, exprOn);
             }
             len_vTok++;
@@ -146,13 +148,13 @@ export class CronExpression {
       if (exprOn <= YEAR) {
         this.storeExpressionVals(0, '*', YEAR);
       }
-      let dow: TreeSet<number> = this.getSet(DAY_OF_WEEK);
+      const dow: TreeSet<number> = this.getSet(DAY_OF_WEEK);
 
-      let dom: TreeSet<number> = this.getSet(DAY_OF_MONTH);
+      const dom: TreeSet<number> = this.getSet(DAY_OF_MONTH);
 
       // Copying the logic from the UnsupportedOperationException below
-      let dayOfMSpec: boolean = !dom.has(NO_SPEC_INT);
-      let dayOfWSpec: boolean = !dow.has(NO_SPEC_INT);
+      const dayOfMSpec = !dom.has(NO_SPEC_INT);
+      const dayOfWSpec = !dow.has(NO_SPEC_INT);
 
       if (dayOfMSpec && !dayOfWSpec) {
         // skip
@@ -167,12 +169,12 @@ export class CronExpression {
   };
 
   storeExpressionVals = function(pos: number, s: string, type: number): number {
-    let incr: number = 0;
+    let incr = 0;
     let i: number = this.skipWhiteSpace(pos, s);
     if (i >= s.length) {
       return i;
     }
-    let c: String = s.charAt(i);
+    let c: string = s.charAt(i);
     if (c >= 'A' && c <= 'Z' && !(s === 'L') && !(s === 'LW')) {
       let sub: string = s.substring(i, i + 3);
       let sVal = -1;
@@ -244,7 +246,7 @@ export class CronExpression {
         throw new Error("'?' can only be specified for Day-of-Month or Day-of-Week." + String(i));
       }
       if (type === DAY_OF_WEEK && !this.lastdayOfMonth) {
-        let val: number = this.daysOfMonth.last();
+        const val: number = this.daysOfMonth.last();
         if (val === NO_SPEC_INT) {
           throw new Error("'?' can only be specified for Day-of-Month -OR- Day-of-Week." + String(i));
         }
@@ -311,14 +313,14 @@ export class CronExpression {
       }
       return i;
     } else if (c >= '0' && c <= '9') {
-      let val: number = Number(c.valueOf());
+      let val = Number(c.valueOf());
       i++;
       if (i >= s.length) {
         this.addToSet(val, -1, -1, type);
       } else {
         c = s.charAt(i);
         if (c >= '0' && c <= '9') {
-          let vs: [number, number] = this.getValue(val, s, i);
+          const vs: [number, number] = this.getValue(val, s, i);
           val = vs[1];
           i = vs[0];
         }
@@ -332,14 +334,16 @@ export class CronExpression {
     return i;
   };
 
-  skipWhiteSpace = function(i: number, s: String): number {
-    for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {}
+  skipWhiteSpace = function(i: number, s: string): number {
+    for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {
+      // empty
+    }
 
     return i;
   };
 
-  getMonthNumber = function(s: String): number {
-    let integer: number = monthMap.get(s);
+  getMonthNumber = function(s: string): number {
+    const integer: number = monthMap.get(s);
 
     if (integer === undefined) {
       return -1;
@@ -348,8 +352,8 @@ export class CronExpression {
     return integer;
   };
 
-  getDayOfWeekNumber = function(s: String): number {
-    let integer: number = dayMap.get(s);
+  getDayOfWeekNumber = function(s: string): number {
+    const integer: number = dayMap.get(s);
 
     if (integer === undefined) {
       return -1;
@@ -358,7 +362,7 @@ export class CronExpression {
     return integer;
   };
   addToSet = function(val: number, end: number, incr: number, type: number) {
-    let set = this.getSet(type);
+    const set = this.getSet(type);
 
     if (type === SECOND || type === MINUTE) {
       if ((val < 0 || val > 59 || end > 59) && val != ALL_SPEC_INT) {
@@ -465,12 +469,13 @@ export class CronExpression {
       case YEAR:
         return this.years;
     }
+    return undefined;
   };
 
   // get the string value
   getValue = function(v: number, s: string, i: number) {
     let c: string = s.charAt(i);
-    let s1: string = String(v);
+    let s1 = String(v);
     while (c >= '0' && c <= '9') {
       s1 = s1.concat(c);
       i++;
@@ -479,20 +484,21 @@ export class CronExpression {
       }
       c = s.charAt(i);
     }
-    let val: [number, number];
 
-    val = [i < s.length ? i : i + 1, Number(s1)];
+    const val: [number, number] = [i < s.length ? i : i + 1, Number(s1)];
     return val;
   };
 
   getNumericValue = function(s: string, i: number): number {
-    let endOfVal = this.findNextWhiteSpace(i, s);
-    let val: string = s.substring(i, endOfVal);
+    const endOfVal = this.findNextWhiteSpace(i, s);
+    const val: string = s.substring(i, endOfVal);
     return Number(val);
   };
 
-  findNextWhiteSpace = function(i: number, s: String) {
-    for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {}
+  findNextWhiteSpace = function(i: number, s: string) {
+    for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {
+      // empty
+    }
     return i;
   };
   checkNext = function(pos: number, s: string, val: number, type: number): number {
@@ -512,7 +518,7 @@ export class CronExpression {
       } else {
         throw new Error("'L' option is not valid here. (pos=" + i + ')' + i);
       }
-      let set = this.getSet(type);
+      const set = this.getSet(type);
       set.add(val);
       i++;
       return i;
@@ -524,7 +530,7 @@ export class CronExpression {
       } else {
         throw new Error("'W' option is not valid here. (pos=" + i + ')' + i);
       }
-      let set = this.getSet(type);
+      const set = this.getSet(type);
       set.add(val);
       i++;
       return i;
@@ -544,7 +550,7 @@ export class CronExpression {
         throw new Error("A numeric value between 1 and 5 must follow the '#' option" + i);
       }
 
-      let set = this.getSet(type);
+      const set = this.getSet(type);
       set.add(val);
       i++;
       return i;
@@ -553,7 +559,7 @@ export class CronExpression {
     if (c === '-') {
       i++;
       c = s.charAt(i);
-      let v: number = Number(c);
+      const v = Number(c);
       end = v;
       i++;
       if (i >= s.length) {
@@ -562,15 +568,15 @@ export class CronExpression {
       }
       c = s.charAt(i);
       if (c >= '0' && c <= '9') {
-        let vs: [number, number] = this.getValue(v, s, i);
-        let v1 = vs[1];
+        const vs: [number, number] = this.getValue(v, s, i);
+        const v1 = vs[1];
         end = v1;
         i = vs[0];
       }
       if (i < s.length && (c = s.charAt(i)) === '/') {
         i++;
         c = s.charAt(i);
-        let v2: number = Number(c);
+        const v2 = Number(c);
         i++;
         if (i >= s.length) {
           this.addToSet(val, end, v2, type);
@@ -578,8 +584,8 @@ export class CronExpression {
         }
         c = s.charAt(i);
         if (c >= '0' && c <= '9') {
-          let vs: [number, number] = this.getValue(v2, s, i);
-          let v3 = vs[1];
+          const vs: [number, number] = this.getValue(v2, s, i);
+          const v3 = vs[1];
           this.addToSet(val, end, v3, type);
           i = vs[0];
           return i;
@@ -596,7 +602,7 @@ export class CronExpression {
     if (c === '/') {
       i++;
       c = s.charAt(i);
-      let v2 = Number(c);
+      const v2 = Number(c);
       i++;
       if (i >= s.length) {
         this.addToSet(val, end, v2, type);
@@ -604,8 +610,8 @@ export class CronExpression {
       }
       c = s.charAt(i);
       if (c >= '0' && c <= '9') {
-        let vs: [number, number] = this.getValue(v2, s, i);
-        let v3 = vs[1];
+        const vs: [number, number] = this.getValue(v2, s, i);
+        const v3 = vs[1];
         this.addToSet(val, end, v3, type);
         i = vs[1];
         return i;
