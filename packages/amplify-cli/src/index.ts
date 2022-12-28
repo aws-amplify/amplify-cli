@@ -16,7 +16,8 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
-import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
+import { getEnvParametersUploadHandler } from 'amplify-provider-awscloudformation';
+import { saveAll as saveAllEnvParams, ServiceUploadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
@@ -162,15 +163,9 @@ export const run = async (startTime: number): Promise<void> => {
   if (context.input.command === 'push') {
     const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
     const CloudFormationProviderName = 'awscloudformation';
-    let uploaderHandler = undefined;
+    let uploaderHandler: ServiceUploadHandler | undefined = undefined;
     if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
-      uploaderHandler = await context.amplify.invokePluginMethod(
-        context,
-        CloudFormationProviderName,
-        undefined,
-        'getEnvParametersUploadHandler',
-        [context],
-      );
+      uploaderHandler = await getEnvParametersUploadHandler(context as unknown as $TSContext);
     }
     await saveAllEnvParams(uploaderHandler);
   }

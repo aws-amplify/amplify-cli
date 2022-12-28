@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../aws-utils/aws-ssm';
@@ -29,9 +29,9 @@ const uploadParameterToParameterStore = (
       };
       await ssmClient.putParameter(sdkParameters).promise();
     } catch (e) {
-      // TODO
-      printer.error(`Failed to upload parameter: ${key}`);
-      printer.error(`Reason: ${e?.message ?? e}`);
+      throw new AmplifyFault('ParameterUploadFault', {
+        message: `Failed to upload ${key} to ParameterStore`,
+      }, e);
     }
-  }
-}
+  };
+};
