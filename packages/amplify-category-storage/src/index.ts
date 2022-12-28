@@ -86,7 +86,8 @@ export const console = async (context: $TSContext): Promise<void> => {
   const { amplify } = context;
   const amplifyMeta = stateManager.getMeta();
   if (!amplifyMeta.storage || Object.keys(amplifyMeta.storage).length === 0) {
-    return printer.error('Storage has NOT been added to this project.');
+    printer.error('Storage has NOT been added to this project.');
+    return;
   }
 
   const nameOverrides = {
@@ -101,9 +102,9 @@ export const console = async (context: $TSContext): Promise<void> => {
   const providerController = await import(`${__dirname}/provider-utils/${serviceSelection.providerName}/index`);
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return undefined;
+    return;
   }
-  return providerController.console(amplifyMeta, serviceSelection.providerName, serviceSelection.service);
+  await providerController.console(amplifyMeta, serviceSelection.providerName, serviceSelection.service);
 };
 
 export async function migrateStorageCategory(context: any) {
