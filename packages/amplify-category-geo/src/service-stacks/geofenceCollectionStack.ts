@@ -13,7 +13,7 @@ import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectio
 import { crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 
 type GeofenceCollectionStackProps = Pick<GeofenceCollectionParameters, 'groupPermissions'> &
-    TemplateMappings & { authResourceName: string };
+  TemplateMappings & { authResourceName: string };
 
 /**
  * geo fence collections stack class
@@ -35,15 +35,19 @@ export class GeofenceCollectionStack extends BaseStack {
     const inputParameters: string[] = Object.keys(this.props.groupPermissions).map(
       (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
-    inputParameters.push(
-      `auth${this.authResourceName}UserPoolId`,
-      'collectionName',
-      'env',
-      'isDefault',
-    );
+    inputParameters.push(`auth${this.authResourceName}UserPoolId`, 'collectionName', 'env', 'isDefault');
     this.parameters = this.constructInputParameters(inputParameters);
 
-    this.geofenceCollectionName = Fn.join('-', [this.parameters.get('collectionName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
+    const env = this.parameters.get('env');
+    const collectionName = this.parameters.get('collectionName');
+    if (!env) {
+      throw new TypeError('expected env to be defined');
+    }
+    if (!collectionName) {
+      throw new TypeError('expected collectionName to be defined');
+    }
+
+    this.geofenceCollectionName = Fn.join('-', [collectionName.valueAsString, env.valueAsString]);
 
     this.geofenceCollectionResource = this.constructCollectionResource();
     this.constructCollectionPolicyResources(this.geofenceCollectionResource);
@@ -124,9 +128,9 @@ export class GeofenceCollectionStack extends BaseStack {
         collectionName: collectionResource.getAtt('CollectionName').toString(),
       });
 
-      const crudActions: string[] = _.uniq(_.flatten(
-        this.groupPermissions[group].map((permission: string) => crudPermissionsMap[permission]),
-      ));
+      const crudActions: string[] = _.uniq(
+        _.flatten(this.groupPermissions[group].map((permission: string) => crudPermissionsMap[permission])),
+      );
       const policyDocument = new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
@@ -137,16 +141,14 @@ export class GeofenceCollectionStack extends BaseStack {
         ],
       });
 
+      const authResource = this.parameters.get(`auth${this.authResourceName}UserPoolId`);
+      if (!authResource) {
+        throw new TypeError('expected authResource to be defined');
+      }
       // eslint-disable-next-line no-new
       new iam.CfnPolicy(this, `${group}GeofenceCollectionPolicy`, {
         policyName: `${group}${this.geofenceCollectionName}Policy`,
-        roles: [
-          cdk.Fn.join('-',
-            [
-                this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-                `${group}GroupRole`,
-            ]),
-        ],
+        roles: [cdk.Fn.join('-', [authResource.valueAsString, `${group}GroupRole`])],
         policyDocument,
       });
     });

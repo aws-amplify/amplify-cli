@@ -38,7 +38,11 @@ export class AuthInputState extends CategoryInputState {
   }
 
   public getCLIInputPayload(): CognitoCLIInputs {
-    return JSONUtilities.readJson<CognitoCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true })!;
+    const inputs = JSONUtilities.readJson<CognitoCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true });
+    if (!inputs) {
+      throw new TypeError('Expected cli inputs to not be null');
+    }
+    return inputs
   }
 
   public cliInputFileExists(): boolean {

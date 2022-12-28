@@ -71,7 +71,10 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
   }
 
   try {
-    const manifest = JSONUtilities.readJson<PluginManifest>(pluginManifestFilePath)!;
+    const manifest = JSONUtilities.readJson<PluginManifest>(pluginManifestFilePath);
+    if (!manifest) {
+      throw new TypeError('expected manifest to be defined');
+    }
     const pluginNameValidationResult = await validPluginName(manifest.name);
 
     if (pluginNameValidationResult.isValid) {
@@ -112,7 +115,10 @@ function verifyCommands(context: VerificationContext): PluginVerificationResult 
 
 async function verifyEventHandlers(context: VerificationContext): Promise<PluginVerificationResult> {
   let isVerified = true;
-  if (context.manifest!.eventHandlers && context.manifest!.eventHandlers.length > 0) {
+  if (!context.manifest) {
+    throw new TypeError('expected context.manifest to be defined');
+  }
+  if (context.manifest.eventHandlers && context.manifest.eventHandlers.length > 0) {
     // Lazy load the plugin if not yet loaded
     if (!context.pluginModule) {
       context.pluginModule = await import(context.pluginDirPath);

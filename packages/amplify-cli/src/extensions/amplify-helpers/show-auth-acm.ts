@@ -22,17 +22,14 @@ export function showACM(sdl: string, nodeName: string) {
   if (!type) {
     throw new Error(`Model "${nodeName}" does not exist.`);
   } else {
-    const fields: string[] = type.fields!.map((field: FieldDefinitionNode) => field.name.value);
+    const fields: string[] = (type.fields ?? []).map((field: FieldDefinitionNode) => field.name.value);
     const acm = new AccessControlMatrix({ name: type.name.value, operations: MODEL_OPERATIONS, resources: fields });
     const parentAuthDirective = type.directives?.find(dir => dir.name.value === 'auth');
     if (parentAuthDirective) {
-      const authRules: AuthRule[] = getAuthDirectiveRules(
-        new DirectiveWrapper(parentAuthDirective),
-        {
-          isField: false,
-          deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
-        },
-      );
+      const authRules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(parentAuthDirective), {
+        isField: false,
+        deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
+      });
       convertModelRulesToRoles(acm, authRules);
     }
     for (const fieldNode of type.fields || []) {

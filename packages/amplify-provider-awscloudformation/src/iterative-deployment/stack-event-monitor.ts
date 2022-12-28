@@ -165,9 +165,9 @@ export class StackEventMonitor {
 
   private processNestedStack(event: StackEvent): void {
     if (event.ResourceType === 'AWS::CloudFormation::Stack') {
-      const physicalResourceId = event.PhysicalResourceId!;
+      const physicalResourceId = event.PhysicalResourceId;
       const idx = this.stacksBeingMonitored.indexOf(physicalResourceId);
-      if (idx >= 0 && event.ResourceStatus!.endsWith('_COMPLETE') && physicalResourceId !== this.stackName) {
+      if (event.ResourceStatus && idx >= 0 && event.ResourceStatus.endsWith('_COMPLETE') && physicalResourceId !== this.stackName) {
         this.stacksBeingMonitored.splice(idx, 1);
         this.completedStacks.add(physicalResourceId);
       } else if (!this.completedStacks.has(physicalResourceId)) {

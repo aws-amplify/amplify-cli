@@ -17,8 +17,11 @@ export function getHashForRootStack(dirPath, files?: string[]) {
 export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
   try {
     const projectPath = pathManager.findProjectRoot();
-    const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath!);
-    const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
+    if (!projectPath) {
+      throw new TypeError('expected projectPath to be defined');
+    }
+    const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath);
+    const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath);
     if (fs.existsSync(localBackendDir) && fs.existsSync(path.join(localBackendDir, rootStackFileName))) {
       const localCfnBuffer = fs.readFileSync(path.join(localBackendDir, rootStackFileName));
       if (fs.existsSync(cloudBackendDir) && fs.existsSync(path.join(cloudBackendDir, rootStackFileName))) {

@@ -44,7 +44,10 @@ const getTableFromTemplate = (cfnTemplate?: Template): Table | undefined => {
   if (_.isEmpty(cfnTemplate?.Resources)) {
     return undefined;
   }
-  const cfnTable = Object.values(cfnTemplate!.Resources!).find(resource => resource.Type === 'AWS::DynamoDB::Table') as Table | undefined;
+  if (!cfnTemplate?.Resources) {
+    throw new TypeError('expected cfnTemplate.Resources to be defined');
+  }
+  const cfnTable = Object.values(cfnTemplate.Resources).find(resource => resource.Type === 'AWS::DynamoDB::Table') as Table | undefined;
   return cfnTable;
 };
 

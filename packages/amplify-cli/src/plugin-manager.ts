@@ -70,7 +70,7 @@ export function getPluginsWithName(pluginPlatform: PluginPlatform, nameOrAlias: 
       result = result.concat(pluginPlatform.plugins[pluginName]);
     } else {
       pluginPlatform.plugins[pluginName].forEach(pluginInfo => {
-        if (pluginInfo.manifest.aliases && pluginInfo.manifest.aliases!.includes(nameOrAlias)) {
+        if (pluginInfo.manifest.aliases && pluginInfo.manifest.aliases.includes(nameOrAlias)) {
           result.push(pluginInfo);
         }
       });
@@ -86,7 +86,7 @@ export function getPluginsWithNameAndCommand(pluginPlatform: PluginPlatform, nam
   Object.keys(pluginPlatform.plugins).forEach(pluginName => {
     pluginPlatform.plugins[pluginName].forEach(pluginInfo => {
       const { name, aliases, commands, commandAliases } = pluginInfo.manifest;
-      const nameOrAliasMatching = name === nameOrAlias || (aliases && aliases!.includes(nameOrAlias));
+      const nameOrAliasMatching = name === nameOrAlias || (aliases && aliases.includes(nameOrAlias));
 
       if (nameOrAliasMatching) {
         if ((commands && commands.includes(command)) || (commandAliases && Object.keys(commandAliases).includes(command))) {
@@ -173,7 +173,10 @@ export const addPluginPackage = async (pluginPlatform: PluginPlatform, pluginDir
 
   if (pluginVerificationResult.verified) {
     const { packageJson, manifest } = pluginVerificationResult;
-    const pluginInfo = new PluginInfo(packageJson.name, packageJson.version, pluginDirPath, manifest!);
+    if (!manifest) {
+      throw new TypeError('expected manifest to be defined');
+    }
+    const pluginInfo = new PluginInfo(packageJson.name, packageJson.version, pluginDirPath, manifest);
 
     // take the package out of the excluded
     if (pluginPlatform.excluded[pluginInfo.manifest.name] && pluginPlatform.excluded[pluginInfo.manifest.name].length > 0) {

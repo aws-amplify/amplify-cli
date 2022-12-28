@@ -10,8 +10,7 @@ import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
 import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
 
-type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
-  TemplateMappings & { authResourceName: string };
+type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> & TemplateMappings & { authResourceName: string };
 
 /**
  * class to generate cfn for placeIndex resource
@@ -32,9 +31,7 @@ export class PlaceIndexStack extends BaseStack {
     this.authResourceName = this.props.authResourceName;
     this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    const inputParameters: string[] = this.props.groupPermissions.map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`,
-    );
+    const inputParameters: string[] = this.props.groupPermissions.map((group: string) => `authuserPoolGroups${group}GroupRole`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -47,7 +44,16 @@ export class PlaceIndexStack extends BaseStack {
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
-    this.placeIndexName = Fn.join('-', [this.parameters.get('indexName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
+    const env = this.parameters.get('env');
+
+    const indexName = this.parameters.get('indexName');
+    if (!env) {
+      throw new TypeError('expected env to be defined');
+    }
+    if (!indexName) {
+      throw new TypeError('expected indexName to be defined');
+    }
+    this.placeIndexName = Fn.join('-', [indexName.valueAsString, env.valueAsString]);
 
     this.placeIndexResource = this.constructIndexResource();
     this.constructIndexPolicyResource(this.placeIndexResource);
@@ -88,9 +94,9 @@ export class PlaceIndexStack extends BaseStack {
     geoUpdateDeleteIndexStatement.addActions('geo:UpdatePlaceIndex', 'geo:DeletePlaceIndex');
     geoUpdateDeleteIndexStatement.addResources(placeIndexARN);
 
-    const dataSource = this.parameters.get('dataProvider')!.valueAsString;
+    const dataSource = this.parameters.get('dataProvider')?.valueAsString;
 
-    const dataSourceIntendedUse = this.parameters.get('dataSourceIntendedUse')!.valueAsString;
+    const dataSourceIntendedUse = this.parameters.get('dataSourceIntendedUse')?.valueAsString;
 
     const customPlaceIndexLambdaCode = fs.readFileSync(customPlaceIndexLambdaCodePath, 'utf-8');
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
@@ -123,33 +129,34 @@ export class PlaceIndexStack extends BaseStack {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: [
-            'geo:SearchPlaceIndexForPosition',
-            'geo:SearchPlaceIndexForText',
-            'geo:SearchPlaceIndexForSuggestions',
-            'geo:GetPlace'],
+          actions: ['geo:SearchPlaceIndexForPosition', 'geo:SearchPlaceIndexForText', 'geo:SearchPlaceIndexForSuggestions', 'geo:GetPlace'],
           resources: [indexResource.getAtt('IndexArn').toString()],
         }),
       ],
     });
 
+    const authRoleName = this.parameters.get('authRoleName')?.valueAsString;
+    const unauthRoleName = this.parameters.get('unauthRoleName')?.valueAsString;
+    if (!authRoleName) {
+      throw new TypeError('expected authRoleName to be defined');
+    }
+    if (!unauthRoleName) {
+      throw new TypeError('expected unauthRoleName to be defined');
+    }
     const cognitoRoles: Array<string> = [];
-    if (this.accessType === AccessType.AuthorizedUsers
-      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    if (this.accessType === AccessType.AuthorizedUsers || this.accessType === AccessType.AuthorizedAndGuestUsers) {
+      cognitoRoles.push(authRoleName);
     }
     if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
+      cognitoRoles.push(unauthRoleName);
     }
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
-        cognitoRoles.push(
-          cdk.Fn.join('-',
-            [
-            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`,
-            ]),
-        );
+        const userPoolId = this.parameters.get(`auth${this.authResourceName}UserPoolId`)?.valueAsString;
+        if (!userPoolId) {
+          throw new TypeError('expected userPoolId to be defined');
+        }
+        cognitoRoles.push(cdk.Fn.join('-', [userPoolId, `${group}GroupRole`]));
       });
     }
 

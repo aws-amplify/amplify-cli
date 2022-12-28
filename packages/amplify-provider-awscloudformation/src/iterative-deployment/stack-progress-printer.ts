@@ -134,9 +134,9 @@ export class StackProgressPrinter implements IStackProgressPrinter {
         const { ResourceStatus: resourceStatus } = ev;
 
         let colorFn = chalk.reset;
-        if (CNF_ERROR_STATUS.includes(resourceStatus!)) {
+        if (resourceStatus && CNF_ERROR_STATUS.includes(resourceStatus)) {
           colorFn = chalk.red;
-        } else if (CFN_SUCCESS_STATUS.includes(resourceStatus!)) {
+        } else if (resourceStatus && CFN_SUCCESS_STATUS.includes(resourceStatus)) {
           colorFn = chalk.green;
         }
 

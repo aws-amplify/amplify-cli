@@ -55,7 +55,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
     };
 
     const successfulSchemas: StudioSchema[] = [];
-    const detachedForms: {id: string, name: string}[] = [];
+    const detachedForms: { id: string; name: string }[] = [];
     let hasSuccessfulForm = false;
     const failedResponseNames: string[] = [];
     const modelNames = dataSchema?.models ? new Set(Object.keys(dataSchema.models)) : new Set<string>();
@@ -74,14 +74,14 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
            * no longer exists.
            */
           if (
-            isStudioForm(failedSchema)
-            && failedSchema.id
-            && dataSchema
-            && eventType === 'PostPush'
-            && isFormDetachedFromModel(failedSchema, modelNames)
+            isStudioForm(failedSchema) &&
+            failedSchema.id &&
+            dataSchema &&
+            eventType === 'PostPush' &&
+            isFormDetachedFromModel(failedSchema, modelNames)
           ) {
             // Don't need to add form to failedResponseNames if it is going to be deleted
-            detachedForms.push({id: failedSchema.id, name: failedSchema.name});
+            detachedForms.push({ id: failedSchema.id, name: failedSchema.name });
             return;
           }
           failedResponseNames.push(result.schemaName);
@@ -113,7 +113,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     notifyMissingPackages(context);
 
-    deleteDetachedForms(detachedForms, studioClient);
+    await deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {
     printer.debug(e);
     spinner.fail('Failed to sync UI components');

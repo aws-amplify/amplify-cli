@@ -15,7 +15,7 @@ const INDENTATIONSPACE = 4;
 export default async function createNewPlugin(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
   const pluginName = await getPluginName(context, pluginParentDirPath);
   if (pluginName) {
-    const pluginDirPath = await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName!);
+    const pluginDirPath = await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName);
     return pluginDirPath;
   }
   return undefined;
@@ -25,9 +25,12 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
   let pluginName = 'my-amplify-plugin';
   const yesFlag = context.input.options && context.input.options[constants.YES];
 
-  if (context.input.subCommands!.length > 1) {
+  if ((context.input.subCommands ?? []).length > 1) {
     // subcommands: ['new', 'name']
-    pluginName = context.input.subCommands![1];
+    if (!context.input.subCommands) {
+      throw new TypeError('expected context.input.subcommands to be defined');
+    }
+    pluginName = context.input.subCommands[1];
   } else if (!yesFlag) {
     const pluginNameQuestion: InputQuestion = {
       type: 'input',

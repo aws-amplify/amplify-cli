@@ -14,7 +14,7 @@ const BINARY_LOCATION = 'https://package.cli.amplify.aws';
 
 const pipeline = util.promisify(stream.pipeline);
 
-const error = (msg: string|Error): void => {
+const error = (msg: string | Error): void => {
   console.error(msg);
   process.exit(1);
 };
@@ -57,12 +57,11 @@ const getPlatformCompressedBinaryName = (): string => {
   const architecture = os.arch();
   const platform = supportedPlatforms.find(platformInfo => type === platformInfo.TYPE && architecture === platformInfo.ARCHITECTURE);
   if (!platform) {
-    error(
-      `Platform with type "${type}" and architecture "${architecture}" is not supported by ${name}.}`,
-    );
+    error(`Platform with type "${type}" and architecture "${architecture}" is not supported by ${name}.}`);
+    throw new TypeError('expected platform to be defined');
   }
 
-  return platform!.COMPRESSED_BINARY_PATH;
+  return platform.COMPRESSED_BINARY_PATH;
 };
 
 /**
@@ -123,11 +122,7 @@ export class Binary {
     console.log(`Downloading release from ${getCompressedBinaryUrl()}`);
     try {
       const res = await axios({ url: getCompressedBinaryUrl(), responseType: 'stream' });
-      await pipeline(
-        res.data,
-        createGunzip(),
-        this.extract(),
-      );
+      await pipeline(res.data, createGunzip(), this.extract());
 
       console.log('amplify has been installed!');
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });

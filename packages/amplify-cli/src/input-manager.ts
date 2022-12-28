@@ -107,25 +107,31 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
 
   normalizeInput(input);
 
-  const pluginCandidates = getPluginsWithName(pluginPlatform, input.plugin!);
+  if (!input.command) {
+    throw new TypeError('expected input.command to be defined');
+  }
+  if (!input.plugin) {
+    throw new TypeError('expected input.plugin to be defined');
+  }
+  const pluginCandidates = getPluginsWithName(pluginPlatform, input.plugin);
 
   if (pluginCandidates.length > 0) {
     for (let i = 0; i < pluginCandidates.length; i++) {
       const { name, commands, commandAliases } = pluginCandidates[i].manifest;
 
-      if ((commands && commands!.includes(constants.HELP)) || (commandAliases && Object.keys(commandAliases).includes(constants.HELP))) {
+      if ((commands && commands.includes(constants.HELP)) || (commandAliases && Object.keys(commandAliases).includes(constants.HELP))) {
         result.helpCommandAvailable = true;
       }
 
       // verify if `input.command` is an actual command.
-      if (commands && commands!.includes(input.command!)) {
+      if (commands && commands.includes(input.command)) {
         result.verified = true;
         break;
       }
 
       // verify if `input.command` is an alias for a command.
-      if (commandAliases && Object.keys(commandAliases).includes(input.command!)) {
-        input.command = commandAliases[input.command!];
+      if (commandAliases && Object.keys(commandAliases).includes(input.command)) {
+        input.command = commandAliases[input.command];
         result.verified = true;
         break;
       }
@@ -133,9 +139,9 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
       if (Array.isArray(input.subCommands) && input.subCommands.length > 0) {
         // if `input.command` is not a command name or an alias for a command, check the
         // first sub-command for a verb / noun swap (i.e. `env add` versus `add env`).
-        if (commands && commands!.includes(input.subCommands[0])) {
+        if (commands && commands.includes(input.subCommands[0])) {
           const command = input.subCommands[0];
-          input.subCommands[0] = input.command!;
+          input.subCommands[0] = input.command;
           input.command = command;
 
           result.verified = true;
@@ -145,7 +151,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         // same as above, but check if the first sub-command is an alias.
         if (commandAliases && Object.prototype.hasOwnProperty.call(commandAliases, input.subCommands[0])) {
           const command = commandAliases[input.subCommands[0]];
-          input.subCommands[0] = input.command!;
+          input.subCommands[0] = input.command;
           input.command = command;
 
           result.verified = true;
@@ -154,25 +160,25 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
       }
 
       // if `input.command` is the default plugin command, check `input.options` for what to do.
-      if (input.command! === constants.PLUGIN_DEFAULT_COMMAND) {
-        if (commands && commands!.includes(name)) {
+      if (input.command === constants.PLUGIN_DEFAULT_COMMAND) {
+        if (commands && commands.includes(name)) {
           input.command = name;
           result.verified = true;
           break;
         }
-        if (input.options && input.options[constants.VERSION] && commands && commands!.includes(constants.VERSION)) {
+        if (input.options && input.options[constants.VERSION] && commands && commands.includes(constants.VERSION)) {
           input.command = constants.VERSION;
           result.verified = true;
           break;
         }
-        if (input.options && input.options[constants.HELP] && commands && commands!.includes(constants.HELP)) {
+        if (input.options && input.options[constants.HELP] && commands && commands.includes(constants.HELP)) {
           input.command = constants.HELP;
           result.verified = true;
           break;
         }
 
         // as a fall back, use the help command
-        if (commands && commands!.includes(constants.HELP)) {
+        if (commands && commands.includes(constants.HELP)) {
           input.command = constants.HELP;
           result.verified = true;
           break;
@@ -183,12 +189,12 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
     if (!result.verified) {
       let commandString = input.plugin === constants.CORE ? '' : input.plugin;
 
-      if (input.command! !== constants.PLUGIN_DEFAULT_COMMAND) {
-        commandString += ' ' + input.command!;
+      if (input.command !== constants.PLUGIN_DEFAULT_COMMAND) {
+        commandString += ' ' + input.command;
       }
 
       if (input.subCommands) {
-        commandString += ' ' + input.subCommands!.join(' ');
+        commandString += ' ' + input.subCommands.join(' ');
       }
 
       result.message = `The Amplify CLI can NOT find command: ${commandString}`;

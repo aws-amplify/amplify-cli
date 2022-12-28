@@ -1,9 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import sequential from 'promise-sequential';
-import {
-  stateManager, executeHooks, HooksMeta,
-} from 'amplify-cli-core';
+import { stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
@@ -25,15 +23,19 @@ import {
   AmplifyPostEnvAddEventData,
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import {
-  FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath,
-} from './domain/amplify-usageData/UsageDataTypes';
+import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command
  */
 export const executeCommand = async (context: Context): Promise<void> => {
-  const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
+  if (!context.input.plugin) {
+    throw new TypeError('expected context.input.plugin to be defined');
+  }
+  if (!context.input.command) {
+    throw new TypeError('expected context.input.command to be defined');
+  }
+  const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin, context.input.command);
 
   if (pluginCandidates.length === 1) {
     await executePluginModuleCommand(context, pluginCandidates[0]);
@@ -57,7 +59,10 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
   let promptForSelection = true;
 
   const noSmartPickCommands = ['add', 'help'];
-  const commandAllowsSmartPick = !noSmartPickCommands.includes(context.input.command!);
+  if (!context.input.command) {
+    throw new TypeError('expected context.input.command to be defined');
+  }
+  const commandAllowsSmartPick = !noSmartPickCommands.includes(context.input.command);
 
   if (commandAllowsSmartPick) {
     const smartPickResult = smartPickPlugin(pluginCandidates);
@@ -70,7 +75,7 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
   if (promptForSelection) {
     // only use the manifest's displayName if there are no duplicates
     const displayNames = pluginCandidates.map(candidate => candidate?.manifest?.displayName);
-    const noDuplicateDisplayNames = (new Set(displayNames)).size === displayNames.length;
+    const noDuplicateDisplayNames = new Set(displayNames).size === displayNames.length;
 
     // special handling for hosting plugins
     const consoleHostingPlugins = pluginCandidates.filter(pluginInfo => pluginInfo.packageName === 'amplify-console-hosting');
@@ -90,15 +95,19 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
-    result = await prompter.pick('Select the plugin module to execute', pluginCandidates.map(plugin => {
-      const displayName = plugin.manifest.displayName && noDuplicateDisplayNames
-        ? plugin.manifest.displayName
-        : `${plugin.packageName}@${plugin.packageVersion}`;
-      return {
-        name: displayName,
-        value: plugin,
-      };
-    }));
+    result = await prompter.pick(
+      'Select the plugin module to execute',
+      pluginCandidates.map(plugin => {
+        const displayName =
+          plugin.manifest.displayName && noDuplicateDisplayNames
+            ? plugin.manifest.displayName
+            : `${plugin.packageName}@${plugin.packageVersion}`;
+        return {
+          name: displayName,
+          value: plugin,
+        };
+      }),
+    );
   }
 
   return result;
@@ -122,7 +131,7 @@ const smartPickPlugin = (pluginCandidates: PluginInfo[]): PluginInfo | undefined
     // 2. if no service in metadata is declared in any candidate's manifest, and only one candidate does not define the optional
     // "services" field in its manifest, select the candidate, this is for the existing implementation of official plugins
     pluginCandidates.forEach(candidate => {
-      if (candidate.manifest.services && candidate.manifest.services!.length > 0) {
+      if (candidate.manifest.services && candidate.manifest.services.length > 0) {
         const servicesSetInPlugin = new Set<string>(candidate.manifest.services);
         if (twoStringSetsAreEqual(servicesSetInMeta, servicesSetInPlugin)) {
           pluginWithMatchingServices.push(candidate);
@@ -147,9 +156,12 @@ const smartPickPlugin = (pluginCandidates: PluginInfo[]): PluginInfo | undefined
 };
 
 const executePluginModuleCommand = async (context: Context, plugin: PluginInfo): Promise<void> => {
-  const { commands, commandAliases } = plugin.manifest;
-  if (!commands!.includes(context.input.command!)) {
-    context.input.command = commandAliases![context.input.command!];
+  const { commands = [], commandAliases = {} } = plugin.manifest;
+  if (!context.input.command) {
+    throw new TypeError('expected context.input.command to be defined');
+  }
+  if (!commands.includes(context.input.command)) {
+    context.input.command = commandAliases[context.input.command];
   }
 
   if (!fs.existsSync(plugin.packageLocation)) {
@@ -193,9 +205,12 @@ const getHandler = async (pluginInfo: PluginInfo, context: Context): Promise<() 
 // old plugin execution approach of scanning the command folder and locating the command file
 // TODO check if this is used anywhere and remove if not
 const legacyCommandExecutor = async (context: Context, plugin: PluginInfo): Promise<void> => {
-  let commandFilePath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
+  if (!context.input.command) {
+    throw new TypeError('expected context.input.command to be defined');
+  }
+  let commandFilePath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command));
   if (context.input.subCommands && context.input.subCommands.length > 0) {
-    commandFilePath = path.join(commandFilePath, ...context.input.subCommands!);
+    commandFilePath = path.join(commandFilePath, ...context.input.subCommands);
   }
 
   let commandModule;
@@ -249,7 +264,7 @@ const raisePreEvent = async (context: Context): Promise<void> => {
       await raisePreExportEvent(context);
       break;
     default:
-      // fall through
+    // fall through
   }
 };
 
@@ -293,7 +308,7 @@ const raisePostEvent = async (context: Context): Promise<void> => {
       await raisePostCodegenModelsEvent(context);
       break;
     default:
-      // fall through
+    // fall through
   }
   await executeHooks(HooksMeta.getInstance(context.input, 'post'));
 };

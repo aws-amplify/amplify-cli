@@ -10,8 +10,7 @@ import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
 import { customMapLambdaCodePath } from '../service-utils/constants';
 
-type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> &
-  TemplateMappings & { authResourceName: string };
+type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> & TemplateMappings & { authResourceName: string };
 
 /**
  * Class to generate cfn for Map resource
@@ -32,9 +31,7 @@ export class MapStack extends BaseStack {
     this.authResourceName = this.props.authResourceName;
     this.mapRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    const inputParameters: string[] = (this.props.groupPermissions || []).map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`,
-    );
+    const inputParameters: string[] = (this.props.groupPermissions || []).map((group: string) => `authuserPoolGroups${group}GroupRole`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -46,7 +43,16 @@ export class MapStack extends BaseStack {
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
-    this.mapName = Fn.join('-', [this.parameters.get('mapName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
+    const mapName = this.parameters.get('mapName');
+    const env = this.parameters.get('env');
+    if (!mapName) {
+      throw new TypeError('expected mapName to be defined');
+    }
+    if (!env) {
+      throw new TypeError('expected env to be defined');
+    }
+
+    this.mapName = Fn.join('-', [mapName.valueAsString, env.valueAsString]);
     this.mapResource = this.constructMapResource();
     this.constructMapPolicyResource(this.mapResource);
     this.constructOutputs();
@@ -57,9 +63,13 @@ export class MapStack extends BaseStack {
     new cdk.CfnOutput(this, 'Name', {
       value: this.mapResource.getAtt('MapName').toString(),
     });
+    const mapStyle = this.parameters.get('mapStyle');
+    if (!mapStyle) {
+      throw new TypeError('expected mapStyle to be defined');
+    }
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Style', {
-      value: this.parameters.get('mapStyle')!.valueAsString,
+      value: mapStyle.valueAsString,
     });
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Region', {
@@ -90,7 +100,10 @@ export class MapStack extends BaseStack {
     geoUpdateDeleteMapStatement.addActions('geo:UpdateMap', 'geo:DeleteMap');
     geoUpdateDeleteMapStatement.addResources(mapARN);
 
-    const mapStyle = this.parameters.get('mapStyle')!.valueAsString;
+    const mapStyle = this.parameters.get('mapStyle')?.valueAsString;
+    if (!mapStyle) {
+      throw new TypeError('expected mapStyle to be defined');
+    }
 
     const customMapLambdaCode = fs.readFileSync(customMapLambdaCodePath, 'utf-8');
     const customMapLambda = new lambda.Function(this, 'CustomMapLambda', {
@@ -130,22 +143,27 @@ export class MapStack extends BaseStack {
     });
 
     const cognitoRoles: Array<string> = [];
-    if (this.accessType === AccessType.AuthorizedUsers
-      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    const authRoleName = this.parameters.get('authRoleName')?.valueAsString;
+    const unauthRoleName = this.parameters.get('unauthRoleName')?.valueAsString;
+    if (!authRoleName) {
+      throw new TypeError('expected authRoleName to be defined');
+    }
+    if (!unauthRoleName) {
+      throw new TypeError('expected unauthRoleName to be defined');
+    }
+    if (this.accessType === AccessType.AuthorizedUsers || this.accessType === AccessType.AuthorizedAndGuestUsers) {
+      cognitoRoles.push(authRoleName);
     }
     if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
+      cognitoRoles.push(unauthRoleName);
     }
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
-        cognitoRoles.push(
-          cdk.Fn.join('-',
-            [
-            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`,
-            ]),
-        );
+        const userPoolName = this.parameters.get(`auth${this.authResourceName}UserPoolId`)?.valueAsString;
+        if (!userPoolName) {
+          throw new TypeError('expected userPoolName to be defined');
+        }
+        cognitoRoles.push(cdk.Fn.join('-', [userPoolName, `${group}GroupRole`]));
       });
     }
 

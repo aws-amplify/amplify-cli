@@ -59,7 +59,7 @@ export const copyOverride = () => {
     }
     const content = fs.readFileSync(src);
     // eslint-disable-next-line no-bitwise
-    if (flags! & fs.constants.COPYFILE_EXCL) {
+    if (flags && flags & fs.constants.COPYFILE_EXCL) {
       try {
         fs.statSync(dest);
       } catch (statError) {

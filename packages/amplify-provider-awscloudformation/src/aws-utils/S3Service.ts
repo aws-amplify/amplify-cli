@@ -27,7 +27,7 @@ export class S3Service implements IS3Service {
       const response = await this.s3.listBuckets().promise();
 
       if (response.Buckets) {
-        this.cachedBucketList.push(...response.Buckets!);
+        this.cachedBucketList.push(...(response.Buckets ?? []));
       }
     }
 
@@ -47,9 +47,13 @@ export class S3Service implements IS3Service {
       if (error.code === 'NotFound') {
         return false;
       }
-      throw new AmplifyFault('UnknownFault', {
-        message: error.message,
-      }, error);
+      throw new AmplifyFault(
+        'UnknownFault',
+        {
+          message: error.message,
+        },
+        error,
+      );
     }
   }
 

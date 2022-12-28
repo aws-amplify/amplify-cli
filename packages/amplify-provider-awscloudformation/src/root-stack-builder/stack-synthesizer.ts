@@ -27,12 +27,12 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
    */
   setStackAsset = (templateName: string, template: string): void => {
     RootStackSynthesizer.stackAssets.set(templateName, JSONUtilities.parse(template));
-  }
+  };
 
   /**
    * get all stacks
    */
-  collectStacks = (): Map<string, Template> => new Map(RootStackSynthesizer.stackAssets.entries())
+  collectStacks = (): Map<string, Template> => new Map(RootStackSynthesizer.stackAssets.entries());
 
   /**
    * add a stack
@@ -42,8 +42,9 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
   }
 
   getStack = (stackName: string): Stack => {
-    if (this.stacks.has(stackName)) {
-      return this.stacks.get(stackName)!;
+    const stack = this.stacks.get(stackName);
+    if (stack) {
+      return stack;
     }
 
     throw new AmplifyFault('UnknownFault', {

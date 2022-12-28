@@ -15,8 +15,8 @@ export const isMigrateProject = () => {
 
 export const isRootOverrideFileModifiedSinceLastPush = () => {
   const projectPath = pathManager.findProjectRoot();
-  const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath!);
-  const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
+  const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath);
+  const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath);
   if (fs.existsSync(localBackendDir) && fs.existsSync(path.join(localBackendDir, '..', 'override.ts'))) {
     const localCfnBuffer = fs.readFileSync(path.join(localBackendDir, '..', 'override.ts'));
     if (fs.existsSync(cloudBackendDir) && fs.existsSync(path.join(cloudBackendDir, '..', 'override.ts'))) {

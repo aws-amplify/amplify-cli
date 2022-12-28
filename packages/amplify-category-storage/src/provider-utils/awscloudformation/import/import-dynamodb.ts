@@ -1,7 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IDynamoDBService } from 'amplify-util-import';
 import Enquirer from 'enquirer';
@@ -52,7 +50,7 @@ export const importDynamoDB = async (
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, persistEnvParameters);
 
   if (printSuccessMessage) {
-    printSuccess(answers.tableName!);
+    printSuccess(answers.tableName ?? '');
   }
 
   return {
@@ -112,10 +110,12 @@ const importServiceWalkthrough = async (
     // eslint-disable-next-line prefer-destructuring
     answers.tableName = tableList[0];
 
-    answers.resourceName = answers.tableName.replace(/[\W_]+/g, '');
+    answers.resourceName = answers.tableName?.replace(/[\W_]+/g, '');
     answers.tableDescription = await dynamoDB.getTableDetails(answers.tableName);
 
-    printer.info(importMessages.OneTable(answers.tableName));
+    if (answers.tableName) {
+      printer.info(importMessages.OneTable(answers.tableName));
+    }
   } else {
     const tableNameQuestion = {
       type: 'autocomplete',
@@ -130,8 +130,11 @@ const importServiceWalkthrough = async (
     // any case needed because async validation TS definition is not up to date
     const { tableName } = await enquirer.prompt(tableNameQuestion as $TSAny);
 
-    answers.tableName = tableName!;
-    answers.resourceName = answers.tableName!.replace(/[\W_]+/g, '');
+    answers.tableName = tableName;
+    if (!answers.tableName) {
+      throw new TypeError('expected answers.tableName to be defined');
+    }
+    answers.resourceName = answers.tableName.replace(/[\W_]+/g, '');
 
     answers.tableDescription = await dynamoDB.getTableDetails(answers.tableName);
   }
@@ -168,14 +171,17 @@ const updateStateFiles = async (
     providerPlugin: questionParameters.providerName,
     dependsOn: [],
   };
+  if (!answers.resourceName) {
+    throw new TypeError('expected answers.resourceName to be defined');
+  }
 
   // Create and persist parameters
   const resourceParameters: DynamoDBResourceParameters = {
-    resourceName: answers.resourceName!,
+    resourceName: answers.resourceName,
     serviceType: 'imported',
   };
 
-  stateManager.setResourceParametersJson(undefined, AmplifyCategories.STORAGE, answers.resourceName!, resourceParameters);
+  stateManager.setResourceParametersJson(undefined, AmplifyCategories.STORAGE, answers.resourceName, resourceParameters);
 
   // Add resource data to amplify-meta file and backend-config, since backend-config requires less information
   // we have to do a separate update to it without duplicating the methods
@@ -184,7 +190,7 @@ const updateStateFiles = async (
 
   context.amplify.updateamplifyMetaAfterResourceAdd(
     AmplifyCategories.STORAGE,
-    answers.resourceName!,
+    answers.resourceName,
     metaConfiguration,
     backendConfiguration,
     true,
@@ -194,7 +200,7 @@ const updateStateFiles = async (
   const envSpecificParameters: DynamoDBEnvSpecificResourceParameters = createEnvSpecificResourceParameters(answers, questionParameters);
 
   if (updateEnvSpecificParameters) {
-    context.amplify.saveEnvResourceParameters(context, AmplifyCategories.STORAGE, answers.resourceName!, envSpecificParameters);
+    context.amplify.saveEnvResourceParameters(context, AmplifyCategories.STORAGE, answers.resourceName, envSpecificParameters);
   }
 
   return {
@@ -206,18 +212,21 @@ const updateStateFiles = async (
 };
 
 const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: DynamoDBImportParameters): DynamoDBMetaOutput => {
+  if (!answers.tableDescription) {
+    throw new TypeError('expected answers.tableDescription to be defined');
+  }
   const output: DynamoDBMetaOutput = {
     Name: answers.tableName,
     Region: questionParameters.region,
-    Arn: answers.tableDescription!.TableArn,
-    StreamArn: answers.tableDescription!.LatestStreamArn,
+    Arn: answers.tableDescription.TableArn,
+    StreamArn: answers.tableDescription.LatestStreamArn,
   };
 
-  const hashKey = answers.tableDescription!.KeySchema?.find(ks => ks.KeyType === 'HASH');
-  const sortKeys = answers.tableDescription!.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
+  const hashKey = answers.tableDescription?.KeySchema?.find(ks => ks.KeyType === 'HASH');
+  const sortKeys = answers.tableDescription?.KeySchema?.filter(ks => ks.KeyType === 'RANGE') ?? [];
 
   if (hashKey) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
+    const attribute = answers.tableDescription.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
 
     if (attribute) {
       output.PartitionKeyName = hashKey.AttributeName;
@@ -226,7 +235,7 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
   }
 
   if (sortKeys && sortKeys.length > 0) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
+    const attribute = answers.tableDescription.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
 
     if (attribute) {
       output.SortKeyName = sortKeys[0].AttributeName;
@@ -241,18 +250,27 @@ const createEnvSpecificResourceParameters = (
   answers: DynamoDBImportAnswers,
   questionParameters: DynamoDBImportParameters,
 ): DynamoDBEnvSpecificResourceParameters => {
+  if (!answers.tableName) {
+    throw new TypeError('expected answers.tableName to be defined');
+  }
+  if (!questionParameters.region) {
+    throw new TypeError('expected questionParameters.region to be defined');
+  }
+  if (!answers.tableDescription) {
+    throw new TypeError('expected answers.tableDescription to be defined');
+  }
   const envSpecificResourceParameters: DynamoDBEnvSpecificResourceParameters = {
-    tableName: answers.tableName!,
-    region: questionParameters.region!,
-    arn: answers.tableDescription!.TableArn,
-    streamArn: answers.tableDescription!.LatestStreamArn,
+    tableName: answers.tableName,
+    region: questionParameters.region,
+    arn: answers.tableDescription.TableArn,
+    streamArn: answers.tableDescription.LatestStreamArn,
   };
 
-  const hashKey = answers.tableDescription!.KeySchema?.find(ks => ks.KeyType === 'HASH');
-  const sortKeys = answers.tableDescription!.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
+  const hashKey = answers.tableDescription.KeySchema?.find(ks => ks.KeyType === 'HASH');
+  const sortKeys = answers.tableDescription.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
 
   if (hashKey) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
+    const attribute = answers.tableDescription.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
 
     if (attribute) {
       envSpecificResourceParameters.partitionKeyName = hashKey.AttributeName;
@@ -261,7 +279,7 @@ const createEnvSpecificResourceParameters = (
   }
 
   if (sortKeys && sortKeys.length > 0) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
+    const attribute = answers.tableDescription.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
 
     if (attribute) {
       envSpecificResourceParameters.sortKeyName = sortKeys[0].AttributeName;
@@ -310,7 +328,14 @@ export const importedDynamoDBEnvInit = async (
       if (currentResource && currentResource.output) {
         const {
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          Name, Region, Arn, StreamArn, PartitionKeyName, PartitionKeyType, SortKeyName, SortKeyType,
+          Name,
+          Region,
+          Arn,
+          StreamArn,
+          PartitionKeyName,
+          PartitionKeyType,
+          SortKeyName,
+          SortKeyType,
         } = currentResource.output;
 
         /* eslint-disable no-param-reassign */
@@ -329,16 +354,20 @@ export const importedDynamoDBEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance
-      .getResourceParamManager(AmplifyCategories.STORAGE, resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager(
+      AmplifyCategories.STORAGE,
+      resourceName,
+    );
 
+    const dynamoDbTableName = resourceParamManager.getParam(DynamoDBParam.TABLE_NAME);
+    if (!dynamoDbTableName) {
+      throw new TypeError('expected dynamoDbTableName to be defined');
+    }
     if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.ImportPreviousTable(
-          resourceName, resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!, context.exeInfo.sourceEnvName,
-        ),
+        message: importMessages.ImportPreviousTable(resourceName, dynamoDbTableName, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -350,10 +379,14 @@ export const importedDynamoDBEnvInit = async (
         };
       }
 
+      const dynamoDbRegion = resourceParamManager.getParam(DynamoDBParam.REGION);
+      if (!dynamoDbRegion) {
+        throw new TypeError('expected dynamoDbRegion to be defined');
+      }
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.tableName = resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!;
-      currentEnvSpecificParameters.region = resourceParamManager.getParam(DynamoDBParam.REGION)!;
+      currentEnvSpecificParameters.tableName = dynamoDbTableName;
+      currentEnvSpecificParameters.region = dynamoDbRegion;
       currentEnvSpecificParameters.arn = resourceParamManager.getParam(DynamoDBParam.ARN);
       currentEnvSpecificParameters.streamArn = resourceParamManager.getParam(DynamoDBParam.STREAM_ARN);
       currentEnvSpecificParameters.partitionKeyName = resourceParamManager.getParam(DynamoDBParam.PARTITION_KEY_NAME);

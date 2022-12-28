@@ -1,7 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSAny, $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IS3Service } from 'amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
@@ -67,7 +65,10 @@ export const importS3 = async (
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, persistEnvParameters);
 
   if (printSuccessMessage) {
-    printSuccess(answers.bucketName!);
+    if (!answers.bucketName) {
+      throw new TypeError('expected answers.bucketName to be defined');
+    }
+    printSuccess(answers.bucketName);
   }
 
   return {
@@ -129,11 +130,11 @@ const importServiceWalkthrough = async (
   const enquirer = new Enquirer<S3ImportAnswers>(undefined, defaultAnswers);
 
   if (bucketList.length === 1) {
-    answers.bucketName = bucketList[0].Name!;
+    answers.bucketName = bucketList[0].Name;
 
-    printer.info(importMessages.OneBucket(answers.bucketName));
+    printer.info(importMessages.OneBucket(answers.bucketName ?? ''));
   } else {
-    const bucketNameList = bucketList.map(b => b.Name!);
+    const bucketNameList = bucketList.map(b => b.Name);
 
     const bucketNameQuestion = {
       type: 'autocomplete',
@@ -151,8 +152,11 @@ const importServiceWalkthrough = async (
     answers.bucketName = bucketName;
   }
 
+  if (!answers.bucketName) {
+    throw new TypeError('expected answers.bucketName to be defined');
+  }
   // Save the region as we need to store it in resource parameters
-  questionParameters.region = await s3.getBucketLocation(answers.bucketName!);
+  questionParameters.region = await s3.getBucketLocation(answers.bucketName);
 
   return {
     questionParameters,
@@ -237,26 +241,29 @@ export const updateStateFiles = async (
     dependsOn: [],
   };
 
+  if (!answers.resourceName) {
+    throw new TypeError('expected answers.resourceName to be defined');
+  }
   // Create and persist parameters
   const resourceParameters: S3ResourceParameters = {
-    resourceName: answers.resourceName!,
+    resourceName: answers.resourceName,
     serviceType: 'imported',
   };
 
-  stateManager.setResourceParametersJson(undefined, 'storage', answers.resourceName!, resourceParameters);
+  stateManager.setResourceParametersJson(undefined, 'storage', answers.resourceName, resourceParameters);
 
   // Add resource data to amplify-meta file and backend-config, since backend-config requires less information
   // we have to do a separate update to it without duplicating the methods
   const metaConfiguration = _.clone(backendConfiguration) as S3MetaConfiguration;
   metaConfiguration.output = createMetaOutput(answers, questionParameters);
 
-  context.amplify.updateamplifyMetaAfterResourceAdd('storage', answers.resourceName!, metaConfiguration, backendConfiguration, true);
+  context.amplify.updateamplifyMetaAfterResourceAdd('storage', answers.resourceName, metaConfiguration, backendConfiguration, true);
 
   // Update team provider-info
   const envSpecificParameters: S3EnvSpecificResourceParameters = createEnvSpecificResourceParameters(answers, questionParameters);
 
   if (updateEnvSpecificParameters) {
-    context.amplify.saveEnvResourceParameters(context, 'storage', answers.resourceName!, envSpecificParameters);
+    context.amplify.saveEnvResourceParameters(context, 'storage', answers.resourceName, envSpecificParameters);
   }
 
   return {
@@ -280,9 +287,15 @@ const createEnvSpecificResourceParameters = (
   answers: S3ImportAnswers,
   questionParameters: S3ImportParameters,
 ): S3EnvSpecificResourceParameters => {
+  if (!answers.bucketName) {
+    throw new TypeError('expected answers.bucketName to be defined');
+  }
+  if (!questionParameters.region) {
+    throw new TypeError('expected questionParameters.region to be defined');
+  }
   const envSpecificResourceParameters: S3EnvSpecificResourceParameters = {
-    bucketName: answers.bucketName!,
-    region: questionParameters.region!,
+    bucketName: answers.bucketName,
+    region: questionParameters.region,
   };
 
   return envSpecificResourceParameters;
@@ -334,13 +347,24 @@ export const importedS3EnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager('storage', resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager(
+      'storage',
+      resourceName,
+    );
 
     if (resourceParamManager.hasAnyParams()) {
+      const bucketName = resourceParamManager.getParam('bucketName');
+      const regionName = resourceParamManager.getParam('region');
+      if (!regionName) {
+        throw new TypeError('expected regionName to be defined');
+      }
+      if (!bucketName) {
+        throw new TypeError('expected bucketName to be defined');
+      }
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.ImportPreviousBucket(resourceName, resourceParamManager.getParam('bucketName')!, context.exeInfo.sourceEnvName),
+        message: importMessages.ImportPreviousBucket(resourceName, bucketName, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -354,8 +378,8 @@ export const importedS3EnvInit = async (
 
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.bucketName = resourceParamManager.getParam('bucketName')!;
-      currentEnvSpecificParameters.region = resourceParamManager.getParam('region')!;
+      currentEnvSpecificParameters.bucketName = bucketName;
+      currentEnvSpecificParameters.region = regionName;
       /* eslint-enable */
     }
   }
@@ -390,8 +414,11 @@ export const importedS3EnvInit = async (
     };
   }
 
+  if (!answers.bucketName) {
+    throw new TypeError('expected answers.bucketName to be defined');
+  }
   // Save the region as we need to store it in resource parameters
-  questionParameters.region = await s3.getBucketLocation(answers.bucketName!);
+  questionParameters.region = await s3.getBucketLocation(answers.bucketName);
 
   const newState = await updateStateFiles(context, questionParameters, answers, false);
 
@@ -428,8 +455,11 @@ const headlessImport = async (
     throw new Error(importMessages.BucketNotFound(currentEnvSpecificParameters.bucketName));
   }
 
+  if (!answers.bucketName) {
+    throw new TypeError('expected answers.bucketName to be defined');
+  }
   // Save the region as we need to store it in resource parameters
-  questionParameters.region = await s3.getBucketLocation(answers.bucketName!);
+  questionParameters.region = await s3.getBucketLocation(answers.bucketName);
 
   const newState = await updateStateFiles(context, questionParameters, answers, false);
 
@@ -439,9 +469,7 @@ const headlessImport = async (
   };
 };
 
-const ensureHeadlessParameters = (
-  headlessParams: ImportS3HeadlessParameters,
-): S3EnvSpecificResourceParameters => {
+const ensureHeadlessParameters = (headlessParams: ImportS3HeadlessParameters): S3EnvSpecificResourceParameters => {
   // If we are doing headless mode, validate parameter presence and overwrite the input values from env specific params since they can be
   // different for the current env operation (eg region can mismatch)
 

@@ -33,16 +33,16 @@ export class DynamoDBInputState {
   }
 
   public getCliInputPayload(): DynamoDBCLIInputs {
-    let cliInputs: DynamoDBCLIInputs;
-
     // Read cliInputs file if exists
     try {
-      cliInputs = JSONUtilities.readJson<DynamoDBCLIInputs>(this._cliInputsFilePath)!;
+      const cliInputs = JSONUtilities.readJson<DynamoDBCLIInputs>(this._cliInputsFilePath);
+      if (!cliInputs) {
+        throw new TypeError('expected cliInputs to be defined');
+      }
+      return cliInputs;
     } catch (e) {
       throw new Error('cli-inputs.json file missing from the resource directory');
     }
-
-    return cliInputs;
   }
 
   public cliInputFileExists(): boolean {

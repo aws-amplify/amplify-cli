@@ -36,7 +36,7 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
 }
 
 export default function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString = '************'): Input {
-  const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
+  const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput) ?? '');
   const argv = input.argv;
   const length = argv.length;
   let redactString = false;

@@ -14,51 +14,51 @@ import isChildPath from '../utils/is-child-path';
 import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 
-export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
-  pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
+export async function scanPluginPlatform(pluginPlatformParam?: PluginPlatform): Promise<PluginPlatform> {
+  const pluginPlatform = pluginPlatformParam || readPluginsJsonFile() || new PluginPlatform();
 
-  pluginPlatform!.plugins = new PluginCollection();
+  pluginPlatform.plugins = new PluginCollection();
 
-  await addCore(pluginPlatform!);
+  await addCore(pluginPlatform);
 
-  if (pluginPlatform!.userAddedLocations && pluginPlatform!.userAddedLocations.length > 0) {
+  if (pluginPlatform.userAddedLocations && pluginPlatform.userAddedLocations.length > 0) {
     // clean up the userAddedLocation first
-    pluginPlatform!.userAddedLocations = pluginPlatform!.userAddedLocations.filter(pluginDirPath => {
+    pluginPlatform.userAddedLocations = pluginPlatform.userAddedLocations.filter(pluginDirPath => {
       const result = fs.existsSync(pluginDirPath);
       return result;
     });
 
-    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
-      await verifyAndAdd(pluginPlatform!, pluginDirPath),
+    const scanUserLocationTasks = pluginPlatform.userAddedLocations.map(pluginDirPath => async () =>
+      await verifyAndAdd(pluginPlatform, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
 
   if (isPackaged) {
-    pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
+    pluginPlatform.pluginDirectories.push(constants.PackagedNodeModules);
   }
 
-  if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
-    const scanDirTasks = pluginPlatform!.pluginDirectories.map(directory => async () => {
+  if (pluginPlatform && pluginPlatform.pluginDirectories.length > 0 && pluginPlatform.pluginPrefixes.length > 0) {
+    const scanDirTasks = pluginPlatform.pluginDirectories.map(directory => async () => {
       directory = normalizePluginDirectory(directory);
       const exists = await fs.pathExists(directory);
       if (exists) {
         //adding subDir based on amplify-
         const subDirNames = await fs.readdir(directory);
-        await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform!);
+        await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform);
         //ading plugin based on @aws-amplify/amplify-
         if (subDirNames.includes('@aws-amplify')) {
           const nameSpacedDir = path.join(directory, '@aws-amplify');
           const nameSpacedPackages = await fs.readdir(nameSpacedDir);
-          await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatform!);
+          await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatform);
         }
       }
     });
     await sequential(scanDirTasks);
   }
 
-  pluginPlatform!.lastScanTime = new Date();
-  writePluginsJsonFile(pluginPlatform!);
+  pluginPlatform.lastScanTime = new Date();
+  writePluginsJsonFile(pluginPlatform);
 
   await checkPlatformHealth(pluginPlatform);
 
@@ -119,7 +119,7 @@ async function verifyAndAdd(pluginPlatform: PluginPlatform, pluginDirPath: strin
   if (
     pluginVerificationResult.verified &&
     // Only the current core is added by the addCore(.) method, other packages can not be core
-    pluginVerificationResult.manifest!.name !== constants.CORE
+    pluginVerificationResult.manifest?.name !== constants.CORE
   ) {
     const manifest = pluginVerificationResult.manifest as PluginManifest;
     const { name, version } = pluginVerificationResult.packageJson;

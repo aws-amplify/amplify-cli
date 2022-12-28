@@ -41,7 +41,7 @@ export async function checkProjectConfigVersion(context: Context): Promise<void>
       throw error;
     }
 
-    if (lt(currentProjectVersion!, minProjectVersion!)) {
+    if (minProjectVersion && lt(currentProjectVersion, minProjectVersion)) {
       await checkLambdaCustomResourceNodeVersion(context, projectPath);
 
       projectConfig.version = constants.CURRENT_PROJECT_CONFIG_VERSION;

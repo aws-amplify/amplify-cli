@@ -58,7 +58,7 @@ export class BannerMessage {
 
   public static getMessage = async (messageId: string): Promise<string | undefined> => {
     BannerMessage.ensureInitialized();
-    return BannerMessage.instance!.getMessages(messageId);
+    return BannerMessage.instance?.getMessages(messageId);
   };
 
   getMessages = async (messageId: string): Promise<string | undefined> => {

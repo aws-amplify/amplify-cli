@@ -2,14 +2,17 @@ import {
   $TSAny,
   $TSContext,
   $TSMeta,
-  $TSObject, ResourceAlreadyExistsError,
+  $TSObject,
+  ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
-  stateManager
+  stateManager,
 } from 'amplify-cli-core';
 import {
   AddStorageRequest,
   CrudOperation,
-  ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest
+  ImportStorageRequest,
+  RemoveStorageRequest,
+  UpdateStorageRequest,
 } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
 import { v4 as uuid } from 'uuid';
@@ -18,14 +21,15 @@ import { authCategoryName, categoryName } from '../../constants';
 import { ProviderUtils } from '../awscloudformation/import/types';
 import { updateStateFiles } from './import/import-s3';
 import { ServiceName } from './provider-constants';
-import { buildS3UserInputFromHeadlessStorageRequest, buildS3UserInputFromHeadlessUpdateStorageRequest, buildTriggerFunctionParams } from './s3-headless-adapter';
 import {
-  S3UserInputs
-} from './service-walkthrough-types/s3-user-input-types';
+  buildS3UserInputFromHeadlessStorageRequest,
+  buildS3UserInputFromHeadlessUpdateStorageRequest,
+  buildTriggerFunctionParams,
+} from './s3-headless-adapter';
+import { S3UserInputs } from './service-walkthrough-types/s3-user-input-types';
 import { checkStorageAuthenticationRequirements } from './service-walkthroughs/s3-auth-api';
 import { s3AddStorageLambdaTrigger, s3CreateStorageResource, s3UpdateUserInput } from './service-walkthroughs/s3-resource-api';
 import { resourceAlreadyExists } from './service-walkthroughs/s3-walkthrough';
-
 
 // map of s3 actions corresponding to CRUD verbs
 // 'create/update' have been consolidated since s3 only has put concept
@@ -153,7 +157,7 @@ export async function headlessImportStorage(context: $TSContext, storageRequest:
       throw error;
     }
 
-    const bucketRegion = await s3.getBucketLocation(bucketName!);
+    const bucketRegion = await s3.getBucketLocation(bucketName);
 
     const projectConfig = context.amplify.getProjectConfig();
     const [shortId] = uuid().split('-');
@@ -190,7 +194,7 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
 
   try {
     await context.amplify.removeResource(context, categoryName, resourceName, { headless: true });
-  } catch (error: $TSAny) {
+  } catch (error) {
     printer.error(`An error occurred when headlessly removing the storage resource "${resourceName}": ${error.message || error}`);
 
     await context.usageData.emitError(error);
@@ -200,7 +204,7 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
 }
 
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
-  const storageInput: S3UserInputs  = buildS3UserInputFromHeadlessStorageRequest( context, storageRequest );
+  const storageInput: S3UserInputs = buildS3UserInputFromHeadlessStorageRequest(context, storageRequest);
   const s3UserInput = await s3CreateStorageResource(context, storageInput);
   const allowUnauthenticatedIdentities = storageInput.guestAccess && storageInput.guestAccess.length > 0;
   //update auth dependency
@@ -208,11 +212,11 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
 
   //create new function if required
   const lambdaConfig = storageRequest.serviceConfiguration.lambdaTrigger;
-  if(lambdaConfig){
-    if (lambdaConfig.mode === 'new'){
-      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)
+  if (lambdaConfig) {
+    if (lambdaConfig.mode === 'new') {
+      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name);
       //create function and add as trigger
-      await s3AddStorageLambdaTrigger(context,  storageInput.resourceName as string , storageLambdaParams)
+      await s3AddStorageLambdaTrigger(context, storageInput.resourceName as string, storageLambdaParams);
     }
   }
 }
@@ -227,16 +231,15 @@ async function updateS3StorageArtifacts(context: $TSContext, updateStorageReques
   //regenerate storage resource artifacts
   let s3UserInput = await s3UpdateUserInput(context, storageInput);
   //create new function if required
-  if(lambdaConfig){
-    if (lambdaConfig.mode === 'new'){
-      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)
+  if (lambdaConfig) {
+    if (lambdaConfig.mode === 'new') {
+      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name);
       //create function and add as trigger
-      s3UserInput = await s3AddStorageLambdaTrigger(context,  storageInput.resourceName as string , storageLambdaParams)
+      s3UserInput = await s3AddStorageLambdaTrigger(context, storageInput.resourceName as string, storageLambdaParams);
     }
   }
   return s3UserInput;
 }
-
 
 function doUserPoolGroupsExist(meta: $TSMeta) {
   const { userPoolGroups } = meta[authCategoryName];
@@ -273,4 +276,3 @@ export async function getAuthResourceName(context: $TSContext) {
 
   return authResources[0].resourceName;
 }
-

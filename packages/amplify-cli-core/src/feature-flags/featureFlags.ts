@@ -22,8 +22,8 @@ export class FeatureFlags {
   private static instance: FeatureFlags;
 
   private readonly registrations: Map<string, FeatureFlagRegistration[]> = new Map();
-  private fileValueProvider!: FeatureFlagFileProvider;
-  private envValueProvider!: FeatureFlagEnvironmentProvider;
+  private fileValueProvider: FeatureFlagFileProvider | undefined;
+  private envValueProvider: FeatureFlagEnvironmentProvider | undefined;
   private effectiveFlags: Readonly<FeatureFlagsEntry> = {};
   private newProjectDefaults: Readonly<FeatureFlagsEntry> = {};
   private existingProjectDefaults: Readonly<FeatureFlagsEntry> = {};
@@ -260,26 +260,29 @@ export class FeatureFlags {
 
   private buildJSONSchemaFromRegistrations = (): JSONSchema7 =>
     [...this.registrations.entries()].reduce<JSONSchema7>(
-      (schema: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
+      (schema: JSONSchema7, registrations: [string, FeatureFlagRegistration[]]) => {
         // r is a tuple, 0=section, 1=array of registrations for that section
-        const currentSection = <JSONSchema7>(schema.properties![r[0].toLowerCase()] ?? {
+        if (!schema.properties) {
+          throw new TypeError('expected schema.properties to be defined');
+        }
+        const currentSection = <JSONSchema7>(schema.properties[registrations[0].toLowerCase()] ?? {
           type: 'object',
           additionalProperties: false,
         });
 
-        currentSection.properties = r[1].reduce<{ [key: string]: JSONSchema7Definition }>((p, fr) => {
+        currentSection.properties = registrations[1].reduce<{ [key: string]: JSONSchema7Definition }>((prev, featureRegistration) => {
           /* eslint-disable no-param-reassign */
-          p![fr.name.toLowerCase()] = {
-            type: fr.type,
-            default: fr.defaultValueForNewProjects,
+          prev[featureRegistration.name.toLowerCase()] = {
+            type: featureRegistration.type,
+            default: featureRegistration.defaultValueForNewProjects,
           };
           /* eslint-enable */
 
-          return p;
+          return prev;
         }, {});
 
         /* eslint-disable no-param-reassign */
-        schema.properties![r[0].toLowerCase()] = currentSection;
+        schema.properties[registrations[0].toLowerCase()] = currentSection;
         /* eslint-enable */
 
         return schema;
@@ -297,12 +300,12 @@ export class FeatureFlags {
       (result: FeatureFlagsEntry, r: [string, FeatureFlagRegistration[]]) => {
         // r is a tuple, 0=section, 1=array of registrations for that section
         /* eslint-disable @typescript-eslint/ban-types */
-        const nest = r[1].reduce<{ [key: string]: {} }>((p, fr) => {
+        const nest = r[1].reduce<{ [key: string]: {} }>((prev, flagRegistration) => {
           /* eslint-disable no-param-reassign */
-          p![fr.name] = fr.defaultValueForNewProjects;
+          prev[flagRegistration.name] = flagRegistration.defaultValueForNewProjects;
           /* eslint-enable */
 
-          return p;
+          return prev;
         }, {});
 
         /* eslint-disable no-param-reassign */
@@ -321,12 +324,12 @@ export class FeatureFlags {
       (result: FeatureFlagsEntry, r: [string, FeatureFlagRegistration[]]) => {
         // r is a tuple, 0=section, 1=array of registrations for that section
         /* eslint-disable @typescript-eslint/ban-types */
-        const nest = r[1].reduce<{ [key: string]: {} }>((p, fr) => {
+        const nest = r[1].reduce<{ [key: string]: {} }>((prev, flagRegistration) => {
           /* eslint-disable no-param-reassign */
-          p![fr.name] = fr.defaultValueForExistingProjects;
+          prev[flagRegistration.name] = flagRegistration.defaultValueForExistingProjects;
           /* eslint-enable */
 
-          return p;
+          return prev;
         }, {});
 
         /* eslint-disable no-param-reassign */
@@ -485,6 +488,13 @@ export class FeatureFlags {
   };
 
   private loadValues = async (): Promise<void> => {
+    if (!this.fileValueProvider) {
+      throw new TypeError('expected fileValueProvider to be defined');
+    }
+
+    if (!this.envValueProvider) {
+      throw new TypeError('expected this.envValueProvider to be defined');
+    }
     // Load the flags from all providers
     const fileFlags = await this.fileValueProvider.load();
     const envFlags = this.transformEnvFlags(await this.envValueProvider.load());

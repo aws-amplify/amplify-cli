@@ -2,7 +2,7 @@ import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
 import { execAsStringPromise, getPythonBinaryName } from './pyUtils';
 import { coerce, lt } from 'semver';
 
-export const minPyVersion = coerce('3.8')!;
+export const minPyVersion = coerce('3.8');
 const pythonErrMsg =
   'You must have python >= 3.8 installed and available on your PATH as "python3" or "python". It can be installed from https://www.python.org/downloads';
 const pipenvErrMsg =
@@ -24,7 +24,7 @@ export async function checkDeps(): Promise<CheckDependenciesResult> {
     try {
       const pyVersionStr = await execAsStringPromise(`${pyBinary} --version`);
       const pyVersion = coerce(pyVersionStr);
-      if (!pyVersion || lt(pyVersion, minPyVersion)) {
+      if (!pyVersion || !minPyVersion || lt(pyVersion, minPyVersion)) {
         hasDeps = false;
         errMsg = `${pyBinary} found but version ${pyVersionStr} is less than the minimum required version.\n${pythonErrMsg}`;
       }

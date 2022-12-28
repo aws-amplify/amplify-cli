@@ -499,7 +499,7 @@ export class S3InputState {
 
     // validate cli-inputs.json
     const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'S3UserInputs');
-    await schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
+    await schemaValidator.validateInput(JSON.stringify(this._inputPayload ?? ''));
   }
 
   public static async getInstance(context: $TSContext, props: S3InputStateOptions): Promise<S3InputState> {
@@ -514,14 +514,16 @@ export class S3InputState {
   }
 
   public getCliInputPayload(): S3UserInputs {
-    let cliInputs: S3UserInputs;
     // Read cliInputs file if exists
     try {
-      cliInputs = JSONUtilities.readJson<S3UserInputs>(this._cliInputsFilePath)!;
+      const cliInputs = JSONUtilities.readJson<S3UserInputs>(this._cliInputsFilePath);
+      if (!cliInputs) {
+        throw new TypeError('expected cliInputs to be defined');
+      }
+      return cliInputs;
     } catch (e) {
       throw new Error('cli-inputs.json file missing from the resource directory');
     }
-    return cliInputs;
   }
 
   public getCliMetadata(): S3FeatureMetadata | undefined {

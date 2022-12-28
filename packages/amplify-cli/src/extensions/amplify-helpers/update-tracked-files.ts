@@ -9,8 +9,11 @@ const { readJson } = JSONUtilities;
  */
 export const updateCognitoTrackedFiles = async (): Promise<void> => {
   if (await detectCognitoAttributesRequireVerificationBeforeUpdateDiff()) {
-    const { resourceName } = stateManager.getResourceFromMeta(stateManager.getMeta(), 'auth', 'Cognito', undefined, false)!;
-    await addExtraLineToCliInputsJson(pathManager.getBackendDirPath(), resourceName);
+    const resource = stateManager.getResourceFromMeta(stateManager.getMeta(), 'auth', 'Cognito', undefined, false);
+    if (!resource?.resourceName) {
+      throw new TypeError('expected resource.resourceName to be defined');
+    }
+    await addExtraLineToCliInputsJson(pathManager.getBackendDirPath(), resource.resourceName);
   }
 };
 

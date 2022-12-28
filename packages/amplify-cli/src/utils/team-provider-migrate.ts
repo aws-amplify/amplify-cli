@@ -1,8 +1,6 @@
 import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  mergeDeploymentSecrets, PathConstants, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { mergeDeploymentSecrets, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import { Context } from '../domain/context';
 import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';
@@ -64,7 +62,11 @@ const authResourceNameHasSecrets = (): string | undefined => {
   if (!authResourceName) {
     return undefined;
   }
-  if (getEnvParamManager().getResourceParamManager('auth', authResourceName).hasParam(hostedUIProviderCredsField)) {
+  if (
+    getEnvParamManager()
+      .getResourceParamManager('auth', authResourceName)
+      .hasParam(hostedUIProviderCredsField)
+  ) {
     return authResourceName;
   }
   return undefined;
@@ -72,7 +74,10 @@ const authResourceNameHasSecrets = (): string | undefined => {
 
 const moveAuthSecretToDeploymentSecrets = (authResourceName: string): void => {
   const resourceParamManager = getEnvParamManager().getResourceParamManager('auth', authResourceName);
-  const teamProviderSecrets = resourceParamManager.getParam(hostedUIProviderCredsField)!;
+  const teamProviderSecrets = resourceParamManager.getParam(hostedUIProviderCredsField);
+  if (!teamProviderSecrets) {
+    throw new TypeError('expected teamProviderSecrets to be defined');
+  }
   const rootStackId = getRootStackId();
   const { envName } = stateManager.getLocalEnvInfo();
 

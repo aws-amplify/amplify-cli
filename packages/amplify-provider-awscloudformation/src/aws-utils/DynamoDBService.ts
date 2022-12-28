@@ -41,7 +41,7 @@ export class DynamoDBService implements IDynamoDBService {
         async response => response?.LastEvaluatedTableName,
       );
 
-      this.cachedTableList.push(...result!);
+      this.cachedTableList.push(...result);
     }
 
     return this.cachedTableList;
