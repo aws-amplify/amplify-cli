@@ -29,7 +29,10 @@ export function majMinPyVersion(pyVersion: string): string {
     throw new Error(`Cannot interpret Python version "${pyVersion}"`);
   }
   const versionNum = pyVersion.split(' ')[1];
-  return versionNum.split('.').slice(0, 2).join('.');
+  return versionNum
+    .split('.')
+    .slice(0, 2)
+    .join('.');
 }
 
 // wrapper for executing a shell command and returning the result as a string promise
@@ -61,6 +64,7 @@ export const getPythonBinaryName = (): string | undefined => {
       return executable;
     }
   }
+  return undefined;
 };
 
 const getPipfilePyVersion = (pipfilePath: string) => {

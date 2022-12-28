@@ -242,7 +242,7 @@ function debug(message: string, title = 'DEBUG'): void {
 function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
-    case 'markdown':
+    case 'markdown': {
       const header = data.shift();
       t = new CLITable({
         style: { head: ['reset'] }, // "no color"
@@ -252,6 +252,7 @@ function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {})
       t.push(...data);
       t.unshift(columnHeaderDivider(t));
       break;
+    }
     case 'lean':
       t = new CLITable({
         style: { head: ['reset'] }, // "no color"

@@ -33,7 +33,7 @@ import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
-import { init as initErrorHandler, handleException } from './amplify-exception-handler';
+import { init as initErrorHandler, handleException, handleUnhandledRejection } from './amplify-exception-handler';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -44,22 +44,20 @@ EventEmitter.defaultMaxListeners = 1000;
 // Change stacktrace limit to max value to capture more details if needed
 Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 
-process.on('uncaughtException', handleException);
+process.on('uncaughtException', (e): void => void handleException(e));
 
 // In this handler we have to re-throw the error otherwise the process hangs there.
-process.on('unhandledRejection', error => {
-  throw error;
-});
+process.on('unhandledRejection', handleUnhandledRejection);
 
 /**
  * Disable the CDK deprecation warning in production but not in CI/debug mode
  */
- const disableCDKDeprecationWarning = () => {
+const disableCDKDeprecationWarning = () => {
   const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
   if (!isDebug) {
     process.env.JSII_DEPRECATED = 'quiet';
   }
-}
+};
 
 /**
  * Command line entry point
@@ -67,7 +65,7 @@ process.on('unhandledRejection', error => {
 export const run = async (startTime: number): Promise<void> => {
   deleteOldVersion();
 
-  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
   // Most of these warning messages are targetting searchable directive, which needs to migrate from elastic search to open search
   // This is not diabled in debug mode
   disableCDKDeprecationWarning();
@@ -138,7 +136,7 @@ export const run = async (startTime: number): Promise<void> => {
     });
   }
 
-  process.on('SIGINT', sigIntHandler.bind(context));
+  process.on('SIGINT', (): void => void sigIntHandler(context));
 
   // Skip NodeJS version check and migrations if Amplify CLI is executed in CI/CD or
   // the command is not push
@@ -147,7 +145,7 @@ export const run = async (startTime: number): Promise<void> => {
   }
 
   // For mobile hub migrated project validate project and command to be executed
-  ensureMobileHubCommandCompatibility(context as unknown as $TSContext);
+  ensureMobileHubCommandCompatibility((context as unknown) as $TSContext);
 
   // Display messages meant for most executions
   await displayBannerMessages(input);
@@ -176,15 +174,15 @@ const ensureFilePermissions = (filePath: string): void => {
 
 // This function cannot be converted to an arrow function because it uses 'this' binding
 // eslint-disable-next-line func-style
-async function sigIntHandler(this: Context): Promise<void> {
-  this.usageData.emitAbort();
+async function sigIntHandler(context: Context): Promise<void> {
+  void context.usageData.emitAbort();
 
   try {
-    await this.amplify.runCleanUpTasks(this);
+    await context.amplify.runCleanUpTasks(context);
   } catch (err) {
-    this.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
+    context.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
   }
-  this.print.warning('^Aborted!');
+  context.print.warning('^Aborted!');
 
   exitOnNextTick(2);
 }
@@ -219,13 +217,13 @@ export const execute = async (input: Input): Promise<void> => {
   await attachUsageData(context, Date.now());
   initErrorHandler(context);
 
-  process.on('SIGINT', sigIntHandler.bind(context));
+  process.on('SIGINT', (): void => void sigIntHandler(context));
 
   await executeCommand(context);
 
   const exitCode = process.exitCode || 0;
   if (exitCode === 0) {
-    context.usageData.emitSuccess();
+    void context.usageData.emitSuccess();
   }
 };
 

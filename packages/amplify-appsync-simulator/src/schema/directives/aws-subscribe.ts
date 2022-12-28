@@ -40,6 +40,7 @@ const getSubscriberForMutation = (schema: GraphQLSchema, subscriptions: GraphQLF
           return subscriptionName;
         }
       }
+      return undefined;
     })
     .filter(Boolean);
 };

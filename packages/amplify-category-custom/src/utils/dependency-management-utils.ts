@@ -64,7 +64,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
       const allOutputs: $TSObject = cfnTemplate.Outputs;
       const outputsWithoutConditions: any = {};
 
-      for (const key in allOutputs) {
+      for (const key of Object.keys(allOutputs)) {
         if (!allOutputs[key]['Condition']) {
           // Filter out outputs which are conditional to avoid deployment failures
           outputsWithoutConditions[key] = allOutputs[key];
@@ -273,7 +273,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
           resources.push(resourceDefinition);
         }
       }
-    } catch (e: any) {
+    } catch (e) {
       printer.warn(`Dependencies cannot be added for ${selectedCategory}`);
       if (e.stack) {
         printer.warn(e.stack);

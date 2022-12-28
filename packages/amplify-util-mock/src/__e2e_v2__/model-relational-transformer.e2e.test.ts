@@ -74,7 +74,7 @@ describe('@model with relational transformer', () => {
       });
     } catch (e) {
       console.error(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 
@@ -86,7 +86,7 @@ describe('@model with relational transformer', () => {
       await terminateDDB(ddbEmulator, dbPath);
     } catch (e) {
       logDebug(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 
@@ -147,9 +147,8 @@ describe('@model with relational transformer', () => {
   test('create comment without a post and then querying the comment.', async () => {
     const comment1 = 'a comment and a date! - 1';
 
-    try {
-      const createCommentResponse1 = await GRAPHQL_CLIENT.query(
-        `mutation {
+    const createCommentResponse1 = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { content: "${comment1}" }) {
               id
               content
@@ -159,14 +158,14 @@ describe('@model with relational transformer', () => {
               }
             }
           }`,
-        {},
-      );
-      expect(createCommentResponse1.data.createComment.id).toBeDefined();
-      expect(createCommentResponse1.data.createComment.post).toBeNull();
+      {},
+    );
+    expect(createCommentResponse1.data.createComment.id).toBeDefined();
+    expect(createCommentResponse1.data.createComment.post).toBeNull();
 
-      expect(createCommentResponse1.data.createComment.content).toEqual(comment1);
-      const queryResponseDesc = await GRAPHQL_CLIENT.query(
-        `query {
+    expect(createCommentResponse1.data.createComment.content).toEqual(comment1);
+    const queryResponseDesc = await GRAPHQL_CLIENT.query(
+      `query {
               getComment(id: "${createCommentResponse1.data.createComment.id}") {
                   id
                   content
@@ -175,14 +174,10 @@ describe('@model with relational transformer', () => {
                   }
               }
           }`,
-        {},
-      );
-      expect(queryResponseDesc.data.getComment).toBeDefined();
-      expect(queryResponseDesc.data.getComment.post).toBeNull();
-    } catch (e) {
-      console.error(e);
-      expect(e).toBeUndefined();
-    }
+      {},
+    );
+    expect(queryResponseDesc.data.getComment).toBeDefined();
+    expect(queryResponseDesc.data.getComment.post).toBeNull();
   });
 
   test('default limit is 50', async () => {

@@ -46,7 +46,9 @@ export class StorageServer extends EventEmitter {
     this.app = express();
     this.app.use(cors(corsOptions));
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
+    /* eslint-disable @typescript-eslint/no-misused-promises */
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
+    /* eslint-enable */
 
     this.server = null;
     this.route = config.route;

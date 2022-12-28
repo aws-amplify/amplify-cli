@@ -50,7 +50,7 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
   return lambdaProcess;
 };
 
-const stopLambda = async (lambdaProcess: ExecaChildProcess) => {
+const stopLambda = async (lambdaProcess?: ExecaChildProcess) => {
   try {
     if (lambdaProcess) {
       lambdaProcess.cancel();
@@ -67,7 +67,7 @@ export const localInvoke = async (request: InvocationRequest, context: $TSContex
   const localInvoker = await buildLocalInvoker(context);
 
   // Find a free tcp port for the Lambda to launch on
-  const portNumber = await getPort({port: getPort.makeRange(BASE_PORT, MAX_PORT)});
+  const portNumber = await getPort({ port: getPort.makeRange(BASE_PORT, MAX_PORT) });
 
   const lambdaExecutableDir = path.join(request.srcRoot, BIN_LOCAL);
   const lambdaExecutablePath = path.join(lambdaExecutableDir, MAIN_BINARY);

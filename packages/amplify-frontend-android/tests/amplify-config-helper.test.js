@@ -41,7 +41,7 @@ describe('generate maps and search configuration', () => {
             isDefault: isDefault
         };
     }
-
+    let mockContext = {}
     beforeEach(() => {
         jest.clearAllMocks();
         mockContext = {

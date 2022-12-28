@@ -11,7 +11,7 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
     context.print.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   } else if (kinesisResources.length === 1) {
     targetResourceName = kinesisResources[0].resourceName;
     context.print.success(`Selected resource ${targetResourceName}`);

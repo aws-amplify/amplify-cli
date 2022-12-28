@@ -9,4 +9,5 @@ export const run = (context: $TSContext) => {
     return runHelp(context);
   }
   mockAllCategories(context);
+  return undefined;
 };

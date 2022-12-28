@@ -113,6 +113,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
     }
     return cliInputs.resourceName;
   }
+  return undefined;
 }
 
 /**
@@ -131,7 +132,7 @@ export async function updateWalkthrough(context: $TSContext) {
     // For better DX check if the storage is imported
     if (amplifyMeta[AmplifyCategories.STORAGE][storageResourceName].serviceType === 'imported') {
       printer.error('Updating of an imported storage resource is not supported.');
-      return;
+      return undefined;
     }
     //load existing cliInputs
     const cliInputsState = new S3InputState(context, storageResourceName, undefined);
@@ -148,7 +149,7 @@ export async function updateWalkthrough(context: $TSContext) {
         const stackGenerator = new AmplifyS3ResourceStackTransform(storageResourceName, context);
         await stackGenerator.transform(CLISubCommandType.UPDATE); //generates cloudformation
       } else {
-        return;
+        return undefined;
       }
     }
 
@@ -195,6 +196,7 @@ export async function updateWalkthrough(context: $TSContext) {
     await stackGenerator.transform(CLISubCommandType.UPDATE);
     return cliInputs.resourceName;
   }
+  return undefined;
 }
 
 /**
@@ -344,7 +346,7 @@ export async function addTrigger(
   switch (triggerStateEvent) {
     case S3CLITriggerStateEvent.ERROR:
       throw new Error("Lambda Trigger is already enabled, please use 'amplify update storage'");
-    case S3CLITriggerStateEvent.ADD_NEW_TRIGGER:
+    case S3CLITriggerStateEvent.ADD_NEW_TRIGGER: {
       // Check if functions exist and if exists, ask if Cx wants to use existing or create new
       const existingLambdaResources = await getExistingFunctionsForTrigger(context, existingTriggerFunction, false);
       if (existingLambdaResources && existingLambdaResources.length > 0) {
@@ -354,6 +356,7 @@ export async function addTrigger(
         triggerFunction = await interactiveCreateNewLambdaAndUpdateCFN(context);
       }
       break;
+    }
     case S3CLITriggerStateEvent.REPLACE_TRIGGER:
       triggerFunction = await interactiveAskTriggerTypeFlow(context, policyID, existingTriggerFunction);
       break;
@@ -418,7 +421,7 @@ async function getS3ResourceNameFromMeta(amplifyMeta: $TSAny): Promise<string | 
  * @returns { resourceName => resourceData in Amplify metafile}
  */
 function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TSAny> | undefined {
-  if (!amplifyMeta.hasOwnProperty(AmplifyCategories.STORAGE)) {
+  if (!Object.prototype.hasOwnProperty.call(amplifyMeta, AmplifyCategories.STORAGE)) {
     return undefined;
   }
   const resources: Record<string, $TSAny> = {}; //maps cx resource to
@@ -625,14 +628,17 @@ async function interactiveAskTriggerTypeFlow(
 ) {
   const triggerTypeAnswer: S3TriggerFunctionType = await askTriggerFunctionTypeQuestion();
   switch (triggerTypeAnswer) {
-    case S3TriggerFunctionType.EXISTING_FUNCTION:
+    case S3TriggerFunctionType.EXISTING_FUNCTION: {
       const selectedFunction = await interactiveAddExistingLambdaAndUpdateCFN(context, existingTriggerFunction, existingLambdaResources);
       return selectedFunction;
-    case S3TriggerFunctionType.NEW_FUNCTION:
+    }
+    case S3TriggerFunctionType.NEW_FUNCTION: {
       //Create a new lambda trigger and update cloudformation
       const newTriggerFunction = await interactiveCreateNewLambdaAndUpdateCFN(context);
       return newTriggerFunction;
+    }
   } //Existing function or New function
+  return undefined;
 }
 
 /**

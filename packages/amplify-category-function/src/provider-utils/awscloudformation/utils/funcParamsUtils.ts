@@ -13,6 +13,7 @@ export function merge(existing: Partial<FunctionParameters>, other: Partial<Func
     if (_.isArray(oldVal)) {
       return _.uniqWith(oldVal.concat(newVal), _.isEqual);
     }
+    return undefined;
   };
   return _.mergeWith(existing, other, mergeFunc);
 }

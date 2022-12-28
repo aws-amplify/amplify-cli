@@ -63,7 +63,7 @@
     "@types/express": "^4.17.3",
     "@types/node": "^12.12.6",
     "@types/ws": "^8.2.2",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^9.0.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

@@ -125,18 +125,19 @@ export async function askWhoHasAccessQuestion(context: $TSContext, defaultValues
  * @param groupName
  * @returns
  */
-function normalizeUserRole( role : S3UserAccessRole , groupName :string | undefined){
-    switch(role){
-      case S3UserAccessRole.AUTH :{
-          return 'Authenticated';
-      }
-      case S3UserAccessRole.GUEST :{
-        return S3UserAccessRole.GUEST;
-      }
-      case S3UserAccessRole.GROUP:{
-        return groupName
-      }
+function normalizeUserRole(role: S3UserAccessRole, groupName: string | undefined) {
+  switch (role) {
+    case S3UserAccessRole.AUTH: {
+      return 'Authenticated';
     }
+    case S3UserAccessRole.GUEST: {
+      return S3UserAccessRole.GUEST;
+    }
+    case S3UserAccessRole.GROUP: {
+      return groupName;
+    }
+  }
+  return undefined;
 }
 
 export async function askCRUDQuestion(
@@ -153,10 +154,10 @@ export async function askCRUDQuestion(
   let selectedPermissions;
   do {
     selectedPermissions = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: initialIndexes });
-    if( !selectedPermissions || selectedPermissions.length <= 0 ){
+    if (!selectedPermissions || selectedPermissions.length <= 0) {
       printer.warn('Select at least one option');
     }
-  } while( !selectedPermissions || selectedPermissions.length <= 0 );
+  } while (!selectedPermissions || selectedPermissions.length <= 0);
   return selectedPermissions as Array<S3PermissionType>;
 }
 
@@ -171,7 +172,7 @@ export async function askUserPoolGroupSelectionQuestion(
   const selectedIndexes = selectedChoices ? getIndexArray(choices, selectedChoices) : undefined;
   const userPoolGroups = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: selectedIndexes });
   //prompter pick-many returns string if returnsize is 1, and array otherwise.
-  if ( Array.isArray(userPoolGroups) ){
+  if (Array.isArray(userPoolGroups)) {
     return userPoolGroups as string[];
   } else {
     //Type is string

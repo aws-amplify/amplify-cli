@@ -106,7 +106,6 @@ export async function updateLayerWalkthrough(
 
   if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
     permissionsUpdateConfirmed = true;
-    let defaultLayerPermissions: PermissionEnum[];
     let defaultOrgs: string[] = [];
     let defaultAccounts: string[] = [];
     let selectedVersionNumber: number;
@@ -132,7 +131,7 @@ export async function updateLayerWalkthrough(
     }
 
     // load defaults
-    defaultLayerPermissions = permissions.map(permission => permission.type);
+    const defaultLayerPermissions = permissions.map(permission => permission.type);
     defaultOrgs = permissions
       .filter(p => p.type === PermissionEnum.AwsOrg)
       .reduce((orgs: string[], permission: OrgsLayer) => [...orgs, ...permission.orgs], []);

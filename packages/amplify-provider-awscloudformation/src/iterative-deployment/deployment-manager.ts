@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager } from 'amplify-cli-core';
 import { AmplifySpinner, printer as promptsPrinter } from 'amplify-prompts';
 import assert from 'assert';
 import * as aws from 'aws-sdk';
@@ -93,9 +91,13 @@ export class DeploymentManager {
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, eventMap, options);
     } catch (e) {
-      throw new AmplifyError('DeploymentError', {
-        message: 'Could not load configuration',
-      }, e);
+      throw new AmplifyError(
+        'DeploymentError',
+        {
+          message: 'Could not load configuration',
+        },
+        e,
+      );
     }
   };
 
@@ -164,9 +166,9 @@ export class DeploymentManager {
 
     let maxDeployed = 0;
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const service = interpret(machine)
-        .onTransition(async state => {
+        .onTransition(state => {
           if (state.changed) {
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
 
@@ -184,7 +186,8 @@ export class DeploymentManager {
             } else if (state.matches('deploy') || state.matches('rollback')) {
               this.spinner.stop();
               const { currentIndex } = state.context;
-              const message = state.matches('deploy') ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
+              const message = state.matches('deploy')
+                ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
                 : `Rolling back (${maxDeployed - currentIndex} of ${maxDeployed})`;
               this.logger('deploy', [{ spinner: message }])();
               this.printer.updateIndexInHeader(maxDeployed, state.context.stacks.length);
@@ -195,15 +198,17 @@ export class DeploymentManager {
             case 'deployed':
               return resolve();
             case 'rolledBack':
-            case 'failed':
+            case 'failed': {
               this.printer.stopBars();
               promptsPrinter.info(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
               const deploymentErrors = new DeploymentError(state.context.errors);
               this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
+            }
             default:
             // intentionally left blank as we don't care about intermediate states
           }
+          return undefined;
         })
         .start();
       service.send({ type: 'DEPLOY' });
@@ -239,9 +244,9 @@ export class DeploymentManager {
       fns,
     );
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const service = interpret(machine)
-        .onTransition(async state => {
+        .onTransition(state => {
           if (state.changed) {
             const rollbackSpinnerState = Object.keys(rollbackSpinnerMessages).find(key => state.matches(key));
             if (rollbackSpinnerState) {
@@ -261,14 +266,16 @@ export class DeploymentManager {
           switch (state.value) {
             case 'rolledBack':
               return resolve();
-            case 'failed':
+            case 'failed': {
               this.printer.stopBars();
               const deploymentErrors = new DeploymentError(state.context.errors);
               this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
+            }
             default:
             // intentionally left blank as we don't care about intermediate states
           }
+          return undefined;
         })
         .start();
       service.send({ type: 'ROLLBACK' });
@@ -364,12 +371,17 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      throw new AmplifyError('DeploymentError', {
-        message: e.code === 'NotFound'
-          ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
-          : e.message,
-        details: e.message,
-      }, e);
+      throw new AmplifyError(
+        'DeploymentError',
+        {
+          message:
+            e.code === 'NotFound'
+              ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
+              : e.message,
+          details: e.message,
+        },
+        e,
+      );
     }
   };
 
@@ -387,23 +399,31 @@ export class DeploymentManager {
       if (err?.code === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      throw new AmplifyFault('ServiceCallFault', {
-        message: err.message,
-      }, err);
+      throw new AmplifyFault(
+        'ServiceCallFault',
+        {
+          message: err.message,
+        },
+        err,
+      );
     }
   };
 
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
-    const waiters = tables.map(name => new Promise(resolve => {
-      const interval = setInterval(async () => {
-        const areIndexesReady = await throttledGetTableStatus(name);
-        if (areIndexesReady) {
-          clearInterval(interval);
-          resolve(undefined);
-        }
-      }, this.options.throttleDelay);
-    }));
+    const waiters = tables.map(
+      name =>
+        new Promise(resolve => {
+          const interval = setInterval(() => {
+            void throttledGetTableStatus(name).then(areIndexesReady => {
+              if (areIndexesReady) {
+                clearInterval(interval);
+                resolve(undefined);
+              }
+            });
+          }, this.options.throttleDelay);
+        }),
+    );
     await Promise.all(waiters);
   };
 
