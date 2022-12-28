@@ -69,13 +69,19 @@ describe('api graphql v1 migration tests', () => {
         const projRoot2 = await createNewProjectDir(`${projectName}2`);
         try {
             await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-            // this fails due to a line:
-            // "CreateAPIKey": 1,
-            // missing in the newly pulled down project's parameters file
-            // assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+
+            // the following excludes a parameter "CreateAPIKey", which is only present in the first project
+            // because it gets set to '1' when the API is first created
+            const excludeCreateAPIKey = (category, resourceKey, parameters) => {
+                if(category === 'api' && resourceKey === projectName){
+                    delete parameters.project1.CreateAPIKey;
+                }
+                return { project1: parameters.project1, project2: parameters.project2 };
+            }
+            assertNoParameterChangesBetweenProjects(projRoot, projRoot2, { excludeFromParameterDiff: excludeCreateAPIKey });
             expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
             await amplifyPushAuth(projRoot2, true);
-            // assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+            assertNoParameterChangesBetweenProjects(projRoot, projRoot2, { excludeFromParameterDiff: excludeCreateAPIKey });
             expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
         } finally {
             deleteProjectDir(projRoot2);

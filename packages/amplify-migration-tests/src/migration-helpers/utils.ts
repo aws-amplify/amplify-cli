@@ -27,9 +27,30 @@ export const getShortId = (): string => {
 };
 
 /**
+ * Given the parameter objects of each project for the provided category & resource key, 
+ * you can modify the parameter objects before the diff is performed.
+ * 
+ * You can use conditional logic to delete attributes on the parameter objects before they are diffed, if
+ * you want to exclude those attributes from the comparison. Make sure to return the modified objects
+ * that you want to be diffed.
+ */
+export type ExcludeFromParameterDiff = (
+  currentCategory: string, 
+  currentResourceKey: string,
+  parameters: {
+    project1: any,
+    project2: any,
+  }) => { project1: any, project2: any };
+
+/**
  * Asserts that parameters between two project directories didn't drift.
  */
-export const assertNoParameterChangesBetweenProjects = (projectRoot1: string, projectRoot2: string): void => {
+export const assertNoParameterChangesBetweenProjects = (
+  projectRoot1: string, 
+  projectRoot2: string, 
+  options?: { 
+    excludeFromParameterDiff?: ExcludeFromParameterDiff
+  }): void => {
   const backendConfig1 = getBackendConfig(projectRoot1);
   const backendConfig2 = getBackendConfig(projectRoot2);
   expect(backendConfig2).toMatchObject(backendConfig1);
@@ -44,8 +65,14 @@ export const assertNoParameterChangesBetweenProjects = (projectRoot1: string, pr
             .toEqual(cliInputs2);
         }
         if (parametersExists(projectRoot1, categoryKey, resourceKey)) {
-          const parameters1 = getParameters(projectRoot1, categoryKey, resourceKey);
-          const parameters2 = getParameters(projectRoot2, categoryKey, resourceKey);
+          let parameters1 = getParameters(projectRoot1, categoryKey, resourceKey);
+          let parameters2 = getParameters(projectRoot2, categoryKey, resourceKey);
+          console.log(categoryKey,resourceKey);
+          if(options && options.excludeFromParameterDiff){
+            const afterExclusions = options.excludeFromParameterDiff(categoryKey, resourceKey, { project1: parameters1, project2: parameters2 });
+            parameters1 = afterExclusions.project1;
+            parameters2 = afterExclusions.project2;
+          }
           expect(parameters1)
             .toEqual(parameters2);
         }
