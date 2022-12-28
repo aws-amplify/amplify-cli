@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-cdkv2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.4...@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.5) (2022-12-28)
+
+
+### Features
+
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
 # [4.4.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.3...@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.4) (2022-12-13)
 
 

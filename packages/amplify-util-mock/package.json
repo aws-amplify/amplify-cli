@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "4.6.0-cdkv2.5",
+  "version": "4.6.0-cdkv2.6",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -29,15 +29,15 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-appsync-simulator": "2.7.0-cdkv2.4",
-    "@aws-amplify/amplify-opensearch-simulator": "1.2.0-cdkv2.2",
+    "@aws-amplify/amplify-appsync-simulator": "2.7.0-cdkv2.5",
+    "@aws-amplify/amplify-opensearch-simulator": "1.2.0-cdkv2.3",
     "@hapi/topo": "^5.0.0",
-    "amplify-category-function": "4.2.0-cdkv2.4",
-    "amplify-cli-core": "4.0.0-cdkv2.4",
+    "amplify-category-function": "4.2.0-cdkv2.5",
+    "amplify-cli-core": "4.0.0-cdkv2.5",
     "amplify-codegen": "^3.3.4",
-    "amplify-dynamodb-simulator": "2.5.0-cdkv2.4",
+    "amplify-dynamodb-simulator": "2.5.0-cdkv2.5",
     "amplify-prompts": "2.6.2-cdkv2.2",
-    "amplify-provider-awscloudformation": "7.0.0-cdkv2.4",
+    "amplify-provider-awscloudformation": "7.0.0-cdkv2.5",
     "amplify-storage-simulator": "1.7.0-cdkv2.2",
     "chokidar": "^3.5.3",
     "detect-port": "^1.3.0",
@@ -70,7 +70,7 @@
     "@types/semver": "^7.1.0",
     "@types/which": "^1.3.2",
     "amplify-function-plugin-interface": "1.9.6-cdkv2.1",
-    "amplify-nodejs-function-runtime-provider": "2.3.4-cdkv2.4",
+    "amplify-nodejs-function-runtime-provider": "2.3.4-cdkv2.5",
     "aws-appsync": "^4.1.4",
     "aws-sdk": "^2.1233.0",
     "aws-sdk-mock": "^5.8.0",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.11-cdkv2.1...amplify-dotnet-function-runtime-provider@1.7.0-cdkv2.0) (2022-12-28)
+
+
+### Features
+
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
 ## [1.6.11-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.11-cdkv2.0...amplify-dotnet-function-runtime-provider@1.6.11-cdkv2.1) (2022-12-13)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

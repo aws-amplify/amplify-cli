@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "7.0.0-cdkv2.4",
+  "version": "7.0.0-cdkv2.5",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -25,13 +25,13 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "3.0.0-cdkv2.4",
-    "@aws-amplify/amplify-environment-parameters": "1.2.0-cdkv2.4",
-    "@aws-amplify/cli-extensibility-helper": "3.0.0-cdkv2.4",
+    "@aws-amplify/amplify-category-custom": "3.0.0-cdkv2.5",
+    "@aws-amplify/amplify-environment-parameters": "1.2.0-cdkv2.5",
+    "@aws-amplify/cli-extensibility-helper": "3.0.0-cdkv2.5",
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.3",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.3",
-    "amplify-cli-core": "4.0.0-cdkv2.4",
-    "amplify-cli-logger": "1.2.2-cdkv2.1",
+    "amplify-cli-core": "4.0.0-cdkv2.5",
+    "amplify-cli-logger": "1.2.2-cdkv2.2",
     "amplify-codegen": "^3.3.4",
     "amplify-prompts": "2.6.2-cdkv2.2",
     "amplify-util-import": "2.3.0-cdkv2.4",

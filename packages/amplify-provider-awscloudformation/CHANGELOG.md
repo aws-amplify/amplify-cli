@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0-cdkv2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.4...amplify-provider-awscloudformation@7.0.0-cdkv2.5) (2022-12-28)
+
+
+### Bug Fixes
+
+* back off on cfn event pull ([#11624](https://github.com/aws-amplify/amplify-cli/issues/11624)) ([1e53965](https://github.com/aws-amplify/amplify-cli/commit/1e53965c4ba3ccc5aad72b37791bbef807ec5fc3))
+
+
+
+
+
 # [7.0.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.3...amplify-provider-awscloudformation@7.0.0-cdkv2.4) (2022-12-13)
 
 

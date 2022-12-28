@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-cdkv2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-cdkv2.5...amplify-category-geo@3.0.0-cdkv2.6) (2022-12-28)
+
+
+### Features
+
+* **category-geo:** add new map style 2022.12 ([#11621](https://github.com/aws-amplify/amplify-cli/issues/11621)) ([dc60f7d](https://github.com/aws-amplify/amplify-cli/commit/dc60f7d1368b3bb4721f51f2404bf7a8f84075c0))
+
+
+
+
+
 # [3.0.0-cdkv2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-cdkv2.4...amplify-category-geo@3.0.0-cdkv2.5) (2022-12-13)
 
 **Note:** Version bump only for package amplify-category-geo

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.2-cdkv2.1...amplify-cli-logger@1.2.2-cdkv2.2) (2022-12-28)
+
+
+### Bug Fixes
+
+* update redactor scanning logic ([#11622](https://github.com/aws-amplify/amplify-cli/issues/11622)) ([c7bb7cc](https://github.com/aws-amplify/amplify-cli/commit/c7bb7cca89662019b6d5dfd789d08945d64d2fb0))
+
+
+
+
+
 ## [1.2.2-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.2-cdkv2.0...amplify-cli-logger@1.2.2-cdkv2.1) (2022-12-13)
 
 

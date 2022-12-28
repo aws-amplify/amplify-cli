@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.2.0-cdkv2.2...@aws-amplify/amplify-opensearch-simulator@1.2.0-cdkv2.3) (2022-12-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
+
+
+
+
+
 # [1.2.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.2.0-cdkv2.1...@aws-amplify/amplify-opensearch-simulator@1.2.0-cdkv2.2) (2022-12-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
