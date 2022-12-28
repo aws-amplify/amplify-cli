@@ -16,6 +16,7 @@ import { assertNoParameterChangesBetweenProjects,
     collectCloudformationDiffBetweenProjects } from "../../migration-helpers/utils";
 import * as fs from 'fs-extra';
 import path from 'path';
+import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 
 describe('api graphql v2 migration tests', () => {
     let projRoot: string;
@@ -27,7 +28,7 @@ describe('api graphql v2 migration tests', () => {
 
     // inspired by api_7.test.ts
     it('...adds graphql with v2 transformer, adds overrides, and pulls in latest version', async () => {
-        const projectName = 'graphqlMigration';
+        const projectName = 'gqmigration';
         projRoot = await createNewProjectDir(projectName);
         
         await initJSProjectWithProfileV10(projRoot, { name: projectName, disableAmplifyAppCreation: false });
@@ -38,7 +39,8 @@ describe('api graphql v2 migration tests', () => {
         const meta = getProjectMeta(projRoot);
         const region = meta.providers.awscloudformation.Region;
         // eslint-disable-next-line spellcheck/spell-checker
-        const { output } = meta.api.simplemodel;
+        console.log("STUFF:", meta.api);
+        const { output } = meta.api.gqmigration;
         const { GraphQLAPIIdOutput } = output;
 
         // add overrides
@@ -55,10 +57,10 @@ describe('api graphql v2 migration tests', () => {
         try {
             await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
             await amplifyPushAuth(projRoot2, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
 
             // check overridden config in cloud after pushing with vLatest
             const overriddenAppsyncApiOverride = await getAppSyncApi(GraphQLAPIIdOutput, region);

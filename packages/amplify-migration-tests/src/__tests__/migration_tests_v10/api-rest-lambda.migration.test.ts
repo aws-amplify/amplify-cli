@@ -1,4 +1,5 @@
 import { addFunction, addRestApi, addSimpleDDB, amplifyPull, amplifyPushAuth, amplifyPushUpdate, amplifyPushWithoutCodegen, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, listAttachedRolePolicies, listRolePolicies, updateAuthAddAdminQueries, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
+import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects, pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from "../../migration-helpers/utils";
 
@@ -60,11 +61,11 @@ describe('api lambda migration tests', () => {
         try {
             await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            // TODO: inject exclusion logic for AdminQueries/DeploymentGateway after that PR gets merged
-            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+            
+            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
             await amplifyPushAuth(projRoot2, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
 
 
             // validate metadata for pulled down project

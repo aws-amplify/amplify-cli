@@ -1,4 +1,5 @@
 import { addRestApi, addSimpleDDB, amplifyPull, amplifyPushAuth, amplifyPushUpdate, amplifyPushWithoutCodegen, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
+import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects, pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from "../../migration-helpers/utils";
 
@@ -28,12 +29,11 @@ describe('api serverless migration tests', () => {
         const projRoot2 = await createNewProjectDir(`${projectName}2`);
         try {
             await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-            // TODO: update to use exclusions for API Gateway
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
             await amplifyPushAuth(projRoot2, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+            expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
 
             // validate metadata
             const meta2 = getProjectMeta(projRoot2);
