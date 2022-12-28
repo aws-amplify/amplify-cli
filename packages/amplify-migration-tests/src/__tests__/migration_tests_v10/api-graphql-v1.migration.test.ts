@@ -29,7 +29,7 @@ describe('api graphql v1 migration tests', () => {
 
     // inspired by function_5.test.ts
     it('...adds graphql with v1 transformer, updates models, adds function access, and pulls with latest version', async () => {
-        projectName = 'graphqlMigration';
+        projectName = 'graphqlmigration';
         projRoot = await createNewProjectDir(projectName);
         
         await initJSProjectWithProfileV10(projRoot, { name: projectName, disableAmplifyAppCreation: false });
