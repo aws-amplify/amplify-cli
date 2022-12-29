@@ -66,14 +66,6 @@ export const importResource = async (
 
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, projectType, persistEnvParameters);
 
-  if (!answers.authSelections) {
-    throw new TypeError('expected authSelections to be defined');
-  }
-
-  if (!answers.userPool) {
-    throw new TypeError('expected userPool type to be defined');
-  }
-
   if (printSuccessMessage) {
     printSuccess(context, answers.authSelections, answers.userPool, answers.identityPool);
   }
@@ -83,18 +75,12 @@ export const importResource = async (
   };
 };
 
-const printSuccess = (context: $TSContext, authSelections: AuthSelections, userPool: UserPoolType, identityPool?: IdentityPool): void => {
+const printSuccess = (context: $TSContext, authSelections?: AuthSelections, userPool?: UserPoolType, identityPool?: IdentityPool): void => {
   context.print.info('');
-  if (!userPool.Name) {
-    throw new TypeError('expected userPool.Name to be defined');
-  }
-  if (!identityPool?.IdentityPoolName) {
-    throw new TypeError('expected identityPool.IdentityPoolName to be defined');
-  }
   if (authSelections === 'userPoolOnly') {
-    context.print.info(importMessages.UserPoolOnlySuccess(userPool.Name));
+    context.print.info(importMessages.UserPoolOnlySuccess(userPool?.Name ?? ''));
   } else {
-    context.print.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool.Name, identityPool.IdentityPoolName));
+    context.print.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool?.Name ?? '', identityPool?.IdentityPoolName ?? ''));
   }
   context.print.info('');
   context.print.info('Next steps:');
@@ -210,7 +196,7 @@ const importServiceWalkthrough = async (
     const { userPoolId } = await enquirer.prompt(userPoolQuestion as $TSAny);
     answers.userPoolId = userPoolId;
     if (!userPoolId) {
-      throw new TypeError('expected userPoolId to be defined');
+      throw new TypeError('userPoolId must be defined');
     }
     answers.userPool = await cognito.getUserPoolDetails(userPoolId);
   }
@@ -229,7 +215,7 @@ const importServiceWalkthrough = async (
 
     // Filter Identity Pool candidates further based on AppClient selection.
     if (answers.authSelections === 'identityPoolAndUserPool') {
-      if (questionParameters.validatedIdentityPools && questionParameters.validatedIdentityPools.length >= 1) {
+      if (questionParameters.validatedIdentityPools && questionParameters.validatedIdentityPools?.length >= 1) {
         // No need to check to have 1 web and 1 native since prefiltering already done that check in ValidateUserPool
         questionParameters.validatedIdentityPools = questionParameters.validatedIdentityPools.filter(ipc =>
           ipc.providers.filter(p => p.ClientId === answers.appClientWebId || p.ClientId === answers.appClientNativeId),
@@ -268,11 +254,8 @@ const importServiceWalkthrough = async (
       oauthLoopFinished = true;
       userPoolSelectionSucceeded = true;
     } else {
-      if (!answers.appClientWeb) {
-        throw new TypeError('expected answers.appClientWeb to be defined');
-      }
-      if (!answers.appClientNative) {
-        throw new TypeError('expected appClientNative to be defined');
+      if (!answers.appClientWeb || !answers.appClientNative) {
+        throw new TypeError('appClientWeb and appClientNative must be defined');
       }
       // Check OAuth config matching and enabled
       const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb, answers.appClientNative);
@@ -320,8 +303,8 @@ const importServiceWalkthrough = async (
       answers.identityPoolId = identityPool.IdentityPoolId;
       answers.identityPool = identityPool;
     } else {
-      const identityPoolChoices = (questionParameters.validatedIdentityPools ?? [])
-        .map(ip => ({
+      const identityPoolChoices = questionParameters.validatedIdentityPools
+        ?.map(ip => ({
           message: `${ip.identityPool.IdentityPoolName} (${ip.identityPool.IdentityPoolId})`,
           value: ip.identityPool.IdentityPoolId,
         }))
@@ -349,8 +332,9 @@ const importServiceWalkthrough = async (
         ?.map(ip => ip.identityPool)
         .find(ip => ip.IdentityPoolId === identityPoolId);
     }
+
     if (!answers.identityPoolId) {
-      throw new TypeError('expected answers.identityPoolId to be defined');
+      throw new TypeError('answers.identityPoolId must be defined');
     }
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
     const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId);
@@ -361,12 +345,12 @@ const importServiceWalkthrough = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (!answers.userPoolId) {
-    throw new TypeError('expected answers.userPoolId to be defined');
-  }
-  if (answers.userPool?.MfaConfiguration !== 'OFF') {
+  if (answers.userPool.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
+      if (!answers.userPoolId) {
+        throw new TypeError('userPoolId must be defined');
+      }
       answers.mfaConfiguration = await cognito.getUserPoolMfaConfig(answers.userPoolId);
     } catch {
       // swallow error
@@ -374,6 +358,9 @@ const importServiceWalkthrough = async (
   }
 
   if (answers.oauthProviders && answers.oauthProviders.length > 0) {
+    if (!answers.userPoolId) {
+      throw new TypeError('answers.userPoolId');
+    }
     answers.identityProviders = await cognito.listUserPoolIdentityProviders(answers.userPoolId);
   }
 
@@ -408,16 +395,21 @@ const validateUserPool = async (
   // We can't validate until fully until AppClients are selected later.
   if (answers.authSelections === 'identityPoolAndUserPool') {
     const identityPools = await identity.listIdentityPoolDetails();
-
+    type IdentityPoolCandidate = {
+      identityPool: IdentityPool;
+      providers: CognitoIdentityProvider[];
+    };
+    // TODO: this code block is inefficient, can be refactored
     const identityPoolCandidates = identityPools
-      .filter(ip => ip.CognitoIdentityProviders && ip.CognitoIdentityProviders.filter(a => a.ProviderName?.endsWith(userPoolId)).length > 0)
-      .map(ip => ({
+      .filter(
+        ip => ip.CognitoIdentityProviders && ip.CognitoIdentityProviders?.filter(a => a.ProviderName?.endsWith(userPoolId)).length > 0,
+      )
+      .map<IdentityPoolCandidate>(ip => ({
         identityPool: ip,
-        providers: (ip.CognitoIdentityProviders ?? []).filter(a => a.ProviderName?.endsWith(userPoolId)),
+        providers: ip.CognitoIdentityProviders?.filter(a => a.ProviderName?.endsWith(userPoolId)) ?? [],
       }));
 
     const validatedIdentityPools: { identityPool: IdentityPool; providers: CognitoIdentityProvider[] }[] = [];
-
     for (const candidate of identityPoolCandidates) {
       const hasWebClientProvider =
         candidate.providers.filter(p => p.ClientId && webClients.map(c => c.ClientId).includes(p.ClientId)).length > 0;
@@ -462,10 +454,7 @@ const selectAppClients = async (
       // eslint-disable-next-line prefer-destructuring, no-param-reassign
       answers.appClientWeb = questionParameters.webClients[0];
 
-      if (!answers.appClientWeb.ClientName) {
-        throw new TypeError('expected answers.appClientWeb.ClientName to be defined');
-      }
-      context.print.info(importMessages.SingleAppClientSelected('Web', answers.appClientWeb.ClientName));
+      context.print.info(importMessages.SingleAppClientSelected('Web', answers.appClientWeb.ClientName ?? ''));
 
       autoSelected++;
     } else {
@@ -552,15 +541,15 @@ const appClientsOAuthPropertiesMatching = async (
   // Compare the app client properties, they must match, otherwise show what is not matching.
   // For convenience we show all the properties that are not matching,
   // not just the first mismatch.
-  const callbackUrlMatching = isArraysEqual(appClientWeb.CallbackURLs ?? [], appClientNative.CallbackURLs ?? []);
-  const logoutUrlsMatching = isArraysEqual(appClientWeb.LogoutURLs ?? [], appClientNative.LogoutURLs ?? []);
-  const allowedOAuthFlowsMatching = isArraysEqual(appClientWeb.AllowedOAuthFlows ?? [], appClientNative.AllowedOAuthFlows ?? []);
-  const allowedOAuthScopesMatching = isArraysEqual(appClientWeb.AllowedOAuthScopes ?? [], appClientNative.AllowedOAuthScopes ?? []);
+  const callbackUrlMatching = isArraysEqual(appClientWeb.CallbackURLs, appClientNative.CallbackURLs);
+  const logoutUrlsMatching = isArraysEqual(appClientWeb.LogoutURLs, appClientNative.LogoutURLs);
+  const allowedOAuthFlowsMatching = isArraysEqual(appClientWeb.AllowedOAuthFlows, appClientNative.AllowedOAuthFlows);
+  const allowedOAuthScopesMatching = isArraysEqual(appClientWeb.AllowedOAuthScopes, appClientNative.AllowedOAuthScopes);
   const allowedOAuthFlowsUserPoolClientMatching =
     appClientWeb.AllowedOAuthFlowsUserPoolClient === appClientNative.AllowedOAuthFlowsUserPoolClient;
   const supportedIdentityProvidersMatching = isArraysEqual(
-    appClientWeb.SupportedIdentityProviders ?? [],
-    appClientNative.SupportedIdentityProviders ?? [],
+    appClientWeb.SupportedIdentityProviders,
+    appClientNative.SupportedIdentityProviders,
   );
   const propertiesMatching =
     supportedIdentityProvidersMatching &&
@@ -659,11 +648,11 @@ const appClientsOAuthPropertiesMatching = async (
     };
   }
 
-  const filteredProviders = appClientWeb.SupportedIdentityProviders.filter(p => supportedIdentityProviders.includes(p));
+  const filteredProviders = appClientWeb.SupportedIdentityProviders?.filter(p => supportedIdentityProviders.includes(p)) ?? [];
 
   return {
     isValid: true,
-    oauthProviders: filteredProviders || [],
+    oauthProviders: filteredProviders,
     oauthProperties: {
       callbackURLs: appClientWeb.CallbackURLs,
       logoutURLs: appClientWeb.LogoutURLs,
@@ -679,12 +668,12 @@ const showValidationTable = (
   title: string,
   appClientWeb: UserPoolClientType,
   appClientNative: UserPoolClientType,
-  webValues: string[] | undefined,
-  nativeValues: string[] | undefined,
+  webValues: string[] = [],
+  nativeValues: string[] = [],
 ): void => {
-  const tableOptions = [[appClientWeb.ClientName, appClientNative.ClientName]];
-  const webNames = [...(webValues || [])].sort();
-  const nativeNames = [...(nativeValues || [])].sort();
+  const tableOptions = [[appClientWeb.ClientName ?? '', appClientNative.ClientName ?? '']];
+  const webNames = [...webValues].sort();
+  const nativeNames = [...nativeValues].sort();
   const rowsDiff = Math.abs(webNames.length - nativeNames.length);
 
   if (webNames.length < nativeNames.length) {
@@ -700,13 +689,13 @@ const showValidationTable = (
 
   context.print.info(title);
   context.print.info('');
-  context.print.table(tableOptions.filter(t => t) as string[][], { format: 'markdown' });
+  context.print.table(tableOptions, { format: 'markdown' });
   context.print.info('');
 };
 
-const isArraysEqual = (left: string[], right: string[]): boolean => {
-  const sortedLeft = [...(left || [])].sort();
-  const sortedRight = [...(right || [])].sort();
+const isArraysEqual = (left: string[] = [], right: string[] = []): boolean => {
+  const sortedLeft = [...left].sort();
+  const sortedRight = [...right].sort();
 
   return _.isEqual(sortedLeft, sortedRight);
 };
@@ -719,13 +708,10 @@ const updateStateFiles = async (
   updateEnvSpecificParameters: boolean,
 ): Promise<{
   backendConfiguration: BackendConfiguration;
-  resourceParameters: ResourceParameters;
+  resourceParameters: Partial<ResourceParameters>;
   metaConfiguration: MetaConfiguration;
   envSpecificParameters: EnvSpecificResourceParameters;
 }> => {
-  if (!answers.userPool) {
-    throw new TypeError('expected answers.userPool to be defined');
-  }
   const backendConfiguration: BackendConfiguration = {
     service: 'Cognito',
     serviceType: 'imported',
@@ -747,17 +733,8 @@ const updateStateFiles = async (
     !!answers.oauthProperties.logoutURLs &&
     answers.oauthProperties.logoutURLs.length > 0;
 
-  if (!answers.authSelections) {
-    throw new TypeError('expected answers.authSelections to be defined');
-  }
-  if (!answers.resourceName) {
-    throw new TypeError('expected answers.resourceName to be defined');
-  }
-  if (!questionParameters.region) {
-    throw new TypeError('expected questionParameters.region to be defined');
-  }
   // Create and persist parameters
-  const resourceParameters: ResourceParameters = {
+  const resourceParameters: Partial<ResourceParameters> = {
     authSelections: answers.authSelections,
     resourceName: answers.resourceName,
     serviceType: 'imported',
@@ -769,8 +746,8 @@ const updateStateFiles = async (
     usernameAttributes: answers.userPool?.UsernameAttributes,
     authProvidersUserPool: answers.oauthProviders?.filter(provider => !!hostedUIProviders.find(it => it.value === provider)),
     requiredAttributes: (answers.userPool?.SchemaAttributes ?? [])
-      .filter(att => att.Name && att.Required && !!coreAttributes.find(it => it.value === att.Name))
-      .map(att => att.Name) as string[],
+      .filter(att => att.Required && !!coreAttributes.find(it => it.value === att.Name))
+      .map<string>(att => att.Name ?? ''),
     passwordPolicyMinLength: answers.userPool?.Policies?.PasswordPolicy?.MinimumLength ?? 8,
     passwordPolicyCharacters: [
       ...(answers.userPool?.Policies?.PasswordPolicy?.RequireLowercase ? ['Requires Lowercase'] : []),
@@ -786,6 +763,9 @@ const updateStateFiles = async (
     ],
   };
 
+  if (!answers.resourceName) {
+    throw new TypeError('answers.resourceName must be defined');
+  }
   stateManager.setResourceParametersJson(undefined, 'auth', answers.resourceName, { ...resourceParameters, ...authResourceParameters });
 
   // Add resource data to amplify-meta file and backend-config, since backend-config requires less information
@@ -812,16 +792,14 @@ const updateStateFiles = async (
 
 const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): MetaOutput => {
   const userPool = answers.userPool;
-  if (!userPool) {
-    throw new TypeError('expected userPool to be defined');
-  }
+
   const output: MetaOutput = {
-    UserPoolId: userPool.Id,
-    UserPoolName: userPool.Name,
+    UserPoolId: userPool?.Id,
+    UserPoolName: userPool?.Name,
     AppClientID: answers.appClientNative?.ClientId,
     ...(answers.appClientNative?.ClientSecret ? { AppClientSecret: answers.appClientNative.ClientSecret } : {}),
     AppClientIDWeb: answers.appClientWeb?.ClientId,
-    HostedUIDomain: userPool.Domain,
+    HostedUIDomain: userPool?.Domain,
   };
 
   if (answers.authSelections === 'identityPoolAndUserPool') {
@@ -829,20 +807,20 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
     output.IdentityPoolName = answers.identityPool?.IdentityPoolName;
 
     if (answers?.identityPool?.SupportedLoginProviders) {
-      for (const key of Object.keys(answers.identityPool?.SupportedLoginProviders ?? {})) {
+      for (const key of Object.keys(answers?.identityPool.SupportedLoginProviders || {})) {
         switch (key) {
           case 'www.amazon.com':
-            output.AmazonWebClient = answers.identityPool?.SupportedLoginProviders[key];
+            output.AmazonWebClient = answers?.identityPool.SupportedLoginProviders[key];
             break;
           case 'graph.facebook.com':
-            output.FacebookWebClient = answers.identityPool?.SupportedLoginProviders[key];
+            output.FacebookWebClient = answers?.identityPool.SupportedLoginProviders[key];
             break;
           case 'accounts.google.com':
-            output.GoogleWebClient = answers.identityPool?.SupportedLoginProviders[key];
+            output.GoogleWebClient = answers?.identityPool.SupportedLoginProviders[key];
             break;
           // eslint-disable-next-line spellcheck/spell-checker
           case 'appleid.apple.com':
-            output.AppleWebClient = answers.identityPool?.SupportedLoginProviders[key];
+            output.AppleWebClient = answers?.identityPool.SupportedLoginProviders[key];
             break;
           default:
             // We don't do anything with the providers that the CLI currently does not support.
@@ -854,7 +832,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
 
   // SNS Role if there is SMS configuration on the user pool, use the separate MFA configuration object
   // not the one on the userPool itself
-  if (userPool.MfaConfiguration !== 'OFF' && answers.mfaConfiguration?.SmsMfaConfiguration?.SmsConfiguration) {
+  if (userPool?.MfaConfiguration !== 'OFF' && answers.mfaConfiguration?.SmsMfaConfiguration?.SmsConfiguration) {
     output.CreatedSNSRole = answers.mfaConfiguration.SmsMfaConfiguration.SmsConfiguration?.SnsCallerArn;
   }
 
@@ -880,23 +858,11 @@ const createEnvSpecificResourceParameters = (
 ): EnvSpecificResourceParameters => {
   const userPool = answers.userPool;
 
-  if (!userPool?.Name) {
-    throw new TypeError('expected userPool.Name to be defined');
-  }
-  if (!userPool?.Id) {
-    throw new TypeError('expected userPool.Id to be defined');
-  }
-  if (!answers.appClientWeb?.ClientId) {
-    throw new TypeError('expected answers.appClientWeb.ClientId to be defined');
-  }
-  if (!answers.appClientNative?.ClientId) {
-    throw new TypeError('expected answers.appClientNative.ClientId to be defined');
-  }
   const envSpecificResourceParameters: EnvSpecificResourceParameters = {
-    userPoolId: userPool.Id,
-    userPoolName: userPool.Name,
-    webClientId: answers.appClientWeb.ClientId,
-    nativeClientId: answers.appClientNative.ClientId,
+    userPoolId: userPool?.Id ?? '',
+    userPoolName: userPool?.Name ?? '',
+    webClientId: answers?.appClientWeb?.ClientId ?? '',
+    nativeClientId: answers?.appClientNative?.ClientId ?? '',
     identityPoolId: answers.identityPoolId,
     identityPoolName: answers.identityPool?.IdentityPoolName,
     allowUnauthenticatedIdentities: answers.identityPool?.AllowUnauthenticatedIdentities,
@@ -906,37 +872,36 @@ const createEnvSpecificResourceParameters = (
     unauthRoleName: answers.unauthRoleName,
   };
 
-  if (!answers.identityProviders) {
-    throw new TypeError('expected answers.identityProviders to be defined');
-  }
-
   if (hasOAuthConfig) {
+    if (!answers.identityProviders) {
+      throw new TypeError('answers.identityProviders must be defined');
+    }
     envSpecificResourceParameters.hostedUIProviderCreds = createOAuthCredentials(answers.identityProviders);
   }
 
   if (answers.authSelections === 'identityPoolAndUserPool' && answers.identityPool?.SupportedLoginProviders) {
-    for (const key of Object.keys(answers.identityPool?.SupportedLoginProviders ?? {})) {
+    for (const key of Object.keys(answers.identityPool?.SupportedLoginProviders || {})) {
       switch (key) {
         case 'www.amazon.com':
-          envSpecificResourceParameters.amazonAppId = answers.identityPool.SupportedLoginProviders[key];
+          envSpecificResourceParameters.amazonAppId = answers.identityPool?.SupportedLoginProviders[key];
           break;
         case 'graph.facebook.com':
-          envSpecificResourceParameters.facebookAppId = answers.identityPool.SupportedLoginProviders[key];
+          envSpecificResourceParameters.facebookAppId = answers.identityPool?.SupportedLoginProviders[key];
           break;
         // eslint-disable-next-line spellcheck/spell-checker
         case 'appleid.apple.com':
-          envSpecificResourceParameters.appleAppId = answers.identityPool.SupportedLoginProviders[key];
+          envSpecificResourceParameters.appleAppId = answers.identityPool?.SupportedLoginProviders[key];
           break;
         case 'accounts.google.com': {
           switch (projectType) {
             case 'javascript':
-              envSpecificResourceParameters.googleClientId = answers.identityPool.SupportedLoginProviders[key];
+              envSpecificResourceParameters.googleClientId = answers.identityPool?.SupportedLoginProviders[key];
               break;
             case 'ios':
-              envSpecificResourceParameters.googleIos = answers.identityPool.SupportedLoginProviders[key];
+              envSpecificResourceParameters.googleIos = answers.identityPool?.SupportedLoginProviders[key];
               break;
             case 'android':
-              envSpecificResourceParameters.googleAndroid = answers.identityPool.SupportedLoginProviders[key];
+              envSpecificResourceParameters.googleAndroid = answers.identityPool?.SupportedLoginProviders[key];
               break;
             default:
               throw new Error(`Unknown project type ${projectType}`);
@@ -956,7 +921,7 @@ const createEnvSpecificResourceParameters = (
 const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
   const credentials = identityProviders.map(idp => {
     if (!idp.ProviderDetails) {
-      throw new TypeError('expected idp.ProviderDetails to be defined');
+      throw new TypeError('idp.ProviderDetails must be defined');
     }
     if (idp.ProviderName === 'SignInWithApple') {
       return {
@@ -980,14 +945,13 @@ const createOAuthCredentials = (identityProviders: IdentityProviderType[]): stri
 const createParameters = (providerName: string, userPoolList: UserPoolDescriptionType[]): ImportParameters => {
   const questionParameters: ImportParameters = {
     providerName,
-    userPoolList: userPoolList
-      .filter(({ Id }) => Id)
-      .map<{ message: string; value: string }>(up => ({
-        message: `${up.Name} (${up.Id})`,
-        // we can make this cast here because we have run the filter operation above
-        value: up.Id as string,
-      }))
-      .sort((a, b) => a.message.localeCompare(b.message)),
+    userPoolList:
+      userPoolList
+        ?.map(up => ({
+          message: `${up.Name} (${up.Id})`,
+          value: up.Id ?? '',
+        }))
+        .sort((a, b) => a.message.localeCompare(b.message)) ?? [],
     webClients: [],
     nativeClients: [],
   };
@@ -995,7 +959,7 @@ const createParameters = (providerName: string, userPoolList: UserPoolDescriptio
   return questionParameters;
 };
 
-const isCustomAuthConfigured = (userPool: UserPoolType): boolean => {
+const isCustomAuthConfigured = (userPool?: UserPoolType): boolean => {
   const customAuthConfigured =
     !!userPool &&
     !!userPool.LambdaConfig &&
@@ -1079,14 +1043,14 @@ export const importedAuthEnvInit = async (
     );
 
     if (resourceParamManager.hasAnyParams()) {
-      const userPoolId = resourceParamManager.getParam(AuthParam.USER_POOL_ID);
-      if (!userPoolId) {
-        throw new TypeError('expected userPoolId to be defined');
-      }
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.Questions.ImportPreviousResource(resourceName, userPoolId, context.exeInfo.sourceEnvName),
+        message: importMessages.Questions.ImportPreviousResource(
+          resourceName,
+          resourceParamManager.getParam(AuthParam.USER_POOL_ID)!,
+          context.exeInfo.sourceEnvName,
+        ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -1098,19 +1062,11 @@ export const importedAuthEnvInit = async (
         };
       }
 
-      const webClientId = resourceParamManager.getParam(AuthParam.WEB_CLIENT_ID);
-      const nativeClientId = resourceParamManager.getParam(AuthParam.NATIVE_CLIENT_ID);
-      if (!webClientId) {
-        throw new TypeError('expected webClientId to be defined');
-      }
-      if (!nativeClientId) {
-        throw new TypeError('expected nativeClientId to be defined');
-      }
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.userPoolId = userPoolId;
-      currentEnvSpecificParameters.webClientId = webClientId;
-      currentEnvSpecificParameters.nativeClientId = nativeClientId;
+      currentEnvSpecificParameters.userPoolId = resourceParamManager.getParam(AuthParam.USER_POOL_ID)!;
+      currentEnvSpecificParameters.webClientId = resourceParamManager.getParam(AuthParam.WEB_CLIENT_ID)!;
+      currentEnvSpecificParameters.nativeClientId = resourceParamManager.getParam(AuthParam.NATIVE_CLIENT_ID)!;
 
       if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
         currentEnvSpecificParameters.identityPoolId = resourceParamManager.getParam(AuthParam.IDENTITY_POOL_ID);
@@ -1212,20 +1168,16 @@ export const importedAuthEnvInit = async (
   answers.oauthProviders = oauthResult.oauthProviders;
   answers.oauthProperties = oauthResult.oauthProperties;
 
-  if (!answers.userPoolId) {
-    throw new TypeError('expected answers.userPoolId to be defined');
-  }
-  if (answers.oauthProviders && answers.oauthProviders.length > 0) {
+  if (answers.userPoolId && answers.oauthProviders && answers.oauthProviders.length > 0) {
     answers.identityProviders = await cognito.listUserPoolIdentityProviders(answers.userPoolId);
   }
 
   if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-    const identityPools =
-      questionParameters.validatedIdentityPools?.filter(
-        idp => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
-      ) ?? [];
+    const identityPools = questionParameters.validatedIdentityPools?.filter(
+      idp => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
+    );
 
-    if (identityPools.length !== 1) {
+    if (identityPools?.length !== 1) {
       context.print.info(
         importMessages.IdentityPoolNotFound(
           currentEnvSpecificParameters.identityPoolName ?? '',
@@ -1251,9 +1203,12 @@ export const importedAuthEnvInit = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool?.MfaConfiguration !== 'OFF') {
+  if (answers.userPool.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
+      if (!answers.userPoolId) {
+        throw new TypeError('answers.userPoolId must be defined');
+      }
       answers.mfaConfiguration = await cognito.getUserPoolMfaConfig(answers.userPoolId);
     } catch {
       // swallow error
@@ -1261,6 +1216,9 @@ export const importedAuthEnvInit = async (
   }
 
   if (answers.oauthProviders && answers.oauthProviders.length > 0) {
+    if (!answers.userPoolId) {
+      throw new TypeError('answers.userPoolId must be defined');
+    }
     answers.identityProviders = await cognito.listUserPoolIdentityProviders(answers.userPoolId);
   }
 
@@ -1354,7 +1312,10 @@ export const headlessImport = async (
   answers.oauthProviders = oauthResult.oauthProviders;
   answers.oauthProperties = oauthResult.oauthProperties;
 
-  if (answers.userPoolId && answers.oauthProviders && answers.oauthProviders.length > 0) {
+  if (answers.oauthProviders && answers.oauthProviders.length > 0) {
+    if (!answers.userPoolId) {
+      throw new TypeError('answer.userPoolId must be defined');
+    }
     answers.identityProviders = await cognito.listUserPoolIdentityProviders(answers.userPoolId);
   }
 
@@ -1363,7 +1324,7 @@ export const headlessImport = async (
       idp => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
     );
 
-    if (identityPools?.length !== 1) {
+    if (!identityPools || identityPools.length !== 1) {
       throw new Error(
         importMessages.IdentityPoolNotFound(
           currentEnvSpecificParameters.identityPoolName ?? '',
@@ -1385,16 +1346,22 @@ export const headlessImport = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPoolId && answers.userPool?.MfaConfiguration !== 'OFF') {
+  if (answers.userPool.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
+      if (!answers.userPoolId) {
+        throw new TypeError('answer.userPoolId must be defined');
+      }
       answers.mfaConfiguration = await cognito.getUserPoolMfaConfig(answers.userPoolId);
     } catch {
       // swallow error
     }
   }
 
-  if (answers.userPoolId && answers.oauthProviders && answers.oauthProviders.length > 0) {
+  if (answers.oauthProviders && answers.oauthProviders.length > 0) {
+    if (!answers.userPoolId) {
+      throw new TypeError('answer.userPoolId must be defined');
+    }
     answers.identityProviders = await cognito.listUserPoolIdentityProviders(answers.userPoolId);
   }
 
