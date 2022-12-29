@@ -5,6 +5,7 @@ import * as yaml from 'js-yaml';
 import { join } from 'path';
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
+import { splitTestsV2 } from './split-e2e-tests-v2';
 
 const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -14,7 +15,7 @@ const CONCURRENCY = 35;
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 
 // Todo: update the split test strategy to use parallelization so circleci results dont go over the limits of github payload size
-const WINDOWS_TEST_SKIP_LIST: string[] = [
+export const WINDOWS_TEST_SKIP_LIST: string[] = [
   'amplify-app_pkg',
   'analytics-2_pkg',
   'api_migration_update_v5',
@@ -129,7 +130,7 @@ const JOBS_RUNNING_ON_LINUX_LARGE_VM: string[] = [
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
+export const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-1',
   'us-east-2',
   'us-west-2',
@@ -142,9 +143,9 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 
 // Some services (eg. amazon lex) are not available in all regions
 // Tests added to this list will always run in us-west-2
-const FORCE_US_WEST_2 = ['interactions'];
+export const FORCE_US_WEST_2 = ['interactions'];
 
-const USE_PARENT_ACCOUNT = [
+export const USE_PARENT_ACCOUNT = [
   'import_dynamodb_1',
   'import_s3_1',
   'searchable-migration',
@@ -173,13 +174,13 @@ export type CircleCIConfig = {
   };
 };
 
-const repoRoot = join(__dirname, '..');
+export const repoRoot = join(__dirname, '..');
 
-function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
+export function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return glob.sync(pattern, { cwd: dir });
 }
 
-function generateJobName(baseName: string, testSuitePath: string): string {
+export function generateJobName(baseName: string, testSuitePath: string): string {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
   let name = testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
@@ -308,7 +309,7 @@ function splitTests(
  * @param jobs - All the jobs in workflow
  * @param jobName - job that needs to be removed from workflow
  */
-function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] {
+export function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] {
   return jobs.filter(j => {
     if (typeof j === 'string') {
       return j !== jobName;
@@ -324,7 +325,7 @@ function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] 
  * @param jobs array of job names
  * @param concurrency number of concurrent jobs
  */
-function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
+export function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
   const lastBatchJobLength = Math.min(concurrency, jobs.length);
   const lastBatchJobNames = jobs.slice(jobs.length - lastBatchJobLength);
   return lastBatchJobNames;
@@ -337,7 +338,7 @@ function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
  * @param jobName - job to remove from requires
  * @param jobsToReplaceWith - jobs to add to requires
  */
-function replaceWorkflowDependency(jobs: WorkflowJob[], jobName: string, jobsToReplaceWith: string[]): WorkflowJob[] {
+export function replaceWorkflowDependency(jobs: WorkflowJob[], jobName: string, jobsToReplaceWith: string[]): WorkflowJob[] {
   return jobs.map(j => {
     if (typeof j === 'string') return j;
     const [currentJobName, jobObj] = Object.entries(j)[0];
@@ -448,12 +449,19 @@ function main(): void {
 
   validateArtifactStoragePaths(config);
 
-  const splitPkgTests = splitTests(
+  // const splitPkgTests = splitTests(
+  //   config,
+  //   'amplify_e2e_tests_pkg',
+  //   'build_test_deploy_v3',
+  //   join(repoRoot, 'packages', 'amplify-e2e-tests'),
+  //   CONCURRENCY,
+  //   undefined
+  // );
+  const splitPkgTests = splitTestsV2(
     config,
     'amplify_e2e_tests_pkg',
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
-    CONCURRENCY,
     undefined
   );
   const splitGqlTests = splitTests(
