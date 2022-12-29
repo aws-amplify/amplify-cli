@@ -111,11 +111,9 @@ export async function createNewProjectDir(
   // eslint-disable-next-line spellcheck/spell-checker
   prefix = path.join(fs.realpathSync(os.tmpdir()), amplifyTestsDir),
 ): Promise<string> {
-  const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim();
   let projectDir;
   do {
-    const randomId = await global.getRandomId();
-    projectDir = path.join(prefix, `${projectName}_${randomId}_${currentHash}`);
+    projectDir = path.join(prefix, `${projectName}_${Math.floor(Math.random() * 1000000)}`);
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
