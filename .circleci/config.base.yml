@@ -384,25 +384,7 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             verifyPkgCli
-
-  graphql_e2e_tests:
-    <<: *defaults
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Run GraphQL end-to-end tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            cd packages/graphql-transformers-e2e-tests/
-            retry yarn e2e --maxWorkers=3 $TEST_SUITE
-          environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
-          no_output_timeout: 90m
-      - store_test_results:
-          path: ~/repo/packages/graphql-transformers-e2e-tests/
+            
   amplify_sudo_install_test:
     <<: *defaults
     steps:
@@ -947,18 +929,6 @@ workflows:
                 - beta
                 - release
                 - /tagged-release-without-e2e-tests\/.*/
-      - graphql_e2e_tests:
-          context:
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - upload_pkg_binaries
       - integration_test:
           context:
             - e2e-test-context
@@ -1184,7 +1154,6 @@ workflows:
           requires:
             - test
             - mock_e2e_tests
-            - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
