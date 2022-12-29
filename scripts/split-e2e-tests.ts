@@ -457,17 +457,8 @@ function main(): void {
     false,
     undefined
   );
-  const splitGqlTests = splitTestsV2(
-    splitPkgTests,
-    'gql',
-    'graphql_e2e_tests',
-    'build_test_deploy_v3',
-    join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
-    false,
-    undefined
-  );
   const splitV5MigrationTests = splitTestsV2(
-    splitGqlTests,
+    splitPkgTests,
     'migrationV5',
     'amplify_migration_tests_v5',
     'build_test_deploy_v3',
