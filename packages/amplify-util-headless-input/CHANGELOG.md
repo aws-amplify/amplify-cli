@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.8-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.7...amplify-util-headless-input@1.9.8-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+
+
+
 ## [1.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.6...amplify-util-headless-input@1.9.7) (2022-11-17)
 
 **Note:** Version bump only for package amplify-util-headless-input

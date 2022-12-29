@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.1-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.7.1-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* check java_home variable before starting opensearch emulator ([#11528](https://github.com/aws-amplify/amplify-cli/issues/11528)) ([a150ca2](https://github.com/aws-amplify/amplify-cli/commit/a150ca2f017c7edaf3901a554b4771a02aad21da))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+* searchable mock packaging ([#11472](https://github.com/aws-amplify/amplify-cli/issues/11472)) ([7e3e399](https://github.com/aws-amplify/amplify-cli/commit/7e3e3998caf0fd3cfa9e995b1ddd7dd2410a33e8))
+
+
+
+
+
 # [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.1...amplify-util-mock@4.7.0) (2022-11-17)
 
 

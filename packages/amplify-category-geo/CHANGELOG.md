@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.10.0...amplify-category-geo@2.11.0-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* **category-geo:** add new map style 2022.12 ([#11621](https://github.com/aws-amplify/amplify-cli/issues/11621)) ([dc60f7d](https://github.com/aws-amplify/amplify-cli/commit/dc60f7d1368b3bb4721f51f2404bf7a8f84075c0))
+
+
+
+
+
 # [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.9.0...amplify-category-geo@2.10.0) (2022-11-17)
 
 

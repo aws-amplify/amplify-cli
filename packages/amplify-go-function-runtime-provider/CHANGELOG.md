@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.6-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.5...amplify-go-function-runtime-provider@2.3.6-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* coerce compare Go version 1.17 to SemVer type ([f7d009a](https://github.com/aws-amplify/amplify-cli/commit/f7d009af78ed576ea44799b2c6854a9d56034379))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+
+
+
 ## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.4...amplify-go-function-runtime-provider@2.3.5) (2022-11-17)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

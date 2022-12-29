@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-graphql15.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.0...@aws-amplify/amplify-console-integration-tests@2.6.1-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-console-integration-tests/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+
+
+
+
+
 # [2.6.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0...@aws-amplify/amplify-console-integration-tests@2.6.0) (2022-11-17)
 
 

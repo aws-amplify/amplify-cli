@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.3-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.3-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* address UI Builder component generation errors ([#11536](https://github.com/aws-amplify/amplify-cli/issues/11536)) ([aceec4c](https://github.com/aws-amplify/amplify-cli/commit/aceec4c098bc85d2e8da0738bbc5e8089ad8ae6e))
+* **cli:** fix grammar in pull warning message ([#11407](https://github.com/aws-amplify/amplify-cli/issues/11407)) ([984c0f8](https://github.com/aws-amplify/amplify-cli/commit/984c0f8548cec80d0e14269757cd49b031403097))
+* delete detached forms with a warning ([#11610](https://github.com/aws-amplify/amplify-cli/issues/11610)) ([7dc9179](https://github.com/aws-amplify/amplify-cli/commit/7dc9179e6e15e1a261bcb717ec0e777f6f3dd68c))
+
+
+
+
+
 ## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.1...@aws-amplify/amplify-util-uibuilder@1.6.2) (2022-11-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

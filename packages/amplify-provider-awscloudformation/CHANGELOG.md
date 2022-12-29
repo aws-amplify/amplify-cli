@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.10.0-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@6.10.0-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* add check for api repo overrides errors ([#11394](https://github.com/aws-amplify/amplify-cli/issues/11394)) ([d57ffe4](https://github.com/aws-amplify/amplify-cli/commit/d57ffe4660cfe13187cb20a120a05f426aecaf89))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* back off on cfn event pull ([#11624](https://github.com/aws-amplify/amplify-cli/issues/11624)) ([1e53965](https://github.com/aws-amplify/amplify-cli/commit/1e53965c4ba3ccc5aad72b37791bbef807ec5fc3))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+* iterative gsi deployment - incorrect AttributeDefinitions ([#11532](https://github.com/aws-amplify/amplify-cli/issues/11532)) ([8308751](https://github.com/aws-amplify/amplify-cli/commit/8308751cfc51c5270cc10138330b9bbe65f5673f))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+* suppress errors when browser launch fails ([#11406](https://github.com/aws-amplify/amplify-cli/issues/11406)) ([e01894e](https://github.com/aws-amplify/amplify-cli/commit/e01894e5b3ed71163e647ada63515d8de8aa3d92))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
 ## [6.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.0...amplify-provider-awscloudformation@6.9.1) (2022-11-17)
 
 

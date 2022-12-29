@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0...amplify-storage-simulator@1.7.1-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.6.8...amplify-storage-simulator@1.7.0) (2022-10-27)
 
 

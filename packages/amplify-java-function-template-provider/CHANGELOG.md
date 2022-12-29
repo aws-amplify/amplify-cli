@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.15-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.14...amplify-java-function-template-provider@1.5.15-graphql15.0) (2022-12-29)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.13...amplify-java-function-template-provider@1.5.14) (2022-08-02)
 
 **Note:** Version bump only for package amplify-java-function-template-provider

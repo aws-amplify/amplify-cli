@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.6.0...amplify-nodejs-function-template-provider@2.6.1-graphql15.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+
+
+
 # [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.5.4...amplify-nodejs-function-template-provider@2.6.0) (2022-11-17)
 
 
