@@ -50,6 +50,7 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'import_s3_2c_pkg',
         'layer-2_pkg',
         'mock-api_pkg',
+        'model-migration_pkg',
         'notifications-analytics-compatibility-in-app-1_pkg',
         'notifications-analytics-compatibility-sms-1_pkg',
         'notifications-analytics-compatibility-sms-2_pkg',
