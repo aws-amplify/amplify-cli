@@ -12,7 +12,8 @@ import { runSubscription } from '../utils/graphql-runner/subscriptions';
 import { extractIamToken } from '../utils/auth-helpers/helpers';
 import { REALTIME_SUBSCRIPTION_PATH } from './subscription/websocket-server/server';
 
-const MAX_BODY_SIZE = '10 MB';
+// eslint-disable-next-line spellcheck/spell-checker
+const MAX_BODY_SIZE = '10mb';
 
 const STATIC_ROOT = join(__dirname, '..', '..', 'public');
 export class OperationServer {

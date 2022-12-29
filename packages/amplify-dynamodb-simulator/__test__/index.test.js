@@ -109,7 +109,6 @@ describe('emulator operations', () => {
   it('reports on invalid dbPath values with extra stderr output', async () => {
     expect.assertions(1);
     // This makes JVM running DynamoDB simulator print an extra line before surfacing real error.
-    // eslint-disable-next-line spellcheck/spell-checker
     process.env.JAVA_TOOL_OPTIONS = '-Dlog4j2.formatMsgNoLookups=true';
     await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
   });

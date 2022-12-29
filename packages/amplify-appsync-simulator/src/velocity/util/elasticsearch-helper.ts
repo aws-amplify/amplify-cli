@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import ElasticsearchUtils from './elasticsearch-utils';
 
 class ElasticsearchHelper {
@@ -12,7 +13,8 @@ class ElasticsearchHelper {
    *
    * filter: {
    *   title: {
-   *     eq: "hi",
+   * // eslint-disable-next-line spellcheck/spell-checker
+   *     eq: "hihihi",
    *     wildcard: "h*i"
    *   },
    *   upvotes: {
