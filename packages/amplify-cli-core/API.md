@@ -413,13 +413,11 @@ export const commandsInfo: ({
     command: string;
     commandDescription: string;
     commandUsage: string;
-    learnMoreLink: string;
     commandFlags: never[];
     subCommands: {
         subCommand: string;
         subCommandDescription: string;
         subCommandUsage: string;
-        learnMoreLink: string;
         subCommandFlags: {
             short: string;
             long: string;
@@ -430,7 +428,6 @@ export const commandsInfo: ({
     command: string;
     commandDescription: string;
     commandUsage: string;
-    learnMoreLink: string;
     commandFlags: {
         short: string;
         long: string;
@@ -440,7 +437,6 @@ export const commandsInfo: ({
         subCommand: string;
         subCommandDescription: string;
         subCommandUsage: string;
-        learnMoreLink: string;
         subCommandFlags: never[];
     }[];
 })[];

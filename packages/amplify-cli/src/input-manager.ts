@@ -66,8 +66,8 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
 
 function preserveHelpInformation(input: Input): Input {
   // preserve non-help command in subcommands
-  if (input.command && input.command.toLocaleLowerCase() !== constants.HELP) {
-    input.subCommands = input.subCommands ? [input.command.toLocaleLowerCase(), ...input.subCommands] : [input.command.toLocaleLowerCase()];
+  if (input.command && input.command.toLowerCase() !== constants.HELP) {
+    input.subCommands = input.subCommands ? [input.command.toLocaleLowerCase(), ...input.subCommands] : [input.command.toLowerCase()];
   }
 
   // prevent information in help option from being overwritten to true by saving it in subcommands

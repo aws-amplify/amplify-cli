@@ -12,7 +12,6 @@ type SubCommandInfo = {
   subCommand: string,
   subCommandDescription: string,
   subCommandUsage: string,
-  learnMoreLink: string,
   subCommandFlags: Array<CommandFlagInfo>
 };
 
@@ -20,7 +19,6 @@ type CommandInfo = {
   command: string,
   commandDescription: string,
   commandUsage: string,
-  learnMoreLink: string,
   commandFlags: Array<CommandFlagInfo>,
   subCommands: Array<SubCommandInfo>
 };
@@ -52,10 +50,14 @@ const printCategoryMessage = () => {
   printer.blankLine();
 };
 
+const AMPLIFY_CLI_DOCS_URL = `https://docs.amplify.aws/cli`;
+const HEADLESS_DOCS_LINK = `${AMPLIFY_CLI_DOCS_URL}/usage/headless`;
+const getDocsLinkForCommand = (commandName: string) =>  `${AMPLIFY_CLI_DOCS_URL}/commands/${commandName}`;
+
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | null {
   let retCommand: CommandInfo | null = null;
   for (const command of commandsInfo) {
-    if (command.command == commandName) {
+    if (command.command === commandName) {
       retCommand = command;
       break;
     }
@@ -64,7 +66,7 @@ export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: str
 }
 
 export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | null {
-  let command = lookUpCommand(commandsInfo, commandName);
+  const command = lookUpCommand(commandsInfo, commandName);
   if (command === null) {
     return null;
   }
@@ -88,14 +90,14 @@ export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo
   let hasSubcommands = input.subCommands && Array.isArray(input.subCommands) && input.subCommands.length >= 1; // check if subcommands exist
   if (hasSubcommands) {
     specifiedCommands = {command: input.subCommands[0], subCommand: ''}; // if just 1 subcommand, set that as command
-    if (input.subCommands.length == 1) {
+    if (input.subCommands.length === 1) {
       if (input.options) { // check if subcommands are in options field
         let subcommandsInOptions = acceptableCommands.filter(i => input.options.hasOwnProperty(i));
-        if (subcommandsInOptions && subcommandsInOptions.length == 1) {
+        if (subcommandsInOptions && subcommandsInOptions.length === 1) {
           specifiedCommands = {command: input.subCommands[0], subCommand: subcommandsInOptions[0]};
         }
       }
-    } else if (input.subCommands.length == 2) {
+    } else if (input.subCommands.length === 2) {
       specifiedCommands = {command: input.subCommands[0], subCommand: input.subCommands[1]};
     }
   }
@@ -113,6 +115,11 @@ function getHelpFlagRow(flagObject: CommandFlagInfo): [string, string] {
   } else {
     columns = [FLAG_PREFIX_LONG + flagObject.long, flagObject.flagDescription];
   }
+
+  if (flagObject.long === 'headless') {
+    columns[1] += ` (see ${HEADLESS_DOCS_LINK})`
+  }
+
   return columns;
 }
 
@@ -147,7 +154,7 @@ function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>,
 }
 
 function printCommandSpecificHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, commandName: string, defaultNumTabs=1, extraTabLengthThreshold=5) {
-  let command = lookUpCommand(commandsInfo, commandName.toLocaleLowerCase());
+  const command = lookUpCommand(commandsInfo, commandName.toLocaleLowerCase());
   if (command === null) {
     printGenericHelp(context, commandsInfo, defaultNumTabs, extraTabLengthThreshold);
     return;
@@ -182,17 +189,15 @@ function printCommandSpecificHelp(context: $TSContext, commandsInfo: Array<Comma
     printer.blankLine();
   }
 
-  if (command.learnMoreLink.length > 0) {
-    printHeaderText(LEARN_MORE);
-    printBodyText(DEFAULT_INDENT + command.learnMoreLink);
-    printer.blankLine();
-  }
+  printHeaderText(LEARN_MORE);
+  printBodyText(DEFAULT_INDENT + getDocsLinkForCommand(commandName));
+  printer.blankLine();
 }
 
 function printSubcommandSpecificHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string, defaultNumTabs=1, extraTabLengthThreshold=5) {
-  let subCommand = lookUpSubcommand(commandsInfo, commandName, subcommandName);
+  const subCommand = lookUpSubcommand(commandsInfo, commandName, subcommandName);
   if (subCommand === null) {
-    let command = lookUpCommand(commandsInfo, commandName);
+    const command = lookUpCommand(commandsInfo, commandName);
     if (command === null) {
       printGenericHelp(context, commandsInfo, defaultNumTabs, extraTabLengthThreshold);
       return;
@@ -217,11 +222,9 @@ function printSubcommandSpecificHelp(context: $TSContext, commandsInfo: Array<Co
     printer.blankLine();
   }
 
-  if (subCommand.learnMoreLink.length > 0) {
-    printHeaderText(LEARN_MORE);
-    printBodyText(DEFAULT_INDENT + subCommand.learnMoreLink);
-    printer.blankLine();
-  }
+  printHeaderText(LEARN_MORE);
+  printBodyText(DEFAULT_INDENT + getDocsLinkForCommand(commandName));
+  printer.blankLine();
 }
 
 export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>) {
