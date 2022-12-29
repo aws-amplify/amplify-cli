@@ -247,21 +247,20 @@ export const constructPartialNotificationsAppMeta = (
 export const constructResourceMeta = (amplifyMeta : $TSMeta,
   resourceName: string, pinpointOutput:
   Partial<ICategoryMeta>): Partial<ICategoryMeta> => {
-  if (!amplifyMeta[AmplifyCategories.NOTIFICATIONS] || Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length === 0) {
-    // eslint-disable-next-line no-param-reassign
-    amplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: { output: {} } };
+  const tmpAmplifyMeta = amplifyMeta;
+  if (!tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
+    tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: { output: {} } };
   }
-  // eslint-disable-next-line no-param-reassign
-  amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
-    ...amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
+  tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
+    ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
     service: AmplifySupportedService.PINPOINT,
     output: {
-      ...amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName].output,
+      ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName].output,
       ...pinpointOutput,
     },
     lastPushTimeStamp: new Date(),
   };
-  return amplifyMeta;
+  return tmpAmplifyMeta;
 };
 
 /**
