@@ -42,7 +42,9 @@ config();
  * delete project directory
  */
 export const deleteProjectDir = (root: string): void => {
-  rimraf.sync(root);
+  if(fs.existsSync(root)){
+    rimraf.sync(root);
+  }
 };
 
 /**
