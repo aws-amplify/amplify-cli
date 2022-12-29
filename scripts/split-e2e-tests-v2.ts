@@ -109,9 +109,11 @@ const getShortNameForTestSuite = (
 //   );
 export const splitTestsV2 = function splitTests(
     config: Readonly<CircleCIConfig>,
+    jobTag: string,
     baseJobName: string,
     workflowName: string,
     jobRootDir: string,
+    isMigration: boolean,
     pickTests: ((testSuites: string[]) => string[]) | undefined,
   ): CircleCIConfig {
     const output: CircleCIConfig = { ...config };
@@ -127,6 +129,10 @@ export const splitTestsV2 = function splitTests(
     }
 
     const generateJobsForOS = (os: OS_TYPE) => {
+        // migration tests are not supported for windows
+        if(isMigration && os === 'w'){
+            return [];
+        }
         const osJobs = [createRandomJob(os)];
         for(let test of testSuites){
             const currentJob = osJobs[osJobs.length - 1];
@@ -165,7 +171,7 @@ export const splitTestsV2 = function splitTests(
                 continue;
             }
             const firstTestName = getShortNameForTestSuite(j.tests[0]);
-            const jobName = `${j.os === 'l' ? 'linux' : 'win'}_${firstTestName.charAt(0)}_${index}`;
+            const jobName = `${j.os}_${jobTag}_${firstTestName.charAt(0)}_${index}`;
             newJobConfigurations = {
                 ...newJobConfigurations,
                 [jobName]: {
