@@ -178,7 +178,7 @@ export const splitTestsV2 = function splitTests(
                     ...baseJob,
                     environment: {
                         ...(baseJob?.environment || {}),
-                        TEST_SUITE: `"${j.tests.join('|')}"`,
+                        TEST_SUITE: j.tests.join('|'),
                         CLI_REGION: j.region,
                     }
                 }
