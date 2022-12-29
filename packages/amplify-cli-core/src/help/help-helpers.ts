@@ -2,20 +2,20 @@ import { $TSContext, $TSAny } from '../types';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
 
-type CommandFlagInfo = {
+export type CommandFlagInfo = {
   short: string,
   long: string,
   flagDescription: string
 };
 
-type SubCommandInfo = {
+export type SubCommandInfo = {
   subCommand: string,
   subCommandDescription: string,
   subCommandUsage: string,
   subCommandFlags: Array<CommandFlagInfo>
 };
 
-type CommandInfo = {
+export type CommandInfo = {
   command: string,
   commandDescription: string,
   commandUsage: string,
@@ -55,14 +55,14 @@ const HEADLESS_DOCS_LINK = `${AMPLIFY_CLI_DOCS_URL}/usage/headless`;
 const getDocsLinkForCommand = (commandName: string) =>  `${AMPLIFY_CLI_DOCS_URL}/commands/${commandName}`;
 
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | null {
-  let retCommand: CommandInfo | null = null;
+  let foundCommand: CommandInfo | null = null;
   for (const command of commandsInfo) {
     if (command.command === commandName) {
-      retCommand = command;
+      foundCommand = command;
       break;
     }
   }
-  return retCommand;
+  return foundCommand;
 }
 
 export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | null {

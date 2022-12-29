@@ -409,37 +409,23 @@ export class CloudformationProviderFacade {
 }
 
 // @public (undocumented)
-export const commandsInfo: ({
+export type CommandFlagInfo = {
+    short: string;
+    long: string;
+    flagDescription: string;
+};
+
+// @public (undocumented)
+export type CommandInfo = {
     command: string;
     commandDescription: string;
     commandUsage: string;
-    commandFlags: never[];
-    subCommands: {
-        subCommand: string;
-        subCommandDescription: string;
-        subCommandUsage: string;
-        subCommandFlags: {
-            short: string;
-            long: string;
-            flagDescription: string;
-        }[];
-    }[];
-} | {
-    command: string;
-    commandDescription: string;
-    commandUsage: string;
-    commandFlags: {
-        short: string;
-        long: string;
-        flagDescription: string;
-    }[];
-    subCommands: {
-        subCommand: string;
-        subCommandDescription: string;
-        subCommandUsage: string;
-        subCommandFlags: never[];
-    }[];
-})[];
+    commandFlags: Array<CommandFlagInfo>;
+    subCommands: Array<SubCommandInfo>;
+};
+
+// @public (undocumented)
+export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
 export class ConfigurationError extends Error {
@@ -1015,13 +1001,9 @@ export class JSONUtilities {
     } | undefined) => void;
 }
 
-// Warning: (ae-forgotten-export) The symbol "CommandInfo" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | null;
 
-// Warning: (ae-forgotten-export) The symbol "SubCommandInfo" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | null;
 
@@ -1468,6 +1450,14 @@ export const stateManager: StateManager;
 
 // @public (undocumented)
 export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
+
+// @public (undocumented)
+export type SubCommandInfo = {
+    subCommand: string;
+    subCommandDescription: string;
+    subCommandUsage: string;
+    subCommandFlags: Array<CommandFlagInfo>;
+};
 
 // @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];
