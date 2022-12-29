@@ -345,7 +345,7 @@ const importServiceWalkthrough = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool.MfaConfiguration !== 'OFF') {
+  if (answers.userPool?.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
       if (!answers.userPoolId) {
@@ -1203,7 +1203,7 @@ export const importedAuthEnvInit = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool.MfaConfiguration !== 'OFF') {
+  if (answers.userPool?.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
       if (!answers.userPoolId) {
@@ -1346,7 +1346,7 @@ export const headlessImport = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool.MfaConfiguration !== 'OFF') {
+  if (answers.userPool?.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
       if (!answers.userPoolId) {
