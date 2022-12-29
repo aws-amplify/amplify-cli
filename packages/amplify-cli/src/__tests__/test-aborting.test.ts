@@ -33,6 +33,7 @@ describe('test SIGINT with execute', () => {
       },
       FeatureFlags: {
         initialize: jest.fn(),
+        getNumber: jest.fn(),
       },
       BannerMessage: {
         initialize: jest.fn(),
