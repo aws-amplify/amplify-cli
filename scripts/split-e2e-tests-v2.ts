@@ -61,6 +61,7 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'pull_pkg',
         'schema-iterative-rollback-1_pkg',
         'schema-iterative-rollback-2_pkg',
+        'searchable-migration_pkg',
         'storage-5_pkg',
         'studio-modelgen_pkg',
         'uibuilder_pkg',
