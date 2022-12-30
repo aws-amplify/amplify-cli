@@ -5,7 +5,11 @@ const localTemplatePath = path.resolve(__dirname, '../dist/index.html');
 
 const getShortNameForTestSuite = (
   testSuitePath) => {
-  const startIndex = testSuitePath.lastIndexOf('/') + 1;
+  let startIndex = testSuitePath.lastIndexOf('/') + 1;
+  if (testSuitePath.startsWith('C:')) {
+    // windows
+    startIndex = testSuitePath.lastIndexOf('\\') + 1;
+  }
   const endIndex = testSuitePath.lastIndexOf('.test');
   return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
 }

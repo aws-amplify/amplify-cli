@@ -178,7 +178,14 @@ export const splitTestsV2 = function splitTests(
             if(j.tests.length === 0){
                 continue;
             }
-            const jobName = `${j.os}_${j.os === 'l' ? counts.l : counts.w }${isMigration ? '_migration' : ''}`;
+            const names = j.tests.map(tn => getShortNameForTestSuite(tn)).join('_');
+            // const jobName = `${j.os}_${j.os === 'l' ? counts.l : counts.w }${isMigration ? '_migration' : ''}`;
+            let jobName = `${j.os}_${names}`;
+            if(isMigration){
+                const startIndex = baseJobName.lastIndexOf('_');
+                jobName = jobName + baseJobName.substring(startIndex);
+            }
+
             newJobConfigurations = {
                 ...newJobConfigurations,
                 [jobName]: {
