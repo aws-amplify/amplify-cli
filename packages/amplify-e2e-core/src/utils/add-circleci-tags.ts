@@ -82,7 +82,7 @@ const staggerTestsThatRunOnTheSameMachine = async (projectPath: string) => {
   const lock = path.join(projectPath, '..', 'lock.txt');
   console.log(lock);
   // one test will create the lock first, 60 seconds should be enough to allow 1 test to do this first without collision risk
-  const initialDelay = Math.floor(Math.random() * 5 * 1000);
+  const initialDelay = Math.floor(Math.random() * 60 * 1000);
   await delay(initialDelay);
   while(true){
     if(fs.existsSync(lock)) {
