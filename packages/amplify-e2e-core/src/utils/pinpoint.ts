@@ -82,8 +82,8 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 /**
  * initializes a project to test pinpoint
  */
-export function initProjectForPinpoint(cwd: string): Promise<void> {
-  addCircleCITags(cwd);
+export async function initProjectForPinpoint(cwd: string): Promise<void> {
+  await addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {

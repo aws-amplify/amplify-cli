@@ -18,7 +18,7 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
 };
 
-export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
+export async function initJSProjectWithProfileV4_28_2(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -28,7 +28,7 @@ export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Object, t
     };
   }
 
-  addCircleCITags(cwd);
+  await addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
@@ -66,7 +66,7 @@ export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Object, t
   });
 }
 
-export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
+export async function initJSProjectWithProfileV4_52_0(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -76,7 +76,7 @@ export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Object, t
     };
   }
 
-  addCircleCITags(cwd);
+  await addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
@@ -116,10 +116,10 @@ export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Object, t
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export async function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
+  await addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -147,9 +147,9 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
+      .run(async (err: Error) => {
         if (!err) {
-          addCircleCITags(cwd);
+          await addCircleCITags(cwd);
 
           resolve();
         } else {

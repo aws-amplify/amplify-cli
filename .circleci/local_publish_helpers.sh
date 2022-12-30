@@ -250,8 +250,8 @@ function setAwsAccountCredentials {
     export AWS_ACCESS_KEY_ID_ORIG=$AWS_ACCESS_KEY_ID
     export AWS_SECRET_ACCESS_KEY_ORIG=$AWS_SECRET_ACCESS_KEY
     export AWS_SESSION_TOKEN_ORIG=$AWS_SESSION_TOKEN
-    # introduce a delay of up to 3 minute to allow for more even spread aws list-accounts calls due to throttling
-    sleep $[ ( $RANDOM % 180 )  + 1 ]s
+    # introduce a delay of up to 1 minute to allow for more even spread aws list-accounts calls due to throttling
+    sleep $[ ( $RANDOM % 60 )  + 1 ]s
     if [[ "$OSTYPE" == "msys" ]]; then
         # windows provided by circleci has this OSTYPE
         useChildAccountCredentials
