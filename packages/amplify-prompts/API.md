@@ -63,6 +63,9 @@ export type BarOptions = {
     failureText: string;
 };
 
+// @public (undocumented)
+export const between: (min: number, max: number, message?: string | undefined) => Validator;
+
 // Warning: (ae-forgotten-export) The symbol "EqualsFunction" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "SingleFilterFunction" needs to be exported by the entry point index.d.ts
 //
