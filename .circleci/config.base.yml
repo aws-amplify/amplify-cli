@@ -502,7 +502,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 $TEST_SUITE
+            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -534,7 +534,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 $TEST_SUITE
+            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -564,7 +564,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 $TEST_SUITE
+            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -594,7 +594,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 $TEST_SUITE
+            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -622,7 +622,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=4
+            retry yarn run console-integration --no-cache --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
@@ -1260,7 +1260,7 @@ commands:
                 command: |
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --no-cache --maxWorkers=4 $TEST_SUITE
+                  retry yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 60m
       - when:
           condition:

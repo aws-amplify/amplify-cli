@@ -68,7 +68,7 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'uibuilder_pkg',
     ],
 }
-const MAX_TESTS_PER_JOB = 5;
+const MAX_TESTS_PER_JOB = 3;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
     region: string,
