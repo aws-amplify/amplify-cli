@@ -153,8 +153,9 @@ export const splitTestsV2 = function splitTests(
             // add the test
             currentJob.tests.push(test);
         
-            // create a new job once the current job is full
-            if(currentJob.tests.length >= MAX_TESTS_PER_JOB){
+            // create a new job once the current job is full;
+            // migration tests are 1-1 due to limitations with older cli versions
+            if(isMigration || currentJob.tests.length >= MAX_TESTS_PER_JOB){
                 osJobs.push(createRandomJob(os));
             }
         }
@@ -232,7 +233,7 @@ export const splitTestsV2 = function splitTests(
                             requires: requiredJobs,
                             matrix: {
                                 parameters: {
-                                    os: newJobName.startsWith('l') ? ['l_large'] : ['w_medium']
+                                    os: newJobName.startsWith('l') ? (isMigration ? ['l_medium'] : ['l_large']) : ['w_medium']
                                 },
                             },
                         },
