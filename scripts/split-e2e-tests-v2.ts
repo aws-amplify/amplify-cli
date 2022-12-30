@@ -111,7 +111,7 @@ const getShortNameForTestSuite = (
 //   );
 export const splitTestsV2 = function splitTests(
     config: Readonly<CircleCIConfig>,
-    jobTag: string,
+    counts: { w: number, l: number},
     baseJobName: string,
     workflowName: string,
     jobRootDir: string,
@@ -168,13 +168,11 @@ export const splitTestsV2 = function splitTests(
     // section of the CircleCI config file
     let newJobConfigurations = {};
     const generateJobConfigurations = (jobs: CandidateJob[]) => {
-        let index = 0;
         for(let j of jobs){
             if(j.tests.length === 0){
                 continue;
             }
-            const firstTestName = getShortNameForTestSuite(j.tests[0]);
-            const jobName = `${j.os}_${jobTag}_${firstTestName.charAt(0)}_${index}`;
+            const jobName = `${j.os}_${j.os === 'l' ? counts.l : counts.w }${isMigration ? '_migration' : ''}`;
             newJobConfigurations = {
                 ...newJobConfigurations,
                 [jobName]: {
@@ -186,7 +184,11 @@ export const splitTestsV2 = function splitTests(
                     }
                 }
             }
-            index ++;
+            if(j.os === 'l'){
+                counts.l ++;
+            } else {
+                counts.w ++;
+            }
         }
     }
     generateJobConfigurations(linuxJobs);

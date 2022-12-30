@@ -448,9 +448,10 @@ function main(): void {
   const config = loadConfig();
 
   validateArtifactStoragePaths(config);
+  const counts = { w: 0, l: 0 };
   const splitPkgTests = splitTestsV2(
     config,
-    'e2e',
+    counts,
     'amplify_e2e_tests_pkg',
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
@@ -459,7 +460,7 @@ function main(): void {
   );
   const splitV5MigrationTests = splitTestsV2(
     splitPkgTests,
-    'migrationV5',
+    counts,
     'amplify_migration_tests_v5',
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
@@ -470,7 +471,7 @@ function main(): void {
   );
   const splitV6MigrationTests = splitTestsV2(
     splitV5MigrationTests,
-    'migrationV6',
+    counts,
     'amplify_migration_tests_v6',
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
@@ -481,7 +482,7 @@ function main(): void {
   );
   const splitV10MigrationTests = splitTestsV2(
     splitV6MigrationTests,
-    'migrationV10',
+    counts,
     'amplify_migration_tests_v10',
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
@@ -490,6 +491,7 @@ function main(): void {
       return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
     }
   );
+  console.log(counts);
   saveConfig(splitV10MigrationTests);
   verifyConfig();
 }
