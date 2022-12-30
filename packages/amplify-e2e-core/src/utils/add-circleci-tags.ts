@@ -87,7 +87,7 @@ const staggerTestsThatRunOnTheSameMachine = async (projectPath: string) => {
   while(true){
     if(fs.existsSync(lock)) {
       await delay(1 * 1000);// wait
-      console.log("waiting to start");
+      // console.log("waiting to start");
       continue;
     } else {
       // create a lock file
