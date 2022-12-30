@@ -3,7 +3,6 @@ import {
     WorkflowJob,
     repoRoot,
     generateJobName as oldJobName,
-    WINDOWS_TEST_SKIP_LIST, 
     USE_PARENT_ACCOUNT, 
     AWS_REGIONS_TO_RUN_TESTS as regions,
     FORCE_US_WEST_2,
@@ -75,6 +74,7 @@ type CandidateJob = {
     os: OS_TYPE,
     executor: string,
     tests: string[],
+    useParentAccount: boolean,
     // intentially leaving this here - accounts are randomly assigned to jobs 
     // by a via local_publish_helpers.sh script
     // account: string, 
@@ -90,7 +90,8 @@ const createRandomJob = (os: OS_TYPE) : CandidateJob => {
         region,
         os,
         executor: os === 'l' ? 'l_large' : 'w_medium',
-        tests: []
+        tests: [],
+        useParentAccount: false,
     }
 }
 
@@ -152,6 +153,11 @@ export const splitTestsV2 = function splitTests(
 
             // add the test
             currentJob.tests.push(test);
+
+            if(currentJob.tests.some(
+                (t) => USE_PARENT_ACCOUNT.some((usesParent) => oldJobName(baseJobName, t).startsWith(usesParent)))) {
+                currentJob.useParentAccount = true;
+            }
         
             // create a new job once the current job is full;
             // migration tests are 1-1 due to limitations with older cli versions
@@ -181,6 +187,7 @@ export const splitTestsV2 = function splitTests(
                         ...(baseJob?.environment || {}),
                         TEST_SUITE: j.tests.join('|'),
                         CLI_REGION: j.region,
+                        ...(j.useParentAccount ? { USE_PARENT_ACCOUNT: 1 } : {})
                     }
                 }
             }
