@@ -868,6 +868,10 @@ jobs:
                   sleep 60
                 done
           no_output_timeout: 180m
+      - run:
+          name: 'Collect Results'
+          command: yarn workflow-results
+          
     working_directory: ~/repo
 
 workflows:
