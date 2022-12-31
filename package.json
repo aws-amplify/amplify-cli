@@ -31,6 +31,7 @@
     "update-test-data": "source ./scripts/cci-data.sh && updateTestData",
     "update-job-data": "source ./scripts/cci-data.sh && updateJobData",
     "process-job-data": "yarn update-job-data && ts-node ./scripts/cci-process-data.ts",
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",

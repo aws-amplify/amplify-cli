@@ -77,6 +77,15 @@ export function saveTestTimings(data: any): any {
     fs.writeFileSync(testData, JSON.stringify(data, null, 2));
 }
 
+export function saveWorkflowResults(data: any): any {
+    const filePath = join(REPO_ROOT, 'artifacts', 'cci-workflow-results.json');
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+}
+export function saveWorkflowResultsHTML(data: any): any {
+    const filePath = join(REPO_ROOT, 'artifacts', 'cci-workflow-results.html');
+    fs.writeFileSync(filePath, data);
+}
+
 /**
  * Config file
  */
