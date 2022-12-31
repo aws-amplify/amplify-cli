@@ -120,8 +120,6 @@ export const splitTestsV2 = function splitTests(
         return a.medianRuntime - b.medianRuntime;
     }).map(v => v.test);
 
-    console.log(testSuites);
-
     const generateJobsForOS = (os: OS_TYPE) => {
         // migration tests are not supported for windows
         if(isMigration && os === 'w'){
