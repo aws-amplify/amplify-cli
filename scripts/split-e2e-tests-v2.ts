@@ -1,16 +1,11 @@
+import { CircleCIConfig, WorkflowJob } from "./cci-types";
+import { FORCE_US_WEST_2, getOldJobName, getOldJobNameWithoutSuffixes, USE_PARENT_ACCOUNT } from './cci-utils';
 import { 
-    CircleCIConfig, 
-    WorkflowJob,
-    repoRoot,
-    generateJobName as oldJobName,
-    USE_PARENT_ACCOUNT, 
-    AWS_REGIONS_TO_RUN_TESTS as regions,
-    FORCE_US_WEST_2,
-    getTestFiles,
-    getLastBatchJobs,
-    replaceWorkflowDependency,
-    removeWorkflowJob
-} from "./split-e2e-tests";
+    getTestFileRunTimes, 
+    AWS_REGIONS_TO_RUN_TESTS as regions, 
+    getTestFiles
+} from "./cci-utils";
+
 const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],
     w: [
@@ -67,7 +62,7 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'uibuilder_pkg',
     ],
 }
-const MAX_TESTS_PER_JOB = 3;
+const MAX_WORKERS = 3;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
     region: string,
@@ -96,20 +91,7 @@ const createRandomJob = (os: OS_TYPE) : CandidateJob => {
 }
 
 
-const getShortNameForTestSuite = (
-    testSuitePath: string): string  => {
-    const startIndex = testSuitePath.lastIndexOf('/') + 1;
-    const endIndex = testSuitePath.lastIndexOf('.test');
-    return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
-}
-// const splitPkgTests = splitTests(
-//     config,
-//     'amplify_e2e_tests_pkg',
-//     'build_test_deploy_v3',
-//     join(repoRoot, 'packages', 'amplify-e2e-tests'),
-//     CONCURRENCY,
-//     undefined
-//   );
+
 export const splitTestsV2 = function splitTests(
     config: Readonly<CircleCIConfig>,
     counts: { w: number, l: number},
@@ -119,6 +101,8 @@ export const splitTestsV2 = function splitTests(
     isMigration: boolean,
     pickTests: ((testSuites: string[]) => string[]) | undefined,
   ): CircleCIConfig {
+    
+
     const output: CircleCIConfig = { ...config };
     const baseJobs = { ...config.jobs };
     const baseJob = baseJobs[baseJobName];
@@ -130,6 +114,13 @@ export const splitTestsV2 = function splitTests(
     if(testSuites.length === 0){
         return output;
     }
+    const testFileRunTimes = getTestFileRunTimes(testSuites);
+
+    testSuites = testFileRunTimes.sort((a, b) => {
+        return a.medianRuntime - b.medianRuntime;
+    }).map(v => v.test);
+
+    console.log(testSuites);
 
     const generateJobsForOS = (os: OS_TYPE) => {
         // migration tests are not supported for windows
@@ -141,7 +132,7 @@ export const splitTestsV2 = function splitTests(
             const currentJob = osJobs[osJobs.length - 1];
 
             // if the current test is excluded from this OS, skip it
-            const oldName = oldJobName(baseJobName, test);
+            const oldName = getOldJobName(baseJobName, test);
             if(TEST_EXCLUSIONS[os].find(excluded => oldName === excluded)) {
                 continue;
             }
@@ -155,13 +146,13 @@ export const splitTestsV2 = function splitTests(
             currentJob.tests.push(test);
 
             if(currentJob.tests.some(
-                (t) => USE_PARENT_ACCOUNT.some((usesParent) => oldJobName(baseJobName, t).startsWith(usesParent)))) {
+                (t) => USE_PARENT_ACCOUNT.some((usesParent) => getOldJobName(baseJobName, t).startsWith(usesParent)))) {
                 currentJob.useParentAccount = true;
             }
         
             // create a new job once the current job is full;
             // migration tests are 1-1 due to limitations with older cli versions
-            if(isMigration || currentJob.tests.length >= MAX_TESTS_PER_JOB){
+            if(isMigration || currentJob.tests.length >= MAX_WORKERS){
                 osJobs.push(createRandomJob(os));
             }
         }
@@ -178,7 +169,7 @@ export const splitTestsV2 = function splitTests(
             if(j.tests.length === 0){
                 continue;
             }
-            const names = j.tests.map(tn => getShortNameForTestSuite(tn)).join('_');
+            const names = j.tests.map(tn => getOldJobNameWithoutSuffixes(tn)).join('_');
             // const jobName = `${j.os}_${j.os === 'l' ? counts.l : counts.w }${isMigration ? '_migration' : ''}`;
             let jobName = `${j.os}_${names}`;
             if(isMigration){
@@ -273,3 +264,52 @@ export const splitTestsV2 = function splitTests(
     };
     return output;
   }
+
+
+  /**
+ * CircleCI workflow can have multiple jobs. This helper function removes the jobName from the workflow
+ * @param jobs - All the jobs in workflow
+ * @param jobName - job that needs to be removed from workflow
+ */
+export function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] {
+    return jobs.filter(j => {
+      if (typeof j === 'string') {
+        return j !== jobName;
+      } else {
+        const name = Object.keys(j)[0];
+        return name !== jobName;
+      }
+    });
+}
+  
+/**
+ *
+ * @param jobs array of job names
+ * @param concurrency number of concurrent jobs
+ */
+export function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
+    const lastBatchJobLength = Math.min(concurrency, jobs.length);
+    const lastBatchJobNames = jobs.slice(jobs.length - lastBatchJobLength);
+    return lastBatchJobNames;
+}
+  
+/**
+ * A job in workflow can require some other job in the workflow to be finished before executing
+ * This helper method finds and replaces jobName with jobsToReplacesWith
+ * @param jobs - Workflow jobs
+ * @param jobName - job to remove from requires
+ * @param jobsToReplaceWith - jobs to add to requires
+ */
+export function replaceWorkflowDependency(jobs: WorkflowJob[], jobName: string, jobsToReplaceWith: string[]): WorkflowJob[] {
+    return jobs.map(j => {
+      if (typeof j === 'string') return j;
+      const [currentJobName, jobObj] = Object.entries(j)[0];
+      const requires = jobObj.requires || [];
+      if (requires.includes(jobName)) {
+        jobObj.requires = [...requires.filter(r => r !== jobName), ...jobsToReplaceWith];
+      }
+      return {
+        [currentJobName]: jobObj,
+      };
+    });
+}

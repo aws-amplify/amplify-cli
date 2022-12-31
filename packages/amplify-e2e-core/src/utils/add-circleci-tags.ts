@@ -19,7 +19,7 @@ function delay(ms) {
 }
 export const addCircleCITags = async (projectPath: string): Promise<void> => {
   if (process.env && process.env['CIRCLECI']) {
-    await staggerTestsThatRunOnTheSameMachine(projectPath);
+    await staggerInitCalls(projectPath);
 
     const tags = stateManager.getProjectTags(projectPath);
 
@@ -77,12 +77,10 @@ export function sanitizeTagValue(value: string): string {
  * 
  * @param projectPath 
  */
-const staggerTestsThatRunOnTheSameMachine = async (projectPath: string) => {
-  console.log(projectPath);
-  const lock = path.join(projectPath, '..', 'lock.txt');
-  console.log(lock);
-  // one test will create the lock first, 60 seconds should be enough to allow 1 test to do this first without collision risk
-  const initialDelay = Math.floor(Math.random() * 60 * 1000);
+const staggerInitCalls = async (projectPath: string) => {
+  const lock = path.join(projectPath, '..', 'init-lock.txt');
+  // one test will create the lock first, 15 seconds should be enough to allow 1 test to do this first without collision risk
+  const initialDelay = Math.floor(Math.random() * 15 * 1000);
   await delay(initialDelay);
   while(true){
     if(fs.existsSync(lock)) {
@@ -94,7 +92,7 @@ const staggerTestsThatRunOnTheSameMachine = async (projectPath: string) => {
       try {
         fs.writeFileSync(lock, '');
         console.log("holding lock file", lock);
-        await delay(90 * 1000); // hold the lock for 90 seconds
+        await delay(15 * 1000); // hold the lock for 15 seconds
         fs.unlinkSync(lock);
         break;
       } catch (e){
@@ -102,5 +100,5 @@ const staggerTestsThatRunOnTheSameMachine = async (projectPath: string) => {
       }
     }
   }
-  console.log("STARTING TEST:", new Date().toISOString());
+  console.log("init called:", new Date().toISOString());
 }
