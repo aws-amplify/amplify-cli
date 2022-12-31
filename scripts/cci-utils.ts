@@ -68,7 +68,7 @@ export function saveJobData(data: any): any {
  * 
  * The data in this file is at the JOB level.
  */
-export function loadTestTimings(): any {
+export function loadTestTimings(): { timingData: { test: string, medianRuntime: number }[] }{
     const testData = join(REPO_ROOT, 'scripts', 'cci-test-timings.data.json');
     return JSON.parse(fs.readFileSync(testData, 'utf-8'));
 }
@@ -129,7 +129,7 @@ function getTestNameFromOldJobName(jobName: string){
     return name;
 }
 
-function getTimingsFromJobs() {
+export function getTimingsFromJobsData() {
     const jobData = loadJobData();
     const jobTimings: Map<string, number> = new Map();
     for(let job of jobData.items){
@@ -142,28 +142,6 @@ function getTimingsFromJobs() {
         }
     }
     return jobTimings;
-}
-
-export const getTestFileRunTimes = (testSuites: string[]) => {
-    const jobTimings = getTimingsFromJobs();
-    const testRuntimes = testSuites.map(t => {
-        const oldName = getOldJobNameWithoutSuffixes(t);
-        if(jobTimings.has(oldName)){
-            return {
-                test: t,
-                medianRuntime: jobTimings.get(oldName) as number
-            }
-        } else {
-            console.log("Could not find timing for:", t);
-            return {
-                test: t,
-                medianRuntime: 10 // default for unknown
-            }
-        }
-    })
-    return testRuntimes.sort((a,b) => {
-        return a.medianRuntime - b.medianRuntime;
-    });
 }
 
 export const getSlowestTestsRunTimes = (testSuites: string[]) => {

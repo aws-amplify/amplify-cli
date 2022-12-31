@@ -1,7 +1,6 @@
 import { CircleCIConfig, WorkflowJob } from "./cci-types";
-import { FORCE_US_WEST_2, getOldJobName, getOldJobNameWithoutSuffixes, USE_PARENT_ACCOUNT } from './cci-utils';
-import { 
-    getTestFileRunTimes, 
+import { FORCE_US_WEST_2, getOldJobName, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
+import {
     AWS_REGIONS_TO_RUN_TESTS as regions, 
     getTestFiles
 } from "./cci-utils";
@@ -114,11 +113,13 @@ export const splitTestsV2 = function splitTests(
     if(testSuites.length === 0){
         return output;
     }
-    const testFileRunTimes = getTestFileRunTimes(testSuites);
+    const testFileRunTimes = loadTestTimings().timingData;
 
-    testSuites = testFileRunTimes.sort((a, b) => {
-        return a.medianRuntime - b.medianRuntime;
-    }).map(v => v.test);
+    testSuites.sort((a, b) => {
+        const runtimeA = testFileRunTimes.find((t) => t.test === a)?.medianRuntime ?? 30;
+        const runtimeB = testFileRunTimes.find((t) => t.test === b)?.medianRuntime ?? 30;
+        return runtimeA - runtimeB;
+    });
 
     const generateJobsForOS = (os: OS_TYPE) => {
         // migration tests are not supported for windows
