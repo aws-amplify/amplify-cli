@@ -155,7 +155,7 @@ export const splitTestsV2 = function splitTests(
                 soloJobs.push(newSoloJob);
                 continue;
             }
-            
+
             // add the test
             currentJob.tests.push(test);
             if(US_WEST_2){
@@ -171,7 +171,7 @@ export const splitTestsV2 = function splitTests(
                 osJobs.push(createRandomJob(os));
             }
         }
-        return osJobs;
+        return [...osJobs, ...soloJobs];
     }
     const linuxJobs = generateJobsForOS('l');
     const windowsJobs = generateJobsForOS('w');
