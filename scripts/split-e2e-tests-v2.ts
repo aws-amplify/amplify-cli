@@ -10,7 +10,8 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     w: [
         'amplify-app_pkg',
         'analytics-2_pkg',
-        'api_2_pkg',
+        'api_2a_pkg',
+        'api_2b_pkg',
         'api_5_pkg',
         'datastore-modelgen_pkg',
         'delete_pkg',
