@@ -4,7 +4,10 @@ import {
     AWS_REGIONS_TO_RUN_TESTS as regions, 
     getTestFiles
 } from "./cci-utils";
-
+const RUN_SOLO = [
+    'auth_2e_pkg',
+    'notifications-in-app-messaging_pkg',
+]
 const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],
     w: [
@@ -127,6 +130,7 @@ export const splitTestsV2 = function splitTests(
         if(isMigration && os === 'w'){
             return [];
         }
+        const soloJobs = [];
         const osJobs = [createRandomJob(os)];
         for(let test of testSuites){
             const currentJob = osJobs[osJobs.length - 1];
@@ -136,17 +140,28 @@ export const splitTestsV2 = function splitTests(
             if(TEST_EXCLUSIONS[os].find(excluded => oldName === excluded)) {
                 continue;
             }
+            const US_WEST_2 = FORCE_US_WEST_2.find(t => oldName.startsWith(t));
+            const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => oldName.startsWith(usesParent));
 
-            // some tests only run on us-west-2, we can just switch the region
-            if(FORCE_US_WEST_2.find(t => oldName.startsWith(t))){
-                currentJob.region = 'us-west-2';
+            if(RUN_SOLO.find(solo => oldName === solo)){
+                const newSoloJob = createRandomJob(os);
+                newSoloJob.tests.push(test);
+                if(US_WEST_2){
+                    newSoloJob.region = 'us-west-2';
+                }
+                if(USE_PARENT){
+                    newSoloJob.useParentAccount = true;
+                }
+                soloJobs.push(newSoloJob);
+                continue;
             }
-
+            
             // add the test
             currentJob.tests.push(test);
-
-            if(currentJob.tests.some(
-                (t) => USE_PARENT_ACCOUNT.some((usesParent) => getOldJobName(baseJobName, t).startsWith(usesParent)))) {
+            if(US_WEST_2){
+                currentJob.region = 'us-west-2';
+            }
+            if(USE_PARENT){
                 currentJob.useParentAccount = true;
             }
         
@@ -223,16 +238,22 @@ export const splitTestsV2 = function splitTests(
         });
 
         if (workflowJob) {
-        Object.values(jobByRegion).forEach(regionJobs => {
+        Object.values(jobByRegion).forEach((regionJobs: any) => {
             const newJobNames = Object.keys(regionJobs as object);
             const jobs = newJobNames.map((newJobName, index) => {
                 if (typeof workflowJob === 'string') {
                     return newJobName;
                 } else {
+                    const isSingleTest = regionJobs[newJobName].environment.TEST_SUITE.split('|').length === 1;
                     let requiredJobs = workflowJob[baseJobName].requires || [];
                     // don't need to wait on windows if this is a linux test
                     if (newJobName.startsWith('l')) {
                         requiredJobs = requiredJobs.filter(j => j !== 'build_windows_workspace_for_e2e');
+                    }
+                    // we can downsize on linux
+                    let runner = (isMigration || isSingleTest) ? 'l_medium' : 'l_large';
+                    if(!newJobName.startsWith('l')){
+                        runner = 'w_medium';// w_medium is the smallest we can go for windows
                     }
                     return {
                         [newJobName]: {
@@ -240,7 +261,7 @@ export const splitTestsV2 = function splitTests(
                             requires: requiredJobs,
                             matrix: {
                                 parameters: {
-                                    os: newJobName.startsWith('l') ? (isMigration ? ['l_medium'] : ['l_large']) : ['w_medium']
+                                    os: [runner]
                                 },
                             },
                         },
