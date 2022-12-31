@@ -871,7 +871,10 @@ jobs:
       - run:
           name: 'Collect Results'
           command: yarn workflow-results
-          
+      - run: *scan_e2e_test_artifacts
+      - store_artifacts:
+          path: ~/repo/artifacts
+
     working_directory: ~/repo
 
 workflows:
