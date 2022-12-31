@@ -7,6 +7,21 @@ import {
 const RUN_SOLO = [
     'auth_2e_pkg',
     'notifications-in-app-messaging_pkg',
+    'import_auth_1a_pkg',
+    'import_auth_1b_pkg',
+    'import_auth_2a_pkg',
+    'import_auth_2b_pkg',
+    'import_auth_3_pkg',
+    'import_dynamodb_2a_pkg',
+    'import_dynamodb_2c_pkg',
+    'import_s3_2a_pkg',
+    'import_s3_2c_pkg',
+    'geo-add-e_pkg',
+    'geo-add-f_pkg',
+    'geo-remove-2_pkg',
+    'geo-remove-3_pkg',
+    'geo-update-1_pkg',
+    'geo-update-2_pkg',
 ]
 const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],

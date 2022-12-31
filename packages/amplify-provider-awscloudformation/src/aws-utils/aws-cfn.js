@@ -21,8 +21,8 @@ const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 const { printer } = require('amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
-const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 15 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
-const CFN_POLL_TIME_MAX = (process.env.IS_AMPLIFY_CI ? 60 : 30) * 1000; // 30 seconds
+const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
+const CFN_POLL_TIME_MAX = (process.env.IS_AMPLIFY_CI ? 120 : 30) * 1000; // 30 seconds
 let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
