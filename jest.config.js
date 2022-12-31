@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.js'],
   bail: false,
   verbose: true,
   testRunner: 'jest-circus/runner',
