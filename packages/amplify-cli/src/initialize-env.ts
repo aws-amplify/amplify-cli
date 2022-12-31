@@ -8,8 +8,6 @@ import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplif
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
-const spinner = ora('');
-
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
  */
@@ -79,8 +77,8 @@ export const initializeEnv = async (
       }
     }
 
-    spinner.start(
-      isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
+    printer.info(
+      isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`
     );
 
     try {
@@ -95,8 +93,8 @@ export const initializeEnv = async (
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
 
-    spinner.succeed(
-      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
+    printer.info(
+      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.'
     );
 
     const projectDetails = context.amplify.getProjectDetails();
@@ -138,8 +136,8 @@ export const initializeEnv = async (
 
     printer.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
-    // let the error propagate up after we safely exit the spinner
-    spinner.fail('There was an error initializing your environment.');
+    // let the error propagate up after we safely exit
+    printer.error('There was an error initializing your environment.');
     throw e;
   }
 };

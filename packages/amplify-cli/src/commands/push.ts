@@ -3,9 +3,9 @@ import {
   $TSContext,
   AmplifyError,
   AmplifyFault,
-  spinner,
   stateManager,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
 import {
   notifyFieldAuthSecurityChange,
@@ -43,11 +43,11 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
       securityChangeNotified = await notifyListQuerySecurityChange(context);
     }
 
-    spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
+    printer.info(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
-    spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
+    printer.success(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
   } catch (e) {
-    spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
+    printer.error(`There was an error pulling the backend environment ${currentEnv}.`);
     throw new AmplifyFault('BackendPullFault', { message: e.message }, e);
   }
 };
