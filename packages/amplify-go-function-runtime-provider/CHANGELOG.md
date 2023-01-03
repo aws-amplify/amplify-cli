@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.4-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.5...amplify-go-function-runtime-provider@2.3.4-beta.4) (2022-12-28)
+
+
+### Bug Fixes
+
+* coerce compare Go version 1.17 to SemVer type ([f7d009a](https://github.com/aws-amplify/amplify-cli/commit/f7d009af78ed576ea44799b2c6854a9d56034379))
+
+
+
+
+
 ## [2.3.4-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.5...amplify-go-function-runtime-provider@2.3.4-beta.3) (2022-12-13)
 
 
