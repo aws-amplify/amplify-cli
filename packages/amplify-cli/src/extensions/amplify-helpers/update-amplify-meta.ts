@@ -10,6 +10,7 @@ import * as fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
+import { existsVFSSync, copyFromVFStoFSSync } from 'amplify-provider-awscloudformation';
 import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
 import { getHashForResourceDir } from './resource-status';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
@@ -71,7 +72,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   const overrideTsConfigJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'tsconfig.json');
 
   for (const resource of resources) {
-    const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
+    const sourceDir = path.normalize(path.join(pathManager.getBackendSnapshotVFSPath(), resource.category, resource.resourceName));
     const targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), resource.category, resource.resourceName));
 
     if (fs.pathExistsSync(targetDir)) {
@@ -81,8 +82,8 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     fs.ensureDirSync(targetDir);
 
     // in the case that the resource is being deleted, the sourceDir won't exist
-    if (fs.pathExistsSync(sourceDir)) {
-      fs.copySync(sourceDir, targetDir);
+    if (existsVFSSync(sourceDir)) {
+      copyFromVFStoFSSync(sourceDir, targetDir);
       if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
         removeNodeModulesDir(targetDir);
       }
@@ -110,7 +111,6 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     }
   }
 };
-
 const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: currentCloudBackendDir,

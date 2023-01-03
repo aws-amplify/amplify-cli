@@ -109,6 +109,10 @@ export class PathManager {
     projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName],
   );
 
+  getBackendSnapshotVFSPath = (projectPath?: string): string => this.constructPath(
+    projectPath, [PathConstants.AmplifyDirName, '.snapshot'],
+  );
+
   getCurrentCloudBackendDirPath = (projectPath?: string): string => this.constructPath(
     projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName],
   );

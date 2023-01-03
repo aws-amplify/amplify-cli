@@ -79,6 +79,7 @@ import { prePushTemplateDescriptionHandler } from './template-description-utils'
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
+import { takeBackendSnapshotVFS, deleteBackendSnapshotVFS } from './utils/vfs-helpers';
 
 const logger = fileLogger('push-resources');
 
@@ -272,6 +273,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       || rebuild
     ) {
       context.usageData.stopCodePathTimer('pushTransform');
+      takeBackendSnapshotVFS();
       context.usageData.startCodePathTimer('pushDeployment');
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
@@ -464,6 +466,8 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       message: error.message,
       code: error.code,
     }, error);
+  } finally {
+    deleteBackendSnapshotVFS();
   }
 };
 
