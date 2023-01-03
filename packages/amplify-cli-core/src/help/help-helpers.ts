@@ -54,30 +54,16 @@ const AMPLIFY_CLI_DOCS_URL = `https://docs.amplify.aws/cli`;
 const HEADLESS_DOCS_LINK = `${AMPLIFY_CLI_DOCS_URL}/usage/headless`;
 const getDocsLinkForCommand = (commandName: string) =>  `${AMPLIFY_CLI_DOCS_URL}/commands/${commandName}`;
 
-export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | null {
-  let foundCommand: CommandInfo | null = null;
-  for (const command of commandsInfo) {
-    if (command.command === commandName) {
-      foundCommand = command;
-      break;
-    }
-  }
-  return foundCommand;
+export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined {
+  return commandsInfo.find(element => element.command === commandName);
 }
 
-export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | null {
+export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | undefined {
   const command = lookUpCommand(commandsInfo, commandName);
-  if (command === null) {
-    return null;
+  if (command === undefined) {
+    return undefined;
   }
-  let foundSubcommand: SubCommandInfo | null = null;
-  for (const subCommand of command.subCommands) {
-    if (subCommand.subCommand === subcommandName) {
-      foundSubcommand = subCommand;
-      break;
-    }
-  }
-  return foundSubcommand; 
+  return command.subCommands.find(element => element.subCommand === subcommandName); 
 }
 
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>) {
@@ -87,7 +73,7 @@ export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo
   let acceptableCommands: Array<string> = [];
   commandsInfo.forEach(command => acceptableCommands.push(command.command));
   commandsInfo.forEach(command => command.subCommands.forEach(subCommand => acceptableCommands.push(subCommand.subCommand)));
-  let hasSubcommands = input.subCommands && Array.isArray(input.subCommands) && input.subCommands.length >= 1; // check if subcommands exist
+  let hasSubcommands = input.subCommands && Array.isArray(input.subCommands) && input.subCommands.length; // check if subcommands exist
   if (hasSubcommands) {
     specifiedCommands = {command: input.subCommands[0], subCommand: ''}; // if just 1 subcommand, set that as command
     if (input.subCommands.length === 1) {
@@ -154,8 +140,8 @@ function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>,
 }
 
 function printCommandSpecificHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, commandName: string, defaultNumTabs=1, extraTabLengthThreshold=5) {
-  const command = lookUpCommand(commandsInfo, commandName.toLocaleLowerCase());
-  if (command === null) {
+  let command = lookUpCommand(commandsInfo, commandName);
+  if (command === undefined) {
     printGenericHelp(context, commandsInfo, defaultNumTabs, extraTabLengthThreshold);
     return;
   }
@@ -196,9 +182,9 @@ function printCommandSpecificHelp(context: $TSContext, commandsInfo: Array<Comma
 
 function printSubcommandSpecificHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string, defaultNumTabs=1, extraTabLengthThreshold=5) {
   const subCommand = lookUpSubcommand(commandsInfo, commandName, subcommandName);
-  if (subCommand === null) {
+  if (subCommand === undefined) {
     const command = lookUpCommand(commandsInfo, commandName);
-    if (command === null) {
+    if (command === undefined) {
       printGenericHelp(context, commandsInfo, defaultNumTabs, extraTabLengthThreshold);
       return;
     } else {

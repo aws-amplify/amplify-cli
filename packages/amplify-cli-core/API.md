@@ -1002,10 +1002,10 @@ export class JSONUtilities {
 }
 
 // @public (undocumented)
-export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | null;
+export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
 
 // @public (undocumented)
-export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | null;
+export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //

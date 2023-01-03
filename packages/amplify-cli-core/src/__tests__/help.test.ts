@@ -1,14 +1,15 @@
 import { $TSContext } from 'amplify-cli-core';
+import { CommandInfo } from 'amplify-cli-core';
 import { runHelp, commandsInfo, lookUpCommand, lookUpSubcommand, parseHelpCommands } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 describe('amplify help functions: ', () => {
     printer.info = jest.fn();
-    const mockCommandsInfo = [{
+    const mockCommandsInfo: Array<CommandInfo> = [
+        {
             "command": "init",
             "commandDescription": "Initializes a new project, sets up deployment resources in the cloud, and makes your project ready for Amplify",
             "commandUsage": "amplify init [flags]",
-            "learnMoreLink": "https://docs.amplify.aws/",
             "commandFlags": [
             {
                 "short": "y",
@@ -52,14 +53,12 @@ describe('amplify help functions: ', () => {
             "command": "configure",
             "commandDescription": "Configure the Amplify CLI for usage",
             "commandUsage": "amplify configure <subcommand>",
-            "learnMoreLink": "https://docs.amplify.aws/",
             "commandFlags": [],
             "subCommands": [
             {
                 "subCommand": "project",
                 "subCommandDescription": "Configure the attributes of your project such as switching front-end framework",
                 "subCommandUsage": "amplify configure project [flags]",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": [
                 {
                     "short": "y",
@@ -87,14 +86,12 @@ describe('amplify help functions: ', () => {
                 "subCommand": "hosting",
                 "subCommandDescription": "Configure hosting resources including S3, CloudFront, and publish ignore",
                 "subCommandUsage": "amplify hosting project",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": []
             },
             {
                 "subCommand": "codegen",
                 "subCommandDescription": "Configure GraphQL codegen",
                 "subCommandUsage": "amplify configure codegen",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": []
             }
             ]
@@ -103,28 +100,24 @@ describe('amplify help functions: ', () => {
             "command": "mock",
             "commandDescription": "Run mock server for testing categories locally",
             "commandUsage": "amplify mock <subcommand>",
-            "learnMoreLink": "https://docs.amplify.aws/",
             "commandFlags": [],
             "subCommands": [
               {
                 "subCommand": "api",
                 "subCommandDescription": "Run mock server for testing API locally",
                 "subCommandUsage": "amplify mock api",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": []
               },
               {
                 "subCommand": "storage",
                 "subCommandDescription": "Run mock server for testing storage locally",
                 "subCommandUsage": "amplify mock storage",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": []
               },
               {
                 "subCommand": "function",
                 "subCommandDescription": "Run mock server for testing functions locally",
                 "subCommandUsage": "amplify mock function [flags]",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": [
                   {
                     "short": "",
@@ -142,7 +135,6 @@ describe('amplify help functions: ', () => {
                 "subCommand": "function <function-name>",
                 "subCommandDescription": "Run mock server for testing a specific function locally",
                 "subCommandUsage": "amplify mock function <function-name>",
-                "learnMoreLink": "https://docs.amplify.aws/",
                 "subCommandFlags": []
               }
             ]
@@ -151,12 +143,12 @@ describe('amplify help functions: ', () => {
 
     it('test lookup command init not null', () => {
         let initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
-        expect(initCommandInfo).not.toBeNull();
+        expect(initCommandInfo).not.toBeUndefined();
     });
 
     it('test lookup command invalid is null', () => {
         let invalidCommandInfo = lookUpCommand(mockCommandsInfo, 'invalidcommand');
-        expect(invalidCommandInfo).toBeNull();
+        expect(invalidCommandInfo).toBeUndefined();
     });
 
     it('test lookup command init correct command name', () => {
@@ -171,12 +163,12 @@ describe('amplify help functions: ', () => {
 
     it('test lookup subcommand configure project not null', () => {
         let configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
-        expect(configureProjectSubCommandInfo).not.toBeNull();
+        expect(configureProjectSubCommandInfo).not.toBeUndefined();
     });
 
     it('test lookup subcommand invalid is null', () => {
         let invalidSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'invalidcommand', 'invalidsubcommand');
-        expect(invalidSubCommandInfo).toBeNull();
+        expect(invalidSubCommandInfo).toBeUndefined();
     });
 
     it('test lookup subcommand configure project correct subcommand name', () => {
