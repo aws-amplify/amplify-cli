@@ -161,7 +161,7 @@ export const run = async (startTime: number): Promise<void> => {
   if (context.input.command === 'push') {
     const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
     const CloudFormationProviderName = 'awscloudformation';
-    let uploaderHandler: ServiceUploadHandler | undefined = undefined;
+    let uploaderHandler: ServiceUploadHandler | undefined;
     if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
       uploaderHandler = await getEnvParametersUploadHandler(context as unknown as $TSContext);
     }
