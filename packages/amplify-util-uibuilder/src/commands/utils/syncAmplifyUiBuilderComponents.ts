@@ -1,4 +1,3 @@
-// es-lint-disable-file spellcheck/spell-checker
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
 import {
