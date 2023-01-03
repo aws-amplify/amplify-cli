@@ -28,7 +28,7 @@ declare global {
 export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
-  : 5 * 60 * 1000; // 5 Minutes
+  : 10 * 60 * 1000; //10 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
 const { LOG_DUMP_FILE } = process.env;
