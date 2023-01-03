@@ -183,7 +183,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
-      .wait('Do you want to keep existing global seconday indexes created on your table?')
+      .wait('Do you want to keep existing global secondary indexes created on your table?')
       .sendLine('y')
       .wait('Do you want to add global secondary indexes to your table?')
       .sendLine('y')
@@ -312,7 +312,11 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
       chain.wait('Would you like to add another column').sendConfirmYes();
     };
 
-    chain.wait('Provide a friendly name').sendLine(settings.resourceName).wait('Provide table name').sendLine(settings.tableName);
+    chain
+      .wait('Provide a friendly name')
+      .sendLine(settings.resourceName)
+      .wait('Provide table name')
+      .sendLine(settings.tableName);
 
     addColumn('pk', 'string');
     addAnotherColumn();
@@ -345,11 +349,17 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
       .wait('Provide the GSI name')
       .sendLine(settings.gsiName);
 
-    chain.wait('Choose partition key for the GSI').sendKeyDown(2).sendCarriageReturn(); // choose gsi-pk
+    chain
+      .wait('Choose partition key for the GSI')
+      .sendKeyDown(2)
+      .sendCarriageReturn(); // choose gsi-pk
 
     chain.wait('Do you want to add a sort key to your global secondary index').sendConfirmYes();
 
-    chain.wait('Choose sort key for the GSI').sendKeyDown(2).sendCarriageReturn(); // choose gsi-sk
+    chain
+      .wait('Choose sort key for the GSI')
+      .sendKeyDown(2)
+      .sendCarriageReturn(); // choose gsi-sk
 
     chain
       .wait('Do you want to add more global secondary indexes to your table')
@@ -744,11 +754,21 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
       .wait('Provide bucket name:')
       .sendLine(settings.bucketName || RETURN);
 
-    chain.wait('Who should have access:').sendKeyDown().send(' ').sendCarriageReturn();
+    chain
+      .wait('Who should have access:')
+      .sendKeyDown()
+      .send(' ')
+      .sendCarriageReturn();
 
-    chain.wait('What kind of access do you want for Authenticated users?').sendCtrlA().sendCarriageReturn();
+    chain
+      .wait('What kind of access do you want for Authenticated users?')
+      .sendCtrlA()
+      .sendCarriageReturn();
 
-    chain.wait('What kind of access do you want for Guest users?').sendCtrlA().sendCarriageReturn();
+    chain
+      .wait('What kind of access do you want for Guest users?')
+      .sendCtrlA()
+      .sendCarriageReturn();
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 

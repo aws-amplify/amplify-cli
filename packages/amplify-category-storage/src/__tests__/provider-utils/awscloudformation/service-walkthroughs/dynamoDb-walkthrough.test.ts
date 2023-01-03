@@ -17,7 +17,7 @@ describe('add ddb walkthrough tests', () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
-    mockContext = {
+    mockContext = ({
       amplify: {
         getProjectDetails: () => {
           return {
@@ -30,7 +30,7 @@ describe('add ddb walkthrough tests', () => {
       input: {
         options: {},
       },
-    } as unknown as $TSContext;
+    } as unknown) as $TSContext;
   });
 
   afterEach(() => {
@@ -119,7 +119,7 @@ describe('update ddb walkthrough tests', () => {
 
   beforeEach(() => {
     jest.mock('amplify-prompts');
-    mockContext = {
+    mockContext = ({
       amplify: {
         getProjectDetails: () => {
           return {
@@ -132,7 +132,7 @@ describe('update ddb walkthrough tests', () => {
       input: {
         options: {},
       },
-    } as unknown as $TSContext;
+    } as unknown) as $TSContext;
   });
 
   afterEach(() => {
@@ -200,7 +200,7 @@ describe('update ddb walkthrough tests', () => {
       .fn()
       .mockReturnValueOnce(true) // Would you like to add another column
       .mockReturnValueOnce(false) // Would you like to add another column
-      .mockReturnValueOnce(true) // Do you want to keep existing global seconday indexes created on your table?
+      .mockReturnValueOnce(true) // Do you want to keep existing global secondary indexes created on your table?
       .mockReturnValueOnce(true) // Do you want to add global secondary indexes to your table?
       .mockReturnValueOnce(false) // Do you want to add a sort key to your global secondary index
       .mockReturnValueOnce(false); // Do you want to add more global secondary indexes to your table?
