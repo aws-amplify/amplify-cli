@@ -41,7 +41,6 @@ export const migrationFromV6Tests = [
   ]
 
 export const migrationFromV10Tests = [
-    "src/__tests__/migration_tests_v10/api-graphql-v1.migration.test.ts",
     "src/__tests__/migration_tests_v10/api-graphql-v2.migration.test.ts",
     "src/__tests__/migration_tests_v10/api-rest-basic.migration.test.ts",
     "src/__tests__/migration_tests_v10/api-rest-lambda.migration.test.ts",

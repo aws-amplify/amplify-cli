@@ -122,9 +122,7 @@ export const collectCloudformationDiffBetweenProjects = (projectRoot1: string, p
   const stream = new InMemoryWritable();
   for (const categoryKey of Object.keys(backendConfig1)) {
     const category = backendConfig1[categoryKey];
-    console.log("CategoryKey:", categoryKey)
     for (const resourceKey of Object.keys(category)) {
-      console.log("ResourceKey:", resourceKey)
       let template1 = getCloudFormationTemplate(projectRoot1, categoryKey, resourceKey);
       let template2 = getCloudFormationTemplate(projectRoot2, categoryKey, resourceKey);
 

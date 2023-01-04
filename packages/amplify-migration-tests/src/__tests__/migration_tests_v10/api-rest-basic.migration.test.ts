@@ -1,7 +1,22 @@
-import { addRestApi, addSimpleDDB, amplifyPull, amplifyPushAuth, amplifyPushUpdate, amplifyPushWithoutCodegen, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
+import { 
+    addRestApi, 
+    addSimpleDDB, 
+    amplifyPull, 
+    amplifyPushAuth, 
+    amplifyPushUpdate, 
+    createNewProjectDir, 
+    deleteProject, 
+    deleteProjectDir, 
+    generateRandomShortId, 
+    getAppId, 
+    getProjectMeta, 
+    validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
 import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
-import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects, pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from "../../migration-helpers/utils";
+import { 
+    assertNoParameterChangesBetweenProjects, 
+    collectCloudformationDiffBetweenProjects,
+} from "../../migration-helpers/utils";
 
 describe('api REST migration tests', () => {
     let projRoot: string;
@@ -16,7 +31,7 @@ describe('api REST migration tests', () => {
         projectName = 'restDDB';
         projRoot = await createNewProjectDir(projectName);
 
-        const randomId = await global.getRandomId();
+        const randomId = await generateRandomShortId();
         const DDB_NAME = `ddb${randomId}`;
         await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
         await addSimpleDDB(projRoot, { name: DDB_NAME });
