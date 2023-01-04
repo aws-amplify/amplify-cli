@@ -24,7 +24,7 @@ describe('handlePrePush', () => {
   beforeEach(() => {
     context = {
       amplify: {
-        invokePluginMethod: () => ({ models: { Comment: {} } }),
+        invokePluginMethod: jest.fn().mockResolvedValue({ models: { Comment: {} } }),
       },
       input: {
         options: {
@@ -87,17 +87,15 @@ describe('handlePrePush', () => {
   });
 
   it('runs handlePrePush', async () => {
-    utilsMock.isFormDetachedFromModel = jest.fn().mockImplementation(() => true);
-    utilsMock.isFormSchemaCustomized = jest.fn().mockImplementation(() => true);
+    utilsMock.isFormDetachedFromModel = jest.fn().mockReturnValue(true);
+    utilsMock.isFormSchemaCustomized = jest.fn().mockReturnValue(true);
     const spy = jest.spyOn(printer, 'warn');
     await prePushHandler(context);
     expect(spy).toHaveBeenCalledWith('The following forms will no longer be available because the connected data model no longer exists: BlogCreateForm, BlogUpdateForm');
   });
 
   it('runs handlePrePush without schema', async () => {
-    context.amplify.invokePluginMethod = jest.fn()
-      .mockImplementation(() => ({ models: { Comment: {} } }))
-      .mockImplementation(() => (null));
+    context.amplify.invokePluginMethod = jest.fn().mockResolvedValue(null);
     const spy = jest.spyOn(printer, 'debug');
     await prePushHandler(context);
     expect(spy).toHaveBeenCalledWith('Local schema not found');
