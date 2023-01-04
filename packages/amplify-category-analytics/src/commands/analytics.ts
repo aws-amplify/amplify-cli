@@ -1,5 +1,4 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 import { run as runHelp } from './analytics/help';
 
 export { run as analyticsPush } from './analytics/push';
