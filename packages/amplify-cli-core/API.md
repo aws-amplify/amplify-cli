@@ -188,7 +188,7 @@ export class AmplifyNodePkgDetector {
     // Warning: (ae-forgotten-export) The symbol "DetectedDependencies" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    detectAffectedDirectDependencies(): Array<DetectedDependencies> | undefined;
+    detectAffectedDirectDependencies(): Array<DetectedDependencies> | [];
     // Warning: (ae-forgotten-export) The symbol "Lockfile" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -1115,6 +1115,7 @@ export const PathConstants: {
     ExportManifestJsonFilename: string;
     ExportTagsJsonFileName: string;
     ExportCategoryStackMappingJsonFilename: string;
+    OverrideFilePath: string;
 };
 
 // @public (undocumented)
@@ -1194,6 +1195,8 @@ export class PathManager {
     getResourceDirectoryPath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
     getResourceInputsJsonFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
+    // (undocumented)
+    getResourceOverrideFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
     getResourceParametersFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
@@ -1507,7 +1510,7 @@ export function validateExportDirectoryPath(directoryPath: any, defaultPath: str
 export class ViewResourceTableParams {
     constructor(cliParams: CLIParams);
     // (undocumented)
-    get categoryList(): string[] | [];
+    get categoryList(): [] | string[];
     // (undocumented)
     get command(): string;
     // (undocumented)

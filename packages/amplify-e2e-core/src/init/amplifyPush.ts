@@ -211,6 +211,23 @@ export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false):
 });
 
 /**
+ * Function to test amplify push with cdk warninng
+ */
+export const amplifyPushWithCDkWarning = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/We detect you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022[[:ascii:]]*/)
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
+
+/**
  * amplify push command for pushing functions
  * @param cwd : current working directory
  * @param testingWithLatestCode : boolean flag

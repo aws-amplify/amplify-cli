@@ -193,7 +193,7 @@ describe('parsing yarn lock files', () => {
       projectRoot,
       dependencyToSearch: 'aws-cdk-lib',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`undefined`);
+    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`Array []`);
   });
 });
 
@@ -373,6 +373,6 @@ describe('parsing package lock files', () => {
       projectRoot,
       dependencyToSearch: 'aws-cdk-lib',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`undefined`);
+    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`Array []`);
   });
 });

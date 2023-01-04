@@ -22,7 +22,7 @@ export class LockFileParserFactory {
           message: 'Unsupported lockfile type '
           + `${lockfileType} provided. Only 'npm' or 'yarn' is currently `
           + 'supported.',
-          resolution: 'Please install npm6 or yarn1 to compile overrides for this project.',
+          resolution: 'Install npm6 or yarn1 to compile overrides for this project.',
         });
     }
   }

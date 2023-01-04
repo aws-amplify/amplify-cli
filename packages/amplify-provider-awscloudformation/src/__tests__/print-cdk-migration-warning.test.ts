@@ -17,6 +17,7 @@ jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as $TSObject),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
+    getResourceOverrideFilePath: jest.fn().mockReturnValue('mockDirPath/override.ts'),
   },
   AmplifyCategories: {
     STORAGE: 'storage',
@@ -76,7 +77,9 @@ describe('print migration warning tests', () => {
 
     const allResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
     mockContext.amplify.getResourceStatus.mockResolvedValue({ allResources });
+    // amplify-node-detector plug
     detectAffectedDirectDependenciesMock.mockReturnValue(undefined);
+    // override plug
     fsMock.existsSync.mockReturnValue(false);
     printerMock.warn.mockReturnValue(undefined);
     await printCdkMigrationWarning((mockContext as unknown) as $TSContext);
@@ -120,7 +123,7 @@ describe('print migration warning tests', () => {
 
        - mockDirPath/custom/someResource1/package.json
        - mockDirPath/custom/someResource2/package.json
-      Follow this guide here : https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html
+      Follow this guide: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html
       "
     `);
   });
@@ -190,7 +193,7 @@ describe('print migration warning tests', () => {
        - mockDirPath/package.json
       Upgrade '@aws-amplify/cli-extensibility-helper' to latest version ^3.0.0
        - mockDirPath/custom/someResource2/package.json
-      Follow this guide here : https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html
+      Follow this guide: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html
       "
     `);
   });

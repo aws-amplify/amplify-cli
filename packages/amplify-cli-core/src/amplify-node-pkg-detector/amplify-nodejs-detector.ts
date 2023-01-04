@@ -12,8 +12,8 @@ import { LockFileParserFactory } from './parser-factory';
  * return type of detectAffectedDirectDependencies
  */
 type DetectedDependencies = {
-  packageName: string;
-  dependentPackage:{
+  packageName?: string;
+  dependentPackage?:{
     name: string,
     version: string,
   }
@@ -33,24 +33,25 @@ export type AmplifyNodePkgDetectorProps = {
  * by parsing lock files
  */
 export class AmplifyNodePkgDetector {
-     private readonly packageManager: PackageManager | null;
+     private readonly packageManager: PackageManager;
      private readonly dependencyToSearch: string;
      private readonly pkgJsonObj: PackageJson;
      private readonly lockFileContents: string;
      private readonly lockFileParser: LockfileParser;
 
      constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps) {
-       this.packageManager = getPackageManager(amplifyDetectorProps.projectRoot);
-       if (this.packageManager === null) {
+       const packageManager = getPackageManager(amplifyDetectorProps.projectRoot);
+       if (packageManager === null) {
          throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
            message: 'No package manager found.',
            resolution: 'Install npm or yarn to compile overrides for this project.',
          });
        }
+       this.packageManager = packageManager;
        this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
        this.dependencyToSearch = amplifyDetectorProps.dependencyToSearch;
        this.lockFileContents = this.getFileContent(amplifyDetectorProps.projectRoot);
-       this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager!.packageManager);
+       this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager.packageManager);
      }
 
      /**
@@ -63,16 +64,16 @@ export class AmplifyNodePkgDetector {
      /**
     * parses package.json project files
     */
-     private parsePkgJson = (projectRoot: string): PackageJson => {
-       const pkgJsonFullPath = path.resolve(projectRoot, 'package.json');
-       return <PackageJson>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
-     }
+      private parsePkgJson = (projectRoot: string): PackageJson => {
+        const pkgJsonFullPath = path.resolve(projectRoot, 'package.json');
+        return <PackageJson>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
+      }
 
      /**
       * get file content as string
       */
      private getFileContent = (projectRoot: string) : string => {
-       const lockFileFullPath = path.resolve(projectRoot, this.packageManager!.lockFile);
+       const lockFileFullPath = path.resolve(projectRoot, this.packageManager.lockFile);
        if (!fs.existsSync(lockFileFullPath)) {
          throw new AmplifyFault('FileNotFoundFault', {
            message: 'Lockfile not found at location: ${lockFileFullPath}',
@@ -84,25 +85,25 @@ export class AmplifyNodePkgDetector {
      /**
      * returns  explicit dependencies from package.json if lock file package depends on passed dependency else undefined
      */
-     detectAffectedDirectDependencies(): Array<DetectedDependencies> | undefined {
+     detectAffectedDirectDependencies(): Array<DetectedDependencies> | [] {
+       let explicitDependencies = new Array<DetectedDependencies>();
        const allPackagesWithDependency = this.lockFileParser.getDependentPackage(this.dependencyToSearch, this.lockFileContents);
-       const explicitDependencies = Object.keys(allPackagesWithDependency!).map(pkg => {
-         if (Object.keys(this.pkgJsonObj.dependencies).includes(pkg)) {
-           const obj: DetectedDependencies = {
-             packageName: pkg,
-             dependentPackage: {
-               name: this.dependencyToSearch,
-               version: allPackagesWithDependency![pkg][this.dependencyToSearch].version,
+       if (allPackagesWithDependency !== undefined) {
+         explicitDependencies = Object.keys(allPackagesWithDependency).map(pkg => {
+           if (Object.keys(this.pkgJsonObj.dependencies).includes(pkg)) {
+             const obj: DetectedDependencies = {
+               packageName: pkg,
+               dependentPackage: {
+                 name: this.dependencyToSearch,
+                 version: allPackagesWithDependency[pkg][this.dependencyToSearch].version,
 
-             },
-           };
-           return obj;
-         }
-         return undefined;
-       }).filter(key => !!key);
-       if (!_.isEmpty(explicitDependencies)) {
-         return explicitDependencies as Array<DetectedDependencies>;
+               },
+             };
+             return obj;
+           }
+           return {};
+         }).filter(value => Object.keys(value).length !== 0);
        }
-       return undefined;
+       return explicitDependencies;
      }
 }

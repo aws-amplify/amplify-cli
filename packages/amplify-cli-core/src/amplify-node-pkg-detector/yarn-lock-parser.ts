@@ -74,14 +74,16 @@ export class YarnLockParser {
     getDependentPackage(packageName: string,
       lockFileContents: string): Record<string, Record<string, YarnLockDependencyType>> | undefined {
       const lockFileDependenciesMap = this.parseLockFile(lockFileContents);
-      for (const dependency of Object.keys(lockFileDependenciesMap.dependencies!)) {
-        const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
-        if (_.isEmpty(this.dependenciesMap[dependency])) {
-          if (dependencyPkgKey === packageName) {
-            this.dependenciesMap[packageName] = {};
-            this.dependenciesMap[packageName][dependencyPkgKey] = lockFileDependenciesMap.dependencies![dependency];
+      if (lockFileDependenciesMap.dependencies) {
+        for (const dependency of Object.keys(lockFileDependenciesMap.dependencies)) {
+          const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
+          if (_.isEmpty(this.dependenciesMap[dependency])) {
+            if (dependencyPkgKey === packageName) {
+              this.dependenciesMap[packageName] = {};
+              this.dependenciesMap[packageName][dependencyPkgKey] = lockFileDependenciesMap.dependencies[dependency];
+            }
+            this.dfs(dependency, lockFileDependenciesMap, packageName);
           }
-          this.dfs(dependency, lockFileDependenciesMap, packageName);
         }
       }
       return this.dependenciesMap;
@@ -91,19 +93,19 @@ export class YarnLockParser {
      * traverses dependency tree
      */
     private dfs(dependency: string, lockFileDependenciesMap: YarnLock, dependencyToSearch: string): void {
-      const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
-      const dependencyObj = lockFileDependenciesMap.dependencies![dependency];
-      if (!_.isEmpty(dependencyObj) && !_.isEmpty(dependencyObj.dependencies)) {
-        const dependencyObjDeps = dependencyObj.dependencies!;
-        if (!_.isEmpty(dependencyObjDeps)) {
+      if (lockFileDependenciesMap.dependencies) {
+        const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
+        const dependencyObj = lockFileDependenciesMap.dependencies[dependency];
+        if (dependencyObj !== undefined && dependencyObj.dependencies !== undefined) {
+          const dependencyObjDeps = dependencyObj.dependencies;
           for (const nestedDependency of Object.keys(dependencyObjDeps)) {
-            const nestedDependencyActual = this.getDependencyKey(nestedDependency, `${dependencyObjDeps![nestedDependency]}`);
+            const nestedDependencyActual = this.getDependencyKey(nestedDependency, `${dependencyObjDeps[nestedDependency]}`);
             if (nestedDependency === dependencyToSearch
-               || !_.isEmpty(this.dependenciesMap?.[nestedDependency]?.[dependencyToSearch])) {
+                 || !_.isEmpty(this.dependenciesMap?.[nestedDependency]?.[dependencyToSearch])) {
               // mark as dependency
               this.dependenciesMap[dependencyPkgKey] = {};
               this.dependenciesMap[dependencyPkgKey][dependencyToSearch] = this.dependenciesMap?.[nestedDependency]?.[dependencyToSearch]
-               ?? lockFileDependenciesMap.dependencies![nestedDependencyActual];
+                 ?? lockFileDependenciesMap.dependencies[nestedDependencyActual];
               return;
             }
             if (_.isEmpty(this.dependenciesMap[nestedDependency])) {
