@@ -67,7 +67,6 @@ export const assertNoParameterChangesBetweenProjects = (
         if (parametersExists(projectRoot1, categoryKey, resourceKey)) {
           let parameters1 = getParameters(projectRoot1, categoryKey, resourceKey);
           let parameters2 = getParameters(projectRoot2, categoryKey, resourceKey);
-          console.log(categoryKey,resourceKey);
           if(options && options.excludeFromParameterDiff){
             const afterExclusions = options.excludeFromParameterDiff(categoryKey, resourceKey, { project1: parameters1, project2: parameters2 });
             parameters1 = afterExclusions.project1;
