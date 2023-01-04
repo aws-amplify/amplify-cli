@@ -39,7 +39,6 @@ describe('api graphql v2 migration tests', () => {
         const meta = getProjectMeta(projRoot);
         const region = meta.providers.awscloudformation.Region;
         // eslint-disable-next-line spellcheck/spell-checker
-        console.log("STUFF:", meta.api);
         const { output } = meta.api.gqmigration;
         const { GraphQLAPIIdOutput } = output;
 
