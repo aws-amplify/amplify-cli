@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "An S3 simulator to test S3 APIs",
   "repository": {
     "type": "git",
@@ -19,7 +19,8 @@
   "scripts": {
     "test": "jest --logHeapUsage",
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "body-parser": "^1.19.2",

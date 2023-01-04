@@ -1,9 +1,9 @@
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
 import execa from 'execa';
 import which from 'which';
-import { currentSupportedVersion, executableName } from '../constants';
+import { currentSupportedVersion, dotnetcore31, executableName } from '../constants';
 
-export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
+export const detectDotNet = async (runtime: string): Promise<CheckDependenciesResult> => {
   const executablePath = which.sync(executableName, {
     nothrow: true,
   });
@@ -21,7 +21,8 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
   if (sdkResult.exitCode !== 0) {
     throw new Error(`${executableName} failed SDK detection, exit code was ${sdkResult.exitCode}`);
   }
-  const sdkInstalled = installedSdks && installedSdks.match(/^3\.1/m);
+  const requiredSdkRegex = runtime === dotnetcore31 ? /^3\.1/m : /^6\.0/m;
+  const sdkInstalled = installedSdks && installedSdks.match(requiredSdkRegex);
 
   const toolResult = execa.sync(executableName, ['tool', 'list', '--global']);
   const installedToolList = toolResult.stdout;
@@ -36,12 +37,13 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
     if (installedToolList.match(/^amazon\.lambda\.tools/m)) {
       toolInstalled = true;
     }
-    if (installedToolList.match(/^amazon\.lambda\.testtool-3\.1/m)) {
+    const requiredtestToolVersionRegex = runtime === dotnetcore31 ? /^amazon\.lambda\.testtool-3\.1/m : /^amazon\.lambda\.testtool-6\.0/m;
+    if (installedToolList.match(requiredtestToolVersionRegex)) {
       testToolInstalled = true;
     }
   }
 
-  // Verify that a dotnet 3.1 SDK and the dotnet Lambda tools is installed locally
+  // Verify that a dotnet 6 SDK and the dotnet Lambda tools is installed locally
   if (sdkInstalled && toolInstalled && testToolInstalled) {
     return {
       hasRequiredDependencies: true,
@@ -52,15 +54,20 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
       errorMessage: 'Unable to detect required dependencies:\n',
     };
     if (!sdkInstalled) {
-      result.errorMessage += '- The .NET Core 3.1 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n';
+      result.errorMessage += '- The .NET 6 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n';
     }
     if (!toolInstalled) {
       result.errorMessage +=
         '- The Amazon.Lambda.Tools global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.Tools".\n';
     }
     if (!testToolInstalled) {
-      result.errorMessage +=
-        '- The Amazon.Lambda.TestTool-3.1 global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.TestTool-3.1".\n';
+      if (runtime === dotnetcore31) {
+        result.errorMessage +=
+          '- The Amazon.Lambda.TestTool-3.1 global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.TestTool-3.1".\n';
+      } else {
+        result.errorMessage +=
+          '- The Amazon.Lambda.TestTool-6.0 global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.TestTool-6.0".\n';
+      }
     }
     return result;
   }

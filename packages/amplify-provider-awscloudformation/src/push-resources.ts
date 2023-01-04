@@ -64,7 +64,6 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
-import { showBuildDirChangesMessage } from './utils/auto-updates';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
@@ -196,7 +195,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
-    await showBuildDirChangesMessage();
 
     // Removed api transformation to generate resources before starting deploy/
 
@@ -1031,20 +1029,21 @@ export const formNestedStack = async (
 
     const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
     const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
-
-    stack.Properties.Parameters.userpoolId = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
-    };
-    stack.Properties.Parameters.userpoolArn = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
-    };
+    const authTriggerCfnParameters: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO, 'getAuthTriggerStackCfnParameters',
+      [stack, cognitoResource.resourceName]);
+    stack.Properties.Parameters = { ...stack.Properties.Parameters, ...authTriggerCfnParameters };
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = cognitoResource.resource as { dependsOn: any };
 
     dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any; }) => {
       const dependsOnStackName = `${resource.category}${resource.resourceName}`;
-
+      if (isAuthTrigger(resource)) {
+        const lambdaRoleKey = `function${resource.resourceName}LambdaExecutionRole`;
+        const lambdaRoleValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.LambdaExecutionRoleArn`] };
+        stack.Properties.Parameters[lambdaRoleKey] = lambdaRoleValue;
+      }
       stack.DependsOn.push(dependsOnStackName);
 
       const dependsOnAttributes = resource?.attributes;

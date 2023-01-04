@@ -12,8 +12,13 @@ describe('api directives @searchable', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projectDir);
-    deleteProjectDir(projectDir);
+    if (process.env.CIRCLECI) {
+      console.log('Skipping cloud deletion since we are in CI, and cleanup script will delete this stack in cleanup step.');
+      deleteProjectDir(projectDir);
+    } else {
+      await deleteProject(projectDir);
+      deleteProjectDir(projectDir);
+    }
   });
 
   it('searchable usage', async () => {

@@ -91,6 +91,7 @@ export type AmplifyErrorType =
   | 'AmplifyStudioNotEnabledError'
   | 'ApiCategorySchemaNotFoundError'
   | 'AuthImportError'
+  | 'BackendConfigValidationError'
   | 'BucketAlreadyExistsError'
   | 'BucketNotFoundError'
   | 'CategoryNotEnabledError'
@@ -127,6 +128,7 @@ export type AmplifyErrorType =
   | 'PermissionsError'
   | 'PluginMethodNotFoundError'
   | 'PluginNotFoundError'
+  | 'PluginPolicyAddError'
   | 'ProfileConfigurationError'
   | 'ProjectAppIdResolveError'
   | 'ProjectInitError'
@@ -179,4 +181,6 @@ export type AmplifyFaultType =
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault'
-  | 'MockProcessFault';
+  | 'MockProcessFault'
+  | 'AuthCategoryFault'
+  | 'ZipExtractFault';

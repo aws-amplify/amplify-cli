@@ -16,6 +16,7 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
+import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
@@ -50,55 +51,27 @@ process.on('unhandledRejection', error => {
   throw error;
 });
 
-const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
-  const newObj = {};
-  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
-  return newObj;
-};
-
-const normalizeStatusCommandOptions = (input: Input): Input => {
-  const options = input.options ? input.options : {};
-  const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
-  // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
-  allowedVerboseIndicators.forEach(verboseFlag => {
-    if (options.verboseFlag !== undefined) {
-      if (typeof options[verboseFlag] === 'string') {
-        const pluginName = (options[verboseFlag] as string).toLowerCase();
-        options[pluginName] = true;
-      }
-      delete options[verboseFlag];
-      options.verbose = true;
-    }
-  });
-
-  // Merge plugins and sub-commands as options (except help/verbose)
-  const returnInput = input;
-  if (returnInput.plugin) {
-    options[returnInput.plugin] = true;
-    delete returnInput.plugin;
+/**
+ * Disable the CDK deprecation warning in production but not in CI/debug mode
+ */
+ const disableCDKDeprecationWarning = () => {
+  const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
+  if (!isDebug) {
+    process.env.JSII_DEPRECATED = 'quiet';
   }
-  if (returnInput.subCommands) {
-    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
-    const inputSubCommands: string[] = [];
-    returnInput.subCommands.forEach(subCommand => {
-      // plugins are inferred as sub-commands when positionally supplied
-      if (!allowedSubCommands.includes(subCommand)) {
-        options[subCommand.toLowerCase()] = true;
-      } else {
-        inputSubCommands.push(subCommand);
-      }
-    });
-    returnInput.subCommands = inputSubCommands;
-  }
-  returnInput.options = convertKeysToLowerCase(options); // normalize keys to lower case
-  return input;
-};
+}
 
 /**
  * Command line entry point
  */
 export const run = async (startTime: number): Promise<void> => {
   deleteOldVersion();
+
+  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // Most of these warning messages are targetting searchable directive, which needs to migrate from elastic search to open search
+  // This is not diabled in debug mode
+  disableCDKDeprecationWarning();
+
   let pluginPlatform = await getPluginPlatform();
   let input = getCommandLineInput(pluginPlatform);
 
@@ -106,11 +79,6 @@ export const run = async (startTime: number): Promise<void> => {
   if (input.command !== 'help') {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: false, isGlobal: true });
-  }
-
-  // Normalize status command options
-  if (input.command === 'status') {
-    input = normalizeStatusCommandOptions(input);
   }
 
   // Initialize Banner messages. These messages are set on the server side
@@ -195,6 +163,8 @@ export const run = async (startTime: number): Promise<void> => {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: true, isGlobal: true });
   }
+
+  await saveAllEnvParams();
 };
 
 const ensureFilePermissions = (filePath: string): void => {

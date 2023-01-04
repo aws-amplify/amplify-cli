@@ -1,12 +1,13 @@
 {
   "name": "amplify-util-import",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "aws",
