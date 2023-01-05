@@ -2,11 +2,13 @@ import url from 'url';
 import nock from 'nock';
 import * as uuid from 'uuid';
 
+import { AmplifyError } from 'amplify-cli-core';
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { Input } from '../domain/input';
 import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
+import { SerializableError } from '../domain/amplify-usageData/SerializableError';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
@@ -182,6 +184,26 @@ describe('test usageData calls', () => {
   it('test delay', async () => {
     scope.post(pathToUrl, () => true).delay(10000);
     await checkUsageData();
+  });
+});
+
+describe('test usage data payload generation', () => {
+  it('when no error', async () => {
+    expect(UsageData.Instance.getUsageDataPayload(null, '').error).toBeUndefined();
+    expect(UsageData.Instance.getUsageDataPayload(null, '').downStreamException).toBeUndefined();
+  });
+  it('when error without downstream exception', async () => {
+    const amplifyError = new AmplifyError('NotImplementedError', { message: 'test error message' });
+    const usageData = UsageData.Instance.getUsageDataPayload(amplifyError, '');
+    expect(usageData.error).toEqual(new SerializableError(amplifyError));
+    expect(usageData.downStreamException).toBeUndefined();
+  });
+  it('when error with downstream exception', async () => {
+    const downStreamException = new Error('DownStreamException');
+    const amplifyError = new AmplifyError('NotImplementedError', { message: 'test error message' }, downStreamException);
+    const usageData = UsageData.Instance.getUsageDataPayload(amplifyError, '');
+    expect(usageData.error).toEqual(new SerializableError(amplifyError));
+    expect(usageData.downStreamException).toEqual(new SerializableError(downStreamException));
   });
 });
 
