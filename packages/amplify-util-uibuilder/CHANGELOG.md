@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.4-rc.14c670e57.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.3...@aws-amplify/amplify-util-uibuilder@1.6.4-rc.14c670e57.0) (2023-01-05)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** update codegen-ui to 2.7.2 ([14c670e](https://github.com/aws-amplify/amplify-cli/commit/14c670e57ec194da97b4d568508b7dad3b94755f))
+
+
+
+
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.3) (2023-01-03)
 
 
