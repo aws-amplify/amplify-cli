@@ -1,5 +1,5 @@
 const xrManager = require('./lib/xr-manager');
-const inquirer = require('inquirer');
+const { prompter } = require('amplify-prompts');
 const path = require('path');
 
 const category = 'xr';
@@ -16,19 +16,14 @@ async function initEnv(context) {
   const allEnvs = context.amplify.getEnvDetails();
 
   // If the environment already has xr configured, exit
-  if (allEnvs[thisEnvName].categories[XR_CATEGORY_NAME]) {
+  if (!!allEnvs[thisEnvName].categories && !!allEnvs[thisEnvName].categories[XR_CATEGORY_NAME]) {
     return;
   }
 
   if (Object.keys(allEnvs).length > 1) {
-    const useConfigAnswer = await inquirer.prompt({
-      name: 'useExistingEnvConfig',
-      type: 'confirm',
-      message: 'Would you like to use XR configuration from an existing environment?',
-      default: false,
-    });
+    const useExistingEnvConfig = await prompter.yesOrNo('Would you like to use XR configuration from an existing environment?');
 
-    if (useConfigAnswer.useExistingEnvConfig) {
+    if (useExistingEnvConfig) {
       // Get environments with XR defined
       const envsWithXR = [];
       Object.entries(allEnvs).forEach(([env, config]) => {
@@ -37,25 +32,17 @@ async function initEnv(context) {
         }
       });
 
-      await inquirer
-        .prompt({
-          name: 'envToUse',
-          message: 'Choose the environment configuration to use:',
-          type: 'list',
-          choices: envsWithXR,
-        })
-        .then(envAnswer => {
-          const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
-          Object.entries(xrResources).forEach(([resource, config]) => {
-            const options = {
-              service: SUMERIAN_SERVICE_NAME,
-              output: config,
-            };
-            context.amplify.saveEnvResourceParameters(context, XR_CATEGORY_NAME, resource, config);
-            context.amplify.updateamplifyMetaAfterResourceAdd(XR_CATEGORY_NAME, resource, options);
-          });
-          context.print.info(`XR configuration from ${envAnswer.envToUse} saved for ${thisEnvName}`);
-        });
+      const envToUse = await prompter.pick('Choose the environment configuration to use:', envsWithXR);
+      const xrResources = allEnvs[envToUse].categories[XR_CATEGORY_NAME];
+      Object.entries(xrResources).forEach(([resource, config]) => {
+        const options = {
+          service: SUMERIAN_SERVICE_NAME,
+          output: config,
+        };
+        context.amplify.saveEnvResourceParameters(context, XR_CATEGORY_NAME, resource, config);
+        context.amplify.updateamplifyMetaAfterResourceAdd(XR_CATEGORY_NAME, resource, options);
+      });
+      context.print.info(`XR configuration from ${envToUse} saved for ${thisEnvName}`);
       return;
     }
   }

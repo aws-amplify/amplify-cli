@@ -1,8 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
-const inquirer = require('inquirer');
 const chalk = require('chalk');
 const { URL } = require('url');
+const { prompter } = require('amplify-prompts');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
@@ -21,14 +21,9 @@ async function setupAccess(context, resourceName) {
   let templateFilePath = path.join(__dirname, constants.TemplateFileName);
   const template = context.amplify.readJsonFile(templateFilePath);
 
-  const answer = await inquirer.prompt({
-    name: 'allowUnAuthAccess',
-    type: 'confirm',
-    message: 'Would you like to allow unauthenticated users access to the Sumerian project for this scene?',
-    default: false,
-  });
+  const allowUnAuthAccess = await prompter.yesOrNo('Would you like to allow unauthenticated users access to the Sumerian project for this scene?');
 
-  if (!answer.allowUnAuthAccess) {
+  if (!allowUnAuthAccess) {
     delete template.Resources.CognitoUnauthPolicy;
   }
 
@@ -93,20 +88,12 @@ async function addScene(context) {
     `Publish the scene you want to add. See ${chalk.green('https://docs.amplify.aws/lib/xr/getting-started/q/platform/js')}`,
   );
   context.print.info('Then download the JSON configuration to your local computer.');
-  await inquirer.prompt({
-    name: 'pressEnter',
-    type: 'input',
-    message: 'Press Enter when ready.',
-  });
+  await prompter.input('Press Enter when ready.');
 
   context.print.warning('Note the following scene name is used to identify the scene in the Amplify framework');
   context.print.warning('It does NOT have to match the scene name in the Sumerian console');
-  let sceneName;
-  await inquirer
-    .prompt({
-      name: 'sceneName',
-      type: 'input',
-      message: 'Provide a name for the scene:',
+  const sceneName = await prompter
+    .input('Provide a name for the scene:', {
       validate: name => {
         const existingScenes = getExistingScenes(context);
         if (existingScenes.includes(name)) {
@@ -118,9 +105,6 @@ async function addScene(context) {
         }
         return true;
       },
-    })
-    .then(answer => {
-      sceneName = answer.sceneName;
     });
 
   await addSceneConfig(context, sceneName);
@@ -140,10 +124,7 @@ async function addScene(context) {
 
 async function addSceneConfig(context, sceneName) {
   let sumerianConfig;
-  await inquirer.prompt({
-    name: 'configFilePath',
-    type: 'input',
-    message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
+  await prompter.input(`Enter the path to the downloaded JSON configuration file for ${sceneName}:`, {
     validate: configFilePath => {
       try {
         if (fs.existsSync(configFilePath)) {
@@ -193,7 +174,9 @@ async function addSceneConfig(context, sceneName) {
   await ensureSetup(context, sceneName);
 
   context.amplify.saveEnvResourceParameters(context, constants.CategoryName, sceneName, sumerianConfig);
-  context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, sceneName, options);
+  if (context.input.command === 'add') {
+    context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, sceneName, options);
+  }
 }
 
 async function updateScene(context) {
@@ -207,17 +190,9 @@ async function updateScene(context) {
     return;
   }
 
-  await inquirer
-    .prompt({
-      name: 'sceneToUpdate',
-      message: 'Choose the scene you would like to update',
-      type: 'list',
-      choices: existingScenes,
-    })
-    .then(async answer => {
-      await addSceneConfig(context, answer.sceneToUpdate);
-      context.print.info(`${chalk.green(answer.sceneToUpdate)} has been updated.`);
-    });
+  const answer = await prompter.pick('Choose the scene you would like to update', existingScenes)
+  await addSceneConfig(context, answer);
+  context.print.info(`${chalk.green(answer)} has been updated.`);
 }
 
 async function remove(context) {
