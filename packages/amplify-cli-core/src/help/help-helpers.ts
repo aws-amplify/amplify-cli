@@ -28,6 +28,7 @@ const DEFAULT_COLUMN_SEP_SPACING = 2;
 const DEFAULT_INDENT_SPACING = 2;
 const DEFAULT_COLUMN_SEP = SPACE.repeat(DEFAULT_COLUMN_SEP_SPACING);
 const DEFAULT_INDENT = SPACE.repeat(DEFAULT_INDENT_SPACING);
+const MAX_LINE_LENGTH = 80;
 
 const USAGE = 'USAGE';
 const DESCRIPTION = 'DESCRIPTION';
@@ -35,8 +36,10 @@ const COMMANDS = 'COMMANDS';
 const FLAGS = 'FLAGS';
 const LEARN_MORE = 'LEARN MORE';
 const SUBCOMMANDS = 'SUBCOMMANDS';
-const TAG_LINE =
-  'The Amplify Command Line Interface (CLI) is a unified toolchain to create, integrate, and manage the AWS cloud services for your app.';
+const TAG_LINE = [
+  'The Amplify Command Line Interface (CLI) is a unified toolchain to',
+  'create, integrate, and manage the AWS cloud services for your app.',
+];
 const DEFAULT_LINK = 'https://docs.amplify.aws/cli/';
 
 const FLAG_DELIMITER = ' | ';
@@ -124,7 +127,7 @@ function printColumns(rowsArray: Array<[string, string]>, minColumnSeparatingSpa
 }
 
 function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, defaultNumTabs = 1, extraTabLengthThreshold = 5) {
-  printBodyText(TAG_LINE);
+  TAG_LINE.forEach(line => printBodyText(line));
   printer.blankLine();
 
   printHeaderText(USAGE);
