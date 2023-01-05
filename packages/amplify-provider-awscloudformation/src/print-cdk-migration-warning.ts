@@ -33,7 +33,7 @@ export const printCdkMigrationWarning = async (context: $TSContext): Promise<voi
   }
 };
 
-const getOverridesWarning = (resourcesToBuild: IAmplifyResource[]): AmplifyWarning | undefined => {
+const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
   let overridesWarningObject;
   for (const resource of resourcesToBuild) {
     // since overrides project is backend
@@ -43,10 +43,9 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[]): AmplifyWarni
     if (fs.existsSync(overrideFilePath) && _.isEmpty(overridesWarningObject)) {
       const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
         projectRoot: pathManager.getBackendDirPath(),
-        dependencyToSearch: '@aws-cdk/core',
       };
 
-      const explicitDependencies = new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies();
+      const explicitDependencies = new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies(dependencyToSearch);
       if (!_.isEmpty(explicitDependencies)) {
         overridesWarningObject = {
           impactedFiles: [path.join(pathManager.getBackendDirPath(), 'package.json')],
@@ -58,7 +57,7 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[]): AmplifyWarni
   return overridesWarningObject;
 };
 
-const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[]): AmplifyWarning | undefined => {
+const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
   let customResourcesWarningObject;
   const customResourceImpactedFiles = [];
   const customCategoryResources = resourcesToBuild.filter(resource => resource.category === AmplifyCategories.CUSTOM);
@@ -66,10 +65,9 @@ const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[]): Amplif
     const targetDir = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot: targetDir,
-      dependencyToSearch: '@aws-cdk/core',
     };
 
-    const explicitDependencies = new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies();
+    const explicitDependencies = new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies(dependencyToSearch);
     if (!_.isEmpty(explicitDependencies)) {
       customResourceImpactedFiles.push(path.join(targetDir, 'package.json'));
       customResourcesWarningObject = {
@@ -85,9 +83,10 @@ const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[]): Amplif
  * returns migration message otherwise undefined
  */
 export const getMigrationMessage = (resourcesToBuild: IAmplifyResource[]): string => {
-  const migrationBanner = `We detect you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022`;
-  const overridesWarningObject = getOverridesWarning(resourcesToBuild);
-  const customResourceWarningObject = getCustomResourcesWarning(resourcesToBuild);
+  const migrationBanner = `We detected that you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022`;
+  const dependencyToSearch = '@aws-cdk/core';
+  const overridesWarningObject = getOverridesWarning(resourcesToBuild, dependencyToSearch);
+  const customResourceWarningObject = getCustomResourcesWarning(resourcesToBuild, dependencyToSearch);
   let migrationString;
   if (!_.isEmpty(overridesWarningObject) || !_.isEmpty(customResourceWarningObject)) {
     migrationString = '\n';

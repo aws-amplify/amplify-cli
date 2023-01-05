@@ -11,7 +11,6 @@ describe('no package Manager cases', () => {
     expect(
       () => new AmplifyNodePkgDetector({
         projectRoot,
-        dependencyToSearch: '@aws-cdk/core',
       }),
     ).toThrowErrorMatchingInlineSnapshot(`"No package manager found."`);
   });
@@ -28,7 +27,6 @@ describe('parsing yarn lock files', () => {
     expect(
       () => new AmplifyNodePkgDetector({
         projectRoot,
-        dependencyToSearch: '@aws-cdk/core',
       }),
     ).toThrowErrorMatchingInlineSnapshot(`"Lockfile not found at location: \${lockFileFullPath}"`);
   });
@@ -41,7 +39,6 @@ describe('parsing yarn lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: '@aws-cdk/core',
     });
     expect(dec.parseLockFile()).toMatchSnapshot();
   });
@@ -55,7 +52,6 @@ describe('parsing yarn lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
-      dependencyToSearch: '@aws-cdk/core',
     };
     expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).parseLockFile()).toThrowErrorMatchingInlineSnapshot(
       `"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`,
@@ -71,9 +67,8 @@ describe('parsing yarn lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: '@aws-cdk/core',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
@@ -108,9 +103,8 @@ describe('parsing yarn lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: 'amplify-cli-core',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
@@ -146,9 +140,8 @@ describe('parsing yarn lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: 'fs-extra',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
@@ -191,9 +184,8 @@ describe('parsing yarn lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: 'aws-cdk-lib',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
   });
 });
 
@@ -208,7 +200,6 @@ describe('parsing package lock files', () => {
     expect(
       () => new AmplifyNodePkgDetector({
         projectRoot,
-        dependencyToSearch: '@aws-cdk/core',
       }),
     ).toThrowErrorMatchingInlineSnapshot(`"Lockfile not found at location: \${lockFileFullPath}"`);
   });
@@ -221,7 +212,6 @@ describe('parsing package lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: '@aws-cdk/core',
     });
     expect(dec.parseLockFile()).toMatchSnapshot();
   });
@@ -235,7 +225,6 @@ describe('parsing package lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
-      dependencyToSearch: '@aws-cdk/core',
     };
     expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).parseLockFile()).toThrowErrorMatchingInlineSnapshot(
       `"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`,
@@ -251,9 +240,8 @@ describe('parsing package lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: '@aws-cdk/core',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
@@ -288,9 +276,8 @@ describe('parsing package lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: 'amplify-cli-core',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
@@ -326,9 +313,8 @@ describe('parsing package lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: 'fs-extra',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
@@ -371,8 +357,7 @@ describe('parsing package lock files', () => {
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
-      dependencyToSearch: 'aws-cdk-lib',
     });
-    expect(dec.detectAffectedDirectDependencies()).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
   });
 });

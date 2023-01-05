@@ -69,9 +69,10 @@ export class YarnLockParser {
     }
 
     /**
-     * getDependentNpmPackage()
+     * this function takes dependencyTo search and lockFile content as input and
+     * returns a map of < allPackages ,dependencyToSearchPayload>
      */
-    getDependentPackage(packageName: string,
+    getDependentPackageMap(packageName: string,
       lockFileContents: string): Record<string, Record<string, YarnLockDependencyType>> | undefined {
       const lockFileDependenciesMap = this.parseLockFile(lockFileContents);
       if (lockFileDependenciesMap.dependencies) {

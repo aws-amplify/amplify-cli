@@ -165,7 +165,7 @@ export type AmplifyFaultType =
   | 'BackendDeleteFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
-  | 'FileNotFoundFault'
+  | 'LockFileNotFoundFault'
   | 'LockFileParsingFault'
   | 'NotificationsChannelAPNSFault'
   | 'NotificationsChannelEmailFault'

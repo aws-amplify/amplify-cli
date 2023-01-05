@@ -11,6 +11,6 @@ export type Lockfile = PackageLock | YarnLock;
   */
 export interface LockfileParser {
     parseLockFile: (lockFileContents: string) => Lockfile;
-    getDependentPackage: (packageName: string, lockFileContents: string) => Record<string, Record<string, YarnLockDependencyType>>
+    getDependentPackageMap: (packageName: string, lockFileContents: string) => Record<string, Record<string, YarnLockDependencyType>>
         | Record<string, Record< string, PackageLockDependencyType>> | undefined;
 }

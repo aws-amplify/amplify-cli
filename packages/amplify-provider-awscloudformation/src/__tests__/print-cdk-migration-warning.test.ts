@@ -1,78 +1,78 @@
-import { $TSObject, $TSContext } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
-import { printCdkMigrationWarning } from '../print-cdk-migration-warning';
+import { $TSObject, $TSContext } from "amplify-cli-core";
+import * as fs from "fs-extra";
+import { printer } from "amplify-prompts";
+import { printCdkMigrationWarning } from "../print-cdk-migration-warning";
 
 const detectAffectedDirectDependenciesMock = jest.fn();
 
-jest.mock('amplify-prompts');
+jest.mock("amplify-prompts");
 
-jest.mock('fs-extra');
+jest.mock("fs-extra");
 
 const fsMock = fs as jest.Mocked<typeof fs>;
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSObject),
+jest.mock("amplify-cli-core", () => ({
+  ...(jest.requireActual("amplify-cli-core") as $TSObject),
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
-    getResourceOverrideFilePath: jest.fn().mockReturnValue('mockDirPath/override.ts'),
+    getBackendDirPath: jest.fn().mockReturnValue("mockDirPath"),
+    getResourceOverrideFilePath: jest.fn().mockReturnValue("mockDirPath/override.ts")
   },
   AmplifyCategories: {
-    STORAGE: 'storage',
-    API: 'api',
-    AUTH: 'auth',
-    FUNCTION: 'function',
-    HOSTING: 'hosting',
-    INTERACTIONS: 'interactions',
-    NOTIFICATIONS: 'notifications',
-    PREDICTIONS: 'predictions',
-    ANALYTICS: 'analytics',
-    CUSTOM: 'custom',
+    STORAGE: "storage",
+    API: "api",
+    AUTH: "auth",
+    FUNCTION: "function",
+    HOSTING: "hosting",
+    INTERACTIONS: "interactions",
+    NOTIFICATIONS: "notifications",
+    PREDICTIONS: "predictions",
+    ANALYTICS: "analytics",
+    CUSTOM: "custom"
   },
   AmplifyNodePkgDetector: jest.fn().mockImplementation(() => ({
-    detectAffectedDirectDependencies: detectAffectedDirectDependenciesMock,
-  })),
+    detectAffectedDirectDependencies: detectAffectedDirectDependenciesMock
+  }))
 }));
 
 const inputPayload = {
   a: {
-    name: 'b',
-    version: 'x.y.z',
-  },
+    name: "b",
+    version: "x.y.z"
+  }
 };
 
 const mockContext = {
   amplify: {
-    getResourceStatus: jest.fn(),
-  },
+    getResourceStatus: jest.fn()
+  }
 };
 
-describe('print migration warning tests', () => {
+describe("print migration warning tests", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('no migration message when there are no override and custom resources', async () => {
+  it("no migration message when there are no override and custom resources", async () => {
     const resourcesToBeCreated = [
       {
-        category: 'function',
-        resourceName: 'someResource',
-        service: 'Lambda',
-      },
+        category: "function",
+        resourceName: "someResource",
+        service: "Lambda"
+      }
     ];
     const resourcesToBeDeleted = [
       {
-        category: 'auth',
-        resourceName: 'someResource1',
-        service: 'Cognito',
-      },
+        category: "auth",
+        resourceName: "someResource1",
+        service: "Cognito"
+      }
     ];
     const resourcesToBeUpdated = [
       {
-        category: 'storage',
-        resourceName: 'someResource2',
-        service: 'S3',
-      },
+        category: "storage",
+        resourceName: "someResource2",
+        service: "S3"
+      }
     ];
 
     const allResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
@@ -86,27 +86,27 @@ describe('print migration warning tests', () => {
     expect(printerMock.warn).not.toBeCalled();
   });
 
-  it('migration message when there are only custom resources', async () => {
+  it("migration message when there are only custom resources", async () => {
     const resourcesToBeCreated = [
       {
-        category: 'auth',
-        resourceName: 'someResource',
-        service: 'Cognito',
-      },
+        category: "auth",
+        resourceName: "someResource",
+        service: "Cognito"
+      }
     ];
     const resourcesToBeDeleted = [
       {
-        category: 'custom',
-        resourceName: 'someResource1',
-        service: 'mockService',
-      },
+        category: "custom",
+        resourceName: "someResource1",
+        service: "mockService"
+      }
     ];
     const resourcesToBeUpdated = [
       {
-        category: 'custom',
-        resourceName: 'someResource2',
-        service: 'mockService2',
-      },
+        category: "custom",
+        resourceName: "someResource2",
+        service: "mockService2"
+      }
     ];
 
     const allResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
@@ -117,7 +117,7 @@ describe('print migration warning tests', () => {
     await printCdkMigrationWarning((mockContext as unknown) as $TSContext);
     expect(printerMock.warn.mock.calls[0][0]).toMatchInlineSnapshot(`
       "
-      We detect you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022
+      We detected that you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022
 
       Impacted Files:
 
@@ -128,20 +128,20 @@ describe('print migration warning tests', () => {
     `);
   });
 
-  it('migration message when there are only overrides', async () => {
+  it("migration message when there are only overrides", async () => {
     const resourcesToBeCreated = [
       {
-        category: 'auth',
-        resourceName: 'someResource',
-        service: 'Cognito',
-      },
+        category: "auth",
+        resourceName: "someResource",
+        service: "Cognito"
+      }
     ];
     const resourcesToBeUpdated = [
       {
-        category: 'storage',
-        resourceName: 'someResource2',
-        service: 'S3',
-      },
+        category: "storage",
+        resourceName: "someResource2",
+        service: "S3"
+      }
     ];
 
     const allResources = [...resourcesToBeCreated, ...resourcesToBeUpdated];
@@ -152,7 +152,7 @@ describe('print migration warning tests', () => {
     await printCdkMigrationWarning((mockContext as unknown) as $TSContext);
     expect(printerMock.warn.mock.calls[0][0]).toMatchInlineSnapshot(`
       "
-      We detect you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022
+      We detected that you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022
 
       Impacted Files:
 
@@ -162,20 +162,20 @@ describe('print migration warning tests', () => {
     `);
   });
 
-  it('migration message when there both are present', async () => {
+  it("migration message when there both are present", async () => {
     const resourcesToBeCreated = [
       {
-        category: 'auth',
-        resourceName: 'someResource',
-        service: 'Cognito',
-      },
+        category: "auth",
+        resourceName: "someResource",
+        service: "Cognito"
+      }
     ];
     const resourcesToBeUpdated = [
       {
-        category: 'custom',
-        resourceName: 'someResource2',
-        service: 'mockService2',
-      },
+        category: "custom",
+        resourceName: "someResource2",
+        service: "mockService2"
+      }
     ];
 
     const allResources = [...resourcesToBeCreated, ...resourcesToBeUpdated];
@@ -186,7 +186,7 @@ describe('print migration warning tests', () => {
     await printCdkMigrationWarning((mockContext as unknown) as $TSContext);
     expect(printerMock.warn.mock.calls[0][0]).toMatchInlineSnapshot(`
       "
-      We detect you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022
+      We detected that you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022
 
       Impacted Files:
 

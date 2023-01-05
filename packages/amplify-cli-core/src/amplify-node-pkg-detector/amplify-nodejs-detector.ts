@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import * as path from 'path';
 import { AmplifyError } from '../errors/amplify-error';
 import { AmplifyFault } from '../errors/amplify-fault';
@@ -11,7 +10,7 @@ import { LockFileParserFactory } from './parser-factory';
 /**
  * return type of detectAffectedDirectDependencies
  */
-type DetectedDependencies = {
+export type DetectedDependencies = {
   packageName?: string;
   dependentPackage?:{
     name: string,
@@ -24,7 +23,6 @@ type DetectedDependencies = {
  */
 export type AmplifyNodePkgDetectorProps = {
     projectRoot: string,
-    dependencyToSearch: string,
   }
 
 /**
@@ -34,7 +32,6 @@ export type AmplifyNodePkgDetectorProps = {
  */
 export class AmplifyNodePkgDetector {
      private readonly packageManager: PackageManager;
-     private readonly dependencyToSearch: string;
      private readonly pkgJsonObj: PackageJson;
      private readonly lockFileContents: string;
      private readonly lockFileParser: LockfileParser;
@@ -49,33 +46,32 @@ export class AmplifyNodePkgDetector {
        }
        this.packageManager = packageManager;
        this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
-       this.dependencyToSearch = amplifyDetectorProps.dependencyToSearch;
-       this.lockFileContents = this.getFileContent(amplifyDetectorProps.projectRoot);
+       this.lockFileContents = this.getLockFileContent(amplifyDetectorProps.projectRoot);
        this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager.packageManager);
      }
 
      /**
       * parses lock file
       */
-     parseLockFile():Lockfile {
+     public parseLockFile():Lockfile {
        return this.lockFileParser.parseLockFile(this.lockFileContents);
      }
 
      /**
     * parses package.json project files
     */
-      private parsePkgJson = (projectRoot: string): PackageJson => {
-        const pkgJsonFullPath = path.resolve(projectRoot, 'package.json');
-        return <PackageJson>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
-      }
+     private parsePkgJson = (projectRoot: string): PackageJson => {
+       const pkgJsonFullPath = path.resolve(projectRoot, 'package.json');
+       return <PackageJson>JSON.parse(fs.readFileSync(pkgJsonFullPath, 'utf-8'));
+     }
 
      /**
-      * get file content as string
+      * get lock file content as string
       */
-     private getFileContent = (projectRoot: string) : string => {
+     private getLockFileContent = (projectRoot: string) : string => {
        const lockFileFullPath = path.resolve(projectRoot, this.packageManager.lockFile);
        if (!fs.existsSync(lockFileFullPath)) {
-         throw new AmplifyFault('FileNotFoundFault', {
+         throw new AmplifyFault('LockFileNotFoundFault', {
            message: 'Lockfile not found at location: ${lockFileFullPath}',
          });
        }
@@ -83,19 +79,19 @@ export class AmplifyNodePkgDetector {
      };
 
      /**
-     * returns  explicit dependencies from package.json if lock file package depends on passed dependency else undefined
+     * returns  explicit dependencies from package.json if lock file package depends on passed dependency else []
      */
-     detectAffectedDirectDependencies(): Array<DetectedDependencies> | [] {
+     public detectAffectedDirectDependencies = (dependencyToSearch: string): Array<DetectedDependencies> | [] => {
        let explicitDependencies = new Array<DetectedDependencies>();
-       const allPackagesWithDependency = this.lockFileParser.getDependentPackage(this.dependencyToSearch, this.lockFileContents);
+       const allPackagesWithDependency = this.lockFileParser.getDependentPackageMap(dependencyToSearch, this.lockFileContents);
        if (allPackagesWithDependency !== undefined) {
          explicitDependencies = Object.keys(allPackagesWithDependency).map(pkg => {
            if (Object.keys(this.pkgJsonObj.dependencies).includes(pkg)) {
              const obj: DetectedDependencies = {
                packageName: pkg,
                dependentPackage: {
-                 name: this.dependencyToSearch,
-                 version: allPackagesWithDependency[pkg][this.dependencyToSearch].version,
+                 name: dependencyToSearch,
+                 version: allPackagesWithDependency[pkg][dependencyToSearch].version,
 
                },
              };

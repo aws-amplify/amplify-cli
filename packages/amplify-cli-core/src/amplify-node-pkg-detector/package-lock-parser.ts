@@ -61,9 +61,10 @@ export class PackageLockParser {
   }
 
   /**
-     * getDependentNpmPackage()
+     * this function takes dependencyTo search and lockFile content as input and
+     * returns a map of < allPackages ,dependencyToSearchPayload>
      */
-   public getDependentPackage = (packageName: string,
+   public getDependentPackageMap = (packageName: string,
      lockFileContents: string): Record<string, Record<string, PackageLockDependencyType>> | undefined => {
      const lockFileDependenciesMap = this.parseLockFile(lockFileContents);
      if (lockFileDependenciesMap.dependencies) {
