@@ -190,20 +190,20 @@ describe('test usageData calls', () => {
 describe('test usage data payload generation', () => {
   it('when no error', async () => {
     expect(UsageData.Instance.getUsageDataPayload(null, '').error).toBeUndefined();
-    expect(UsageData.Instance.getUsageDataPayload(null, '').downStreamException).toBeUndefined();
+    expect(UsageData.Instance.getUsageDataPayload(null, '').downstreamException).toBeUndefined();
   });
   it('when error without downstream exception', async () => {
     const amplifyError = new AmplifyError('NotImplementedError', { message: 'test error message' });
     const usageData = UsageData.Instance.getUsageDataPayload(amplifyError, '');
     expect(usageData.error).toEqual(new SerializableError(amplifyError));
-    expect(usageData.downStreamException).toBeUndefined();
+    expect(usageData.downstreamException).toBeUndefined();
   });
   it('when error with downstream exception', async () => {
-    const downStreamException = new Error('DownStreamException');
-    const amplifyError = new AmplifyError('NotImplementedError', { message: 'test error message' }, downStreamException);
+    const downstreamException = new Error('DownStreamException');
+    const amplifyError = new AmplifyError('NotImplementedError', { message: 'test error message' }, downstreamException);
     const usageData = UsageData.Instance.getUsageDataPayload(amplifyError, '');
     expect(usageData.error).toEqual(new SerializableError(amplifyError));
-    expect(usageData.downStreamException).toEqual(new SerializableError(downStreamException));
+    expect(usageData.downstreamException).toEqual(new SerializableError(downstreamException));
   });
 });
 

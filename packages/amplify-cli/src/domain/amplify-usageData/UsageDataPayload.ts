@@ -19,7 +19,7 @@ export class UsageDataPayload implements IUsageDataPayload {
   inputOptions: InputOptions;
   timestamp: string;
   error!: SerializableError;
-  downStreamException!: SerializableError;
+  downstreamException!: SerializableError;
   payloadVersion: string;
   osPlatform: string;
   osRelease: string;
@@ -64,7 +64,7 @@ export class UsageDataPayload implements IUsageDataPayload {
     if (error) {
       this.error = new SerializableError(error);
       if ('downstreamException' in error && (error as $TSAny).downstreamException) {
-        this.downStreamException = new SerializableError((error as $TSAny).downstreamException as Error);
+        this.downstreamException = new SerializableError((error as $TSAny).downstreamException as Error);
       }
     }
   }
