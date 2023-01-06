@@ -57,7 +57,7 @@ describe('@function transformer', () => {
   afterAll(async () => {
     try {
       if (server) {
-        server.stop();
+        await server.stop();
       }
     } catch (e) {
       console.error(e);

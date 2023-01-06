@@ -47,7 +47,7 @@ export const run = async (context: Context): Promise<PluginPlatform> => {
         await configureScanInterval(context, pluginPlatform);
         break;
       default:
-        configurePluginDirectories(context, pluginPlatform);
+        await configurePluginDirectories(context, pluginPlatform);
         break;
     }
   } while (answer.selection !== exit);
