@@ -115,6 +115,7 @@ type AWSAccountInfo = {
   accessKeyId: string;
   secretAccessKey: string;
   sessionToken: string;
+  parent: boolean;
 };
 
 const PINPOINT_TEST_REGEX = /integtest/;
@@ -233,6 +234,9 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
+  if(region === 'us-east-1' && account.parent){
+    return []; // temporarily disabled until us-east-1 is re-enabled for this account
+  }
   const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
   try {
     const amplifyApps = await amplifyClient.listApps({ maxResults: 25 }).promise(); // keeping it to 25 as max supported is 25
@@ -341,7 +345,10 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
-  let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
+  // NOTE: every few months, we should disable the filter , and clean up all stacks (not just root stacks)
+  // this is because some child stacks fail to delete (but we don't let that stop us from deleting root stacks)
+  // eventually, we must clean up those child stacks too.
+  let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);; 
   if(rootStacks.length > 50){
     // we can only delete 50 stacks accross all regions every batch,
     // so we shouldn't take more than 20 apps from each of 8 regions.
@@ -844,6 +851,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
           sessionToken: process.env.AWS_SESSION_TOKEN,
+          parent: true,
         };
       }
       const randomNumber = Math.floor(Math.random() * 100000);
@@ -859,6 +867,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
         accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
         secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
         sessionToken: assumeRoleRes.Credentials.SessionToken,
+        parent: false,
       };
     });
     return await Promise.all(accountCredentialPromises);
@@ -870,6 +879,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         sessionToken: process.env.AWS_SESSION_TOKEN,
+        parent: true,
       },
     ];
   }
