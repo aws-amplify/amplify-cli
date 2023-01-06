@@ -310,29 +310,43 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
   const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
+  const stackStatusFilter = [
+    'CREATE_COMPLETE',
+    'ROLLBACK_FAILED',
+    'ROLLBACK_COMPLETE',
+    'DELETE_FAILED',
+    'UPDATE_COMPLETE',
+    'UPDATE_ROLLBACK_FAILED',
+    'UPDATE_ROLLBACK_COMPLETE',
+    'IMPORT_COMPLETE',
+    'IMPORT_ROLLBACK_FAILED',
+    'IMPORT_ROLLBACK_COMPLETE',
+  ];
   const stacks = await cfnClient
     .listStacks({
-      StackStatusFilter: [
-        'CREATE_COMPLETE',
-        'ROLLBACK_FAILED',
-        'DELETE_FAILED',
-        'UPDATE_COMPLETE',
-        'UPDATE_ROLLBACK_FAILED',
-        'UPDATE_ROLLBACK_COMPLETE',
-        'IMPORT_COMPLETE',
-        'IMPORT_ROLLBACK_FAILED',
-        'IMPORT_ROLLBACK_COMPLETE',
-      ],
+      StackStatusFilter: stackStatusFilter,
     })
     .promise();
+  // loop 
+  let nextToken = stacks.NextToken;
+  while (nextToken && stacks.StackSummaries.length < 50) {
+    const nextPage = await cfnClient
+      .listStacks({
+        StackStatusFilter: stackStatusFilter,
+        NextToken: nextToken,
+      })
+    .promise();
+    stacks.StackSummaries.push(...nextPage.StackSummaries);
+    nextToken = nextPage.NextToken;
+  }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
   let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
-  if(rootStacks.length > 20){
-    // we can only delete 100 stacks accross all regions every batch,
+  if(rootStacks.length > 50){
+    // we can only delete 50 stacks accross all regions every batch,
     // so we shouldn't take more than 20 apps from each of 8 regions.
     // this should at least limit calls to getStackDetails below
-    rootStacks = rootStacks.slice(0, 20);
+    rootStacks = rootStacks.slice(0, 50);
   }
   const results: StackInfo[] = [];
   for (const stack of rootStacks) {
@@ -530,6 +544,8 @@ const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, 
   if(apps.length > 50){
     // throttle delete calls
     await Promise.all(apps.slice(0, 50).map(app => deleteAmplifyApp(account, accountIndex, app)));
+  } else {
+    await Promise.all(apps.map(app => deleteAmplifyApp(account, accountIndex, app)));
   }
 };
 
@@ -551,6 +567,8 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
   if(roles.length > 50){
     // throttle delete calls
     await Promise.all(roles.slice(0, 50).map(role => deleteIamRole(account, accountIndex, role)));
+  } else {
+    await Promise.all(roles.map(role => deleteIamRole(account, accountIndex, role)));
   }
 };
 
@@ -631,6 +649,8 @@ const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buck
   if(buckets.length > 50){
     // throttle delete calls
     await Promise.all(buckets.slice(0, 50).map(bucket => deleteBucket(account, accountIndex, bucket)));
+  } else {
+    await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
   }
 };
 
@@ -653,6 +673,8 @@ const deletePinpointApps = async (account: AWSAccountInfo, accountIndex: number,
   if(apps.length > 50){
     // throttle delete calls
     await Promise.all(apps.slice(0, 50).map(app => deletePinpointApp(account, accountIndex, app)));
+  } else {
+    await Promise.all(apps.map(app => deletePinpointApp(account, accountIndex, app)));
   }
 };
 
@@ -674,6 +696,8 @@ const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, 
   if(apis.length > 50){
     // throttle delete calls
     await Promise.all(apis.slice(0, 50).map(api => deleteAppSyncApi(account, accountIndex, api)));
+  } else {
+    await Promise.all(apis.map(api => deleteAppSyncApi(account, accountIndex, api)));
   }
 };
 
@@ -694,6 +718,8 @@ const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, st
   if(stacks.length > 100){
     // throttle delete calls, 100 seems to work fine for stacks
     await Promise.all(stacks.slice(0, 100).map(stack => deleteCfnStack(account, accountIndex, stack)));
+  } else {
+    await Promise.all(stacks.map(stack => deleteCfnStack(account, accountIndex, stack)));
   }
 };
 
@@ -705,9 +731,9 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
     await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
     // we'll only wait up to a minute before moving on
-    // await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { maxAttempts: 2 } }).promise();
+    // await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { maxAttempts: 3 } }).promise();
   } catch (e) {
-    // console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
+    console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -913,7 +939,9 @@ const cleanup = async (): Promise<void> => {
   const accounts = await getAccountsToCleanup();
   for(let i = 0 ;i < 5; i ++){
     console.log("CLEANUP ROUND: ", i + 1);
-    await Promise.all(accounts.map((account, i) => cleanupAccount(account, i, filterPredicate)));
+    await Promise.all(accounts.map((account, i) => {
+      return cleanupAccount(account, i, filterPredicate);
+    }));
     await sleep(60 * 1000);// run again after 60 seconds
   }
   console.log('Done cleaning all accounts!');
