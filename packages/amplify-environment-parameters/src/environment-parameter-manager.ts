@@ -1,6 +1,4 @@
-import {
-  AmplifyError, AmplifyFault, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -12,7 +10,7 @@ const envParamManagerMap: Record<string, IEnvironmentParameterManager> = {};
  */
 export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
-): Promise<{instance: IEnvironmentParameterManager}> => {
+): Promise<{ instance: IEnvironmentParameterManager }> => {
   if (!envParamManagerMap[envName]) {
     const envManager = new EnvironmentParameterManager(envName, getParametersControllerInstance());
     await envManager.init();

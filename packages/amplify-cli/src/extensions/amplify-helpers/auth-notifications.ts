@@ -53,7 +53,7 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
       await context.usageData.emitSuccess();
       exitOnNextTick(0);
     }
-    modifyGraphQLSchema(apiResourceDir);
+    await modifyGraphQLSchema(apiResourceDir);
     schemaModified = true;
   }
 
@@ -117,7 +117,7 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
       exitOnNextTick(0);
     }
 
-    modifyGraphQLSchema(apiResourceDir);
+    await modifyGraphQLSchema(apiResourceDir);
     schemaModified = true;
   }
 
@@ -174,7 +174,7 @@ const modifyGraphQLSchema = async (apiResourceDir: string): Promise<void> => {
   const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
   if (schemaFileExists) {
-    fs.appendFile(schemaFilePath, ' ');
+    await fs.appendFile(schemaFilePath, ' ');
   } else if (schemaDirectoryExists) {
     await modifyGraphQLSchemaDirectory(schemaDirectoryPath);
   }
@@ -199,7 +199,7 @@ const modifyGraphQLSchemaDirectory = async (schemaDirectoryPath: string): Promis
     }
 
     if (stats.isFile()) {
-      fs.appendFile(fullPath, ' ');
+      await fs.appendFile(fullPath, ' ');
       return true;
     }
   }

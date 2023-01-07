@@ -114,7 +114,7 @@ export class FeatureFlags {
     });
 
     if (!config?.features) {
-      FeatureFlags.ensureDefaultFeatureFlags(false);
+      await FeatureFlags.ensureDefaultFeatureFlags(false);
     } else if (config.features?.[featureFlagSection]?.[featureFlagName] === undefined) {
       const features = FeatureFlags.getExistingProjectDefaults();
       _.set(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
