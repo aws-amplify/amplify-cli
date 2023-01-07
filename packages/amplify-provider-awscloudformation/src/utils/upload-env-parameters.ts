@@ -7,13 +7,15 @@ import { resolveAppId } from './resolve-appId';
 /**
  * Higher order function for uploading CloudFormation parameters to the service
  */
-export const getEnvParametersUploadHandler = async (context: $TSContext): Promise<((key: string, value: string) => Promise<void>)> => {
+export const getEnvParametersUploadHandler = async (
+  context: $TSContext,
+): Promise<((key: string, value: string) => Promise<void>) | undefined> => {
   let appId: string;
   try {
     appId = resolveAppId(context)
   } catch {
     printer.warn('Failed to resolve AppId, skipping parameter upload');
-    return async (key, value) => { /* no-op */ };
+    return undefined;
   }
   const envName = stateManager.getCurrentEnvName();
   const { client } = await SSM.getInstance(context);
