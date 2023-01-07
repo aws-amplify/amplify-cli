@@ -27,6 +27,16 @@ export const integer =
   (input: string) =>
     /^[0-9]+$/.test(input) ? true : message;
 
+export const greaterThan =
+  (min: number, message?: string): Validator =>
+  (input: string) =>
+    integer(input) && parseInt(input, 10) > min ? true : message || `Input must be greater than ${min}`;
+
+export const lessThan =
+  (min: number, message?: string): Validator =>
+  (input: string) =>
+    integer(input) && parseInt(input, 10) < min ? true : message || `Input must be less than ${min}`;
+
 export const maxLength =
   (maxLen: number, message?: string): Validator =>
   (input: string) =>

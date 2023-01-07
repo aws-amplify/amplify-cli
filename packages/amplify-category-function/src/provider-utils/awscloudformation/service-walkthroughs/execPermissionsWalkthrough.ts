@@ -1,8 +1,7 @@
 import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
-import { printer } from 'amplify-prompts';
+import { byValues, printer, prompter } from 'amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';
-import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
 import {
@@ -50,9 +49,14 @@ export const askExecRolePermissionsQuestions = async (
     categories.push('storage');
   }
 
-  const categoryPermissionQuestion = selectCategories(categories, currentPermissionMap);
-  const categoryPermissionAnswer = await inquirer.prompt(categoryPermissionQuestion);
-  const selectedCategories = categoryPermissionAnswer.categories as string[];
+  const selectedCategories = await prompter.pick<'many', string>(
+    'Select the categories you want this function to have access to.',
+    categories,
+    {
+      initial: byValues(fetchPermissionCategories(currentPermissionMap)),
+      returnSize: 'many',
+    },
+  );
 
   const crudOptions = _.values(CRUDOperation);
   const graphqlOperations = _.values(GraphQLOperation);
@@ -106,9 +110,17 @@ export const askExecRolePermissionsQuestions = async (
       let selectedResources = [];
       if (resourcesList.length > 1) {
         // There's a few resources in this category. Let's pick some.
-        const resourceQuestion = selectResourcesInCategory(resourcesList, currentPermissionMap, selectedCategory);
-        const resourceAnswer = await inquirer.prompt([resourceQuestion]);
-        selectedResources = _.concat(resourceAnswer.resources);
+        const resourceAnswer = await prompter.pick<'many', string>(
+          `${_.capitalize(selectedCategory)} has ${
+            resourcesList.length
+          } resources in this project. Select the one you would like your Lambda to access`,
+          resourcesList,
+          {
+            initial: byValues(fetchPermissionResourcesForCategory(currentPermissionMap, selectedCategory)),
+            returnSize: 'many',
+          },
+        );
+        selectedResources = _.concat(resourceAnswer);
       } else {
         // There's only one resource in the category. Let's use that.
         selectedResources = _.concat(resourcesList);
@@ -131,15 +143,21 @@ export const askExecRolePermissionsQuestions = async (
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
-          printer.warn(
-            `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
-          );
+          printer.warn(`Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
         } else {
           const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName);
-          const permissionQuestion = selectPermissions(options, currentPermissions, resourceName);
-          const permissionAnswer = await inquirer.prompt([permissionQuestion]);
-          const resourcePolicy: any = permissionAnswer.options;
+          const permissionAnswer = await prompter.pick<'many', string>(
+            `Select the operations you want to permit on ${resourceName}`,
+            options,
+            {
+              initial: byValues(currentPermissions),
+              returnSize: 'many',
+              pickAtLeast: 1,
+            },
+          );
+
+          const resourcePolicy: any = permissionAnswer;
           const { permissionPolicies, cfnResources } = await getResourcesForCfn(
             context,
             resourceName,
@@ -159,10 +177,14 @@ export const askExecRolePermissionsQuestions = async (
       if (e.name === 'PluginMethodNotFoundError') {
         printer.warn(`${selectedCategory} category does not support resource policies yet.`);
       } else {
-        throw new AmplifyError('PluginPolicyAddError', {
-          message: `Policies cannot be added for ${selectedCategory}`,
-          details: e.message,
-        }, e);
+        throw new AmplifyError(
+          'PluginPolicyAddError',
+          {
+            message: `Policies cannot be added for ${selectedCategory}`,
+            details: e.message,
+          },
+          e,
+        );
       }
     }
   }
@@ -183,33 +205,6 @@ export const askExecRolePermissionsQuestions = async (
 export type ExecRolePermissionsResponse = Required<
   Pick<FunctionParameters, 'categoryPolicies' | 'environmentMap' | 'topLevelComment' | 'dependsOn' | 'mutableParametersState'>
 >;
-
-// Inquirer Questions
-
-const selectResourcesInCategory = (choices: DistinctChoice<any>[], currentPermissionMap: any, category: any): CheckboxQuestion => ({
-  type: 'checkbox',
-  name: 'resources',
-  message: `${_.capitalize(category)} has ${choices.length} resources in this project. Select the one you would like your Lambda to access`,
-  choices,
-  default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
-});
-
-const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: object): CheckboxQuestion => ({
-  type: 'checkbox',
-  name: 'categories',
-  message: 'Select the categories you want this function to have access to.',
-  choices,
-  default: fetchPermissionCategories(currentPermissionMap),
-});
-
-const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: any, resourceName: any) => ({
-  type: 'checkbox',
-  name: 'options',
-  message: `Select the operations you want to permit on ${resourceName}`,
-  choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
-  default: currentPermissions,
-});
 
 export async function getResourcesForCfn(context, resourceName, resourcePolicy, appsyncResourceName, selectedCategory) {
   if (resourceName.endsWith(appsyncTableSuffix)) {
@@ -313,7 +308,9 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
     });
   }
 
-  const envVarStringList = Array.from(envVars).sort().join('\n\t');
+  const envVarStringList = Array.from(envVars)
+    .sort()
+    .join('\n\t');
 
   if (envVarStringList) {
     printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);

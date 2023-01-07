@@ -1,14 +1,14 @@
 import { $TSContext, $TSMeta } from 'amplify-cli-core';
 import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
-import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
 import _ from 'lodash';
 import { categoryName } from '../../../constants';
 import { ServiceName } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerRuntimes } from './layerConfiguration';
-import { layerVersionQuestion, mapVersionNumberToChoice } from './layerHelpers';
+import { mapVersionNumberToChoice } from './layerHelpers';
 import { getLegacyLayerState, LegacyState } from './layerMigrationUtils';
+import { byValue, prompter } from 'amplify-prompts';
 
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
@@ -57,24 +57,28 @@ export const askLayerSelection = async (
   const currentResourceNames = filterProjectLayers(previousSelections).map(sel => (sel as ProjectLayer).resourceName);
   const choices = layerOptions.map(op => ({
     name: op,
-    checked: currentResourceNames.includes(op),
-    disabled: getLegacyLayerState(op) !== LegacyState.NOT_LEGACY ? disabledMessage : false,
+    value: op,
+    hint: getLegacyLayerState(op) !== LegacyState.NOT_LEGACY ? disabledMessage : '',
+    disabled: getLegacyLayerState(op) !== LegacyState.NOT_LEGACY ? true : false,
   }));
   choices.unshift({
     name: provideExistingARNsPrompt,
-    checked: previousSelections.map(sel => sel.type).includes('ExternalLayer'),
+    value: provideExistingARNsPrompt,
     disabled: false,
+    hint: '',
   });
 
-  const layerSelectionQuestion: CheckboxQuestion = {
-    type: 'checkbox',
-    name: 'layerSelections',
-    message: layerSelectionPrompt,
-    choices: choices,
-    validate: (input: string[]) => input.length <= 5 || 'Select at most 5 entries from the list',
-  };
-  let layerSelections: string[] = (await inquirer.prompt(layerSelectionQuestion)).layerSelections;
-  const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
+  const defaultChoices = layerOptions.filter(op => currentResourceNames.includes(op));
+  if (previousSelections.map(sel => sel.type).includes('ExternalLayer')) {
+    defaultChoices.push(provideExistingARNsPrompt);
+  }
+
+  let layerSelections = await prompter.pick<'many', string>(layerSelectionPrompt, choices, {
+    pickAtMost: 5,
+    returnSize: 'many',
+  });
+
+  const askArnQuestion = layerSelections.map(it => it).includes(provideExistingARNsPrompt);
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
   for (const layerName of layerSelections) {
@@ -108,9 +112,9 @@ export const askLayerSelection = async (
           : defaultLayerVersionPrompt;
       }
 
-      const versionSelection = (
-        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, versionSelectionPrompt(layerName), defaultLayerSelection))
-      ).versionSelection;
+      const versionSelection = await prompter.pick(versionSelectionPrompt(layerName), layerVersionChoices, {
+        initial: defaultLayerSelection ? byValue(defaultLayerSelection) : 0,
+      });
 
       const isLatestVersionSelected = versionSelection === defaultLayerVersionPrompt;
       const selectedVersion =
@@ -145,18 +149,16 @@ export const askLayerSelection = async (
  * @param previousSelections Array of previous layer selections (used to populate the default string)
  */
 export const askCustomArnQuestion = async (numLayersSelected: number, previousSelections: LambdaLayer[] = []) => {
-  const arnPrompt: InputQuestion = {
-    type: 'input',
-    name: 'arns',
-    message: ARNEntryPrompt(5 - numLayersSelected),
-    validate: lambdaLayerARNValidator,
-    filter: stringSplitAndTrim,
-    default:
-      filterExternalLayers(previousSelections)
-        .map(sel => sel.arn)
-        .join(', ') || undefined,
-  };
-  return ((await inquirer.prompt(arnPrompt)).arns as string[]).map(arn => ({ type: 'ExternalLayer', arn } as LambdaLayer));
+  const arnValidation = stringSplitAndTrim(
+    await prompter.input(ARNEntryPrompt(5 - numLayersSelected), {
+      validate: lambdaLayerARNValidator,
+      initial:
+        filterExternalLayers(previousSelections)
+          .map(sel => sel.arn)
+          .join(', ') || undefined,
+    }),
+  );
+  return arnValidation.map(arn => ({ type: 'ExternalLayer', arn } as LambdaLayer));
 };
 
 /**
@@ -220,7 +222,8 @@ const stringSplitAndTrim = (input: string): string[] => {
 };
 
 // validates that each string in input is a valid lambda layer ARN
-const lambdaLayerARNValidator = (input: string[]): true | string => {
-  const invalidARNs = input.filter(arn => !arn.match(layerARNRegex));
+const lambdaLayerARNValidator = (input: string): true | string => {
+  const arns = stringSplitAndTrim(input);
+  const invalidARNs = arns.filter(arn => !arn.match(layerARNRegex));
   return invalidARNs.length === 0 ? true : `${invalidARNs.join(', ')} are not valid Lambda layer ARNs`;
 };

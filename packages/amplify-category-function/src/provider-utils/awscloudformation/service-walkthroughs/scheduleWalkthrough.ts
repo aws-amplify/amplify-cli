@@ -1,14 +1,13 @@
-import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs-extra';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
-inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
 import { constructCloudWatchEventComponent } from '../utils/cloudformationHelpers';
 import { minuteHelper, hourHelper, timeHelper, weekHelper, monthHelper, yearHelper } from '../utils/cronHelper';
 import { CronExpressionsMode } from '../utils/constants';
 import { CronExpression } from '../utils/cronExpression';
 import { categoryName } from '../../../constants';
+import { prompter } from 'amplify-prompts';
 
 export async function scheduleWalkthrough(
   context: any,
@@ -38,24 +37,20 @@ export async function scheduleWalkthrough(
   } else {
     if (await context.amplify.confirmPrompt(`Do you want to update or remove the function's schedule?`, defaultConfirm)) {
       const cfnContent = context.amplify.readJsonFile(cfnFilePath);
-      const scheduleEventOperationQuestion = {
-        type: 'list',
-        name: 'ScheduleEventOperation',
-        message: 'Select from the following options:',
-        choices: [
-          {
-            name: 'Update the schedule',
-            value: 'update',
-          },
-          {
-            name: 'Remove the schedule',
-            value: 'remove',
-          },
-        ],
-      };
+      const choices = [
+        {
+          name: 'Update the schedule',
+          value: 'update',
+        },
+        {
+          name: 'Remove the schedule',
+          value: 'remove',
+        },
+      ];
 
-      const scheduleEventOperationAnswer = await inquirer.prompt([scheduleEventOperationQuestion]);
-      switch (scheduleEventOperationAnswer.ScheduleEventOperation) {
+      const scheduleEventOperationAnswer = await prompter.pick('Select from the following options:', choices);
+
+      switch (scheduleEventOperationAnswer) {
         case 'update': {
           // add service walkthrough to get the cron expression
           const cloudWatchRule = await cronServiceWalkthrough(context);
@@ -81,14 +76,9 @@ export async function scheduleWalkthrough(
 export async function cronServiceWalkthrough(context: any) {
   let cloudwatchRule;
   // resource questions for setting cron
-  const intervalQuestion = {
-    type: 'list',
-    name: 'interval',
-    message: 'At which interval should the function be invoked:',
-    choices: ['Minutes', 'Hourly', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom AWS cron expression'],
-  };
-  const intervalAnswer = await inquirer.prompt([intervalQuestion]);
-  switch (intervalAnswer.interval) {
+  const choices = ['Minutes', 'Hourly', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom AWS cron expression'];
+  const interval = await prompter.pick('At which interval should the function be invoked:', choices);
+  switch (interval) {
     case CronExpressionsMode.Minutes: {
       cloudwatchRule = minuteHelper(context);
       break;
@@ -130,17 +120,11 @@ export async function cronServiceWalkthrough(context: any) {
       break;
     }
     case CronExpressionsMode.Custom: {
-      const customRuleQuestion = {
-        type: 'input',
-        name: 'customRule',
-        message: 'Custom Schedule expression(Learn more: https://amzn.to/3akXtJF)',
-        validate: ValidCronExpression({
-          onErrorMsg: 'Enter a valid Schedule Expression (Learn more: https://amzn.to/3akXtJF)',
-        }),
-      };
-      const customRuleAnswer = await inquirer.prompt([customRuleQuestion]);
-      cloudwatchRule = 'cron(' + customRuleAnswer.customRule + ')';
-
+      const customRuleAnswer = await prompter.input('Custom Schedule expression(Learn more: https://amzn.to/3akXtJF)', {
+        validate: input =>
+          isValidCronExpression(input) ? true : 'Enter a valid Schedule Expression (Learn more: https://amzn.to/3akXtJF)',
+      });
+      cloudwatchRule = 'cron(' + customRuleAnswer + ')';
       break;
     }
   }

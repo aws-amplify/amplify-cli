@@ -1,7 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
-import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
 import { categoryName } from '../../../../constants';
 import {
   askCustomArnQuestion,
@@ -13,8 +12,9 @@ import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/
 import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
+import { prompter } from 'amplify-prompts';
 
-jest.mock('inquirer');
+jest.mock('amplify-prompts');
 jest.mock('enquirer', () => ({ prompt: jest.fn() }));
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
@@ -23,9 +23,9 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration
 }));
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerMigrationUtils');
 
-const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof getLayerRuntimes>;
-const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
-const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
+const getLayerRuntimeMock = getLayerRuntimes as jest.MockedFunction<typeof getLayerRuntimes>;
+const prompterMock = prompter as jest.Mocked<typeof prompter>;
+const enquirerMock = enquirer as jest.Mocked<typeof enquirer>;
 
 const context_stub = ({
   amplify: {
@@ -59,7 +59,7 @@ const previousSelectionsStub: LambdaLayer[] = [
   },
 ];
 
-getLayerRuntimes_mock.mockImplementation(() => {
+getLayerRuntimeMock.mockImplementation(() => {
   return [
     {
       name: 'NodeJs',
@@ -115,30 +115,22 @@ describe('layer selection question', () => {
   });
 
   it('sets default layer choices based on previous selections', async () => {
-    (inquirer_mock.prompt as any).mockImplementation(() => ({
-      layerSelections: [],
-    }));
+    (prompterMock.pick as any).mockImplementation(() => []);
 
     await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
-    expect((inquirer_mock.prompt.mock.calls[0][0] as CheckboxQuestion).choices[1].checked).toBe(true);
+    expect((prompterMock.pick.mock.calls[0][0][1] as any).checked).toBe(true);
   });
 
   it('sets askArnQuestion to true when the customer selects the option', async () => {
-    (inquirer_mock.prompt as any).mockImplementation(() => ({
-      layerSelections: [provideExistingARNsPrompt],
-    }));
+    (prompterMock.pick as any).mockImplementation(() => []);
 
     const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     expect(result.askArnQuestion).toBe(true);
   });
 
   it('returns the selected layers', async () => {
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      layerSelections: [provideExistingARNsPrompt, 'aLayer'],
-    }));
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      versionSelection: `${2}: layer description`,
-    }));
+    (prompterMock.pick as any).mockImplementationOnce(() => [provideExistingARNsPrompt, 'aLayer']);
+    (prompterMock.pick as any).mockImplementationOnce(() => `${2}: layer description`);
 
     const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     const expectedLambdaLayers: LambdaLayer[] = [
@@ -175,17 +167,13 @@ describe('custom arn question', () => {
         arn: 'someArn',
       },
     ];
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      arns: [],
-    }));
+    (prompterMock.pick as any).mockImplementationOnce(() => []); // arns
     await askCustomArnQuestion(1, previousSelectionsStub);
-    expect((inquirer_mock.prompt.mock.calls[0][0] as InputQuestion).default).toBe('someArn');
+    expect(prompterMock.input.mock.calls[0][0]).toBe('someArn');
   });
 
   it('returns ARNs as LambdaLayer array', async () => {
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      arns: ['arn1', 'arn2'],
-    }));
+    (prompterMock.pick as any).mockImplementationOnce(() => ['arn1', 'arn2']);
     const result = await askCustomArnQuestion(1, previousSelectionsStub);
     const expectedResult: LambdaLayer[] = [
       {
@@ -203,7 +191,7 @@ describe('custom arn question', () => {
 
 describe('layer order question', () => {
   beforeAll(() => {
-    enquirer_mock.prompt.mockImplementation(async () => ({
+    enquirerMock.prompt.mockImplementation(async () => ({
       sortedNames: ['myLayer', 'anotherLayer', 'someArn'],
     }));
   });
@@ -249,7 +237,7 @@ describe('layer order question', () => {
     ];
 
     await askLayerOrderQuestion(currentSelectionsStub, previousSelectionsStub);
-    const presentedOrder = (enquirer_mock.prompt.mock.calls[0][0] as any).choices as string[];
+    const presentedOrder = (enquirerMock.prompt.mock.calls[0][0] as any).choices as string[];
     expect(presentedOrder).toStrictEqual(['myLayer', 'someArn', 'anotherLayer']);
   });
 
@@ -307,7 +295,7 @@ describe('layer order question', () => {
       },
     ];
     const result = await askLayerOrderQuestion(currentSelectionsStub);
-    expect(enquirer_mock.prompt.mock.calls.length).toBe(0);
+    expect(enquirerMock.prompt.mock.calls.length).toBe(0);
     expect(result).toStrictEqual(currentSelectionsStub);
   });
 });

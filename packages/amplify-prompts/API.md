@@ -86,6 +86,9 @@ export type Formatter = {
 export const formatter: Formatter;
 
 // @public (undocumented)
+export const greaterThan: (min: number, message?: string | undefined) => Validator;
+
+// @public (undocumented)
 export const integer: (message?: string) => Validator;
 
 // @public (undocumented)
@@ -110,6 +113,9 @@ export type ItemPayload = {
     ResourceStatus: string;
     Timestamp: string;
 };
+
+// @public (undocumented)
+export const lessThan: (min: number, message?: string | undefined) => Validator;
 
 // @public (undocumented)
 export const matchRegex: (validatorRegex: RegExp, message?: string | undefined) => Validator;

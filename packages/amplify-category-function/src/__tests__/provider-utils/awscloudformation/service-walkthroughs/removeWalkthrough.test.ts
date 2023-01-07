@@ -72,8 +72,10 @@ describe('remove walkthough test', () => {
       updateLayerArtifacts: updateLayerArtifacts,
     }));
 
-    jest.mock('inquirer', () => ({
-      prompt: selectPromptMock,
+    jest.mock('amplify-prompts', () => ({
+      prompter: {
+        pick: selectPromptMock,
+      },
     }));
   });
 
@@ -85,7 +87,7 @@ describe('remove walkthough test', () => {
   });
 
   it('tests with legacy and new', async () => {
-    const selectedlayerVersions = [
+    const selectedLayerVersions = [
       {
         Version: 2,
         legacyLayer: true,
@@ -97,13 +99,13 @@ describe('remove walkthough test', () => {
     ];
 
     loadLayerDataFromCloudMock.mockReturnValue([
-      ...selectedlayerVersions,
+      ...selectedLayerVersions,
       {
         Version: 1,
         legacyLayer: true,
       },
     ]);
-    selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
+    selectPromptMock.mockReturnValue({ versions: selectedLayerVersions });
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);

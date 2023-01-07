@@ -4,9 +4,9 @@
 
 import { ResourceName } from 'amplify-cli-core';
 import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
-import inquirer from 'inquirer';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
 import { getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
+import { byValue, prompter } from 'amplify-prompts';
 
 const secretValuesWalkthroughDefaultOptions = {
   preConfirmed: false, // true if the walkthrough has previously confirmed that secrets should be configured. false if this function should gate the flow behind a confirmation
@@ -71,7 +71,11 @@ export const cloneEnvWalkthrough = async (
   }
 
   const funcList = Object.keys(deltas);
-  for (let funcToUpdate = await selectFunctionToUpdate(funcList); funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
+  for (
+    let funcToUpdate = await selectFunctionToUpdate(funcList);
+    funcToUpdate !== `I'm done`;
+    funcToUpdate = await selectFunctionToUpdate(funcList)
+  ) {
     await secretValuesWalkthrough(deltas[funcToUpdate], Object.keys(getStoredEnvironmentVariables(funcToUpdate)), { preConfirmed: true });
   }
 
@@ -104,49 +108,26 @@ const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasMod
 };
 
 const carryOverPrompt = async () =>
-  (
-    await inquirer.prompt<{ carryOver: 'carry' | 'update' }>({
-      type: 'list',
-      name: 'carryOver',
-      message: `You have configured secrets for functions. How do you want to proceed?`,
-      choices: [
-        {
-          value: 'carry',
-          name: 'Carry over existing secret values to the new environment',
-        },
-        {
-          value: 'update',
-          name: 'Update secret values now (you can always update secret values later using `amplify update function`)',
-        },
-      ],
-    })
-  ).carryOver === 'carry';
+  (await prompter.pick<'one', string>(`You have configured secrets for functions. How do you want to proceed?`, [
+    {
+      value: 'carry',
+      name: 'Carry over existing secret values to the new environment',
+    },
+    {
+      value: 'update',
+      name: 'Update secret values now (you can always update secret values later using `amplify update function`)',
+    },
+  ])) === 'carry';
 
 const selectFunctionToUpdate = async (funcNames: string[]) =>
-  (
-    await inquirer.prompt({
-      type: 'list',
-      name: 'funcToUpdate',
-      message: 'Select a function to update secrets for:',
-      choices: funcNames
-        .map(name => ({ name, value: name } as { name: string; value: string | false }))
-        .concat({ name: "I'm done", value: false }),
-    })
-  ).funcToUpdate as string | false;
+  await prompter.pick<'one', string>('Select a function to update secrets for:', funcNames.concat("I'm done"));
 
 const addSecretsConfirm = async (preConfirmed = false) => {
   if (preConfirmed) {
     return true;
   }
 
-  return (
-    await inquirer.prompt<{ confirm: boolean }>({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Do you want to configure secret values this function can access?',
-      default: false,
-    })
-  ).confirm;
+  return await prompter.yesOrNo('Do you want to configure secret values this function can access?', false);
 };
 
 const validNameRegExp = /^[a-zA-Z0-9_]+$/;
@@ -165,14 +146,9 @@ const secretNameValidator = (invalidNames: string[]) => (input?: string) => {
 };
 
 const enterSecretName = async (invalidNames: string[]) =>
-  (
-    await inquirer.prompt<{ secretName: string }>({
-      type: 'input',
-      name: 'secretName',
-      message: 'Enter a secret name (this is the key used to look up the secret value):',
-      validate: secretNameValidator(invalidNames),
-    })
-  ).secretName;
+  await prompter.input('Enter a secret name (this is the key used to look up the secret value):', {
+    validate: secretNameValidator(invalidNames),
+  });
 
 const secretValueDefaultMessage = (secretName: string) => `Enter the value for ${secretName}:`;
 
@@ -184,68 +160,55 @@ export const secretValueValidator = (input?: string) => {
 };
 
 const enterSecretValue = async (message: string) =>
-  (
-    await inquirer.prompt<{ secretValue: string }>({
-      type: 'password',
-      name: 'secretValue',
-      message,
-      validate: secretValueValidator,
-    })
-  ).secretValue;
+  await prompter.input(message, {
+    validate: secretValueValidator,
+    hidden: true,
+  });
 
 const singleSelectSecret = async (existingSecretNames: string[], message: string) =>
-  (
-    await inquirer.prompt<{ secretName: string }>({
-      type: 'list',
-      name: 'secretName',
-      message,
-      choices: existingSecretNames,
-    })
-  ).secretName;
+  await prompter.pick<'one', string>(message, existingSecretNames);
 
 const multiSelectSecret = async (existingSecretNames: string[], message: string) =>
-  (
-    await inquirer.prompt<{ secretNames: string[] }>({
-      type: 'checkbox',
-      name: 'secretNames',
-      message,
-      choices: existingSecretNames,
-    })
-  ).secretNames;
+  await prompter.pick<'many', string>(message, existingSecretNames, {
+    pickAtLeast: 1,
+    returnSize: 'many',
+  });
 
 const selectOperation = async (hasExistingSecrets: boolean, firstLoop: boolean): Promise<SecretOperation> => {
   if (!hasExistingSecrets && firstLoop) {
     return 'add';
   }
 
-  return (
-    await inquirer.prompt<{ operation: SecretOperation }>({
-      type: 'list',
-      name: 'operation',
-      message: 'What do you want to do?',
-      choices: [
-        {
-          name: 'Add a secret',
-          value: 'add',
-        },
-        {
-          name: 'Update a secret',
-          value: 'update',
-          disabled: !hasExistingSecrets,
-        },
-        {
-          name: 'Remove secrets',
-          value: 'remove',
-          disabled: !hasExistingSecrets,
-        },
-        {
-          name: "I'm done",
-          value: 'done',
-        },
-      ],
-      default: firstLoop ? 'add' : 'done',
-    })
-  ).operation;
+  const choices = [
+    {
+      name: 'Add a secret',
+      value: 'add',
+    },
+    ...(hasExistingSecrets
+      ? [
+          {
+            name: 'Update a secret',
+            value: 'update',
+          },
+        ]
+      : []),
+    ...(hasExistingSecrets
+      ? [
+          {
+            name: 'Remove secrets',
+            value: 'remove',
+          },
+        ]
+      : []),
+    {
+      name: "I'm done",
+      value: 'done',
+    },
+  ];
+
+  return (await prompter.pick('What do you want to do?', choices, {
+    initial: firstLoop ? byValue('add') : byValue('done'),
+  })) as SecretOperation;
 };
 
 type SecretOperation = 'add' | 'update' | 'remove' | 'done';

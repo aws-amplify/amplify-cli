@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import {
   FunctionParameters,
   FunctionTemplateCondition,
@@ -14,6 +13,7 @@ import _ from 'lodash';
 import { LayerParameters } from './layerParams';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { categoryName } from '../../../constants';
+import { byValue, prompter } from 'amplify-prompts';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -171,16 +171,9 @@ async function getSelectionsFromContributors<T>(
     selection = selectionOptions.defaultSelection;
   } else {
     // ask which template to use
-    const answer = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'selection',
-        message: selectionOptions.selectionPrompt,
-        choices: selections,
-        default: defaultSelection(selectionOptions, selections),
-      },
-    ]);
-    selection = answer.selection;
+    selection = await prompter.pick<'one', string>(selectionOptions.selectionPrompt, selections, {
+      initial: byValue(defaultSelection(selectionOptions, selections)),
+    });
   }
 
   if (!Array.isArray(selection)) {
@@ -197,8 +190,10 @@ async function getSelectionsFromContributors<T>(
 }
 
 function isDefaultDefined(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>) {
-  return selectionOptions.defaultSelection &&
-    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime');
+  return (
+    selectionOptions.defaultSelection &&
+    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime')
+  );
 }
 
 export async function loadPluginFromFactory(pluginPath: string, expectedFactoryFunction: string, context: $TSContext): Promise<$TSAny> {

@@ -3,15 +3,14 @@ import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import globby from 'globby';
-import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { v4 as uuid } from 'uuid';
 import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from './constants';
 import { getLayerConfiguration, LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { LayerParameters, LayerPermission, LayerRuntime, LayerVersionMetadata, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
+import { prompter } from 'amplify-prompts';
 
 // These glob patterns cover the resource files Amplify stores in the layer resource's directory,
 // layer-parameters.json must NOT be there.
@@ -34,69 +33,9 @@ export function mapVersionNumberToChoice(layerVersion: LayerVersionMetadata): st
   return `${layerVersion.Version}: ${layerVersion.Description || '(no description)'}`;
 }
 
-export function layerVersionQuestion(versions: string[], message: string, defaultOption?: string): ListQuestion {
-  return {
-    type: 'list',
-    name: 'versionSelection',
-    message,
-    choices: versions,
-    default: defaultOption || 0,
-  };
-}
-
-export function layerNameQuestion(projectName: string): InputQuestion {
-  return {
-    type: 'input',
-    name: 'layerName',
-    message: 'Provide a name for your Lambda layer:',
-    validate: (input: string) => {
-      input = input.trim();
-      const meta = stateManager.getMeta();
-      if (!/^[a-zA-Z0-9]{1,87}$/.test(input)) {
-        return 'Lambda layer names must be 1-87 alphanumeric characters long.';
-      } else if (meta?.function?.input || meta?.function?.[`${projectName}${input}`]) {
-        return `A Lambda layer with the name ${input} already exists in this project.`;
-      }
-      return true;
-    },
-    default: `layer${uuid().split('-')[0]}`,
-  };
-}
-
-export function layerPermissionsQuestion(params?: PermissionEnum[]): CheckboxQuestion {
-  return {
-    type: 'checkbox',
-    name: 'layerPermissions',
-    message:
-      'The current AWS account will always have access to this layer.\nOptionally, configure who else can access this layer. (Hit <Enter> to skip)',
-    choices: [
-      {
-        name: 'Specific AWS accounts',
-        value: PermissionEnum.AwsAccounts,
-        checked: _.includes(params, PermissionEnum.AwsAccounts),
-      },
-      {
-        name: 'Specific AWS organization',
-        value: PermissionEnum.AwsOrg,
-        checked: _.includes(params, PermissionEnum.AwsOrg),
-      },
-      {
-        name: 'Public (Anyone on AWS can use this layer)',
-        short: 'Public',
-        value: PermissionEnum.Public,
-        checked: _.includes(params, PermissionEnum.Public),
-      },
-    ],
-    default: [PermissionEnum.Private],
-  };
-}
-
 export async function layerAccountAccessPrompt(defaultAccountIds?: string[]): Promise<string[]> {
   const hasDefaults = defaultAccountIds && defaultAccountIds.length > 0;
-  const answer = await prompt({
-    type: 'input',
-    name: 'authorizedAccountIds',
-    message: 'Provide a list of comma-separated AWS account IDs:',
+  const authorizedAccountIds = await prompter.input('Provide a list of comma-separated AWS account IDs:', {
     validate: (input: string) => {
       const accounts = input.split(',');
       for (const accountId of accounts) {
@@ -106,17 +45,14 @@ export async function layerAccountAccessPrompt(defaultAccountIds?: string[]): Pr
       }
       return true;
     },
-    default: hasDefaults ? defaultAccountIds.join(',') : undefined,
+    initial: hasDefaults ? defaultAccountIds.join(',') : undefined,
   });
-  return _.uniq(answer.authorizedAccountIds.split(',').map((accountId: string) => accountId.trim()));
+  return _.uniq(authorizedAccountIds.split(',').map((accountId: string) => accountId.trim()));
 }
 
 export async function layerOrgAccessPrompt(defaultOrgs?: string[]): Promise<string[]> {
   const hasDefaults = defaultOrgs && defaultOrgs.length > 0;
-  const answer = await prompt({
-    type: 'input',
-    name: 'authorizedOrgIds',
-    message: 'Provide a list of comma-separated AWS organization IDs:',
+  const authorizedOrgIds = await prompter.input('Provide a list of comma-separated AWS organization IDs:', {
     validate: (input: string) => {
       const orgIds = input.split(',');
       for (const orgId of orgIds) {
@@ -126,30 +62,9 @@ export async function layerOrgAccessPrompt(defaultOrgs?: string[]): Promise<stri
       }
       return true;
     },
-    default: hasDefaults ? defaultOrgs.join(',') : undefined,
+    initial: hasDefaults ? defaultOrgs.join(',') : undefined,
   });
-  return _.uniq(answer.authorizedOrgIds.split(',').map((orgId: string) => orgId.trim()));
-}
-
-export function previousPermissionsQuestion(): ListQuestion {
-  return {
-    type: 'list',
-    name: 'usePreviousPermissions',
-    message: 'What permissions do you want to grant to this new layer version?',
-    choices: [
-      {
-        name: 'The same permission as the latest layer version',
-        short: 'Previous version permissions',
-        value: true,
-      },
-      {
-        name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
-        short: 'Private',
-        value: false,
-      },
-    ],
-    default: 0,
-  };
+  return _.uniq(authorizedOrgIds.split(',').map((orgId: string) => orgId.trim()));
 }
 
 export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
@@ -431,7 +346,10 @@ const legacyContentHashing = async (layerPath: string): Promise<string> => {
 
   const joinedHashes = (await Promise.all([safeHash(nodePath, nodeHashOptions), safeHash(pyPath), safeHash(optPath)])).join();
 
-  return crypto.createHash('sha256').update(joinedHashes).digest('base64');
+  return crypto
+    .createHash('sha256')
+    .update(joinedHashes)
+    .digest('base64');
 };
 
 const legacyResourceHashing = async (layerPath: string): Promise<string> => {

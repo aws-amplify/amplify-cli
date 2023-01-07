@@ -1,24 +1,37 @@
-import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
-import inquirer, { InputQuestion } from 'inquirer';
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError, $TSAny } from 'amplify-cli-core';
 import _ from 'lodash';
 import { ServiceName } from '../utils/constants';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import { LayerCloudState } from '../utils/layerCloudState';
 import { saveLayerVersionPermissionsToBeUpdatedInCfn } from '../utils/layerConfiguration';
+import { v4 as uuid } from 'uuid';
 import {
   layerAccountAccessPrompt,
   LayerInputParams,
   layerInputParamsToLayerPermissionArray,
-  layerNameQuestion,
   layerOrgAccessPrompt,
-  layerPermissionsQuestion,
-  layerVersionQuestion,
   loadPreviousLayerHash,
   loadStoredLayerParameters,
-  previousPermissionsQuestion,
 } from '../utils/layerHelpers';
 import { migrateLegacyLayer } from '../utils/layerMigrationUtils';
 import { AccountsLayer, defaultLayerPermission, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from '../utils/layerParams';
+import { byValue, byValues, prompter } from 'amplify-prompts';
+import { stateManager } from 'amplify-cli-core';
+
+const layerPermissionsChoices: { name: string; value: $TSAny }[] = [
+  {
+    name: 'Specific AWS accounts',
+    value: PermissionEnum.AwsAccounts,
+  },
+  {
+    name: 'Specific AWS organization',
+    value: PermissionEnum.AwsOrg,
+  },
+  {
+    name: 'Public (Anyone on AWS can use this layer)',
+    value: PermissionEnum.Public,
+  },
+];
 
 export async function createLayerWalkthrough(
   context: $TSContext,
@@ -28,7 +41,20 @@ export async function createLayerWalkthrough(
     .getProjectDetails()
     .projectConfig.projectName.toLowerCase()
     .replace(/[^a-zA-Z0-9]/gi, '');
-  const { layerName } = await inquirer.prompt(layerNameQuestion(projectName));
+
+  const layerName = await prompter.input('Provide a name for your Lambda layer:', {
+    validate: (input: string) => {
+      input = input.trim();
+      const meta = stateManager.getMeta();
+      if (!/^[a-zA-Z0-9]{1,87}$/.test(input)) {
+        return 'Lambda layer names must be 1-87 alphanumeric characters long.';
+      } else if (meta?.function?.input || meta?.function?.[`${projectName}${input}`]) {
+        return `A Lambda layer with the name ${input} already exists in this project.`;
+      }
+      return true;
+    },
+    initial: `layer${uuid().split('-')[0]}`,
+  });
   parameters.layerName = `${projectName}${layerName}`; // prefix with project name
 
   const runtimeReturn = await runtimeWalkthrough(context, parameters);
@@ -44,7 +70,18 @@ export async function createLayerWalkthrough(
   })) as LayerRuntime[];
 
   const layerInputParameters: LayerInputParams = {};
-  _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));
+  const layerPermissions = await prompter.pick<'many', $TSAny>(
+    'The current AWS account will always have access to this layer.\nOptionally, configure who else can access this layer. (Hit <Enter> to skip)',
+    layerPermissionsChoices,
+    {
+      returnSize: 'many',
+      initial: byValues([PermissionEnum.Private]),
+    },
+  );
+
+  _.assign(layerInputParameters, {
+    layerPermissions,
+  });
 
   for (const permission of layerInputParameters.layerPermissions) {
     switch (permission) {
@@ -81,16 +118,7 @@ export async function updateLayerWalkthrough(
   } else if (lambdaToUpdate && resources.includes(lambdaToUpdate)) {
     parameters.layerName = lambdaToUpdate;
   } else {
-    const resourceQuestion: InputQuestion = [
-      {
-        name: 'resourceName',
-        message: 'Select the Lambda layer to update:',
-        type: 'list',
-        choices: resources,
-      },
-    ];
-    const resourceAnswer = await inquirer.prompt(resourceQuestion);
-    parameters.layerName = resourceAnswer.resourceName;
+    parameters.layerName = await prompter.pick<'one', string>('Select the Lambda layer to update:', resources);
   }
 
   // if legacy layer, perform migration
@@ -119,9 +147,8 @@ export async function updateLayerWalkthrough(
         latestVersionText,
         ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
       ];
-      const selectedVersion: string = (
-        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
-      ).versionSelection;
+
+      const selectedVersion = await prompter.pick('Select the layer version to update:', layerVersionChoices);
 
       if (selectedVersion !== latestVersionText) {
         selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
@@ -141,7 +168,20 @@ export async function updateLayerWalkthrough(
       .reduce((accounts: string[], permission: AccountsLayer) => [...accounts, ...permission.accounts], []);
 
     // select permission strategy
-    const layerInputParameters: LayerInputParams = await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions));
+    const layerInputParameters: LayerInputParams = {};
+    const layerPermissions = await prompter.pick<'many', $TSAny>(
+      'The current AWS account will always have access to this layer.\nOptionally, configure who else can access this layer. (Hit <Enter> to skip)',
+      layerPermissionsChoices,
+      {
+        returnSize: 'many',
+        initial: byValues([PermissionEnum.Private]),
+      },
+    );
+
+    _.assign(layerInputParameters, {
+      layerPermissions,
+    });
+
     // get the account and/or org IDs based on the permissions selected and pass defaults in the questions workflow
     for (const permission of layerInputParameters.layerPermissions) {
       switch (permission) {
@@ -177,9 +217,22 @@ export async function updateLayerWalkthrough(
 }
 
 export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, timestampString: string): Promise<LayerParameters> {
-  const changeLayerPermissions = await inquirer.prompt(previousPermissionsQuestion());
+  const choices = [
+    {
+      name: 'The same permission as the latest layer version',
+      value: 'LATEST_VERSION',
+    },
+    {
+      name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
+      value: 'CURRENT_ACCOUNT',
+    },
+  ];
+
+  const usePreviousPermissions = await prompter.pick('What permissions do you want to grant to this new layer version?', choices, {
+    initial: byValue('LATEST_VERSION'),
+  });
   let permissions = params.permissions;
-  if (!changeLayerPermissions.usePreviousPermissions) {
+  if (usePreviousPermissions === 'CURRENT_ACCOUNT') {
     permissions = [defaultLayerPermission];
   }
   const description = await descriptionQuestion(timestampString);
@@ -192,15 +245,14 @@ export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, 
 }
 
 async function descriptionQuestion(timestampString: string): Promise<string> {
-  const response = await inquirer.prompt({
-    name: 'description',
-    default: `${'Updated layer version'} ${timestampString}`,
-    message: 'Description:',
+  const response = await prompter.input('Description:', {
+    initial: `${'Updated layer version'} ${timestampString}`,
     validate: (desc: string) => {
       if (desc.length === 0) return 'Description cannot be empty';
       if (desc.length > 256) return 'Description cannot be more than 256 characters';
       return true;
     },
   });
-  return response.description;
+
+  return response;
 }
