@@ -843,10 +843,7 @@ jobs:
   cleanup_resources:
     <<: *linux-e2e-executor-large
     steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - checkout
       - run:
           name: 'Run cleanup script'
           command: |

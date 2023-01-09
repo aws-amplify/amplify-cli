@@ -185,11 +185,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
     steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - checkout
       - when: 
           condition:
             equal: [true, << pipeline.parameters.e2e_workflow_cleanup >>]
