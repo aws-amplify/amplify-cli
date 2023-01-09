@@ -54,7 +54,7 @@
     "amplify-cli-core": "3.5.0",
     "amplify-cli-logger": "1.2.2",
     "amplify-cli-shared-interfaces": "1.1.1",
-    "amplify-codegen": "^3.3.4",
+    "amplify-codegen": "^3.3.5",
     "amplify-console-hosting": "2.3.6",
     "amplify-container-hosting": "2.5.7",
     "amplify-dotnet-function-runtime-provider": "1.7.0",

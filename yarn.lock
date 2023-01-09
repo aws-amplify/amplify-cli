@@ -181,10 +181,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.3.1.tgz#b785afdc66572c1a5312a4c836eb1729527ab36e"
-  integrity sha512-bAj2d7Pa0isFAH3qqxDfIeMTu+8yYbmbOkKhh0TGBWkT6Ce8RZWdV7zeBP7txrJpWjauAcu/jjDZ8p18oa+fiQ==
+"@aws-amplify/appsync-modelgen-plugin@2.3.2":
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.3.2.tgz#e4c444f66d209f68810ff5b81236a2363d0f1016"
+  integrity sha512-0P3H7a/kQHOaF1fZfkTKaugVbDTdSX4A2qZxMoujRIeFpquLdJREVKVKj2TGx4S1uHeulhJ19Hap4hUvY2A9og==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -9689,12 +9689,12 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.3.4:
-  version "3.3.4"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.4.tgz#2fc8fe25f3302ee6c890874819ad8ff09d7230ea"
-  integrity sha512-fv6/UAIt0TZ+IP+qCTY5d4vA93vJtMRmRaeBj92qt8IerxYrXSD2kexXA96s68FU6aiKntbRy/BrKpgOPQCNZw==
+amplify-codegen@^3.3.5:
+  version "3.3.5"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.5.tgz#18c4ddf365a088fe01f5f823570d3f94e33f364f"
+  integrity sha512-AuzNJD6F1s1H/jMIg8QtylnXjzsshul7eWeluOdfCR9XTgLUM8ZHbwXIn21YXHs2QsIR1N97ze0bk4xqz6JhFA==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.3.1"
+    "@aws-amplify/appsync-modelgen-plugin" "2.3.2"
     "@aws-amplify/graphql-docs-generator" "3.0.2"
     "@aws-amplify/graphql-types-generator" "3.0.0"
     "@graphql-codegen/core" "1.8.3"
