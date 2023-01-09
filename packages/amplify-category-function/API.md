@@ -40,6 +40,9 @@ const console_2: (context: $TSContext) => Promise<void>;
 export { console_2 as console }
 
 // @public (undocumented)
+export const ensureLambdaExecutionRoleOutputs: () => Promise<void>;
+
+// @public (undocumented)
 export const executeAmplifyCommand: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
