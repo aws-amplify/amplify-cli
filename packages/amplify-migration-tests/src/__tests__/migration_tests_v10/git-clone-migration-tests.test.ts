@@ -37,7 +37,6 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
   
     test('headless init and forcePush when triggers are added', async () => {
       const { projectName } = getProjectConfig(projRoot);
-      const preCleanTpi = getTeamProviderInfo(projRoot);
       await gitCleanFdx(projRoot);
 
       const socialProviders = getSocialProviders();
@@ -54,7 +53,7 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
         },
       };
       // checks amplify hosting forcePush on existing projects with v10.5.1
-      expect( () => nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig, true)).not.toThrow();
+      expect( () => nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig, false)).not.toThrow();
     });
   });
   
