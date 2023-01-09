@@ -21,9 +21,17 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'ap-southeast-2',
 ];
 
-const DELETE_LIMIT_PER_BATCH = {
-  OTHER: 50,
-  CFN_STACK: 100,
+// Limits are efforced per region
+// we collect resources from each region & then delete as an entire batch
+const DELETE_LIMITS = {
+  PER_REGION: {
+    OTHER: 25,
+    CFN_STACK: 50,
+  },
+  PER_BATCH: {
+    OTHER: 50,
+    CFN_STACK: 100,
+  }
 }
 
 const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', 'stale-resources.json'));
@@ -341,7 +349,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
     .promise();
   // loop 
   let nextToken = stacks.NextToken;
-  while (nextToken && stacks.StackSummaries.length < 50) {
+  while (nextToken && stacks.StackSummaries.length < DELETE_LIMITS.PER_REGION.CFN_STACK) {
     const nextPage = await cfnClient
       .listStacks({
         StackStatusFilter: stackStatusFilter,
@@ -357,11 +365,11 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   // this is because some child stacks fail to delete (but we don't let that stop us from deleting root stacks)
   // eventually, we must clean up those child stacks too.
   let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
-  if(rootStacks.length > 50){
-    // we can only delete 50 stacks accross all regions every batch,
-    // so we shouldn't take more than 20 apps from each of 8 regions.
+  if(rootStacks.length > DELETE_LIMITS.PER_REGION.CFN_STACK){
+    // we can only delete 100 stacks accross all regions every batch,
+    // so we shouldn't take more than 50 stacks from each of those 8 regions.
     // this should at least limit calls to getStackDetails below
-    rootStacks = rootStacks.slice(0, 50);
+    rootStacks = rootStacks.slice(0, DELETE_LIMITS.PER_REGION.CFN_STACK);
   }
   const results: StackInfo[] = [];
   for (const stack of rootStacks) {
@@ -556,9 +564,9 @@ const mergeResourcesByCCIJob = (
 };
 
 const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, apps: AmplifyAppInfo[]): Promise<void> => {
-  if(apps.length > 50){
+  if(apps.length > DELETE_LIMITS.PER_BATCH.OTHER){
     // throttle delete calls
-    await Promise.all(apps.slice(0, 50).map(app => deleteAmplifyApp(account, accountIndex, app)));
+    await Promise.all(apps.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(app => deleteAmplifyApp(account, accountIndex, app)));
   } else {
     await Promise.all(apps.map(app => deleteAmplifyApp(account, accountIndex, app)));
   }
@@ -579,9 +587,9 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
 };
 
 const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, roles: IamRoleInfo[]): Promise<void> => {
-  if(roles.length > 50){
+  if(roles.length > DELETE_LIMITS.PER_BATCH.OTHER){
     // throttle delete calls
-    await Promise.all(roles.slice(0, 50).map(role => deleteIamRole(account, accountIndex, role)));
+    await Promise.all(roles.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(role => deleteIamRole(account, accountIndex, role)));
   } else {
     await Promise.all(roles.map(role => deleteIamRole(account, accountIndex, role)));
   }
@@ -648,9 +656,9 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
 };
 
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
-  if(buckets.length > 50){
+  if(buckets.length > DELETE_LIMITS.PER_BATCH.OTHER){
     // throttle delete calls
-    await Promise.all(buckets.slice(0, 50).map(bucket => deleteBucket(account, accountIndex, bucket)));
+    await Promise.all(buckets.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(bucket => deleteBucket(account, accountIndex, bucket)));
   } else {
     await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
   }
@@ -672,9 +680,9 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
 };
 
 const deletePinpointApps = async (account: AWSAccountInfo, accountIndex: number, apps: PinpointAppInfo[]): Promise<void> => {
-  if(apps.length > 50){
+  if(apps.length > DELETE_LIMITS.PER_BATCH.OTHER){
     // throttle delete calls
-    await Promise.all(apps.slice(0, 50).map(app => deletePinpointApp(account, accountIndex, app)));
+    await Promise.all(apps.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(app => deletePinpointApp(account, accountIndex, app)));
   } else {
     await Promise.all(apps.map(app => deletePinpointApp(account, accountIndex, app)));
   }
@@ -693,9 +701,9 @@ const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, 
 };
 
 const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, apis: AppSyncApiInfo[]): Promise<void> => {
-  if(apis.length > 50){
+  if(apis.length > DELETE_LIMITS.PER_BATCH.OTHER){
     // throttle delete calls
-    await Promise.all(apis.slice(0, 50).map(api => deleteAppSyncApi(account, accountIndex, api)));
+    await Promise.all(apis.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(api => deleteAppSyncApi(account, accountIndex, api)));
   } else {
     await Promise.all(apis.map(api => deleteAppSyncApi(account, accountIndex, api)));
   }
@@ -715,9 +723,9 @@ const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, a
 };
 
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
-  if(stacks.length > 100){
+  if(stacks.length > DELETE_LIMITS.PER_BATCH.CFN_STACK){
     // throttle delete calls, 100 seems to work fine for stacks
-    await Promise.all(stacks.slice(0, 100).map(stack => deleteCfnStack(account, accountIndex, stack)));
+    await Promise.all(stacks.slice(0, DELETE_LIMITS.PER_BATCH.CFN_STACK).map(stack => deleteCfnStack(account, accountIndex, stack)));
   } else {
     await Promise.all(stacks.map(stack => deleteCfnStack(account, accountIndex, stack)));
   }
@@ -757,32 +765,32 @@ const deleteResources = async (
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
     if (resources.amplifyApps) {
-      console.log(`Deleting up to ${DELETE_LIMIT_PER_BATCH.OTHER} of ${resources.amplifyApps.length} apps on ACCOUNT[${accountIndex}]`);
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.amplifyApps.length} apps on ACCOUNT[${accountIndex}]`);
       await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
     }
 
     if (resources.stacks) {
-      console.log(`Deleting up to ${DELETE_LIMIT_PER_BATCH.CFN_STACK} of ${resources.stacks.length} stacks on ACCOUNT[${accountIndex}]`);
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.CFN_STACK} of ${resources.stacks.length} stacks on ACCOUNT[${accountIndex}]`);
       await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
     }
 
     if (resources.buckets) {
-      console.log(`Deleting up to ${DELETE_LIMIT_PER_BATCH.OTHER} of ${resources.buckets.length} buckets on ACCOUNT[${accountIndex}]`);
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.buckets.length} buckets on ACCOUNT[${accountIndex}]`);
       await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
     }
 
     if (resources.roles) {
-      console.log(`Deleting up to ${DELETE_LIMIT_PER_BATCH.OTHER} of ${resources.roles.length} roles on ACCOUNT[${accountIndex}]`);
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.roles.length} roles on ACCOUNT[${accountIndex}]`);
       await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
     }
 
     if (resources.pinpointApps) {
-      console.log(`Deleting up to ${DELETE_LIMIT_PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`);
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`);
       await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
     }
 
     if (resources.appSyncApis) {
-      console.log(`Deleting up to ${DELETE_LIMIT_PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`);
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`);
       await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
     }
   }
