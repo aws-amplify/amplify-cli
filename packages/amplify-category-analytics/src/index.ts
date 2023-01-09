@@ -1,7 +1,6 @@
 import { $TSContext, $TSAny, AmplifyFault } from 'amplify-cli-core';
 import * as path from 'path';
-import inquirer, { QuestionCollection } from 'inquirer';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
 import { migrationCheck } from './migrations';
@@ -30,16 +29,7 @@ export const console = async (context: $TSContext) : Promise<void> => {
 
   let selectedResource;
   if (hasKinesisResource && hasPinpointResource) {
-    const question = {
-      name: 'resource',
-      message: 'Select resource',
-      type: 'list',
-      choices: ['kinesis', 'pinpoint'],
-      required: true,
-    };
-
-    const result = await inquirer.prompt(question as QuestionCollection<{ [x: string]: unknown; }>);
-    selectedResource = result.resource;
+    selectedResource = await prompter.pick('Select resource', ['kinesis', 'pinpoint']);
   } else if (hasKinesisResource) {
     selectedResource = 'kinesis';
   } else if (hasPinpointResource) {
