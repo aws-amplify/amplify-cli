@@ -348,7 +348,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   // NOTE: every few months, we should disable the filter , and clean up all stacks (not just root stacks)
   // this is because some child stacks fail to delete (but we don't let that stop us from deleting root stacks)
   // eventually, we must clean up those child stacks too.
-  let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);; 
+  let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
   if(rootStacks.length > 50){
     // we can only delete 50 stacks accross all regions every batch,
     // so we shouldn't take more than 20 apps from each of 8 regions.
@@ -558,12 +558,12 @@ const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, 
 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
   const { name, appId, region } = app;
-  // console.log(`[ACCOUNT ${accountIndex}] Deleting App ${name}(${appId})`);
+  console.log(`[ACCOUNT ${accountIndex}] Deleting App ${name}(${appId})`);
   const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
   try {
     await amplifyClient.deleteApp({ appId }).promise();
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting Amplify App ${appId} failed with the following error`, e);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Amplify App ${appId} failed with the following error`, e);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -582,14 +582,14 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
 const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo): Promise<void> => {
   const { name: roleName } = role;
   try {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
-    // console.log(`Role creation time (PST): ${role.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
+    console.log(`Role creation time (PST): ${role.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.deleteRole({ RoleName: roleName }).promise();
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${roleName} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${roleName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -613,11 +613,11 @@ const detachIamAttachedRolePolicy = async (
   policy: aws.IAM.AttachedPolicy,
 ): Promise<void> => {
   try {
-    // console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
+    console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await iamClient.detachRolePolicy({ RoleName: roleName, PolicyArn: policy.PolicyArn }).promise();
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -641,11 +641,11 @@ const deleteIamRolePolicy = async (
   policyName: string,
 ): Promise<void> => {
   try {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role Policy ${policyName}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role Policy ${policyName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await iamClient.deleteRolePolicy({ RoleName: roleName, PolicyName: policyName }).promise();
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting iam role policy ${policyName} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role policy ${policyName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -664,12 +664,12 @@ const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buck
 const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
   const { name } = bucket;
   try {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
-    // console.log(`Bucket creation time (PST): ${bucket.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
+    console.log(`Bucket creation time (PST): ${bucket.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
     const s3 = new aws.S3(getAWSConfig(account));
     await deleteS3Bucket(name, s3);
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -690,12 +690,12 @@ const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, 
     id, name, region,
   } = app;
   try {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting Pinpoint App ${name}`);
-    // console.log(`Pinpoint creation time (PST): ${app.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Pinpoint App ${name}`);
+    console.log(`Pinpoint creation time (PST): ${app.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
     const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
     await pinpoint.deleteApp({ ApplicationId: id }).promise();
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting pinpoint app ${name} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting pinpoint app ${name} failed with error ${e.message}`);
   }
 };
 
@@ -713,11 +713,11 @@ const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, a
     apiId, name, region,
   } = api;
   try {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name}`);
     const appSync = new aws.AppSync(getAWSConfig(account, region));
     await appSync.deleteGraphqlApi({ apiId }).promise();
   } catch (e) {
-    // console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name} failed with error ${e.message}`);
   }
 };
 
@@ -733,12 +733,12 @@ const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, st
 const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo): Promise<void> => {
   const { stackName, region, resourcesFailedToDelete } = stack;
   const resourceToRetain = resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
-  // console.log(`[ACCOUNT ${accountIndex}] Deleting CloudFormation stack ${stackName}`);
+  console.log(`[ACCOUNT ${accountIndex}] Deleting CloudFormation stack ${stackName}`);
   try {
     const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
     await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
     // we'll only wait up to a minute before moving on
-    // await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { maxAttempts: 3 } }).promise();
+    await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { maxAttempts: 2 } }).promise();
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
