@@ -10,8 +10,8 @@
   deleteProject,
   deleteProjectDir,
   getAmplifyInitConfig, getProjectConfig,
-  getSocialProviders,
-  getTeamProviderInfo, gitCleanFdx,
+  getProjectMeta,
+  getSocialProviders, gitCleanFdx,
   gitCommitAll,
   gitInit,
   nonInteractiveInitWithForcePushAttach
@@ -36,9 +36,10 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
     });
   
     test('headless init and forcePush when triggers are added', async () => {
+      // checks amplify hosting forcePush on existing projects with v10.5.1
       const { projectName } = getProjectConfig(projRoot);
+      assertLambdaexecutionRoleArns(projRoot, false);
       await gitCleanFdx(projRoot);
-
       const socialProviders = getSocialProviders();
       const categoriesConfig = {
         auth: {
@@ -52,8 +53,33 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
           loginwithamazonAppSecretUserPool: socialProviders.AMAZON_APP_SECRET,
         },
       };
-      // checks amplify hosting forcePush on existing projects with v10.5.1
-      expect( () => nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig, false)).not.toThrow();
+      await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig, true);
+      assertLambdaexecutionRoleArns(projRoot, true);
     });
   });
+
+
+  const assertLambdaexecutionRoleArns = (projRoot: string, isDefined: boolean) => {
+    const meta = getProjectMeta(projRoot);
+    const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+    const createFunctionResourceName = `${authKey}CreateAuthChallenge`;
+    const defineFunctionResourceName = `${authKey}DefineAuthChallenge`;
+    const customMessageFunctionResourceName = `${authKey}CustomMessage`;
+    const createFunctionMeta = meta.function[createFunctionResourceName];
+    const defineFunctionMeta = meta.function[defineFunctionResourceName];
+    const customMessageFunctionMeta = meta.function[customMessageFunctionResourceName];
+    const createFunctionRoleArn = createFunctionMeta.output.LambdaExecutionRoleArn;
+    const defineFunctionRoleArn = defineFunctionMeta.output.LambdaExecutionRoleArn;
+    const customMessageFunctionRoleArn = customMessageFunctionMeta.output.LambdaExecutionRoleArn;
+    if(isDefined){
+      expect(createFunctionRoleArn).toBeDefined();
+      expect(defineFunctionRoleArn).toBeDefined();
+      expect(customMessageFunctionRoleArn).toBeDefined();
+    }
+    else{
+      expect(createFunctionRoleArn).not.toBeDefined();
+      expect(defineFunctionRoleArn).not.toBeDefined();
+      expect(customMessageFunctionRoleArn).not.toBeDefined();
+    }
+  }
   
