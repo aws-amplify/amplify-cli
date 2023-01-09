@@ -38,7 +38,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
 
   printer.info(chalk.green(consoleUrl));
-  open(consoleUrl, { wait: false });
+  await open(consoleUrl, { wait: false });
 };
 
 const constructAdminURL = (baseUrl: string, appId: string, envName: string): string => `${baseUrl}/admin/${appId}/${envName}/home`;

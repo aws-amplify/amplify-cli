@@ -17,7 +17,7 @@ export const cfnRootStackFileName = "root-cloudformation-stack.json";
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function getConfiguredLocationServiceClient(context: $TSContext, options?: {}): Promise<LocationService>;
+export function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>): Promise<LocationService>;
 
 // Warning: (ae-forgotten-export) The symbol "SSM" needs to be exported by the entry point index.d.ts
 //

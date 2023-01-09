@@ -282,7 +282,7 @@ function printLayerSuccessMessages(context: $TSContext, parameters: LayerParamet
   if (parameters.runtimes.length !== 0) {
     print.info('Move your libraries to the following folder:');
     for (const runtime of parameters.runtimes) {
-      let runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
+      const runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
       print.info(`[${runtime.name}]: ${runtimePath}`);
     }
     print.info('');
@@ -332,7 +332,7 @@ export function migrateResource(context: $TSContext, projectPath: string, servic
 
   if (!serviceConfig.walkthroughs.migrate) {
     context.print.info(`No migration required for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return serviceConfig.walkthroughs.migrate(context, projectPath, resourceName);
@@ -347,7 +347,7 @@ export function getPermissionPolicies(context: $TSContext, service: ServiceName,
 
   if (!serviceConfig.walkthroughs.getIAMPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return serviceConfig.walkthroughs.getIAMPolicies(resourceName, crudOptions);
@@ -423,6 +423,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       }
     }
   }
+  return undefined;
 }
 
 async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {
@@ -459,12 +460,12 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
   return envParams;
 }
 
-export function openConsole(context: $TSContext, service: ServiceName) {
+export async function openConsole(context: $TSContext, service: ServiceName) {
   const amplifyMeta = stateManager.getMeta();
   const region = amplifyMeta.providers[provider].Region;
   const selection = service === ServiceName.LambdaFunction ? 'functions' : 'layers';
   const url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/${selection}`;
-  open(url, { wait: false });
+  await open(url, { wait: false });
 }
 
 export function isMockable(service: ServiceName): IsMockableResponse {

@@ -131,6 +131,8 @@ export abstract class AmplifyException extends Error {
     // (undocumented)
     readonly classification: AmplifyExceptionClassification;
     // (undocumented)
+    readonly code?: string;
+    // (undocumented)
     readonly details?: string;
     // (undocumented)
     readonly downstreamException?: Error | undefined;
@@ -157,6 +159,7 @@ export type AmplifyExceptionOptions = {
     details?: string;
     resolution?: string;
     link?: string;
+    code?: string;
 };
 
 // @public (undocumented)
@@ -168,7 +171,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
+export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -241,7 +244,7 @@ export class ApiCategoryFacade {
 }
 
 // @public (undocumented)
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL: string;
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
 export const AWS_DOCS_URL = "https://docs.aws.amazon.com/";

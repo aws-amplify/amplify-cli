@@ -18,7 +18,7 @@ export const run = async (context: Context) => {
     .catch(err => {
       context.print.error(`Error executing command amplify plugin ${subCommand}`);
       context.print.error(err.message || err.stack || JSONUtilities.stringify(err));
-      context.usageData.emitError(err);
+      void context.usageData.emitError(err);
       exitOnNextTick(1);
     });
 };

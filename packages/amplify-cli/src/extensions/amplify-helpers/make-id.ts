@@ -1,4 +1,4 @@
-export function makeId(n: number = 5) {
+export function makeId(n = 5) {
   let text = '';
   const possible = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 

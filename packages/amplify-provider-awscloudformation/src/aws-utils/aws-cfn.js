@@ -12,7 +12,7 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager, pathManager, AmplifyError, AmplifyException, AmplifyFault } = require('amplify-cli-core');
+const { stateManager, pathManager, AmplifyError, AmplifyFault } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
@@ -22,6 +22,7 @@ const { printer } = require('amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
+const CFN_POLL_TIME_MAX = 30 * 1000; // 30 seconds
 let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
@@ -85,7 +86,7 @@ class CloudFormation {
         }
         cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, async (completeErr, waitForStackdata) => {
           if (self.pollForEvents) {
-            clearInterval(self.pollForEvents);
+            clearTimeout(self.pollForEvents);
           }
 
           this.progressBar?.stop();
@@ -124,7 +125,7 @@ class CloudFormation {
           Promise.reject(e);
         } finally {
           if (this.pollForEvents) {
-            clearInterval(this.pollForEvents);
+            clearTimeout(this.pollForEvents);
           }
         }
       });
@@ -153,7 +154,20 @@ class CloudFormation {
   }
 
   readStackEvents(stackName) {
-    this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), CFN_POLL_TIME);
+    const self = this;
+    let delay = CFN_POLL_TIME;
+    let readStackEventsCalls = 0;
+    const invoker = () => {
+      self.addToPollQueue(stackName, 3);
+      if (delay < CFN_POLL_TIME_MAX) {
+        delay = Math.min(Math.pow(2, readStackEventsCalls) * CFN_POLL_TIME, CFN_POLL_TIME_MAX);
+      }
+      self.pollForEvents = setTimeout(invoker, delay);
+      readStackEventsCalls++;
+    }
+
+    // start it off
+    self.pollForEvents = setTimeout(invoker, delay);
   }
 
   pollStack(stackName) {
@@ -357,13 +371,13 @@ class CloudFormation {
                   const cfnCompleteStatus = 'stackUpdateComplete';
                   if (updateErr) {
                     if (self.pollForEvents) {
-                      clearInterval(self.pollForEvents);
+                      clearTimeout(self.pollForEvents);
                     }
                     return reject(updateErr);
                   }
                   cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
                     if (self.pollForEvents) {
-                      clearInterval(self.pollForEvents);
+                      clearTimeout(self.pollForEvents);
                     }
                     this.progressBar?.stop();
 
@@ -384,13 +398,9 @@ class CloudFormation {
         });
     } catch (error) {
       this.progressBar?.stop();
-
-      if (error instanceof AmplifyException) {
-        throw error;
-      }
-
       throw new AmplifyFault('ResourceNotReadyFault', {
-        message: error.message
+        message: error.message,
+        code: error.code,
       }, error);
     }
   }

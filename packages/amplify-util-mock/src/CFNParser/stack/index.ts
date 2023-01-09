@@ -11,7 +11,7 @@ import {
   CloudFormationResource,
   CloudFormationResources,
   CloudFormationTemplate,
-  CloudFormationTemplateFetcher,
+  CloudFormationTemplateFetcher
 } from './types';
 
 export const CFN_PSEUDO_PARAMS = {
@@ -19,14 +19,14 @@ export const CFN_PSEUDO_PARAMS = {
   'AWS::AccountId': '12345678910',
   'AWS::StackId': 'fake-stackId',
   'AWS::StackName': 'local-testing',
-  'AWS::URLSuffix': 'amazonaws.com',
+  'AWS::URLSuffix': 'amazonaws.com'
 };
 
 export function nestedStackHandler(
   resourceName: string,
   resource: CloudFormationResource,
   cfnContext: CloudFormationParseContext,
-  cfnTemplateFetcher: CloudFormationTemplateFetcher,
+  cfnTemplateFetcher: CloudFormationTemplateFetcher
 ) {
   if (typeof resource.Properties.TemplateURL === 'undefined') {
     throw new Error(`Error in parsing Nested stack ${resourceName}. Stack is missing required property TemplateURL`);
@@ -37,7 +37,7 @@ export function nestedStackHandler(
   const processedParameters = Object.entries(parameters).reduce((acc, [parameterName, parameterValue]) => {
     return {
       ...acc,
-      [parameterName]: parseValue(parameterValue, cfnContext),
+      [parameterName]: parseValue(parameterValue, cfnContext)
     };
   }, {});
 
@@ -75,7 +75,7 @@ export function processConditions(conditions: CloudFormationConditions, processe
       params: processedParams,
       conditions: { ...conditions },
       resources: {},
-      exports: {},
+      exports: {}
     });
   });
   return processedConditions;
@@ -99,7 +99,7 @@ export function getDependencyResources(node: object | any[], params: Record<stri
       const resourceName = fnArgs[0];
       result.push(resourceName);
     } else if (typeof fnArgs !== 'string') {
-      for (var i = 0; i < fnArgs.length; i++) {
+      for (let i = 0; i < fnArgs.length; i++) {
         result = [...result, ...getDependencyResources(fnArgs[i], params)];
       }
     }
@@ -116,7 +116,7 @@ export function sortResources(resources: CloudFormationResources, params: Record
     let dependsOn: string[] = [];
     // intrinsic dependency
     const intrinsicDependency = Object.values(resource.Properties)
-      .map(propValue => getDependencyResources(propValue, params))
+      .map(propValue => getDependencyResources(propValue as any, params))
       .reduce((sum, val) => [...sum, ...val], []);
 
     // Todo: enable this once e2e test invoke transformer the same way as
@@ -158,7 +158,7 @@ export function sortResources(resources: CloudFormationResources, params: Record
 
 export function filterResourcesBasedOnConditions(
   resources: CloudFormationResources,
-  conditions: Record<string, boolean>,
+  conditions: Record<string, boolean>
 ): CloudFormationResources {
   const filteredResources: CloudFormationResources = {};
   Object.entries(resources)
@@ -183,7 +183,7 @@ export function processResources(
   conditions: Record<string, boolean>,
   resources: CloudFormationResources,
   cfnExports: Record<string, any>,
-  cfnTemplateFetcher: CloudFormationTemplateFetcher,
+  cfnTemplateFetcher: CloudFormationTemplateFetcher
 ): { resources: Record<string, any>; stackExports: Record<string, any> } {
   const filteredResources = filterResourcesBasedOnConditions(resources, conditions);
   const sortedResourceNames = sortResources(filteredResources, parameters);
@@ -195,7 +195,7 @@ export function processResources(
       params: { ...parameters },
       conditions: { ...conditions },
       resources: { ...processedResources },
-      exports: { ...cfnExports },
+      exports: { ...cfnExports }
     };
 
     if (resourceType === 'AWS::CloudFormation::Stack') {
@@ -213,7 +213,7 @@ export function processResources(
           throw e;
         } else {
           console.log(
-            `Mock does not handle CloudFormation resource of type ${resourceType}. Skipping processing resource ${resourceName}.`,
+            `Mock does not handle CloudFormation resource of type ${resourceType}. Skipping processing resource ${resourceName}.`
           );
         }
       }
@@ -227,7 +227,7 @@ export function processExports(
   parameters: Record<string, any>,
   conditions: Record<string, boolean>,
   resources: Record<string, any>,
-  cfnExports: Record<string, any> = {},
+  cfnExports: Record<string, any> = {}
 ): Record<string, any> {
   const stackExports = {};
   const cfnContext = { params: parameters, conditions, resources, exports: cfnExports };
@@ -256,7 +256,7 @@ export function processOutputs(
   parameters: Record<string, any>,
   conditions: Record<string, boolean>,
   resources: Record<string, any>,
-  cfnExports: Record<string, any> = {},
+  cfnExports: Record<string, any> = {}
 ): Record<string, any> {
   const outputs = {};
   const cfnContext = { params: parameters, conditions, resources, exports: cfnExports };
@@ -270,7 +270,7 @@ export function processCloudFormationStack(
   template: CloudFormationTemplate,
   parameters: Record<string, any>,
   cfnExports: Record<string, any>,
-  cfnTemplateFetcher: CloudFormationTemplateFetcher,
+  cfnTemplateFetcher: CloudFormationTemplateFetcher
 ): { resources: Record<string, any>; stackExports: Record<string, any>; outputs: Record<string, any> } {
   const mergedParameters = mergeParameters(template.Parameters || {}, parameters || {});
   const processedConditions = processConditions(template.Conditions || {}, mergedParameters);
@@ -280,18 +280,18 @@ export function processCloudFormationStack(
     mergedParameters,
     processedConditions,
     processedResources.resources,
-    processedResources.stackExports,
+    processedResources.stackExports
   );
   const processedExports = processExports(
     template.Outputs || {},
     mergedParameters,
     processedConditions,
     processedResources.resources,
-    processedResources.stackExports,
+    processedResources.stackExports
   );
   return {
     resources: processedResources.resources,
     stackExports: processedExports,
-    outputs: processedOutput,
+    outputs: processedOutput
   };
 }

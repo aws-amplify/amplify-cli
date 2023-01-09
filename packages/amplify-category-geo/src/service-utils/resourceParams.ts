@@ -19,5 +19,6 @@ export enum AccessType {
 
 export enum DataProvider {
     Esri = 'Esri',
-    Here = 'HERE'
+    Here = 'HERE',
+    OpenData = 'OpenData',
 }

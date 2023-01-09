@@ -462,7 +462,7 @@ export class AmplifyToolkit {
   }
 
   constructor() {
-    this._cleanUpTasks = new Array();
+    this._cleanUpTasks = [];
   }
 
   addCleanUpTask = (task: (context: Context) => void) => {

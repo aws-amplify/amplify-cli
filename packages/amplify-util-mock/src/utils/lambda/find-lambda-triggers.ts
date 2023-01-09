@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, stateManager, JSONUtilities, $TSObject } from "amplify-cli-core";
+import { $TSContext, pathManager, stateManager, JSONUtilities, $TSObject } from 'amplify-cli-core';
 import * as path from 'path';
 import _ = require('lodash');
 import { ServiceName } from 'amplify-category-function';
@@ -83,8 +83,8 @@ export const getSearchableLambdaTriggerConfig = (context: $TSContext, opensearch
     directory: mockSearchableTriggerDirectory,
     envVars: {
       OPENSEARCH_ENDPOINT: opensearchEndpoint,
-      DEBUG: "1",
-      OPENSEARCH_USE_EXTERNAL_VERSIONING: "false",
+      DEBUG: '1',
+      OPENSEARCH_USE_EXTERNAL_VERSIONING: 'false',
       TABLE_NAME: tableName?.substring(0, tableName?.lastIndexOf('Table')) || ''
     },
     reBuild: false

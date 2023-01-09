@@ -51,7 +51,7 @@ function loadDiffableProject(path: string, rootStackName: string): DiffableProje
 export function readFromPath(directory: string): any {
   const pathExists = fs.pathExistsSync(directory);
   if (!pathExists) {
-    return;
+    return undefined;
   }
   const dirStats = fs.lstatSync(directory);
   if (!dirStats.isDirectory()) {

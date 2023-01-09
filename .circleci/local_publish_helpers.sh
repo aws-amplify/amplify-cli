@@ -64,6 +64,9 @@ function generatePkgCli {
   # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
   cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
 
+  # replace DEV binary entry point with production one
+  cp ../node_modules/@aws-amplify/cli-internal/bin/amplify.production.template node_modules/@aws-amplify/cli-internal/bin/amplify
+
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
 
@@ -172,7 +175,7 @@ function setSudoNpmRegistryUrlToLocal {
 function useChildAccountCredentials {
     if [[ ! -z "$USE_PARENT_ACCOUNT" ]]; then
         echo "Using parent account credentials"
-        exit 0
+        return
     fi
     export AWS_PAGER=""
     parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
@@ -182,11 +185,12 @@ function useChildAccountCredentials {
     session_id=$((1 + $RANDOM % 10000))
     if [[ -z "$pick_acct" || -z "$session_id" ]]; then
         echo "Unable to find a child account. Falling back to parent AWS account"
-        exit 0
+        return
     fi
     creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
     if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
         echo "Unable to assume child account role. Falling back to parent AWS account"
+        return
     fi
     echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
     export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
@@ -277,5 +281,21 @@ function runE2eTest {
         yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
         yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+    fi
+}
+
+function checkPackageVersionsInLocalNpmRegistry {
+    cli_internal_version=$(npm view @aws-amplify/cli-internal version)
+    cli_version=$(npm view @aws-amplify/cli version)
+
+    echo "@aws-amplify/cli-internal version: $cli_internal_version"
+    echo "@aws-amplify/cli version: $cli_version"
+
+    if [[ $cli_internal_version != $cli_version ]]; then
+        echo "Versions did not match."
+        echo "Manual fix: add a proper conventional commit that touches the amplify-cli-npm package to correct its version bump. For example https://github.com/aws-amplify/amplify-cli/commit/6f14792d1db424aa428ec4836fed7d6dd5cccfd0"
+        exit 1
+    else
+        echo "Versions matched."
     fi
 }

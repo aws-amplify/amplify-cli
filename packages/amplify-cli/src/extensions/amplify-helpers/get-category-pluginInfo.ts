@@ -7,7 +7,7 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
 
   if (pluginInfosForCategory?.length > 0) {
     if (service) {
-      let pluginInfosForCategoryAndService = pluginInfosForCategory.filter(pluginInfo => {
+      const pluginInfosForCategoryAndService = pluginInfosForCategory.filter(pluginInfo => {
         return pluginInfo.manifest.services && pluginInfo.manifest.services.includes(service);
       });
 

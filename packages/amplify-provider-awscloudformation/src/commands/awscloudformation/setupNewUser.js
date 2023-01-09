@@ -4,6 +4,6 @@ module.exports = {
   name: 'setupNewUser',
   alias: ['setup-new-user', 'newUser', 'new-user'],
   run: async context => {
-    setupNewUser.run(context);
+    await setupNewUser.run(context);
   },
 };

@@ -67,7 +67,7 @@ export const time = () => ({
       return null;
     }
   },
-  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone: string = 'UTC'): string | null {
+  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone = 'UTC'): string | null {
     try {
       return moment(timestamp)
         .tz(timezone)

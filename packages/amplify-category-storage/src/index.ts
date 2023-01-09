@@ -42,7 +42,7 @@ export {
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
 export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {
-  let defaultS3UserInputs = getAllDefaults(project, shortId);
+  const defaultS3UserInputs = getAllDefaults(project, shortId);
   switch (accessType) {
     case S3AccessType.AUTH_ONLY:
       defaultS3UserInputs.authAccess = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
@@ -69,7 +69,7 @@ export async function add(context: any, providerName: any, service: any) {
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
 
   return providerController.addResource(context, AmplifyCategories.STORAGE, service, options);

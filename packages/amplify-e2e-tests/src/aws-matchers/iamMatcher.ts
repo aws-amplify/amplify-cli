@@ -29,8 +29,8 @@ export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
 };
 
 export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, idpId: string) => {
-  let pass: boolean = false;
-  let message: string = '';
+  let pass = false;
+  let message = '';
 
   try {
     const iam = new IAM({
