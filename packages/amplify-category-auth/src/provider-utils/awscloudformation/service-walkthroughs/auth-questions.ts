@@ -26,11 +26,11 @@ declare module 'enquirer' {
 
 /* eslint-disable no-param-reassign */
 export const serviceWalkthrough = async (
-  context:$TSContext,
-  defaultValuesFilename:any,
-  stringMapsFilename:any,
-  serviceMetadata:any,
-  coreAnswers: {[key: string]: any} = {},
+  context: $TSContext,
+  defaultValuesFilename: any,
+  stringMapsFilename: any,
+  serviceMetadata: any,
+  coreAnswers: { [key: string]: any } = {},
 ): Promise<Record<string, unknown>> => {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
@@ -78,10 +78,10 @@ export const serviceWalkthrough = async (
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
         key to find the array of values it should splice into.
       */
-      input.iterator
-      && answer
-      && Array.isArray(answer)
-      && answer.length > 0
+      input.iterator &&
+      answer &&
+      Array.isArray(answer) &&
+      answer.length > 0
     ) {
       await handleIteratorValues(context, input, answer);
       j += 1;
@@ -96,7 +96,7 @@ export const serviceWalkthrough = async (
       */
       if (!coreAnswers[input.key]) {
         answer = [answer];
-        coreAnswers = { ...coreAnswers, ...{[input.key]: answer} };
+        coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
       } else {
         coreAnswers[input.key].push(answer);
       }
@@ -125,7 +125,12 @@ export const serviceWalkthrough = async (
       }
       coreAnswers = { ...coreAnswers, ...{ ['useDefault']: answer } };
       j += 1;
-    } else if (!context.updatingAuth && input.key === 'useDefault' && typeof answer === 'string' && ['default', 'defaultSocial'].includes(answer)) {
+    } else if (
+      !context.updatingAuth &&
+      input.key === 'useDefault' &&
+      typeof answer === 'string' &&
+      ['default', 'defaultSocial'].includes(answer)
+    ) {
       // if the user selects defaultSocial, we set hostedUI to true to avoid re-asking this question
       coreAnswers = { ...coreAnswers, ...{ [input.key]: answer } };
       coreAnswers.authSelections = 'identityPoolAndUserPool';
@@ -222,11 +227,9 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
       return { name: e.groupName, value: e.groupName };
     });
 
-    const groups2BeDeleted = await prompter.pick<'many', string>(
-      'Select any user pool groups you want to delete:',
-      deletionChoices,
-      { returnSize: 'many' },
-    );
+    const groups2BeDeleted = await prompter.pick<'many', string>('Select any user pool groups you want to delete:', deletionChoices, {
+      returnSize: 'many',
+    });
     userPoolGroupList = userPoolGroupList.filter((i: any) => !groups2BeDeleted.includes(i));
   }
 
@@ -235,33 +238,31 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
   the user has deleted all existing groups. If they want to delete
   all groups they should just delete the resource */
   if (userPoolGroupList.length < 1) {
-    const userPoolGroupName = await prompter.input('Provide a name for your user pool group:',
-      {
-        validate: context.amplify.inputValidation({
-          validation: {
-            operator: 'regex',
-            value: '^[a-zA-Z0-9]+$',
-            onErrorMsg: 'Resource name should be alphanumeric',
-          },
-          required: true,
-        }),
-      });
+    const userPoolGroupName = await prompter.input('Provide a name for your user pool group:', {
+      validate: context.amplify.inputValidation({
+        validation: {
+          operator: 'regex',
+          value: '^[a-zA-Z0-9]+$',
+          onErrorMsg: 'Resource name should be alphanumeric',
+        },
+        required: true,
+      }),
+    });
     userPoolGroupList.push(userPoolGroupName);
   }
 
   let addAnother = await prompter.yesOrNo('Do you want to add another User Pool Group', false);
   while (addAnother === true) {
-    const userPoolGroupName = await prompter.input('Provide a name for your user pool group:',
-      {
-        validate: context.amplify.inputValidation({
-          validation: {
-            operator: 'regex',
-            value: '^[a-zA-Z0-9]+$',
-            onErrorMsg: 'Resource name should be alphanumeric',
-          },
-          required: true,
-        }),
-      });
+    const userPoolGroupName = await prompter.input('Provide a name for your user pool group:', {
+      validate: context.amplify.inputValidation({
+        validation: {
+          operator: 'regex',
+          value: '^[a-zA-Z0-9]+$',
+          onErrorMsg: 'Resource name should be alphanumeric',
+        },
+        required: true,
+      }),
+    });
 
     userPoolGroupList.push(userPoolGroupName);
     addAnother = await prompter.yesOrNo('Do you want to add another User Pool Group', false);
@@ -296,24 +297,21 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
 const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): Promise<string> => {
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
-  if (await context.amplify.confirmPrompt('Do you want to restrict access to the admin queries API to a specific Group')) {
+  if (await prompter.yesOrNo('Do you want to restrict access to the admin queries API to a specific Group')) {
     userPoolGroupListClone.push('Enter a custom group');
 
     let adminGroup = await prompter.pick('Select the group to restrict access with:', userPoolGroupListClone);
     if (adminGroup === 'Enter a custom group') {
-      adminGroup = await prompter.input(
-        'Provide a group name:',
-        {
-          validate: context.amplify.inputValidation({
-            validation: {
-              operator: 'regex',
-              value: '^[a-zA-Z0-9]+$',
-              onErrorMsg: 'Resource name should be alphanumeric',
-            },
-            required: true,
-          }),
-        },
-      );
+      adminGroup = await prompter.input('Provide a group name:', {
+        validate: context.amplify.inputValidation({
+          validation: {
+            operator: 'regex',
+            value: '^[a-zA-Z0-9]+$',
+            onErrorMsg: 'Resource name should be alphanumeric',
+          },
+          required: true,
+        }),
+      });
     }
 
     return adminGroup;
@@ -696,7 +694,7 @@ const handleTriggers = (context: $TSContext, answer: string[]): string[] => {
   const selectionMetadata = capabilities;
 
   /* eslint-disable no-loop-func */
-  selectionMetadata.forEach((selection: { [key: string]: any; }) => {
+  selectionMetadata.forEach((selection: { [key: string]: any }) => {
     Object.keys(selection.triggers).forEach(t => {
       if (!tempTriggers[t] && answer.includes(selection.value)) {
         tempTriggers[t] = selection.triggers[t];
@@ -715,34 +713,38 @@ const handleTriggers = (context: $TSContext, answer: string[]): string[] => {
   });
 
   return tempTriggers;
-}
+};
 
 const askQuestion = async (question: any, input: any, context: $TSContext): Promise<string | boolean | string[] | undefined> => {
   const { amplify } = context;
   let answer: string | boolean | string[] | undefined;
 
-  if (question.when()) {
+  if (!question.when || question.when()) {
     if (question.prefix) {
       printer.info(question.prefix);
     }
 
     if (input.type && input.type === 'list') {
+      const defaultValue = question.default();
       answer = await prompter.pick<'one', string>(input.question, question.choices, {
-        initial: byValue(question.default()),
         returnSize: 'one',
+        ...(defaultValue != undefined ? { initial: byValue(defaultValue) } : {}),
       });
     } else if (input.type && input.type === 'multiselect') {
+      const defaultValue = question.default();
       answer = await prompter.pick<'many', string>(input.question, question.choices, {
-        initial: byValues(question.default()),
+        ...(defaultValue != undefined ? { initial: byValues(defaultValue) } : {}),
         returnSize: 'many',
-        pickAtLeast: 1
       });
     } else if (input.type && input.type === 'confirm') {
-      answer = await prompter.yesOrNo(input.question, question.default());
-    } else { // input
+      const defaultValue = question.default();
+      answer = await prompter.yesOrNo(input.question, defaultValue ?? true);
+    } else {
+      // input
+      const defaultValue = question.default();
       answer = await prompter.input(input.question, {
-        initial: question.default(),
-        validate: amplify.inputValidation(input)
+        ...(defaultValue != undefined ? { initial: defaultValue } : {}),
+        validate: amplify.inputValidation(input),
       });
     }
 
@@ -752,7 +754,7 @@ const askQuestion = async (question: any, input: any, context: $TSContext): Prom
   }
 
   return answer;
-}
+};
 
 async function handleIteratorValues(context: $TSContext, questionObj: any, answers: string[]) {
   const { amplify } = context;
@@ -765,4 +767,3 @@ async function handleIteratorValues(context: $TSContext, questionObj: any, answe
     replacementArray.splice(replacementArray.indexOf(answer), 1, newAnswer);
   }
 }
-

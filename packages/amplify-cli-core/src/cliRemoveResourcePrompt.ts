@@ -1,3 +1,4 @@
+import { prompter } from 'amplify-prompts';
 import { $TSContext } from '.';
 
 export async function promptConfirmationRemove(context: $TSContext, serviceType?: string): Promise<boolean> {
@@ -11,6 +12,6 @@ export async function promptConfirmationRemove(context: $TSContext, serviceType?
       'Are you sure you want to unlink this imported resource from this Amplify backend environment? The imported resource itself will not be deleted.';
   }
 
-  const confirm = context.input.options?.yes || (await context.amplify.confirmPrompt(promptText));
+  const confirm = context.input.options?.yes || (await prompter.yesOrNo(promptText));
   return confirm;
 }

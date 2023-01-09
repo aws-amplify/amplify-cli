@@ -1,7 +1,7 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import { stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
@@ -132,9 +132,7 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush === undefined) {
-      context.exeInfo.forcePush = await context.amplify.confirmPrompt(
-        'Do you want to push your resources to the cloud for your environment?',
-      );
+      context.exeInfo.forcePush = await prompter.yesOrNo('Do you want to push your resources to the cloud for your environment?');
     }
 
     if (context.exeInfo.forcePush) {

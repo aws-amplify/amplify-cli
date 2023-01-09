@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -9,6 +7,7 @@ import { editors, editorSelection, normalizeEditor } from '../extensions/amplify
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
+import { printer, prompter } from 'amplify-prompts';
 
 /**
  * Analyzes the project
@@ -23,7 +22,7 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
   // default to that here unless different param specified
   const { frontend } = context?.parameters?.options;
   if (!frontend) {
-    context.print.warning('No frontend specified. Defaulting to android.');
+    printer.warn('No frontend specified. Defaulting to android.');
     context.exeInfo.projectConfig.frontend = 'android';
   } else {
     context.exeInfo.projectConfig.frontend = frontend;
@@ -40,10 +39,10 @@ export const displayConfigurationDefaults = (
   defaultEnv: string | undefined,
   defaultEditorName: string,
 ): void => {
-  context.print.info('Project information');
-  context.print.info(`| Name: ${defaultProjectName}`);
-  context.print.info(`| Environment: ${defaultEnv}`);
-  context.print.info(`| Default editor: ${defaultEditorName}`);
+  printer.info('Project information');
+  printer.info(`| Name: ${defaultProjectName}`);
+  printer.info(`| Environment: ${defaultEnv}`);
+  printer.info(`| Default editor: ${defaultEditorName}`);
 };
 
 const setConfigurationDefaults = (
@@ -73,8 +72,8 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
-  context.print.success('The following configuration will be applied:');
-  context.print.info('');
+  printer.success('The following configuration will be applied:');
+  printer.info('');
 
   displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 
@@ -83,9 +82,9 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   const frontendModule = await import(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
-  context.print.info('');
+  printer.info('');
 
-  if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
+  if (context.exeInfo.inputParams.yes || (await prompter.yesOrNo('Initialize the project with the above configuration?'))) {
     setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
@@ -97,7 +96,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
 export const analyzeProject = async (context: $TSContext): Promise<$TSContext> => {
   // eslint-disable-next-line spellcheck/spell-checker
   if (!context.parameters.options.app || !context.parameters.options.quickstart) {
-    context.print.warning('Note: It is recommended to run this command from the root of your app directory');
+    printer.warn('Note: It is recommended to run this command from the root of your app directory');
   }
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
@@ -269,7 +268,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
     const envAddExec = checkEnvAddExec(context);
 
     if (allEnvs.length > 0 && envAddExec === false) {
-      if (await context.amplify.confirmPrompt('Do you want to use an existing environment?')) {
+      if (await prompter.yesOrNo('Do you want to use an existing environment?')) {
         const envQuestion: inquirer.ListQuestion = {
           type: 'list',
           name: 'envName',

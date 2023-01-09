@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { byValues, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
@@ -287,24 +287,24 @@ export const triggerFlow = async (context, resource, category, previousTriggers 
 
   // loop through triggers that user selected,
   // and ask which templates they want using template metadata and learn more loop
-  if (askTriggers.triggers) {
-    for (let i = 0; i < askTriggers.triggers.length; i++) {
-      const optionsPath = `${triggerPath}/${askTriggers.triggers[i]}`;
+  if (askTriggers) {
+    for (let i = 0; i < askTriggers.length; i++) {
+      const optionsPath = `${triggerPath}/${askTriggers[i]}`;
 
-      const templateOptions: (string | Separator | { name; value })[] = choicesFromMetadata(optionsPath, askTriggers.triggers[i]);
+      const templateOptions: (string | Separator | { name; value })[] = choicesFromMetadata(optionsPath, askTriggers[i]);
       templateOptions.push({ name: 'Create your own module', value: 'custom' });
-      const templateMeta = context.amplify.getTriggerMetadata(optionsPath, askTriggers.triggers[i]);
-      const readableTrigger = triggerMeta[askTriggers.triggers[i]].name;
+      const templateMeta = context.amplify.getTriggerMetadata(optionsPath, askTriggers[i]);
+      const readableTrigger = triggerMeta[askTriggers[i]].name;
 
       const templateQuestion = {
         name: 'templates',
         type: 'checkbox',
         message: `What functionality do you want to use for ${readableTrigger}`,
         choices: templateOptions,
-        default: _.flattenDeep(previousTriggers[askTriggers.triggers[i]]),
+        default: _.flattenDeep(previousTriggers[askTriggers[i]]),
       };
       const askTemplates = await learnMoreLoop('templates', readableTrigger, templateMeta, templateQuestion);
-      triggerObj[`${askTriggers.triggers[i]}`] = askTemplates.templates;
+      triggerObj[`${askTriggers[i]}`] = askTemplates;
     }
   }
 
@@ -361,12 +361,15 @@ export const getTriggerPermissions = async (context, triggers, category) => {
 
 // helper function to show help text and redisplay question if 'learn more' is selected
 const learnMoreLoop = async (key, map, metaData: { URL?; name }, question) => {
-  let selections: { templates?; triggers?: [] | undefined } = await inquirer.prompt(question);
+  let selections = await prompter.pick<'many', string>(question.message, question.choices, {
+    initial: byValues(question.default),
+    returnSize: 'many',
+  });
 
   while (
     // handle answers that are strings or arrays
-    Array.isArray(selections[key]) &&
-    selections[key].includes('learn')
+    Array.isArray(selections) &&
+    selections.includes('learn')
   ) {
     let prefix;
     if (metaData.URL) {
@@ -381,8 +384,12 @@ const learnMoreLoop = async (key, map, metaData: { URL?; name }, question) => {
       });
     }
     question.prefix = prefix;
-    selections = await inquirer.prompt(question);
+    selections = await prompter.pick<'many', string>(question.message, question.choices, {
+      initial: byValues(question.default),
+      returnSize: 'many',
+    });
   }
+
   return selections;
 };
 
@@ -407,7 +414,7 @@ export const getTriggerMetadata = (triggerPath, selection): $TSAny => JSONUtilit
 // open customer's text editor
 async function openEditor(context, filePath, name) {
   const fullPath = `${filePath}/${name}.js`;
-  if (await context.amplify.confirmPrompt(`Do you want to edit your ${name} function now?`)) {
+  if (await prompter.yesOrNo(`Do you want to edit your ${name} function now?`)) {
     await context.amplify.openEditor(context, fullPath);
   }
 }

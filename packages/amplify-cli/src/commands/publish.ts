@@ -1,4 +1,4 @@
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { run as push } from './push';
 
 /**
@@ -38,7 +38,7 @@ export const run = async context => {
   let continueToPublish = didPush || !!context?.exeInfo?.inputParams?.yes;
   if (!continueToPublish && isHostingAlreadyPushed) {
     printer.info('');
-    continueToPublish = await context.amplify.confirmPrompt('Do you still want to publish the frontend?');
+    continueToPublish = await prompter.yesOrNo('Do you still want to publish the frontend?');
   }
 
   if (continueToPublish) {

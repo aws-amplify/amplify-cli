@@ -6,7 +6,7 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { postPullCodegen } from './amplify-service-helper';
@@ -72,7 +72,7 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
   if (!inputParams.yes) {
     const shouldKeepAmplifyDir = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
       ? !context.exeInfo.existingLocalEnvInfo.noUpdateBackend
-      : await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
+      : await prompter.yesOrNo('Do you plan on modifying this backend?');
 
     if (shouldKeepAmplifyDir) {
       if (stateManager.currentMetaFileExists()) {

@@ -5,18 +5,16 @@ import { setRegPendingDelete } from '../utils/win-utils';
 import { pendingDeletePath } from '../utils/win-constants';
 import { hideSync } from 'hidefile';
 import chalk from 'chalk';
+import { printer, prompter } from 'amplify-prompts';
 
 export const run = async (context: $TSContext) => {
   if (!isPackaged) {
-    context.print.warning('"uninstall" is not available in this installation of Amplify.');
-    context.print.info(`Use ${chalk.blueBright('npm uninstall -g @aws-amplify/cli')} instead.`);
+    printer.warn('"uninstall" is not available in this installation of Amplify.');
+    printer.info(`Use ${chalk.blueBright('npm uninstall -g @aws-amplify/cli')} instead.`);
     return;
   }
-  if (
-    !context?.input?.options?.yes &&
-    !(await context.amplify.confirmPrompt('Are you sure you want to uninstall the Amplify CLI?', false))
-  ) {
-    context.print.warning('Not removing the Amplify CLI.');
+  if (!context?.input?.options?.yes && !(await prompter.yesOrNo('Are you sure you want to uninstall the Amplify CLI?', false))) {
+    printer.warn('Not removing the Amplify CLI.');
     return;
   }
   if (process.platform.startsWith('win')) {
@@ -37,14 +35,12 @@ export const run = async (context: $TSContext) => {
     try {
       await setRegPendingDelete();
     } catch (err) {
-      context.print.warning(err);
-      context.print.warning(
-        `Unable to set registry value marking Amplify binary for deletion. You can manually delete ${pendingDeletePath}.`,
-      );
+      printer.warn(err);
+      printer.warn(`Unable to set registry value marking Amplify binary for deletion. You can manually delete ${pendingDeletePath}.`);
     }
   }
   await removeHomeDotAmplifyDir();
-  context.print.success('Uninstalled the Amplify CLI');
+  printer.success('Uninstalled the Amplify CLI');
 };
 
 const removeHomeDotAmplifyDir = async () => {

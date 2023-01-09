@@ -218,7 +218,7 @@ describe('remove-resource', () => {
     });
 
     it('not remove resource when confirm prompt returns false', async () => {
-      context.amplify.confirmPrompt.mockReturnValue(false);
+      prompter.yesOrNo.mockReturnValue(false);
 
       await expect(removeResource(context as any, 'function', 'lambda1')).resolves.toBeUndefined();
 
@@ -245,7 +245,7 @@ describe('remove-resource', () => {
         resourceName: 'authResourceName',
       });
 
-      expect(context.amplify.confirmPrompt).toBeCalledWith(
+      expect(prompter.yesOrNo).toBeCalledWith(
         'Are you sure you want to unlink this imported resource from this Amplify backend environment? The imported resource itself will not be deleted.',
       );
     });

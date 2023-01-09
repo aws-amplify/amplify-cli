@@ -7,6 +7,7 @@ import * as envEditor from 'env-editor';
 import { editorSelection } from './editor-selection';
 import { getEnvInfo } from './get-env-info';
 import { $TSContext } from 'amplify-cli-core';
+import { prompter } from 'amplify-prompts';
 
 export async function openEditor(context: $TSContext, filePath: string, waitToContinue = true): Promise<void> {
   const continueQuestion: inquirer.InputQuestion = {
@@ -48,7 +49,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
     if (!editorPath) {
       context.print.warning(`Could not find selected code editor (${editorSelected}) on your machine.`);
 
-      const openFile = await context.amplify.confirmPrompt('Try opening with system-default editor instead?', true);
+      const openFile = await prompter.yesOrNo('Try opening with system-default editor instead?', true);
 
       if (openFile) {
         await open(filePath, { wait: waitToContinue });

@@ -1,14 +1,12 @@
-import {
-  exitOnNextTick, stateManager, $TSAny, $TSContext,
-} from 'amplify-cli-core';
+import { exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import { initializeEnv } from './initialize-env';
 import { postPullCodegen } from './amplify-service-helper';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 
 /**
  * pull backend from the cloud
  */
- export const pullBackend = async (context: $TSContext, inputParams: $TSAny): Promise<void> => {
+export const pullBackend = async (context: $TSContext, inputParams: $TSAny): Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = inputParams;
   printer.info('');
@@ -23,7 +21,7 @@ import { printer } from 'amplify-prompts';
     printer.warn('Local changes detected.');
     printer.warn('Pulling changes from the cloud will override your local changes.');
     if (!context.exeInfo.inputParams.yes) {
-      const confirmOverride = await context.amplify.confirmPrompt('Are you sure you would like to continue?', false);
+      const confirmOverride = await prompter.yesOrNo('Are you sure you would like to continue?', false);
       if (!confirmOverride) {
         printer.info(`Run an 'amplify push' to update your project upstream.`);
         printer.info('However, this will override upstream changes to this backend environment with your local changes.');
