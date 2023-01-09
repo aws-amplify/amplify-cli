@@ -7,7 +7,7 @@ import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
-import { deleteS3Bucket } from '@aws-amplify/amplify-e2e-core';
+import { deleteS3Bucket, sleep } from '@aws-amplify/amplify-e2e-core';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
@@ -564,12 +564,7 @@ const mergeResourcesByCCIJob = (
 };
 
 const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, apps: AmplifyAppInfo[]): Promise<void> => {
-  if(apps.length > DELETE_LIMITS.PER_BATCH.OTHER){
-    // throttle delete calls
-    await Promise.all(apps.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(app => deleteAmplifyApp(account, accountIndex, app)));
-  } else {
-    await Promise.all(apps.map(app => deleteAmplifyApp(account, accountIndex, app)));
-  }
+  await Promise.all(apps.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(app => deleteAmplifyApp(account, accountIndex, app)));
 };
 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
@@ -587,12 +582,7 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
 };
 
 const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, roles: IamRoleInfo[]): Promise<void> => {
-  if(roles.length > DELETE_LIMITS.PER_BATCH.OTHER){
-    // throttle delete calls
-    await Promise.all(roles.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(role => deleteIamRole(account, accountIndex, role)));
-  } else {
-    await Promise.all(roles.map(role => deleteIamRole(account, accountIndex, role)));
-  }
+  await Promise.all(roles.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(role => deleteIamRole(account, accountIndex, role)));
 };
 
 const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo): Promise<void> => {
@@ -656,12 +646,7 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
 };
 
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
-  if(buckets.length > DELETE_LIMITS.PER_BATCH.OTHER){
-    // throttle delete calls
-    await Promise.all(buckets.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(bucket => deleteBucket(account, accountIndex, bucket)));
-  } else {
-    await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
-  }
+  await Promise.all(buckets.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(bucket => deleteBucket(account, accountIndex, bucket)));
 };
 
 const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
@@ -680,12 +665,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
 };
 
 const deletePinpointApps = async (account: AWSAccountInfo, accountIndex: number, apps: PinpointAppInfo[]): Promise<void> => {
-  if(apps.length > DELETE_LIMITS.PER_BATCH.OTHER){
-    // throttle delete calls
-    await Promise.all(apps.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(app => deletePinpointApp(account, accountIndex, app)));
-  } else {
-    await Promise.all(apps.map(app => deletePinpointApp(account, accountIndex, app)));
-  }
+  await Promise.all(apps.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(app => deletePinpointApp(account, accountIndex, app)));
 };
 
 const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, app: PinpointAppInfo): Promise<void> => {
@@ -701,12 +681,7 @@ const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, 
 };
 
 const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, apis: AppSyncApiInfo[]): Promise<void> => {
-  if(apis.length > DELETE_LIMITS.PER_BATCH.OTHER){
-    // throttle delete calls
-    await Promise.all(apis.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(api => deleteAppSyncApi(account, accountIndex, api)));
-  } else {
-    await Promise.all(apis.map(api => deleteAppSyncApi(account, accountIndex, api)));
-  }
+  await Promise.all(apis.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map(api => deleteAppSyncApi(account, accountIndex, api)));
 };
 
 const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo): Promise<void> => {
@@ -723,12 +698,7 @@ const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, a
 };
 
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
-  if(stacks.length > DELETE_LIMITS.PER_BATCH.CFN_STACK){
-    // throttle delete calls, 100 seems to work fine for stacks
-    await Promise.all(stacks.slice(0, DELETE_LIMITS.PER_BATCH.CFN_STACK).map(stack => deleteCfnStack(account, accountIndex, stack)));
-  } else {
-    await Promise.all(stacks.map(stack => deleteCfnStack(account, accountIndex, stack)));
-  }
+  await Promise.all(stacks.slice(0, DELETE_LIMITS.PER_BATCH.CFN_STACK).map(stack => deleteCfnStack(account, accountIndex, stack)));
 };
 
 const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo): Promise<void> => {
@@ -959,9 +929,5 @@ const cleanup = async (): Promise<void> => {
   }
   console.log('Done cleaning all accounts!');
 };
-
-const sleep = async (ms) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 cleanup();
