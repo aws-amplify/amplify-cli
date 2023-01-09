@@ -880,12 +880,13 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   );
   // cleanup resources that are <unknown> but that are definitely amplify resources
   // this includes apps with names that include "test" or stacks that include both "amplify" & "test"
-  const testapps = (allResources["<unknown>"].amplifyApps as any)?.filter(a => a.name.toLocaleLowerCase().includes('test'));
-  const testStacks = (allResources["<unknown>"].stacks as any)?.filter(s => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'));
-  if(!allResources["<orphan>"].amplifyApps) {allResources["<orphan>"].amplifyApps = []}
-  if(!allResources["<orphan>"].stacks) {allResources["<orphan>"].stacks = []}
-  (allResources["<orphan>"].amplifyApps as any).push(...(testapps ? testapps : []));
-  (allResources["<orphan>"].stacks as any).push(...(testStacks ? testStacks : []));
+  const testApps = allResources["<unknown>"].amplifyApps?.filter(a => a.name.toLocaleLowerCase().includes('test'));
+  const testStacks = allResources["<unknown>"].stacks?.filter(s => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'));
+  const orphanedResources = allResources["<orphan>"];
+  orphanedResources.amplifyApps = orphanedResources.amplifyApps ?? [];
+  orphanedResources.stacks = orphanedResources.stacks ?? [];
+  orphanedResources.amplifyApps.push(...(testApps ? testApps : []));
+  orphanedResources.stacks.push(...(testStacks ? testStacks : []));
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources);
