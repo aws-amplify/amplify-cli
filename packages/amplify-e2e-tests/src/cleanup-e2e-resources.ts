@@ -879,6 +879,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanPinpointApplications, orphanAppSyncApis
   );
   // cleanup resources that are <unknown> but that are definitely amplify resources
+  // this includes apps with names that include "test" or stacks that include both "amplify" & "test"
   const testapps = (allResources["<unknown>"].amplifyApps as any)?.filter(a => a.name.toLocaleLowerCase().includes('test'));
   const testStacks = (allResources["<unknown>"].stacks as any)?.filter(s => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'));
   if(!allResources["<orphan>"].amplifyApps) {allResources["<orphan>"].amplifyApps = []}
