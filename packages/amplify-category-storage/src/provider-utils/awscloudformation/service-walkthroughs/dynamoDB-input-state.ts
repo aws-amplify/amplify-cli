@@ -49,17 +49,17 @@ export class DynamoDBInputState {
     return fs.existsSync(this._cliInputsFilePath);
   }
 
-  public isCLIInputsValid(cliInputs?: DynamoDBCLIInputs) {
+  public async isCLIInputsValid(cliInputs?: DynamoDBCLIInputs): Promise<void> {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
 
     const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'DynamoDBCLIInputs');
-    schemaValidator.validateInput(JSON.stringify(cliInputs));
+    await schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
-  public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {
-    this.isCLIInputsValid(cliInputs);
+  public async saveCliInputPayload(cliInputs: DynamoDBCLIInputs): Promise<void> {
+    await this.isCLIInputsValid(cliInputs);
 
     fs.ensureDirSync(pathManager.getResourceDirectoryPath(undefined, this._category, this._resourceName));
     try {
@@ -69,7 +69,7 @@ export class DynamoDBInputState {
     }
   }
 
-  public migrate() {
+  public async migrate(): Promise<void> {
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
     const backendDir = pathManager.getBackendDirPath();
@@ -144,7 +144,7 @@ export class DynamoDBInputState {
       gsi,
     };
 
-    this.saveCliInputPayload(cliInputs);
+    await this.saveCliInputPayload(cliInputs);
 
     // Remove old files
 

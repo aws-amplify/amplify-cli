@@ -216,21 +216,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@2.5.6":
-  version "2.5.6"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.5.6.tgz#d70416c1f35c0c8fd8d8f7ef70a6fb40a46d9822"
-  integrity sha512-RScybJUc+hUp0z+IXkUecsy0tMPNu0YjKO3eCEDrJZyv31aHGdsbadElgVU61p6l3iYig6SwA9mE+SrKw86ALg==
+"@aws-amplify/codegen-ui-react@2.7.2":
+  version "2.7.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.7.2.tgz#3789a9f0e989aff6009f27d15106f979fa752898"
+  integrity sha512-glUu6mNY/z8NwBe9D+MauyKENguujlPgnHZYbVouqAa+y4KTwLnXF6valkg6pOFI2bed7eBRzTtIdmo29BVJvA==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.5.6"
+    "@aws-amplify/codegen-ui" "2.7.2"
     "@typescript/vfs" "~1.3.5"
     typescript "<=4.5.0"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.5.6":
-  version "2.5.6"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.5.6.tgz#af61c36c12c19880914cae1601b3387579e87d02"
-  integrity sha512-xbe7Hw5boVzT1aSwrDwIQvZ85pNz25zJDIL4xvt1JyjWt2u5flY2DqxMAutltKmY2EGfDFWEzsz7ze/+NCWBtA==
+"@aws-amplify/codegen-ui@2.7.2":
+  version "2.7.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.7.2.tgz#aa4ca4f21162e7b6badf49e71987eb3507177906"
+  integrity sha512-nAVfanYejH0HB9wIbfObFZLo73Uec5MeUlH5CfUMWyZP2MF59BgAp+zy3IStiJxq+kpH4xVitAdKLNAz6ubqhQ==
   dependencies:
     change-case "^4.1.2"
     yup "^0.32.11"
@@ -17515,9 +17515,9 @@ json5@2.x, json5@^2.1.2, json5@^2.2.0, json5@^2.2.1:
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
 json5@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
-  integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
+  integrity sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==
   dependencies:
     minimist "^1.2.0"
 
@@ -18458,12 +18458,7 @@ minimist-options@4.1.0:
     is-plain-obj "^1.1.0"
     kind-of "^6.0.3"
 
-minimist@^1.1.1, minimist@^1.2.3, minimist@^1.2.5, minimist@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
-  integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
-
-minimist@^1.2.0:
+minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.3, minimist@^1.2.5, minimist@^1.2.6:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
   integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==

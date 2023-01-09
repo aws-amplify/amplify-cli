@@ -15,5 +15,5 @@ export const run = async (context: $TSContext) => {
     printer.error(`Provider ${result.providerName} not configured for this category`);
     return undefined;
   }
-  return openConsole(result.service);
+  await openConsole(result.service);
 };

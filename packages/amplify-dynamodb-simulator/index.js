@@ -196,10 +196,10 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
           log.error('Dynamo DB Simulator has prematurely exited... need to retry');
           const err = new Error('premature exit');
           err.code = 'premature';
-          proc.removeListener('exit', prematureExit);
+          proc.removeListener('exit', prematureExit).catch(reject);
           reject(err);
         };
-        proc.on('exit', prematureExit);
+        void proc.on('exit', prematureExit);
       }),
     ]);
 
@@ -221,7 +221,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
   } finally {
     waiter && waiter.cancel();
     if (typeof prematureExit === 'function') {
-      proc.removeListener('exit', prematureExit);
+      void proc.removeListener('exit', prematureExit);
     }
   }
 
