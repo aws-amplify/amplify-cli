@@ -69,7 +69,7 @@ const WINDOWS_TEST_SKIP_LIST: string[] = [
   'geo-update-1_pkg',
   'geo-update-2_pkg',
   'git-clone-attach_pkg',
-  'git-clone-migration_pkg',
+  'git-clone-migration-tests_v10',
   'hooks-a_pkg',
   'import_auth_1a_pkg',
   'import_auth_1b_pkg',
