@@ -34,7 +34,7 @@
     "@hapi/topo": "^5.0.0",
     "amplify-category-function": "4.2.2",
     "amplify-cli-core": "3.5.0",
-    "amplify-codegen": "^3.3.4",
+    "amplify-codegen": "^3.3.5",
     "amplify-dynamodb-simulator": "2.5.2",
     "amplify-prompts": "2.6.2",
     "amplify-provider-awscloudformation": "6.10.0",
