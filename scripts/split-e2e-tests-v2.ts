@@ -22,6 +22,10 @@ const RUN_SOLO = [
     'geo-remove-3_pkg',
     'geo-update-1_pkg',
     'geo-update-2_pkg',
+    'containers-api-2_pkg',
+    'containers-api-1_pkg',
+    'schema-auth-11-a_pkg',
+    'http-migration_pkg',
 ]
 const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],
@@ -44,6 +48,7 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'function_7_pkg',
         'function_8_pkg',
         'geo-add-e_pkg',
+        'geo-add-c_pkg',
         'geo-add-f_pkg',
         'geo-remove-2_pkg',
         'geo-remove-3_pkg',
