@@ -25,7 +25,7 @@ export function updateEnvironment(cwd: string, settings: { permissionsBoundaryAr
     spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
       .wait('Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles')
       .sendLine(settings.permissionsBoundaryArn)
-      .run((err: Error) => (!!err ? reject(err) : resolve()));
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 
@@ -92,8 +92,8 @@ export function checkoutEnvironment(cwd: string, settings: { envName: string, re
 // Test multiple Environments by passing settings.numEnv
 export function listEnvironment(cwd: string, settings: { numEnv?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
-    let numEnv = settings.numEnv || 1;
-    let regex = /\|\s\*?[a-z]{2,10}\s+\|/;
+    const numEnv = settings.numEnv || 1;
+    const regex = /\|\s\*?[a-z]{2,10}\s+\|/;
     const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {

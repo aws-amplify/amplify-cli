@@ -23,9 +23,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
   if (editorSelected !== 'none') {
     const editorArguments: string[] = [];
 
-    let editor: envEditor.Editor;
-
-    editor = envEditor.getEditor(editorSelected);
+    const editor: envEditor.Editor = envEditor.getEditor(editorSelected);
 
     if (!editor) {
       context.print.error(
@@ -73,7 +71,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
             stdio: 'ignore',
           });
 
-          subProcess.on('error', err => {
+          void subProcess.on('error', err => {
             context.print.error(
               `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
             );

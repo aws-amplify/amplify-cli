@@ -32,45 +32,31 @@ export type LayerPushSettings = {
 /**
  * Function to test amplify push with verbose status
  */
-export const amplifyPush = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
   // Test detailed status
-  spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait(/.*/)
-    .run((err: Error) => {
-      if (err) {
-        reject(err);
-      }
-    });
+    .runAsync();
   // Test amplify push
-  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
     .wait('Do you want to generate code for your newly created GraphQL API')
     .sendConfirmNo()
     .wait(/.*/)
-    .run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-});
+    .runAsync();
+};
 
 /**
  * Function to test amplify push with codegen for graphql API
  */
-export const amplifyPushGraphQlWithCognitoPrompt = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+export const amplifyPushGraphQlWithCognitoPrompt = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
   // Test detailed status
-  spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait(/.*/)
-    .run((err: Error) => {
-      if (err) {
-        reject(err);
-      }
-    });
+    .runAsync();
   // Test amplify push
-  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
     .wait(/.*Do you want to use the default authentication and security configuration.*/)
@@ -82,14 +68,8 @@ export const amplifyPushGraphQlWithCognitoPrompt = (cwd: string, testingWithLate
     .wait('Do you want to generate code for your newly created GraphQL API')
     .sendConfirmNo()
     .wait(/.*/)
-    .run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-});
+    .runAsync();
+};
 
 /**
  * Function to test amplify push with force push flag --force
@@ -405,26 +385,16 @@ export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boole
 /**
  * Function to test amplify push with overrides functionality
  */
-export const amplifyPushOverride = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+export const amplifyPushOverride = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
   // Test detailed status
-  spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait(/.*/)
-    .run((err: Error) => {
-      if (err) {
-        reject(err);
-      } else {
-        // Test amplify push
-        spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-          .wait('Are you sure you want to continue?')
-          .sendConfirmYes()
-          .wait(/.*/)
-          .run((error: Error) => {
-            if (!error) {
-              resolve();
-            } else {
-              reject(error);
-            }
-          });
-      }
-    });
-});
+    .runAsync();
+
+  // Test amplify push
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*/)
+    .runAsync();
+};

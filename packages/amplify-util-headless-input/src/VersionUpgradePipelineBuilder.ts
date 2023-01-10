@@ -5,14 +5,14 @@ import { VersionUpgradePipeline } from './HeadlessInputValidator';
  */
 export class VersionUpgradePipelineBuilder {
   private versionIndexMap: Map<number, number> = new Map();
-  private transformationFunctions: Function[] = [];
+  private transformationFunctions: ((...args: unknown[]) => unknown)[] = [];
 
   withVersionIndexMap(map: Map<number, number>) {
     this.versionIndexMap = map;
     return this;
   }
 
-  withTransformationFunctions(functions: Function[]) {
+  withTransformationFunctions(functions: ((...args: unknown[]) => unknown)[]) {
     this.transformationFunctions = functions;
     return this;
   }

@@ -1,4 +1,4 @@
-let DEFAULT_INTERVAL = ['*'];
+const DEFAULT_INTERVAL = ['*'];
 /**
  * Initializes a CronBuilder with an optional initial cron expression.
  * @constructor

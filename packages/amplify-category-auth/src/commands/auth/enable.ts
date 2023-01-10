@@ -10,14 +10,14 @@ export const alias = ['add'];
 
 export const run = async (context: $TSContext) => {
   if (projectHasAuth(context)) {
-    return;
+    return undefined;
   }
   const { amplify } = context;
   const serviceSelectionPromptResult = await amplify.serviceSelectionPrompt(context, category, getSupportedServices());
   const providerController = await import(path.join(`..`, `..`, `provider-utils`, `${serviceSelectionPromptResult.providerName}`, `index`));
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
   return providerController.addResource(context, serviceSelectionPromptResult.service);
 };

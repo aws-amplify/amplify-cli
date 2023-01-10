@@ -40,7 +40,7 @@ export const run = async (context: Context) => {
 async function resolvePluginPathAndAdd(context: Context, inputPath: string) {
   const pluginDirPath = await resolvePluginPackagePath(context, inputPath);
   if (pluginDirPath) {
-    addNewPluginPackage(context, pluginDirPath);
+    await addNewPluginPackage(context, pluginDirPath);
   }
 }
 
@@ -181,7 +181,7 @@ async function addNewPluginPackage(context: Context, pluginDirPath: string) {
 async function addExcludedPluginPackage(context: Context, userSelection: PluginInfo[]) {
   if (userSelection.length > 0) {
     if (userSelection.length === 1) {
-      addFromExcluded(context.pluginPlatform, userSelection[0]);
+      await addFromExcluded(context.pluginPlatform, userSelection[0]);
     } else {
       const options = new Array<InquirerOption>();
       userSelection.forEach(pluginInfo => {
@@ -199,7 +199,7 @@ async function addExcludedPluginPackage(context: Context, userSelection: PluginI
         choices: options,
       });
 
-      addFromExcluded(context.pluginPlatform, answer.selection);
+      await addFromExcluded(context.pluginPlatform, answer.selection);
     }
     await confirmAndScan(context.pluginPlatform);
   }

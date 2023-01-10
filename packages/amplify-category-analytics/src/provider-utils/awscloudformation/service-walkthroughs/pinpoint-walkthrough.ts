@@ -5,11 +5,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
-import {
-  $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories,
-  $TSAny,
-  JSONUtilities,
-} from 'amplify-cli-core';
+import { $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories, $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { alphanumeric, printer, prompter } from 'amplify-prompts';
 import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 
@@ -25,7 +21,7 @@ const templateFileName = 'pinpoint-cloudformation-template.json';
  * @param defaultValuesFilename default values for given walkthrough
  * @returns resource
  */
-export const addWalkthrough = async (context : $TSContext, defaultValuesFilename: string): Promise<$TSAny> => {
+export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSAny> => {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
@@ -33,16 +29,13 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
     printer.warn(errMessage);
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
+  } else {
+    return configure(context, defaultValuesFilename, undefined);
   }
-
-  return configure(context, defaultValuesFilename, undefined);
+  return undefined;
 };
 
-const configure = async (
-  context : $TSContext,
-  defaultValuesFilename: string,
-  resourceName: string | undefined,
-): Promise<$TSAny> => {
+const configure = async (context: $TSContext, defaultValuesFilename: string, resourceName: string | undefined): Promise<$TSAny> => {
   const { amplify } = context;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -66,10 +59,12 @@ const configure = async (
   }
 
   const answers = {
-    resourceName: resourceName || await prompter.input('Provide a friendly resource name:', {
-      validate: alphanumeric('Resource name should be alphanumeric'),
-      initial: defaultValues.resourceName,
-    }),
+    resourceName:
+      resourceName ||
+      (await prompter.input('Provide a friendly resourcename:', {
+        validate: alphanumeric('Resource name should be alphanumeric'),
+        initial: defaultValues.resourceName,
+      })),
     appName: await prompter.input('Provide your pinpoint resource name:', {
       validate: alphanumeric('Resource name should be alphanumeric'),
       initial: defaultValues.appName,
@@ -84,7 +79,7 @@ const configure = async (
     allowUnauthenticatedIdentities: true,
   };
 
-  const checkResult : $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
     analyticsRequirements,
     context,
     'analytics',
@@ -122,9 +117,7 @@ const configure = async (
       }
     } else {
       try {
-        printer.warn(
-          'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
-        );
+        printer.warn('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
         analyticsRequirements.allowUnauthenticatedIdentities = false;
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,
@@ -287,7 +280,7 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
   return cfn;
 };
 
-const migrateParams = (context:$TSContext, params: Record<string, $TSAny>): Record<string, $TSAny> => {
+const migrateParams = (context: $TSContext, params: Record<string, $TSAny>): Record<string, $TSAny> => {
   const { defaultValuesFilename } = require(`${__dirname}/../../supported-services.json`)[serviceName];
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -319,6 +312,7 @@ const replaceRef = (node: $TSAny, refName: string, refReplacement: $TSAny): $TSA
       replaceRef(n, refName, refReplacement);
     });
   }
+  return undefined;
 };
 
 const isRefNode = (node: $TSAny, refName: string): boolean => {
@@ -339,7 +333,7 @@ export const getIAMPolicies = (resourceName: string, crudOptions: $TSAny): $TSAn
   let policy = {};
   const actions: Array<string> = [];
 
-  crudOptions.forEach((crudOption : string) => {
+  crudOptions.forEach((crudOption: string) => {
     switch (crudOption) {
       case 'create':
         actions.push('mobiletargeting:Put*', 'mobiletargeting:Create*', 'mobiletargeting:Send*');

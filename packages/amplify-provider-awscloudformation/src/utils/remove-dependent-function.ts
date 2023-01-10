@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, $TSObject, AmplifyError, pathManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from 'amplify-cli-core';
 import path from 'path';
 import { readProjectConfiguration, collectDirectivesByTypeNames, getTableNameForModel } from 'graphql-transformer-core';
 
@@ -13,19 +11,19 @@ export const ensureValidFunctionModelDependencies = async (
   allResources: $TSObject[],
 ): Promise<$TSObject[]> => {
   // get #current-cloud-backed and cloud backend schema.graphql
-  let dependentFunctionResource;
   const backendDir = pathManager.getBackendDirPath();
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const tablesDeleted = await getTableNameDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (tablesDeleted.length === 0) {
-    return dependentFunctionResource;
+    return undefined;
   }
-  dependentFunctionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'lambdasWithApiDependency', [
+  const dependentFunctionResource = await context.amplify.invokePluginMethod<any[]>(
     context,
-    allResources,
-    backendDir,
-    tablesDeleted,
-  ]);
+    'function',
+    undefined,
+    'lambdasWithApiDependency',
+    [context, allResources, backendDir, tablesDeleted],
+  );
   if (dependentFunctionResource.length === 0) {
     return dependentFunctionResource;
   }
@@ -46,8 +44,8 @@ export const ensureValidFunctionModelDependencies = async (
       apiResource[0].resourceName,
     ]);
   } else if (
-    !continueToPush
-    && (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
+    !continueToPush &&
+    (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
   ) {
     await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
       context,

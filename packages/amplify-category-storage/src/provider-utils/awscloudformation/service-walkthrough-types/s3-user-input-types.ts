@@ -10,22 +10,22 @@ export enum S3TriggerFunctionType {
 }
 
 export enum S3UserAccessRole {
-    AUTH = "Auth",
-    GUEST = "Guest",
-    GROUP = "Group"
+    AUTH = 'Auth',
+    GUEST = 'Guest',
+    GROUP = 'Group'
 }
 
 export function getUserAccessQuestions( accessRole : S3UserAccessRole ): string {
      if( accessRole === S3UserAccessRole.AUTH ){
-         return "Authenticated";
+         return 'Authenticated';
      } else {
          return accessRole.toString()
      }
 }
 
 export enum S3AccessType  {
-    AUTH_AND_GUEST =  "authAndGuest",
-    AUTH_ONLY =  "auth"
+    AUTH_AND_GUEST =  'authAndGuest',
+    AUTH_ONLY =  'auth'
 }
 
 export enum S3PermissionType {

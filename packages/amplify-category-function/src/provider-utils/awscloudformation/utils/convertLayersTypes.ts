@@ -39,7 +39,7 @@ export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[]
 export const convertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
   lambdaLayers.forEach(layer => {
-    if (layer.type === externalLayer && layer.arn.hasOwnProperty(LAYER_ARN_KEY)) {
+    if (layer.type === externalLayer && Object.prototype.hasOwnProperty.call(layer.arn, LAYER_ARN_KEY)) {
       const layerArn = layer.arn[LAYER_ARN_KEY];
       const layerArnSplit = layerArn.split(':');
       const layerNameWithEnv = layerArnSplit[layerArnSplit.length - 2];

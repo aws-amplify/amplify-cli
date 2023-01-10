@@ -196,11 +196,12 @@ export const updateTrigger = async triggerOptions => {
     }
     context.print.success('Successfully updated the Cognito trigger locally');
     return null;
-  } catch (err: $TSAny) {
+  } catch (err) {
     context.print.error(`Error updating the Cognito trigger: ${err.message}`);
     await context.usageData.emitError(err);
     exitOnNextTick(1);
   }
+  return undefined;
 };
 
 export const deleteDeselectedTriggers = async (currentTriggers, previousTriggers, functionName, targetDir, context) => {
@@ -503,7 +504,7 @@ export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, trig
               input: 'input',
               list: 'pick',
               confirm: 'confirmContinue',
-            }
+            };
             const prompterFunction = prompterTypeMapping[questions[j].question.type];
             const answer: any = await prompter[prompterFunction](questions[j].question.message);
             answers[questions[j].key] = answer;
