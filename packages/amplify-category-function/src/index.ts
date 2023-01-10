@@ -11,7 +11,6 @@ import { postEnvRemoveHandler } from './events/postEnvRemoveHandler';
 import { postPushHandler } from './events/postPushHandler';
 import { preExportHandler } from './events/preExportHandler';
 import { prePushHandler } from './events/prePushHandler';
-import { ensureLambdaExecutionRoleOutputs } from './provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 // eslint-disable-next-line import/no-cycle
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
