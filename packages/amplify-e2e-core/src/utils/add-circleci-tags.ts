@@ -1,6 +1,7 @@
 import { stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { sleep } from './sleep';
 
 declare global {
   /* eslint-disable @typescript-eslint/no-namespace */
@@ -14,9 +15,6 @@ declare global {
   /* eslint-enable */
 }
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 export const addCircleCITags = async (projectPath: string): Promise<void> => {
   if (process.env && process.env['CIRCLECI']) {
     await staggerInitCalls(projectPath);
@@ -81,10 +79,10 @@ const staggerInitCalls = async (projectPath: string) => {
   const lock = path.join(projectPath, '..', 'init-lock.txt');
   // one test will create the lock first, 15 seconds should be enough to allow 1 test to do this first without collision risk
   const initialDelay = Math.floor(Math.random() * 15 * 1000);
-  await delay(initialDelay);
+  await sleep(initialDelay);
   while(true){
     if(fs.existsSync(lock)) {
-      await delay(1 * 1000);// wait
+      await sleep(1 * 1000);// wait
       // console.log("waiting to start");
       continue;
     } else {
@@ -92,7 +90,7 @@ const staggerInitCalls = async (projectPath: string) => {
       try {
         fs.writeFileSync(lock, '');
         console.log("holding lock file", lock);
-        await delay(15 * 1000); // hold the lock for 15 seconds
+        await sleep(15 * 1000); // hold the lock for 15 seconds
         fs.unlinkSync(lock);
         break;
       } catch (e){
