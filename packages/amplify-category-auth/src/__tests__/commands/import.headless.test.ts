@@ -24,9 +24,7 @@ jest.mock('amplify-cli-core', () => ({
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = jest.fn().mockReturnValue({
   providers: {
-    awscloudformation: {
-      Region: 'us-east-1',
-    },
+    awscloudformation: {},
   },
 });
 stateManager_mock.setResourceParametersJson = jest.fn();
@@ -68,7 +66,6 @@ describe('import auth headless', () => {
   const getUserPoolDetails = {
     Id: USER_POOL_ID,
     MfaConfiguration: 'ON',
-    Name: 'test',
   };
   const identityPoolDetails = [
     {
@@ -140,9 +137,9 @@ describe('import auth headless', () => {
       input: {
         command: 'import',
       },
-      usageData: {
-        pushHeadlessFlow: jest.fn(),
-      },
+      usageData : {
+        pushHeadlessFlow : jest.fn()
+      }
     };
   });
 
