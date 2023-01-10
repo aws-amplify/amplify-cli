@@ -50,7 +50,7 @@ const setup = {
     return {
       name: 'resourceName',
       message: 'Provide a friendly name for your resource',
-      validate: alphanumeric,
+      validate: alphanumeric(),
       default: defaultName,
     };
   },

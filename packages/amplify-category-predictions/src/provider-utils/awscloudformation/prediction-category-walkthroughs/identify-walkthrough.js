@@ -53,7 +53,7 @@ const PREDICTIONS_WALKTHROUGH_MODE = {
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -328,24 +328,26 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 async function followUpQuestions(typeObj, identifyType, parameters) {
   const answers = {};
 
-  if (typeObj.questions(parameters).when()) {
-    answers[typeObj.questions(parameters).name] = await prompter.pick(
-      typeObj.questions(parameters).message,
-      typeObj.questions(parameters).choices,
-      {
-        initial: byValue(typeObj.questions(parameters).default),
-        validate: typeObj.questions(parameters).validate,
-      }
-    );
+  for (const question of typeObj.questions(parameters)) {
+    if (!question.when || question.when(answers)) {
+      answers[question.name] = await prompter.pick(
+        question.message,
+        question.choices,
+        {
+          ...(question.default ? { initial: byValue(question.default) } : {}),
+          ...(question.validate ? { validate: question.validate } : {}),
+        }
+      );
+    }
   }
 
-  if (typeObj.auth(parameters).when()) {
+  if (!typeObj.auth(parameters).when || typeObj.auth(parameters).when(answers)) {
     answers[typeObj.auth(parameters).name] = await prompter.pick(
       typeObj.auth(parameters).message,
       typeObj.auth(parameters).choices,
       {
-        initial: byValue(typeObj.auth(parameters).default),
-        validate: typeObj.auth(parameters).validate,
+        ...(typeObj.auth(parameters).default ? { initial: byValue(typeObj.auth(parameters).default) } : {}),
+        ...(typeObj.auth(parameters).validate ? { validate: typeObj.questions(parameters).validate } : {}),
       }
     );
   }

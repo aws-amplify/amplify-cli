@@ -18,7 +18,7 @@ const service = 'SageMaker';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -171,7 +171,7 @@ async function followUpQuestions(context, questionObj, inferType, defaultValues,
     [questionObj.endpointPrompt(parameters).name]: await prompter.pick(
       questionObj.endpointPrompt(parameters).message,
       questionObj.endpointPrompt(parameters).choices,
-      { initial: byValue(questionObj.endpointPrompt(parameters).default) },
+      ...(questionObj.endpointPrompt(parameters).default ? { initial: byValue(questionObj.endpointPrompt(parameters).default) } : {}),
     ),
   };
 
@@ -187,10 +187,10 @@ async function followUpQuestions(context, questionObj, inferType, defaultValues,
   }
 
   Object.assign(answers, {
-    [questionObj.authAccess(parameters).name]: await prompter.pick(
-      questionObj.authAccess(parameters).message,
-      questionObj.authAccess(parameters).choices,
-      { initial: byValue(questionObj.authAccess(parameters).default) },
+    [questionObj.authAccess.prompt(parameters).name]: await prompter.pick(
+      questionObj.authAccess.prompt(parameters).message,
+      questionObj.authAccess.prompt(parameters).choices,
+      ...(questionObj.authAccess.prompt(parameters).default ? { initial: byValue(questionObj.authAccess.prompt(parameters).default) } : {}),
     ),
   });
 

@@ -17,7 +17,7 @@ const service = 'Comprehend';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -85,7 +85,7 @@ async function configure(context, resourceObj) {
   // only ask this for add
   if (!parameters.resourceName) {
     const interpretQuestionSetupType = interpretAssets.setup.type();
-    answers.interpretText = await prompter.pick(
+    answers.interpretType = await prompter.pick(
       interpretQuestionSetupType.message,
       interpretQuestionSetupType.choices,
     );
@@ -99,7 +99,7 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
-    const interpretQuestionSetupName = interpretAssets.setup.type();
+    const interpretQuestionSetupName = interpretAssets.setup.name(`${answers.interpretType}${defaultValues.resourceName}`);
     answers.resourceName = await prompter.input(
       interpretQuestionSetupName.message,
       {

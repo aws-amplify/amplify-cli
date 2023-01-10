@@ -17,7 +17,7 @@ let service = '';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -98,7 +98,7 @@ async function configure(context, resourceObj) {
 
     const convertNameQuestion = convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`);
     Object.assign(answers, {
-      resourceName: await prompter.input(convertNameQuestion, {
+      resourceName: await prompter.input(convertNameQuestion.message, {
         validate: convertNameQuestion.validate,
         initial: convertNameQuestion.default,
       })
@@ -172,7 +172,10 @@ async function followupQuestions(context, convertType, parameters) {
     [typeQuestions.questions(parameters).name]: await prompter.pick(
       typeQuestions.questions(parameters).message,
       typeQuestions.questions(parameters).choices,
-      { initial: byValue(typeQuestions.questions(parameters).default) }
+      {
+        ...(typeQuestions.questions(parameters).default ? { initial: byValue(typeQuestions.questions(parameters).default) } : {}),
+      }
+
     ),
   };
   // ask questions based on convert type
@@ -181,7 +184,9 @@ async function followupQuestions(context, convertType, parameters) {
       [typeQuestions.voiceQuestion(answers.language, parameters).name]: await prompter.pick(
         typeQuestions.voiceQuestion(answers.language, parameters).message,
         typeQuestions.voiceQuestion(answers.language, parameters).choices,
-        { initial: byValue(typeQuestions.voiceQuestion(answers.language, parameters).default) }
+        {
+          ...(typeQuestions.voiceQuestion(answers.language, parameters).default ? { initial: byValue(typeQuestions.voiceQuestion(answers.language, parameters).default) } : {}),
+        }
       ),
     });
   }
@@ -192,16 +197,20 @@ async function followupQuestions(context, convertType, parameters) {
       [typeQuestions.targetQuestion(targetOptions, parameters).name]: await prompter.pick(
         typeQuestions.targetQuestion(targetOptions, parameters).message,
         typeQuestions.targetQuestion(targetOptions, parameters).choices,
-        { initial: byValue(typeQuestions.targetQuestion(targetOptions, parameters).default) }
+        {
+          ...(typeQuestions.targetQuestion(targetOptions, parameters).default ? { initial: byValue(typeQuestions.targetQuestion(targetOptions, parameters).default) } : {}),
+        }
       ),
     });
   }
 
   Object.assign(answers, {
-    [typeQuestions.authAccess(parameters).name]: await prompter.pick(
-      typeQuestions.authAccess(parameters).message,
-      typeQuestions.authAccess(parameters).choices,
-      { initial: byValue(typeQuestions.authAccess(parameters).default) }
+    [typeQuestions.authAccess.prompt(parameters).name]: await prompter.pick(
+      typeQuestions.authAccess.prompt(parameters).message,
+      typeQuestions.authAccess.prompt(parameters).choices,
+      {
+        ...(typeQuestions.authAccess.prompt(parameters).default ? { initial: byValue(typeQuestions.authAccess.prompt(parameters).default) } : {}),
+      }
     ),
   });
 
