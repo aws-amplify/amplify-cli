@@ -14,5 +14,5 @@ export async function invokeDeleteEnvParamsFromService(context: $TSContext, envN
     [context],
   );
   const envParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(envName)).instance;
-  await envParamManager.deleteAllEnvParametersFromPs(envName, deleteParametersFromService);
+  await envParamManager.deleteAllEnvParametersFromService(envName, deleteParametersFromService);
 }
