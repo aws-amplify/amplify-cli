@@ -76,7 +76,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
     printer.info('For more information: https://docs.amplify.aws/cli/usage/export-to-cdk');
     printer.blankLine();
   } catch (ex) {
-    revertToBackup(amplifyExportFolder);
+    await revertToBackup(amplifyExportFolder);
     spinner.fail();
     throw new AmplifyFault(
       'ResourceNotReadyFault',
@@ -86,7 +86,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
       ex,
     );
   } finally {
-    removeBackup(amplifyExportFolder);
+    await removeBackup(amplifyExportFolder);
     spinner.stop();
   }
 };

@@ -70,7 +70,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
 
     // Load configuration for layer and regenerate cfn template
     const layerParameters = loadStoredLayerParameters(context, layerName);
-    updateLayerArtifacts(context, layerParameters, {
+    await updateLayerArtifacts(context, layerParameters, {
       generateCfnFile: true,
       updateDescription: false,
       updateLayerParams: false,

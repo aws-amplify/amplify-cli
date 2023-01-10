@@ -319,7 +319,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         if (stateFolder.cloud) {
           await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
         }
-        postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
+        await postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
@@ -446,7 +446,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     );
     if (analyticsResources && analyticsResources.length > 0) {
       context = await invokePostPushAnalyticsUpdate(context);
-      context.amplify.updateamplifyMetaAfterPush(analyticsResources);
+      await context.amplify.updateamplifyMetaAfterPush(analyticsResources);
     }
 
     // Store current cloud backend in S3 deployment bucket

@@ -68,4 +68,4 @@ export type VersionedSchemaSupplier = (
 /**
  * Function that takes a version number and returns an array of functions that can be composed to translate a payload of the given version into the latest version of the schema
  */
-export type VersionUpgradePipeline = (version: number) => Function[];
+export type VersionUpgradePipeline = (version: number) => ((...args: unknown[]) => unknown)[];

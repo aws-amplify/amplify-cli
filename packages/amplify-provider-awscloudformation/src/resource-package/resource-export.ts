@@ -323,7 +323,7 @@ export class ResourceExport extends ResourcePackager {
             });
           await this.processAndWriteCfnTemplate(cfnTemplate, destination, templateFormat, false);
         } else {
-          this.copyResource(cfnFile, destination);
+          await this.copyResource(cfnFile, destination);
         }
         stackParameters[stackName].nestedStacks[logicalId] = nestedStack;
 

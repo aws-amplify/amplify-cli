@@ -445,13 +445,13 @@ export class DeploymentManager {
     await this.waitForActiveTables(stackParams.tableNames);
   };
 
-  private stackPollFn = (deploymentStep: DeploymentMachineOp): (() => void) => {
+  private stackPollFn = (deploymentStep: DeploymentMachineOp): (() => Promise<void>) => {
     assert(deploymentStep.stackName, 'stack name should be passed to stackPollFn');
     const monitor = new StackEventMonitor(this.cfnClient, deploymentStep.stackName, this.printer.print, this.printer.addActivity);
     monitor.start();
-    return () => {
+    return async () => {
       if (monitor) {
-        monitor.stop();
+        await monitor.stop();
       }
     };
   };

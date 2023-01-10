@@ -55,7 +55,7 @@ const run = async opts => {
     updateFrameworkInProjectConfig(platform.framework);
     await createAmplifyHelperFiles(platform.frontend);
     console.log(`${emoji.get('white_check_mark')} Amplify setup completed successfully.`);
-    showHelpText(platform.frontend);
+    await showHelpText(platform.frontend);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
@@ -441,7 +441,7 @@ async function createAmplifyHelperFiles(frontend) {
   }
 
   if (frontend === 'flutter') {
-    initializeAmplifyConfiguration(path.resolve('lib'));
+    await initializeAmplifyConfiguration(path.resolve('lib'));
   }
 
   return frontend;

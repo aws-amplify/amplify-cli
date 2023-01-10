@@ -38,7 +38,7 @@ describe('add ddb walkthrough tests', () => {
   });
 
   it('addWalkthrough() test', async () => {
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(async () => undefined);
     jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     const expectedCLIInputsJSON: DynamoDBCLIInputs = {
@@ -180,7 +180,7 @@ describe('update ddb walkthrough tests', () => {
 
     jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => currentCLIInputsJSON);
 
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(async () => undefined);
     jest.spyOn(DynamoDBInputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
     jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 

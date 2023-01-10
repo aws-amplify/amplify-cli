@@ -231,7 +231,7 @@ export const startOpensearchEmulator = async (
   } finally {
     waiter && waiter.cancel();
     if (typeof prematureExit === 'function') {
-      proc.removeListener('exit', prematureExit);
+      void proc.removeListener('exit', prematureExit);
     }
   }
   return new OpenSearchEmulator(proc, opts);
@@ -280,10 +280,10 @@ export const exitingEmulatorPromise = (proc: execa.ExecaChildProcess<string>, pr
     prematureExit = () => {
       const err: $TSAny = new Error('premature exit');
       err.code = 'premature';
-      proc.removeListener('exit', prematureExit);
+      void proc.removeListener('exit', prematureExit);
       reject(err);
     };
-    proc.on('exit', prematureExit);
+    void proc.on('exit', prematureExit);
   });
 };
 

@@ -122,7 +122,7 @@ export class S3InputState {
       }
     }
     //validate CLI inputs
-    this.isCLIInputsValid(this._inputPayload);
+    void this.isCLIInputsValid(this._inputPayload);
   }
 
   getOldS3ParamsForMigration(): MigrationParams {
@@ -493,22 +493,22 @@ export class S3InputState {
     }
   }
 
-  updateInputPayload(props: S3InputStateOptions) {
+  async updateInputPayload(props: S3InputStateOptions) {
     // Overwrite
     this._inputPayload = props.inputPayload;
 
     // validate cli-inputs.json
     const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'S3UserInputs');
-    schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
+    await schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
   }
 
-  public static getInstance(context: $TSContext, props: S3InputStateOptions): S3InputState {
+  public static async getInstance(context: $TSContext, props: S3InputStateOptions): Promise<S3InputState> {
     if (!S3InputState.s3InputState) {
       S3InputState.s3InputState = new S3InputState(context, props.resourceName, props.inputPayload);
     }
     //update flow
     if (props.inputPayload) {
-      S3InputState.s3InputState.updateInputPayload(props);
+      await S3InputState.s3InputState.updateInputPayload(props);
     }
     return S3InputState.s3InputState;
   }

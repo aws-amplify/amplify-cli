@@ -12,29 +12,25 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
   if (!(await shouldRenderComponents(context))) {
     return;
   }
-  try {
-    const studioClient = await AmplifyStudioClient.setClientInfo(context);
-    const [formSchemas, localSchema] = await Promise.all<[Promise<{
-      entities: AmplifyUIBuilder.Form[];
-    }>, Promise<Schema>]>([
-      studioClient.listForms(),
-      context.amplify.invokePluginMethod(
-        context,
-        'codegen',
-        undefined,
-        'getModelIntrospection',
-        [context],
-      ),
-    ]);
+  const studioClient = await AmplifyStudioClient.setClientInfo(context);
+  const [formSchemas, localSchema] = await Promise.all<[Promise<{
+    entities: AmplifyUIBuilder.Form[];
+  }>, Promise<Schema>]>([
+    studioClient.listForms(),
+    context.amplify.invokePluginMethod(
+      context,
+      'codegen',
+      undefined,
+      'getModelIntrospection',
+      [context],
+    ),
+  ]);
 
-    if (!localSchema) {
-      printer.debug('Local schema not found');
-      return;
-    }
-    printDetachedFormsWarning(formSchemas, localSchema);
-  } catch (error) {
-    printer.debug(error);
+  if (!localSchema) {
+    printer.debug('Local schema not found');
+    return;
   }
+  printDetachedFormsWarning(formSchemas, localSchema);
 };
 
 const printDetachedFormsWarning = (formSchemas: { entities: AmplifyUIBuilder.Form[] }, localSchema: Schema): void => {

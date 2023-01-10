@@ -460,12 +460,12 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
   return envParams;
 }
 
-export function openConsole(context: $TSContext, service: ServiceName) {
+export async function openConsole(context: $TSContext, service: ServiceName) {
   const amplifyMeta = stateManager.getMeta();
   const region = amplifyMeta.providers[provider].Region;
   const selection = service === ServiceName.LambdaFunction ? 'functions' : 'layers';
   const url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/${selection}`;
-  open(url, { wait: false });
+  await open(url, { wait: false });
 }
 
 export function isMockable(service: ServiceName): IsMockableResponse {

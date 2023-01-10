@@ -22,7 +22,7 @@ export async function start(context) {
     try {
       await mockStorage.start(context);
       // call s3 trigger
-      mockStorage.trigger(context);
+      await mockStorage.trigger(context);
     } catch (e) {
       console.log(e);
       // Sending term signal so we clean up after ourselves
