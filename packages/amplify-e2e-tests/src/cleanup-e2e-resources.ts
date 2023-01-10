@@ -922,7 +922,7 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-  for(let i = 0 ;i < 5; i ++){
+  for(let i = 0 ;i < 3; i ++){
     console.log("CLEANUP ROUND: ", i + 1);
     await Promise.all(accounts.map((account, i) => {
       return cleanupAccount(account, i, filterPredicate);
