@@ -3,6 +3,7 @@ import { LockfileParser } from './lock-file-interface';
 import { LockfileType } from './lock-file-types';
 import { PackageLockParser } from './package-lock-parser';
 import { YarnLockParser } from './yarn-lock-parser';
+import { Yarn2LockParser } from './yarn2-lock-parser';
 
 /**
  * lock file parser factory
@@ -17,6 +18,8 @@ export class LockFileParserFactory {
         return new PackageLockParser();
       case LockfileType.YARN:
         return new YarnLockParser();
+      case LockfileType.YARN2:
+        return new Yarn2LockParser();
       default:
         throw new AmplifyError('UnsupportedLockFileTypeError', {
           message: 'Unsupported lockfile type '

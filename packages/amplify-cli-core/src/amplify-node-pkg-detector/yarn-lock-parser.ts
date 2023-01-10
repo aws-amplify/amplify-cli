@@ -6,7 +6,7 @@ import { LockfileType } from './lock-file-types';
 /**
  * yarn lock file types
  */
-export type YarnLockFileTypes = LockfileType.YARN;
+export type YarnLockFileTypes = LockfileType.YARN | LockfileType.YARN2;
 
 /**
  * yarn lock interface
@@ -15,9 +15,8 @@ export interface YarnLock {
   type: string;
   object: YarnLockDependency;
   dependencies?: YarnLockDependency;
-  lockfileType: LockfileType.YARN;
+  lockfileType: LockfileType.YARN | LockfileType.YARN2;
   lockfileVersion: 1 | 2;
-
 }
 
 /**

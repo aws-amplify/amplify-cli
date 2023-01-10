@@ -194,7 +194,7 @@ describe('parsing package lock files', () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
       executable: 'npm',
       lockFile: 'package-lock-not-found.json',
-      packageManager: 'yarn',
+      packageManager: 'npm',
     });
     const projectRoot = path.join(__dirname, 'resources');
     expect(
@@ -353,6 +353,172 @@ describe('parsing package lock files', () => {
       executable: 'npm',
       lockFile: 'package-lock-test.json',
       packageManager: 'npm',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
+  });
+});
+
+describe('parsing yarn2 lock files', () => {
+  it('parses yarn2 lock file correctly', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-2-test.lock',
+      packageManager: 'yarn2',
+      yarnrc: '.yarnrc.yml',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.parseLockFile()).toMatchSnapshot();
+  });
+
+  it('throw error on corrupted lock file', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-test-error.lock',
+      packageManager: 'yarn2',
+      yarnrc: '.yarnrc.yml',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
+      projectRoot,
+    };
+    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).parseLockFile()).toThrowErrorMatchingInlineSnapshot(
+      `"yarn.lock parsing failed"`,
+    );
+  });
+
+  it('correctly detect dependencies for @aws-cdk/core', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-2-test.lock',
+      packageManager: 'yarn2',
+      yarnrc: '.yarnrc.yml',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.172.0",
+          },
+          "packageName": "amplify-cli-core",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.172.0",
+          },
+          "packageName": "@aws-amplify/amplify-category-custom",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.172.0",
+          },
+          "packageName": "@aws-amplify/cli-extensibility-helper",
+        },
+      ]
+    `);
+  });
+
+  it('correctly detect dependencies for amplify-cli-core', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-2-test.lock',
+      packageManager: 'yarn2',
+      yarnrc: '.yarnrc.yml',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "amplify-cli-core",
+            "version": "3.5.0",
+          },
+          "packageName": "@aws-amplify/amplify-category-custom",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "amplify-cli-core",
+            "version": "3.5.0",
+          },
+          "packageName": "@aws-amplify/cli-extensibility-helper",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "amplify-cli-core",
+            "version": "3.5.0",
+          },
+          "packageName": "amplify-cli-core",
+        },
+      ]
+    `);
+  });
+
+  it('correctly detect dependencies for fs-extra', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-2-test.lock',
+      packageManager: 'yarn2',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "9.1.0",
+          },
+          "packageName": "amplify-cli-core",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "8.1.0",
+          },
+          "packageName": "@aws-amplify/amplify-category-custom",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "8.1.0",
+          },
+          "packageName": "@aws-amplify/cli-extensibility-helper",
+        },
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "9.1.0",
+          },
+          "packageName": "fs-extra",
+        },
+      ]
+    `);
+  });
+
+  it('correctly detect dependencies for aws-cdk-lib', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-2-test.lock',
+      packageManager: 'yarn2',
+      yarnrc: '.yarnrc.yml',
     });
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({

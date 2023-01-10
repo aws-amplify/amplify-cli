@@ -1072,10 +1072,11 @@ export type PackageManager = {
     packageManager: PackageManagerType;
     lockFile: string;
     executable: string;
+    yarnrc?: string;
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export type PackageManagerType = 'yarn' | 'npm' | 'yarn2';
 
 // @public (undocumented)
 export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
