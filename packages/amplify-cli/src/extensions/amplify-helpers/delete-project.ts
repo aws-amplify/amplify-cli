@@ -3,9 +3,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
-import {
-  FeatureFlags, $TSContext, AmplifyFault,
-} from 'amplify-cli-core';
+import { FeatureFlags, $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { IEnvironmentParameterManager, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
@@ -43,16 +42,44 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
           printer.warn('Amplify App cannot be deleted, other environments still linked to Application');
         }
       }
+
+      // delete paramater store parameters for each environment
+      const CloudFormationProviderName = 'awscloudformation';
+      const deleteParametersFromParameterStoreFn: (
+        envName: string,
+        keys: Array<string>,
+      ) => Promise<void> = await context.amplify.invokePluginMethod(
+        context,
+        CloudFormationProviderName,
+        undefined,
+        'getEnvParametersDeleteHandler',
+        [context],
+      );
+      const allEnvParamManagers: Array<[string, IEnvironmentParameterManager]> = [];
+      for (const envName of envNames) {
+        const envParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(envName)).instance;
+        allEnvParamManagers.push([envName, envParamManager]);
+      }
+      await Promise.all(
+        allEnvParamManagers.map(([envName, envParamManager]) =>
+          envParamManager.deleteAllEnvParametersFromPs(envName, deleteParametersFromParameterStoreFn),
+        ),
+      );
+
       spinner.succeed('Project deleted in the cloud.');
     } catch (ex) {
       if ('name' in ex && ex.name === 'BucketNotFoundError') {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
         spinner.fail('Project delete failed.');
-        throw new AmplifyFault('BackendDeleteFault', {
-          message: 'Project delete failed.',
-          details: ex.message,
-        }, ex);
+        throw new AmplifyFault(
+          'BackendDeleteFault',
+          {
+            message: 'Project delete failed.',
+            details: ex.message,
+          },
+          ex,
+        );
       }
     }
     removeLocalAmplifyDir(context);
@@ -81,8 +108,10 @@ const amplifyBackendEnvironments = async (client, appId): Promise<string[]> => {
 /**
  * Get confirmation from the user to delete the project
  */
-export const getConfirmation = async (context: $TSContext, env?: string)
-  : Promise<{ proceed: boolean; deleteS3: boolean; deleteAmplifyApp: boolean; }> => {
+export const getConfirmation = async (
+  context: $TSContext,
+  env?: string,
+): Promise<{ proceed: boolean; deleteS3: boolean; deleteAmplifyApp: boolean }> => {
   if (context.input.options && context.input.options.force) {
     return {
       proceed: true,

@@ -1,4 +1,4 @@
-import { AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyFault, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -127,6 +127,22 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       return acc;
     }, {} as Record<string, unknown>);
   }
+
+  async deleteAllEnvParametersFromPs(
+    environmentName: string,
+    deleteParametersFromParameterStoreFn: (envName: string, keys: Array<string>) => Promise<void>,
+  ): Promise<void> {
+    const parameterNamesToDelete: Array<string> = [];
+    Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
+      const [category, resourceName] = splitResourceKey(resourceKey);
+      const resourceParams = paramManager.getAllParams();
+      Object.entries(resourceParams).forEach(([paramName]) => {
+        const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
+        parameterNamesToDelete.push(ssmParamName);
+      });
+    });
+    await deleteParametersFromParameterStoreFn(environmentName, parameterNamesToDelete);
+  }
 }
 
 const getResourceKey = (category: string, resourceName: string): string => `${category}_${resourceName}`;
@@ -146,6 +162,10 @@ export type IEnvironmentParameterManager = {
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: () => void;
+  deleteAllEnvParametersFromPs: (
+    environmentName: string,
+    deleteParametersFromParameterStoreFn: (envName: string, keys: Array<string>) => Promise<void>,
+  ) => Promise<void>;
 };
 
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>

@@ -50,6 +50,8 @@ import { LocationService } from './aws-utils/aws-location-service';
 import { hashDirectory } from './upload-appsync-files';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { getApiKeyConfig } from './utils/api-key-helpers';
+import { getEnvParametersDeleteHandler } from './utils/delete-from-parameter-store';
+export { getEnvParametersDeleteHandler } from './utils/delete-from-parameter-store';
 
 function init(context) {
   return initializer.run(context);

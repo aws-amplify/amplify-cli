@@ -19,6 +19,7 @@ export type IEnvironmentParameterManager = {
     hasResourceParamManager: (category: string, resource: string) => boolean;
     getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
     save: () => void;
+    deleteAllEnvParametersFromPs: (environmentName: string, deleteParametersFromParameterStoreFn: (envName: string, keys: Array<string>) => Promise<void>) => Promise<void>;
 };
 
 // @public (undocumented)
