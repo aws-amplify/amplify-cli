@@ -64,9 +64,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
 
     const resources = stateManager.getMeta();
     if (resources.auth?.userPoolGroups) {
-      await updateUserPoolGroups(context, this._cognitoStackProps.resourceName!, this._cognitoStackProps.userPoolGroupList);
+      await updateUserPoolGroups(context, this._cognitoStackProps.resourceName, this._cognitoStackProps.userPoolGroupList);
     } else {
-      await createUserPoolGroups(context, this._cognitoStackProps.resourceName!, this._cognitoStackProps.userPoolGroupList);
+      await createUserPoolGroups(context, this._cognitoStackProps.resourceName, this._cognitoStackProps.userPoolGroupList);
     }
     // generate custom Auth Trigger for Cognito
     if (this._cognitoStackProps.breakCircularDependency) {
@@ -209,7 +209,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
     // eslint-disable-next-line spellcheck/spell-checker
-    return templates.get('AmplifyAuthCongitoStack')!;
+    const template = templates.get('AmplifyAuthCongitoStack');
+    if (!template) {
+      throw TypeError('expected template to be defined');
+    }
+    return template;
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
@@ -262,11 +266,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {
       this._cognitoStackProps.triggers = JSON.stringify(this._cognitoStackProps.triggers);
       // convert permissions
-      const triggerPermissions = this._cognitoStackProps.permissions!.map(i => JSON.stringify(i));
+      const triggerPermissions = this._cognitoStackProps.permissions?.map(i => JSON.stringify(i)) ?? [];
       // convert dependsOn
       const { dependsOn } = this._cognitoStackProps;
       // convert auth trigger connections
-      const authTriggerConnections = this._cognitoStackProps.authTriggerConnections!.map(obj => {
+      const authTriggerConnections = (this._cognitoStackProps.authTriggerConnections ?? []).map(obj => {
         const modifiedObj = _.omit(obj, ['lambdaFunctionArn']);
         return JSON.stringify(modifiedObj);
       });

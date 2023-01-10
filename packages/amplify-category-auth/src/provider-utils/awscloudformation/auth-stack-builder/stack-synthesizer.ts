@@ -51,8 +51,9 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
   }
 
   getStack = (stackName: string): Stack => {
-    if (this.stacks.has(stackName)) {
-      return this.stacks.get(stackName)!;
+    const stack = this.stacks.get(stackName)
+    if (this.stacks.has(stackName) && !!stack) {
+      return stack;
     }
     throw new Error(`Stack ${stackName} is not created`);
   };

@@ -1,11 +1,18 @@
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext,
-  AmplifyCategories, AmplifyCategoryTransform, AmplifyError, AmplifyStackTemplate, AmplifySupportedService,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
+  AmplifyError,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
   JSONUtilities,
-  pathManager, Template, writeCFNTemplate,
+  pathManager,
+  Template,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -188,22 +195,24 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         sandbox: {},
       });
       try {
-        await sandboxNode
-          .run(overrideCode)
-          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
-      } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        await sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
+      } catch (err) {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };
 
   /**
    * Object required to generate Stack using cdk
-  */
+   */
   private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
     const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
     const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true });
@@ -223,9 +232,15 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   public synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    const cfnUserPoolGroupStack: Template = templates.get('AmplifyUserPoolGroupStack')!;
+    const cfnUserPoolGroupStack: Template | undefined = templates.get('AmplifyUserPoolGroupStack');
     const templatesOutput = this._synthesizerOutputs.collectStacks();
-    const cfnUserPoolGroupOutputs: Template = templatesOutput.get('AmplifyUserPoolGroupStackOutputs')!;
+    const cfnUserPoolGroupOutputs: Template | undefined = templatesOutput.get('AmplifyUserPoolGroupStackOutputs');
+    if (!cfnUserPoolGroupStack) {
+      throw new TypeError('Expected cfnUserPoolGroupStack to be defined');
+    }
+    if (!cfnUserPoolGroupOutputs) {
+      throw new TypeError('Expected cfnUserPoolGroupOutputs to be defined');
+    }
     cfnUserPoolGroupStack.Outputs = cfnUserPoolGroupOutputs.Outputs;
     return cfnUserPoolGroupStack;
   };

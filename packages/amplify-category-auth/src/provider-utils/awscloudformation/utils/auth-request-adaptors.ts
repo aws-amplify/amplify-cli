@@ -43,7 +43,10 @@ export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestion
  * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguation output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
-export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
+export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({
+  serviceConfiguration: cognitoConfig,
+  resourceName,
+}): ServiceQuestionHeadlessResult => {
   const userPoolConfig = cognitoConfig.userPoolConfiguration;
   const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
   const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
@@ -56,7 +59,9 @@ export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectTyp
   };
 };
 
-export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
+export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({
+  serviceModification,
+}: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
   const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
   return {
     serviceName: serviceModification.serviceName,
@@ -71,7 +76,10 @@ export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttribu
   };
 };
 
-const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => ({
+const immutableAttributeAdaptor = (
+  userPoolConfig: CognitoUserPoolConfiguration,
+  identityPoolConfig?: CognitoIdentityPoolConfiguration,
+) => ({
   userPoolName: userPoolConfig.userPoolName,
   usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
   aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
@@ -107,8 +115,7 @@ const mutableAttributeAdaptor = (
 const oauthMap = (
   oauthConfig?: Partial<CognitoOAuthConfiguration>,
   requiredAttributes: string[] = [],
-): (OAuthResult & SocialProviderResult
-) | Record<string, unknown> => {
+): (OAuthResult & SocialProviderResult) | Record<string, unknown> => {
   if (!oauthConfig) return {};
   if (isEmpty(oauthConfig)) {
     return {
@@ -181,8 +188,9 @@ const mutableIdentityPoolMap = (
     authProviders: (idPoolConfig.identitySocialFederation || [])
       .map(socialFed => socialFed.provider)
       .map(provider => pascalCase(provider))
-      .map(provider => authProviderList.find(ap => ap.name === provider)!)
-      .map(ap => ap.value),
+      .map(provider => authProviderList.find(ap => ap.name === provider))
+      .map(ap => ap?.value)
+      .filter(v => !!v) as string[],
     // convert the list of social federation configs into individual key: client id pairs
     ...(idPoolConfig?.identitySocialFederation || []).reduce(
       (acc, it): AppIds => merge(acc, { [socialFederationKeyMap(it.provider, projectType)]: it.clientId }),

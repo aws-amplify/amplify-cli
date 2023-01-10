@@ -1,6 +1,4 @@
-import {
-  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
+import { $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -48,18 +46,32 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
       fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'parameters.json'));
     }
 
+    if (!parameters) {
+      throw new TypeError('parameters must be defined');
+    }
+
     // convert parameters.json to cli-inputs.json
-    const cliInputs = mapParametersJsonToCliInputs(parameters!);
+    const cliInputs = mapParametersJsonToCliInputs(parameters);
     const cliInputsPath = path.join(authResourceDirPath, 'cli-inputs.json');
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
     printer.debug('Migration is Successful');
   } catch (e) {
-    rollback(authResourceDirPath, backupAuthResourceFolder!);
-    rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    throw new AmplifyError('MigrationError', {
-      message: `There was an error migrating your project: ${e.message}`,
-      details: `Migration operations are rolled back.`,
-    }, e);
+    if (!backupAuthResourceFolder) {
+      throw new TypeError('expected backupAuthResourceFolder to be defined');
+    }
+    if (!backupUserPoolGroupResourceFolder) {
+      throw new TypeError('expected backupUserPoolGroupResourceFolder to be defined');
+    }
+    rollback(authResourceDirPath, backupAuthResourceFolder);
+    rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder);
+    throw new AmplifyError(
+      'MigrationError',
+      {
+        message: `There was an error migrating your project: ${e.message}`,
+        details: `Migration operations are rolled back.`,
+      },
+      e,
+    );
   } finally {
     cleanUp(backupAuthResourceFolder);
     cleanUp(backupUserPoolGroupResourceFolder);

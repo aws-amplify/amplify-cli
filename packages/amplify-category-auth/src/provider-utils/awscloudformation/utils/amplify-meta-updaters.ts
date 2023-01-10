@@ -1,7 +1,5 @@
 import * as path from 'path';
-import {
-  JSONUtilities, pathManager, $TSAny, $TSContext,
-} from 'amplify-cli-core';
+import { JSONUtilities, pathManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import { hostedUIProviders } from '../assets/string-maps';
 import { AuthParameters } from '../import/types';
 
@@ -16,7 +14,7 @@ type FrontEndConfig = {
   mfaConfiguration: string | undefined;
   mfaTypes: string[];
   verificationMechanisms: string[];
-}
+};
 
 /**
  * Factory function that returns a function that updates Amplify meta files after adding auth resource assets
@@ -27,17 +25,23 @@ type FrontEndConfig = {
  * @param resultMetadata.service the service
  * @param resultMetadata.providerName the provider
  */
-export const getPostAddAuthMetaUpdater = (context: $TSContext,
+export const getPostAddAuthMetaUpdater = (
+  context: $TSContext,
   resultMetadata: {
     service: string;
-    providerName: string
-  }) => (resourceName: string): string => {
+    providerName: string;
+  },
+) => (resourceName: string): string => {
   const options: $TSAny = {
     service: resultMetadata.service,
     providerPlugin: resultMetadata.providerName,
   };
   const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
-  const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
+  const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath);
+
+  if (!authParameters) {
+    throw new TypeError('expected authParameters to be defined');
+  }
 
   if (authParameters.dependsOn) {
     options.dependsOn = authParameters.dependsOn;
@@ -47,12 +51,13 @@ export const getPostAddAuthMetaUpdater = (context: $TSContext,
   if (authParameters.triggers) {
     const triggers: $TSAny = JSONUtilities.parse<$TSAny>(authParameters.triggers);
 
-    customAuthConfigured = !!triggers.DefineAuthChallenge
-        && triggers.DefineAuthChallenge.length > 0
-        && !!triggers.CreateAuthChallenge
-        && triggers.CreateAuthChallenge.length > 0
-        && !!triggers.VerifyAuthChallengeResponse
-        && triggers.VerifyAuthChallengeResponse.length > 0;
+    customAuthConfigured =
+      !!triggers.DefineAuthChallenge &&
+      triggers.DefineAuthChallenge.length > 0 &&
+      !!triggers.CreateAuthChallenge &&
+      triggers.CreateAuthChallenge.length > 0 &&
+      !!triggers.VerifyAuthChallengeResponse &&
+      triggers.VerifyAuthChallengeResponse.length > 0;
   }
 
   options.customAuth = customAuthConfigured;
@@ -83,7 +88,10 @@ export const getPostAddAuthMetaUpdater = (context: $TSContext,
  */
 export const getPostUpdateAuthMetaUpdater = (context: $TSContext) => async (resourceName: string) => {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
-  const authParameters = JSONUtilities.readJson<AuthParameters>(resourceDirPath)!;
+  const authParameters = JSONUtilities.readJson<AuthParameters>(resourceDirPath);
+  if (!authParameters) {
+    throw new TypeError('expected authParamters to be defined');
+  }
   if (authParameters.dependsOn) {
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', authParameters.dependsOn);
   }
@@ -91,12 +99,13 @@ export const getPostUpdateAuthMetaUpdater = (context: $TSContext) => async (reso
   let customAuthConfigured = false;
   if (authParameters.triggers) {
     const triggers = JSONUtilities.parse<$TSAny>(authParameters.triggers);
-    customAuthConfigured = !!triggers.DefineAuthChallenge
-      && triggers.DefineAuthChallenge.length > 0
-      && !!triggers.CreateAuthChallenge
-      && triggers.CreateAuthChallenge.length > 0
-      && !!triggers.VerifyAuthChallengeResponse
-      && triggers.VerifyAuthChallengeResponse.length > 0;
+    customAuthConfigured =
+      !!triggers.DefineAuthChallenge &&
+      triggers.DefineAuthChallenge.length > 0 &&
+      !!triggers.CreateAuthChallenge &&
+      triggers.CreateAuthChallenge.length > 0 &&
+      !!triggers.VerifyAuthChallengeResponse &&
+      triggers.VerifyAuthChallengeResponse.length > 0;
   }
   context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'customAuth', customAuthConfigured);
   context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'frontendAuthConfig', getFrontendConfig(authParameters));
@@ -125,7 +134,7 @@ export const getPostUpdateAuthMetaUpdater = (context: $TSContext) => async (reso
  * Get the front end configuration
  * @param authParameters the auth params
  */
-export const getFrontendConfig = (authParameters: AuthParameters) : FrontEndConfig => {
+export const getFrontendConfig = (authParameters: AuthParameters): FrontEndConfig => {
   const verificationMechanisms = (authParameters?.autoVerifiedAttributes || []).map((att: string) => att.toUpperCase());
   const usernameAttributes: string[] = [];
 

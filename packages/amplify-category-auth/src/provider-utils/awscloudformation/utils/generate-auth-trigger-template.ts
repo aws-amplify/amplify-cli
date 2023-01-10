@@ -3,17 +3,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource } from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import {
-  $TSAny, JSONUtilities, pathManager, AmplifyFault,
-} from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, AmplifyFault } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { authTriggerAssetFilePath } from '../constants';
-import {
-  AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions,
-} from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from './configure-sms';
 
 type CustomResourceAuthStackProps = Readonly<{
@@ -65,9 +61,9 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
 
       if (!_.isEmpty(props.permissions)) {
-        const lambdaPermission = props.permissions!.find(permission => config.triggerType === permission.trigger);
-        if (!_.isEmpty(lambdaPermission)) {
-          createPermissionsForAuthTrigger(this, fnName, roleArn, lambdaPermission!, userpoolArn);
+        const lambdaPermission = props.permissions?.find(permission => config.triggerType === permission.trigger);
+        if (lambdaPermission && !_.isEmpty(lambdaPermission)) {
+          createPermissionsForAuthTrigger(this, fnName, roleArn, lambdaPermission, userpoolArn);
         }
       }
     });
@@ -101,8 +97,8 @@ export const generateNestedAuthTriggerTemplate = async (
 
   const enableSnsRole: boolean | undefined = !useEnabledMfas || configureSMS;
 
-  if (!_.isEmpty(authTriggerConnections)) {
-    const cfnObject = await createCustomResourceForAuthTrigger(authTriggerConnections!, !!enableSnsRole, permissions);
+  if (authTriggerConnections && !_.isEmpty(authTriggerConnections)) {
+    const cfnObject = await createCustomResourceForAuthTrigger(authTriggerConnections, !!enableSnsRole, permissions);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers aren't defined

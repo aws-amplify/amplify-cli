@@ -2,26 +2,24 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import {
-  stateManager, open, $TSContext, $TSObject,
-} from 'amplify-cli-core';
+import { stateManager, open, $TSContext, $TSObject } from 'amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
-import {
-  ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys,
-} from './constants';
+import { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } from './constants';
 import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-handlers';
 import { getSupportedServices } from '../supported-services';
 import { importResource, importedAuthEnvInit } from './import';
 
 export { importResource } from './import';
 
-const serviceQuestions = async (context:any,
-  defaultValuesFilename:any,
+const serviceQuestions = async (
+  context: any,
+  defaultValuesFilename: any,
   stringMapsFilename: any,
   serviceWalkthroughFilename: any,
-  serviceMetadata: any): Promise<any> => {
+  serviceMetadata: any,
+): Promise<any> => {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = await import(serviceWalkthroughSrc);
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
@@ -30,12 +28,12 @@ const serviceQuestions = async (context:any,
 export const addResource = async (context: $TSContext, service: string): Promise<string> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
-  return getAddAuthHandler(
-    context,
-  )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
+  return getAddAuthHandler(context)(
+    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
+  );
 };
 
-export const updateResource = async (context: $TSContext, { service }: {service:any}): Promise<any> => {
+export const updateResource = async (context: $TSContext, { service }: { service: any }): Promise<any> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
@@ -45,9 +43,7 @@ export const updateResource = async (context: $TSContext, { service }: {service:
 
 export const updateConfigOnEnvInit = async (context: $TSContext, category: any, service: string): Promise<any> => {
   const serviceMetadata = getSupportedServices().Cognito;
-  const {
-    defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider,
-  } = serviceMetadata;
+  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   await ensureEnvParamManager();
@@ -83,7 +79,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
           providerName: provider,
           // this coercion was done to avoid making `provider` on the ServiceSelection type nullable, a larger, potentially breaking change.
           // Once ServiceSelection is refactored, this should be removed, and provider should be set to undefined without type coercion.
-          provider: undefined as unknown as string, // We don't have the resolved directory of the provider we pass in an instance
+          provider: (undefined as unknown) as string, // We don't have the resolved directory of the provider we pass in an instance
           service: 'Cognito',
         },
         resourceParams,
@@ -139,7 +135,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
   // legacy headless mode (only supports init)
   if (isInHeadlessMode(context)) {
     const envParams: $TSObject = {};
-    let mergedValues: $TSObject | undefined;
+    let mergedValues: Record<string, unknown> = {};
     if (resourceParams.thirdPartyAuth || hostedUIProviderMeta) {
       const authParams = getHeadlessParams(context);
       const projectType = context.amplify.getProjectConfig().frontend;
@@ -147,8 +143,8 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
       const missingParams: any[] = [];
       requiredParams.forEach((param: any) => {
-        if (Object.keys(mergedValues!).includes(param)) {
-          envParams[param] = mergedValues![param];
+        if (Object.keys(mergedValues).includes(param)) {
+          envParams[param] = mergedValues[param];
         } else {
           missingParams.push(param);
         }
@@ -164,12 +160,13 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
     return envParams;
   }
 
-  const isPullingOrEnv = context.input.command === 'pull'
-    || (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
+  const isPullingOrEnv =
+    context.input.command === 'pull' ||
+    (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
   // don't ask for env_specific params when checking out env or pulling
   serviceMetadata.inputs = serviceMetadata.inputs.filter(
-    (input: any) => ENV_SPECIFIC_PARAMS.includes(input.key)
-      && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
+    (input: any) =>
+      ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
   );
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -177,7 +174,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 
   // interactive mode
   const result = await serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata, resourceParams);
-  let envParams: {[key: string]: any} = {};
+  let envParams: { [key: string]: any } = {};
 
   if (resourceParams.hostedUIProviderMeta) {
     envParams = formatCredentialsForEnvParams(currentEnvSpecificValues, result, resourceParams);
@@ -251,7 +248,7 @@ const getOAuthProviderKeys = (currentEnvSpecificValues: any, resourceParams: any
 /* eslint-enable no-param-reassign */
 
 const formatCredentialsForEnvParams = (currentEnvSpecificValues: any, result: any, resourceParams: any): any => {
-  const partialParams: {[key: string]: any} = {};
+  const partialParams: { [key: string]: any } = {};
   if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
     partialParams.hostedUIProviderCreds = [];
     const inputResult = JSON.parse(result.hostedUIProviderCreds);

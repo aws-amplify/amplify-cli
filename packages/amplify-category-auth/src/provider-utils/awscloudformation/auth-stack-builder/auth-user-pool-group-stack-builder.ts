@@ -127,8 +127,9 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
    * Get the parameter with the given logical id
    */
   getCfnParameter(logicalId: string): cdk.CfnParameter {
-    if (this._cfnParameterMap.has(logicalId)) {
-      return this._cfnParameterMap.get(logicalId)!;
+    const cfnParameter = this._cfnParameterMap.get(logicalId);
+    if (cfnParameter) {
+      return cfnParameter;
     }
     throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} doesn't exist`);
   }
@@ -137,8 +138,9 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
    * Get the condition with the given logical id
    */
   getCfnCondition(logicalId: string): cdk.CfnCondition {
-    if (this._cfnConditionMap.has(logicalId)) {
-      return this._cfnConditionMap.get(logicalId)!;
+    const condition = this._cfnConditionMap.get(logicalId);
+    if (condition) {
+      return condition;
     }
     throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} doesn't exist`);
   }
@@ -149,7 +151,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   generateUserPoolGroupResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
     props.groups.forEach(group => {
       this.userPoolGroup[`${group.groupName}`] = new CfnUserPoolGroup(this, `${group.groupName}Group`, {
-        userPoolId: this.getCfnParameter(getCfnParamsLogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,
+        userPoolId: this.getCfnParameter(getCfnParamsLogicalId(props.cognitoResourceName, 'UserPoolId')).valueAsString,
         groupName: group.groupName,
         precedence: group.precedence,
       });
@@ -161,7 +163,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         );
         this.userPoolGroupRole[`${group.groupName}`] = new iam.CfnRole(this, `${group.groupName}GroupRole`, {
           roleName: cdk.Fn.join('', [
-            this.getCfnParameter(getCfnParamsLogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,
+            this.getCfnParameter(getCfnParamsLogicalId(props.cognitoResourceName, 'UserPoolId')).valueAsString,
             `-${group.groupName}GroupRole`,
           ]),
           assumeRolePolicyDocument: {
@@ -392,6 +394,5 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
     throw new Error('Method not implemented.');
   }
 
-  public renderCloudFormationTemplate =
-  (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
+  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation()) ?? '';
 }

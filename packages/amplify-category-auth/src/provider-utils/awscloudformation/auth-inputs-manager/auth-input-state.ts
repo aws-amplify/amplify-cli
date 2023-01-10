@@ -32,13 +32,17 @@ export class AuthInputState extends CategoryInputState {
     this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'build'));
   }
 
-  public async isCLIInputsValid(cliInputs: CognitoCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
+  public async isCLIInputsValid(cliInputs: CognitoCLIInputs | undefined = this.getCLIInputPayload()): Promise<boolean> {
     const schemaValidator = new CLIInputSchemaValidator(this.context, this.#service, this.#category, 'CognitoCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
   public getCLIInputPayload(): CognitoCLIInputs {
-    return JSONUtilities.readJson<CognitoCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true })!;
+    const inputs = JSONUtilities.readJson<CognitoCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true });
+    if (!inputs) {
+      throw new TypeError('inputs is not defined')
+    }
+    return inputs
   }
 
   public cliInputFileExists(): boolean {
