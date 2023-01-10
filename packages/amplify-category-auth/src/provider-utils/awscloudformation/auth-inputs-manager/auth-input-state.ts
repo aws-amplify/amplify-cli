@@ -37,8 +37,11 @@ export class AuthInputState extends CategoryInputState {
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
-  public getCLIInputPayload(): CognitoCLIInputs | undefined {
+  public getCLIInputPayload(): CognitoCLIInputs {
     const inputs = JSONUtilities.readJson<CognitoCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true });
+    if (!inputs) {
+      throw new TypeError('inputs is not defined')
+    }
     return inputs
   }
 
