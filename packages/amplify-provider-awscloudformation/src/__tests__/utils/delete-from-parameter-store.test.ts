@@ -1,5 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
-import { getEnvParametersDeleteHandler } from '../../utils/delete-from-parameter-store';
+import { getEnvParametersDeleteHandler } from '../../utils/delete-from-service';
 import { SSM } from '../../aws-utils/aws-ssm';
 
 jest.mock('../../aws-utils/aws-ssm');
@@ -27,9 +27,9 @@ describe('parameters-delete-handler', () => {
       },
     };
 
-    const deleteParametersFromParameterStoreFn = await getEnvParametersDeleteHandler((contextStub as unknown) as $TSContext, envName);
-    expect(deleteParametersFromParameterStoreFn).toBeDefined();
-    await deleteParametersFromParameterStoreFn(keys);
+    const deleteParametersFromServiceFn = await getEnvParametersDeleteHandler((contextStub as unknown) as $TSContext, envName);
+    expect(deleteParametersFromServiceFn).toBeDefined();
+    await deleteParametersFromServiceFn(keys);
     expect(deleteParametersPromiseMock).toBeCalledTimes(1);
   });
 });

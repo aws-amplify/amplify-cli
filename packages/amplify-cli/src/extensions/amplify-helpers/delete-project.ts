@@ -4,13 +4,13 @@
 import ora from 'ora';
 import chalk from 'chalk';
 import { FeatureFlags, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { IEnvironmentParameterManager, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
 import { getPluginInstance } from './get-plugin-instance';
 import { getAmplifyAppId } from './get-amplify-appId';
 import { getAmplifyDirPath } from './path-manager';
+import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 /**
  * Deletes the amplify project from the cloud and local machine
@@ -43,28 +43,8 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
         }
       }
 
-      // delete paramater store parameters for each environment
-      const CloudFormationProviderName = 'awscloudformation';
-      const deleteParametersFromParameterStoreFn: (
-        envName: string,
-        keys: Array<string>,
-      ) => Promise<void> = await context.amplify.invokePluginMethod(
-        context,
-        CloudFormationProviderName,
-        undefined,
-        'getEnvParametersDeleteHandler',
-        [context],
-      );
-      const allEnvParamManagers: Array<[string, IEnvironmentParameterManager]> = [];
-      for (const envName of envNames) {
-        const envParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(envName)).instance;
-        allEnvParamManagers.push([envName, envParamManager]);
-      }
-      await Promise.all(
-        allEnvParamManagers.map(([envName, envParamManager]) =>
-          envParamManager.deleteAllEnvParametersFromPs(envName, deleteParametersFromParameterStoreFn),
-        ),
-      );
+      // delete env paramaters from service for each env
+      await Promise.all(envNames.map(envName => invokeDeleteEnvParamsFromService(context, envName)));
 
       spinner.succeed('Project deleted in the cloud.');
     } catch (ex) {
