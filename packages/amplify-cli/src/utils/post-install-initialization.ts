@@ -28,12 +28,8 @@ export const postInstallInitialization = async () => {
         pluginArtifactPaths.map(assetPath => {
           const resolvedPackageRoot = resolvePackageRoot(packageName);
           const targetLibFolder = pathManager.getAmplifyPackageLibDirPath(packageName);
-          fs.copy(
-            path.join(resolvedPackageRoot, assetPath),
-            path.join(targetLibFolder, assetPath),
-          )
-        }
-        ),
+          return fs.copy(path.join(resolvedPackageRoot, assetPath), path.join(targetLibFolder, assetPath));
+        }),
       );
     }),
   );

@@ -131,13 +131,13 @@ const handleExpiredTokenException = (): void => {
  */
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
-  const isStaleResource = (new Date().getUTCMilliseconds() - resource.CreationDate.getUTCMilliseconds()) > STALE_DURATION_MS;
+  const isStaleResource = new Date().getUTCMilliseconds() - resource.CreationDate.getUTCMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
-  const isStaleResource = (new Date().getUTCMilliseconds() - resource.CreateDate.getUTCMilliseconds()) > STALE_DURATION_MS;
+  const isStaleResource = new Date().getUTCMilliseconds() - resource.CreateDate.getUTCMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
@@ -154,7 +154,7 @@ const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolea
 
 const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
   const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
-  const isStaleResource = (new Date().getUTCMilliseconds() - new Date(resource.CreationDate).getUTCMilliseconds()) > STALE_DURATION_MS;
+  const isStaleResource = new Date().getUTCMilliseconds() - new Date(resource.CreationDate).getUTCMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
@@ -184,12 +184,20 @@ const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: st
   let nextToken = null;
 
   do {
-    const result = await pinpoint.getApps({
-      Token: nextToken,
-    }).promise();
-    apps.push(...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
-      id: it.Id, name: it.Name, arn: it.Arn, region, createTime: new Date(it.CreationDate),
-    })));
+    const result = await pinpoint
+      .getApps({
+        Token: nextToken,
+      })
+      .promise();
+    apps.push(
+      ...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
+        id: it.Id,
+        name: it.Name,
+        arn: it.Arn,
+        region,
+        createTime: new Date(it.CreationDate),
+      })),
+    );
 
     nextToken = result.ApplicationsResponse.NextToken;
   } while (nextToken);
@@ -348,7 +356,7 @@ const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobDetails>
   const client = getCircleCIClient();
   const result = await client.build(jobId);
 
-  const r = _.pick(result, [
+  const r = (_.pick(result, [
     'build_url',
     'branch',
     'build_num',
@@ -359,7 +367,7 @@ const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobDetails>
     'committer_name',
     'workflows.workflow_id',
     'lifecycle',
-  ]) as unknown as CircleCIJobDetails;
+  ]) as unknown) as CircleCIJobDetails;
   return r;
 };
 
@@ -549,11 +557,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
   }
 };
 
-const deleteAttachedRolePolicies = async (
-  account: AWSAccountInfo,
-  accountIndex: number,
-  roleName: string,
-): Promise<void> => {
+const deleteAttachedRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
   const iamClient = new aws.IAM(getAWSConfig(account));
   const rolePolicies = await iamClient.listAttachedRolePolicies({ RoleName: roleName }).promise();
   await Promise.all(rolePolicies.AttachedPolicies.map(policy => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
@@ -577,22 +581,13 @@ const detachIamAttachedRolePolicy = async (
   }
 };
 
-const deleteRolePolicies = async (
-  account: AWSAccountInfo,
-  accountIndex: number,
-  roleName: string,
-): Promise<void> => {
+const deleteRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
   const iamClient = new aws.IAM(getAWSConfig(account));
   const rolePolicies = await iamClient.listRolePolicies({ RoleName: roleName }).promise();
   await Promise.all(rolePolicies.PolicyNames.map(policy => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
 };
 
-const deleteIamRolePolicy = async (
-  account: AWSAccountInfo,
-  accountIndex: number,
-  roleName: string,
-  policyName: string,
-): Promise<void> => {
+const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number, roleName: string, policyName: string): Promise<void> => {
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role Policy ${policyName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
@@ -629,9 +624,7 @@ const deletePinpointApps = async (account: AWSAccountInfo, accountIndex: number,
 };
 
 const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, app: PinpointAppInfo): Promise<void> => {
-  const {
-    id, name, region,
-  } = app;
+  const { id, name, region } = app;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Pinpoint App ${name}`);
     console.log(`Pinpoint creation time (PST): ${app.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
@@ -798,7 +791,9 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     return await Promise.all(accountCredentialPromises);
   } catch (e) {
     console.error(e);
-    console.log('Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.');
+    console.log(
+      'Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.',
+    );
     return [
       {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -869,4 +864,4 @@ const cleanup = async (): Promise<void> => {
   console.log('Done cleaning all accounts!');
 };
 
-cleanup();
+void cleanup();

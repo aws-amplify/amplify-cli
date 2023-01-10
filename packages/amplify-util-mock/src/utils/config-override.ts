@@ -1,7 +1,7 @@
 import { getAmplifyMeta } from './index';
 export class ConfigOverrideManager {
   private static instance: ConfigOverrideManager = null;
-  private overrides: {};
+  private overrides: Record<string, any>;
   private amplifyMeta: any = {};
   constructor(context) {
     this.overrides = {};
@@ -10,7 +10,7 @@ export class ConfigOverrideManager {
     });
   }
 
-  addOverride(category: string, override: {}) {
+  addOverride(category: string, override: Record<string, any>) {
     this.overrides[category] = override;
   }
 

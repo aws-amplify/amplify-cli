@@ -86,26 +86,26 @@ export class StorageServer extends EventEmitter {
     // create eventObj for thr trigger
 
     if (request.method === 'PUT') {
-      this.handleRequestPut(request, response);
+      await this.handleRequestPut(request, response);
     }
 
     if (request.method === 'POST') {
-      this.handleRequestPost(request, response);
+      await this.handleRequestPost(request, response);
     }
 
     if (request.method === 'GET') {
-      this.handleRequestGet(request, response);
+      await this.handleRequestGet(request, response);
     }
 
     if (request.method === 'LIST') {
-      this.handleRequestList(request, response);
+      await this.handleRequestList(request, response);
     }
 
     if (request.method === 'DELETE') {
       // emit event for delete
       const eventObj = this.createEvent(request);
       this.emit('event', eventObj);
-      this.handleRequestDelete(request, response);
+      await this.handleRequestDelete(request, response);
     }
   }
 
