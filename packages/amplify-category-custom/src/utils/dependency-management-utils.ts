@@ -293,29 +293,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   });
 
   // Update meta and backend-config.json files
-
   await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', resources);
-
-  // Show information on usage
-
-  // showUsageInformation(resources);
-}
-
-function showUsageInformation(resources: AmplifyDependentResourceDefinition[]) {
-  printer.success(`Successfully added dependent resources.`);
-  printer.info(`You can access the dependent resource attributes using the Ref's mentioned below`);
-  printer.blankLine();
-
-  for (const resource of resources) {
-    printer.info(`Category: ${resource.category}  Resource: ${resource.resourceName}`);
-    printer.blankLine();
-    for (const attribute of resource.attributes || []) {
-      printer.info(`Attribute ${attribute}`);
-      printer.info(`{ Ref: ${resource.category}${resource.resourceName}${attribute} }`);
-      printer.blankLine();
-    }
-    printer.blankLine();
-  }
 }
 
 function generateInputParametersForDependencies(resources: AmplifyDependentResourceDefinition[]) {
