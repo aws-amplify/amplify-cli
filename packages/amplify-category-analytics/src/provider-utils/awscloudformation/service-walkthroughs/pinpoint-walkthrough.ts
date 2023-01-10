@@ -61,12 +61,12 @@ const configure = async (context: $TSContext, defaultValuesFilename: string, res
   const answers = {
     resourceName:
       resourceName ||
-      (await prompter.input('Provide a friendly resourcename:', {
-        validate: alphanumeric('Resource name should be alphanumeric'),
+      (await prompter.input('Provide a friendly resource name:', {
+        validate: alphanumeric('Resource name must be alphanumeric'),
         initial: defaultValues.resourceName,
       })),
     appName: await prompter.input('Provide your pinpoint resource name:', {
-      validate: alphanumeric('Resource name should be alphanumeric'),
+      validate: alphanumeric('Resource name must be alphanumeric'),
       initial: defaultValues.appName,
     }),
   };

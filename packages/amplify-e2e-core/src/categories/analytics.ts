@@ -7,7 +7,7 @@ export function addPinpoint(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.wrongName)
-      .wait('Resource name should be alphanumeric')
+      .wait('Resource name must be alphanumeric')
       .send('\b')
       .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
@@ -33,7 +33,7 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('Enter a Stream name')
       .sendLine(settings.wrongName)
-      .wait('Name is invalid.')
+      .wait('Name is invalid. Has to be non-empty and alphanumeric')
       .send('\b')
       .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
