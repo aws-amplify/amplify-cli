@@ -46,7 +46,7 @@ export const importDynamoDB = async (
 
   const { questionParameters, answers } = importServiceWalkthroughResult;
 
-  // If there were previous params then we dont want to update env params, instead return it.
+  // If there were previous params then we do not want to update env params, instead return it.
   const persistEnvParameters = !previousResourceParameters;
 
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, persistEnvParameters);

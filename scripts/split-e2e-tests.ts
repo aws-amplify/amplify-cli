@@ -13,7 +13,7 @@ const CONCURRENCY = 35;
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 
-// Todo: update the split test strategy to use parallelization so circleci results dont go over the limits of github payload size
+// Todo: update the split test strategy to use parallelization so circleci results do not go over the limits of github payload size
 const WINDOWS_TEST_SKIP_LIST: string[] = [
   'amplify-app_pkg',
   'analytics-2_pkg',
@@ -144,11 +144,7 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 // Tests added to this list will always run in us-west-2
 const FORCE_US_WEST_2 = ['interactions'];
 
-const USE_PARENT_ACCOUNT = [
-  'import_dynamodb_1',
-  'import_s3_1',
-  'searchable-migration',
-];
+const USE_PARENT_ACCOUNT = ['import_dynamodb_1', 'import_s3_1', 'searchable-migration'];
 
 export type WorkflowJob =
   | {
@@ -182,7 +178,12 @@ function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
 function generateJobName(baseName: string, testSuitePath: string): string {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  let name = testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
+  let name = testSuitePath
+    .substring(startIndex, endIndex)
+    .split('.e2e')
+    .join('')
+    .split('.')
+    .join('-');
   if (baseName.includes('pkg')) {
     name = name + '_pkg';
   }
@@ -214,7 +215,7 @@ function splitTests(
   const jobs = { ...config.jobs };
   const job = jobs[jobName];
   let testSuites = getTestFiles(jobRootDir);
-  if(pickTests && typeof pickTests === 'function'){
+  if (pickTests && typeof pickTests === 'function') {
     testSuites = pickTests(testSuites);
   }
 
@@ -397,47 +398,47 @@ function validateArtifactStoragePaths(config: CircleCIConfig) {
   const storagePathsUsedInConfig = new Set();
   const unregisteredPaths = new Set();
   const invalidPaths = new Set();
-  for(let key of Object.keys(config.jobs)) {
+  for (let key of Object.keys(config.jobs)) {
     const job = config.jobs[key];
     const steps = job.steps;
 
-    for(let i = 0; i < steps.length; i ++){
+    for (let i = 0; i < steps.length; i++) {
       const resultsPath = steps[i].store_test_results;
       const artifactsPath = steps[i].store_artifacts;
-      if(resultsPath){
+      if (resultsPath) {
         storagePathsUsedInConfig.add(resultsPath.path);
-        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
+        if (ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1) {
           unregisteredPaths.add(resultsPath.path);
         }
-        if (!resultsPath.path.startsWith("~/")){
+        if (!resultsPath.path.startsWith('~/')) {
           invalidPaths.add(resultsPath.path);
         }
       }
-      if(artifactsPath){
+      if (artifactsPath) {
         storagePathsUsedInConfig.add(artifactsPath.path);
-        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
+        if (ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1) {
           unregisteredPaths.add(artifactsPath.path);
         }
-        if (!artifactsPath.path.startsWith("~/")){
+        if (!artifactsPath.path.startsWith('~/')) {
           invalidPaths.add(artifactsPath.path);
         }
       }
     }
   }
-  if(unregisteredPaths.size > 0 || invalidPaths.size > 0){
-    console.log("There are errors in your configuration.\n");
+  if (unregisteredPaths.size > 0 || invalidPaths.size > 0) {
+    console.log('There are errors in your configuration.\n');
 
-    if(invalidPaths.size > 0){
+    if (invalidPaths.size > 0) {
       const errors = Array.from(invalidPaths);
-      console.log("Fix these paths. They must start with ~/",errors, "\n");
+      console.log('Fix these paths. They must start with ~/', errors, '\n');
     }
-    if(unregisteredPaths.size > 0){
+    if (unregisteredPaths.size > 0) {
       const newList = Array.from(storagePathsUsedInConfig);
       const unregisteredList = Array.from(unregisteredPaths);
-      console.log("You are storing artifacts in an unregistered location.");
-      console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths.");
-      console.log("Update the list to match this:", newList);
-      console.log("Doing so will register these unregistered paths:", unregisteredList);
+      console.log('You are storing artifacts in an unregistered location.');
+      console.log('Please update artifact-storage-path-allow-list.ts to include the new storage paths.');
+      console.log('Update the list to match this:', newList);
+      console.log('Doing so will register these unregistered paths:', unregisteredList);
     }
     process.exit(1);
   }
@@ -454,7 +455,7 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
-    undefined
+    undefined,
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
@@ -462,7 +463,7 @@ function main(): void {
     'build_test_deploy_v3',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
-    undefined
+    undefined,
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
@@ -471,8 +472,8 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV5Tests.find((t) => t === testName));
-    }
+      return tests.filter(testName => migrationFromV5Tests.find(t => t === testName));
+    },
   );
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
@@ -481,8 +482,8 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV6Tests.find((t) => t === testName));
-    }
+      return tests.filter(testName => migrationFromV6Tests.find(t => t === testName));
+    },
   );
   const splitV10MigrationTests = splitTests(
     splitV6MigrationTests,
@@ -491,8 +492,8 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV10Tests.find((t) => t === testName));
-    }
+      return tests.filter(testName => migrationFromV10Tests.find(t => t === testName));
+    },
   );
   saveConfig(splitV10MigrationTests);
   verifyConfig();

@@ -7,7 +7,7 @@ import { categoryName, functionCategoryName } from '../../constants';
 import { FunctionServiceNameLambdaFunction, providerName } from './provider-constants';
 
 export async function removeTrigger(context: $TSContext, resourceName: string, triggerFunctionName: string) {
-  // Update Cloudformation file
+  // Update CloudFormation file
   const projectRoot = pathManager.findProjectRoot();
   const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
@@ -198,7 +198,7 @@ export async function addTrigger(
 
   // If updating an already existing S3 resource
   if (resourceName) {
-    // Update Cloudformation file
+    // Update CloudFormation file
     const projectBackendDirPath = pathManager.getBackendDirPath();
     const storageCFNFilePath = path.join(projectBackendDirPath, categoryName, resourceName, 's3-cloudformation-template.json');
     const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = readCFNTemplate(storageCFNFilePath);

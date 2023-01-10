@@ -39,7 +39,7 @@ class ElasticsearchHelper {
    *       "must":[
    *       {
    *         "term":{
-   *         "title":"hi"
+   *         "title":"hihihi"
    *         }
    *       },
    *       {

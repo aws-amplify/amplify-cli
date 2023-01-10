@@ -17,9 +17,9 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
         categoryPluginInfo = pluginInfoForCategory[0];
       }
     } else {
-      const overiddenPlugin = pluginInfoForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
-      if (overiddenPlugin !== undefined) {
-        return overiddenPlugin;
+      const overriddenPlugin = pluginInfoForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
+      if (overriddenPlugin !== undefined) {
+        return overriddenPlugin;
       }
       categoryPluginInfo = pluginInfoForCategory[0];
     }

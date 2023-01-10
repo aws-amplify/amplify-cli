@@ -1,5 +1,12 @@
 import {
-  $TSAny, $TSContext, AmplifyFault, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
+  $TSAny,
+  $TSContext,
+  AmplifyFault,
+  JSONUtilities,
+  PathConstants,
+  spinner,
+  stateManager,
+  validateExportDirectoryPath,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -40,7 +47,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
     spinner.text = `Writing resources`;
     await resourceExport.writeResourcesToDestination(packagedResources);
 
-    spinner.text = `Writing Cloudformation`;
+    spinner.text = `Writing CloudFormation`;
     const { stackParameters, transformedResources } = await resourceExport.generateAndTransformCfnResources(packagedResources);
 
     spinner.text = `Generating and writing root stack`;
@@ -71,9 +78,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw new AmplifyFault('ResourceNotReadyFault', {
-      message: ex.message,
-    }, ex);
+    throw new AmplifyFault(
+      'ResourceNotReadyFault',
+      {
+        message: ex.message,
+      },
+      ex,
+    );
   } finally {
     removeBackup(amplifyExportFolder);
     spinner.stop();

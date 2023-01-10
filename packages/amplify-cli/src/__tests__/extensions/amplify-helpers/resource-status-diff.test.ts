@@ -3,9 +3,7 @@ import path from 'path';
 import * as fs from 'fs-extra';
 import { stateManager, pathManager } from 'amplify-cli-core';
 import { CLOUD_INITIALIZED } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import {
-  capitalize, globCFNFilePath, ResourceDiff, stackMutationType,
-} from '../../../extensions/amplify-helpers/resource-status-diff';
+import { capitalize, globCFNFilePath, ResourceDiff, stackMutationType } from '../../../extensions/amplify-helpers/resource-status-diff';
 import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 // Mock Glob to fetch test cloudformation
@@ -79,7 +77,7 @@ describe('resource-status-diff helpers', () => {
   });
 
   it('should Glob only cloudformation template files', async () => {
-    const mockCloudformationTemplateName = 'cloudformation-template.json';
+    const mockCloudFormationTemplateName = 'cloudformation-template.json';
     const stubFileFolder = 'stub-file-folder';
     const expectedGlobOptions = {
       absolute: false,
@@ -91,10 +89,10 @@ describe('resource-status-diff helpers', () => {
     const cfnFilename = globCFNFilePath(stubFileFolder);
     expect(globMock.sync.mock.calls.length).toBe(1);
     expect(globMock.sync).toBeCalledWith('**/*template.{yaml,yml,json}', expectedGlobOptions);
-    expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudformationTemplateName}`);
+    expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudFormationTemplateName}`);
   });
 
-  it('should search both Build and non Build folders for Cloudformation Templates', async () => {
+  it('should search both Build and non Build folders for CloudFormation Templates', async () => {
     // Enable cloud initialized to test updates , but retain all other functions
     jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
       ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as {}),

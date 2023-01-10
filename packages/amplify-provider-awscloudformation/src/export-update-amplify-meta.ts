@@ -1,15 +1,13 @@
 /* eslint-disable no-continue */
-import {
-  $TSContext, AmplifyError,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import * as _ from 'lodash';
-import Cloudformation from './aws-utils/aws-cfn';
+import CloudFormation from './aws-utils/aws-cfn';
 
 /**
  * entry point for the export update amplify meta
  */
 export const run = async (context: $TSContext, stackName: string): Promise<void> => {
-  const cfn = await new Cloudformation(context);
+  const cfn = await new CloudFormation(context);
   let rootStack = null;
   let nextToken = null;
   let continueListing = false;

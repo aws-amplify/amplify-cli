@@ -203,16 +203,16 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
      * Update function name
      */
     const functionresourceDirPath = path.join(projectBackendDirPath, functionCategory, predictionsTriggerFunctionName);
-    const functionparametersFilePath = path.join(functionresourceDirPath, parametersFileName);
+    const functionParametersFilePath = path.join(functionresourceDirPath, parametersFileName);
     let functionParameters;
     try {
-      functionParameters = amplify.readJsonFile(functionparametersFilePath);
+      functionParameters = amplify.readJsonFile(functionParametersFilePath);
     } catch (e) {
       functionParameters = {};
     }
     functionParameters.resourceName = answers.resourceName || parameters.resourceName;
     const functionJsonString = JSON.stringify(functionParameters, null, 4);
-    fs.writeFileSync(functionparametersFilePath, functionJsonString, 'utf8');
+    fs.writeFileSync(functionParametersFilePath, functionJsonString, 'utf8');
   } else if (parameters.resourceName) {
     const s3ResourceName = s3ResourceAlreadyExists();
     if (s3ResourceName) {

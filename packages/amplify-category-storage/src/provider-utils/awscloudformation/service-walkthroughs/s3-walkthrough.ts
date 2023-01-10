@@ -102,7 +102,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
     const cliInputsState = new S3InputState(context, cliInputs.resourceName as string, cliInputs);
     await cliInputsState.saveCliInputPayload(cliInputs);
 
-    //Generate Cloudformation
+    //Generate CloudFormation
     const stackGenerator = new AmplifyS3ResourceStackTransform(cliInputs.resourceName as string, context);
     await stackGenerator.transform(CLISubCommandType.ADD);
 
@@ -191,7 +191,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
     //Save CLI Inputs payload
     await cliInputsState.saveCliInputPayload(cliInputs);
-    //Generate Cloudformation
+    //Generate CloudFormation
     const stackGenerator = new AmplifyS3ResourceStackTransform(cliInputs.resourceName as string, context);
     await stackGenerator.transform(CLISubCommandType.UPDATE);
     return cliInputs.resourceName;
@@ -438,7 +438,7 @@ function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TS
 }
 
 /**
- * Important!!: Creates new Lambda function name and Generates Lambda function Cloudformation.
+ * Important!!: Creates new Lambda function name and Generates Lambda function CloudFormation.
  * note:- This will be removed once Functions move to CDK.
  * Function names use a unique uuid to generate function-names since the User
  * could potentially generate multiple functions and switch between them for triggers.

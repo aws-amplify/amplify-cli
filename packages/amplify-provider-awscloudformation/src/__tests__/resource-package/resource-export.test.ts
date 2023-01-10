@@ -37,20 +37,20 @@ pathManager_mock.getBackendDirPath = jest.fn().mockReturnValue('backend');
 
 const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 JSONUtilitiesMock.stringify.mockImplementation((data, __) => JSON.stringify(data, null, 2));
-JSONUtilitiesMock.parse.mockImplementation((data) => JSON.parse(data));
+JSONUtilitiesMock.parse.mockImplementation(data => JSON.parse(data));
 JSONUtilitiesMock.readJson.mockImplementation((pathToJson: string) => {
   if (pathToJson.includes('function') && pathToJson.includes('amplifyexportestlayer5f16d693')) {
     return lambdaTemplate;
   }
   if (pathToJson.includes('rootStackTemplate.json')) {
-    return {
+    return ({
       Resources: {
         DeploymentBucket: {
           Properties: {},
         },
       },
       Parameters: {},
-    } as unknown as Template;
+    } as unknown) as Template;
   }
 });
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
@@ -62,14 +62,14 @@ readCFNTemplate_mock.mockImplementation(path => {
     };
   }
   return {
-    cfnTemplate: {
+    cfnTemplate: ({
       Parameters: {},
       Resources: {
         LambdaFunction: {
           Properties: {},
         },
       },
-    } as unknown as Template,
+    } as unknown) as Template,
     templateFormat: CFNTemplateFormat.JSON,
   };
 });
@@ -81,9 +81,9 @@ jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 fs_mock.existsSync.mockReturnValue(true);
 fs_mock.lstatSync.mockImplementation((_path, _options) => {
-  return {
+  return ({
     isDirectory: jest.fn().mockReturnValue(true),
-  } as unknown as fs.Stats;
+  } as unknown) as fs.Stats;
 });
 
 jest.mock('../../aws-utils/aws-s3', () => ({
@@ -92,7 +92,7 @@ jest.mock('../../aws-utils/aws-s3', () => ({
   },
 }));
 jest.mock('../../aws-utils/aws-cfn', () => ({
-  Cloudformation: {},
+  CloudFormation: {},
 }));
 jest.mock('../../admin-modelgen', () => ({
   adminModelgen: {},
@@ -104,19 +104,19 @@ jest.mock('../../zip-util', () => ({
   downloadZip: mockdownloadZip,
 }));
 jest.mock('../../pre-push-cfn-processor/cfn-pre-processor', () => ({
-  preProcessCFNTemplate: jest.fn().mockImplementation((cfnPath) => cfnPath),
+  preProcessCFNTemplate: jest.fn().mockImplementation(cfnPath => cfnPath),
   writeCustomPoliciesToCFNTemplate: jest.fn(),
-}))
+}));
 
 jest.mock('../../template-description-utils', () => ({
   prePushTemplateDescriptionHandler: jest.fn(),
   getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
-}))
+}));
 jest.mock('../../download-api-models', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
 jest.mock('../../iterative-deployment', () => ({}));
 jest.mock('../../utils/env-level-constructs', () => ({
-  getNetworkResourceCfn: jest.fn().mockReturnValue({ Resources: { mocknetworkstack: {} } } as unknown as Template),
+  getNetworkResourceCfn: jest.fn().mockReturnValue(({ Resources: { mocknetworkstack: {} } } as unknown) as Template),
 }));
 jest.mock('../../utils/consolidate-apigw-policies', () => ({
   consolidateApiGatewayPolicies: mockconsolidateApiGatewayPolicies,
@@ -269,7 +269,7 @@ import { Template } from 'cloudform-types';
 
 describe('test resource export', () => {
   const exportPath = './exportPath';
-  const mockContext = {
+  const mockContext = ({
     amplify: {
       invokePluginMethod: invokePluginMethod,
       getEnvInfo: stateManager_mock.getLocalEnvInfo,
@@ -284,7 +284,7 @@ describe('test resource export', () => {
         envName: 'dev',
       },
     },
-  } as unknown as $TSContext;
+  } as unknown) as $TSContext;
 
   let resourceExport: ResourceExport;
 

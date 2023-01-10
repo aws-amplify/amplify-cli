@@ -142,7 +142,7 @@ describe('amplify add lambda layer with changes', () => {
     const settingsUpdate = {
       runtimes: [layerRuntime],
       layerName,
-      dontChangePermissions: true,
+      doNotChangePermissions: true,
       numLayers: 1,
       projName,
     };

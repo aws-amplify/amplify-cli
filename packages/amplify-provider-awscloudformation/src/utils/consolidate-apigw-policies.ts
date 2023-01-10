@@ -297,7 +297,7 @@ export async function loadApiCliInputs(context: $TSContext, resourceName: string
             context,
             AmplifyCategories.API,
             AmplifySupportedService.APIGW,
-            'convertDeprecatedRestApiPaths',
+            'convertDeperecatedRestApiPaths',
             [deprecatedParamsFileName, deprecatedParamsFilePath, resourceName],
           ),
         };

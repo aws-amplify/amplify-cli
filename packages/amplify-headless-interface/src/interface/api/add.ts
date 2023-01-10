@@ -57,13 +57,13 @@ export interface ConflictResolution {
   /**
    * Strategies that will be used for individual models.
    */
-  perModelResolutionStrategy?: PerModelResolutionStrategy[];
+  perModelResolutionstrategy?: PerModelResolutionstrategy[];
 }
 
 /**
  * Defines a resolution strategy for a single model.
  */
-export interface PerModelResolutionStrategy {
+export interface PerModelResolutionstrategy {
   /**
    * The resolution strategy for the model.
    */

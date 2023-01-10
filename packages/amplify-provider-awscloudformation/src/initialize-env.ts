@@ -6,20 +6,17 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-continue */
 /* eslint-disable max-len */
-/* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable func-style */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import {
-  $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
 import path from 'path';
-import Cloudformation from './aws-utils/aws-cfn';
+import CloudFormation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 import { S3BackendZipFileName } from './constants';
@@ -39,7 +36,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     const backendDir = context.amplify.pathManager.getBackendDirPath();
 
     const s3 = await S3.getInstance(context);
-    const cfnItem = await new Cloudformation(context);
+    const cfnItem = await new CloudFormation(context);
     const file = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
     const unzippedDir = await extractZip(tempDir, file);
 
@@ -77,7 +74,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
     await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
 
-    // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
+    // Copy provider metadata from current-cloud-backend/amplify-meta to backend/amplify-meta
     const currentAmplifyMeta = stateManager.getCurrentMeta();
     const amplifyMeta = stateManager.getMeta();
 

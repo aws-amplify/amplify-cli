@@ -393,7 +393,7 @@ export enum CLISubCommandType {
 }
 
 // @public (undocumented)
-export class CloudformationProviderFacade {
+export class CloudFormationProviderFacade {
     // (undocumented)
     static getApiKeyConfig(context: $TSContext): Promise<ApiKeyConfig>;
     // (undocumented)

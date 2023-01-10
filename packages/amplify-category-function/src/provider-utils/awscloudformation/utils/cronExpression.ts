@@ -122,11 +122,11 @@ export class CronExpression {
 
       let exprOn = SECOND;
 
-      const exprsTok: string[] = cronExpression.split(' ');
-      let len_exprsTok = 0;
-      while (len_exprsTok <= exprsTok.length - 1 && exprOn <= YEAR) {
-        if (exprsTok[len_exprsTok] != undefined) {
-          const expr: string = exprsTok[len_exprsTok].trim();
+      const expressionTokenizer: string[] = cronExpression.split(' ');
+      let lengthExpressionTokenizer = 0;
+      while (lengthExpressionTokenizer <= expressionTokenizer.length - 1 && exprOn <= YEAR) {
+        if (expressionTokenizer[lengthExpressionTokenizer] != undefined) {
+          const expr: string = expressionTokenizer[lengthExpressionTokenizer].trim();
           const vTok: string[] = expr.split(',');
           let len_vTok = 0;
           while (len_vTok <= vTok.length - 1) {
@@ -138,7 +138,7 @@ export class CronExpression {
           }
           exprOn++;
         }
-        len_exprsTok++;
+        lengthExpressionTokenizer++;
       }
 
       if (exprOn <= DAY_OF_WEEK) {

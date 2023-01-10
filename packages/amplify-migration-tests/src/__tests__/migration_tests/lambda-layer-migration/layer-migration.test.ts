@@ -74,7 +74,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     await legacyAddLayer(projRoot, layerSettings);
     await amplifyPushAuth(projRoot, false);
     await amplifyStatus(projRoot, 'No Change', true);
-    await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
+    await updateLayer(projRoot, { ...layerSettings, doNotChangePermissions: true, migrateLegacyLayer: true }, true);
     await amplifyStatus(projRoot, 'Update', true);
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
     await amplifyPushLayer(projRoot, {}, true);
@@ -155,7 +155,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     await legacyAddLayer(projRoot, layerSettings);
     legacyAddOptData(projRoot, layerName);
     await amplifyPushAuth(projRoot, false);
-    await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
+    await updateLayer(projRoot, { ...layerSettings, doNotChangePermissions: true, migrateLegacyLayer: true }, true);
     await amplifyPushLayer(projRoot, {}, true);
     legacyUpdateOptData(projRoot, layerName, 'update');
     await amplifyPushLayer(projRoot, {}, true);

@@ -1,4 +1,4 @@
-import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
+import { $TSContext, CloudFormationProviderFacade } from 'amplify-cli-core';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import type {
   CreateComponentData, Component, Theme, Form,
@@ -64,7 +64,7 @@ export default class AmplifyStudioClient {
    */
   static isAmplifyApp = async (context: $TSContext, appId: string): Promise<boolean> => {
     try {
-      const { isAdminApp } = await CloudformationProviderFacade.isAmplifyAdminApp(context, appId);
+      const { isAdminApp } = await CloudFormationProviderFacade.isAmplifyAdminApp(context, appId);
       return isAdminApp;
     } catch (err) {
       // return false is admin app failed check

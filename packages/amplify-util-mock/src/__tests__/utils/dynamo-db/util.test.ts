@@ -316,7 +316,7 @@ describe('DynamoDB Utils', () => {
       ]);
     });
 
-    it('should throw error if the table names dont match', () => {
+    it('should throw error if the table names do not match', () => {
       const createTableInput: CreateTableInput = {
         ...baseSchema,
         TableName: 'different-name',

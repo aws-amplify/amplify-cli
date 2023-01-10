@@ -9,7 +9,8 @@ jest.mock('amplify-cli-core', () => ({
   },
   ApiCategoryFacade: {
     getTransformerVersion: jest.fn().mockReturnValue(2),
-  },  getGraphQLTransformerFunctionDocLink: jest.fn().mockReturnValue('mockdocs'),
+  },
+  getGraphQLTransformerFunctionDocLink: jest.fn().mockReturnValue('mockdocs'),
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
       function: {
@@ -69,7 +70,7 @@ describe('lambda arn to config', () => {
   });
 
   it('throws on unknown arn formats', async () => {
-    expect(lambdaArnToConfig(context_stub, ['dont know', 'what this is'])).rejects.toThrowError();
+    expect(lambdaArnToConfig(context_stub, ['do not know', 'what this is'])).rejects.toThrowError();
   });
 
   it('throws when arn is valid but no matching lambda found in the project', async () => {

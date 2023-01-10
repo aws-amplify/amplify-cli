@@ -2,7 +2,7 @@
 import * as cdk from '@aws-cdk/core';
 
 //Base template
-//Customer can use these params to mutate the Cloudformation for the resource
+//Customer can use these params to mutate the CloudFormation for the resource
 export interface AmplifyStackTemplate {
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
