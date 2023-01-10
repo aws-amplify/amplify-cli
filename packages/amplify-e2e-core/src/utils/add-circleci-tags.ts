@@ -17,7 +17,7 @@ declare global {
 
 export const addCircleCITags = async (projectPath: string): Promise<void> => {
   if (process.env && process.env['CIRCLECI']) {
-    await staggerInitCalls(projectPath);
+    // await staggerInitCalls(projectPath);
 
     const tags = stateManager.getProjectTags(projectPath);
 

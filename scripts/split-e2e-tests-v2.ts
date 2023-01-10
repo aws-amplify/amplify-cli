@@ -6,6 +6,7 @@ import {
 } from "./cci-utils";
 const RUN_SOLO = [
     'auth_2e_pkg',
+    'env-3_pkg',
     'notifications-in-app-messaging_pkg',
     'import_auth_1a_pkg',
     'import_auth_1b_pkg',
@@ -14,9 +15,11 @@ const RUN_SOLO = [
     'import_auth_3_pkg',
     'import_dynamodb_1_pkg',
     'import_dynamodb_2a_pkg',
+    'import_dynamodb_2b_pkg',
     'import_dynamodb_2c_pkg',
     'import_s3_2a_pkg',
     'import_s3_2c_pkg',
+    'import_s3_3_pkg',
     'geo-add-e_pkg',
     'geo-add-f_pkg',
     'geo-remove-1_pkg',
@@ -28,6 +31,7 @@ const RUN_SOLO = [
     'containers-api-1_pkg',
     'schema-auth-11-a_pkg',
     'http-migration_pkg',
+    'schema-connection-1_pkg'
 ]
 const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],
@@ -37,10 +41,12 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'api_2a_pkg',
         'api_2b_pkg',
         'api_5_pkg',
+        'custom_policies_container_pkg',
         'datastore-modelgen_pkg',
         'delete_pkg',
         'diagnose_pkg',
         'env-2_pkg',
+        'env-3_pkg',
         'export_pkg',
         'function_1_pkg',
         'function_3a_pkg',
