@@ -923,6 +923,14 @@
       "medianRuntime": 35
     },
     {
+      "test": "src/__tests__/storage-1a.test.ts",
+      "medianRuntime": 35
+    },
+    {
+      "test": "src/__tests__/storage-1b.test.ts",
+      "medianRuntime": 35
+    },
+    {
       "test": "src/__tests__/function_11.test.ts",
       "medianRuntime": 36
     },
@@ -1049,10 +1057,6 @@
     {
       "test": "src/__tests__/schema-iterative-update-4.test.ts",
       "medianRuntime": 52
-    },
-    {
-      "test": "src/__tests__/storage-1.test.ts",
-      "medianRuntime": 56
     },
     {
       "test": "src/__tests__/function_1.test.ts",
