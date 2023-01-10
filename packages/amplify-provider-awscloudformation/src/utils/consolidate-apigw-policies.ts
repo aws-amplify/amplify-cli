@@ -144,7 +144,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
 
   private createPoliciesFromResources(options: ApiGatewayPolicyCreationState) {
     const { apiRef, env, roleName, path, methods, namePrefix, envName } = options;
-    const apiPath = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
+    const apiPath = String(path.name).replace(/{[a-zA-Z0-9-]+}/g, '*');
 
     methods.forEach((method: string) => {
       const policySizeIncrease = computePolicySizeIncrease(envName.length, method.length, apiPath.length);
@@ -156,7 +156,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         // Initial size of 104 for version, statement, etc.
         options.policyDocSize = 104 + policySizeIncrease;
         ++options.roleCount;
-        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, (roleName as unknown) as string);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
@@ -186,7 +186,7 @@ function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: st
     ':',
     apiNameRef,
     '/',
-    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown as string,
+    (cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown) as string,
     method,
     apiPath,
   ]);
@@ -225,7 +225,9 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
   try {
     const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
     fs.unlinkSync(cfnPath);
-  } catch {}
+  } catch {
+    // ignore error
+  }
 
   if (apiGateways.length === 0) {
     return { APIGatewayAuthURL: undefined };
@@ -265,7 +267,7 @@ function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, e
   const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
   if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
-    return;
+    return undefined;
   }
 
   JSONUtilities.writeJson(cfnPath, cfn);

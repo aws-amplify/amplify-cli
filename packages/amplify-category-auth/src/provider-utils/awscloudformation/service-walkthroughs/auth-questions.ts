@@ -5,7 +5,6 @@ import chalk from 'chalk';
 import _, { uniq, pullAll } from 'lodash';
 import path from 'path';
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
-// @ts-ignore
 import { Sort } from 'enquirer';
 import { $TSContext } from 'amplify-cli-core';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
@@ -13,13 +12,25 @@ import { authProviders, attributeProviderMap, capabilities } from '../assets/str
 
 const category = 'auth';
 
+/**
+ * The enquirer module has a type declaration file that does not match its actual api.
+ * The package is no longer maintained, so a fix to the file cannot be expected.
+ * This declaration overrides the types exported from the package.
+ */
+declare module 'enquirer' {
+  export class Sort {
+    constructor(sortParameters: any);
+    run(): Promise<string[]>;
+  }
+}
+
 /* eslint-disable no-param-reassign */
 export const serviceWalkthrough = async (
-  context:$TSContext,
-  defaultValuesFilename:any,
-  stringMapsFilename:any,
-  serviceMetadata:any,
-  coreAnswers: {[key: string]: any} = {},
+  context: $TSContext,
+  defaultValuesFilename: any,
+  stringMapsFilename: any,
+  serviceMetadata: any,
+  coreAnswers: { [key: string]: any } = {},
 ): Promise<Record<string, unknown>> => {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
@@ -61,7 +72,7 @@ export const serviceWalkthrough = async (
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
-      selectionMetadata.forEach((selection: {[key: string]: any}) => {
+      selectionMetadata.forEach((selection: { [key: string]: any }) => {
         Object.keys(selection.triggers).forEach(t => {
           if (!tempTriggers[t] && answer.triggers.includes(selection.value)) {
             tempTriggers[t] = selection.triggers[t];
@@ -91,9 +102,9 @@ export const serviceWalkthrough = async (
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
         key to find the array of values it should splice into.
       */
-      questionObj.iterator
-      && answer[questionObj.key]
-      && answer[questionObj.key].length > 0
+      questionObj.iterator &&
+      answer[questionObj.key] &&
+      answer[questionObj.key].length > 0
     ) {
       const replacementArray = context.updatingAuth[questionObj.iterator];
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
@@ -223,7 +234,7 @@ export const serviceWalkthrough = async (
 /* eslint-enable no-param-reassign */
 
 const updateUserPoolGroups = async (context: any): Promise<string[]> => {
-  let userPoolGroupList = [];
+  let userPoolGroupList: string[] = [];
   let existingGroups;
 
   const userGroupParamsPath = path.join(
@@ -322,7 +333,7 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
   userPoolGroupList = Array.from(distinctSet);
 
   // Sort the Array to get precedence
-  let sortedUserPoolGroupList = [];
+  let sortedUserPoolGroupList: string[] = [];
 
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     const sortPrompt = new Sort({
@@ -432,7 +443,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
   const attributesForMapping = answers.requiredAttributes
     ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
     : ['email', 'username'];
-  const res: {[key: string]: any} = {};
+  const res: { [key: string]: any } = {};
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map((providerName: any) => {
@@ -493,9 +504,7 @@ export const structureOAuthMetadata = (coreAnswers: any, context: $TSContext, de
     return null;
   }
   const answers = { ...context.updatingAuth, ...coreAnswers };
-  let {
-    AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs,
-  } = answers;
+  let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
   } else if (coreAnswers.newCallbackURLs) {
@@ -548,20 +557,24 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
   try {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
-    providers.map(providerName => providerName.toLowerCase()).forEach((providerName: string) => {
-      const provider: {authorize_scopes: string} | undefined = parsedMetaData.find((currentProvider: any) => currentProvider.ProviderName === providerName);
-      const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
-      if (providerName === 'SignInWithApple') {
-        providerKeys[`${providerName}ClientIdUserPool`] = creds?.client_id;
-        providerKeys[`${providerName}TeamIdUserPool`] = creds?.team_id;
-        providerKeys[`${providerName}KeyIdUserPool`] = creds?.key_id;
-        providerKeys[`${providerName}PrivateKeyUserPool`] = creds?.private_key;
-      } else {
-        providerKeys[`${providerName}AppIdUserPool`] = creds?.client_id;
-        providerKeys[`${providerName}AppSecretUserPool`] = creds?.client_secret;
-      }
-      providerKeys[`${providerName}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(',');
-    });
+    providers
+      .map(providerName => providerName.toLowerCase())
+      .forEach((providerName: string) => {
+        const provider: { authorize_scopes: string } | undefined = parsedMetaData.find(
+          (currentProvider: any) => currentProvider.ProviderName === providerName,
+        );
+        const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
+        if (providerName === 'SignInWithApple') {
+          providerKeys[`${providerName}ClientIdUserPool`] = creds?.client_id;
+          providerKeys[`${providerName}TeamIdUserPool`] = creds?.team_id;
+          providerKeys[`${providerName}KeyIdUserPool`] = creds?.key_id;
+          providerKeys[`${providerName}PrivateKeyUserPool`] = creds?.private_key;
+        } else {
+          providerKeys[`${providerName}AppIdUserPool`] = creds?.client_id;
+          providerKeys[`${providerName}AppSecretUserPool`] = creds?.client_secret;
+        }
+        providerKeys[`${providerName}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(',');
+      });
   } catch (e) {
     return {};
   }
@@ -598,12 +611,12 @@ const handleUpdates = (context: $TSContext, coreAnswers: any): any => {
 /*
   Adding lambda triggers
 */
-const lambdaFlow = async (context: $TSContext, answers: any):Promise<any> => {
+const lambdaFlow = async (context: $TSContext, answers: any): Promise<any> => {
   const triggers = await context.amplify.triggerFlow(context, 'cognito', 'auth', answers);
   return triggers || answers;
 };
 
-export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptions: any):any => {
+export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptions: any): any => {
   let policy = {};
   const actions: any[] = [];
 

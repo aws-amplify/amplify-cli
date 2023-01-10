@@ -13,42 +13,50 @@ export type MapParameters = ResourceParameters & {
  * The type of Map styles for Esri data provider
  */
 export enum EsriMapStyleType {
-    Navigation = "Navigation",
-    Streets = "Streets",
-    Topographic = "Topographic",
-    DarkGrayCanvas = "DarkGrayCanvas",
-    LightGrayCanvas = "LightGrayCanvas",
-    Imagery = "Imagery"
+    Navigation = 'Navigation',
+    Streets = 'Streets',
+    Topographic = 'Topographic',
+    DarkGrayCanvas = 'DarkGrayCanvas',
+    LightGrayCanvas = 'LightGrayCanvas',
+    Imagery = 'Imagery'
 }
 
 /**
  * The type of Map styles for HERE data provider
  */
  export enum HereMapStyleType {
-   Berlin = "Berlin",
-   Explore = "Explore",
-   ExploreTruck = "ExploreTruck",
-   RasterSatellite = "RasterSatellite",
-   HybridSatellite = "HybridSatellite"
+   Berlin = 'Berlin',
+   Explore = 'Explore',
+   ExploreTruck = 'ExploreTruck',
+   RasterSatellite = 'RasterSatellite',
+   HybridSatellite = 'HybridSatellite'
  }
 
-export type MapStyleType = EsriMapStyleType | HereMapStyleType;
+ /**
+ * The type of Map styles for Open data provider
+ */
+ export enum OpenDataMapStyleType {
+   StandardLight = 'StandardLight'
+ }
+
+export type MapStyleType = EsriMapStyleType | HereMapStyleType | OpenDataMapStyleType;
 
 /**
  * Supported Geo Map Styles
  */
 export enum MapStyle {
-    VectorEsriNavigation = "VectorEsriNavigation",
-    VectorEsriStreets = "VectorEsriStreets",
-    VectorEsriTopographic = "VectorEsriTopographic",
-    VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
-    VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
-    RasterEsriImagery = "RasterEsriImagery",
-    VectorHereBerlin = "VectorHereBerlin",
-    VectorHereExplore = "VectorHereExplore",
-    VectorHereExploreTruck = "VectorHereExploreTruck",
-    RasterHereExploreSatellite = "RasterHereExploreSatellite",
-    HybridHereExploreSatellite = "HybridHereExploreSatellite"
+    VectorEsriNavigation = 'VectorEsriNavigation',
+    VectorEsriStreets = 'VectorEsriStreets',
+    VectorEsriTopographic = 'VectorEsriTopographic',
+    VectorEsriDarkGrayCanvas = 'VectorEsriDarkGrayCanvas',
+    VectorEsriLightGrayCanvas = 'VectorEsriLightGrayCanvas',
+    RasterEsriImagery = 'RasterEsriImagery',
+    VectorHereBerlin = 'VectorHereBerlin',
+    VectorHereExplore = 'VectorHereExplore',
+    VectorHereExploreTruck = 'VectorHereExploreTruck',
+    RasterHereExploreSatellite = 'RasterHereExploreSatellite',
+    HybridHereExploreSatellite = 'HybridHereExploreSatellite',
+    VectorOpenDataStandardLight = 'VectorOpenDataStandardLight'
 }
 
 /**
@@ -113,6 +121,8 @@ export const getMapStyleComponents = (mapStyle: string): Pick<MapParameters, 'da
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.RasterSatellite };
         case MapStyle.HybridHereExploreSatellite:
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.HybridSatellite };
+        case MapStyle.VectorOpenDataStandardLight:
+            return { dataProvider: DataProvider.OpenData, mapStyleType: OpenDataMapStyleType.StandardLight };
         default:
             throw new Error(`Invalid map style ${mapStyle}`);
     }

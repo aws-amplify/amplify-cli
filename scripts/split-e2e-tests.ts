@@ -1,8 +1,8 @@
-import * as yaml from 'js-yaml';
-import * as glob from 'glob';
-import { join } from 'path';
-import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import * as fs from 'fs-extra';
+import * as glob from 'glob';
+import * as yaml from 'js-yaml';
+import { join } from 'path';
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 
@@ -14,83 +14,104 @@ const CONCURRENCY = 35;
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 
 // Todo: update the split test strategy to use parallelization so circleci results dont go over the limits of github payload size
-const WINDOWS_TEST_ALLOWLIST: string[] = [
-  'schema-function-1_pkg',
-  'tags_pkg',
-  'schema-auth-9-a_pkg',
-  'schema-auth-9-b_pkg',
-  'schema-auth-9-c_pkg',
-  'schema-model-a_pkg',
-  'schema-model-b_pkg',
-  'schema-model-c_pkg',
-  'schema-model-d_pkg',
-  'schema-model-e_pkg',
-  'api_lambda_auth_pkg',
-  'node-function_pkg',
-  'schema-function-2_pkg',
-  'notifications_pkg',
-  'interactions_pkg',
-  'analytics_pkg',
-  'schema-auth-7a_pkg',
-  'schema-auth-7b_pkg',
-  'schema-auth-7c_pkg',
-  'schema-auth-11-a_pkg',
-  'schema-auth-11-b_pkg',
-  'schema-auth-11-c_pkg',
-  'auth_6_pkg',
-  'frontend_config_drift_pkg',
-  'hooks-b_pkg',
-  'plugin_pkg',
-  'schema-versioned_pkg',
-  'schema-auth-3_pkg',
-  'schema-auth-8a_pkg',
-  'schema-auth-8b_pkg',
-  'schema-auth-8c_pkg',
-  'import_dynamodb_1_pkg',
-  'schema-connection_pkg',
-  'auth_7a_pkg',
-  'auth_7b_pkg',
-  'iam-permissions-boundary_pkg',
-  'schema-data-access-patterns_pkg',
-  'schema-auth-10_pkg',
-  'schema-searchable_pkg',
-  'schema-auth-6_pkg',
-  'auth_8a_pkg',
-  'auth_8b_pkg',
-  'auth_8c_pkg',
-  's3-sse_pkg',
-  'storage-2_pkg',
-  'schema-auth-4a_pkg',
-  'schema-auth-4b_pkg',
-  'schema-auth-4c_pkg',
-  'schema-auth-4d_pkg',
-  'configure-project_pkg',
-  'schema-auth-12_pkg',
-  'storage-3_pkg',
-  'amplify-configure_pkg',
-  'schema-predictions_pkg',
-  'predictions_pkg',
-  'auth_1a_pkg',
-  'auth_1b_pkg',
-  'auth_1c_pkg',
-  'schema-auth-1a_pkg',
-  'schema-auth-1b_pkg',
-  'schema-auth-2a_pkg',
-  'schema-auth-2b_pkg',
-  'container-hosting_pkg',
-  'schema-auth-13_pkg',
-  'init_a_pkg',
-  'init_b_pkg',
-  'init_c_pkg',
-  'init_d_pkg',
-  'init_e_pkg',
-  'init_f_pkg',
-  'auth_5a_pkg',
-  'auth_5b_pkg',
-  'auth_5c_pkg',
-  'auth_5d_pkg',
-  'auth_5e_pkg',
-  'auth_5f_pkg',
+const WINDOWS_TEST_SKIP_LIST: string[] = [
+  'amplify-app_pkg',
+  'analytics-2_pkg',
+  'api_migration_update_v5',
+  'api_migration_update_v6',
+  'api_2_pkg',
+  'api_5_pkg',
+  'api-key-migration_v5',
+  'api-key-migration_v6',
+  'api-key-migration-2_v5',
+  'api-key-migration-2_v6',
+  'api-migration-a_v5',
+  'api-migration-a_v6',
+  'api-migration-b_v5',
+  'api-migration-b_v6',
+  'api-migration-c_v5',
+  'api-migration-c_v6',
+  'api-migration-d_v5',
+  'api-migration-d_v6',
+  'apigw-ext-migration_v5',
+  'apigw-ext-migration_v6',
+  'auth_migration_update_v5',
+  'auth_migration_update_v6',
+  'auth-migration-a_v5',
+  'auth-migration-a_v6',
+  'auth-migration-b_v5',
+  'auth-migration-b_v6',
+  'auth-migration-c_v5',
+  'auth-migration-c_v6',
+  'auth-migration-d_v5',
+  'auth-migration-d_v6',
+  'auth-migration-e_v5',
+  'auth-migration-e_v6',
+  'datastore-modelgen_pkg',
+  'delete_pkg',
+  'diagnose_pkg',
+  'dotnet_runtime_update_migration_v10',
+  'env-2_pkg',
+  'export_pkg',
+  'function_1_pkg',
+  'function_3a_pkg',
+  'function_3b_pkg',
+  'function_4_pkg',
+  'function_6_pkg',
+  'function_7_pkg',
+  'function_8_pkg',
+  'function_migration_update_v5',
+  'function_migration_update_v6',
+  'geo-add-e_pkg',
+  'geo-add-f_pkg',
+  'geo-remove-2_pkg',
+  'geo-remove-3_pkg',
+  'geo-update-1_pkg',
+  'geo-update-2_pkg',
+  'git-clone-attach_pkg',
+  'hooks-a_pkg',
+  'import_auth_1a_pkg',
+  'import_auth_1b_pkg',
+  'import_auth_2a_pkg',
+  'import_auth_2b_pkg',
+  'import_auth_3_pkg',
+  'import_dynamodb_2a_pkg',
+  'import_dynamodb_2c_pkg',
+  'import_s3_2a_pkg',
+  'import_s3_2c_pkg',
+  'init-migration_v5',
+  'init-migration_v6',
+  'layer-2_pkg',
+  'layer-migration_v5',
+  'layer-migration_v6',
+  'mock-api_pkg',
+  'model-migration_pkg',
+  'notifications-analytics-compatibility-in-app-1_pkg',
+  'notifications-analytics-compatibility-sms-1_pkg',
+  'notifications-analytics-compatibility-sms-2_pkg',
+  'notifications-in-app-messaging-env-1_pkg',
+  'notifications-in-app-messaging-env-2_pkg',
+  'notifications-lifecycle_pkg',
+  'notifications-migration_v5',
+  'notifications-migration_v6',
+  'notifications-migration-2_v5',
+  'notifications-migration-2_v6',
+  'notifications-migration-3_v5',
+  'notifications-migration-3_v6',
+  'notifications-migration-4_v5',
+  'notifications-migration-4_v6',
+  'notifications-sms_pkg',
+  'notifications-sms-pull_pkg',
+  'pull_pkg',
+  'scaffold_v10',
+  'schema-iterative-rollback-1_pkg',
+  'schema-iterative-rollback-2_pkg',
+  'searchable-migration_pkg',
+  'storage-5_pkg',
+  'storage_migration_update_v5',
+  'storage_migration_update_v6',
+  'studio-modelgen_pkg',
+  'uibuilder_pkg',
 ];
 
 // some tests may require a larger executor, specify those here
@@ -124,17 +145,9 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'api_2',
-  'api_1',
-  'auth_2',
   'import_dynamodb_1',
   'import_s3_1',
-  'api-key-migration2',
-  'api-key-migration3',
-  'api-key-migration4',
-  'api-key-migration5',
   'searchable-migration',
-  'storage',
 ];
 
 export type WorkflowJob =
@@ -223,7 +236,7 @@ function splitTests(
   }, {});
 
   // Spilt jobs by region
-  const jobByRegion = Object.entries(newJobs).reduce((acc, entry: [string, any]) => {
+  const jobByRegion = Object.entries(newJobs).reduce((acc: Record<string, any>, entry: [string, any]) => {
     const [jobName, job] = entry;
     const region = job?.environment?.CLI_REGION;
     const regionJobs = { ...acc[region], [jobName]: job };
@@ -252,10 +265,11 @@ function splitTests(
             return newJobName;
           } else {
             // for the most up-to-date list of executors for e2e, see the config.base.yml file
-            let linuxVMSize = JOBS_RUNNING_ON_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
+            const linuxVMSize = JOBS_RUNNING_ON_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
+            const windowsVMSize = 'w_medium';
             let requiredJobs = workflowJob[jobName].requires || [];
-            const allowWindows = WINDOWS_TEST_ALLOWLIST.includes(newJobName);
-            if(!allowWindows) {
+            const skipWindows = WINDOWS_TEST_SKIP_LIST.includes(newJobName);
+            if (skipWindows) {
               requiredJobs = requiredJobs.filter(j => j !== 'build_windows_workspace_for_e2e');
             }
             return {
@@ -264,7 +278,7 @@ function splitTests(
                 requires: requiredJobs,
                 matrix: {
                   parameters: {
-                    os: allowWindows ? [linuxVMSize, 'w_medium'] : [linuxVMSize],
+                    os: skipWindows ? [linuxVMSize] : [linuxVMSize, windowsVMSize],
                   },
                 },
               },

@@ -43,7 +43,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   const partitionKey = await askPrimaryKeyQuestion(indexableAttributeList, attributeAnswers); // Cannot be changed once added
 
-  let cliInputs: DynamoDBCLIInputs = {
+  const cliInputs: DynamoDBCLIInputs = {
     resourceName,
     tableName,
     partitionKey,
@@ -56,10 +56,10 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName);
 
   const cliInputsState = new DynamoDBInputState(context, cliInputs.resourceName);
-  cliInputsState.saveCliInputPayload(cliInputs);
+  await cliInputsState.saveCliInputPayload(cliInputs);
 
   const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
-  stackGenerator.transform();
+  await stackGenerator.transform();
 
   return cliInputs.resourceName;
 }
@@ -84,7 +84,7 @@ export async function updateWalkthrough(context: $TSContext) {
     printer.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   }
 
   const resources = Object.keys(dynamoDbResources);
@@ -96,17 +96,17 @@ export async function updateWalkthrough(context: $TSContext) {
   const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
     if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, resourceName), true))) {
-      cliInputsState.migrate();
+      await cliInputsState.migrate();
       const stackGenerator = new DDBStackTransform(context, resourceName);
-      stackGenerator.transform();
+      await stackGenerator.transform();
     } else {
-      return;
+      return undefined;
     }
   }
 
   const cliInputs = cliInputsState.getCliInputPayload();
 
-  let existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
+  const existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
 
   if (cliInputs.partitionKey) {
     existingAttributeDefinitions.push(cliInputs.partitionKey);
@@ -134,16 +134,16 @@ export async function updateWalkthrough(context: $TSContext) {
   cliInputs.gsi = await askGSIQuestion(indexableAttributeList, attributeAnswers, cliInputs.gsi);
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName, cliInputs.triggerFunctions);
 
-  cliInputsState.saveCliInputPayload(cliInputs);
+  await cliInputsState.saveCliInputPayload(cliInputs);
 
   const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
-  stackGenerator.transform();
+  await stackGenerator.transform();
 
   return cliInputs;
 }
 
 async function askTriggersQuestion(context: $TSContext, resourceName: string, existingTriggerFunctions?: string[]): Promise<string[]> {
-  let triggerFunctions: string[] = existingTriggerFunctions || [];
+  const triggerFunctions: string[] = existingTriggerFunctions || [];
 
   if (!existingTriggerFunctions || existingTriggerFunctions.length === 0) {
     if (await prompter.confirmContinue('Do you want to add a Lambda Trigger for your Table?')) {
@@ -244,10 +244,7 @@ async function askGSIQuestion(
 
     while (continuewithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
-        const gsiNameValidator =
-          (message: string): Validator =>
-          (input: string) =>
-            /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
+        const gsiNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
 
         const gsiName = await prompter.input('Provide the GSI name', {
           validate: gsiNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
@@ -260,7 +257,7 @@ async function askGSIQuestion(
         );
 
         /* eslint-enable */
-        let gsiItem: DynamoDBCLIInputsGSIType = {
+        const gsiItem: DynamoDBCLIInputsGSIType = {
           name: gsiName,
           partitionKey: {
             fieldName: gsiPartitionKeyName,
@@ -316,7 +313,7 @@ async function askSortKeyQuestion(
       printer.error('You must add additional keys in order to select a sort key.');
     }
   }
-  return;
+  return undefined;
 }
 
 async function askPrimaryKeyQuestion(indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[]) {
@@ -379,10 +376,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
   }
 
   while (continueAttributeQuestion) {
-    const attributeNameValidator =
-      (message: string): Validator =>
-      (input: string) =>
-        /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
+    const attributeNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
 
     const attributeName = await prompter.input('What would you like to name this column', {
       validate: attributeNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
@@ -413,10 +407,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
 }
 
 async function askTableNameQuestion(defaultValues: any, resourceName: string) {
-  const tableNameValidator =
-    (message: string): Validator =>
-    (input: string) =>
-      /^[a-zA-Z0-9._-]+$/.test(input) ? true : message;
+  const tableNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9._-]+$/.test(input) ? true : message);
 
   const tableName = await prompter.input('Provide table name', {
     validate: tableNameValidator('You can use the following characters: a-z A-Z 0-9 . - _'),

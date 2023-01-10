@@ -23,7 +23,7 @@ const category = 'analytics';
  * Command to open AWS console for kinesis/pinpoint
  * @param context amplify cli context
  */
-export const console = async (context: $TSContext) : Promise<void> => {
+export const console = async (context: $TSContext): Promise<void> => {
   const hasKinesisResource = kinesisHelper.hasResource(context);
   const hasPinpointResource = pinpointHelper.hasResource(context);
 
@@ -40,10 +40,10 @@ export const console = async (context: $TSContext) : Promise<void> => {
 
   switch (selectedResource) {
     case 'kinesis':
-      kinesisHelper.console(context);
+      await kinesisHelper.console(context);
       break;
     case 'pinpoint':
-      pinpointHelper.console(context);
+      await pinpointHelper.console(context);
       break;
     default:
       break;
@@ -55,7 +55,7 @@ export const console = async (context: $TSContext) : Promise<void> => {
  * @param context cli context
  * @param resourceOpsMapping - get permission policies for each analytics resource
  */
-export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapping: { [x: string]: $TSAny; }): Promise<$TSAny> => {
+export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapping: { [x: string]: $TSAny }): Promise<$TSAny> => {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies: $TSAny[] = [];
@@ -78,9 +78,13 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
         printer.error(`Provider not configured for ${category}: ${resourceName}`);
       }
     } catch (e) {
-      throw new AmplifyFault('AnalyticsCategoryFault', {
-        message: `Could not get policies for ${category}: ${resourceName}`,
-      }, e);
+      throw new AmplifyFault(
+        'AnalyticsCategoryFault',
+        {
+          message: `Could not get policies for ${category}: ${resourceName}`,
+        },
+        e,
+      );
     }
   }
   return { permissionPolicies, resourceAttributes };
@@ -90,14 +94,13 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
  * Execute the Amplify CLI command
  * @param context - Amplify CLI context
  */
-export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
+export const executeAmplifyCommand = async (context: $TSContext): Promise<$TSAny> => {
   context.exeInfo = context.amplify.getProjectDetails();
   await migrationCheck(context);
 
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  commandPath = context.input.command === 'help'
-    ? path.join(commandPath, category)
-    : path.join(commandPath, category, context.input.command);
+  commandPath =
+    context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
 
   const commandModule = await import(commandPath);
   await commandModule.run(context);

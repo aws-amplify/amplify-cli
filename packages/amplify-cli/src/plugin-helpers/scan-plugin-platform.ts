@@ -28,8 +28,8 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
       return result;
     });
 
-    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(
-      pluginDirPath => async () => await verifyAndAdd(pluginPlatform!, pluginDirPath),
+    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
+      await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
@@ -152,6 +152,7 @@ export function isUnderScanCoverageSync(pluginPlatform: PluginPlatform, pluginDi
       if (fs.existsSync(directory) && isChildPath(pluginDirPath, directory)) {
         return true;
       }
+      return undefined;
     });
   }
 

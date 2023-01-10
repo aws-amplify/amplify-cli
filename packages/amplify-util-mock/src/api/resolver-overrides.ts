@@ -122,7 +122,7 @@ export class ResolverOverrides {
     });
   }
 
-  isTemplateFile(filePath: string, isDelete: boolean = false): boolean {
+  isTemplateFile(filePath: string, isDelete = false): boolean {
     if (!this.fileExtensions.includes(path.extname(filePath))) {
       return false;
     }

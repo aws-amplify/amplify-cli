@@ -505,13 +505,13 @@ export interface MapConfiguration {
     // (undocumented)
     mapStyle: MapStyle;
     // (undocumented)
-    serviceName: "Map";
+    serviceName: 'Map';
 }
 
 // @public (undocumented)
 export interface MapModification {
     // (undocumented)
-    serviceName: "Map";
+    serviceName: 'Map';
 }
 
 // @public (undocumented)
@@ -537,7 +537,9 @@ export enum MapStyle {
     // (undocumented)
     VectorHereExplore = "VectorHereExplore",
     // (undocumented)
-    VectorHereExploreTruck = "VectorHereExploreTruck"
+    VectorHereExploreTruck = "VectorHereExploreTruck",
+    // (undocumented)
+    VectorOpenDataStandardLight = "VectorOpenDataStandardLight"
 }
 
 // @public (undocumented)

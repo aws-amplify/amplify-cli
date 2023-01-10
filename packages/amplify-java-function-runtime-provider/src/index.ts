@@ -29,7 +29,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     },
 
     checkDependencies: async () => {
-      var result: CheckDependenciesResult = {
+      const result: CheckDependenciesResult = {
         hasRequiredDependencies: true,
       };
 

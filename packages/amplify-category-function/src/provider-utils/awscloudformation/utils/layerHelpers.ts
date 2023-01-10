@@ -382,7 +382,7 @@ const getLayerGlobs = async (
 
 // hashes just the content that will be zipped into the layer version.
 // for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
-const hashLayerVersion = async (layerPath: string, layerName: string, includeResourceFiles: boolean = false): Promise<string> => {
+const hashLayerVersion = async (layerPath: string, layerName: string, includeResourceFiles = false): Promise<string> => {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName, false);
 
   if (layerConfig) {

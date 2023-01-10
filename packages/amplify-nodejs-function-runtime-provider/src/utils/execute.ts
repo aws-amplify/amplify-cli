@@ -3,23 +3,26 @@ import { InvokeOptions } from './invoke';
 import path from 'path';
 import exit from 'exit';
 
-process.on('message', async (options: InvokeOptions) => {
+process.on('message', (options: InvokeOptions) => {
   const parentPipe = createWriteStream('', { fd: 3 });
   parentPipe.setDefaultEncoding('utf-8');
-  try {
-    const result = await invokeFunction(options);
-    parentPipe.write(JSON.stringify({ result }));
-  } catch (error) {
-    let plainError = error;
-    if (typeof error === 'object') {
-      plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {
-        acc[key] = error[key];
-        return acc;
-      }, {} as Record<string, any>);
-    }
-    parentPipe.write(JSON.stringify({ error: plainError }));
-  }
-  exit(0);
+  void invokeFunction(options)
+    .then(result => {
+      parentPipe.write(JSON.stringify({ result }));
+    })
+    .catch(error => {
+      let plainError = error;
+      if (typeof error === 'object') {
+        plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {
+          acc[key] = error[key];
+          return acc;
+        }, {} as Record<string, any>);
+      }
+      parentPipe.write(JSON.stringify({ error: plainError }));
+    })
+    .then(() => {
+      exit(0);
+    });
 });
 
 const invokeFunction = async (options: InvokeOptions) => {
@@ -51,7 +54,7 @@ const invokeFunction = async (options: InvokeOptions) => {
     ...options.context,
   };
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const callback = (error: any, response: any) => {
       if (error) {
         reject(error);
@@ -62,7 +65,7 @@ const invokeFunction = async (options: InvokeOptions) => {
     try {
       const lambdaPromise = lambdaHandler(event, lambdaMockContext, callback);
       if (typeof lambdaPromise === 'object' && typeof lambdaPromise.then === 'function') {
-        resolve(await lambdaPromise);
+        resolve(lambdaPromise);
       }
     } catch (e) {
       reject(e);

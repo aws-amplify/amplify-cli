@@ -20,7 +20,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       const layerDirPath = path.join(params.srcRoot, '..', '..');
       const optPath = path.join(layerDirPath, 'opt');
 
-      let conflicts: string[] = [];
+      const conflicts: string[] = [];
       libGlob.forEach(lib => {
         const basename = path.basename(lib);
         if (fs.pathExistsSync(path.join(optPath, basename))) {

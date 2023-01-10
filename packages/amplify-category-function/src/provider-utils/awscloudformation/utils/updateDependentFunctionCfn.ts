@@ -28,7 +28,7 @@ export async function updateDependentFunctionsCfn(
     const currentParameters = loadFunctionParameters(resourceDirPath);
     const selectedCategories = currentParameters.permissions;
     let categoryPolicies = [];
-    let permissions = {};
+    const permissions = {};
     let resources = [];
     const functionParameters: Partial<FunctionParameters> = {
       resourceName: lambda.resourceName,
@@ -97,10 +97,10 @@ export function addAppSyncInvokeMethodPermission(
       Type: 'AWS::Lambda::Permission',
       Properties: {
         FunctionName: {
-          Ref: "LambdaFunction"
+          Ref: 'LambdaFunction'
         },
-        Action: "lambda:InvokeFunction",
-        Principal: "appsync.amazonaws.com",
+        Action: 'lambda:InvokeFunction',
+        Principal: 'appsync.amazonaws.com',
       },
     };
   }

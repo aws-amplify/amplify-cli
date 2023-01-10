@@ -51,7 +51,7 @@ async function updateWalkthrough(context) {
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources > 1) {
