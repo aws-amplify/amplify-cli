@@ -71,14 +71,18 @@ function preserveHelpInformation(input: Input): Input {
   }
 
   // prevent information in help option from being overwritten to true by saving it in subcommands
-  if (input.options && input.options[constants.HELP] && typeof input.options[constants.HELP] === "string") {
-    input.subCommands = input.subCommands ? [...input.subCommands, input.options[constants.HELP] as string] : [input.options[constants.HELP] as string];
-  } else if (input.options && input.options[constants.HELP_SHORT] && typeof input.options[constants.HELP_SHORT] === "string") {
-    input.subCommands = input.subCommands ? [...input.subCommands, input.options[constants.HELP_SHORT] as string] : [input.options[constants.HELP_SHORT] as string];
+  if (input.options && input.options[constants.HELP] && typeof input.options[constants.HELP] === 'string') {
+    input.subCommands = input.subCommands
+      ? [...input.subCommands, input.options[constants.HELP] as string]
+      : [input.options[constants.HELP] as string];
+  } else if (input.options && input.options[constants.HELP_SHORT] && typeof input.options[constants.HELP_SHORT] === 'string') {
+    input.subCommands = input.subCommands
+      ? [...input.subCommands, input.options[constants.HELP_SHORT] as string]
+      : [input.options[constants.HELP_SHORT] as string];
   }
 
   // preserve command information in plugin field
-  if (input.plugin && input.plugin !== "core") {
+  if (input.plugin && input.plugin !== 'core') {
     if (input.subCommands && input.subCommands.length && input.argv.indexOf(input.plugin) > input.argv.indexOf(input.subCommands[0])) {
       input.subCommands = [...input.subCommands, input.plugin];
     } else {
@@ -96,7 +100,7 @@ function preserveHelpInformation(input: Input): Input {
 function normalizeInput(input: Input): Input {
   // -v --version => version command
   // -h --help => help command
-  // -y --yes => yes option  
+  // -y --yes => yes option
   if (input.options) {
     if (input.options[constants.VERSION] || input.options[constants.VERSION_SHORT]) {
       input.options[constants.VERSION] = true;

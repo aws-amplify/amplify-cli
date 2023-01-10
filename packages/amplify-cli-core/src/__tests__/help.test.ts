@@ -139,47 +139,47 @@ describe('amplify help functions: ', () => {
     },
   ];
 
-  it('test lookup command init not null', () => {
+  it('lookup valid command (init) and expect not null', () => {
     let initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
     expect(initCommandInfo).not.toBeUndefined();
   });
 
-  it('test lookup command invalid is null', () => {
+  it('lookup invalid command and expect null', () => {
     let invalidCommandInfo = lookUpCommand(mockCommandsInfo, 'invalidcommand');
     expect(invalidCommandInfo).toBeUndefined();
   });
 
-  it('test lookup command init correct command name', () => {
+  it('lookup valid command (init) and expect correct command name', () => {
     let initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
     expect(initCommandInfo!.command).toBe('init');
   });
 
-  it('test lookup command configure correct command name', () => {
+  it('lookup valid command (configure) and expect correct command name', () => {
     let initCommandInfo = lookUpCommand(mockCommandsInfo, 'configure');
     expect(initCommandInfo!.command).toBe('configure');
   });
 
-  it('test lookup subcommand configure project not null', () => {
+  it('lookup valid subcommand (configure project) and expect not null', () => {
     let configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
     expect(configureProjectSubCommandInfo).not.toBeUndefined();
   });
 
-  it('test lookup subcommand invalid is null', () => {
+  it('lookup invalid subcommand and expect null', () => {
     let invalidSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'invalidcommand', 'invalidsubcommand');
     expect(invalidSubCommandInfo).toBeUndefined();
   });
 
-  it('test lookup subcommand configure project correct subcommand name', () => {
+  it('lookup valid subcommand (configure project) and expect correct subcommand name', () => {
     let configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
     expect(configureProjectSubCommandInfo!.subCommand).toBe('project');
   });
 
-  it('test lookup subcommand configure hosting correct subcommand name', () => {
+  it('lookup valid subcommand (configure hosting) correct subcommand name', () => {
     let configureHostingSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'hosting');
     expect(configureHostingSubCommandInfo!.subCommand).toBe('hosting');
   });
 
-  it('test parse configure from input', () => {
+  it('parse command (configure) from input', () => {
     const configureInput = {
       argv: ['node', 'amplify', 'configure', '-h'],
       command: 'help',
@@ -192,7 +192,7 @@ describe('amplify help functions: ', () => {
     expect(specifiedCommands.subCommand).toBe('');
   });
 
-  it('test parse mock function from input', () => {
+  it('parse command and subcommand (mock function) from input', () => {
     const mockFunctionInput = {
       argv: ['node', 'amplify', 'mock', 'function', '-h'],
       plugin: 'mock',
@@ -205,7 +205,7 @@ describe('amplify help functions: ', () => {
     expect(specifiedCommands.subCommand).toBe('function');
   });
 
-  it('test run help invalid command', () => {
+  it('run help invalid command', () => {
     let mockContext: $TSContext;
     mockContext = ({
       input: {
@@ -221,7 +221,7 @@ describe('amplify help functions: ', () => {
     expect(printer.info).toBeCalledWith('  ' + 'amplify <command> <subcommand> [flags]');
   });
 
-  it('test run help mock', () => {
+  it('run help command (mock)', () => {
     let mockContext: $TSContext;
 
     mockContext = ({
@@ -240,7 +240,7 @@ describe('amplify help functions: ', () => {
     expect(printer.info).toBeCalledWith('  ' + 'amplify mock <subcommand>');
   });
 
-  it('test run help mock function', () => {
+  it('run help subcommand (mock function)', () => {
     let mockContext: $TSContext;
 
     mockContext = ({
