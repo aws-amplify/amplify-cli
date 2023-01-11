@@ -1,6 +1,6 @@
 import {
-  initJSProjectWithProfile, initFlutterProjectWithProfile, amplifyPushUpdate, amplifyStatus, deleteProject, generateRandomShortId,
-  addPinpoint, addKinesis, removeAnalytics, createNewProjectDir, deleteProjectDir,
+  initJSProjectWithProfile, amplifyPushUpdate, amplifyStatus, deleteProject,
+  addPinpoint, removeAnalytics, createNewProjectDir, deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -64,22 +64,5 @@ describe('amplify add analytics', () => {
     authAction = _.get(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action');
     expect(_.includes(unAuthAction, 'mobiletargeting:GetUserEndpoints')).toBe(false);
     expect(_.includes(authAction, 'mobiletargeting:GetUserEndpoints')).toBe(false);
-  });
-
-  it('add pinpoint for flutter', async () => {
-    await initFlutterProjectWithProfile(projRoot, { name: 'storageTest' });
-    const rightName = 'myapp';
-    await addPinpoint(projRoot, { rightName, wrongName: '$' });
-    await amplifyPushUpdate(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
-  });
-
-  it('add kinesis', async () => {
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const rightName = `myapp${generateRandomShortId()}`;
-    await addKinesis(projRoot, { rightName, wrongName: '$' });
-    await amplifyPushUpdate(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
   });
 });

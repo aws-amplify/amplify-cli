@@ -124,7 +124,7 @@ function configureNewUser(context) {
   return setupNewUser.run(context);
 }
 
-function openConsole(context) {
+async function openConsole(context) {
   return consoleCommand.run(context);
 }
 
@@ -132,7 +132,7 @@ export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
 }
 
-export async function getConfiguredLocationServiceClient(context: $TSContext, options?: {}) {
+export async function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>) {
   return await LocationService.getInstance(context, options);
 }
 

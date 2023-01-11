@@ -102,7 +102,7 @@ export class APITest {
   async stop(context) {
     this.ddbClient = null;
     if (this.watcher) {
-      this.watcher.close();
+      await this.watcher.close();
       this.watcher = null;
     }
 
@@ -350,13 +350,13 @@ export class APITest {
     this.watcher = await this.registerWatcher(context);
     this.watcher
       .on('add', path => {
-        this.reload(context, path, 'add');
+        void this.reload(context, path, 'add');
       })
       .on('change', path => {
-        this.reload(context, path, 'change');
+        void this.reload(context, path, 'change');
       })
       .on('unlink', path => {
-        this.reload(context, path, 'unlink');
+        void this.reload(context, path, 'unlink');
       });
   }
 
