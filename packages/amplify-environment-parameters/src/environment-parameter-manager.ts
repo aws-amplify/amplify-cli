@@ -129,7 +129,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
    * Throw an error if expected parameters are missing
    */
   async verifyExpectedEnvParameters(): Promise<void> {
-    const parameterStoreKeys = this.parameterMapController.getParameters();
+    const expectedParameters = this.parameterMapController.getParameters();
     const allEnvParams = new Set();
     const missingParameterNames: string[] = [];
 
@@ -140,8 +140,8 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       }
     }
 
-    Object.keys(parameterStoreKeys).forEach(parameterStoreKey => {
-      const paramName = getParamaterNameFromParameterStoreKey(parameterStoreKey);
+    Object.keys(expectedParameters).forEach(expectedParameter => {
+      const paramName = getParamaterNameFromParameterStoreKey(expectedParameter);
       if (!allEnvParams.has(paramName)) {
         missingParameterNames.push(paramName);
       }
@@ -190,4 +190,4 @@ const getParameterStoreKey = (
   paramName: string,
 ): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 
-const getParamaterNameFromParameterStoreKey = (fullParameter: string) => fullParameter.split('_')[3];
+const getParamaterNameFromParameterStoreKey = (fullParameter: string) => fullParameter.split('_').slice(3).join('_');
