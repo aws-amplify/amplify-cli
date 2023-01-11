@@ -130,7 +130,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   async deleteAllEnvParametersFromService(
     environmentName: string,
-    deleteParametersFromServiceFn: (envName: string, keys: Array<string>) => Promise<void>,
+    deleteParametersFromService: (envName: string, keys: Array<string>) => Promise<void>,
   ): Promise<void> {
     const parameterNamesToDelete: Array<string> = [];
     Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
@@ -141,7 +141,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
         parameterNamesToDelete.push(ssmParamName);
       });
     });
-    await deleteParametersFromServiceFn(environmentName, parameterNamesToDelete);
+    await deleteParametersFromService(environmentName, parameterNamesToDelete);
   }
 }
 
@@ -164,7 +164,7 @@ export type IEnvironmentParameterManager = {
   save: () => void;
   deleteAllEnvParametersFromService: (
     environmentName: string,
-    deleteParametersFromParameterStoreFn: (envName: string, keys: Array<string>) => Promise<void>,
+    deleteParametersFromService: (envName: string, keys: Array<string>) => Promise<void>,
   ) => Promise<void>;
 };
 
