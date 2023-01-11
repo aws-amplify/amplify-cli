@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "4.7.1",
+  "version": "4.7.2-rc.1c8fa776b.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "amplify-codegen": "^3.3.5",
     "amplify-dynamodb-simulator": "2.5.2",
     "amplify-prompts": "2.6.2",
-    "amplify-provider-awscloudformation": "6.10.0",
+    "amplify-provider-awscloudformation": "6.10.1-rc.1c8fa776b.0",
     "amplify-storage-simulator": "1.7.1",
     "chokidar": "^3.5.3",
     "detect-port": "^1.3.0",
