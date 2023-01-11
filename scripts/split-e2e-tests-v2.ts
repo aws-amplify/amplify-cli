@@ -8,6 +8,7 @@ const RUN_SOLO = [
     'auth_2e_pkg',
     'auth_2c_pkg',
     'env-3_pkg',
+    'dotnet_runtime_update_migration_pkg',
     'notifications-in-app-messaging_pkg',
     'import_auth_1a_pkg',
     'import_auth_1b_pkg',
