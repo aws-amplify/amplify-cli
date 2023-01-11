@@ -1,50 +1,15 @@
-import { join } from "path";
-import { getOldJobNameWithoutSuffixes, getTestFiles, getTimingsFromJobsData, REPO_ROOT, saveTestTimings, saveWorkflowResults, saveWorkflowResultsHTML } from "./cci-utils";
-import axios from 'axios';
-
-const getWorkflowData = async () => {
-    const result = await axios.get(`https://circleci.com/api/v2/workflow/${process.env.CIRCLE_WORKFLOW_ID}/job`, {
-        headers: {
-            "Circle-Token": process.env.CIRCLECI_TOKEN 
-        }
-    });
-    return result.data;
-}
-const getJobData = async (jobId: string) => {
-    const result = await axios.get(`https://circleci.com/api/v2/project/github/aws-amplify/amplify-cli/job/${jobId}`, {
-        headers: {
-            "Circle-Token": process.env.CIRCLECI_TOKEN 
-        }
-    });
-    return result.data;
-}
-const getJobArtifacts = async (jobId: string) => {
-    const result = await axios.get(`https://circleci.com/api/v2/project/github/aws-amplify/amplify-cli/${jobId}/artifacts`, {
-        headers: {
-            "Circle-Token": process.env.CIRCLECI_TOKEN 
-        }
-    });
-    return result.data;
-}
-const getJobTests = async (jobId: string) => {
-    const result = await axios.get(`https://circleci.com/api/v2/project/github/aws-amplify/amplify-cli/${jobId}/tests`, {
-        headers: {
-            "Circle-Token": process.env.CIRCLECI_TOKEN 
-        }
-    });
-    return result.data;
-}
-
+import { getCCIClient, saveWorkflowResults, saveWorkflowResultsHTML } from "./cci-utils";
 
 const runit = async () => {
-    const data = await getWorkflowData();
+    const client = getCCIClient();
+    const data = await client.getWorkflowJobs();
     const failed = data.items.filter((i: any) => i.status === 'failed');
     const summary = [];
     for(let f of failed){
         try {
-            const jobData = await getJobData(f.job_number);
+            const jobData = await client.getJobDetails(f.job_number);
             // const artifacts = await getJobArtifacts(f.job_number);
-            const tests = await getJobTests(f.job_number);
+            const tests = await client.getJobTests(f.job_number);
             summary.push({
                 jobName: jobData.name,
                 jobUrl: jobData.web_url,

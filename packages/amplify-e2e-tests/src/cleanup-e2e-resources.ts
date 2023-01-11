@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { deleteS3Bucket, sleep } from '@aws-amplify/amplify-e2e-core';
 
-// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
+// Ensure that scripts/cci-utils.ts is also updated when this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-1',
   'us-east-2',
