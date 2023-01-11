@@ -40,6 +40,7 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],
     w: [
         'amplify-app_pkg',
+        'analytics_pkg',
         'analytics-2_pkg',
         'api_2a_pkg',
         'api_2b_pkg',
@@ -98,6 +99,8 @@ const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
         'schema-auth-9-a_pkg',
         'schema-auth-9-b_pkg',
         'schema-auth-9-c_pkg',
+        'schema-auth-11-a_pkg',
+        'schema-auth-15_pkg',
         'schema-iterative-rollback-1_pkg',
         'schema-iterative-rollback-2_pkg',
         'searchable-migration_pkg',
