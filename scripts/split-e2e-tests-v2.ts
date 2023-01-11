@@ -174,7 +174,6 @@ export const splitTestsV2 = function splitTests(
             const currentJob = osJobs[osJobs.length - 1];
 
             // if the current test is excluded from this OS, skip it
-            // const oldName = getOldJobName(baseJobName, test);
             if(TEST_EXCLUSIONS[os].find(excluded => test === excluded)) {
                 continue;
             }
@@ -204,10 +203,6 @@ export const splitTestsV2 = function splitTests(
             }
         
             // create a new job once the current job is full;
-            // migration tests are 1-1 due to limitations with older cli versions
-            // if(isMigration || currentJob.tests.length >= MAX_WORKERS){
-            //     osJobs.push(createRandomJob(os));
-            // }
             if(currentJob.tests.length >= MAX_WORKERS){
                 osJobs.push(createRandomJob(os));
             }
@@ -226,7 +221,6 @@ export const splitTestsV2 = function splitTests(
                 continue;
             }
             const names = j.tests.map(tn => getOldJobNameWithoutSuffixes(tn)).join('_');
-            // const jobName = `${j.os}_${j.os === 'l' ? counts.l : counts.w }${isMigration ? '_migration' : ''}`;
             let jobName = `${j.os}_${names}`;
             if(isMigration){
                 const startIndex = baseJobName.lastIndexOf('_');
