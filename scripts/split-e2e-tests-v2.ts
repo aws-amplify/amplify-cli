@@ -1,115 +1,111 @@
 import { CircleCIConfig, WorkflowJob } from "./cci-types";
-import { FORCE_US_WEST_2, getOldJobName, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
+import { FORCE_US_WEST_2, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import {
     AWS_REGIONS_TO_RUN_TESTS as regions, 
     getTestFiles
 } from "./cci-utils";
 const RUN_SOLO = [
-    'auth_2e_pkg',
-    'auth_2c_pkg',
-    'env-3_pkg',
-    'dotnet_runtime_update_migration_pkg',
-    'notifications-in-app-messaging_pkg',
-    // 'notifications-migration-2_v6',
-    'import_auth_1a_pkg',
-    'import_auth_1b_pkg',
-    'import_auth_2a_pkg',
-    'import_auth_2b_pkg',
-    'import_auth_3_pkg',
-    'import_dynamodb_1_pkg',
-    'import_dynamodb_2a_pkg',
-    'import_dynamodb_2b_pkg',
-    'import_dynamodb_2c_pkg',
-    'import_s3_1_pkg',
-    'import_s3_2a_pkg',
-    'import_s3_2b_pkg',
-    'import_s3_2c_pkg',
-    'import_s3_3_pkg',
-    'geo-add-e_pkg',
-    'geo-add-f_pkg',
-    'geo-remove-1_pkg',
-    'geo-remove-2_pkg',
-    'geo-remove-3_pkg',
-    'geo-update-1_pkg',
-    'geo-update-2_pkg',
-    'containers-api-2_pkg',
-    'containers-api-1_pkg',
-    'schema-auth-11-a_pkg',
-    'schema-auth-15_pkg',
-    'schema-connection-1_pkg'
+    'src/__tests__/auth_2c.test.ts',
+    'src/__tests__/auth_2e.test.ts',
+    'src/__tests__/containers-api-1.test.ts',
+    'src/__tests__/containers-api-2.test.ts',
+    'src/__tests__/env-3.test.ts',
+    'src/__tests__/geo-add-e.test.ts',
+    'src/__tests__/geo-add-f.test.ts',
+    'src/__tests__/geo-remove-1.test.ts',
+    'src/__tests__/geo-remove-2.test.ts',
+    'src/__tests__/geo-remove-3.test.ts',
+    'src/__tests__/geo-update-1.test.ts',
+    'src/__tests__/geo-update-2.test.ts',
+    'src/__tests__/import_auth_1a.test.ts',
+    'src/__tests__/import_auth_1b.test.ts',
+    'src/__tests__/import_auth_2a.test.ts',
+    'src/__tests__/import_auth_2b.test.ts',
+    'src/__tests__/import_auth_3.test.ts',
+    'src/__tests__/import_dynamodb_1.test.ts',
+    'src/__tests__/import_dynamodb_2a.test.ts',
+    'src/__tests__/import_dynamodb_2b.test.ts',
+    'src/__tests__/import_dynamodb_2c.test.ts',
+    'src/__tests__/import_s3_1.test.ts',
+    'src/__tests__/import_s3_2a.test.ts',
+    'src/__tests__/import_s3_2b.test.ts',
+    'src/__tests__/import_s3_2c.test.ts',
+    'src/__tests__/import_s3_3.test.ts',
+    'src/__tests__/notifications-in-app-messaging.test.ts',
+    'src/__tests__/schema-auth-11-a.test.ts',
+    'src/__tests__/schema-auth-15.test.ts',
+    'src/__tests__/schema-connection-1.test.ts'
 ]
 const TEST_EXCLUSIONS: { l: string[], w: string[] } = {
     l: [],
     w: [
-        'amplify-app_pkg',
-        'analytics_pkg',
-        'analytics-2_pkg',
-        'api_2a_pkg',
-        'api_2b_pkg',
-        'api_3_pkg',
-        'api_5_pkg',
-        'custom_policies_container_pkg',
-        'datastore-modelgen_pkg',
-        'delete_pkg',
-        'diagnose_pkg',
-        'env-2_pkg',
-        'env-3_pkg',
-        'export_pkg',
-        'export-pull-d',
-        'function_1_pkg',
-        'function_2a_pkg',
-        'function_2b_pkg',
-        'function_3a_pkg',
-        'function_3b_pkg',
-        'function_4_pkg',
-        'function_6_pkg',
-        'function_7_pkg',
-        'function_8_pkg',
-        'geo-add-e_pkg',
-        'geo-add-c_pkg',
-        'geo-add-f_pkg',
-        'geo-remove-1_pkg',
-        'geo-remove-2_pkg',
-        'geo-remove-3_pkg',
-        'geo-update-1_pkg',
-        'geo-update-2_pkg',
-        'git-clone-attach_pkg',
-        'hooks-a_pkg',
-        'http-migration_pkg',
-        'import_auth_1a_pkg',
-        'import_auth_1b_pkg',
-        'import_auth_2a_pkg',
-        'import_auth_2b_pkg',
-        'import_auth_3_pkg',
-        'import_dynamodb_2a_pkg',
-        'import_dynamodb_2c_pkg',
-        'import_s3_1_pkg',
-        'import_s3_2a_pkg',
-        'import_s3_2c_pkg',
-        'layer-2_pkg',
-        'mock-api_pkg',
-        'model-migration_pkg',
-        'notifications-analytics-compatibility-in-app-1_pkg',
-        'notifications-analytics-compatibility-sms-1_pkg',
-        'notifications-analytics-compatibility-sms-2_pkg',
-        'notifications-in-app-messaging-env-1_pkg',
-        'notifications-in-app-messaging-env-2_pkg',
-        'notifications-lifecycle_pkg',
-        'notifications-sms_pkg',
-        'notifications-sms-pull_pkg',
-        'pull_pkg',
-        'schema-auth-9-a_pkg',
-        'schema-auth-9-b_pkg',
-        'schema-auth-9-c_pkg',
-        'schema-auth-11-a_pkg',
-        'schema-auth-15_pkg',
-        'schema-iterative-rollback-1_pkg',
-        'schema-iterative-rollback-2_pkg',
-        'searchable-migration_pkg',
-        'storage-2_pkg',
-        'storage-5_pkg',
-        'studio-modelgen_pkg',
-        'uibuilder_pkg',
+        'src/__tests__/amplify-app.test.ts',
+        'src/__tests__/analytics-2.test.ts',
+        'src/__tests__/api_2a.test.ts',
+        'src/__tests__/api_2b.test.ts',
+        'src/__tests__/api_3.test.ts',
+        'src/__tests__/api_5.test.ts',
+        'src/__tests__/custom_policies_container.test.ts',
+        'src/__tests__/datastore-modelgen.test.ts',
+        'src/__tests__/delete.test.ts',
+        'src/__tests__/diagnose.test.ts',
+        'src/__tests__/env-2.test.ts',
+        'src/__tests__/env-3.test.ts',
+        'src/__tests__/export.test.ts',
+        'src/__tests__/function_1.test.ts',
+        'src/__tests__/function_2a.test.ts',
+        'src/__tests__/function_2b.test.ts',
+        'src/__tests__/function_3a.test.ts',
+        'src/__tests__/function_3b.test.ts',
+        'src/__tests__/function_4.test.ts',
+        'src/__tests__/function_6.test.ts',
+        'src/__tests__/function_7.test.ts',
+        'src/__tests__/function_8.test.ts',
+        'src/__tests__/geo-add-c.test.ts',
+        'src/__tests__/geo-add-e.test.ts',
+        'src/__tests__/geo-add-f.test.ts',
+        'src/__tests__/geo-remove-1.test.ts',
+        'src/__tests__/geo-remove-2.test.ts',
+        'src/__tests__/geo-remove-3.test.ts',
+        'src/__tests__/geo-update-1.test.ts',
+        'src/__tests__/geo-update-2.test.ts',
+        'src/__tests__/git-clone-attach.test.ts',
+        'src/__tests__/hooks-a.test.ts',
+        'src/__tests__/import_auth_1a.test.ts',
+        'src/__tests__/import_auth_1b.test.ts',
+        'src/__tests__/import_auth_2a.test.ts',
+        'src/__tests__/import_auth_2b.test.ts',
+        'src/__tests__/import_auth_3.test.ts',
+        'src/__tests__/import_dynamodb_2a.test.ts',
+        'src/__tests__/import_dynamodb_2c.test.ts',
+        'src/__tests__/import_s3_1.test.ts',
+        'src/__tests__/import_s3_2a.test.ts',
+        'src/__tests__/import_s3_2c.test.ts',
+        'src/__tests__/layer-2.test.ts',
+        'src/__tests__/mock-api.test.ts',
+        'src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts',
+        'src/__tests__/notifications-analytics-compatibility-sms-1.test.ts',
+        'src/__tests__/notifications-analytics-compatibility-sms-2.test.ts',
+        'src/__tests__/notifications-in-app-messaging-env-1.test.ts',
+        'src/__tests__/notifications-in-app-messaging-env-2.test.ts',
+        'src/__tests__/notifications-lifecycle.test.ts',
+        'src/__tests__/notifications-sms-pull.test.ts',
+        'src/__tests__/notifications-sms.test.ts',
+        'src/__tests__/pull.test.ts',
+        'src/__tests__/schema-auth-11-a.test.ts',
+        'src/__tests__/schema-auth-15.test.ts',
+        'src/__tests__/schema-auth-9-a.test.ts',
+        'src/__tests__/schema-auth-9-b.test.ts',
+        'src/__tests__/schema-auth-9-c.test.ts',
+        'src/__tests__/schema-iterative-rollback-1.test.ts',
+        'src/__tests__/schema-iterative-rollback-2.test.ts',
+        'src/__tests__/storage-2.test.ts',
+        'src/__tests__/storage-5.test.ts',
+        'src/__tests__/studio-modelgen.test.ts',
+        'src/__tests__/transformer-migrations/http-migration.test.ts',
+        'src/__tests__/transformer-migrations/model-migration.test.ts',
+        'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+        'src/__tests__/uibuilder.test.ts'
     ],
 }
 const MAX_WORKERS = 3;
@@ -123,10 +119,6 @@ type CandidateJob = {
     // intentially leaving this here - accounts are randomly assigned to jobs 
     // by a via local_publish_helpers.sh script
     // account: string, 
-}
-type Job = CandidateJob & {
-    name: string;
-    requiredJobs: string[];
 }
 
 const createRandomJob = (os: OS_TYPE) : CandidateJob => {
@@ -171,7 +163,6 @@ export const splitTestsV2 = function splitTests(
         const runtimeB = testFileRunTimes.find((t) => t.test === b)?.medianRuntime ?? 30;
         return runtimeA - runtimeB;
     });
-
     const generateJobsForOS = (os: OS_TYPE) => {
         // migration tests are not supported for windows
         if(isMigration && os === 'w'){
@@ -183,14 +174,14 @@ export const splitTestsV2 = function splitTests(
             const currentJob = osJobs[osJobs.length - 1];
 
             // if the current test is excluded from this OS, skip it
-            const oldName = getOldJobName(baseJobName, test);
-            if(TEST_EXCLUSIONS[os].find(excluded => oldName === excluded)) {
+            // const oldName = getOldJobName(baseJobName, test);
+            if(TEST_EXCLUSIONS[os].find(excluded => test === excluded)) {
                 continue;
             }
-            const US_WEST_2 = FORCE_US_WEST_2.find(t => oldName.startsWith(t));
-            const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => oldName.startsWith(usesParent));
+            const US_WEST_2 = FORCE_US_WEST_2.find(t => test.startsWith(t));
+            const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
-            if(RUN_SOLO.find(solo => oldName === solo)){
+            if(RUN_SOLO.find(solo => test === solo)){
                 const newSoloJob = createRandomJob(os);
                 newSoloJob.tests.push(test);
                 if(US_WEST_2){

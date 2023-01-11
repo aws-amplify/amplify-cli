@@ -18,13 +18,15 @@ export const AWS_REGIONS_TO_RUN_TESTS = [
 
 // Some services (eg. amazon lex) are not available in all regions
 // Tests added to this list will always run in us-west-2
-export const FORCE_US_WEST_2 = ['interactions'];
+export const FORCE_US_WEST_2 = [
+    'src/__tests__/interactions.test.ts'
+];
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 export const USE_PARENT_ACCOUNT = [
-    'import_dynamodb_1',
-    'import_s3_1',
-    'searchable-migration',
+    'src/__tests__/import_dynamodb_1.test.ts',
+    'src/__tests__/import_s3_1.test.ts',
+    'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
 
 export const REPO_ROOT = join(__dirname, '..');
