@@ -1,4 +1,4 @@
-const { prompter, byValues, byValue } = require('amplify-prompts');
+const { prompter } = require('amplify-prompts');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');
@@ -15,7 +15,8 @@ async function add(context) {
         'Please select the service(s) to add.',
         disabledServices,
         {
-          initial: byValues([disabledServices[0]])
+          initial: 0,
+          returnSize: 'many'
         },
       );
       const tasks = [];
@@ -45,7 +46,8 @@ async function configure(context) {
         'Please select the service(s) to configure.',
         enabledServices,
         {
-          initial: byValues([enabledServices[0]])
+          initial: 0,
+          returnSize: 'many'
         }
       );
       const tasks = [];
@@ -83,7 +85,7 @@ async function console(context) {
       const selectedService = await prompter.pick(
         'Please select the service.',
         enabledServices,
-        { initial: byValue([enabledServices[0]]) }
+        { initial: 0 }
       );
       return categoryManager.runServiceAction(context, selectedService, 'console');
     } else if (enabledServices.length === 1) {

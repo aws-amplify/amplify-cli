@@ -28,8 +28,16 @@ const Environments = [DEV, PROD];
 
 const s3IndexModule = require('../../../lib/S3AndCloudFront/index');
 
-const prompter = require('amplify-prompts');
-jest.mock('amplify-prompts');
+const amplifyPrompts = require('amplify-prompts');
+
+jest.mock('amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
 
 describe('s3IndexModule', () => {
   const INTERNAL_TEMPLATE_FILE_PATH = path.normalize(path.join(__dirname, '../../../lib/', templateFileName));
@@ -103,7 +111,7 @@ describe('s3IndexModule', () => {
   };
 
   beforeAll(() => {
-    prompter.pick = jest.fn().mockReturnValue(mockAnswers.environment);
+    amplifyPrompts.prompter.pick.mockReturnValue(mockAnswers.environment);
     fs.ensureDirSync = jest.fn();
     fs.existsSync = jest.fn(() => {
       return true;

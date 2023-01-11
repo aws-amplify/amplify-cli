@@ -46,7 +46,7 @@ async function configureHostingComponents(context, lastConfiguredSection) {
     }
   }
 
-  const section = await prompter.pick('Specify the section to configure', options, { initial: byValue(defaultSection), returnSize: 1 });
+  const section = await prompter.pick('Specify the section to configure', options, { initial: byValue(defaultSection) });
   if (section !== done) {
     const configureModule = require(configurables[section]);
     await configureModule.configure(context);

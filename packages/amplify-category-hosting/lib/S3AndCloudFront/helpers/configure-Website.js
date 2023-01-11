@@ -1,4 +1,4 @@
-const prompter = require('amplify-prompts');
+const { prompter } = require('amplify-prompts');
 const validateDocName = require('./validate-website-doc-name');
 
 async function configure(context) {
@@ -12,6 +12,6 @@ async function configure(context) {
   return context;
 }
 
-export default {
+module.exports = {
   configure,
 };

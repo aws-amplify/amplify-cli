@@ -84,7 +84,7 @@ async function configureCustomErrorResponse(context, DistributionConfig) {
   }
   const done = 'exit';
   const configActions = ['list', 'add', 'edit', 'remove', 'remove all', done];
-  const action = await prompter.pick('Please select the action on Custom Error Responses.', configActions, { initial: byValue(configActions[0]), returnSize: 1 });
+  const action = await prompter.pick('Please select the action on Custom Error Responses.', configActions, { initial: byValue(configActions[0]) });
   switch (action) {
     case 'list':
       listCustomErrorResponses(context, DistributionConfig.CustomErrorResponses);

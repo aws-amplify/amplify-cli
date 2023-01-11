@@ -1,5 +1,13 @@
-const prompter = require('amplify-prompts');
-jest.mock('amplify-prompts');
+const amplifyPrompts = require('amplify-prompts');
+
+jest.mock('amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
 
 jest.mock('../../../lib/S3AndCloudFront/helpers/configure-Website');
 const configureWebsite = require('../../../lib/S3AndCloudFront/helpers/configure-Website');
@@ -73,14 +81,15 @@ describe('configuration-manager', () => {
   });
 
   test('init', async () => {
-    prompter.input = jest.fn().mockReturnValue('mockHostingBucketName');
+    amplifyPrompts.prompter.input.mockReturnValue('mockHostingBucketName');
     await configurationManager.init(mockContext);
     expect(mockContext.exeInfo.parameters.bucketName).toBeDefined();
     expect(configureWebsite.configure).toBeCalledWith(mockContext);
   });
 
   test('configure', async () => {
-    prompter.input = jest.fn()
+    amplifyPrompts.byValue.mockReturnValue(0);
+    amplifyPrompts.prompter.pick
       .mockReturnValueOnce('Website')
       .mockReturnValueOnce('CloudFront')
       .mockReturnValueOnce('Publish')

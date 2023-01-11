@@ -3,9 +3,16 @@ jest.mock('../lib/category-manager');
 const fs = require('fs-extra');
 const categoryManager = require('../lib/category-manager');
 const indexModule = require('../index');
+const amplifyPrompts = require('amplify-prompts');
 
-const prompter = require('amplify-prompts');
-jest.mock('amplify-prompts');
+jest.mock('amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
 
 describe('index', () => {
   const mockContext = {
@@ -57,7 +64,7 @@ describe('index', () => {
     mockDisabledServices.push(S3ANDCLOUDFRONT);
     mockDisabledServices.push(ANOTHERSERVICE);
 
-    prompter.pick = jest.fn().mockImplementationOnce('S3ANDCLOUDFRONT');
+    amplifyPrompts.prompter.pick.mockReturnValueOnce(['S3ANDCLOUDFRONT']);
     await indexModule.add(mockContext);
     expect(categoryManager.runServiceAction).toBeCalled();
   });
@@ -91,7 +98,7 @@ describe('index', () => {
     mockEnabledServices.push(S3ANDCLOUDFRONT);
     mockEnabledServices.push(ANOTHERSERVICE);
     mockAnswers.selectedServices.push(S3ANDCLOUDFRONT);
-    prompter.pick = jest.fn().mockImplementationOnce('S3ANDCLOUDFRONT');
+    amplifyPrompts.prompter.pick.mockReturnValueOnce(['S3ANDCLOUDFRONT']);
     await indexModule.configure(mockContext);
     expect(categoryManager.runServiceAction).toBeCalled();
   });
@@ -155,7 +162,7 @@ describe('index', () => {
     mockEnabledServices.push(S3ANDCLOUDFRONT);
     mockEnabledServices.push(ANOTHERSERVICE);
     mockAnswers.selectedService = mockEnabledServices[0];
-    prompter.pick = jest.fn().mockImplementationOnce(ockEnabledServices[0]);
+    amplifyPrompts.prompter.pick.mockReturnValueOnce(mockEnabledServices[0]);
     await indexModule.console(mockContext);
     expect(categoryManager.runServiceAction).toBeCalled();
     expect(categoryManager.runServiceAction.mock.calls[0][0]).toBe(mockContext);

@@ -1,7 +1,7 @@
 const path = require('path');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
-const prompter = require('amplify-prompts');
+const { prompter, byValue } = require('amplify-prompts');
 
 const PublishIgnoreFileName = 'amplifyPublishIgnore.json';
 
@@ -54,7 +54,7 @@ async function configurePublishIgnore(context, publishIgnore) {
   const action = await prompter.pick(
     'Please select the configuration action on the publish ignore.',
     configActions,
-    { initial: configActions[0], returnSize: 1 },
+    { initial: byValue(configActions[0]) },
   );
 
   switch (action) {
@@ -112,7 +112,7 @@ async function removeIgnore(context, publishIgnore) {
   } else {
     const patternToRemove = await prompter.pick('', [...publishIgnore, CANCEL]);
     if (patternToRemove && patternToRemove !== CANCEL) {
-      publishIgnore = publishIgnore.filter(ignore => answer.patternToRemove !== ignore);
+      publishIgnore = publishIgnore.filter(ignore => patternToRemove !== ignore);
     }
   }
   return publishIgnore;

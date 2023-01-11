@@ -1,9 +1,17 @@
 const fs = require('fs-extra');
 const path = require('path');
 const configurePublish = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish');
+const amplifyPrompts = require('amplify-prompts');
 
-const prompter = require('amplify-prompts');
-jest.mock('amplify-prompts');
+jest.mock('amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
+
 
 describe('configure-Publish', () => {
   const DONE = 'exit';
@@ -50,17 +58,18 @@ describe('configure-Publish', () => {
   });
 
   test('configure, flow1', async () => {
-    prompter.pick = jest.fn
+    amplifyPrompts.byValue.mockResolvedValueOnce('list');
+    amplifyPrompts.prompter.pick
       .mockResolvedValueOnce(configActions.list)
       .mockResolvedValueOnce(configActions.add)
       .mockResolvedValueOnce(configActions.add)
       .mockResolvedValueOnce(configActions.remove)
+      .mockResolvedValueOnce('mockPattern1')
       .mockResolvedValueOnce(configActions.done);
 
-    prompter.input = jest.fn
+    amplifyPrompts.prompter.input
       .mockResolvedValueOnce('mockPattern1')
-      .mockResolvedValueOnce('mockPattern2')
-      .mockResolvedValueOnce('mockPattern1');
+      .mockResolvedValueOnce('mockPattern2');
 
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();
@@ -71,13 +80,14 @@ describe('configure-Publish', () => {
   });
 
   test('configure, flow2', async () => {
-    prompter.pick = jest.fn
+    amplifyPrompts.byValue.mockResolvedValueOnce('list');
+    amplifyPrompts.prompter.pick
       .mockResolvedValueOnce(configActions.add)
       .mockResolvedValueOnce(configActions.add)
       .mockResolvedValueOnce(configActions.removeAll)
       .mockResolvedValueOnce(configActions.done);
 
-    prompter.input = jest.fn
+    amplifyPrompts.prompter.input
       .mockResolvedValueOnce('mockPattern1')
       .mockResolvedValueOnce('mockPattern2');
 
