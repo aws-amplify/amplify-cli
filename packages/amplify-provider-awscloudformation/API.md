@@ -25,7 +25,7 @@ export function getConfiguredLocationServiceClient(context: $TSContext, options?
 export function getConfiguredSSMClient(context: any): Promise<SSM>;
 
 // @public (undocumented)
-export const getEnvParametersDeleteHandler: (context: $TSContext, envName: string) => Promise<(keys: Array<string>) => Promise<void>>;
+export const getEnvParametersDeleteHandler: (context: $TSContext) => Promise<(envName: string) => Promise<void>>;
 
 // @public (undocumented)
 export const getLocationRegionMapping: () => $TSObject;
