@@ -115,15 +115,12 @@ class CloudFormation {
 
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
-          let errorDetails = 'Resources failed to deploy: ';
           printer.error('The following resources failed to deploy:');
           trace.forEach(t => {
             console.log(t);
             console.log('\n');
-            errorDetails += t;
-            errorDetails += '\t';
           });
-          resolve(errorDetails);
+          resolve(this.collectStackErrorMessages(failedStacks));
         } catch (e) {
           Promise.reject(e);
         } finally {
@@ -135,25 +132,40 @@ class CloudFormation {
     });
   }
 
+  collectStackErrorMessages(eventsWithFailure) {
+    const errorMessages = this.filterFailedStackEvents(eventsWithFailure).map(event => {
+      const err = [];
+      const resourceName = event.LogicalResourceId;
+      err.push(`Name: ${resourceName} (${event.ResourceType})`);
+      err.push(`Event Type: ${getStatusToErrorMsg(event.ResourceStatus)}`);
+      err.push(`Reason: ${event.ResourceStatusReason}`);
+      return err.join(', ');
+    });
+    return errorMessages.join('\n');
+  }
+
   generateFailedStackErrorMsgs(eventsWithFailure) {
     this.context.exeInfo.cloudformationEvents = CFNLOG;
-    const stackTrees = eventsWithFailure
+    const stackTrees = this.filterFailedStackEvents(eventsWithFailure).map(event => {
+      const err = [];
+      const resourceName = event.LogicalResourceId;
+      const cfnURL = getCFNConsoleLink(event, this.cfn);
+      err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
+      err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
+      err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
+      if (cfnURL) {
+        err.push(`${chalk.red('URL:')} ${cfnURL}`);
+      }
+      return err.join('\n');
+    });
+    return stackTrees;
+  }
+
+  filterFailedStackEvents(eventsWithFailure) {
+    return eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .filter(stack => this.eventMap['eventToCategories'].has(stack.LogicalResourceId))
-      .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason))
-      .map(event => {
-        const err = [];
-        const resourceName = event.LogicalResourceId;
-        const cfnURL = getCFNConsoleLink(event, this.cfn);
-        err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
-        err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
-        err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
-        if (cfnURL) {
-          err.push(`${chalk.red('URL:')} ${cfnURL}`);
-        }
-        return err.join('\n');
-      });
-    return stackTrees;
+      .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
   }
 
   readStackEvents(stackName) {
