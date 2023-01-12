@@ -121,6 +121,7 @@ class CloudFormation {
             console.log(t);
             console.log('\n');
             errorDetails += t;
+            errorDetails += '\t';
           });
           resolve(errorDetails);
         } catch (e) {
