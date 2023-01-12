@@ -1,4 +1,4 @@
-import { AmplifyFault, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
+import { AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
