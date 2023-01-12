@@ -19,7 +19,7 @@ const dotNetTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
   'Hello World',
   'Serverless',
-  'Trigger (DynamoDb, Kinesis)'
+  'Trigger (DynamoDb, Kinesis)',
 ];
 
 const goTemplateChoices = ['Hello World'];
@@ -32,7 +32,7 @@ const nodeJSTemplateChoices = [
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
-  'AppSync - GraphQL API request (with IAM)'
+  'AppSync - GraphQL API request (with IAM)',
 ];
 
 const pythonTemplateChoices = ['Hello World'];
@@ -88,8 +88,8 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
       'Scheduled recurring invocation',
       'Lambda layers configuration',
       'Environment variables configuration',
-      'Secret values configuration'
-    ]
+      'Secret values configuration',
+    ],
   );
   if (settings.additionalPermissions) {
     // update permissions
@@ -161,12 +161,12 @@ const coreFunction = (
   settings: CoreFunctionSettings,
   action: FunctionActions,
   runtime: FunctionRuntimes,
-  functionConfigCallback: FunctionCallback
+  functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
-      stripColors: true
+      stripColors: true,
     });
 
     if (action === 'create') {
@@ -287,7 +287,7 @@ export const addFunction = (
   cwd: string,
   settings: CoreFunctionSettings,
   runtime: FunctionRuntimes,
-  functionConfigCallback: FunctionCallback = undefined
+  functionConfigCallback: FunctionCallback = undefined,
 ) => {
   return coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
 };
@@ -300,7 +300,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   chain = singleSelect(
     chain.wait('What event source do you want to associate with Lambda trigger'),
     settings.triggerType === 'Kinesis' ? 'Amazon Kinesis Stream' : 'Amazon DynamoDB Stream',
-    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream']
+    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream'],
   );
 
   const res = chain
@@ -328,20 +328,12 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = (cwd: string, settings: any): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue building the resources?')
-      .sendConfirmYes()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+export const functionBuild = async (cwd: string, settings: any): Promise<void> => {
+  return spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue building the resources?')
+    .sendYes()
+    .sendEof()
+    .runAsync();
 };
 
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
@@ -368,7 +360,7 @@ export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext, cwd: s
   chain.wait('Choose a DynamoDB data source option');
   singleSelect(chain, 'Create a new DynamoDB table', [
     'Use DynamoDB table configured in the current Amplify project',
-    'Create a new DynamoDB table'
+    'Create a new DynamoDB table',
   ]);
   chain
     .wait('Provide a friendly name')
@@ -445,7 +437,7 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
 
       singleSelect(chain, options.versions[selection].version.toString(), [
         'Always choose latest version',
-        ...options.versions[selection].expectedVersionOptions.map(op => op.toString())
+        ...options.versions[selection].expectedVersionOptions.map(op => op.toString()),
       ]);
     });
   }
@@ -597,11 +589,11 @@ const addCron = (chain: ExecutionContext, settings: any) => {
 export const functionMockAssert = (
   cwd: string,
   settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
-  testingWithLatestCodebase = false
+  testingWithLatestCodebase = false,
 ) => {
   return new Promise<void>((resolve, reject) => {
     const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
-      settings.timeout ? ['--timeout', settings.timeout.toString()] : []
+      settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
     const chain = spawn(getCLIPath(testingWithLatestCodebase), cliArgs, { cwd, stripColors: true });
     chain.wait('Result:');
@@ -617,7 +609,7 @@ export const functionMockAssert = (
 
 export const functionCloudInvoke = async (
   cwd: string,
-  settings: { funcName: string; payload: string }
+  settings: { funcName: string; payload: string },
 ): Promise<Lambda.InvocationResponse> => {
   const meta = getProjectMeta(cwd);
   const lookupName = settings.funcName;
@@ -672,7 +664,7 @@ export function validateNodeModulesDirRemoval(projRoot) {
   const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: functionDir,
-    absolute: true
+    absolute: true,
   });
   expect(nodeModulesDirs.length).toBe(0);
 }

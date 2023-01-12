@@ -3,10 +3,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
-import {
-  FeatureFlags, $TSContext, AmplifyFault,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { FeatureFlags, $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
 import { getPluginInstance } from './get-plugin-instance';
@@ -49,10 +47,14 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
         spinner.fail('Project delete failed.');
-        throw new AmplifyFault('BackendDeleteFault', {
-          message: 'Project delete failed.',
-          details: ex.message,
-        }, ex);
+        throw new AmplifyFault(
+          'BackendDeleteFault',
+          {
+            message: 'Project delete failed.',
+            details: ex.message,
+          },
+          ex,
+        );
       }
     }
     removeLocalAmplifyDir(context);
@@ -81,8 +83,10 @@ const amplifyBackendEnvironments = async (client, appId): Promise<string[]> => {
 /**
  * Get confirmation from the user to delete the project
  */
-export const getConfirmation = async (context: $TSContext, env?: string)
-  : Promise<{ proceed: boolean; deleteS3: boolean; deleteAmplifyApp: boolean; }> => {
+export const getConfirmation = async (
+  context: $TSContext,
+  env?: string,
+): Promise<{ proceed: boolean; deleteS3: boolean; deleteAmplifyApp: boolean }> => {
   if (context.input.options && context.input.options.force) {
     return {
       proceed: true,
@@ -92,7 +96,7 @@ export const getConfirmation = async (context: $TSContext, env?: string)
   }
   const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {
-    proceed: await context.amplify.confirmPrompt(
+    proceed: await prompter.yesOrNo(
       chalk.red(
         `Are you sure you want to continue? This CANNOT be undone. (This will delete ${environmentText} of the project from the cloud${
           env ? '' : ' and wipe out all the local files created by Amplify CLI'
