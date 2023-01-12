@@ -372,7 +372,7 @@ export const amplifyPushOverride = async (cwd: string, testingWithLatestCodebase
   // Test amplify push
   await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
-    .sendConfirmYes()
+    .sendYes()
     .wait(/.*/)
     .runAsync();
 };
