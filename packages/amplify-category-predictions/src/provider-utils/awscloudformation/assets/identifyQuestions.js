@@ -1,7 +1,7 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable no-multi-str */
 
-import { alphanumeric } from 'amplify-prompts';
+import { byValue, alphanumeric } from 'amplify-prompts';
 
 // defaults for text, entity, and label categories
 
@@ -89,28 +89,31 @@ const identifyEntities = {
             value: 'advanced',
           },
         ],
+        options: {}
       },
       {
         type: 'confirm',
         name: 'celebrityDetectionEnabled',
         message: 'Would you like to enable celebrity detection?',
-        default: options.celebrityDetectionEnabled ? options.celebrityDetectionEnabled : true,
+        initial: options.celebrityDetectionEnabled ? options.celebrityDetectionEnabled : true,
         when: answers => answers.setup === 'advanced',
       },
       {
         type: 'confirm',
         name: 'adminTask',
         message: 'Would you like to identify entities from a collection of images?',
-        default: options.adminTask ? options.adminTask : false,
+        initial: options.adminTask ? options.adminTask : false,
         when: answers => answers.setup === 'advanced',
       },
       {
-        type: 'number',
+        type: 'input',
         name: 'maxEntities',
         message: 'How many entities would you like to identify?',
-        default: options.maxEntities ? options.maxEntities : 50,
+        options: {
+          initial: options.maxEntities ?? 50,
+          validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
+        },
         when: answers => answers.setup === 'advanced' && answers.adminTask,
-        validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
       },
       {
         type: 'list',
@@ -127,7 +130,9 @@ const identifyEntities = {
           },
         ],
         when: answers => answers.setup === 'advanced' && answers.adminTask,
-        default: options.folderPolicies ? options.folderPolicies : 'app',
+        options: {
+          initial: options.folderPolicies ? byValue(options.folderPolicies) : 0,
+        },
       },
     ];
   },

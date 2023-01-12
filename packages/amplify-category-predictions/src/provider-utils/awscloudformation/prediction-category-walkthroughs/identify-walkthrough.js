@@ -27,6 +27,7 @@ import {
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
 import { byValue, prompter } from 'amplify-prompts';
+import { prompterAdapter } from '../../../prompter-adapter'
 
 const path = require('path');
 const fs = require('fs-extra');
@@ -330,14 +331,7 @@ async function followUpQuestions(typeObj, identifyType, parameters) {
 
   for (const question of typeObj.questions(parameters)) {
     if (!question.when || question.when(answers)) {
-      answers[question.name] = await prompter.pick(
-        question.message,
-        question.choices,
-        {
-          ...(question.default ? { initial: byValue(question.default) } : {}),
-          ...(question.validate ? { validate: question.validate } : {}),
-        }
-      );
+      answers[question.name] = await prompterAdapter.prompt(question);
     }
   }
 
