@@ -1,7 +1,8 @@
-import { $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { getEnvParametersDeleteHandler } from '../../utils/delete-from-service';
 import { SSM } from '../../aws-utils/aws-ssm';
-import { getSsmSdkParametersDeleteMultiKeys } from '../../utils/get-ssm-sdk-parameters';
+import type { SSM as SSMType } from 'aws-sdk';
+import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from '../../utils/get-ssm-sdk-parameters';
 
 jest.mock('../../aws-utils/aws-ssm');
 
@@ -21,19 +22,34 @@ const contextStub = {
 describe('parameters-delete-handler', () => {
   it('check if returned function is called once with correct paramater', async () => {
     const deleteParametersPromiseMock = jest.fn().mockImplementation(() => Promise.resolve());
-    const deleteParameters = jest.fn().mockImplementation(() => ({ promise: deleteParametersPromiseMock }));
+    const deleteParametersMock = jest.fn().mockImplementation(() => ({ promise: deleteParametersPromiseMock }));
+
+    const mockGetParamatersReturnedObject: SSMType.GetParametersByPathResult = {
+      Parameters: keys.map(key => {
+        return { Name: key };
+      }),
+    };
+    const getParametersByPathPromiseMock = jest.fn().mockImplementation(() => Promise.resolve(mockGetParamatersReturnedObject));
+    const getParametersByPathMock = jest.fn().mockImplementation(() => ({ promise: getParametersByPathPromiseMock }));
+
     const mockSSM = SSM as jest.Mocked<typeof SSM>;
     mockSSM.getInstance = jest.fn().mockResolvedValue({
       client: {
-        deleteParameters: deleteParameters,
+        deleteParameters: deleteParametersMock,
+        getParametersByPath: getParametersByPathMock,
       },
     });
 
-    const deleteParametersFromService = await getEnvParametersDeleteHandler((contextStub as unknown) as $TSContext, envName);
-    await deleteParametersFromService(keys);
+    const deleteParametersFromService = await getEnvParametersDeleteHandler((contextStub as unknown) as $TSContext);
+    await deleteParametersFromService(envName);
     expect(deleteParametersPromiseMock).toBeCalledTimes(1);
-    expect(deleteParameters).toBeCalledTimes(1);
-    const expectedParamater = getSsmSdkParametersDeleteMultiKeys(fakeAppId, envName, keys);
-    expect(deleteParameters).toBeCalledWith(expectedParamater);
+    expect(deleteParametersMock).toBeCalledTimes(1);
+    const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(fakeAppId, envName, keys);
+    expect(deleteParametersMock).toBeCalledWith(expectedDeleteParamater);
+
+    expect(getParametersByPathPromiseMock).toBeCalledTimes(1);
+    expect(getParametersByPathMock).toBeCalledTimes(1);
+    const expectedGetParamater = getSsmSdkParametersGetParametersByPath(fakeAppId, envName);
+    expect(getParametersByPathMock).toBeCalledWith(expectedGetParamater);
   });
 });
