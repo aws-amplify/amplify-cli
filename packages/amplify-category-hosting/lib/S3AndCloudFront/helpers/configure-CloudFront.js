@@ -121,7 +121,7 @@ async function addCER(context, CustomErrorResponses) {
   const unConfiguredCodes = getUnConfiguredErrorCodes(CustomErrorResponses);
   if (unConfiguredCodes.length > 0) {
     CustomErrorResponses.push({
-      ErrorCode: await prompter.pick('Please select the error code to add custom error response.', unConfiguredCodes, { initial: byValue(unConfiguredCodes[0]), returnSize: 1, transform: input => parseInt(input, 10) }),
+      ErrorCode: await prompter.pick('Please select the error code to add custom error response.', unConfiguredCodes, { initial: byValue(unConfiguredCodes[0]), transform: input => parseInt(input, 10) }),
       ResponseCode: await prompter.input('Response code', { initial: 200, transform: input => parseInt(input, 10) }),
       ResponsePagePath: await prompter.input('Response page path', { initial: '/' }),
       ErrorCachingMinTTL: await prompter.input('Error caching Min TTL in seconds', { initial: 300, transform: input => parseInt(input, 10) }),
@@ -135,7 +135,7 @@ async function addCER(context, CustomErrorResponses) {
 async function editCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
-    const errorCode = await prompter.pick('Please select the error code to edit its custom error response.', configuredCodes, { initial: byValue(configuredCodes[0]), returnSize: 1, transform: input => parseInt(input, 10) });
+    const errorCode = await prompter.pick('Please select the error code to edit its custom error response.', configuredCodes, { initial: byValue(configuredCodes[0]), transform: input => parseInt(input, 10) });
     const i = getCerIndex(errorCode, CustomErrorResponses);
     CustomErrorResponses[i].ErrorCode = errorCode;
     CustomErrorResponses[i].ResponseCode = await prompter.input('Response code', { initial: CustomErrorResponses[i].ResponseCode, transform: input => parseInt(input, 10) });
@@ -153,7 +153,7 @@ async function removeCER(context, CustomErrorResponses) {
     const selection = await prompter.pick(
       'Please select the error code to remove its custom error response.',
       configuredCodes,
-      { initial: configuredCodes[0], returnSize: 1 }
+      { initial: configuredCodes[0] }
     );
 
     const i = getCerIndex(selection, CustomErrorResponses);

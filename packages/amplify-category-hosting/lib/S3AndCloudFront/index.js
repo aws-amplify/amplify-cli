@@ -53,8 +53,8 @@ async function enable(context) {
 }
 
 async function checkCDN(context) {
-  const answer = await prompter.pick('Select the environment setup:', Environments, { initial: byValue(DEV), returnSize: 1 });
-  if (answer.environment === DEV) {
+  const answer = await prompter.pick('Select the environment setup:', Environments, { initial: byValue(DEV) });
+  if (answer === DEV) {
     removeCDN(context);
   } else {
     makeBucketPrivate(context);

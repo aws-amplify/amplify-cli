@@ -1,4 +1,4 @@
-const prompter = require('amplify-prompts');
+const { prompter } = require('amplify-prompts');
 const mockTemplate = require('../../../../__mocks__/mockTemplate-noCloudFront');
 const configureWebsite = require('../../../../lib/S3AndCloudFront/helpers/configure-Website');
 

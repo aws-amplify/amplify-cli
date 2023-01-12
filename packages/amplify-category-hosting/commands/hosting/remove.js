@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const prompter = require('amplify-prompts');
+const { prompter } = require('amplify-prompts');
 
 const subcommand = 'remove';
 const category = 'hosting';
@@ -65,7 +65,7 @@ async function chooseResource(context, inputResourceName) {
         if (inputResourceName) {
           resourceName = inputResourceName;
         } else if (enabledResources.length > 0) {
-          resourceName = await prompter.pick('Choose the resource you would want to remove', enabledResources, { returnSize: 1 });
+          resourceName = await prompter.pick('Choose the resource you would want to remove', enabledResources);
         } else {
           context.print.error(`You have not added any resources managed by the ${displayName} hosting plugin module.`);
         }
