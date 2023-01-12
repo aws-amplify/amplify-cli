@@ -18,9 +18,9 @@ export default async function runBuildCommand(context: $TSContext) {
       await execaSync(buildCommandBase, buildCommandArgs, {
         stdio: 'inherit',
       });
-      spinner.succeed(`Successfully built app with build command (${BuildCommand}).`);
+      spinner.succeed('Successfully built app with build command.');
     } catch (e) {
-      spinner.fail(`Build command (${BuildCommand}) failed. See the output above for resolution.`);
+      spinner.fail('Build command failed. See the output above for resolution.');
       exitOnNextTick(1);
     }
   }
