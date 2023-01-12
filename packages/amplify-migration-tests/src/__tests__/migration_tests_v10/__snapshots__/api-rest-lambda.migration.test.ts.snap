@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`api lambda migration tests ...adds lambda with multiple rest APIs with v10 and pulls without drift in latest version 1`] = `
+"Resources
+[~] AWS::Lambda::Function UserPoolClientLambda 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+
+"
+`;
+
+exports[`api lambda migration tests ...adds lambda with multiple rest APIs with v10 and pulls without drift in latest version 2`] = `
+"Outputs
+[+] Output LambdaExecutionRoleArn: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"LambdaExecutionRole\\",\\"Arn\\"]}}
+
+Outputs
+[+] Output LambdaExecutionRoleArn: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"LambdaExecutionRole\\",\\"Arn\\"]}}
+
+Resources
+[~] AWS::Lambda::Function UserPoolClientLambda 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+
+"
+`;
