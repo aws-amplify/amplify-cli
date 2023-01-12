@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick, spinner } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, spinner } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { sync as execaSync } from 'execa';
 
@@ -20,8 +20,10 @@ export default async function runBuildCommand(context: $TSContext) {
       });
       spinner.succeed('Successfully built app with build command.');
     } catch (e) {
-      spinner.fail('Build command failed. See the output above for resolution.');
-      exitOnNextTick(1);
+      throw new AmplifyError('ConfigurationError', {
+        message: 'Build command failed.',
+        resolution: 'See the output above for resolution.',
+      });
     }
   }
 }
