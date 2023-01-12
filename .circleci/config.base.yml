@@ -1268,7 +1268,8 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   source $BASH_ENV
                   amplify version
-                  retry runE2eTest
+                  cd packages/amplify-e2e-tests
+                  retry yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 65m
       - when:
           condition:
