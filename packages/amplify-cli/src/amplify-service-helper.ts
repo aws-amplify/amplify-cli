@@ -1,4 +1,4 @@
-import { $TSObject, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSObject, $TSContext, pathManager, stateManager, AmplifyCategories } from 'amplify-cli-core';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import * as path from 'path';
 import _ from 'lodash';
@@ -44,7 +44,7 @@ export const postPullCodegen = async (context: $TSContext): Promise<void> => {
   }
   if (await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', gqlApiName))) {
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted } = await getResourceStatus(
-      'api',
+      AmplifyCategories.API,
       undefined,
       undefined,
       undefined,
