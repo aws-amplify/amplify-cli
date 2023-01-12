@@ -22,7 +22,10 @@ const deleteParametersFromParameterStore = (
     try {
       const chunkedKeys = chunkForParameterStore(keys);
       await Promise.all(
-        chunkedKeys.map(chunk => ssmClient.deleteParameters(getSsmSdkParametersDeleteMultiKeys(appId, envName, chunk)).promise())
+        chunkedKeys.map(chunk => {
+          const ssmArgument = getSsmSdkParametersDeleteMultiKeys(appId, envName, chunk);
+          return ssmClient.deleteParameters(ssmArgument).promise();
+        })
       );
     } catch (e) {
       throw new AmplifyFault(
