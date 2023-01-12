@@ -1,4 +1,5 @@
 import { $TSContext, exitOnNextTick, spinner } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { sync as execaSync } from 'execa';
 
 export default async function runBuildCommand(context: $TSContext) {
@@ -12,7 +13,8 @@ export default async function runBuildCommand(context: $TSContext) {
     const buildCommandBase = buildCommandArray[0];
     const buildCommandArgs = buildCommandArray.slice(1);
     try {
-      spinner.start(`Building app with build command (${BuildCommand}).`);
+      printer.info(`Executing build command: ${BuildCommand}`);
+      spinner.start('Building app...');
       await execaSync(buildCommandBase, buildCommandArgs, {
         stdio: 'inherit',
       });
