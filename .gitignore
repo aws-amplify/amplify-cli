@@ -25,6 +25,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 packages/amplify-opensearch-simulator/emulator
 .vscode/*
 .history/*
+!.vscode/amplify-cli.code-workspace
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea
