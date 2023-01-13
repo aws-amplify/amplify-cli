@@ -31,7 +31,7 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
-export async function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
+export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -41,7 +41,7 @@ export async function initJSProjectWithProfile(cwd: string, settings?: Partial<t
     };
   }
 
-  await addCircleCITags(cwd);
+  addCircleCITags(cwd);
 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
@@ -100,10 +100,10 @@ export async function initJSProjectWithProfile(cwd: string, settings?: Partial<t
   });
 }
 
-export async function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  await addCircleCITags(cwd);
+  addCircleCITags(cwd);
 
   let env;
 
@@ -139,9 +139,9 @@ export async function initAndroidProjectWithProfile(cwd: string, settings: Parti
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run(async (err: Error) => {
+      .run((err: Error) => {
         if (!err) {
-          await addCircleCITags(cwd);
+          addCircleCITags(cwd);
 
           resolve();
         } else {
@@ -157,10 +157,10 @@ export function createRandomName(): string {
   return uuid().replace(regExp, '').substring(0, length);
 }
 
-export async function initIosProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initIosProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  await addCircleCITags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -188,9 +188,9 @@ export async function initIosProjectWithProfile(cwd: string, settings: Record<st
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run(async (err: Error) => {
+      .run((err: Error) => {
         if (!err) {
-          await addCircleCITags(cwd);
+          addCircleCITags(cwd);
 
           resolve();
         } else {
@@ -200,10 +200,10 @@ export async function initIosProjectWithProfile(cwd: string, settings: Record<st
   });
 }
 
-export async function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  await addCircleCITags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
@@ -239,13 +239,13 @@ export async function initFlutterProjectWithProfile(cwd: string, settings: Recor
   });
 }
 
-export async function initProjectWithAccessKey(
+export function initProjectWithAccessKey(
   cwd: string,
   settings: { accessKeyId: string; secretAccessKey: string; region?: string },
 ): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  await addCircleCITags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -300,8 +300,8 @@ export async function initProjectWithAccessKey(
   });
 }
 
-export async function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
-  await addCircleCITags(cwd);
+export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -338,8 +338,8 @@ export async function initNewEnvWithAccessKey(cwd: string, s: { envName: string;
   });
 }
 
-export async function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  await addCircleCITags(cwd);
+export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -369,8 +369,8 @@ export async function initNewEnvWithProfile(cwd: string, s: { envName: string })
   });
 }
 
-export async function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  await addCircleCITags(cwd);
+export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -397,7 +397,7 @@ export async function updatedInitNewEnvWithProfile(cwd: string, s: { envName: st
   });
 }
 
-export async function amplifyInitSandbox(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -407,7 +407,7 @@ export async function amplifyInitSandbox(cwd: string, settings: Record<string, u
     };
   }
 
-  await addCircleCITags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })

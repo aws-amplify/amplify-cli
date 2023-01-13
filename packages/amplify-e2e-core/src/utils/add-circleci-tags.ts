@@ -15,9 +15,8 @@ declare global {
   /* eslint-enable */
 }
 
-export const addCircleCITags = async (projectPath: string): Promise<void> => {
+export const addCircleCITags = (projectPath: string): void => {
   if (process.env && process.env['CIRCLECI']) {
-    // await staggerInitCalls(projectPath);
 
     const tags = stateManager.getProjectTags(projectPath);
 
@@ -57,46 +56,4 @@ export const addCircleCITags = async (projectPath: string): Promise<void> => {
 
 export function sanitizeTagValue(value: string): string {
   return value.replace(/[^ a-z0-9_.:/=+\-@]/gi, '');
-}
-
-/**
- * Jest runs tests that start at the same time, which can lead to issues 
- * when running amplify init on 4 tests simultaneously.
- * 
- * We need a way to stagger the tests while still taking advantage of Jest-Workers,
- * so the individual tests need a way to communicate with each other & offset their
- * start times.
- * 
- * We can't use the CLI's process to do this either, because the Node.js context 
- * will be unique for each test.
- * 
- * Solution: we can use the file system to create a mutex, and allow the tests
- * to communicate their start times with each other.
- * 
- * @param projectPath 
- */
-const staggerInitCalls = async (projectPath: string) => {
-  const lock = path.join(projectPath, '..', 'init-lock.txt');
-  // one test will create the lock first, 15 seconds should be enough to allow 1 test to do this first without collision risk
-  const initialDelay = Math.floor(Math.random() * 15 * 1000);
-  await sleep(initialDelay);
-  while(true){
-    if(fs.existsSync(lock)) {
-      await sleep(1 * 1000);// wait
-      // console.log("waiting to start");
-      continue;
-    } else {
-      // create a lock file
-      try {
-        fs.writeFileSync(lock, '');
-        console.log("holding lock file", lock);
-        await sleep(15 * 1000); // hold the lock for 15 seconds
-        fs.unlinkSync(lock);
-        break;
-      } catch (e){
-        // some other test created it first
-      }
-    }
-  }
-  console.log("init called:", new Date().toISOString());
 }

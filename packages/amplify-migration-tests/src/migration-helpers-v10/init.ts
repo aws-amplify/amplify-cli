@@ -23,7 +23,7 @@ const defaultSettings = {
     permissionsBoundaryArn: undefined,
 };
   
-export async function initJSProjectWithProfileV10(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
+export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
     const s = { ...defaultSettings, ...settings };
     let env;
   
@@ -33,7 +33,7 @@ export async function initJSProjectWithProfileV10(cwd: string, settings?: Partia
       };
     }
   
-    await addCircleCITags(cwd);
+    addCircleCITags(cwd);
   
     const cliArgs = ['init'];
     const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
