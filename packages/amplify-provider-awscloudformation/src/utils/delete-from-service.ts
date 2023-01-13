@@ -5,17 +5,15 @@ import { resolveAppId } from './resolve-appId';
 import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from './get-ssm-sdk-parameters';
 
 /**
- * Higher order function for deleting CloudFormation parameters from the service
+ * Delete CloudFormation parameters from the service
  */
 export const deleteEnvironmentParametersFromService = async (context: $TSContext, envName: string): Promise<void> => {
   const appId = resolveAppId(context);
   const { client } = await SSM.getInstance(context);
-  const deleteHandler = getDeleteParametersFromParameterStoreHandler(appId, envName, client);
-  await deleteHandler();
+  await deleteParametersFromParameterStore(appId, envName, client);
 };
 
-const getDeleteParametersFromParameterStoreHandler = (appId: string, envName: string, ssmClient: SSMType): (() => Promise<void>) => {
-  return async (): Promise<void> => {
+const deleteParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<void> => {
     try {
       const envKeysInParameterStore: Array<string> = await getAllEnvParametersFromParameterStore(appId, envName, ssmClient);
       const chunkedKeys: Array<Array<string>> = chunkForParameterStore(envKeysInParameterStore);
@@ -34,7 +32,6 @@ const getDeleteParametersFromParameterStoreHandler = (appId: string, envName: st
         e,
       );
     }
-  };
 };
 
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
@@ -55,7 +52,7 @@ const chunkForParameterStore = (keys: Array<string>): Array<Array<string>> => {
   let lastChunk: Array<string> = [];
   chunkedKeys.push(lastChunk);
   keys.forEach(key => {
-    if (lastChunk.length == maxLength) {
+    if (lastChunk.length === maxLength) {
       lastChunk = [];
       chunkedKeys.push(lastChunk);
     }
