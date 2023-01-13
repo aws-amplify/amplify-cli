@@ -48,6 +48,24 @@ export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false
 };
 
 /**
+ * Function to test amplify push with verbose status
+ */
+export const amplifyPushLegacy = async (cwd: string): Promise<void> => {
+  // Test detailed status
+  await spawn(getCLIPath(false), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait(/.*/)
+    .runAsync();
+  // Test amplify push
+  await spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait('Do you want to generate code for your newly created GraphQL API')
+    .sendConfirmNo()
+    .wait(/.*/)
+    .runAsync();
+};
+
+/**
  * Function to test amplify push with codegen for graphql API
  */
 export const amplifyPushGraphQlWithCognitoPrompt = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {

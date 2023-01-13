@@ -3,7 +3,7 @@
 
 import {
   addHeadlessApi,
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -73,7 +73,7 @@ describe('api migration update test d', () => {
       allowDestructiveUpdates: false,
       testingWithLatestCodebase: false,
     });
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true, { testingWithLatestCodebase: true });
     expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
     await amplifyPushUpdate(projRoot, undefined, undefined, true);
