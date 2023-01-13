@@ -2,7 +2,7 @@ import interpretAssets from '../assets/interpretQuestions';
 import getAllDefaults from '../default-values/interpret-defaults';
 import regionMapper from '../assets/regionMapping';
 import { enableGuestAuth } from './enable-guest-auth';
-import { alphanumeric, prompter } from 'amplify-prompts';
+import { prompter } from 'amplify-prompts';
 
 const path = require('path');
 const fs = require('fs-extra');
