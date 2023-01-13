@@ -1,5 +1,6 @@
 import {
   amplifyPushAuth,
+  amplifyPushAuthLegacy,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -11,7 +12,7 @@ import {
   getProjectMeta,
 } from '@aws-amplify/amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
-import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers' ;
+import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 import { v4 as uuid } from 'uuid';
 
 describe('API Gateway CDK migration', () => {
@@ -31,7 +32,7 @@ describe('API Gateway CDK migration', () => {
 
   it('migrates on api update', async () => {
     await addRestApiOldDx(projRoot, { existingLambda: false, apiName: 'restapimig' });
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
     await updateRestApi(projRoot, {
       updateOperation: 'Add another path',
       newPath: '/foo',
@@ -46,7 +47,7 @@ describe('API Gateway CDK migration', () => {
   it('migrates auth with admin queries', async () => {
     await addAuthWithDefault(projRoot);
     await updateAuthAddAdminQueries(projRoot);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
 
     await updateAuthAdminQueriesWithExtMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);

@@ -3,6 +3,7 @@ import {
   addNotificationChannel,
   addPinpointAnalytics,
   amplifyPushAuth,
+  amplifyPushAuthLegacy,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -33,7 +34,7 @@ describe('amplify add notifications', () => {
 
     await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addPinpointAnalytics(projectRoot, false);
-    await amplifyPushAuth(projectRoot, false);
+    await amplifyPushAuthLegacy(projectRoot);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName, true);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
@@ -45,7 +46,7 @@ describe('amplify add notifications', () => {
 
     await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addAuthWithDefault(projectRoot, false);
-    await amplifyPushAuth(projectRoot, false);
+    await amplifyPushAuthLegacy(projectRoot);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);

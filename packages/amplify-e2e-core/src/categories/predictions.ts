@@ -51,7 +51,7 @@ export const addIdentifyCollection = async (cwd: string, settings: any): Promise
     .wait('How many entities would you like to identify?')
     .sendCarriageReturn()
     .wait('Would you like to allow users to add images to this collection?')
-    .sendYes()
+    .sendCarriageReturn()
     .wait('Who should have access?')
     .sendKeyDown()
     .sendCarriageReturn()

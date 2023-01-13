@@ -2,7 +2,7 @@ import {
   addFunction,
   addLayer,
   amplifyPush,
-  amplifyPushAuth,
+  amplifyPushAuthLegacy,
   amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
@@ -60,7 +60,7 @@ describe('amplify function migration', () => {
 
     overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
     let meta = getProjectMeta(projRoot);
     const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
@@ -110,7 +110,7 @@ describe('amplify function migration', () => {
 
     await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);
     await addFunction(projRoot, { name: function2, functionTemplate: 'Hello World' }, runtime, undefined);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
 
     const layerName = `test${shortId}`;
     const layerSettings = {

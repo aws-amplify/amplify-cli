@@ -1,6 +1,6 @@
 import {
   addFunction,
-  amplifyPushAuth,
+  amplifyPushAuthLegacy,
   amplifyPushLayer,
   amplifyStatus,
   createNewProjectDir,
@@ -72,7 +72,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     };
 
     await legacyAddLayer(projRoot, layerSettings);
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuthLegacy(projRoot);
     await amplifyStatus(projRoot, 'No Change', true);
     await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
     await amplifyStatus(projRoot, 'Update', true);
@@ -110,7 +110,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     };
 
     await legacyAddLayer(projRoot, layerSettings);
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuthLegacy(projRoot);
     legacyAddOptData(projRoot, layerName);
     await amplifyPushLayer(projRoot, { migrateLegacyLayer: true }, true);
     await removeLayerVersion(projRoot, { removeLegacyOnly: true }, [1], [1, 2], true);
@@ -127,7 +127,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     };
 
     await legacyAddLayer(projRoot, layerSettings);
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuthLegacy(projRoot);
     await updateLayer(
       projRoot,
       {
@@ -154,7 +154,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
 
     await legacyAddLayer(projRoot, layerSettings);
     legacyAddOptData(projRoot, layerName);
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuthLegacy(projRoot);
     await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
     await amplifyPushLayer(projRoot, {}, true);
     legacyUpdateOptData(projRoot, layerName, 'update');

@@ -202,6 +202,24 @@ export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false):
   });
 
 /**
+ * To be used in migrations tests only
+ */
+export const amplifyPushAuthLegacy = (cwd: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+
+/**
  * amplify push command for pushing functions
  * @param cwd : current working directory
  * @param testingWithLatestCode : boolean flag
@@ -390,7 +408,7 @@ export const amplifyPushOverride = async (cwd: string, testingWithLatestCodebase
   // Test amplify push
   await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
-    .sendYes()
+    .sendConfirmYes()
     .wait(/.*/)
     .runAsync();
 };

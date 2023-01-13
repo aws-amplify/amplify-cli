@@ -6,6 +6,7 @@ import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithRecaptchaTrigger,
   amplifyPushAuth,
+  amplifyPushAuthLegacy,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -44,7 +45,7 @@ describe('amplify auth migration c', () => {
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');

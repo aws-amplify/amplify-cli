@@ -3,6 +3,7 @@ import {
   addAuthWithCustomTrigger,
   addAuthWithDefault,
   amplifyPushAuth,
+  amplifyPushAuthLegacy,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -42,7 +43,7 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
     await addAuthWithCustomTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
     const meta = getProjectMeta(projRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
@@ -81,7 +82,7 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // add and push auth with installed cli
     await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthLegacy(projRoot);
     const meta = getProjectMeta(projRoot);
     const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase
