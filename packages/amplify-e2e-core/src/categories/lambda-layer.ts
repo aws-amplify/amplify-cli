@@ -288,7 +288,6 @@ export const updateLayer = (
     numLayers?: number;
     versions?: number;
     permissions?: string[];
-    // eslint-disable-next-line spellcheck/spell-checker
     doNotChangePermissions?: boolean;
     changePermissionOnFutureVersion?: boolean;
     changePermissionOnLatestVersion?: boolean;
