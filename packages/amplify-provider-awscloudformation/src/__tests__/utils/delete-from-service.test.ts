@@ -1,5 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
-import { getEnvParametersDeleteHandler } from '../../utils/delete-from-service';
+import { deleteEnvironmentParametersFromService } from '../../utils/delete-from-service';
 import { SSM } from '../../aws-utils/aws-ssm';
 import type { SSM as SSMType } from 'aws-sdk';
 import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from '../../utils/get-ssm-sdk-parameters';
@@ -40,8 +40,7 @@ describe('parameters-delete-handler', () => {
       },
     });
 
-    const deleteParametersFromService = await getEnvParametersDeleteHandler((contextStub as unknown) as $TSContext);
-    await deleteParametersFromService(envName);
+    await deleteEnvironmentParametersFromService((contextStub as unknown) as $TSContext, envName);
     expect(deleteParametersPromiseMock).toBeCalledTimes(1);
     expect(deleteParametersMock).toBeCalledTimes(1);
     const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(fakeAppId, envName, keys);
