@@ -68,8 +68,6 @@ export function addInterpret(cwd: string, settings: any): Promise<void> {
     .wait('Please select from one of the categories below')
     .sendKeyDown(2)
     .sendCarriageReturn()
-    .wait('What would you like to interpret?')
-    .sendCarriageReturn()
     .wait('Provide a friendly name for your resource')
     .sendLine(`${resourceName}\r`)
     .wait('What kind of interpretation would you like?')
