@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1-rc.04424cfbc.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.0...@aws-amplify/amplify-migration-tests@5.3.1-rc.04424cfbc.0) (2023-01-13)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+* add to migration test list ([0521e96](https://github.com/aws-amplify/amplify-cli/commit/0521e960f995800a6be71457c21cf58525b2ea93))
+* address comments ([ab11b08](https://github.com/aws-amplify/amplify-cli/commit/ab11b08b105207786a49ea13a83f8226a8fb722f))
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.1...@aws-amplify/amplify-migration-tests@5.3.0) (2023-01-03)
 
 

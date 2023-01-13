@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.1-rc.04424cfbc.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.0...amplify-provider-awscloudformation@6.10.1-rc.04424cfbc.0) (2023-01-13)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+
+
+
+
+
 # [6.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@6.10.0) (2023-01-03)
 
 
