@@ -1,4 +1,4 @@
-import { AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -37,10 +37,10 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
 /**
  * Execute the save method of all currently initialized IEnvironmentParameterManager instances
  */
-export const saveAll = async (): Promise<void> => {
+export const saveAll = async (serviceUploadHandler?: ServiceUploadHandler): Promise<void> => {
   for (const envParamManager of Object.values(envParamManagerMap)) {
     // save methods must be executed in sequence to avoid race conditions writing to the tpi file
-    await envParamManager.save();
+    await envParamManager.save(serviceUploadHandler);
   }
 };
 
@@ -85,7 +85,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  async save(): Promise<void> {
+  async save(serviceUploadHandler?: ServiceUploadHandler): Promise<void> {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
       return;
@@ -108,17 +108,50 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
 
     // update param mapping
-    this.parameterMapController.removeAllParameters();
-    Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
+    this.parameterMapController
+      .removeAllParameters();
+    for (const [resourceKey, paramManager] of Object.entries(this.resourceParamManagers)) {
       const [category, resourceName] = splitResourceKey(resourceKey);
       const resourceParams = paramManager.getAllParams();
-      Object.entries(resourceParams).forEach(([paramName]) => {
+      for (const [paramName, paramValue] of Object.entries(resourceParams)) {
         const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
         this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
-      });
+        if (serviceUploadHandler) {
+          await serviceUploadHandler(ssmParamName, paramValue);
+        }
+      }
+    }
+
+    this.parameterMapController.save();
+  }
+
+  /**
+   * Throw an error if expected parameters are missing
+   */
+  async verifyExpectedEnvParameters(): Promise<void> {
+    const expectedParameters = this.parameterMapController.getParameters();
+    const allEnvParams = new Set();
+    const missingParameterNames: string[] = [];
+
+    for (const paramManager of Object.values(this.resourceParamManagers)) {
+      const resourceParams = paramManager.getAllParams();
+      for (const paramName of Object.keys(resourceParams)) {
+        allEnvParams.add(paramName);
+      }
+    }
+
+    Object.keys(expectedParameters).forEach(expectedParameter => {
+      const paramName = getParamaterNameFromParameterStoreKey(expectedParameter);
+      if (!allEnvParams.has(paramName)) {
+        missingParameterNames.push(paramName);
+      }
     });
-    // uploading values to PS will go here
-    await this.parameterMapController.save();
+
+    if (missingParameterNames.length > 0) {
+      throw new AmplifyError('MissingExpectedParameterError', {
+        message: `Expected parameter${missingParameterNames.length === 1 ? '' : 's'} ${missingParameterNames.join(', ')}`,
+      });
+    }
   }
 
   private serializeTPICategories(): Record<string, unknown> {
@@ -145,8 +178,16 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  save: () => void;
-};
+  save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+  verifyExpectedEnvParameters: () => Promise<void>;
+}
 
-const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
-  `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
+export type ServiceUploadHandler = (key: string, value: string) => Promise<void>;
+
+const getParameterStoreKey = (
+  categoryName: string,
+  resourceName: string,
+  paramName: string,
+): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
+
+const getParamaterNameFromParameterStoreKey = (fullParameter: string) => fullParameter.split('_').slice(3).join('_');
