@@ -1,20 +1,16 @@
 import { alphanumeric, matchRegex, between } from 'amplify-prompts';
-import { v4 as uuid } from 'uuid';
-
-const [shortId] = uuid().split('-');
 
 export const servicesMetadata = {
   Lex: {
     inputs: {
       resourceQuestion: {
-        // index: 0
+        key: 'resourceName',
         message: 'Provide a friendly resource name that will be used to label this category in the project:',
         type: 'input',
         validate: alphanumeric(),
-        initial: `lex${shortId}`,
       },
       startQuestion: {
-        // index: 1
+        key: 'startChoice',
         message: 'Would you like to start with a sample chatbot or start from scratch?',
         type: 'list',
         choices: ['Start with a sample', 'Start from scratch'],
@@ -22,7 +18,7 @@ export const servicesMetadata = {
         pickAtLeast: 1,
       },
       sampleChatbotQuestion: {
-        // index: 2
+        key: 'sampleName',
         message: 'Choose a sample chatbot:',
         type: 'list',
         choices: ['BookTrip', 'OrderFlowers', 'ScheduleAppointment'],
@@ -30,7 +26,7 @@ export const servicesMetadata = {
         pickAtLeast: 1,
       },
       botNameQuestion: {
-        // index: 3
+        key: 'botName',
         message: 'Enter a name for your bot:',
         type: 'input',
         validate: matchRegex(
@@ -39,21 +35,20 @@ export const servicesMetadata = {
         ),
       },
       coppaQuestion: {
-        // index: 4
+        key: 'coppa',
         message:
           "Please indicate if your use of this bot is subject to the Children's Online Privacy Protection Act (COPPA).\nLearn more: https://www.ftc.gov/tips-advice/business-center/guidance/complying-coppa-frequently-asked-questions",
         type: 'confirm',
         initial: false,
       },
       chatBotNameUpdate: {
-        // index: 5
         key: 'botName',
         message: 'Which chatbot would you like to update?',
         type: 'list',
         required: true,
       },
       addUpdateIntentQuestion: {
-        // index: 6
+        key: 'intentChoice',
         message: 'Would you like to add an intent or choose and existing intent?',
         type: 'list',
         choices: ['Update an existing intent', 'Add an intent', 'Delete an intent'],
@@ -61,7 +56,7 @@ export const servicesMetadata = {
         returnSize: 1,
       },
       chooseIntentQuestion: {
-        // index: 7
+        key: 'intentName',
         type: 'list',
         message: 'Choose an intent: ',
         pickAtLeast: 1,
@@ -69,19 +64,19 @@ export const servicesMetadata = {
         // choices to be dynamically populated
       },
       addUtteranceQuestion: {
-        // index: 8
+        key: 'addUtterance',
         type: 'confirm',
         message: 'Would you like to add an utterance?',
         initial: true,
       },
       addSlotQuestion: {
-        // index: 9
+        key: 'addSlot',
         type: 'confirm',
         message: 'Would you like to add a slot?',
         initial: true,
       },
       outputVoiceQuestion: {
-        // index: 10
+        key: 'outputVoice',
         message: 'Choose an output voice:',
         choices: [
           {
@@ -102,29 +97,29 @@ export const servicesMetadata = {
         returnSize: 1,
       },
       sessionTimeoutQuestion: {
-        // index: 11
+        key: 'sessionTimeout',
         message: 'After how long should the session timeout (in minutes)?',
         transform: (input: string) => parseInt(input, 10),
         validate: between(1, 1440, 'Session timeout must be a number and must be greater than 0 and less than 1440.'),
         type: 'input',
       },
       intentNameQuestion: {
-        // index: 12
+        key: 'intentName',
         message: 'Give a unique name for the new intent:',
         type: 'input',
         validate: matchRegex(
-          /^([A-Za-z]_?){1,100}$'/,
+          /^([A-Za-z]_?){1,100}$/,
           'Intent name can only contain letters, cannot be empty, and must be no longer than 100 characters',
         ),
       },
       utteranceQuestion: {
-        // index: 13
+        key: 'utterance',
         message: 'Enter a sample utterance (spoken or typed phrase that invokes your intent. e.g. Book a hotel)',
         type: 'input',
         validate: matchRegex(/^.{1,200}$/, 'Utterances can be a maximum of 200 characters and cannot be empty'),
       },
       slotNameQuestion: {
-        // index: 14
+        key: 'slotName',
         message: 'Enter a name for your slot (e.g. Location)',
         type: 'input',
         validate: matchRegex(
@@ -133,44 +128,44 @@ export const servicesMetadata = {
         ),
       },
       slotTypeQuestion: {
-        // index: 15
+        key: 'slotType',
         message: 'Choose a slot type:',
         type: 'list',
         // choices to be dynamically populated
       },
       slotPromptQuestion: {
-        // index: 16
+        key: 'slotPrompt',
         message: 'Enter a prompt for your slot (e.g. What city?)',
         type: 'input',
         validate: matchRegex(/^.{1,1000}$/, 'Prompts can have a maximum of 1000 characters and cannot be empty'),
       },
       slotRequiredQuestion: {
-        // index: 17
+        key: 'slotRequired',
         message: 'Should this slot be required?',
         type: 'confirm',
         initial: true,
       },
       addConfirmationQuestion: {
-        // index: 18
+        key: 'confirmationPrompt',
         message: 'Would you like to add a confirmation prompt to your intent?',
         type: 'confirm',
         initial: false,
       },
       confirmationQuestionQuestion: {
-        // index: 19
+        key: 'confirmationQuestion',
         message: 'Enter a confirmation message (e.g. Are you sure you want to order a {Drink_name}?):',
         type: 'input',
         validate: matchRegex(/^.{1,1000}$/, 'Confirmation questions can have a maximum of 1000 characters and cannot be empty'),
       },
       cancelMessageQuestion: {
-        // index: 20
+        key: 'cancelMessage',
         message:
           'Enter a cancel message for when the user says no to the confirmation message (e.g. Okay. Your order will not be placed.):',
         type: 'input',
         validate: matchRegex(/^.{1,1000}$/, 'Cancel messages can have a maximum of 1000 characters and cannot be empty'),
       },
       intentFulfillmentQuestion: {
-        // index: 21
+        key: 'intentFulfillment',
         message: 'How would you like the intent to be fulfilled?',
         type: 'list',
         choices: [
@@ -187,38 +182,37 @@ export const servicesMetadata = {
         returnSize: 1,
       },
       lambdaFunctionName: {
-        // index: 22
         key: 'lambdaFunctionName',
         message: 'Choose a Lambda function to use:',
         type: 'list',
         required: true,
       },
       addAnotherIntentQuestion: {
-        // index: 23
+        key: 'createAnotherIntent',
         message: 'Would you like to create another intent?',
         type: 'confirm',
         initial: false,
       },
       addAnotherUtteranceQuestion: {
-        // index: 24
+        key: 'addAnotherUtterance',
         message: 'Would you like to add another utterance?',
         type: 'confirm',
         initial: true,
       },
       addAnotherSlotQuestion: {
-        // index: 25
+        key: 'createAnotherSlot',
         message: 'Would you like to add another slot?',
         type: 'confirm',
         initial: true,
       },
       slotTypeChoiceQuestion: {
-        // index: 26
+        key: 'slotTypeChoice',
         message: "Would you like to choose an Amazon built-in slot type, a slot type you've already made, or create a new slot type?",
         type: 'list',
         choices: ['Amazon built-in slot type', "Slot type I've already made", 'Create a new slot type'],
       },
       slotTypeNameQuestion: {
-        // index: 27
+        key: 'slotTypeName',
         message: 'What would you like to name your slot type?',
         type: 'input',
         validate: matchRegex(
@@ -227,25 +221,25 @@ export const servicesMetadata = {
         ),
       },
       slotTypeDescriptionQuestion: {
-        // index: 28
+        key: 'slotTypeDescription',
         message: 'Give a description of your slot type:',
         type: 'input',
         validate: matchRegex(/^.{1,1000}$/, 'Slot type descriptions can have a maximum of 1000 characters and cannot be empty'),
       },
       slotTypeValueQuestion: {
-        // index: 29
+        key: 'slotValue',
         message: 'Add a possible value for your slot:',
         type: 'input',
         validate: matchRegex(/^.{1,1000}$/, 'Slot values can have a maximum of 1000 characters and cannot be empty'),
       },
       continueAddingSlotValuesQuestion: {
-        // index: 30
+        key: 'continueAddingSlotValues',
         message: 'Add another slot value?',
         type: 'confirm',
         initial: true,
       },
       deleteIntentConfirmation: {
-        // index: 31
+        key: 'deleteIntentConfirmation',
         message: 'Are you sure you want to delete this intent?',
         type: 'confirm',
         initial: false,

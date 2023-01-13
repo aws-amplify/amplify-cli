@@ -65,13 +65,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     resourceName = await prompterAdapter.prompt({
       ...inputs.resourceQuestion,
       options: {
-        initial: defaultValues['resourceQuestion']
+        initial: defaultValues[inputs.resourceQuestion.key]
       }
     });
     startChoice = await prompterAdapter.prompt({
       ...inputs.startQuestion,
       options: {
-        initial: byValue(defaultValues['startQuestion'] || resourceName)
+        initial: byValue(defaultValues[inputs.startQuestion.key] || resourceName)
       }
     });
   } else {

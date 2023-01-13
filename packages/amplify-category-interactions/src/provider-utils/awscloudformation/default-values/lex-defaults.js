@@ -1,9 +1,8 @@
 const uuid = require('uuid');
-const [shortId] = uuid.v4().split('-');
 
 const getAllDefaults = project => {
   const name = project.projectConfig.projectName.toLowerCase().replace('-', '_');
-
+  const [shortId] = uuid.v4().split('-');
   const botName = `${name}_bot`;
   const authRoleName = {
     Ref: 'AuthRoleName',
@@ -23,7 +22,7 @@ const getAllDefaults = project => {
     unauthRoleName,
     authRoleArn,
     shortId,
-
+    resourceName: `lex${shortId}`,
     sessionTimeout: 5,
     lexPolicyName: `lexPolicy${shortId}`,
     lambdaPolicyName: `lambdaPolicy${shortId}`,
