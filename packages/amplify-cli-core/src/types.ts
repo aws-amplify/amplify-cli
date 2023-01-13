@@ -369,8 +369,21 @@ export type $TSCopyJob = $TSAny;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSObject) => void;
   updateBackendConfigAfterResourceUpdate: (category: string, resourceName: string, attribute: string, value: $TSAny) => void;
   updateBackendConfigAfterResourceRemove: (category: string, resourceName: string) => void;
+  /**
+   * use EnvironmentParameterManager from the amplify-environment-parameters package
+   * @deprecated
+   */
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
+  /**
+   * use EnvironmentParameterManager from the amplify-environment-parameters package
+   * @deprecated
+   */
+  saveEnvResourceParameters: (
+    context: $TSContext | undefined,
+    category: string,
+    resourceName: string,
+    envSpecificParams?: $TSObject,
+  ) => void;
   removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
   triggerFlow: (...args: unknown[]) => $TSAny;
   addTrigger: () => $TSAny;
