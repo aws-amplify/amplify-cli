@@ -1,6 +1,14 @@
 import { getCCIClient, saveWorkflowResults, saveWorkflowResultsHTML } from "./cci-utils";
 
-const runit = async () => {
+/**
+ * This function runs after a CircleCI workflow has completed (build_test_deploy)
+ * and aggretates the test results from the workflow into a single html/json file 
+ * that is easier to read. It eliminates the need to have to scan each individual
+ * failed job. 
+ * Links to the job are provided, so you can just view the html file and
+ * open failed jobs from there.
+ */
+const getWorkflowDataAndSummarizeResults = async () => {
     const client = getCCIClient();
     const data = await client.getWorkflowJobs();
     const failed = data.items.filter((i: any) => i.status === 'failed');
@@ -55,6 +63,6 @@ const toHTML = (summary: any) => {
 }
 
 function main(): void {
-    runit();
+    getWorkflowDataAndSummarizeResults();
 }
 main();

@@ -1,7 +1,4 @@
 import { stateManager } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { sleep } from './sleep';
 
 declare global {
   /* eslint-disable @typescript-eslint/no-namespace */

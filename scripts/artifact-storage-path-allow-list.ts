@@ -34,7 +34,6 @@
 export const ARTIFACT_STORAGE_PATH_ALLOW_LIST = [
     '~/repo/artifacts',
     '~/repo/packages/amplify-util-mock/',
-    '~/repo/packages/amplify-util-mock/',
     '~/repo/packages/graphql-transformers-e2e-tests/',
     '~/repo/packages/amplify-e2e-tests/',
     '~/repo/packages/amplify-e2e-tests/amplify-e2e-reports',

@@ -250,7 +250,7 @@ export const splitTestsV2 = function splitTests(
     generateJobConfigurations(windowsJobs);
 
 
-    // Spilt jobs by region
+    // Split jobs by region
     const jobByRegion = Object.entries(newJobConfigurations).reduce((acc: Record<string, any>, entry: [string, any]) => {
         const [jobName, job] = entry;
         const region = job?.environment?.CLI_REGION;

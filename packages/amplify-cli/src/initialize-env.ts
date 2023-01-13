@@ -1,4 +1,3 @@
-import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
   stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault,

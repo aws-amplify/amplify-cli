@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as ini from 'ini';
 
-import { spawnSync, execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from 'amplify-cli-core';
 import { gt } from 'semver';

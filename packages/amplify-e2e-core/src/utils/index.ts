@@ -42,8 +42,10 @@ config();
  * delete project directory
  */
 export const deleteProjectDir = (root: string): void => {
-  if(fs.existsSync(root)){
+  try {
     rimraf.sync(root);
+  } catch(e){
+    // directory does not exist/was already deleted
   }
 };
 
