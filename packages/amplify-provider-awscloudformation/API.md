@@ -14,6 +14,9 @@ import { Template } from 'amplify-cli-core';
 // @public (undocumented)
 export const cfnRootStackFileName = "root-cloudformation-stack.json";
 
+// @public (undocumented)
+export const deleteEnvironmentParametersFromService: (context: $TSContext, envName: string) => Promise<void>;
+
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
