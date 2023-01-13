@@ -54,7 +54,7 @@ async function updateWalkthrough(context) {
     return undefined;
   }
   let resourceObj = predictionsResources[0].value;
-  if (predictionsResources > 1) {
+  if (predictionsResources.length > 1) {
     resourceObj = await prompter.pick('Which interpret resource would you like to update?', predictionsResources);
   }
 
