@@ -204,4 +204,5 @@ module.exports = {
   prePushCfnTemplateModifier,
   getApiKeyConfig,
   getEnvParametersUploadHandler,
+  deleteEnvironmentParametersFromService,
 };
