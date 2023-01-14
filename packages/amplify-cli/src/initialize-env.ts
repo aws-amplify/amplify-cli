@@ -1,3 +1,4 @@
+import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
   stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault,
@@ -7,6 +8,7 @@ import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplif
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
+const spinner = ora('');
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
  */
@@ -76,7 +78,7 @@ export const initializeEnv = async (
       }
     }
 
-    printer.info(
+    spinner.start(
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`
     );
 
@@ -92,7 +94,7 @@ export const initializeEnv = async (
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
 
-    printer.info(
+    spinner.info(
       isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.'
     );
 
@@ -133,10 +135,10 @@ export const initializeEnv = async (
     // Generate AWS exports/configuration file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
 
-    printer.success(isPulling ? '' : 'Initialized your environment successfully.');
+    spinner.succeed(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
     // let the error propagate up after we safely exit
-    printer.error('There was an error initializing your environment.');
+    spinner.fail('There was an error initializing your environment.');
     throw e;
   }
 };
