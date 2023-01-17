@@ -34,7 +34,7 @@ export class ViewResourceTableParams {
   getCategoryFromCLIOptions(cliOptions: object) {
     if (cliOptions) {
       return Object.keys(cliOptions)
-        .filter(key => key !== 'verbose' && key !== 'yes')
+        .filter(key => key !== 'verbose' && key !== 'yes' && key !== 'debug')
         .map(category => category.toLowerCase());
     } else {
       return [];

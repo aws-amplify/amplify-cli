@@ -56,10 +56,10 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName);
 
   const cliInputsState = new DynamoDBInputState(context, cliInputs.resourceName);
-  cliInputsState.saveCliInputPayload(cliInputs);
+  await cliInputsState.saveCliInputPayload(cliInputs);
 
   const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
-  stackGenerator.transform();
+  await stackGenerator.transform();
 
   return cliInputs.resourceName;
 }
@@ -96,9 +96,9 @@ export async function updateWalkthrough(context: $TSContext) {
   const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
     if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, resourceName), true))) {
-      cliInputsState.migrate();
+      await cliInputsState.migrate();
       const stackGenerator = new DDBStackTransform(context, resourceName);
-      stackGenerator.transform();
+      await stackGenerator.transform();
     } else {
       return undefined;
     }
@@ -134,10 +134,10 @@ export async function updateWalkthrough(context: $TSContext) {
   cliInputs.gsi = await askGSIQuestion(indexableAttributeList, attributeAnswers, cliInputs.gsi);
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName, cliInputs.triggerFunctions);
 
-  cliInputsState.saveCliInputPayload(cliInputs);
+  await cliInputsState.saveCliInputPayload(cliInputs);
 
   const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
-  stackGenerator.transform();
+  await stackGenerator.transform();
 
   return cliInputs;
 }

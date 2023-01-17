@@ -95,7 +95,7 @@ export class AmplifyAppSyncSimulator {
     // (undocumented)
     start(): Promise<void>;
     // (undocumented)
-    stop(): void;
+    stop(): Promise<void>;
     // (undocumented)
     get url(): string;
 }

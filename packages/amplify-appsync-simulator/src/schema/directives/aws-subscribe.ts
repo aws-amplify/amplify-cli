@@ -17,9 +17,11 @@ export const getAwsSubscribeDirectiveTransformer = (
           const resolve = mutation.resolve;
           const newResolver = async (parent, args, context, info) => {
             const result = await resolve(parent, args, context, info);
-            subscriptions.forEach(subscriptionName => {
-              simulatorContext.pubsub.publish(subscriptionName, result);
-            });
+            await Promise.all(
+              subscriptions.map(async subscriptionName => {
+                await simulatorContext.pubsub.publish(subscriptionName, result);
+              }),
+            );
             return result;
           };
           mutation.resolve = newResolver;

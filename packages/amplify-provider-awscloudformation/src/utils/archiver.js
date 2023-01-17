@@ -4,11 +4,11 @@ const fs = require('fs-extra');
 
 const DEFAULT_IGNORE_PATTERN = ['*/*/build/**', '*/*/dist/**', 'function/*/src/node_modules/**'];
 
-function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN, extraFiles) {
+async function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN, extraFiles) {
   const zipFileFolder = path.dirname(zipFilePath);
   const zipFilename = path.basename(zipFilePath);
 
-  fs.ensureDir(zipFileFolder);
+  await fs.ensureDir(zipFileFolder);
   const output = fs.createWriteStream(zipFilePath);
   return new Promise((resolve, reject) => {
     output.on('close', () => {
@@ -51,7 +51,7 @@ function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN, extraF
       }
     }
 
-    zip.finalize();
+    zip.finalize().catch(reject);
   });
 }
 
