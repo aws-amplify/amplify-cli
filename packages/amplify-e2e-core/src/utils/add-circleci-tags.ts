@@ -32,6 +32,7 @@ export const addCircleCITags = (projectPath: string): void => {
     addTagIfNotExist('circleci:build_id', sanitizeTagValue(process.env['CIRCLE_BUILD_NUM'] || 'N/A'));
     addTagIfNotExist('circleci:build_url', sanitizeTagValue(process.env['CIRCLE_BUILD_URL'] || 'N/A'));
     addTagIfNotExist('circleci:job', sanitizeTagValue(process.env['CIRCLE_JOB'] || 'N/A'));
+    addTagIfNotExist('circleci:create_time', new Date().toISOString());
     // exposed by custom CLI test environment
     if (global.getTestName) {
       addTagIfNotExist('jest:test_name', sanitizeTagValue(global.getTestName().substr(0, 255) || 'N/A'));

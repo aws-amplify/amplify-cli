@@ -1,11 +1,21 @@
 /* eslint-disable max-lines-per-function */
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifyCategoryTransform,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
   AmplifyError,
-  AmplifyStackTemplate, AmplifySupportedService, buildOverrideDir,
-  CFNTemplateFormat, FeatureFlags, JSONUtilities, pathManager,
-  stateManager, Template, writeCFNTemplate,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
+  buildOverrideDir,
+  CFNTemplateFormat,
+  FeatureFlags,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  Template,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -87,7 +97,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this.addCfnConditions(props);
     // generate Resources
 
-    this._authTemplateObj.generateCognitoStackResources(props);
+    await this._authTemplateObj.generateCognitoStackResources(props);
 
     // generate Output
     this.generateCfnOutputs(props);
@@ -117,12 +127,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
           .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
-      } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+      } catch (err) {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };

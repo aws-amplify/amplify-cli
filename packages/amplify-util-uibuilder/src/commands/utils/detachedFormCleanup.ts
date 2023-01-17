@@ -7,11 +7,8 @@ import asyncPool from 'tiny-async-pool';
 /**
  * Does the form's reference DataStore type exist in the list of models
  */
-export const isFormDetachedFromModel = (schema: StudioForm | Form, models: Set<string>): boolean => {
-  if (schema.dataType.dataSourceType === 'DataStore' && !models.has(schema.dataType.dataTypeName)) {
-    return true;
-  }
-  return false;
+export const isFormDetachedFromModel = (formSchema: StudioForm | Form, modelNames: Set<string>): boolean => {
+  return formSchema.dataType.dataSourceType === 'DataStore' && !modelNames.has(formSchema.dataType.dataTypeName);
 };
 
 /**
@@ -19,8 +16,8 @@ export const isFormDetachedFromModel = (schema: StudioForm | Form, models: Set<s
  * @param schema The schema to test
  * @returns boolean
  */
-export const isFormSchemaCustomized = (schema: StudioForm | Form): boolean => {
-  const { fields, style, sectionalElements } = schema;
+export const isFormSchemaCustomized = (formSchema: StudioForm | Form): boolean => {
+  const { fields, style, sectionalElements } = formSchema;
   // Fields and sectionalElements just need an empty check
   if (!isEmpty({ ...fields, ...sectionalElements })) {
     return true;

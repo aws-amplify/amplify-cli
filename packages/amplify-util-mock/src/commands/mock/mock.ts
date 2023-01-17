@@ -4,10 +4,10 @@ import { run as runHelp } from './help';
 
 export const name = 'mock';
 
-export const run = (context: $TSContext) => {
+export const run = async (context: $TSContext) => {
   if (context.parameters.options.help) {
     return runHelp(context);
   }
-  mockAllCategories(context);
+  await mockAllCategories(context);
   return undefined;
 };
