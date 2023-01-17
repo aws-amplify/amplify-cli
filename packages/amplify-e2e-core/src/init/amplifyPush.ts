@@ -194,6 +194,34 @@ export function amplifyPushUpdateLegacy(
 }
 
 /**
+ * Function to test amplify push with allowDestructiveUpdates flag option
+ */
+export function amplifyPushUpdateLegacy(
+  cwd: string,
+  waitForText?: RegExp,
+  allowDestructiveUpdates = false,
+  overridePushTimeoutMS = 0,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(false), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .wait(waitForText || /.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+/**
  * Function to test amplify push
  */
 export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
