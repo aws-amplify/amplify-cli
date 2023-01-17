@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import runBuildCommand from '../../utils/run-build-command';
 import { sync } from 'execa';
 
@@ -13,7 +13,6 @@ jest.mock('amplify-cli-core', () => ({
     succeed: jest.fn(),
     fail: jest.fn(),
   },
-  exitOnNextTick: jest.fn(),
 }));
 
 describe('run-build-command', () => {
@@ -98,7 +97,7 @@ describe('run-build-command', () => {
     expect(sync).not.toHaveBeenCalled();
   });
 
-  it('should exit when build command fails', () => {
+  it('should exit when build command fails', async () => {
     const context = {
       exeInfo: {
         inputParams: {
@@ -118,7 +117,6 @@ describe('run-build-command', () => {
     (sync as jest.Mock).mockImplementation(() => {
       throw new Error('failed');
     });
-    runBuildCommand(context);
-    expect(exitOnNextTick).toHaveBeenCalledWith(1);
+    await expect(() => runBuildCommand(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"Build command failed."`);
   });
 });
