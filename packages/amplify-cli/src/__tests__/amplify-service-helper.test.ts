@@ -1,7 +1,6 @@
 import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
 import { postPullCodegen } from '../amplify-service-helper';
 import { getResourceStatus } from '../extensions/amplify-helpers/resource-status';
-import { isDataStoreEnabled } from 'graphql-transformer-core';
 
 jest.mock('amplify-cli-core');
 jest.mock('graphql-transformer-core', () => ({
