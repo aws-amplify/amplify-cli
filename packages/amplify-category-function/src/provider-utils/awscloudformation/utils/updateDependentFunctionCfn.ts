@@ -43,7 +43,7 @@ export async function updateDependentFunctionsCfn(
     };
 
     for (const selectedCategory of Object.keys(selectedCategories)) {
-      // update function parameters resoruce parameters with deleted models data
+      // update function parameters resource parameters with deleted models data
       // remove the deleted @model
       const selectedResources = selectedCategories[selectedCategory];
       for (const resourceName of Object.keys(selectedResources)) {
