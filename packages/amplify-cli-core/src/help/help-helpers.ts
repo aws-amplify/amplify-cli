@@ -37,7 +37,7 @@ const FLAGS = 'FLAGS';
 const LEARN_MORE = 'LEARN MORE';
 const SUBCOMMANDS = 'SUBCOMMANDS';
 const TAG_LINE = [
-  'The Amplify Command Line Interface (CLI) is a unified toolchain to',
+  'The Amplify Command Line Interface (CLI) is a unified tool chain to',
   'create, integrate, and manage the AWS cloud services for your app.',
 ];
 const DEFAULT_LINK = 'https://docs.amplify.aws/cli/';

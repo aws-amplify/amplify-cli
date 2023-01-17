@@ -360,7 +360,7 @@ const supportedServices = {
         key: 'additionalQuestions',
         question: 'Do you want to configure advanced settings?',
         type: 'list',
-        map: 'additonalConfigMap',
+        map: 'additionalConfigMap',
         required: true,
         andConditions: [
           {
@@ -408,7 +408,7 @@ const supportedServices = {
           },
         ],
         learnMore:
-          "Multi-factor authentication (MFA) increases security for your app by adding another authentication method, and not relying solely on user name and password. You can choose to use SMS text messages, or time-based one-time (TOTP) passwords as second factors in signing in your users.\nNote that once your User Pool has been created, You can only select the 'OPTIONAL' configuration for MFA.  Similiarly, once MFA has been enabled for a User pool you cannot disable it.",
+          "Multi-factor authentication (MFA) increases security for your app by adding another authentication method, and not relying solely on user name and password. You can choose to use SMS text messages, or time-based one-time (TOTP) passwords as second factors in signing in your users.\nNote that once your User Pool has been created, You can only select the 'OPTIONAL' configuration for MFA.  Similarly, once MFA has been enabled for a User pool you cannot disable it.",
       },
       {
         key: 'mfaTypes',

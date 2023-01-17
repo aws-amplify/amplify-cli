@@ -13,7 +13,7 @@ import { createLayerZipFilename } from './packageLayer';
 
 /**
  * generates CloudFormation for Layer versions and Layer permissions
- * @param versionList is sorted descendingly
+ * @param versionList is sorted in a descending manner
  */
 export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);

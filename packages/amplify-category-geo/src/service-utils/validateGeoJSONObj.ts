@@ -54,7 +54,7 @@ export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier = '
 };
 
 /**
- * Validate linear ring for those not captured by JSON Schema, incluidng first and last identical position, winding direction
+ * Validate linear ring for those not captured by JSON Schema, including first and last identical position, winding direction
  * @param linearRing Array of coordinates
  * @param isFirstRing Whether it is first(exterior) ring
  */

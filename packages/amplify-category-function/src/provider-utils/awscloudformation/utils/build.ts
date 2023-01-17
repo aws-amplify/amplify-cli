@@ -11,5 +11,5 @@ export const buildResource = (context: $TSContext, resource: BuildRequestMeta & 
   return getBuilderForService(resource.service)(context, resource);
 };
 
-// since lambdaLayers build is dfifferent from lambda function
+// since lambdaLayers build is different from lambda function
 const getBuilderForService = (service: string) => (service === ServiceName.LambdaLayer ? buildLayer : buildFunction);

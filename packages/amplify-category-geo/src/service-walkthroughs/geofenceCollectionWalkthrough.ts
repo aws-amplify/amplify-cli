@@ -64,11 +64,11 @@ export const geofenceCollectionAccessWalkthrough = async (
     if (userPoolGroupList.length <= 0) {
         if (await prompter.yesOrNo('Geofencing requires a Cognito user group for Admin only access control settings. Do you want to add it now?')) {
             printer.info('Select "Create or update Cognito user pool groups" to add a Cognito user group');
-            const currentcommand = context.input['command'];
+            const currentCommand = context.input['command'];
             context.input['command'] = 'update';
             await context.amplify.invokePluginMethod(context, 'auth', undefined, 'executeAmplifyCommand', [context]);
             userPoolGroupList = context.amplify.getUserPoolGroupList();
-            context.input['command'] = currentcommand;
+            context.input['command'] = currentCommand;
         } else {
             printer.error('No Cognito groups exist in the project. Please add a Cognito group using "amplify update auth" and selecting "Create or update Cognito user pool groups"');
             throw new Error('Failed to setup a Geofence Collection. Requires a Cognito group for Admin only access control settings');
@@ -171,7 +171,7 @@ export const updateGeofenceCollectionWalkthrough = async (
  * @param context The Amplify Context object
  * @param currentDefault The current default geofence collection name
  * @param availableGeofenceCollections The names of available geofence collections
- * @returns name of the new default geofence collection choosen
+ * @returns name of the new default geofence collection chosen
  */
 export const updateDefaultGeofenceCollectionWalkthrough = async (
     context: $TSContext,
