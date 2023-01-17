@@ -43,7 +43,7 @@ describe('parameters-delete-handler', () => {
     await deleteEnvironmentParametersFromService((contextStub as unknown) as $TSContext, envName);
     expect(deleteParametersPromiseMock).toBeCalledTimes(1);
     expect(deleteParametersMock).toBeCalledTimes(1);
-    const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(fakeAppId, envName, keys);
+    const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(keys);
     expect(deleteParametersMock).toBeCalledWith(expectedDeleteParamater);
 
     expect(getParametersByPathPromiseMock).toBeCalledTimes(1);

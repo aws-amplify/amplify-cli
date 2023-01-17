@@ -14,24 +14,24 @@ export const deleteEnvironmentParametersFromService = async (context: $TSContext
 };
 
 const deleteParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<void> => {
-    try {
-      const envKeysInParameterStore: Array<string> = await getAllEnvParametersFromParameterStore(appId, envName, ssmClient);
-      const chunkedKeys: Array<Array<string>> = chunkForParameterStore(envKeysInParameterStore);
-      await Promise.all(
-        chunkedKeys.map(chunk => {
-          const ssmArgument = getSsmSdkParametersDeleteParameters(appId, envName, chunk);
-          return ssmClient.deleteParameters(ssmArgument).promise();
-        }),
-      );
-    } catch (e) {
-      throw new AmplifyFault(
-        'ParametersDeleteFault',
-        {
-          message: `Failed to delete parameters from the service`,
-        },
-        e,
-      );
-    }
+  try {
+    const envKeysInParameterStore: Array<string> = await getAllEnvParametersFromParameterStore(appId, envName, ssmClient);
+    const chunkedKeys: Array<Array<string>> = chunkForParameterStore(envKeysInParameterStore);
+    await Promise.all(
+      chunkedKeys.map(keys => {
+        const ssmArgument = getSsmSdkParametersDeleteParameters(keys);
+        return ssmClient.deleteParameters(ssmArgument).promise();
+      }),
+    );
+  } catch (e) {
+    throw new AmplifyFault(
+      'ParametersDeleteFault',
+      {
+        message: `Failed to delete parameters from the service`,
+      },
+      e,
+    );
+  }
 };
 
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {

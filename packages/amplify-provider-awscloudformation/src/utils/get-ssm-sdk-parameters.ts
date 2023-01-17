@@ -1,6 +1,6 @@
-export const getSsmSdkParametersDeleteParameters = (appId: string, envName: string, keys: Array<string>): SsmDeleteParameters => {
+export const getSsmSdkParametersDeleteParameters = (keys: Array<string>): SsmDeleteParameters => {
   const sdkParameters = {
-    Names: keys.map(key => `/amplify/${appId}/${envName}/${key}`),
+    Names: keys,
   };
   return sdkParameters;
 };
