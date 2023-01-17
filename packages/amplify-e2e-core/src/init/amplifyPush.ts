@@ -116,13 +116,17 @@ export function cancelIterativeAmplifyPush(
   idx: { current: number; max: number },
   testingWithLatestCodebase = false,
 ): Promise<void> {
-  return spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait('Are you sure you want to continue?')
-    .sendYes()
-    .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
-    .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
-    .sendCtrlC()
-    .runAsync();
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendYes()
+      .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
+      .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
+      .sendCtrlC()
+      .run((err: Error) => {
+        resolve();
+      });
+  });
 }
 
 /**
