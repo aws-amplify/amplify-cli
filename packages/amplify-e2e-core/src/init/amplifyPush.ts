@@ -116,21 +116,13 @@ export function cancelIterativeAmplifyPush(
   idx: { current: number; max: number },
   testingWithLatestCodebase = false,
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendYes()
-      .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
-      .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
-      .sendCtrlC()
-      .run((err: Error) => {
-        if (err && !/Killed the process as no output receive for/.test(err.message)) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-  });
+  return spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendYes()
+    .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
+    .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
+    .sendCtrlC()
+    .runAsync();
 }
 
 /**
@@ -190,6 +182,34 @@ export function amplifyPushUpdate(
     spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendYes()
+      .wait(waitForText || /.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+/**
+ * Function to test amplify push with allowDestructiveUpdates flag option
+ */
+export function amplifyPushUpdateLegacy(
+  cwd: string,
+  waitForText?: RegExp,
+  allowDestructiveUpdates = false,
+  overridePushTimeoutMS = 0,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(false), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
       .wait(waitForText || /.*/)
       .run((err: Error) => {
         if (!err) {

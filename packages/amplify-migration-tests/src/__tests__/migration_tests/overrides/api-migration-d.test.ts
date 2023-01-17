@@ -4,7 +4,7 @@
 import {
   addHeadlessApi,
   amplifyPushLegacy,
-  amplifyPushUpdate,
+  amplifyPushUpdateLegacy,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -76,7 +76,7 @@ describe('api migration update test d', () => {
     await amplifyPushLegacy(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true, { testingWithLatestCodebase: true });
     expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
-    await amplifyPushUpdate(projRoot, undefined, undefined, true);
+    await amplifyPushUpdateLegacy(projRoot, undefined, true);
 
     // verify
     const meta = getProjectMeta(projRoot);
