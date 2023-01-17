@@ -50,7 +50,8 @@
     "finish-release": "./scripts/finish-release.sh",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
     "extract-api": "nx run-many --target=extract-api --all",
-    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh"
+    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh",
+    "verify-api-extract:clean": "yarn clean && yarn dev-build && yarn verify-api-extract"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -65,7 +66,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
+      "pre-push": "yarn verify-api-extract:clean && yarn build-tests-changed && yarn split-e2e-tests",
       "pre-commit": "yarn verify-commit"
     }
   },
@@ -141,6 +142,7 @@
     "**/got": "^11.8.5",
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
+    "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
     "**/undici": "^5.8.0"
   }

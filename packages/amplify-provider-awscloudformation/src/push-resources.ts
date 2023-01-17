@@ -194,6 +194,8 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     });
 
     await prePushLambdaLayerPrompt(context, resources);
+    await context.amplify.invokePluginMethod(context, AmplifyCategories.FUNCTION,
+      AmplifySupportedService.LAMBDA, 'ensureLambdaExecutionRoleOutputs', []);
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
 

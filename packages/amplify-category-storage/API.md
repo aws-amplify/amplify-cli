@@ -18,7 +18,7 @@ export function canResourceBeTransformed(context: $TSContext, resourceName: stri
 export const category = "storage";
 
 // @public (undocumented)
-function console_2(context: any): Promise<void>;
+const console_2: (context: $TSContext) => Promise<void>;
 export { console_2 as console }
 
 // @public (undocumented)
