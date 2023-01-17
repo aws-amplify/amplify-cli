@@ -51,6 +51,12 @@ import { hashDirectory } from './upload-appsync-files';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { getApiKeyConfig } from './utils/api-key-helpers';
 
+import { deleteEnvironmentParametersFromService } from './utils/delete-from-service';
+export { deleteEnvironmentParametersFromService } from './utils/delete-from-service';
+
+import { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
+export { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -198,4 +204,6 @@ module.exports = {
   hashDirectory,
   prePushCfnTemplateModifier,
   getApiKeyConfig,
+  getEnvParametersUploadHandler,
+  deleteEnvironmentParametersFromService,
 };
