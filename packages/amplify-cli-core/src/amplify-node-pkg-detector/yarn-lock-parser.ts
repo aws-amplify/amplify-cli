@@ -69,7 +69,7 @@ export class YarnLockParser {
 
     /**
      * this function takes dependencyTo search and lockFile content as input and
-     * returns a map of < allPackages ,dependencyToSearchPayload>
+     * returns a map of < allPackages, dependencyToSearchPayload>
      */
     getDependentPackageMap(packageName: string,
       lockFileContents: string): Record<string, Record<string, YarnLockDependencyType>> | undefined {

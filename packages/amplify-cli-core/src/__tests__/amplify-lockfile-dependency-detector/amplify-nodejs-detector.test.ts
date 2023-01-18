@@ -267,6 +267,29 @@ describe('parsing package lock files', () => {
       ]
     `);
   });
+
+  it('correctly detect dependencies for @aws-cdk/core when present in peer dependencies', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'npm',
+      lockFile: 'package-lock-test-peer-dependencies.json',
+      packageManager: 'npm',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.188.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
+      ]
+    `);
+  });
   it('correctly detect dependencies for amplify-cli-core', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
       executable: 'npm',

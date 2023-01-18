@@ -83,10 +83,11 @@ export class AmplifyNodePkgDetector {
      */
      public detectAffectedDirectDependencies = (dependencyToSearch: string): Array<DetectedDependencies> | [] => {
        let explicitDependencies = new Array<DetectedDependencies>();
+       const allPkgJsonDependencies = Object.assign(this.pkgJsonObj.dependencies, this.pkgJsonObj.peerDependencies);
        const allPackagesWithDependency = this.lockFileParser.getDependentPackageMap(dependencyToSearch, this.lockFileContents);
        if (allPackagesWithDependency !== undefined) {
          explicitDependencies = Object.keys(allPackagesWithDependency).map(pkg => {
-           if (Object.keys(this.pkgJsonObj.dependencies).includes(pkg)) {
+           if (Object.keys(allPkgJsonDependencies).includes(pkg)) {
              const obj: DetectedDependencies = {
                packageName: pkg,
                dependentPackage: {
