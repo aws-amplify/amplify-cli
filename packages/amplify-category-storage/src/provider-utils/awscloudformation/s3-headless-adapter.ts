@@ -100,7 +100,7 @@ export function getS3PermissionFromHeadlessParams(headlessPermissionList: CrudOp
           return S3PermissionType.READ;
         }
         default:
-          throw new Error(`Headless Acces Permission ${headlessCrud} is not supported in S3 CLI`);
+          throw new Error(`Headless Access Permission ${headlessCrud} is not supported in S3 CLI`);
       }
     });
   } else {

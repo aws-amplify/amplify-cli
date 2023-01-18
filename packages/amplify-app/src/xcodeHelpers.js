@@ -36,7 +36,7 @@ const GRAPHQL_SCHEMA = 'schema.graphql';
  */
 function getXcodeProjectDir() {
   const files = fs.readdirSync(process.cwd());
-  const targetFiles = files.filter(function extenstionFilter(file) {
+  const targetFiles = files.filter(function extensionFilter(file) {
     return path.extname(file).toLowerCase() === XCODE_PROJ_EXTENSION;
   });
   let projDir;

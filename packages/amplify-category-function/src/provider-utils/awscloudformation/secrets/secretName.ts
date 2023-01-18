@@ -2,7 +2,7 @@
  * This module contains methods for getting the full SSM parameter name of a secret from it's friendly name.
  * Also contains methods for getting a valid CFN object that will resolve to the SSM parameter name.
  *
- * WARNING: be extreemly careful changing anything about how secrets are named in SSM! (AKA you should probably never change this).
+ * WARNING: be extremely careful changing anything about how secrets are named in SSM! (AKA you should probably never change this).
  * This format is sandardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
  */
 import { stateManager } from 'amplify-cli-core';
@@ -61,7 +61,7 @@ export const getAppId = () => {
   const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
   const appId = meta?.providers?.awscloudformation?.AmplifyAppId;
   if (!appId) {
-    throw new Error('Could not find an Amplify AppId in the amplfiy-meta.json file. Make sure your project is initialized in the cloud.');
+    throw new Error('Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.');
   }
   return appId;
 };

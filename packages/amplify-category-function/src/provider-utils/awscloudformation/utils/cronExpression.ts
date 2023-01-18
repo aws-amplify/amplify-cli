@@ -45,9 +45,9 @@ export class CronExpression {
   months = new TreeSet();
   daysOfWeek = new TreeSet();
   years = new TreeSet();
-  lastdayOfWeek = false;
+  lastDayOfWeek = false;
   nthdayOfWeek = 0;
-  lastdayOfMonth = false;
+  lastDayOfMonth = false;
   nearestWeekday = false;
   expressionParsed = false;
 
@@ -122,11 +122,11 @@ export class CronExpression {
 
       let exprOn = SECOND;
 
-      const exprsTok: string[] = cronExpression.split(' ');
-      let len_exprsTok = 0;
-      while (len_exprsTok <= exprsTok.length - 1 && exprOn <= YEAR) {
-        if (exprsTok[len_exprsTok] != undefined) {
-          const expr: string = exprsTok[len_exprsTok].trim();
+      const expressionTokenizer: string[] = cronExpression.split(' ');
+      let lengthExpressionTokenizer = 0;
+      while (lengthExpressionTokenizer <= expressionTokenizer.length - 1 && exprOn <= YEAR) {
+        if (expressionTokenizer[lengthExpressionTokenizer] != undefined) {
+          const expr: string = expressionTokenizer[lengthExpressionTokenizer].trim();
           const vTok: string[] = expr.split(',');
           let len_vTok = 0;
           while (len_vTok <= vTok.length - 1) {
@@ -138,7 +138,7 @@ export class CronExpression {
           }
           exprOn++;
         }
-        len_exprsTok++;
+        lengthExpressionTokenizer++;
       }
 
       if (exprOn <= DAY_OF_WEEK) {
@@ -223,7 +223,7 @@ export class CronExpression {
               throw new Error("A numeric value between 1 and 5 must follow the '#' option" + String(i));
             }
           } else if (c === 'L') {
-            this.lastdayOfWeek = true;
+            this.lastDayOfWeek = true;
             i = i + 1;
           }
         }
@@ -245,7 +245,7 @@ export class CronExpression {
       if (type != DAY_OF_WEEK && type != DAY_OF_MONTH) {
         throw new Error("'?' can only be specified for Day-of-Month or Day-of-Week." + String(i));
       }
-      if (type === DAY_OF_WEEK && !this.lastdayOfMonth) {
+      if (type === DAY_OF_WEEK && !this.lastDayOfMonth) {
         const val: number = this.daysOfMonth.last();
         if (val === NO_SPEC_INT) {
           throw new Error("'?' can only be specified for Day-of-Month -OR- Day-of-Week." + String(i));
@@ -299,7 +299,7 @@ export class CronExpression {
     } else if (c === 'L') {
       i++;
       if (type === DAY_OF_MONTH) {
-        this.lastdayOfMonth = true;
+        this.lastDayOfMonth = true;
       }
       if (type === DAY_OF_WEEK) {
         this.addToSet(7, 7, 0, type);
@@ -514,7 +514,7 @@ export class CronExpression {
 
     if (c === 'L') {
       if (type === DAY_OF_WEEK) {
-        this.lastdayOfWeek = true;
+        this.lastDayOfWeek = true;
       } else {
         throw new Error("'L' option is not valid here. (pos=" + i + ')' + i);
       }
@@ -637,10 +637,10 @@ export class CronExpression {
     this.daysOfWeek = new TreeSet();
     this.years = new TreeSet();
 
-    this.lastdayOfWeek = false;
+    this.lastDayOfWeek = false;
     this.nthdayOfWeek = 0;
-    this.lastdayOfMonth = false;
+    this.lastDayOfMonth = false;
     this.nearestWeekday = false;
-    this.lastdayOffset = 0;
+    this.lastDayOffset = 0;
   };
 }
