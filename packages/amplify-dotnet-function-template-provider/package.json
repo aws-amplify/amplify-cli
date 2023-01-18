@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "2.4.1",
+  "version": "2.4.2-upgrade-graphql15-2.0",
   "description": ".NET templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "3.5.1",
+    "amplify-cli-core": "3.6.0-upgrade-graphql15-2.0",
     "amplify-function-plugin-interface": "1.9.6",
     "graphql-transformer-core": "^7.6.10-upgrade-graphql15-2.1"
   },

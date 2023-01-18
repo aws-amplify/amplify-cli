@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.3-upgrade-graphql15-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.2...amplify-prompts@2.6.3-upgrade-graphql15-2.0) (2023-01-18)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* make prompter multi-select indicator more distinct ([#11742](https://github.com/aws-amplify/amplify-cli/issues/11742)) ([4531c38](https://github.com/aws-amplify/amplify-cli/commit/4531c3819fbf9850d603df443380ae310c85b129))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.1...amplify-prompts@2.6.2) (2023-01-03)
 
 **Note:** Version bump only for package amplify-prompts
