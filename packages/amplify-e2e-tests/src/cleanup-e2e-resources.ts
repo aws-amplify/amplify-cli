@@ -31,8 +31,8 @@ const DELETE_LIMITS = {
   PER_BATCH: {
     OTHER: 50,
     CFN_STACK: 100,
-  }
-}
+  },
+};
 
 const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', 'stale-resources.json'));
 
@@ -145,13 +145,17 @@ const handleExpiredTokenException = (): void => {
  */
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
-  const isStaleResource = new Date().getUTCMilliseconds() - resource.CreationDate.getUTCMilliseconds() > STALE_DURATION_MS;
+  const now = new Date().getTime();
+  const created = resource.CreationDate.getTime();
+  const isStaleResource = now - created > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
-  const isStaleResource = new Date().getUTCMilliseconds() - resource.CreateDate.getUTCMilliseconds() > STALE_DURATION_MS;
+  const now = new Date().getTime();
+  const created = resource.CreateDate.getTime();
+  const isStaleResource = now - created > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
@@ -161,14 +165,18 @@ const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolea
   let isStaleResource = true;
   if (createTimeTagValue) {
     const createTime = new Date(createTimeTagValue);
-    isStaleResource = (new Date().getUTCMilliseconds() - createTime.getUTCMilliseconds()) > STALE_DURATION_MS;
+    const now = new Date().getTime();
+    const created = createTime.getTime();
+    isStaleResource = now - created > STALE_DURATION_MS;
   }
   return isTestResource && isStaleResource;
 };
 
 const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
   const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
-  const isStaleResource = new Date().getUTCMilliseconds() - new Date(resource.CreationDate).getUTCMilliseconds() > STALE_DURATION_MS;
+  const now = new Date().getTime();
+  const created = new Date(resource.CreationDate).getTime();
+  const isStaleResource = now - created > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
@@ -250,7 +258,7 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  if(region === 'us-east-1' && account.parent){
+  if (region === 'us-east-1' && account.parent) {
     return []; // temporarily disabled until us-east-1 is re-enabled for this account
   }
   const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
@@ -278,7 +286,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
       });
     }
     return result;
-  } catch (e){
+  } catch (e) {
     console.log(e);
     return [];
   }
@@ -347,7 +355,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       StackStatusFilter: stackStatusFilter,
     })
     .promise();
-  // loop 
+  // loop
   let nextToken = stacks.NextToken;
   while (nextToken && stacks.StackSummaries.length < DELETE_LIMITS.PER_REGION.CFN_STACK) {
     const nextPage = await cfnClient
@@ -355,7 +363,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
         StackStatusFilter: stackStatusFilter,
         NextToken: nextToken,
       })
-    .promise();
+      .promise();
     stacks.StackSummaries.push(...nextPage.StackSummaries);
     nextToken = nextPage.NextToken;
   }
@@ -365,7 +373,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   // this is because some child stacks fail to delete (but we don't let that stop us from deleting root stacks)
   // eventually, we must clean up those child stacks too.
   let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
-  if(rootStacks.length > DELETE_LIMITS.PER_REGION.CFN_STACK){
+  if (rootStacks.length > DELETE_LIMITS.PER_REGION.CFN_STACK) {
     // we can only delete 100 stacks accross all regions every batch,
     // so we shouldn't take more than 50 stacks from each of those 8 regions.
     // this should at least limit calls to getStackDetails below
@@ -685,9 +693,7 @@ const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, 
 };
 
 const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo): Promise<void> => {
-  const {
-    apiId, name, region,
-  } = api;
+  const { apiId, name, region } = api;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name}`);
     const appSync = new aws.AppSync(getAWSConfig(account, region));
@@ -755,12 +761,16 @@ const deleteResources = async (
     }
 
     if (resources.pinpointApps) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`);
+      console.log(
+        `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`,
+      );
       await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
     }
 
     if (resources.appSyncApis) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`);
+      console.log(
+        `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`,
+      );
       await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
     }
   }
@@ -876,13 +886,21 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
 
   const allResources = mergeResourcesByCCIJob(
-    apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanPinpointApplications, orphanAppSyncApis
+    apps,
+    stacks,
+    buckets,
+    orphanBuckets,
+    orphanIamRoles,
+    orphanPinpointApplications,
+    orphanAppSyncApis,
   );
   // cleanup resources that are <unknown> but that are definitely amplify resources
   // this includes apps with names that include "test" or stacks that include both "amplify" & "test"
-  const testApps = allResources["<unknown>"].amplifyApps?.filter(a => a.name.toLocaleLowerCase().includes('test'));
-  const testStacks = allResources["<unknown>"].stacks?.filter(s => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'));
-  const orphanedResources = allResources["<orphan>"];
+  const testApps = allResources['<unknown>'].amplifyApps?.filter(a => a.name.toLocaleLowerCase().includes('test'));
+  const testStacks = allResources['<unknown>'].stacks?.filter(
+    s => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'),
+  );
+  const orphanedResources = allResources['<orphan>'];
   orphanedResources.amplifyApps = orphanedResources.amplifyApps ?? [];
   orphanedResources.stacks = orphanedResources.stacks ?? [];
   orphanedResources.amplifyApps.push(...(testApps ? testApps : []));
@@ -922,12 +940,14 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-  for(let i = 0 ;i < 3; i ++){
-    console.log("CLEANUP ROUND: ", i + 1);
-    await Promise.all(accounts.map((account, i) => {
-      return cleanupAccount(account, i, filterPredicate);
-    }));
-    await sleep(60 * 1000);// run again after 60 seconds
+  for (let i = 0; i < 3; i++) {
+    console.log('CLEANUP ROUND: ', i + 1);
+    await Promise.all(
+      accounts.map((account, i) => {
+        return cleanupAccount(account, i, filterPredicate);
+      }),
+    );
+    await sleep(60 * 1000); // run again after 60 seconds
   }
   console.log('Done cleaning all accounts!');
 };
