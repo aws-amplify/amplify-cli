@@ -16,16 +16,13 @@ describe('amplify add notifications', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('init');
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
   });
 
   afterEach(async () => {
     await deleteProject(projectRoot, undefined, true);
     deleteProjectDir(projectRoot);
-  });
-
-  beforeAll(async () => {
-    await versionCheck(process.cwd(), false, migrateFromVersion);
-    await versionCheck(process.cwd(), true, migrateToVersion);
   });
 
   it('should add in app notifications if analytics added with an older version', async () => {
