@@ -266,6 +266,10 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const amplifyApps = await amplifyClient.listApps({ maxResults: 25 }).promise(); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
     for (const app of amplifyApps.apps) {
+      const isStale = new Date().getTime() - app.createTime.getTime() > STALE_DURATION_MS;
+      if (!isStale) {
+        continue; // skip
+      }
       const backends: Record<string, StackInfo> = {};
       try {
         const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 5 }).promise();
@@ -372,7 +376,14 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   // NOTE: every few months, we should disable the filter , and clean up all stacks (not just root stacks)
   // this is because some child stacks fail to delete (but we don't let that stop us from deleting root stacks)
   // eventually, we must clean up those child stacks too.
-  let rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
+  let rootStacks = stacks.StackSummaries.filter(stack => {
+    const isRoot = !stack.RootId;
+    const isStale = new Date().getTime() - stack.CreationTime.getDate() > STALE_DURATION_MS;
+    if (!isStale) {
+      console.log('Skipping stack because created date is:', stack.CreationTime);
+    }
+    return isRoot && isStale;
+  });
   if (rootStacks.length > DELETE_LIMITS.PER_REGION.CFN_STACK) {
     // we can only delete 100 stacks accross all regions every batch,
     // so we shouldn't take more than 50 stacks from each of those 8 regions.
