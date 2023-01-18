@@ -164,7 +164,7 @@ export const updateMapWalkthrough = async (
  * @param context The Amplify Context object
  * @param currentDefault The current default map name
  * @param availableMaps The names of available maps
- * @returns name of the new default map choosen
+ * @returns name of the new default map chosen
  */
 export const updateDefaultMapWalkthrough = async (
     context: $TSContext,
