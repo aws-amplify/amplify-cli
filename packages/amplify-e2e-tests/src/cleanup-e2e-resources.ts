@@ -141,22 +141,27 @@ const handleExpiredTokenException = (): void => {
 };
 
 /**
+ * Check if a resource is stale based on its created date
+ * @param created
+ * @returns
+ */
+const isStale = (created: Date): boolean => {
+  const now = new Date().getTime();
+  const isStale = now - created.getTime() > STALE_DURATION_MS;
+  return isStale;
+};
+
+/**
  * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
  */
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
-  const now = new Date().getTime();
-  const created = resource.CreationDate.getTime();
-  const isStaleResource = now - created > STALE_DURATION_MS;
-  return isTestResource && isStaleResource;
+  return isTestResource && isStale(resource.CreationDate);
 };
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
-  const now = new Date().getTime();
-  const created = resource.CreateDate.getTime();
-  const isStaleResource = now - created > STALE_DURATION_MS;
-  return isTestResource && isStaleResource;
+  return isTestResource && isStale(resource.CreateDate);
 };
 
 const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolean => {
@@ -165,19 +170,14 @@ const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolea
   let isStaleResource = true;
   if (createTimeTagValue) {
     const createTime = new Date(createTimeTagValue);
-    const now = new Date().getTime();
-    const created = createTime.getTime();
-    isStaleResource = now - created > STALE_DURATION_MS;
+    isStaleResource = isStale(createTime);
   }
   return isTestResource && isStaleResource;
 };
 
 const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
   const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
-  const now = new Date().getTime();
-  const created = new Date(resource.CreationDate).getTime();
-  const isStaleResource = now - created > STALE_DURATION_MS;
-  return isTestResource && isStaleResource;
+  return isTestResource && isStale(new Date(resource.CreationDate));
 };
 
 /**
@@ -266,8 +266,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const amplifyApps = await amplifyClient.listApps({ maxResults: 25 }).promise(); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
     for (const app of amplifyApps.apps) {
-      const isStale = new Date().getTime() - app.createTime.getTime() > STALE_DURATION_MS;
-      if (!isStale) {
+      if (!isStale(app.createTime)) {
         continue; // skip
       }
       const backends: Record<string, StackInfo> = {};
@@ -378,8 +377,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   // eventually, we must clean up those child stacks too.
   let rootStacks = stacks.StackSummaries.filter(stack => {
     const isRoot = !stack.RootId;
-    const isStale = new Date().getTime() - stack.CreationTime.getDate() > STALE_DURATION_MS;
-    if (!isStale) {
+    if (!isStale(stack.CreationTime)) {
       console.log('Skipping stack because created date is:', stack.CreationTime);
     }
     return isRoot && isStale;
