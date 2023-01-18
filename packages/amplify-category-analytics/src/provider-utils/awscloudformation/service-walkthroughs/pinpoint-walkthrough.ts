@@ -30,49 +30,29 @@ export const addWalkthrough = async (context: $TSContext, defaultValuesFilename:
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   } else {
-    return configure(context, defaultValuesFilename, undefined);
+    return configure(context, defaultValuesFilename);
   }
   return undefined;
 };
 
-const configure = async (context: $TSContext, defaultValuesFilename: string, resourceName: string | undefined): Promise<$TSAny> => {
+const configure = async (context: $TSContext, defaultValuesFilename: string): Promise<$TSAny> => {
   const { amplify } = context;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
-
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
-
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
-  if (resourceName) {
-    const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    const parameters = context.amplify.readJsonFile(parametersFilePath);
-    parameters.resourceName = resourceName;
-    Object.assign(defaultValues, parameters);
-  }
-
   const pinpointApp = getNotificationsCategoryHasPinpointIfExists();
 
   if (pinpointApp) {
     Object.assign(defaultValues, pinpointApp);
   }
 
-  const answers = {
-    resourceName:
-      resourceName ||
-      (await prompter.input('Provide a friendly resource name:', {
-        validate: alphanumeric('Resource name must be alphanumeric'),
-        initial: defaultValues.resourceName,
-      })),
-    appName: await prompter.input('Provide your pinpoint resource name:', {
-      validate: alphanumeric('Resource name must be alphanumeric'),
-      initial: defaultValues.appName,
-    }),
-  };
-
-  Object.assign(defaultValues, answers);
-  const resource = defaultValues.resourceName;
+  const resource = await prompter.input('Provide your pinpoint resource name:', {
+    validate: alphanumeric('Resource name must be alphanumeric'),
+    initial: defaultValues.appName,
+  });
+  defaultValues.appName = resource;
+  defaultValues.resourceName = resource;
 
   const analyticsRequirements = {
     authSelections: 'identityPoolOnly',
@@ -83,7 +63,7 @@ const configure = async (context: $TSContext, defaultValuesFilename: string, res
     analyticsRequirements,
     context,
     'analytics',
-    answers.resourceName,
+    resource,
   ]);
 
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
@@ -108,7 +88,7 @@ const configure = async (context: $TSContext, defaultValuesFilename: string, res
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,
           'analytics',
-          answers.resourceName,
+          resource,
           analyticsRequirements,
         ]);
       } catch (error) {
@@ -122,7 +102,7 @@ const configure = async (context: $TSContext, defaultValuesFilename: string, res
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,
           'analytics',
-          answers.resourceName,
+          resource,
           analyticsRequirements,
         ]);
       } catch (error) {
@@ -133,7 +113,6 @@ const configure = async (context: $TSContext, defaultValuesFilename: string, res
   }
 
   // At this point we have a valid auth configuration either imported or added/updated.
-
   const resourceDirPath = path.join(projectBackendDirPath, category, resource);
   delete defaultValues.resourceName;
   writeParams(resourceDirPath, defaultValues);

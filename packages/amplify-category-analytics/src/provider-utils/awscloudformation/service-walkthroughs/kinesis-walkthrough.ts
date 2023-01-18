@@ -107,10 +107,10 @@ const configure = async (
   const projectBackendDirPath = amplify.pathManager.getBackendDirPath();
 
   const answers = {
-    kinesisStreamName: resourceName || await prompter.input('Enter a Stream name', {
+    kinesisStreamName: resourceName || (await prompter.input('Enter a Stream name', {
       validate: alphanumeric('Name is invalid. Has to be non-empty and alphanumeric'),
       initial: defaultValues.kinesisStreamName,
-    }),
+    })),
     kinesisStreamShardCount: await prompter.input<'one', number>('Enter a number of shards', {
       transform: input => Number.parseInt(input, 10),
       initial: 1,
