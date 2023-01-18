@@ -345,6 +345,7 @@
   "tmpdir",
   "todos",
   "tokenizer",
+  "toolchain",
   "totp",
   "transpile",
   "transpiled",
