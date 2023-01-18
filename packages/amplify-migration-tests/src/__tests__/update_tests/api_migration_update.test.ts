@@ -26,17 +26,15 @@ import {
 describe('api migration update test', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('graphql-api');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('graphql-api');
     await initJSProjectWithProfileV4_52_0(projRoot, { name: 'apimigration' });
   });
 

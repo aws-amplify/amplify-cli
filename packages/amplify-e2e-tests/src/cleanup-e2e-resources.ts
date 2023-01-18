@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { deleteS3Bucket, sleep } from '@aws-amplify/amplify-e2e-core';
 
-// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
+// Ensure that scripts/cci-utils.ts is also updated when this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-1',
   'us-east-2',
@@ -922,7 +922,7 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-  for(let i = 0 ;i < 5; i ++){
+  for(let i = 0 ;i < 3; i ++){
     console.log("CLEANUP ROUND: ", i + 1);
     await Promise.all(accounts.map((account, i) => {
       return cleanupAccount(account, i, filterPredicate);
