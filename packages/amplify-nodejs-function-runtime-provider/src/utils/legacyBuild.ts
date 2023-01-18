@@ -24,13 +24,7 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
 const runBuildScriptHook = (resourceName: string, projectRoot: string): void => {
   const scriptName = `amplify:${resourceName}`;
   if (scriptExists(projectRoot, scriptName)) {
-    const nodeEnv = process.env.NODE_ENV;
-    try {
-      delete process.env.NODE_ENV;
-      runPackageManager(projectRoot, undefined, scriptName);
-    } finally {
-      process.env.NODE_ENV = nodeEnv;
-    }
+    runPackageManager(projectRoot, undefined, scriptName);
   }
 };
 
