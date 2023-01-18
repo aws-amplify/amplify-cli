@@ -186,7 +186,8 @@ export enum AmplifyFrontend {
 export class AmplifyNodePkgDetector {
     constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependencies> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
     // (undocumented)
     parseLockFile(): Lockfile;
 }
@@ -578,7 +579,7 @@ export enum DeploymentStepStatus {
 }
 
 // @public (undocumented)
-export type DetectedDependencies = {
+export type DetectedDependency = {
     packageName?: string;
     dependentPackage?: {
         name: string;
@@ -1521,7 +1522,7 @@ export function validateExportDirectoryPath(directoryPath: any, defaultPath: str
 export class ViewResourceTableParams {
     constructor(cliParams: CLIParams);
     // (undocumented)
-    get categoryList(): string[] | [];
+    get categoryList(): [] | string[];
     // (undocumented)
     get command(): string;
     // (undocumented)

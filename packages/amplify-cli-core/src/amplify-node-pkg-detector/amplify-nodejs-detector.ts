@@ -10,7 +10,7 @@ import { LockFileParserFactory } from './parser-factory';
 /**
  * return type of detectAffectedDirectDependencies
  */
-export type DetectedDependencies = {
+export type DetectedDependency = {
   packageName?: string;
   dependentPackage?:{
     name: string,
@@ -81,14 +81,14 @@ export class AmplifyNodePkgDetector {
      /**
      * returns  explicit dependencies from package.json if lock file package depends on passed dependency else []
      */
-     public detectAffectedDirectDependencies = (dependencyToSearch: string): Array<DetectedDependencies> | [] => {
-       let explicitDependencies = new Array<DetectedDependencies>();
+     public detectAffectedDirectDependencies = (dependencyToSearch: string): Array<DetectedDependency> | [] => {
+       let explicitDependencies = new Array<DetectedDependency>();
        const allPkgJsonDependencies = Object.assign(this.pkgJsonObj.dependencies, this.pkgJsonObj.peerDependencies);
        const allPackagesWithDependency = this.lockFileParser.getDependentPackageMap(dependencyToSearch, this.lockFileContents);
        if (allPackagesWithDependency !== undefined) {
          explicitDependencies = Object.keys(allPackagesWithDependency).map(pkg => {
            if (Object.keys(allPkgJsonDependencies).includes(pkg)) {
-             const obj: DetectedDependencies = {
+             const obj: DetectedDependency = {
                packageName: pkg,
                dependentPackage: {
                  name: dependencyToSearch,

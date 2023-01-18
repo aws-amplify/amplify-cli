@@ -91,6 +91,13 @@ describe('parsing yarn lock files', () => {
           },
           "packageName": "@aws-amplify/cli-extensibility-helper",
         },
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.172.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
       ]
     `);
   });
@@ -143,6 +150,13 @@ describe('parsing yarn lock files', () => {
     });
     expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
       Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "9.1.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
         Object {
           "dependentPackage": Object {
             "name": "fs-extra",
@@ -264,6 +278,13 @@ describe('parsing package lock files', () => {
           },
           "packageName": "@aws-amplify/cli-extensibility-helper",
         },
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.172.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
       ]
     `);
   });
@@ -339,6 +360,13 @@ describe('parsing package lock files', () => {
     });
     expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
       Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "8.1.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
         Object {
           "dependentPackage": Object {
             "name": "fs-extra",
@@ -450,6 +478,13 @@ describe('parsing yarn2 lock files', () => {
           },
           "packageName": "@aws-amplify/cli-extensibility-helper",
         },
+        Object {
+          "dependentPackage": Object {
+            "name": "@aws-cdk/core",
+            "version": "1.172.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
       ]
     `);
   });
@@ -504,6 +539,13 @@ describe('parsing yarn2 lock files', () => {
     });
     expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
       Array [
+        Object {
+          "dependentPackage": Object {
+            "name": "fs-extra",
+            "version": "9.1.0",
+          },
+          "packageName": "@aws-cdk/core",
+        },
         Object {
           "dependentPackage": Object {
             "name": "fs-extra",
