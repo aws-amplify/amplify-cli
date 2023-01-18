@@ -33,6 +33,66 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
 ];
+/**
+ * Most Windows tests only run on 'dev', except for this list of smoke tests.
+ * This list should contain ~30 high quality tests that provide good overall coverage.
+ *
+ * All other tests will eventually run on 'dev'.
+ */
+const WINDOWS_SMOKE_TESTS = [
+  // api, lambda, multi-env
+  'src/__tests__/api_lambda_auth_1.test.ts',
+  // auth with api, trigger, and function that depends on api
+  'src/__tests__/auth_2e.test.ts',
+  // js with with all auth options
+  'src/__tests__/auth_3c.test.ts',
+  // headless auth with totp & sms
+  'src/__tests__/auth_5b.test.ts',
+  // headless auth update resource
+  'src/__tests__/auth_5e.test.ts',
+  // js with all auth options and front end config
+  'src/__tests__/auth_6.test.ts',
+  // auth import
+  'src/__tests__/auth_7b.test.ts',
+  // flutter with auth
+  'src/__tests__/auth_8b.test.ts',
+  // android
+  'src/__tests__/auth_11.test.ts',
+  // auth with multiple triggers
+  'src/__tests__/auth-trigger.test.ts',
+  // configure
+  'src/__tests__/congifure-project.test.ts',
+  // api with containers and secrets
+  'src/__tests__/containers-api-secrets.test.ts',
+  // api with dynamodb & lambda, custom policies
+  'src/__tests__/custom_policies_function.test.ts',
+  // env
+  'src/__tests__/env-1.test.ts',
+  // export and pull
+  'src/__tests__/export-pull-a.test.ts',
+  // functions
+  'src/__tests__/function_10.test.ts',
+  // notifications with function permissions
+  'src/__tests__/function-permissions.test.ts',
+  // geo
+  'src/__tests__/geo-add-a.test.ts',
+  // global sandbox
+  'src/__tests__/global_sandbox-b.test.ts',
+  // hooks
+  'src/__tests__/hooks-b.test.ts',
+  // hosting
+  'src/__tests__/hostingPROD.test.ts',
+  // import, s3
+  'src/__tests__/import_s3_2b.test.ts',
+  // interactions
+  'src/__tests__/interactions.test.ts',
+  // schema auth test
+  'src/__tests__/schema-auth-1a.test.ts',
+  // schema model test
+  'src/__tests__/schema-model-e.test.ts',
+  // interative deployments
+  'src/__tests__/schema-iterative-update-1.test.ts',
+];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
@@ -169,6 +229,11 @@ export const splitTestsV2 = function splitTests(
       // if the current test is excluded from this OS, skip it
       if (TEST_EXCLUSIONS[os].find(excluded => test === excluded)) {
         continue;
+      }
+      // when we are not running E2E on 'dev', we only run a subset of tests on Windows
+      const isNotDevBranch = process.env.CIRCLE_BRANCH !== 'dev';
+      if (isNotDevBranch && os === 'w' && !WINDOWS_SMOKE_TESTS.includes(test)) {
+        continue; // skip this test
       }
       const US_WEST_2 = FORCE_US_WEST_2.find(t => test.startsWith(t));
       const USE_PARENT = USE_PARENT_ACCOUNT.some(usesParent => test.startsWith(usesParent));
