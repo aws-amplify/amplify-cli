@@ -800,6 +800,12 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandUsage: 'amplify storage override',
         subCommandFlags: [],
       },
+      {
+        subCommand: 'console',
+        subCommandDescription: 'Opens the web console for the storage category',
+        subCommandUsage: 'amplify storage console',
+        subCommandFlags: [],
+      },
     ],
   },
   {

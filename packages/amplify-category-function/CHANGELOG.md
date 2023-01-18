@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.2...amplify-category-function@4.2.3) (2023-01-17)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+
+
+
+
+
 ## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.2) (2023-01-03)
 
 
