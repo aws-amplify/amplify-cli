@@ -21,8 +21,8 @@ const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 const { printer } = require('amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
-const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
-const CFN_POLL_TIME_MAX = 30 * 1000; // 30 seconds
+const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
+const CFN_POLL_TIME_MAX = (process.env.IS_AMPLIFY_CI ? 120 : 30) * 1000; // 30 seconds
 let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
@@ -229,7 +229,8 @@ class CloudFormation {
     } else {
       newEvents = events;
     }
-    if (this.eventMap && this.progressBar.isTTY()) {
+    if (this.eventMap &&
+      this.progressBar.isTTY()) {
       this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
     } else {
       showEvents(_.uniqBy(newEvents, 'EventId'));
@@ -250,17 +251,18 @@ class CloudFormation {
             LogicalResourceId: event.LogicalResourceId,
             ResourceType: event.ResourceType,
             ResourceStatus: event.ResourceStatus,
-            Timestamp: event.Timestamp,
-          },
-        };
-        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId);
+            Timestamp: event.Timestamp
+          }
+        }
+        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId)
         if (event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
             this.progressBar.finishBar(item.category);
           }
           this.progressBar.updateBar('projectBar', updateObj);
-        } else if (this.eventMap['eventToCategories']) {
+        }
+        else if (this.eventMap['eventToCategories']) {
           const category = this.eventMap['eventToCategories'].get(event.LogicalResourceId);
           if (category) {
             this.progressBar.updateBar(category, updateObj);
