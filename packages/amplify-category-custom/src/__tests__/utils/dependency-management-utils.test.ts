@@ -1,5 +1,6 @@
 import { $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import { glob } from 'glob';
+import * as inquirer from 'inquirer';
 import { prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import {
@@ -14,6 +15,7 @@ jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 jest.mock('glob');
 jest.mock('fs-extra');
+jest.mock('inquirer');
 
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
 const writeCFNTemplate_mock = writeCFNTemplate as jest.MockedFunction<typeof writeCFNTemplate>;
@@ -30,7 +32,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -48,7 +50,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('get resource attr for resources with build folder with one cfn file', async () => {
@@ -113,7 +115,7 @@ describe('getAllResources() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -131,7 +133,7 @@ describe('getAllResources() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('get all resource types', async () => {
@@ -165,7 +167,7 @@ describe('addCDKResourceDependency() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -183,7 +185,7 @@ describe('addCDKResourceDependency() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('get depenencies for a custom CDK stack', async () => {
@@ -295,7 +297,7 @@ describe('addCFNResourceDependency() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -314,7 +316,7 @@ describe('addCFNResourceDependency() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('add new resource dependency to custom cfn stack ', async () => {
@@ -353,8 +355,10 @@ describe('addCFNResourceDependency() scenarios', () => {
 
     // test with adding one dependency at once
 
-    const prompterMock = prompter as jest.Mocked<typeof prompter>;
-    prompterMock.pick.mockResolvedValueOnce(['mockCategory1']).mockResolvedValueOnce(['mockResourceName1']);
+    const inqurer_mock = inquirer as jest.Mocked<typeof inquirer>;
+    inqurer_mock.prompt
+      .mockResolvedValueOnce({ categories: ['mockCategory1'] })
+      .mockResolvedValueOnce({ resources: ['mockResourceName1'] });
 
     await addCFNResourceDependency(mockContext, 'customResourcename');
 

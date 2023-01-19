@@ -8,7 +8,6 @@ import { v4 } from 'uuid';
 import execa from 'execa';
 
 jest.mock('execa');
-jest.setTimeout(90 * 1000);
 const execaMock = execa as jest.MockedFunction<typeof execa>;
 (execaMock as any).mockImplementation(async () => ({ stdout: 'mock-process-output' }));
 
@@ -16,12 +15,12 @@ jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('mock-path-to-lib'),
-  },
+  }
 }));
 
 describe('emulator operations', () => {
   const getMockSearchableFolder = (): string => {
-    let pathToSearchableMockResources = join(__dirname, '..', '..', 'resources');
+    let pathToSearchableMockResources = join(__dirname, '..', '..', 'resources', );
     do {
       pathToSearchableMockResources = join('/tmp', `amplify-cli-opensearch-emulator-${v4()}`, 'mock-api-resources', 'searchable');
     } while (fs.existsSync(pathToSearchableMockResources));
@@ -38,14 +37,14 @@ describe('emulator operations', () => {
     nodeName: 'mock-opensearch-node-local',
     port: 9600,
     type: 'single-node',
-    version: '1.3.0',
+    version: '1.3.0'
   };
   const openSearchClusterDefaultOptions = {
     clusterName: 'opensearch-cluster',
     nodeName: 'opensearch-node-local',
     port: 9200,
     type: 'single-node',
-    version: '1.3.0',
+    version: '1.3.0'
   };
   const ensureMockSearchableResourcePath = () => {
     fs.ensureDirSync(mockSearchableResourcePath);
@@ -59,11 +58,9 @@ describe('emulator operations', () => {
     jest.setTimeout(5 * 60 * 1000);
     jest.resetModules();
     jest.spyOn(openpgp, 'verify').mockReturnValueOnce({
-      signatures: [
-        {
-          verified: Promise.resolve(true),
-        },
-      ],
+      signatures: [{
+        verified: Promise.resolve(true)
+      }]
     } as $TSAny);
   });
 
@@ -79,16 +76,16 @@ describe('emulator operations', () => {
   const fetchURL = async (url: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       http
-        .get(url, resp => {
-          let data = '';
-          resp.on('data', chunk => {
+        .get(url, (resp) => {
+          let data = "";
+          resp.on("data", (chunk) => {
             data += chunk;
           });
-          resp.on('end', () => {
+          resp.on("end", () => {
             resolve(data);
           });
         })
-        .on('error', err => {
+        .on("error", (err) => {
           reject(err);
         });
     });
@@ -107,27 +104,27 @@ describe('emulator operations', () => {
     it('correctly resolves the path to local opensearch binary', async () => {
       const relativePathFromMockSearchableResourceDir = await openSearchEmulator.getPathToOpenSearchBinary();
       expect(relativePathFromMockSearchableResourceDir).toEqual(join('opensearchLib', 'bin', 'opensearch'));
-
+      
       const fullPathToOpenSearchBinary = await openSearchEmulator.getPathToOpenSearchBinary(mockSearchableResourcePath);
       expect(fullPathToOpenSearchBinary).toEqual(join(mockSearchableResourcePath, 'opensearchLib', 'bin', 'opensearch'));
     });
-
+    
     it('skips downloading another opensearch binary when one is locally available', async () => {
       const openSearchExists = await openSearchEmulator.openSearchLocalExists(mockSearchableResourcePath);
       // returns false when there is no local binary
       expect(openSearchExists).toEqual(false);
 
       const nodeFetch = await import('node-fetch');
-      jest.mock('node-fetch', () => jest.fn());
+      jest.mock('node-fetch', ()=>jest.fn());
       expect(nodeFetch).toBeCalledTimes(0);
     });
-
+    
     it('correctly generates opensearch args from given options', async () => {
       const resolvedBuildArgs = openSearchEmulator.buildArgs(openSearchClusterOptions, pathToSearchableData);
       const expectedCall = `-Ecluster.name=${openSearchClusterOptions.clusterName} -Enode.name=${openSearchClusterOptions.nodeName} -Ehttp.port=${openSearchClusterOptions.port} -Ediscovery.type=${openSearchClusterOptions.type} -Epath.data=${pathToSearchableData}`;
       expect(resolvedBuildArgs.join(' ')).toEqual(expectedCall);
     });
-
+    
     it('throws error if max re-tries is breached', async () => {
       try {
         await openSearchEmulator.launch(mockSearchableResourcePath, {}, 5);
@@ -142,17 +139,16 @@ describe('emulator operations', () => {
       jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
       try {
         await openSearchEmulator.launch(pathToSearchableData);
-      } catch (err) {
+      } catch(err) {
         expect(execaMock).toBeCalledWith(
-          'opensearchLib/bin/opensearch',
-          [
-            `-Ecluster.name=${openSearchClusterDefaultOptions.clusterName}`,
-            `-Enode.name=${openSearchClusterDefaultOptions.nodeName}`,
-            `-Ehttp.port=${openSearchClusterDefaultOptions.port}`,
+          "opensearchLib/bin/opensearch", 
+          [ `-Ecluster.name=${openSearchClusterDefaultOptions.clusterName}`, 
+            `-Enode.name=${openSearchClusterDefaultOptions.nodeName}`, 
+            `-Ehttp.port=${openSearchClusterDefaultOptions.port}`, 
             `-Ediscovery.type=${openSearchClusterDefaultOptions.type}`,
-            `-Epath.data=${pathToSearchableData}`,
-          ],
-          { cwd: pathToSearchableLocal },
+            `-Epath.data=${pathToSearchableData}`
+          ], 
+          { "cwd": pathToSearchableLocal }
         );
         expect(err?.message).toEqual(startupErrorMessage);
       }
@@ -163,17 +159,16 @@ describe('emulator operations', () => {
       jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
       try {
         await openSearchEmulator.launch(pathToSearchableData, openSearchClusterOptions);
-      } catch (err) {
+      } catch(err) {
         expect(execaMock).toBeCalledWith(
-          'opensearchLib/bin/opensearch',
-          [
-            `-Ecluster.name=${openSearchClusterOptions.clusterName}`,
-            `-Enode.name=${openSearchClusterOptions.nodeName}`,
-            `-Ehttp.port=${openSearchClusterOptions.port}`,
+          "opensearchLib/bin/opensearch", 
+          [ `-Ecluster.name=${openSearchClusterOptions.clusterName}`, 
+            `-Enode.name=${openSearchClusterOptions.nodeName}`, 
+            `-Ehttp.port=${openSearchClusterOptions.port}`, 
             `-Ediscovery.type=${openSearchClusterDefaultOptions.type}`,
-            `-Epath.data=${pathToSearchableData}`,
-          ],
-          { cwd: pathToSearchableLocal },
+            `-Epath.data=${pathToSearchableData}`
+          ], 
+          { "cwd": pathToSearchableLocal }
         );
         expect(err?.message).toEqual(startupErrorMessage);
       }

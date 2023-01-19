@@ -1,8 +1,11 @@
 import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
+  addAuthWithGroupsAndAdminAPI,
   addS3AndAuthWithAuthOnlyAccess,
+  addS3WithGroupAccess,
   addS3WithGuestAccess,
+  addS3WithTrigger,
   amplifyPushAuth,
   checkIfBucketExists,
   createNewProjectDir,
@@ -11,6 +14,7 @@ import {
   getProjectMeta,
   initFlutterProjectWithProfile,
   initJSProjectWithProfile,
+  updateS3AddTriggerNewFunctionWithFunctionExisting,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -67,6 +71,35 @@ describe('amplify add/update storage(S3)', () => {
     await addS3WithGuestAccess(projRoot, {});
     await amplifyPushAuth(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with user pool groups and Admin API', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithGroupsAndAdminAPI(projRoot, {});
+    await addS3WithGroupAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with trigger', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot, {});
+    await addS3WithTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with user pool groups and then update S3 bucket to add trigger', async () => {
+    const settings = {
+      userGroup1: 'Admins',
+      userGroup2: 'Users',
+    };
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithGroupsAndAdminAPI(projRoot, {});
+    await addS3WithGroupAccess(projRoot, settings);
+    await updateS3AddTriggerNewFunctionWithFunctionExisting(projRoot, settings);
+    await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
 });

@@ -1,14 +1,15 @@
 import {
-  $TSContext, stateManager
+  $TSContext, stateManager, pathManager, readCFNTemplate, writeCFNTemplate, AmplifySupportedService,
 } from 'amplify-cli-core';
+import * as path from 'path';
 import { categoryName } from '../constants';
 import {
   FunctionSecretsStateManager,
   getLocalFunctionSecretNames,
-  storeSecretsPendingRemoval
+  storeSecretsPendingRemoval,
 } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
-import { ensureLambdaExecutionRoleOutputs } from '../provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 import { ensureEnvironmentVariableValues } from '../provider-utils/awscloudformation/utils/environmentVariablesHelper';
+
 /**
  * prePush Handler event for function category
  */
@@ -30,3 +31,30 @@ const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
   await storeSecretsPendingRemoval(context, functionNames);
 };
 
+/**
+ * updates function cfn stack with lambda execution role arn parameter
+ */
+export const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
+  const amplifyMeta = stateManager.getMeta();
+  const functionNames = Object.keys(amplifyMeta?.[categoryName]);
+  // filter lambda layer from lambdas in function
+  const lambdaFunctionNames = functionNames.filter(functionName => {
+    const functionObj = amplifyMeta?.[categoryName]?.[functionName];
+    return functionObj.service === AmplifySupportedService.LAMBDA;
+  });
+  for (const functionName of lambdaFunctionNames) {
+    const templateSourceFilePath = path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
+    const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
+    if (!cfnTemplate?.Outputs?.LambdaExecutionRoleArn) {
+      cfnTemplate.Outputs.LambdaExecutionRoleArn = {
+        Value: {
+          'Fn::GetAtt': [
+            'LambdaExecutionRole',
+            'Arn',
+          ],
+        },
+      };
+      await writeCFNTemplate(cfnTemplate, templateSourceFilePath);
+    }
+  }
+};

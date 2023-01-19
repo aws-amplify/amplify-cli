@@ -28,14 +28,14 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   let projRoot: string;
   let versionToMigrateFrom: string;
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-
+  beforeAll(async () => {
     const version = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, version);
     versionToMigrateFrom = version.v;
+  });
 
-
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
     if (versionToMigrateFrom === '4.28.2') {
       await initJSProjectWithProfileV4_28_2(projRoot, {}, false);
     } else if (versionToMigrateFrom === '4.52.0') {

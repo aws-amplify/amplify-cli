@@ -3,17 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.14.0...@aws-amplify/amplify-category-auth@2.14.1) (2023-01-17)
-
-
-### Bug Fixes
-
-* set NoEcho flag on OAuth creds CFN param ([04424cf](https://github.com/aws-amplify/amplify-cli/commit/04424cfbc25000b102bba121e9a8a14b092bf344))
-
-
-
-
-
 # [2.14.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.2...@aws-amplify/amplify-category-auth@2.14.0) (2023-01-03)
 
 

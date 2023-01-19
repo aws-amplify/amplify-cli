@@ -9,8 +9,7 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 describe('amplify migration test scaffold v10', () => {
   let projRoot: string;
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('scaffoldTest');
+  beforeAll(async () => {
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
@@ -18,6 +17,10 @@ describe('amplify migration test scaffold v10', () => {
     console.log(`Test migration from: ${migrateFromVersion} to ${migrateToVersion}`);
     // expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v); // uncomment this once we are in v11 for local codebase
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('scaffoldTest');
   });
 
   afterEach(async () => {

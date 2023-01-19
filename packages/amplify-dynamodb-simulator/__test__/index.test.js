@@ -1,7 +1,6 @@
 const ddbSimulator = require('..');
 const fs = require('fs-extra');
 
-jest.setTimeout(90 * 1000);
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('./'),
@@ -42,7 +41,8 @@ describe('emulator operations', () => {
     if (fs.existsSync(dbPath)) {
       try {
         fs.removeSync(dbPath);
-      } catch (err) {
+      }
+      catch(err) {
         console.log(err);
       }
     }

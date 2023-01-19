@@ -2,7 +2,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
-import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager,
+} from 'amplify-cli-core';
 import { BuildType } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
@@ -109,7 +111,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   }
 };
 
-const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
+const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: currentCloudBackendDir,
     absolute: true,
@@ -127,7 +129,7 @@ const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
 export const updateamplifyMetaAfterResourceAdd = (
   category: string,
   resourceName: string,
-  metadataResource: { dependsOn?: [{ category: string; resourceName: string }] } = {},
+  metadataResource: { dependsOn?: [{ category: string; resourceName: string; }] } = {},
   backendConfigResource?: { dependsOn?: $TSAny },
   overwriteObjectIfExists?: boolean,
 ): void => {
@@ -206,7 +208,7 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
  * b. Timestamp of last push
  * @param resources all resources from amplify-meta.json
  */
-export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promise<void> => {
+export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise<void> => {
   // ensure backend config is written before copying to current-cloud-backend
   await saveAllEnvParams();
   const amplifyMeta = stateManager.getMeta();
@@ -298,7 +300,7 @@ export const updateAmplifyMetaAfterPackage = (
  * @param category category of the resource
  * @param resourceName logical name of the resource
  */
-export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string): void => {
+export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string):void => {
   const currentMeta = stateManager.getCurrentMeta();
 
   const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
@@ -315,7 +317,7 @@ export const updateamplifyMetaAfterResourceDelete = (category: string, resourceN
 const checkForCyclicDependencies = (
   category: $TSAny,
   resourceName: string,
-  dependsOn: [{ category: string; resourceName: string }],
+  dependsOn: [{ category:string; resourceName:string }],
 ): void => {
   const amplifyMeta = stateManager.getMeta();
   let cyclicDependency = false;

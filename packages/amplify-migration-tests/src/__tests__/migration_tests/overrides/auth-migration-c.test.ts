@@ -23,14 +23,17 @@ const defaultSettings = {
 describe('amplify auth migration c', () => {
   let projRoot: string;
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth_migration');
+  beforeAll(async () => {
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth_migration');
   });
 
   afterEach(async () => {
