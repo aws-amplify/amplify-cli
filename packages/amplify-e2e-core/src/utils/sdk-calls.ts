@@ -82,10 +82,12 @@ export const getDeploymentBucketObject = async (projectRoot: string, objectKey: 
   const meta = getProjectMeta(projectRoot);
   const deploymentBucket = meta.providers.awscloudformation.DeploymentBucketName;
   const s3 = new S3();
-  const result = await s3.getObject({
-    Bucket: deploymentBucket,
-    Key: objectKey,
-  }).promise();
+  const result = await s3
+    .getObject({
+      Bucket: deploymentBucket,
+      Key: objectKey,
+    })
+    .promise();
   return result.Body.toLocaleString();
 };
 
@@ -198,8 +200,8 @@ export const addUserToUserPool = async (userPoolId: string, region: string) => {
 export const listUserPoolGroupsForUser = async (userPoolId: string, userName: string, region: string): Promise<string[]> => {
   const provider = new CognitoIdentityServiceProvider({ region });
   const params = {
-    UserPoolId: userPoolId, /* required */
-    Username: userName, /* required */
+    UserPoolId: userPoolId /* required */,
+    Username: userName /* required */,
   };
   const res = await provider.adminListGroupsForUser(params).promise();
   const groups = res.Groups.map(group => group.GroupName);
@@ -401,42 +403,127 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     .promise();
 };
 
+export const getSSMParametersFunctionPrefix = async (
+  region: string,
+  appId: string,
+  envName: string,
+  funcName: string,
+  parameterNames: string[],
+) => {
+  const ssmClient = new SSM({ region });
+  if (!parameterNames || parameterNames.length === 0) {
+    throw new Error('no parameterNames specified');
+  }
+  return await ssmClient
+    .getParameters({
+      Names: parameterNames.map(name => `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${name}`),
+      WithDecryption: true,
+    })
+    .promise();
+};
+
+export const getAllSSMParamatersFromAppId = async (appId: string, region: string): Promise<Array<string>> => {
+  const ssmClient = new SSM({ region });
+  const retrievedParameters: Array<string> = [];
+  let recievedNextToken = '';
+  do {
+    const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, recievedNextToken);
+    const data = await ssmClient.getParametersByPath(ssmArgument).promise();
+    retrievedParameters.push(...data.Parameters.map(returnedParameter => returnedParameter.Name));
+    recievedNextToken = data.NextToken;
+  } while (recievedNextToken);
+  return retrievedParameters;
+};
+
+export const expectParametersOptionalValue = async (
+  expectToExist: NameOptionalValuePair[],
+  expectNotExist: string[],
+  region: string,
+  appId: string,
+  envName: string,
+  funcName: string,
+) => {
+  const parametersToRequest = expectToExist.map(exist => exist.name).concat(expectNotExist);
+  const result = await getSSMParametersFunctionPrefix(region, appId, envName, funcName, parametersToRequest);
+  const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${name}`;
+  expect(result.InvalidParameters.length).toBe(expectNotExist.length);
+  expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
+  expect(result.Parameters.length).toBe(expectToExist.length);
+  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: param.Value })).sort(sortByName);
+  const mappedExpect = expectToExist.map(exist => ({ name: mapName(exist.name), value: exist.value ? exist.value : '' })).sort(sortByName);
+
+  const mappedResultKeys = mappedResult.map(parameter => parameter.name);
+  for (const expectedParam of mappedExpect) {
+    if (expectedParam.value) {
+      expect(mappedResult).toContainEqual(expectedParam);
+    } else {
+      expect(mappedResultKeys).toContainEqual(expectedParam.name);
+    }
+  }
+};
+
+const sortByName = (a: NameOptionalValuePair, b: NameOptionalValuePair) => a.name.localeCompare(b.name);
+type NameOptionalValuePair = { name: string; value?: string };
+
+const getSsmSdkParametersGetParametersByPath = (appId: string, nextToken?: string): SsmGetParametersByPathArgument => {
+  const sdkParameters: SsmGetParametersByPathArgument = { Path: `/amplify/${appId}/` };
+  if (nextToken) {
+    sdkParameters.NextToken = nextToken;
+  }
+  return sdkParameters;
+};
+
+type SsmGetParametersByPathArgument = {
+  Path: string;
+  NextToken?: string;
+};
+
 // Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
   const service = new Location({ region });
-  return await service.describeMap({
-    MapName: mapName,
-  }).promise();
+  return await service
+    .describeMap({
+      MapName: mapName,
+    })
+    .promise();
 };
 
 export const getPlaceIndex = async (placeIndexName: string, region: string) => {
   const service = new Location({ region });
-  return await service.describePlaceIndex({
-    IndexName: placeIndexName,
-  }).promise();
+  return await service
+    .describePlaceIndex({
+      IndexName: placeIndexName,
+    })
+    .promise();
 };
 
 export const getGeofenceCollection = async (geofenceCollectionName: string, region: string) => {
   const service = new Location({ region });
-  return await service.describeGeofenceCollection({
-    CollectionName: geofenceCollectionName,
-  }).promise();
+  return await service
+    .describeGeofenceCollection({
+      CollectionName: geofenceCollectionName,
+    })
+    .promise();
 };
 
 export const getGeofence = async (geofenceCollectionName: string, geofenceId: string, region: string) => {
   const service = new Location({ region });
-  return (await service.getGeofence({
-    CollectionName: geofenceCollectionName,
-    GeofenceId: geofenceId,
-  })).promise();
+  return (
+    await service.getGeofence({
+      CollectionName: geofenceCollectionName,
+      GeofenceId: geofenceId,
+    })
+  ).promise();
 };
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const listGeofences = async (geofenceCollectionName: string, region: string, nextToken: string = null) => {
   const service = new Location({ region });
   // eslint-disable-next-line spellcheck/spell-checker
-  return (await service.listGeofences({
-    CollectionName: geofenceCollectionName,
-    NextToken: nextToken,
-  })).promise();
+  return (
+    await service.listGeofences({
+      CollectionName: geofenceCollectionName,
+      NextToken: nextToken,
+    })
+  ).promise();
 };
