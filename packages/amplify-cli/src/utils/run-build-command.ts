@@ -20,10 +20,13 @@ export default async function runBuildCommand(context: $TSContext) {
       });
       spinner.succeed('Successfully built app with build command.');
     } catch (e) {
-      throw new AmplifyError('ConfigurationError', {
-        message: 'Build command failed.',
-        resolution: 'See the output above for resolution.',
-      });
+      throw new AmplifyError(
+        'ConfigurationError',
+        {
+          message: 'Build command failed.',
+        },
+        e,
+      );
     }
   }
 }
