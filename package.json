@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
-    "coverage:collect": "ts-node ./scripts/coverage.ts",
+    "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "addwords": "node ./scripts/add-to-dict.js",
     "test-changed": "nx affected --target=test",
     "test": "nx run-many --target=test --all",
