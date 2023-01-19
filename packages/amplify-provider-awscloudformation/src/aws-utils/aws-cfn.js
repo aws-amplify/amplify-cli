@@ -90,12 +90,13 @@ class CloudFormation {
 
           if (completeErr) {
             context.print.error('\nAn error occurred when creating the CloudFormation stack');
-            this.collectStackErrors(cfnParentStackParams.StackName).then(errorDetails => {
-              completeErr.details = errorDetails;
-              reject(completeErr);
-            });
+            const errorDetails = await this.collectStackErrors(cfnParentStackParams.StackName);
             logger('cfnModel.createStack', [cfnParentStackParams])(completeErr);
-            const error = new Error('Initialization of project failed');
+            const error = new AmplifyFault(
+              'DeploymentFault',
+              { message: 'Initialization of project failed', details: errorDetails },
+              completeErr,
+            );
             error.stack = null;
             reject(error);
           }
@@ -229,8 +230,7 @@ class CloudFormation {
     } else {
       newEvents = events;
     }
-    if (this.eventMap &&
-      this.progressBar.isTTY()) {
+    if (this.eventMap && this.progressBar.isTTY()) {
       this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
     } else {
       showEvents(_.uniqBy(newEvents, 'EventId'));
@@ -251,18 +251,17 @@ class CloudFormation {
             LogicalResourceId: event.LogicalResourceId,
             ResourceType: event.ResourceType,
             ResourceStatus: event.ResourceStatus,
-            Timestamp: event.Timestamp
-          }
-        }
-        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId)
+            Timestamp: event.Timestamp,
+          },
+        };
+        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId);
         if (event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
             this.progressBar.finishBar(item.category);
           }
           this.progressBar.updateBar('projectBar', updateObj);
-        }
-        else if (this.eventMap['eventToCategories']) {
+        } else if (this.eventMap['eventToCategories']) {
           const category = this.eventMap['eventToCategories'].get(event.LogicalResourceId);
           if (category) {
             this.progressBar.updateBar(category, updateObj);
