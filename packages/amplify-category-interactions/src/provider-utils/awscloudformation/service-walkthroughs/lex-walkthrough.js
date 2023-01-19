@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-import { byValue, printer, prompter, alphanumeric, matchRegex, between } from 'amplify-prompts';
+import { printer, prompter, alphanumeric, matchRegex, between } from 'amplify-prompts';
 
 const category = 'interactions';
 const parametersFileName = 'lex-params.json';
