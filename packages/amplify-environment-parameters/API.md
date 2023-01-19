@@ -19,6 +19,7 @@ export type IEnvironmentParameterManager = {
     hasResourceParamManager: (category: string, resource: string) => boolean;
     getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
     save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+    getMissingParameters: () => Promise<string[]>;
     verifyExpectedEnvParameters: () => Promise<void>;
 };
 
