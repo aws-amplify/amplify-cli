@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* eslint-disable @typescript-eslint/no-var-requires, global-require */
 
-// this file should be a duplicate of amplify.production.template except for the NODE_ENV value
-process.env.NODE_ENV = 'production';
+// this file should be a duplicate of amplify except for the CLI_ENV value
+process.env.CLI_ENV = 'production';
 
 const startTime = Date.now();
 if (process.pkg) {
