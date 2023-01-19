@@ -183,7 +183,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
-      .wait('Do you want to keep existing global seconday indexes created on your table?')
+      .wait('Do you want to keep existing global secondary indexes created on your table?')
       .sendLine('y')
       .wait('Do you want to add global secondary indexes to your table?')
       .sendLine('y')
