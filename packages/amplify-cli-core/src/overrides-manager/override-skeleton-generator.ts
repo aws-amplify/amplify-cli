@@ -24,7 +24,7 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
   fs.ensureDirSync(destDirPath);
 
   // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
-  generateTsConfigforProject(srcResourceDirPath, destDirPath);
+  generateTsConfigForProject(srcResourceDirPath, destDirPath);
 
   // 2. Build Override Directory
   await buildOverrideDir(backendDir, destDirPath);
@@ -137,7 +137,7 @@ export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, src
 /**
  * this method generates the tsconfig file template for overrides
  */
-export const generateTsConfigforProject = (srcResourceDirPath: string, destDirPath: string): void => {
+export const generateTsConfigForProject = (srcResourceDirPath: string, destDirPath: string): void => {
   const overrideFileName = path.join(destDirPath, 'override.ts');
   // ensure build dir path
   fs.ensureDirSync(path.join(destDirPath, 'build'));

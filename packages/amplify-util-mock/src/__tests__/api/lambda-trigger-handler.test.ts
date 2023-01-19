@@ -87,7 +87,7 @@ describe('Lambda Trigger Handler', () => {
   });
 
   it('Polls for records from given DDB stream', async () => {
-    const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollDDBStreamAndInvokeLamba').mockResolvedValueOnce();
+    const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollDDBStreamAndInvokeLambda').mockResolvedValueOnce();
     await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
         mockContext,
         mockStreamArn,

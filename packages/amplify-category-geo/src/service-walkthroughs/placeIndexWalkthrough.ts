@@ -151,7 +151,7 @@ export const updatePlaceIndexWalkthrough = async (
  * @param context The Amplify Context object
  * @param currentDefault The current default place index name
  * @param availablePlaceIndices The names of available place indices
- * @returns name of the new default place index choosen
+ * @returns name of the new default place index chosen
  */
 export const updateDefaultPlaceIndexWalkthrough = async (
     context: $TSContext,

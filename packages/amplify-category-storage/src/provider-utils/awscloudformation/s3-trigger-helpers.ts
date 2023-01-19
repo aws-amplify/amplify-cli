@@ -7,7 +7,7 @@ import { categoryName, functionCategoryName } from '../../constants';
 import { FunctionServiceNameLambdaFunction, providerName } from './provider-constants';
 
 export async function removeTrigger(context: $TSContext, resourceName: string, triggerFunctionName: string) {
-  // Update Cloudformtion file
+  // Update CloudFormation file
   const projectRoot = pathManager.findProjectRoot();
   const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');

@@ -245,7 +245,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
             category: 'api',
             attributes: ['GraphQLAPIIdOutput'],
             needsAdditionalDynamoDBResourceProps: true,
-            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+            // data to pass so we construct additional resourceProps for lambda environment variable for @model back dynamoDB tables
             _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
             _cfJoinComponentTableName: await constructCFModelTableNameComponent(
               appsyncResourceName,

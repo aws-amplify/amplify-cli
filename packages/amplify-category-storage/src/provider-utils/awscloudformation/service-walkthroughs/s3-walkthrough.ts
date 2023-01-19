@@ -52,8 +52,8 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   //Migrate auth category if required
   try {
-    const authMigerationAccepted = await migrateAuthDependencyResource(context);
-    if (!authMigerationAccepted) {
+    const authMigrationAccepted = await migrateAuthDependencyResource(context);
+    if (!authMigrationAccepted) {
       exitOnNextTick(0);
     }
   } catch (error) {
@@ -214,7 +214,7 @@ export function isMigrateStorageRequired(context: $TSContext, resourceName: stri
 /**
  * Migrate workflow for S3 resource
  * - converts old context files into cliInputs and transforms into cloudformation.
- * - removes all old artifacs
+ * - removes all old artifacts
  * @param context
  * @param resourceName
  */

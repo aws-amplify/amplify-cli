@@ -12,7 +12,7 @@ export abstract class AmplifyCategoryTransform {
    */
   abstract transform(context: $TSContext): Promise<Template>;
   /**
-   * Apply overrides on the derviced class object
+   * Apply overrides on the derived class object
    */
   abstract applyOverride(): Promise<void>;
   /**

@@ -19,7 +19,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         short: '',
         long: 'frontend',
-        flagDescription: "Information for the project's frontend appliction",
+        flagDescription: "Information for the project's frontend application",
       },
       {
         short: '',
@@ -68,7 +68,7 @@ export const commandsInfo: Array<CommandInfo> = [
           {
             short: '',
             long: 'frontend',
-            flagDescription: "Information for the project's frontend appliction",
+            flagDescription: "Information for the project's frontend application",
           },
           {
             short: '',
@@ -154,7 +154,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         short: '',
         long: 'frontend',
-        flagDescription: "Information for the project's frontend appliction",
+        flagDescription: "Information for the project's frontend application",
       },
       {
         short: '',
