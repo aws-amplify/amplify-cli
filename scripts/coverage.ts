@@ -1,3 +1,6 @@
+/**
+ * This script is used to merge the coverage reports from all packages into a single report.
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import * as istanbul from 'istanbul-lib-coverage';
@@ -36,6 +39,8 @@ const mergeCoverageMap = (files: string[]): istanbul.CoverageMap => {
     const json = fs.readFileSync(file).toString();
     map.merge(JSON.parse(json));
   });
+  // Remove coverage from lib, e2e, and test files
+  map.filter(file => !file.match(/(lib\/.*?|__e2e__|__tests__)/));
   return map;
 };
 
