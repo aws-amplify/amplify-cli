@@ -106,6 +106,10 @@ class CloudFormation {
     });
   }
 
+  /**
+   * In the event of a cfn deployment failure, generate error messages from the cfn events
+   * and write them on the console and return them for consumption by the caller.
+   */
   collectStackErrors(stackName) {
     // add root stack to see the new stacks
     this.readStackEvents(stackName);
@@ -133,6 +137,9 @@ class CloudFormation {
     });
   }
 
+  /**
+   * Returns an error message from the failed stacks for populating it in the AmplifyFault's details
+   */
   collectStackErrorMessages(eventsWithFailure) {
     const errorMessages = this.filterFailedStackEvents(eventsWithFailure).map(event => {
       const err = [];
@@ -145,6 +152,9 @@ class CloudFormation {
     return errorMessages.join('\n');
   }
 
+  /**
+   * Generate user friendly error message from the failed stacks for printing it on the user console
+   */
   generateFailedStackErrorMsgs(eventsWithFailure) {
     this.context.exeInfo.cloudformationEvents = CFNLOG;
     const stackTrees = this.filterFailedStackEvents(eventsWithFailure).map(event => {
@@ -162,6 +172,9 @@ class CloudFormation {
     return stackTrees;
   }
 
+  /**
+   * Filters out all the failed stacks that don't have useful error messages such as parent stack's 'Resource creation cancelled'
+   */
   filterFailedStackEvents(eventsWithFailure) {
     return eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
