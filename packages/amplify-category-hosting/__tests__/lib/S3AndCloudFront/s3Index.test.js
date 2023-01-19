@@ -24,7 +24,6 @@ const parametersFileName = 'parameters.json';
 
 const DEV = 'DEV (S3 only with HTTP)';
 const PROD = 'PROD (S3 with CloudFront using HTTPS)';
-const Environments = [DEV, PROD];
 
 const s3IndexModule = require('../../../lib/S3AndCloudFront/index');
 
