@@ -56,12 +56,6 @@ export { deleteEnvironmentParametersFromService } from './utils/delete-from-serv
 import { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
 export { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
 
-import { deleteEnvironmentParametersFromService } from './utils/delete-from-service';
-export { deleteEnvironmentParametersFromService } from './utils/delete-from-service';
-
-import { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
-export { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
-
 function init(context) {
   return initializer.run(context);
 }
