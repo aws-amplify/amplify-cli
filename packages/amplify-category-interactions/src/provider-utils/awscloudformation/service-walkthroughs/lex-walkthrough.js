@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-import { printer, prompter, alphanumeric, matchRegex, between } from 'amplify-prompts';
+import { printer, prompter, alphanumeric, matchRegex, between, and, minLength, maxLength } from 'amplify-prompts';
 
 const category = 'interactions';
 const parametersFileName = 'lex-params.json';
@@ -14,7 +14,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
 }
 
-function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   // const resourceName = resourceAlreadyExists(context);
   const { amplify } = context;
   context.exeInfo = amplify.getProjectDetails();
@@ -35,10 +35,11 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     exitOnNextTick(0);
   }
 
-  return prompter.pick(
+  const answer = await prompter.pick(
     'Specify the resource that you would want to update',
     Object.keys(lexResources)
-  ).then(answer => configure(context, defaultValuesFilename, serviceMetadata, answer));
+  );
+  return configure(context, defaultValuesFilename, serviceMetadata, answer);
 }
 
 // Goes through Lex walkthrough
@@ -305,12 +306,12 @@ async function addIntent(context, resourceName, intents, parameters) {
     confirmationQuestion = await prompter.input(
       'Enter a confirmation message (e.g. Are you sure you want to order a {Drink_name}?):',
       {
-        validate: matchRegex(/^.{1,1000}$/, 'Confirmation questions can have a maximum of 1000 characters and cannot be empty'),
+        validate: and(minLength(1), maxLength(1000), 'Confirmation questions can have a maximum of 1000 characters and cannot be empty'),
       }
     );
     cancelMessage = await prompter.input(
       'Enter a cancel message for when the user says no to the confirmation message (e.g. Okay. Your order will not be placed.):',
-      { validate: matchRegex(/^.{1,1000}$/, 'Cancel messages can have a maximum of 1000 characters and cannot be empty') }
+      { validate: and(minLength(1), maxLength(1000), 'Cancel messages can have a maximum of 1000 characters and cannot be empty') }
     );
   }
 
@@ -351,7 +352,7 @@ async function askIntent(resourceName) {
       initial: resourceName,
       validate: matchRegex(
         /^([A-Za-z]_?){1,100}$/,
-        'Intent name can only contain letters, cannot be empty, and must be no longer than 100 characters'
+        'Intent name can only contain letters and underscores, cannot be empty, and must be no longer than 100 characters'
       ),
     }
   );
@@ -458,14 +459,7 @@ async function getSlotType(context, newSlotTypes, parameters) {
     'Would you like to choose an Amazon built-in slot type, a slot type you\'ve already made, or create a new slot type?',
     ['Amazon built-in slot type', "Slot type I've already made", 'Create a new slot type']
   );
-  function searchSlotTypes(builtInSlotTypes) {
-    return function (answers, input = '') {
-      return new Promise(resolve => {
-        const fuzzyResult = fuzzy.filter(input, builtInSlotTypes);
-        resolve(fuzzyResult.map(el => el.original));
-      });
-    };
-  }
+
   if (slotTypeChoice === 'Amazon built-in slot type') {
     let slotTypeOptions = '';
     let builtInSlotTypes = [];
