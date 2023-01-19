@@ -499,16 +499,6 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     for (const [key, value] of Object.entries(props)) {
-      if (key === 'hostedUIProviderCreds') {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'String',
-            noEcho: true,
-          },
-          key,
-        );
-        continue;
-      }
       if (typeof value === 'string' || (typeof value === 'object' && !Array.isArray(value))) {
         this._authTemplateObj.addCfnParameter(
           {

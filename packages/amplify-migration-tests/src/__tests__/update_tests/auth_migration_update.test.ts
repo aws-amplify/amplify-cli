@@ -20,15 +20,17 @@ import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrate
 describe('amplify auth migration', () => {
   let projRoot: string;
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth migration');
+  beforeAll(async () => {
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
 
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth migration');
     await initJSProjectWithProfileV4_52_0(projRoot, { name: 'authMigration' });
   });
   afterEach(async () => {

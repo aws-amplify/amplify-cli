@@ -15,8 +15,6 @@ const cfn = ({
 } as unknown) as CloudFormation;
 
 jest.useFakeTimers();
-jest.spyOn(global, 'setTimeout');
-jest.spyOn(global, 'clearTimeout');
 
 describe('StackEventMonitor', () => {
   const monitor = new StackEventMonitor(cfn, 'testStackName',
@@ -24,7 +22,7 @@ describe('StackEventMonitor', () => {
 
   test('start StackEventMonitor', () => {
     monitor.start();
-    
+
     jest.runAllTimers();
     expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 5000);

@@ -788,7 +788,6 @@ Object {
       "Type": "String",
     },
     "hostedUIProviderCreds": Object {
-      "NoEcho": true,
       "Type": "String",
     },
     "hostedUIProviderMeta": Object {

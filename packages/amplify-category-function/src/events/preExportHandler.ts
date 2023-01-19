@@ -1,4 +1,4 @@
-import { ensureLambdaExecutionRoleOutputs } from '../provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
+import { ensureLambdaExecutionRoleOutputs } from './prePushHandler';
 /**
  * prePush Handler event for function category
  */
