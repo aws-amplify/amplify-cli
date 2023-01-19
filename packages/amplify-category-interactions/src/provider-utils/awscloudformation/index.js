@@ -1,13 +1,11 @@
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
-
 const authHelper = require('./auth-helper');
+const { servicesMetadata } = require(`../supported-services`);
 
 const parametersFileName = 'lex-params.json';
 const cfnParametersFilename = 'parameters.json';
-
-let serviceMetadata;
 
 function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
@@ -62,7 +60,7 @@ function getTemplateMappings(context) {
 
 async function addResource(context, category, service, options) {
   await authHelper.ensureAuth(context, ''); // There is no resourceName available this early
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -102,7 +100,7 @@ async function addResource(context, category, service, options) {
 }
 
 function updateResource(context, category, service) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -126,7 +124,7 @@ function updateResource(context, category, service) {
 }
 
 async function migrateResource(context, projectPath, service, resourceName) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { migrate } = require(serviceWalkthroughSrc);
@@ -140,7 +138,7 @@ async function migrateResource(context, projectPath, service, resourceName) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
