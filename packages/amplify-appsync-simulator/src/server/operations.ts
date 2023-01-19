@@ -37,7 +37,7 @@ export class OperationServer {
       console.log('DB data cleared');
       return response.status(200).send({ message: `Successfully deleted ${JSON.stringify(deletedItems)} tables` });
     } catch (e) {
-      console.log('Error clearing DB data');
+      console.error(`Error clearing DB data. Error: ${e.message}`);
       return response.status(500).send({ message: e.message });
     }
   };

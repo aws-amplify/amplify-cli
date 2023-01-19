@@ -50,6 +50,7 @@ function getAPIInfo() {
   return fetch('/api-config').then(response => response.json());
 }
 
+// Calls clear-data endpoint to clear all data in the local database
 function clearData() { 
   return fetch('/clear-data', { method: 'DELETE' }).then(response => response.json());
 }
@@ -149,6 +150,19 @@ class App extends Component<{}, State> {
     this.setState(prevState => ({
       clearDataModalVisible: !prevState.clearDataModalVisible
     }));
+  
+  hideDataModal = () => {
+    this.setState({ clearDataModalVisible: false });
+  }
+
+  clearDataAndShowMessage = async () => {
+    this.setState({ clearDataModalVisible: false });
+    this.setState({ clearResponse: JSON.stringify(await clearData(), undefined, 2) });
+    setTimeout(() => {
+      this.setState({ clearResponse: '' });
+    }
+    , 8000);
+  }
 
   switchAuthMode = val => {
     this.setState({ currentAuthMode: val });
@@ -315,17 +329,8 @@ class App extends Component<{}, State> {
 
     const clearDataModal = clearDataModalVisible ? (
       <ClearDataModal
-        onClose={() => {
-          this.setState({ clearDataModalVisible: false });
-        }}
-        onClear={async () => {
-          this.setState({ clearDataModalVisible: false });
-          this.setState({ clearResponse: JSON.stringify(await clearData(), undefined, 2) });
-          setTimeout(() => {
-            this.setState({ clearResponse: '' });
-          }
-          , 8000);
-        }}
+        onClose={this.hideDataModal}
+        onClear={this.clearDataAndShowMessage}
       />
     ) : null;
     return (

@@ -2,14 +2,11 @@ import { useState } from "react";
 import { Button, Modal } from "semantic-ui-react";
 
 type Props = {
-  onClose: Function;
-  onClear: Function;
+  onClose: Function; // Used to close the modal when the user clicks on the cancel button
+  onClear: Function; // Used to clear the data when the user clicks on the clear button
 };
 export function ClearDataModal(props: Props) {
   const [isOpen, setIsOpen] = useState(true);
-  const actionText = "Clear";
-  const cancelText = "Cancel";
-  const confirmationText = "Do you want to clear the data of your mock server?";
 
   const handleClose = () => {
     setIsOpen(false);
@@ -24,14 +21,14 @@ export function ClearDataModal(props: Props) {
     <Modal onClose={handleClose} open={isOpen}>
       <Modal.Header>Reset </Modal.Header>
       <Modal.Content>
-        <Modal.Description> {confirmationText} </Modal.Description>
+        <Modal.Description> {"Do you want to clear the data of your mock server?"} </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
         <Button primary onClick={handleReset}>
-          {actionText}
+          {"Clear"}
         </Button>
         <Button color="red" onClick={handleClose}>
-          {cancelText}
+          {"Cancel"}
         </Button>
       </Modal.Actions>
     </Modal>

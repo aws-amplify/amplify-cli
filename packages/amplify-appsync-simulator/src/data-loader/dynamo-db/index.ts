@@ -27,7 +27,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     this.client = new DynamoDB({ ...ddbConfig.config, ...ddbConfig.options });
   }
 
-  async load(payload): Promise<object | null > {
+  async load(payload): Promise<object | null> {
     try {
       switch (payload.operation) {
         case 'GetItem':
@@ -62,7 +62,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       throw e;
     }
   }
-
+  // Deletes all records from the DynamoDB local table
   private async deleteAllItems(): Promise<object | null> {
     try {
       const items = await this.getAllItems();
@@ -79,16 +79,18 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     }
     return [this.tableName];
   }
-
+  // Gets all the records from the DynamoDB local table
   private async getAllItems(): Promise<Array<AttributeMap> | null> {
     let items = [];
     let data = await this.client.scan({ TableName: this.tableName }).promise();
     items = [...items, ...data.Items];
     while (typeof data.LastEvaluatedKey !== 'undefined') {
-      data = await this.client.scan({
-        TableName: this.tableName,
-        ExclusiveStartKey: data.LastEvaluatedKey,
-      }).promise();
+      data = await this.client
+        .scan({
+          TableName: this.tableName,
+          ExclusiveStartKey: data.LastEvaluatedKey,
+        })
+        .promise();
       items = [...items, ...data.Items];
     }
     return items;
