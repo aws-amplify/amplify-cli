@@ -1,7 +1,8 @@
 import { $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 
-const regex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+const stackTraceRegex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+const ARNRegex = /arn:[a-z0-9][-.a-z0-9]{0,62}:[A-Za-z0-9][A-Za-z0-9_/.-]{0,62}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9][A-Za-z0-9:_/+=,@.-]{0,1023}/g;
 
 /**
  * Wrapper around Error.name
@@ -9,11 +10,13 @@ const regex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.
 export class SerializableError {
   name: string;
   message: string;
+  details?: string;
   code?: string;
   trace?: Trace[];
   constructor(error: Error) {
     this.name = error.name;
-    this.message = error.message;
+    this.message = removeARN(error.message)!;
+    this.details = removeARN((error as $TSAny)?.details);
     this.code = (error as $TSAny)?.code;
     this.trace = extractStackTrace(error);
   }
@@ -24,7 +27,7 @@ const extractStackTrace = (error: Error): Trace[] => {
   if (error.stack) {
     const stack = error.stack.split('\n');
     stack.forEach(line => {
-      const match = regex.exec(line);
+      const match = stackTraceRegex.exec(line);
       if (match) {
         const [, methodName, file, lineNumber, columnNumber] = match;
         result.push({
@@ -72,9 +75,13 @@ const processPaths = (paths: string[]): string[] => {
   });
 };
 
+const removeARN = (str?: string): string | undefined => {
+  return str?.replace(ARNRegex, '<escaped ARN>');
+};
+
 type Trace = {
   methodName: string;
   file: string;
   lineNumber: string;
   columnNumber: string;
-}
+};

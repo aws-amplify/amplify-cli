@@ -476,6 +476,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       {
         message: error.message,
         code: error.code,
+        details: error.details,
       },
       error,
     );

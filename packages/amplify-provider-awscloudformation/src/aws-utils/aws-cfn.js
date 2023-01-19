@@ -29,10 +29,7 @@ const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLE
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 
 // These are cascade failures caused because of a root failure. Safe to ignore
-const RESOURCE_CASCADE_FAIL_REASONS = [
-  'Resource creation cancelled',
-  'Resource update cancelled'
-];
+const RESOURCE_CASCADE_FAIL_REASONS = ['Resource creation cancelled', 'Resource update cancelled'];
 class CloudFormation {
   constructor(context, userAgentAction, options = {}, eventMap = {}) {
     return (async () => {
@@ -93,9 +90,13 @@ class CloudFormation {
 
           if (completeErr) {
             context.print.error('\nAn error occurred when creating the CloudFormation stack');
-            await this.collectStackErrors(cfnParentStackParams.StackName);
+            const errorDetails = await this.collectStackErrors(cfnParentStackParams.StackName);
             logger('cfnModel.createStack', [cfnParentStackParams])(completeErr);
-            const error = new Error('Initialization of project failed');
+            const error = new AmplifyFault(
+              'DeploymentFault',
+              { message: 'Initialization of project failed', details: errorDetails },
+              completeErr,
+            );
             error.stack = null;
             reject(error);
           }
@@ -105,6 +106,10 @@ class CloudFormation {
     });
   }
 
+  /**
+   * In the event of a cfn deployment failure, generate error messages from the cfn events
+   * and write them on the console and return them for consumption by the caller.
+   */
   collectStackErrors(stackName) {
     // add root stack to see the new stacks
     this.readStackEvents(stackName);
@@ -120,7 +125,7 @@ class CloudFormation {
             console.log(t);
             console.log('\n');
           });
-          resolve();
+          resolve(this.collectStackErrorMessages(failedStacks));
         } catch (e) {
           Promise.reject(e);
         } finally {
@@ -132,25 +137,49 @@ class CloudFormation {
     });
   }
 
+  /**
+   * Return an error message from the failed stacks for populating it in the AmplifyFault's details
+   */
+  collectStackErrorMessages(eventsWithFailure) {
+    const errorMessages = this.filterFailedStackEvents(eventsWithFailure).map(event => {
+      const err = [];
+      const resourceName = event.LogicalResourceId;
+      err.push(`Name: ${resourceName} (${event.ResourceType})`);
+      err.push(`Event Type: ${getStatusToErrorMsg(event.ResourceStatus)}`);
+      err.push(`Reason: ${event.ResourceStatusReason}`);
+      return err.join(', ');
+    });
+    return errorMessages.join('\n');
+  }
+
+  /**
+   * Generate user friendly error message from the failed stacks for printing it on the user console
+   */
   generateFailedStackErrorMsgs(eventsWithFailure) {
     this.context.exeInfo.cloudformationEvents = CFNLOG;
-    const stackTrees = eventsWithFailure
+    const stackTrees = this.filterFailedStackEvents(eventsWithFailure).map(event => {
+      const err = [];
+      const resourceName = event.LogicalResourceId;
+      const cfnURL = getCFNConsoleLink(event, this.cfn);
+      err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
+      err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
+      err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
+      if (cfnURL) {
+        err.push(`${chalk.red('URL:')} ${cfnURL}`);
+      }
+      return err.join('\n');
+    });
+    return stackTrees;
+  }
+
+  /**
+   * Filter out all the failed stacks that don't have useful error messages such as parent stack's 'Resource creation cancelled'
+   */
+  filterFailedStackEvents(eventsWithFailure) {
+    return eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .filter(stack => this.eventMap['eventToCategories'].has(stack.LogicalResourceId))
-      .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason))
-      .map(event => {
-        const err = [];
-        const resourceName = event.LogicalResourceId;
-        const cfnURL = getCFNConsoleLink(event, this.cfn);
-        err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
-        err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
-        err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
-        if (cfnURL) {
-          err.push(`${chalk.red('URL:')} ${cfnURL}`);
-        }
-        return err.join('\n');
-      });
-    return stackTrees;
+      .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
   }
 
   readStackEvents(stackName) {
@@ -164,7 +193,7 @@ class CloudFormation {
       }
       self.pollForEvents = setTimeout(invoker, delay);
       readStackEventsCalls++;
-    }
+    };
 
     // start it off
     self.pollForEvents = setTimeout(invoker, delay);
@@ -214,11 +243,9 @@ class CloudFormation {
     } else {
       newEvents = events;
     }
-    if (this.eventMap &&
-      this.progressBar.isTTY()) {
+    if (this.eventMap && this.progressBar.isTTY()) {
       this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
-    }
-    else {
+    } else {
       showEvents(_.uniqBy(newEvents, 'EventId'));
     }
 
@@ -237,24 +264,23 @@ class CloudFormation {
             LogicalResourceId: event.LogicalResourceId,
             ResourceType: event.ResourceType,
             ResourceStatus: event.ResourceStatus,
-            Timestamp: event.Timestamp
-          }
-        }
-        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId)
+            Timestamp: event.Timestamp,
+          },
+        };
+        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId);
         if (event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
-            this.progressBar.finishBar(item.category)
+            this.progressBar.finishBar(item.category);
           }
           this.progressBar.updateBar('projectBar', updateObj);
-        }
-        else if (this.eventMap['eventToCategories']) {
+        } else if (this.eventMap['eventToCategories']) {
           const category = this.eventMap['eventToCategories'].get(event.LogicalResourceId);
           if (category) {
             this.progressBar.updateBar(category, updateObj);
           }
         }
-      })
+      });
     }
   }
 
@@ -302,9 +328,7 @@ class CloudFormation {
       const stackName = providerMeta.StackName || '';
       const stackId = providerMeta.StackId || '';
 
-      const deploymentBucketName = amplifyMeta.providers
-        ? amplifyMeta.providers[providerName].DeploymentBucketName
-        : '';
+      const deploymentBucketName = amplifyMeta.providers ? amplifyMeta.providers[providerName].DeploymentBucketName : '';
       const authRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].AuthRoleName : '';
       const unauthRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].UnauthRoleName : '';
 
@@ -383,7 +407,10 @@ class CloudFormation {
                     this.progressBar?.stop();
 
                     if (completeErr) {
-                      this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
+                      this.collectStackErrors(cfnParentStackParams.StackName).then(errorDetails => {
+                        completeErr.details = errorDetails;
+                        reject(completeErr);
+                      });
                     } else {
                       self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
                       return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
@@ -399,10 +426,14 @@ class CloudFormation {
         });
     } catch (error) {
       this.progressBar?.stop();
-      throw new AmplifyFault('ResourceNotReadyFault', {
-        message: error.message,
-        code: error.code,
-      }, error);
+      throw new AmplifyFault(
+        'ResourceNotReadyFault',
+        {
+          message: error.message,
+          code: error.code,
+        },
+        error,
+      );
     }
   }
 
@@ -619,7 +650,10 @@ class CloudFormation {
             cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, completeErr => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
-                this.collectStackErrors(stackName).then(() => reject(completeErr));
+                this.collectStackErrors(stackName).then(errorDetails => {
+                  completeErr.details = errorDetails;
+                  reject(completeErr);
+                });
               } else {
                 resolve();
               }
@@ -644,7 +678,6 @@ function formatOutputs(outputs) {
 }
 
 function showEvents(events) {
-
   // CFN sorts the events by descending
   events = events.reverse();
 
