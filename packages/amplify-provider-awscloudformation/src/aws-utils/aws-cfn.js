@@ -138,7 +138,7 @@ class CloudFormation {
   }
 
   /**
-   * Returns an error message from the failed stacks for populating it in the AmplifyFault's details
+   * Return an error message from the failed stacks for populating it in the AmplifyFault's details
    */
   collectStackErrorMessages(eventsWithFailure) {
     const errorMessages = this.filterFailedStackEvents(eventsWithFailure).map(event => {
@@ -173,7 +173,7 @@ class CloudFormation {
   }
 
   /**
-   * Filters out all the failed stacks that don't have useful error messages such as parent stack's 'Resource creation cancelled'
+   * Filter out all the failed stacks that don't have useful error messages such as parent stack's 'Resource creation cancelled'
    */
   filterFailedStackEvents(eventsWithFailure) {
     return eventsWithFailure
