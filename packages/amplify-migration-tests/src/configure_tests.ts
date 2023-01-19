@@ -6,9 +6,11 @@ import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionTo
  *  tested CLI is the codebase (bin/amplify)
  */
 
-async function setupAmplify(version: string = 'latest') {
+async function setupAmplify(version = 'latest') {
   // install CLI to be used for migration test initial project
   await installAmplifyCLI(version);
+  
+  console.log('INSTALLED CLI:', version);
 
   if (isCI()) {
     const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;

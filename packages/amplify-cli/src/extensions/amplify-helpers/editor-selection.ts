@@ -85,7 +85,7 @@ export function normalizeEditor(editor) {
  */
 function hideNoManualEdit(editor) {
   switch (editor) {
-    case 'vscode':
+    case 'vscode': {
       const workspaceSettingsPath = '.vscode/settings.json';
       const exclusionRules = {
         'files.exclude': {
@@ -108,6 +108,7 @@ function hideNoManualEdit(editor) {
         JSONUtilities.writeJson(workspaceSettingsPath, exclusionRules);
       }
       break;
+    }
     default:
       break;
   }

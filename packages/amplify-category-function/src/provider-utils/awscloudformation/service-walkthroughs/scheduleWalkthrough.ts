@@ -19,11 +19,11 @@ export async function scheduleWalkthrough(
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, params.resourceName);
   const cfnFileName = `${params.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-  let scheduleParams = params;
+  const scheduleParams = params;
   if (params.cloudwatchRule === undefined || params.cloudwatchRule === 'NONE') {
     if (await context.amplify.confirmPrompt('Do you want to invoke this function on a recurring schedule?', defaultConfirm)) {
       try {
-        let cloudWatchRule = await cronServiceWalkthrough(context);
+        const cloudWatchRule = await cronServiceWalkthrough(context);
         scheduleParams.cloudwatchRule = cloudWatchRule;
         if (context.input.command === 'update') {
           //append cloudwatch events to CFN File
@@ -58,7 +58,7 @@ export async function scheduleWalkthrough(
       switch (scheduleEventOperationAnswer.ScheduleEventOperation) {
         case 'update': {
           // add service walkthrough to get the cron expression
-          let cloudWatchRule = await cronServiceWalkthrough(context);
+          const cloudWatchRule = await cronServiceWalkthrough(context);
           scheduleParams.cloudwatchRule = cloudWatchRule;
           break;
         }
@@ -98,14 +98,14 @@ export async function cronServiceWalkthrough(context: any) {
       break;
     }
     case CronExpressionsMode.Daily: {
-      var exp = new CronBuilder();
+      let exp = new CronBuilder();
       exp = await timeHelper(exp);
       cloudwatchRule = exp.build();
       cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule, cloudwatchRule.lastIndexOf('*'), '?') + ' ' + '*' + ')';
       break;
     }
     case CronExpressionsMode.Weekly: {
-      var exp1 = new CronBuilder();
+      let exp1 = new CronBuilder();
       exp1 = await weekHelper(exp1);
       exp1 = await timeHelper(exp1);
       cloudwatchRule = exp1.build();
@@ -113,7 +113,7 @@ export async function cronServiceWalkthrough(context: any) {
       break;
     }
     case CronExpressionsMode.Monthly: {
-      var exp2 = new CronBuilder();
+      let exp2 = new CronBuilder();
       exp2 = await monthHelper(exp2, context);
       exp2 = await timeHelper(exp2);
       cloudwatchRule = exp2.build();
@@ -121,7 +121,7 @@ export async function cronServiceWalkthrough(context: any) {
       break;
     }
     case CronExpressionsMode.Yearly: {
-      var exp3 = new CronBuilder();
+      let exp3 = new CronBuilder();
       exp3 = await yearHelper(exp3, context);
       exp3 = await timeHelper(exp3);
       cloudwatchRule = exp3.build();

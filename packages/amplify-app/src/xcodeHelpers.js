@@ -175,7 +175,7 @@ async function addAmplifyFiles() {
   }
   const rootDir = path.resolve(projectDir, '..', '..');
   const project = xcode.project(projectDir);
-  return new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     project.parse(error => {
       if (error) {
         reject(error);

@@ -8,9 +8,11 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as ini from 'ini';
 
-import { spawnSync, execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from 'amplify-cli-core';
+import { gt } from 'semver';
+import { sleep } from '.';
 
 export * from './diagnose';
 export * from './configure';
@@ -37,10 +39,9 @@ export function getCLIPath(testingWithLatestCodebase = false) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
       return process.env.AMPLIFY_PATH;
     }
-
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
-
+  
   const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
   return amplifyScriptPath;
 }
@@ -91,9 +92,19 @@ export async function installAmplifyCLI(version = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
-  process.env.AMPLIFY_PATH = process.platform === 'win32'
+  
+  console.log('SETTING PATH:');
+  if(gt(version, '10.0.0')){
+    process.env.AMPLIFY_PATH = process.platform === 'win32'
+    ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
+    : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
+  } else {
+    process.env.AMPLIFY_PATH = process.platform === 'win32'
     ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
     : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+  }
+  
+  console.log('PATH SET:', process.env.AMPLIFY_PATH);
 }
 
 export async function createNewProjectDir(
@@ -101,14 +112,16 @@ export async function createNewProjectDir(
   // eslint-disable-next-line spellcheck/spell-checker
   prefix = path.join(fs.realpathSync(os.tmpdir()), amplifyTestsDir),
 ): Promise<string> {
-  const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim();
   let projectDir;
   do {
-    const randomId = await global.getRandomId();
-    projectDir = path.join(prefix, `${projectName}_${currentHash}_${randomId}`);
+    projectDir = path.join(prefix, `${projectName}_${Math.floor(Math.random() * 1000000)}`);
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
+
+  const initialDelay = Math.floor(Math.random() * 180 * 1000);
+  await sleep(initialDelay);
+
   console.log(projectDir);
   return projectDir;
 }

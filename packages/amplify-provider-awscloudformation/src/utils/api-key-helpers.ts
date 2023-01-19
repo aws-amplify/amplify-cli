@@ -17,6 +17,7 @@ function getDefaultIfApiKey(): ApiKeyConfig {
   const { defaultAuthentication } = authConfig;
 
   if (defaultAuthentication.authenticationType === 'API_KEY') return defaultAuthentication.apiKeyConfig;
+  return undefined;
 }
 
 function getAdditionalApiKeyConfig(): ApiKeyConfig {

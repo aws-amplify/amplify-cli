@@ -86,9 +86,7 @@ module.exports = {
    *
    */
   newSecret: async (context, options) => {
-    const {
-      description, secret, name, version,
-    } = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .createSecret({
@@ -105,9 +103,7 @@ module.exports = {
    *
    */
   updateSecret: async (context, options) => {
-    const {
-      description, secret, name, version,
-    } = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .updateSecret({
@@ -136,9 +132,13 @@ module.exports = {
       const { code } = error;
 
       if (code !== 'ResourceNotFoundException') {
-        throw new AmplifyFault('ResourceNotFoundFault', {
-          message: error.message,
-        }, error);
+        throw new AmplifyFault(
+          'ResourceNotFoundFault',
+          {
+            message: error.message,
+          },
+          error,
+        );
       }
     }
 
@@ -345,11 +345,10 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions)
-      .then(result => {
-        const appSyncModel = result;
-        return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
-      });
+    return new AppSync(context, awsOptions).then(result => {
+      const appSyncModel = result;
+      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+    });
   },
   /**
    *
@@ -363,11 +362,10 @@ module.exports = {
       params.nextToken = options;
     }
     logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params])();
-    return new Lex(context)
-      .then(result => {
-        log();
-        return result.lex.getBuiltinSlotTypes(params).promise();
-      });
+    return new Lex(context).then(result => {
+      logger();
+      return result.lex.getBuiltinSlotTypes(params).promise();
+    });
   },
   /**
    *
@@ -377,8 +375,7 @@ module.exports = {
       maxResults: 50,
     };
     logger('getSlotTypes.lex.getSlotTypes', [params])();
-    return new Lex(context)
-      .then(result => result.lex.getSlotTypes(params).promise());
+    return new Lex(context).then(result => result.lex.getSlotTypes(params).promise());
   },
   /**
    * @deprecated Use getGraphQLApiKeys instead
@@ -397,8 +394,7 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions)
-      .then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
+    return new AppSync(context, awsOptions).then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
   },
   /**
    *

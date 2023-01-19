@@ -15,8 +15,8 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import {
-  initJSProjectWithProfileOldDX,
-  initJSProjectWithProfile,
+  initJSProjectWithProfileV4_28_2,
+  initJSProjectWithProfileV4_52_0,
   legacyAddLayer,
   legacyAddOptData,
   legacyUpdateOptData,
@@ -28,18 +28,18 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   let projRoot: string;
   let versionToMigrateFrom: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
+
     const version = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, version);
     versionToMigrateFrom = version.v;
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
+
     if (versionToMigrateFrom === '4.28.2') {
-      await initJSProjectWithProfileOldDX(projRoot, {}, false);
+      await initJSProjectWithProfileV4_28_2(projRoot, {}, false);
     } else if (versionToMigrateFrom === '4.52.0') {
-      await initJSProjectWithProfile(projRoot, {});
+      await initJSProjectWithProfileV4_52_0(projRoot, {});
     } else {
       throw new Error(`layer-migration.test.ts was invoked with an unexpected installed Amplify CLI version: ${versionToMigrateFrom}`);
     }

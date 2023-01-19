@@ -9,6 +9,7 @@ import sequential from 'promise-sequential';
 import { categoryName } from './constants';
 import { postEnvRemoveHandler } from './events/postEnvRemoveHandler';
 import { postPushHandler } from './events/postPushHandler';
+import { preExportHandler } from './events/preExportHandler';
 import { prePushHandler } from './events/prePushHandler';
 // eslint-disable-next-line import/no-cycle
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
@@ -35,12 +36,12 @@ export { lambdasWithApiDependency } from './provider-utils/awscloudformation/uti
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
+export { ensureLambdaExecutionRoleOutputs } from './provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 export {
   updateDependentFunctionsCfn,
   addAppSyncInvokeMethodPermission,
 } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
-
 /**
  * Entry point for adding function resource
  */
@@ -325,6 +326,9 @@ export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Pro
       break;
     case 'InternalOnlyPostEnvRemove':
       await postEnvRemoveHandler(context, args?.data?.envName);
+      break;
+    case 'PreExport':
+      await preExportHandler();
       break;
     default:
       // other event handlers not implemented

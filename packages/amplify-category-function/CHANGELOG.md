@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.2...amplify-category-function@4.2.3) (2023-01-17)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.2) (2023-01-03)
+
+
+### Bug Fixes
+
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+
+
+
+
+
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0...amplify-category-function@4.2.1) (2022-11-17)
 
 **Note:** Version bump only for package amplify-category-function

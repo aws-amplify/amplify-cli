@@ -14,7 +14,7 @@ module.exports = {
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
-          return;
+          return undefined;
         }
         return providerController.updateResource(context, category, result.service);
       })

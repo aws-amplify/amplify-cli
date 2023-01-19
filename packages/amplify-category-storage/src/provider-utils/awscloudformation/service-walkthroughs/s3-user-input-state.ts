@@ -122,7 +122,7 @@ export class S3InputState {
       }
     }
     //validate CLI inputs
-    this.isCLIInputsValid(this._inputPayload);
+    void this.isCLIInputsValid(this._inputPayload);
   }
 
   getOldS3ParamsForMigration(): MigrationParams {
@@ -174,7 +174,7 @@ export class S3InputState {
   genInputParametersForMigration(oldS3Params: MigrationParams): S3UserInputs {
     const oldParams = oldS3Params.parameters;
     const storageParams = oldS3Params.storageParams;
-    let userInputs: S3UserInputs = {
+    const userInputs: S3UserInputs = {
       resourceName: this._resourceName,
       bucketName: oldParams.bucketName,
       policyUUID: buildShortUUID(), //Since UUID is unique for every resource, we re-create the policy names with new UUID.
@@ -209,7 +209,7 @@ export class S3InputState {
       }
     }
 
-    if (storageParams && storageParams.hasOwnProperty('groupPermissionMap')) {
+    if (storageParams && Object.prototype.hasOwnProperty.call(storageParams, 'groupPermissionMap')) {
       userInputs.groupAccess = S3InputState.getPolicyMapFromStorageParamPolicyMap(storageParams.groupPermissionMap);
     }
 
@@ -457,7 +457,7 @@ export class S3InputState {
 
   public static getPolicyMapFromCfnPolicyMap(groupCFNPolicyMap: GroupCFNAccessType) {
     if (groupCFNPolicyMap) {
-      let result: GroupAccessType = {};
+      const result: GroupAccessType = {};
       for (const groupName of Object.keys(groupCFNPolicyMap)) {
         result[groupName] = S3InputState.getInputPermissionsFromCfnPermissions(groupCFNPolicyMap[groupName]);
       }
@@ -471,7 +471,7 @@ export class S3InputState {
     groupStorageParamsPolicyMap: GroupStorageParamsAccessType,
   ): GroupAccessType | undefined {
     if (groupStorageParamsPolicyMap) {
-      let result: GroupAccessType = {};
+      const result: GroupAccessType = {};
       for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
         result[groupName] = S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName]);
       }
@@ -483,7 +483,7 @@ export class S3InputState {
 
   public static getPolicyMapFromStorageParamsPolicyMap(groupStorageParamsPolicyMap: GroupStorageParamsAccessType) {
     if (groupStorageParamsPolicyMap) {
-      let result: GroupAccessType = {};
+      const result: GroupAccessType = {};
       for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
         result[groupName] = S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName]);
       }
@@ -493,22 +493,22 @@ export class S3InputState {
     }
   }
 
-  updateInputPayload(props: S3InputStateOptions) {
+  async updateInputPayload(props: S3InputStateOptions) {
     // Overwrite
     this._inputPayload = props.inputPayload;
 
     // validate cli-inputs.json
     const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'S3UserInputs');
-    schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
+    await schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
   }
 
-  public static getInstance(context: $TSContext, props: S3InputStateOptions): S3InputState {
+  public static async getInstance(context: $TSContext, props: S3InputStateOptions): Promise<S3InputState> {
     if (!S3InputState.s3InputState) {
       S3InputState.s3InputState = new S3InputState(context, props.resourceName, props.inputPayload);
     }
     //update flow
     if (props.inputPayload) {
-      S3InputState.s3InputState.updateInputPayload(props);
+      await S3InputState.s3InputState.updateInputPayload(props);
     }
     return S3InputState.s3InputState;
   }
@@ -534,10 +534,6 @@ export class S3InputState {
 
     fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
 
-    try {
-      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
-    } catch (e) {
-      throw e;
-    }
+    JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
   }
 }

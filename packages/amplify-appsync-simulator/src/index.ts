@@ -124,8 +124,8 @@ export class AmplifyAppSyncSimulator {
     await this._server.start();
   }
 
-  stop() {
-    this._server.stop();
+  async stop() {
+    await this._server.stop();
   }
 
   getMappingTemplate(path: string): VelocityTemplate {

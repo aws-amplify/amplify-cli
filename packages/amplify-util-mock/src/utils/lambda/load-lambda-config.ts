@@ -21,7 +21,7 @@ const CFN_DEFAULT_CONDITIONS = {
 export const loadLambdaConfig = async (
   context: $TSContext,
   resourceName: string,
-  overrideApiToLocal: boolean = false,
+  overrideApiToLocal = false,
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
   const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
@@ -30,7 +30,7 @@ export const loadLambdaConfig = async (
   );
   const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
   if (!lambdaDef) {
-    return;
+    return undefined;
   }
   const cfnParams = populateCfnParams(resourceName, overrideApiToLocal);
   const processedLambda = lambdaFunctionHandler(lambdaDef[0], lambdaDef[1], {

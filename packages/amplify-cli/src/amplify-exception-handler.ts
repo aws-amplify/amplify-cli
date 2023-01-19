@@ -1,12 +1,5 @@
-import {
-  $TSAny,
-  AmplifyException,
-  AmplifyFaultType,
-  AmplifyFault,
-  executeHooks,
-  HooksMeta,
-} from 'amplify-cli-core';
-import { logger } from 'amplify-cli-logger';
+import { $TSAny, AmplifyException, AmplifyFaultType, AmplifyFault, executeHooks, HooksMeta, isWindowsPlatform } from 'amplify-cli-core';
+import { getAmplifyLogger } from 'amplify-cli-logger';
 import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';
@@ -45,13 +38,11 @@ export const handleException = async (exception: unknown): Promise<void> => {
   }
 
   if (context?.usageData) {
-    await executeSafely(
-      () => {
-        context?.usageData.emitError(deepestException);
-        printer.blankLine();
-        printer.info(`Session Identifier: ${context?.usageData.getSessionUuid()}`);
-      }, 'Failed to emit error to usage data',
-    );
+    await executeSafely(async () => {
+      await context?.usageData.emitError(deepestException);
+      printer.blankLine();
+      printer.info(`Session Identifier: ${context?.usageData.getSessionUuid()}`);
+    }, 'Failed to emit error to usage data');
   }
 
   // Swallow and continue if any operations fail
@@ -60,22 +51,41 @@ export const handleException = async (exception: unknown): Promise<void> => {
   }
 
   await executeSafely(
-    () => executeHooks(HooksMeta.getInstance(undefined, 'post', {
-      message: deepestException.message ?? 'undefined error in Amplify process',
-      stack: deepestException.stack ?? 'undefined error stack',
-    })),
+    () =>
+      executeHooks(
+        HooksMeta.getInstance(undefined, 'post', {
+          message: deepestException.message ?? 'undefined error in Amplify process',
+          stack: deepestException.stack ?? 'undefined error stack',
+        }),
+      ),
     'Failed to execute hooks',
   );
 
   await executeSafely(
-    () => logger.logError({
-      message: deepestException.message,
-      error: deepestException,
-    }),
+    () =>
+      getAmplifyLogger().logError({
+        message: deepestException.message,
+        error: deepestException,
+      }),
     'Failed to log error',
   );
 
-  process.exitCode = 1;
+  process.exit(1);
+};
+
+/**
+ * Handle rejected promises that weren't caught or awaited anywhere in the code.
+ */
+export const handleUnhandledRejection = (reason: Error | $TSAny): void => {
+  if (reason instanceof Error) {
+    throw reason;
+  } else if (reason !== null && typeof reason === 'string') {
+    throw new Error(reason);
+  } else if (reason !== null) {
+    throw new Error(JSON.stringify(reason));
+  } else {
+    throw new Error('Unhandled promise rejection');
+  }
 };
 
 const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
@@ -102,9 +112,7 @@ const executeSafely = async (functionToExecute: () => Promise<void> | void, erro
 };
 
 const printAmplifyException = (amplifyException: AmplifyException): void => {
-  const {
-    message, details, resolution, link, stack,
-  } = amplifyException;
+  const { message, details, resolution, link, stack } = amplifyException;
 
   printer.error(message);
   if (details) {
@@ -141,34 +149,47 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
   errorPrinter.error(JSON.stringify(amplifyException.toObject()));
 };
 
-const unknownErrorToAmplifyException = (err: unknown): AmplifyException => new AmplifyFault(
-  unknownErrorTypeToAmplifyExceptionType(err), {
-    message: (typeof err === 'object' && err !== null && 'message' in err) ? (err as $TSAny).message : 'Unknown error',
+const unknownErrorToAmplifyException = (err: unknown): AmplifyException =>
+  new AmplifyFault(unknownErrorTypeToAmplifyExceptionType(err), {
+    message: typeof err === 'object' && err !== null && 'message' in err ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
-  },
-);
+  });
 
-const genericErrorToAmplifyException = (err: Error): AmplifyException => new AmplifyFault(
-  genericErrorTypeToAmplifyExceptionType(err), {
-    message: err.message,
-    resolution: mapGenericErrorToResolution(err),
-  }, err,
-);
+const genericErrorToAmplifyException = (err: Error): AmplifyException =>
+  new AmplifyFault(
+    genericErrorTypeToAmplifyExceptionType(err),
+    {
+      message: err.message,
+      resolution: mapGenericErrorToResolution(err),
+    },
+    err,
+  );
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => new AmplifyFault(
-  nodeErrorTypeToAmplifyExceptionType(err), {
-    message: err.message,
-    resolution: mapNodeErrorToResolution(err),
-  }, err,
-);
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException =>
+  new AmplifyFault(
+    nodeErrorTypeToAmplifyExceptionType(err),
+    {
+      message: err.message,
+      resolution: mapNodeErrorToResolution(err),
+      code: err.code,
+    },
+    err,
+  );
 
 const nodeErrorTypeToAmplifyExceptionType = (__err: NodeJS.ErrnoException): AmplifyFaultType => 'UnknownNodeJSFault';
-const mapNodeErrorToResolution = (__err: NodeJS.ErrnoException): string => `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
+const mapNodeErrorToResolution = (err: NodeJS.ErrnoException): string => {
+  if (!isWindowsPlatform && err.code === 'EACCES' && err.message.includes('/.amplify/')) {
+    return `Try running 'sudo chown -R $(whoami):$(id -gn) ~/.amplify' to fix this`;
+  }
+  return `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
+};
 
 const genericErrorTypeToAmplifyExceptionType = (__err: Error): AmplifyFaultType => 'UnknownFault';
-const mapGenericErrorToResolution = (__err: Error): string => `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
+const mapGenericErrorToResolution = (__err: Error): string =>
+  `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
 
 const unknownErrorTypeToAmplifyExceptionType = (__err: unknown): AmplifyFaultType => 'UnknownFault';
-const mapUnknownErrorToResolution = (__err: unknown): string => `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
+const mapUnknownErrorToResolution = (__err: unknown): string =>
+  `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
 
 const isNodeJsError = (err: Error): err is NodeJS.ErrnoException => (err as $TSAny).code !== undefined;

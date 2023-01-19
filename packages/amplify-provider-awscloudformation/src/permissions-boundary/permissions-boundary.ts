@@ -1,5 +1,10 @@
 import {
-  $TSContext, stateManager, getPermissionsBoundaryArn, setPermissionsBoundaryArn, AmplifyError, AMPLIFY_DOCS_URL,
+  $TSContext,
+  stateManager,
+  getPermissionsBoundaryArn,
+  setPermissionsBoundaryArn,
+  AmplifyError,
+  AMPLIFY_DOCS_URL,
 } from 'amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAMClient } from '../aws-utils/aws-iam';
@@ -69,7 +74,7 @@ const permissionsBoundarySupplier = async (
   }
   if (!doPrompt) {
     // if we got here, the permissions boundary is not required and we can't prompt so return undefined
-    return;
+    return undefined;
   }
   const envName = envNameSupplier();
 

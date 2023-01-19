@@ -14,21 +14,19 @@ import {
   updateDDBWithTriggerMigration,
   updateS3AddTriggerWithAuthOnlyReqMigration,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-add-update migration');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('ddb-add-update migration');
   });
 
   afterEach(async () => {
@@ -38,7 +36,7 @@ describe('amplify add/update storage(DDB)', () => {
 
   it('init a project and add/update ddb table with & without trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addSimpleDDB(projRoot, {});
     await addDDBWithTrigger(projRoot, {});
@@ -110,7 +108,7 @@ describe('amplify add/update storage(S3)', () => {
 
   it('init a project and add s3 bucket & update with new trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3StorageWithAuthOnly(projRoot);
     await amplifyPushAuth(projRoot);

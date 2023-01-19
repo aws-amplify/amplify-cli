@@ -1,11 +1,21 @@
 /* eslint-disable max-lines-per-function */
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifyCategoryTransform,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
   AmplifyError,
-  AmplifyStackTemplate, AmplifySupportedService, buildOverrideDir,
-  CFNTemplateFormat, FeatureFlags, JSONUtilities, pathManager,
-  stateManager, Template, writeCFNTemplate,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
+  buildOverrideDir,
+  CFNTemplateFormat,
+  FeatureFlags,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  Template,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -13,8 +23,9 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { configureSmsOption } from '../utils/configure-sms';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
@@ -86,7 +97,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this.addCfnConditions(props);
     // generate Resources
 
-    this._authTemplateObj.generateCognitoStackResources(props);
+    await this._authTemplateObj.generateCognitoStackResources(props);
 
     // generate Output
     this.generateCfnOutputs(props);
@@ -116,12 +127,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
           .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
-      } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+      } catch (err) {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };
@@ -302,10 +317,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    * generate cfn outputs
    */
   private generateCfnOutputs = (props: CognitoStackOptions): void => {
-    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
-      || (props.mfaConfiguration !== 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
-      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
-      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = configureSmsOption(props);
 
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
@@ -487,6 +499,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     for (const [key, value] of Object.entries(props)) {
+      if (key === 'hostedUIProviderCreds') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+            noEcho: true,
+          },
+          key,
+        );
+        continue;
+      }
       if (typeof value === 'string' || (typeof value === 'object' && !Array.isArray(value))) {
         this._authTemplateObj.addCfnParameter(
           {

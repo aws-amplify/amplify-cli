@@ -28,7 +28,7 @@ export const importResource = async (context: $TSContext) => {
     return true;
   });
   if (provisionedCollectionNames.length === 0) {
-    throw new Error('No geofence is not provisioned yet. Run \`amplify push\` to provision geofence collection.')
+    throw new Error('No geofence is not provisioned yet. Run `amplify push` to provision geofence collection.')
   }
   // Get collection region
   const collectionRegion = geofenceCollectionResourcesMap[provisionedCollectionNames[0]].output.Region;

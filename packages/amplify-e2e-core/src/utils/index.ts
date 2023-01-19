@@ -30,7 +30,6 @@ export * from './git-operations';
 /**
  * Whether the current environment is CircleCI or not
  */
-
 export const isCI = (): boolean => JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false');
 
 // eslint-disable-next-line spellcheck/spell-checker
@@ -43,7 +42,11 @@ config();
  * delete project directory
  */
 export const deleteProjectDir = (root: string): void => {
-  rimraf.sync(root);
+  try {
+    rimraf.sync(root);
+  } catch(e){
+    // directory does not exist/was already deleted
+  }
 };
 
 /**

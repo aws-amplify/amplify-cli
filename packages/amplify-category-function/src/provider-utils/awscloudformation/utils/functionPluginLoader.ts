@@ -82,7 +82,7 @@ export async function runtimeWalkthrough(
   // runtime selections
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
-  for (let selection of selections) {
+  for (const selection of selections) {
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
     const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
     if (!depCheck.hasRequiredDependencies) {
@@ -171,7 +171,7 @@ async function getSelectionsFromContributors<T>(
     selection = selectionOptions.defaultSelection;
   } else {
     // ask which template to use
-    let answer = await inquirer.prompt([
+    const answer = await inquirer.prompt([
       {
         type: 'list',
         name: 'selection',

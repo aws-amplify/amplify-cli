@@ -127,7 +127,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Hello World',
       },
-      'dotnetCore31',
+      'dotnet6',
     );
   });
 
