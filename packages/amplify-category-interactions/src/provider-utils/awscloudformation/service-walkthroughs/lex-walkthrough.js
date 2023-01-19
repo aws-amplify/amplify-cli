@@ -7,7 +7,6 @@ const category = 'interactions';
 const parametersFileName = 'lex-params.json';
 const cfnParametersFilename = 'parameters.json';
 const serviceName = 'Lex';
-const fuzzy = require('fuzzy');
 import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
