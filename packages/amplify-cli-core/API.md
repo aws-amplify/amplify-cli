@@ -602,7 +602,7 @@ export type ErrorParameter = {
 export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
-export const executeHooks: (hooksMeta: HooksMeta) => Promise<void>;
+export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -670,7 +670,7 @@ export function generateCustomPoliciesInTemplate(template: Template_2, resourceN
 export const generateOverrideSkeleton: (context: $TSContext, srcResourceDirPath: string, destDirPath: string) => Promise<void>;
 
 // @public (undocumented)
-export const generateTsConfigforProject: (srcResourceDirPath: string, destDirPath: string) => void;
+export const generateTsConfigForProject: (srcResourceDirPath: string, destDirPath: string) => void;
 
 // @public (undocumented)
 export function getAmplifyResourceByCategories(category: string): string[];
