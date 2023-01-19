@@ -1,4 +1,4 @@
-import { isCI } from 'amplify-cli-core';
+import { $TSAny, isCI } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
 import * as os from 'os';
 import { Input } from '../input';
@@ -19,6 +19,7 @@ export class UsageDataPayload implements IUsageDataPayload {
   inputOptions: InputOptions;
   timestamp: string;
   error!: SerializableError;
+  downstreamException!: SerializableError;
   payloadVersion: string;
   osPlatform: string;
   osRelease: string;
@@ -62,6 +63,9 @@ export class UsageDataPayload implements IUsageDataPayload {
     this.flowReport = flowReport;
     if (error) {
       this.error = new SerializableError(error);
+      if ('downstreamException' in error && (error as $TSAny).downstreamException) {
+        this.downstreamException = new SerializableError((error as $TSAny).downstreamException as Error);
+      }
     }
   }
 }
