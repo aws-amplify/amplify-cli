@@ -3,8 +3,7 @@
   "files.exclude": {
     "**/.git": true,
     "**/node_modules": true,
-    "**/build": true,
-    "**/coverage": true
+    "**/build": true
   },
   "editor.formatOnSave": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
@@ -21,5 +20,5 @@
   "jest.runAllTestsFirst": false,
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  }
 }

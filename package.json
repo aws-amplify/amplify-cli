@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
+    "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "addwords": "node ./scripts/add-to-dict.js",
     "test-changed": "nx affected --target=test",
     "test": "nx run-many --target=test --all",
@@ -28,6 +29,8 @@
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify amplify-dev",
     "link-aa-win": "node ./scripts/link-bin.js packages/amplify-app/bin/amplify-app amplify-app-dev",
     "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-aa-win",
+    "update-test-timing-data": "ts-node ./scripts/cci-get-job-metrics.ts && ts-node ./scripts/cci-extract-test-timings-from-job-metrics.ts",
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
@@ -48,7 +51,8 @@
     "finish-release": "./scripts/finish-release.sh",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
     "extract-api": "nx run-many --target=extract-api --all",
-    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh"
+    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh",
+    "verify-api-extract:clean": "yarn clean && yarn dev-build && yarn verify-api-extract"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -63,7 +67,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
+      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
       "pre-commit": "yarn verify-commit"
     }
   },
@@ -95,7 +99,7 @@
     "@commitlint/prompt": "^16.2.3",
     "@microsoft/api-extractor": "^7.33.5",
     "@types/glob": "^7.1.1",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^27.0.0",
     "@types/js-yaml": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
@@ -110,7 +114,7 @@
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^26.1.1",
+    "eslint-plugin-jest": "^27.0.0",
     "eslint-plugin-jsdoc": "^37.9.6",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prefer-arrow": "^1.2.3",
@@ -119,8 +123,11 @@
     "execa": "^5.1.1",
     "glob": "^7.2.0",
     "husky": "^3.1.0",
-    "jest": "^26.6.3",
-    "jest-circus": "^26.6.3",
+    "istanbul-lib-coverage": "^3.2.0",
+    "istanbul-lib-report": "^3.0.0",
+    "istanbul-reports": "^3.1.5",
+    "jest": "^27.0.0",
+    "jest-circus": "^27.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
     "lnk": "1.1.0",
@@ -129,7 +136,7 @@
     "nx": "^14.8.3",
     "pkg": "^5.4.1",
     "rimraf": "^3.0.0",
-    "ts-jest": "^26.4.4",
+    "ts-jest": "^27.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^4.5.5"
   },
@@ -139,6 +146,7 @@
     "**/got": "^11.8.5",
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
+    "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
     "**/undici": "^5.8.0"
   }

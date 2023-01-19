@@ -250,8 +250,8 @@ function setAwsAccountCredentials {
     export AWS_ACCESS_KEY_ID_ORIG=$AWS_ACCESS_KEY_ID
     export AWS_SECRET_ACCESS_KEY_ORIG=$AWS_SECRET_ACCESS_KEY
     export AWS_SESSION_TOKEN_ORIG=$AWS_SESSION_TOKEN
-    # introduce a delay of up to 5 minutes to allow for more even spread aws list-accounts calls due to throttling
-    sleep $[ ( $RANDOM % 300 )  + 1 ]s
+    # introduce a delay of up to 1 minute to allow for more even spread aws list-accounts calls due to throttling
+    sleep $[ ( $RANDOM % 60 )  + 1 ]s
     if [[ "$OSTYPE" == "msys" ]]; then
         # windows provided by circleci has this OSTYPE
         useChildAccountCredentials
@@ -276,11 +276,10 @@ function runE2eTest {
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
-        failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        # adding --force-exit per https://github.com/facebook/jest/issues/9473
-        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)=
+        yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE
     fi
 }
 
