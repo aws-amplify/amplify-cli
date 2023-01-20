@@ -473,7 +473,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v5.2.0 --no-cache --maxWorkers= $TEST_SUITE
-          no_output_timeout: 65m
+          no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
@@ -503,7 +503,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 65m
+          no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
@@ -535,7 +535,7 @@ jobs:
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
             retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 65m
+          no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
