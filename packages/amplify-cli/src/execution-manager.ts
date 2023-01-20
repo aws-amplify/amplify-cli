@@ -353,8 +353,8 @@ export const raiseEvent = async (context: Context, args: AmplifyEventArgs): Prom
         };
         return eventHandler;
       });
-    for (const eventHanler of eventHandlers) {
-      await eventHanler();
+    for (const eventHandler of eventHandlers) {
+      await eventHandler();
     }
   }
 };

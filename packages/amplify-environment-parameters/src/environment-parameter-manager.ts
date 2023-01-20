@@ -137,8 +137,8 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
 
     Object.keys(expectedParameters).forEach(expectedParameter => {
-      const [categgoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(expectedParameter);
-      if (!allEnvParams.has(`${categgoryName}_${resourceName}_${parameterName}`)) {
+      const [categoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(expectedParameter);
+      if (!allEnvParams.has(`${categoryName}_${resourceName}_${parameterName}`)) {
         missingResourceParameters.push(expectedParameter);
       }
     });
