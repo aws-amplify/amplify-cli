@@ -427,7 +427,7 @@ export const getAllSSMParamatersForAppId = async (appId: string, region: string)
   const retrievedParameters: Array<string> = [];
   let receivedNextToken = '';
   do {
-    const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, receivedNextToken);
+    const ssmArgument = getSsmSdkParametersByPath(appId, receivedNextToken);
     const data = await ssmClient.getParametersByPath(ssmArgument).promise();
     retrievedParameters.push(...data.Parameters.map(returnedParameter => returnedParameter.Name));
     receivedNextToken = data.NextToken;
@@ -465,7 +465,7 @@ export const expectParametersOptionalValue = async (
 const sortByName = (a: NameOptionalValuePair, b: NameOptionalValuePair) => a.name.localeCompare(b.name);
 type NameOptionalValuePair = { name: string; value?: string };
 
-const getSsmSdkParametersGetParametersByPath = (appId: string, nextToken?: string): SsmGetParametersByPathArgument => {
+const getSsmSdkParametersByPath = (appId: string, nextToken?: string): SsmGetParametersByPathArgument => {
   const sdkParameters: SsmGetParametersByPathArgument = { Path: `/amplify/${appId}/` };
   if (nextToken) {
     sdkParameters.NextToken = nextToken;
