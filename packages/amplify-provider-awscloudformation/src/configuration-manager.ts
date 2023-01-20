@@ -632,21 +632,9 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
     projectConfigInfo.configLevel = 'amplifyAdmin';
     appId = appId || authType.appId;
 
-    try {
-      awsConfig = await getTempCredsWithAdminTokens(context, appId);
-    } catch (e) {
-      context.print.error(`Failed to get credentials: ${e.message || e}`);
-      await context.usageData.emitError(e);
-      exitOnNextTick(1);
-    }
+    awsConfig = await getTempCredsWithAdminTokens(context, appId);
   } else if (authType.type === 'profile') {
-    try {
-      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, authType.profileName);
-    } catch (e) {
-      context.print.error(`Failed to get profile: ${e.message || e}`);
-      await context.usageData.emitError(e);
-      exitOnNextTick(1);
-    }
+    awsConfig = await systemConfigManager.getProfiledAwsConfig(context, authType.profileName);
   } else if (authType.type === 'accessKeys') {
     awsConfig = loadConfigFromPath(projectConfigInfo.config.awsConfigFilePath);
   }
@@ -775,13 +763,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
 
   if (awsConfigInfo.configLevel === 'project') {
     if (awsConfigInfo.config.useProfile) {
-      try {
-        resultAWSConfigInfo = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
-      } catch (e) {
-        context.print.error(`Failed to get profile: ${e.message || e}`);
-        await context.usageData.emitError(e);
-        exitOnNextTick(1);
-      }
+      resultAWSConfigInfo = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
     } else {
       resultAWSConfigInfo = {
         accessKeyId: awsConfigInfo.config.accessKeyId,

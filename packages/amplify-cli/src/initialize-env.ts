@@ -93,6 +93,7 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await sequential(initializationTasks);
     } catch (e) {
+      spinner.fail();
       throw new AmplifyFault(
         'ProjectInitFault',
         {
