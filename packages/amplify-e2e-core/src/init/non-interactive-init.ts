@@ -29,6 +29,33 @@ export const nonInteractiveInitAttach = async (
 };
 
 /**
+ * Executes a non-interactive init to migrate a local project to an existing cloud environment with forcePush flag
+ */
+ export const nonInteractiveInitWithForcePushAttach = async (
+  projRoot: string,
+  amplifyInitConfig: AmplifyInitConfig,
+  categoriesConfig?: CategoriesConfig,
+  testingWithLatestCodebase = false,
+  awsProviderConfig = getAwsProviderConfig(),
+): Promise<void> => {
+  const args = [
+    'init',
+    '--yes',
+    '--amplify',
+    JSON.stringify(amplifyInitConfig),
+    '--providers',
+    JSON.stringify({
+      awscloudformation: awsProviderConfig,
+    }),
+    '--forcePush'
+  ];
+  if (categoriesConfig) {
+    args.push('--categories', JSON.stringify(categoriesConfig));
+  }
+  await execa(getCLIPath(testingWithLatestCodebase), args, { cwd: projRoot });
+};
+
+/**
  * Returns an AmplifyConfig object with a default editor
  */
 export const getAmplifyInitConfig = (projectName: string, envName: string): AmplifyInitConfig => ({
