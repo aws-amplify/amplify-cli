@@ -50,7 +50,7 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
         const [shortId] = uuid().split('-');
         const indexNameInput = await prompter.input(
             'Provide a name for the location search index (place index):',
-            { validate: alphanumeric(), initial: `placeindex${shortId}` }
+            { validate: alphanumeric(), initial: `placeIndex${shortId}` }
         );
         if (await checkGeoResourceExists(indexNameInput)) {
             printer.info(`Geo resource ${indexNameInput} already exists. Choose another name.`);
