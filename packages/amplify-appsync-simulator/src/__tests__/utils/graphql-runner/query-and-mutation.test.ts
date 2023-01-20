@@ -144,7 +144,7 @@ describe('runQueryAndMutation', () => {
       }
     `);
 
-    const error = new GraphQLError('An error from template');
+    const error = new Error('An error from template');
     executionContext.appsyncErrors = [error];
     const variables = { var1: 'val1' };
     getNameResolver.mockReturnValue(name);
