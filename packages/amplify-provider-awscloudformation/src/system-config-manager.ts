@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from 'amplify-cli-core';
 
-import aws, { STS, ProcessCredentials } from 'aws-sdk';
+import { STS, ProcessCredentials } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
