@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from 'amplify-cli-core';
 
-import { STS, ProcessCredentials } from 'aws-sdk';
+import aws, { STS, ProcessCredentials } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
@@ -92,7 +92,7 @@ export const getProfiledAwsConfig = async (
         ...roleCredentials,
       };
     } else if (profileConfig.credential_process) {
-      const credentialProcess = new ProcessCredentials({ profile: profileName });
+      const credentialProcess = new ProcessCredentials({ profile: profileName, filename: configFilePath });
       await credentialProcess.getPromise();
 
       awsConfigInfo = {
