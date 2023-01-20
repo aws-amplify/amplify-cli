@@ -188,7 +188,7 @@ class CloudFormation {
         stack =>
           (this.eventMap['eventToCategories'] && this.eventMap['eventToCategories'].has(stack.LogicalResourceId)) ||
           (this.eventMap['rootResources'] &&
-            this.eventMap['rootResources'].map(resource => resource.key).includes(stack.LogicalResourceId)),
+            this.eventMap['rootResources'].some(resource => resource.key === stack.LogicalResourceId)),
       )
       .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
   }
