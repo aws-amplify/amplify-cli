@@ -53,7 +53,7 @@ export interface S3TriggerPrefixType {
 }
 
 export interface S3UserInputTriggerFunctionParams{
-    category :string; //function registed by
+    category :string; //function registered by
     tag ?: string;
     triggerFunction : string;
     permissions : S3PermissionType[];

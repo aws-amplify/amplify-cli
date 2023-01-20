@@ -132,7 +132,7 @@ export class CronExpression {
           while (len_vTok <= vTok.length - 1) {
             if (vTok[len_vTok] != undefined) {
               const v: string = vTok[len_vTok];
-              this.storeExpressionVals(0, v, exprOn);
+              this.storeExpressionValues(0, v, exprOn);
             }
             len_vTok++;
           }
@@ -146,7 +146,7 @@ export class CronExpression {
       }
 
       if (exprOn <= YEAR) {
-        this.storeExpressionVals(0, '*', YEAR);
+        this.storeExpressionValues(0, '*', YEAR);
       }
       const dow: TreeSet<number> = this.getSet(DAY_OF_WEEK);
 
@@ -168,8 +168,8 @@ export class CronExpression {
     }
   };
 
-  storeExpressionVals = function(pos: number, s: string, type: number): number {
-    let incr = 0;
+  storeExpressionValues = function(pos: number, s: string, type: number): number {
+    let increment = 0;
     let i: number = this.skipWhiteSpace(pos, s);
     if (i >= s.length) {
       return i;
@@ -231,9 +231,9 @@ export class CronExpression {
         throw new Error("Illegal characters for this position: '" + String(sub) + "'" + String(i));
       }
       if (eVal != -1) {
-        incr = 1;
+        increment = 1;
       }
-      this.addToSet(sVal, eVal, incr, type);
+      this.addToSet(sVal, eVal, increment, type);
       return i + 3;
     }
 
@@ -258,7 +258,7 @@ export class CronExpression {
 
     if (c === '*' || c === '/') {
       if (c === '*' && i + 1 >= s.length) {
-        this.addToSet(ALL_SPEC_INT, -1, incr, type);
+        this.addToSet(ALL_SPEC_INT, -1, increment, type);
         return i + 1;
       } else if (c === '/' && (i + 1 >= s.length || s.charAt(i + 1) === ' ' || s.charAt(i + 1) === '\t')) {
         throw new Error("'/' must be followed by an integer." + String(i));
@@ -273,28 +273,28 @@ export class CronExpression {
           throw new Error('Unexpected end of string.' + String(i));
         }
 
-        incr = this.getNumericValue(s, i);
+        increment = this.getNumericValue(s, i);
 
         i++;
-        if (incr > 10) {
+        if (increment > 10) {
           i++;
         }
-        if (incr > 59 && (type === SECOND || type === MINUTE)) {
-          throw new Error('Increment > 60 : ' + incr + i);
-        } else if (incr > 23 && type === HOUR) {
-          throw new Error('Increment > 24 : ' + incr + i);
-        } else if (incr > 31 && type === DAY_OF_MONTH) {
-          throw new Error('Increment > 31 : ' + incr + i);
-        } else if (incr > 7 && type === DAY_OF_WEEK) {
-          throw new Error('Increment > 7 : ' + incr + i);
-        } else if (incr > 12 && type === MONTH) {
-          throw new Error('Increment > 12 : ' + incr + i);
+        if (increment > 59 && (type === SECOND || type === MINUTE)) {
+          throw new Error('Increment > 60 : ' + increment + i);
+        } else if (increment > 23 && type === HOUR) {
+          throw new Error('Increment > 24 : ' + increment + i);
+        } else if (increment > 31 && type === DAY_OF_MONTH) {
+          throw new Error('Increment > 31 : ' + increment + i);
+        } else if (increment > 7 && type === DAY_OF_WEEK) {
+          throw new Error('Increment > 7 : ' + increment + i);
+        } else if (increment > 12 && type === MONTH) {
+          throw new Error('Increment > 12 : ' + increment + i);
         }
       } else {
-        incr = 1;
+        increment = 1;
       }
 
-      this.addToSet(ALL_SPEC_INT, -1, incr, type);
+      this.addToSet(ALL_SPEC_INT, -1, increment, type);
       return i;
     } else if (c === 'L') {
       i++;
@@ -361,7 +361,7 @@ export class CronExpression {
 
     return integer;
   };
-  addToSet = function(val: number, end: number, incr: number, type: number) {
+  addToSet = function(val: number, end: number, increment: number, type: number) {
     const set = this.getSet(type);
 
     if (type === SECOND || type === MINUTE) {
@@ -386,7 +386,7 @@ export class CronExpression {
       }
     }
 
-    if ((incr === 0 || incr === -1) && val != ALL_SPEC_INT) {
+    if ((increment === 0 || increment === -1) && val != ALL_SPEC_INT) {
       if (val != -1) {
         set.add(val);
       } else {
@@ -398,8 +398,8 @@ export class CronExpression {
     let startAt: number = val;
     let stopAt: number = end;
 
-    if (val === ALL_SPEC_INT && incr <= 0) {
-      incr = 1;
+    if (val === ALL_SPEC_INT && increment <= 0) {
+      increment = 1;
       set.add(ALL_SPEC_INT); // put in a marker, but also fill values
     }
 
@@ -447,7 +447,7 @@ export class CronExpression {
       }
     }
 
-    for (let i = startAt; i <= stopAt; i += incr) {
+    for (let i = startAt; i <= stopAt; i += increment) {
       set.add(i);
     }
   };

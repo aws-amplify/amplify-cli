@@ -72,8 +72,8 @@ export class JavaString {
     return new JavaArray(result, e => new JavaString(e.toString()));
   }
 
-  startsWith(prefix, toffset = 0) {
-    return this.value.startsWith(prefix.toString(), toffset);
+  startsWith(prefix, offset = 0) {
+    return this.value.startsWith(prefix.toString(), offset);
   }
 
   substring(beginIndex, endIndex = Infinity) {
