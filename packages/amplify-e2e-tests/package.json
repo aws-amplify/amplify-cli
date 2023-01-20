@@ -17,7 +17,7 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --verbose --forceExit --detectOpenHandles",
+    "e2e": "npm run setup-profile && jest --verbose --forceExit --detectOpenHandles --runInBand",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
