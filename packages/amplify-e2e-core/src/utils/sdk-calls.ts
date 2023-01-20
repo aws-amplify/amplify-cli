@@ -414,7 +414,7 @@ export const getSSMParametersFunctionPrefix = async (
   if (!parameterNames || parameterNames.length === 0) {
     throw new Error('no parameterNames specified');
   }
-  return await ssmClient
+  return ssmClient
     .getParameters({
       Names: parameterNames.map(name => `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${name}`),
       WithDecryption: true,
@@ -422,16 +422,16 @@ export const getSSMParametersFunctionPrefix = async (
     .promise();
 };
 
-export const getAllSSMParamatersFromAppId = async (appId: string, region: string): Promise<Array<string>> => {
+export const getAllSSMParamatersForAppId = async (appId: string, region: string): Promise<Array<string>> => {
   const ssmClient = new SSM({ region });
   const retrievedParameters: Array<string> = [];
-  let recievedNextToken = '';
+  let receivedNextToken = '';
   do {
-    const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, recievedNextToken);
+    const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, receivedNextToken);
     const data = await ssmClient.getParametersByPath(ssmArgument).promise();
     retrievedParameters.push(...data.Parameters.map(returnedParameter => returnedParameter.Name));
-    recievedNextToken = data.NextToken;
-  } while (recievedNextToken);
+    receivedNextToken = data.NextToken;
+  } while (receivedNextToken);
   return retrievedParameters;
 };
 
