@@ -60,4 +60,96 @@ describe('CloudFormation', () => {
     }
     cfn.progressBar.stop();
   });
+
+  describe('filterFailedStackEvents', () => {
+    test('that it does not filter stack events that are in eventToCategories map', async () => {
+      const eventsWithFailure = [
+        {
+          StackId: 'testStackId1',
+          LogicalResourceId: 'testLogicalResourceId1',
+          ResourceType: 'AWS::IAM::Role',
+          ResourceStatusReason: 'Some valid reason',
+        },
+        {
+          StackId: 'testStackId2',
+          LogicalResourceId: 'testLogicalResourceId2',
+          ResourceType: 'AWS::IAM::Role',
+          ResourceStatusReason: 'Some valid reason',
+        },
+      ];
+
+      const eventMap = {
+        rootResources: [],
+        eventToCategories: new Map(),
+        categories: [],
+      };
+      // Only testLogicalResourceId1 is in the eventToCategories Map
+      eventMap.eventToCategories.set('testLogicalResourceId1', 'testLogicalResourceId1-value');
+      const cfn = await new CloudFormation();
+      cfn.eventMap = eventMap;
+      const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
+
+      // Only testStackId1 event should be returned since that's the only one in eventToCategories map
+      expect(filteredEvents).toEqual(eventsWithFailure.filter(e => e.StackId == 'testStackId1'));
+    });
+
+    test('that it filters stack events with cascade failure reasons', async () => {
+      const eventsWithFailure = [
+        {
+          StackId: 'testStackId1',
+          LogicalResourceId: 'testLogicalResourceId1',
+          ResourceType: 'AWS::IAM::Role',
+          ResourceStatusReason: 'Resource creation cancelled',
+        },
+      ];
+
+      const eventMap = {
+        rootResources: [],
+        eventToCategories: new Map(),
+        categories: [],
+      };
+      eventMap.eventToCategories.set('testLogicalResourceId1', 'testLogicalResourceId1-value');
+      const cfn = await new CloudFormation();
+      cfn.eventMap = eventMap;
+      const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
+      expect(filteredEvents).toEqual([]); // empty array
+    });
+
+    test('that it only filters resource of type AWS::CloudFormation::Stack with generic error message', async () => {
+      const eventsWithFailure = [
+        {
+          StackId: 'testStackId1',
+          LogicalResourceId: 'testLogicalResourceId1',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          ResourceStatusReason: 'The following resource(s) failed to create: [LambdaExecutionRole]. ',
+        },
+        {
+          StackId: 'testStackId2',
+          LogicalResourceId: 'testLogicalResourceId2',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          ResourceStatusReason: 'Some valid stack failure message',
+        },
+      ];
+
+      const eventMap = {
+        rootResources: [
+          {
+            category: 'resourceCategory1',
+            key: 'testLogicalResourceId1',
+          },
+          {
+            category: 'resourceCategory2',
+            key: 'testLogicalResourceId2',
+          },
+        ],
+        categories: [],
+      };
+      const cfn = await new CloudFormation();
+      cfn.eventMap = eventMap;
+      const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
+
+      // Should not filter testStackId1 event that has a specific error message
+      expect(filteredEvents).toEqual(eventsWithFailure.filter(e => e.StackId == 'testStackId2'));
+    });
+  });
 });

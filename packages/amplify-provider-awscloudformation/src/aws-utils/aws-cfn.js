@@ -30,6 +30,8 @@ const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 
 // These are cascade failures caused because of a root failure. Safe to ignore
 const RESOURCE_CASCADE_FAIL_REASONS = ['Resource creation cancelled', 'Resource update cancelled'];
+
+const STACK_RESOURCE_FILTER_FAIL_REASON = 'The following resource(s) failed';
 class CloudFormation {
   constructor(context, userAgentAction, options = {}, eventMap = {}) {
     return (async () => {
@@ -177,8 +179,17 @@ class CloudFormation {
    */
   filterFailedStackEvents(eventsWithFailure) {
     return eventsWithFailure
-      .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
-      .filter(stack => this.eventMap['eventToCategories'].has(stack.LogicalResourceId))
+      .filter(
+        stack =>
+          stack.ResourceType !== 'AWS::CloudFormation::Stack' ||
+          (stack.ResourceStatusReason && !stack.ResourceStatusReason.includes(STACK_RESOURCE_FILTER_FAIL_REASON)),
+      )
+      .filter(
+        stack =>
+          (this.eventMap['eventToCategories'] && this.eventMap['eventToCategories'].has(stack.LogicalResourceId)) ||
+          (this.eventMap['rootResources'] &&
+            this.eventMap['rootResources'].map(resource => resource.key).includes(stack.LogicalResourceId)),
+      )
       .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
   }
 
