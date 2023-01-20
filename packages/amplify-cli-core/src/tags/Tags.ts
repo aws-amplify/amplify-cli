@@ -64,14 +64,14 @@ export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProject
     '{project-env}': envName,
   };
   const regexMatcher = skipProjectEnv ? /{project-name}/g : /{project-name}|{project-env}/g;
-  const hydrdatedTags = tags.map(tag => {
+  const hydratedTags = tags.map(tag => {
     return {
       ...tag,
       Value: tag.Value.replace(regexMatcher, (matched: string) => replace[matched]),
     };
   });
-  validate(hydrdatedTags, skipProjectEnv);
-  return hydrdatedTags;
+  validate(hydratedTags, skipProjectEnv);
+  return hydratedTags;
 }
 
 type TagVariables = {

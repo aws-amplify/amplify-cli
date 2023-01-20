@@ -127,7 +127,7 @@ function getSchemaFile(rootDir) {
  * @param {string} rootDir
  * @param {string} schemaFile
  * @param {XcodeProj} xcodeProject
- * @returns {boolean} returns true if models have been successufully added to the `xcodeProject`
+ * @returns {boolean} returns true if models have been successfully added to the `xcodeProject`
  */
 function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
   let hasGeneratedFiles = false;

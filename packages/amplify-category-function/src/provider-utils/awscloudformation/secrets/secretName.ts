@@ -3,7 +3,7 @@
  * Also contains methods for getting a valid CFN object that will resolve to the SSM parameter name.
  *
  * WARNING: be extremely careful changing anything about how secrets are named in SSM! (AKA you should probably never change this).
- * This format is sandardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
+ * This format is standardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
  */
 import { stateManager } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
@@ -42,7 +42,7 @@ export const getEnvSecretPrefix = (envName: string = stateManager.getLocalEnvInf
 // NOTE: Even though the following 2 functions are CFN specific, I'm putting them here to colocate all of the secret naming logic
 
 /**
- * Retuns a CFN object that will resolve the the full name of the SSM parameter for secretName in functionName
+ * Returns a CFN object that will resolve the the full name of the SSM parameter for secretName in functionName
  */
 export const getFunctionSecretCfnName = (secretName: string, functionName: string) =>
   Fn.Join('', [getFunctionSecretCfnPrefix(functionName), secretName]);

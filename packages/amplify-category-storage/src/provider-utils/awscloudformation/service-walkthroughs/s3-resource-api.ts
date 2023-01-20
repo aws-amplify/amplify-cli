@@ -228,7 +228,7 @@ async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInpu
   }
   await cliInputsState.saveCliInputPayload(storageInput);
 
-  //Generate Cloudformation
+  //Generate CloudFormation
   const stackGenerator = new AmplifyS3ResourceStackTransform(storageInput.resourceName as string, context);
   await stackGenerator.transform(phase); //phase = add/update/remove
   //sync amplify-meta

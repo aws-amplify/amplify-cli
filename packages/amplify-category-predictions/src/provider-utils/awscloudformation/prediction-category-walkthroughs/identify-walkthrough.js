@@ -254,7 +254,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
     });
 
     if (answers.folderPolicies === 'app' && parameters.resourceName && configMode != PREDICTIONS_WALKTHROUGH_MODE.ADD) {
-      addStorageIAMResourcestoIdentifyCFNFile(parameters.resourceName, s3Resource.resourceName);
+      addStorageIAMResourcesToIdentifyCFNFile(parameters.resourceName, s3Resource.resourceName);
     }
   }
 
@@ -584,7 +584,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   return functionName;
 }
 
-function addStorageIAMResourcestoIdentifyCFNFile(predictionsResourceName, s3ResourceName) {
+function addStorageIAMResourcesToIdentifyCFNFile(predictionsResourceName, s3ResourceName) {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(
     projectBackendDirPath,
