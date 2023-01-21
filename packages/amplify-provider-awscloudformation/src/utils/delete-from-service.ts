@@ -35,12 +35,15 @@ const deleteParametersFromParameterStore = async (appId: string, envName: string
 };
 
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
+  const keyPrefix = 'AMPLIFY_';
   const parametersUnderPath: Array<string> = [];
   let recievedNextToken = '';
   do {
     const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, recievedNextToken);
     const data = await ssmClient.getParametersByPath(ssmArgument).promise();
-    parametersUnderPath.push(...data.Parameters.map(returnedParameter => returnedParameter.Name));
+    parametersUnderPath.push(
+      ...data.Parameters.map(returnedParameter => returnedParameter.Name).filter(name => name.startsWith(keyPrefix)),
+    );
     recievedNextToken = data.NextToken;
   } while (recievedNextToken);
   return parametersUnderPath;

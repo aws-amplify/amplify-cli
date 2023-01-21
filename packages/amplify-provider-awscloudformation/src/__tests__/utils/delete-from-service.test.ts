@@ -7,7 +7,8 @@ import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersBy
 jest.mock('../../aws-utils/aws-ssm');
 
 const fakeAppId = 'fakeAppId';
-const keys: Array<string> = ['one', 'two'];
+const keys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two', 'toBeIgnored'];
+const expectedKeys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two'];
 const envName: string = 'dev';
 const contextStub = {
   exeInfo: {
@@ -43,7 +44,7 @@ describe('parameters-delete-handler', () => {
     await deleteEnvironmentParametersFromService((contextStub as unknown) as $TSContext, envName);
     expect(deleteParametersPromiseMock).toBeCalledTimes(1);
     expect(deleteParametersMock).toBeCalledTimes(1);
-    const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(keys);
+    const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(expectedKeys);
     expect(deleteParametersMock).toBeCalledWith(expectedDeleteParamater);
 
     expect(getParametersByPathPromiseMock).toBeCalledTimes(1);
