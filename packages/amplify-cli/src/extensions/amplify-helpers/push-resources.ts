@@ -88,12 +88,14 @@ export const pushResources = async (
   // Verify any environment parameters before push operation
   const envParamManager = (await ensureEnvParamManager()).instance;
 
-  const promptMissingParameter = async (parameter: string, envParamManager: IEnvironmentParameterManager): Promise<void> => {
-    printer.warn(`Could not find value for parameter ${parameter}`);
-    const [, categoryName, resourceName, parameterName] = parameter.split('_');
-
+  const promptMissingParameter = async (
+    categoryName: string,
+    resourceName: string,
+    parameterName: string,
+    envParamManager: IEnvironmentParameterManager,
+  ): Promise<void> => {
+    printer.warn(`Could not find value for parameter ${parameterName}`);
     const value = await prompter.input(`Enter a value for ${parameterName} for the ${categoryName} resource: ${resourceName}`);
-
     const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
     resourceParamManager.setParam(parameterName, value);
   };
@@ -103,8 +105,8 @@ export const pushResources = async (
   } else {
     const missingParameters = await envParamManager.getMissingParameters();
     if (missingParameters.length > 0) {
-      for (const parameter of missingParameters) {
-        await promptMissingParameter(parameter, envParamManager);
+      for (const { categoryName, resourceName, parameterName } of missingParameters) {
+        await promptMissingParameter(categoryName, resourceName, parameterName , envParamManager);
       }
       await envParamManager.save(); // Values must be in TPI for CFN deployment to work
     }

@@ -124,10 +124,10 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     await this.parameterMapController.save();
   }
 
-  async getMissingParameters(): Promise<string[]> {
+  async getMissingParameters(): Promise<ResourceParameter[]> {
     const expectedParameters = this.parameterMapController.getParameters();
     const allEnvParams = new Set();
-    const missingResourceParameters: string[] = [];
+    const missingResourceParameters: ResourceParameter[] = [];
 
     for (const [resourceKey, paramManager] of Object.entries(this.resourceParamManagers)) {
       const resourceParams = paramManager.getAllParams();
@@ -139,7 +139,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     Object.keys(expectedParameters).forEach(expectedParameter => {
       const [categoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(expectedParameter);
       if (!allEnvParams.has(`${categoryName}_${resourceName}_${parameterName}`)) {
-        missingResourceParameters.push(expectedParameter);
+        missingResourceParameters.push({ categoryName, resourceName, parameterName });
       }
     });
 
@@ -185,7 +185,7 @@ export type IEnvironmentParameterManager = {
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-  getMissingParameters: () => Promise<string[]>;
+  getMissingParameters: () => Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
   verifyExpectedEnvParameters: () => Promise<void>;
 }
 
@@ -198,7 +198,13 @@ const getParameterStoreKey = (
 ): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 
 const getNamesFromParameterStoreKey = (fullParameter: string) => {
-  const [, categoryName, resourceName] = fullParameter.split('_');
+  const [, categoryName, resourceName] = fullParameter.split('_'); // Ignores the AMPLIFY prefix
   const parameterName = fullParameter.split('_').slice(3).join('_'); // In case parameterName contains underscores
   return [categoryName, resourceName, parameterName];
+}
+
+type ResourceParameter = {
+  categoryName: string;
+  resourceName: string;
+  parameterName: string;
 }

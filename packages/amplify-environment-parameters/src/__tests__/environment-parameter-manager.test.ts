@@ -142,6 +142,6 @@ describe('getMissingParameters', () => {
     funcParamManager.deleteParam('missingParam');
 
     expect(await envParamManager.getMissingParameters())
-      .toEqual(['AMPLIFY_function_funcName_missingParam']);
+      .toEqual([{ categoryName: 'function', resourceName: 'funcName', parameterName: 'missingParam' }]);
   });
 });
