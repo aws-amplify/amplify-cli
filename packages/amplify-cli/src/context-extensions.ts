@@ -60,6 +60,7 @@ function attachPrompt(context: Context) {
     ask: async (questions: any) => {
       if (Array.isArray(questions)) {
         questions = questions.map(q => {
+          // eslint-disable-next-line spellcheck/spell-checker
           if (q.type === 'rawlist' || q.type === 'list') {
             q.type = 'select';
           }
@@ -115,13 +116,13 @@ function attachRuntime(context: Context) {
     plugins: [],
   };
   Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
-    const pluginInfos = context.pluginPlatform.plugins[pluginShortName];
-    pluginInfos.forEach(pluginInfo => {
-      const name = path.basename(pluginInfo.packageLocation);
-      const directory = pluginInfo.packageLocation;
-      const pluginName = pluginInfo.manifest.name;
-      const pluginType = pluginInfo.manifest.type;
-      const commands = pluginInfo.manifest.commands;
+    const pluginInformation = context.pluginPlatform.plugins[pluginShortName];
+    pluginInformation.forEach(pluginEntry => {
+      const name = path.basename(pluginEntry.packageLocation);
+      const directory = pluginEntry.packageLocation;
+      const pluginName = pluginEntry.manifest.name;
+      const pluginType = pluginEntry.manifest.type;
+      const commands = pluginEntry.manifest.commands;
       context.runtime.plugins.push({
         name,
         directory,
@@ -321,7 +322,7 @@ function attachTemplate(context: Context) {
       const data = {
         props,
       };
-      // If a directory was supplied, append a directory seprator.
+      // If a directory was supplied, append a directory separator.
       // Otherwise, the template path will be use as-is.
       const pathToTemplate = opts.directory ? path.join(opts.directory, template) : template;
 

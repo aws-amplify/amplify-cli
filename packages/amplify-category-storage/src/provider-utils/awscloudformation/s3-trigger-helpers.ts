@@ -198,7 +198,7 @@ export async function addTrigger(
 
   // If updating an already existing S3 resource
   if (resourceName) {
-    // Update Cloudformtion file
+    // Update CloudFormation file
     const projectBackendDirPath = pathManager.getBackendDirPath();
     const storageCFNFilePath = path.join(projectBackendDirPath, categoryName, resourceName, 's3-cloudformation-template.json');
     const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = readCFNTemplate(storageCFNFilePath);

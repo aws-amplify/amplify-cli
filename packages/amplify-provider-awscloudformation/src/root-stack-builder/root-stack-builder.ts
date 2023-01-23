@@ -29,7 +29,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   /**
    *
    * @param props :cdk.CfnOutputProps
-   * @param logicalId: : lodicalId of the Resource
+   * @param logicalId: : logicalId of the Resource
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     new cdk.CfnOutput(this, logicalId, props);
@@ -136,7 +136,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
 }
 
 /**
- * additional class to merge CFN parameters and CFN outputs as cdk doesnt allow same logical ID of constructs in same stack
+ * additional class to merge CFN parameters and CFN outputs as cdk does not allow same logical ID of constructs in same stack
  */
 export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootStackTemplate {
   constructor(scope: cdk.Construct, id: string, props: AmplifyRootStackProps) {

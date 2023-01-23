@@ -102,7 +102,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
     const cliInputsState = new S3InputState(context, cliInputs.resourceName as string, cliInputs);
     await cliInputsState.saveCliInputPayload(cliInputs);
 
-    //Generate Cloudformation
+    //Generate CloudFormation
     const stackGenerator = new AmplifyS3ResourceStackTransform(cliInputs.resourceName as string, context);
     await stackGenerator.transform(CLISubCommandType.ADD);
 
@@ -191,7 +191,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
     //Save CLI Inputs payload
     await cliInputsState.saveCliInputPayload(cliInputs);
-    //Generate Cloudformation
+    //Generate CloudFormation
     const stackGenerator = new AmplifyS3ResourceStackTransform(cliInputs.resourceName as string, context);
     await stackGenerator.transform(CLISubCommandType.UPDATE);
     return cliInputs.resourceName;
@@ -236,7 +236,7 @@ export async function migrateStorageCategory(context: $TSContext, resourceName: 
 /**
  * buildShortUUID() - generator function
  * Generates a short-id from a UUID. The short-id is used by the caller to convert
- * policy or resource names into globally unique names (atleast reduce the probability of clash).
+ * policy or resource names into globally unique names (at least reduce the probability of clash).
  * @returns shortId
  */
 export function buildShortUUID() {
@@ -438,7 +438,7 @@ function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TS
 }
 
 /**
- * Important!!: Creates new Lambda function name and Generates Lambda function Cloudformation.
+ * Important!!: Creates new Lambda function name and Generates Lambda function CloudFormation.
  * note:- This will be removed once Functions move to CDK.
  * Function names use a unique uuid to generate function-names since the User
  * could potentially generate multiple functions and switch between them for triggers.
@@ -499,7 +499,7 @@ export async function createNewLambdaAndUpdateCFN(
 }
 
 /**
- * Gets the list of Lambda functions for configuring as trigges on the S3 resource.
+ * Gets the list of Lambda functions for configuring as triggers on the S3 resource.
  * note:- It excludes currently configured trigger function from the list.
  * @param context
  * @param excludeFunctionName
@@ -583,7 +583,7 @@ function getCLITriggerStateEvent(triggerFlowType: S3CLITriggerFlow, existingTrig
  * @returns TriggerFunction name
  */
 async function interactiveCreateNewLambdaAndUpdateCFN(context: $TSContext) {
-  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique shortid*/);
+  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique short id*/);
   await askAndOpenFunctionEditor(context, newTriggerFunction);
   return newTriggerFunction;
 }
@@ -617,7 +617,7 @@ async function interactiveAddExistingLambdaAndUpdateCFN(
  * @param context
  * @param policyID
  * @param existingTriggerFunction - already configured trigger function
- * @param existingLambdaResources - list of all lambda functions avaiable to be configured as triggers
+ * @param existingLambdaResources - list of all lambda functions available to be configured as triggers
  * @returns newTriggerFunction or selectedTriggerFunction
  */
 async function interactiveAskTriggerTypeFlow(
@@ -726,7 +726,7 @@ export function getIAMPolicies(resourceName: $TSAny, crudOptions: $TSAny) {
     }
   });
 
-  // @ts-expect-error ts-migrate(2740) FIXME: Type 'unknown[]' is missing the following properti... Remove this comment to see the full error message
+  // @ts-expect-error ts-migrate(2740) FIXME: Type 'unknown[]' is missing the following properties
   actions = Array.from(actions);
   if ((actions as $TSAny).includes('s3:ListBucket')) {
     let listBucketPolicy = {};

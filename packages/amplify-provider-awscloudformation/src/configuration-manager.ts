@@ -19,7 +19,7 @@ import {
   authTypeQuestion,
   createConfirmQuestion,
   profileNameQuestion,
-  removeProjectComfirmQuestion,
+  removeProjectConfirmQuestion,
   updateOrRemoveQuestion,
   retryAuthConfig,
 } from './question-flows/configuration-questions';
@@ -368,7 +368,7 @@ async function setProjectConfigAction(context: $TSContext) {
 
 async function confirmProjectConfigRemoval(context: $TSContext) {
   if (!context.exeInfo.inputParams.yes) {
-    const answer = await prompt(removeProjectComfirmQuestion);
+    const answer = await prompt(removeProjectConfirmQuestion);
     context.exeInfo.awsConfigInfo.action = answer.removeProjectConfig ? 'remove' : 'cancel';
   }
   return context;
@@ -904,7 +904,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     const errorMessage = 'Failed to resolve AWS credentials with --yes flag.';
     const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
     context.print.error(errorMessage);
-    context.print.info(`Access keys for continuous integration can be configured with headless paramaters: ${chalk.green(docsUrl)}`);
+    context.print.info(`Access keys for continuous integration can be configured with headless parameters: ${chalk.green(docsUrl)}`);
     await context.usageData.emitError(errorMessage);
     exitOnNextTick(1);
   }

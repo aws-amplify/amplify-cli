@@ -21,7 +21,7 @@ const binUrl = (version: string, binaryName: string):string => `https://github.c
 const latestVersionUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
 
 /**
- * Downloads the latest version of amplify-cli (only if it doesnt match the current version)
+ * Downloads the latest version of amplify-cli (only if it does not match the current version)
  */
 export const run = async (context: $TSContext): Promise<void> => {
   if (!isPackaged) {

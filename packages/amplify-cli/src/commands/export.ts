@@ -48,6 +48,7 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
     printer.info(
       `Example: ${chalk.green(
+        // eslint-disable-next-line spellcheck/spell-checker
         'amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript',
       )}`,
     );
@@ -110,7 +111,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
       validatedExportPath,
     );
     spinner.succeed('Successfully generated frontend config files');
-  } catch (ex: any) {
+  } catch (ex) {
     spinner.fail('Failed to generate frontend config files ' + ex.message);
     throw ex;
   } finally {

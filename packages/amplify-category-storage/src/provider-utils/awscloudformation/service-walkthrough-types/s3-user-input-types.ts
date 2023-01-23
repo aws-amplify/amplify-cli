@@ -73,7 +73,7 @@ export interface S3UserInputs {
      triggerFunction?: string|undefined,
      adminTriggerFunction? : S3UserInputTriggerFunctionParams|undefined,
      additionalTriggerFunctions?: S3UserInputTriggerFunctionParams[]|undefined,
-     groupAccess? : GroupAccessType|undefined, //{ "admingroup": [create, read,  delete, list], "secondgroup" :[...''...] }
+     groupAccess? : GroupAccessType|undefined, //{ "adminGroup": [create, read,  delete, list], "secondGroup" :[...''...] }
 }
 
 export function defaultS3UserInputs() :S3UserInputs {

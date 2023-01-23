@@ -59,11 +59,11 @@ export function readFromPath(directory: string): any {
     return buf.toString();
   }
   const files = fs.readdirSync(directory);
-  const accum = {};
+  const filesObject = {};
   for (const fileName of files) {
     const fullPath = path.join(directory, fileName);
     const value = readFromPath(fullPath);
-    accum[fileName] = value;
+    filesObject[fileName] = value;
   }
-  return accum;
+  return filesObject;
 }

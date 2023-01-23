@@ -46,7 +46,7 @@ export class CronExpression {
   daysOfWeek = new TreeSet();
   years = new TreeSet();
   lastDayOfWeek = false;
-  nthdayOfWeek = 0;
+  numDayOfWeek = 0;
   lastDayOfMonth = false;
   nearestWeekday = false;
   expressionParsed = false;
@@ -215,8 +215,8 @@ export class CronExpression {
           } else if (c === '#') {
             try {
               i += 4;
-              this.nthdayOfWeek = Number(s.substring(i));
-              if (this.nthdayOfWeek < 1 || this.nthdayOfWeek > 5) {
+              this.numDayOfWeek = Number(s.substring(i));
+              if (this.numDayOfWeek < 1 || this.numDayOfWeek > 5) {
                 throw new Error();
               }
             } catch (e) {
@@ -542,8 +542,8 @@ export class CronExpression {
       }
       i++;
       try {
-        this.nthdayOfWeek = Number(s.substring(i));
-        if (this.nthdayOfWeek < 1 || this.nthdayOfWeek > 5) {
+        this.numDayOfWeek = Number(s.substring(i));
+        if (this.numDayOfWeek < 1 || this.numDayOfWeek > 5) {
           throw new Error();
         }
       } catch (e) {
@@ -638,7 +638,7 @@ export class CronExpression {
     this.years = new TreeSet();
 
     this.lastDayOfWeek = false;
-    this.nthdayOfWeek = 0;
+    this.numDayOfWeek = 0;
     this.lastDayOfMonth = false;
     this.nearestWeekday = false;
     this.lastDayOffset = 0;

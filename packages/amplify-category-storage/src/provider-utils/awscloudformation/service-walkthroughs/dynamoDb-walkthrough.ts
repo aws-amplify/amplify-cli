@@ -391,11 +391,11 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
 
     attributeAnswers.push({
       AttributeName: attributeName,
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expression is ambiguous... Remove this comment to see the full error message
       AttributeType: attributeTypes[attributeType].code,
     });
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expression is ambiguous... Remove this comment to see the full error message
     if (attributeTypes[attributeType].indexable) {
       indexableAttributeList.push(attributeName);
     }
@@ -660,10 +660,10 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
   /* Current Dynamo CFN's have a trailing comma (accepted by CFN),
   but fails on JSON.parse(), hence removing it */
 
-  let oldcfnString = fs.readFileSync(cfnFilePath, 'utf8');
-  oldcfnString = removeDanglingCommas(oldcfnString);
+  let oldCfnString = fs.readFileSync(cfnFilePath, 'utf8');
+  oldCfnString = removeDanglingCommas(oldCfnString);
 
-  const oldCfn = JSON.parse(oldcfnString);
+  const oldCfn = JSON.parse(oldCfnString);
 
   const newCfn = {};
 

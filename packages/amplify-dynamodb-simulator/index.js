@@ -3,6 +3,7 @@ const { fromEvent } = require('promise-toolbox');
 const fs = require('fs-extra');
 const waitPort = require('wait-port');
 const detectPort = require('detect-port');
+// eslint-disable-next-line spellcheck/spell-checker
 const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
 const { pathManager } = require('amplify-cli-core');
