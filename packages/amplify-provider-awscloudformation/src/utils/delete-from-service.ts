@@ -34,6 +34,13 @@ const deleteParametersFromParameterStore = async (appId: string, envName: string
   }
 };
 
+function isAmplifyParameter(parameter: string) {
+  const keyPrefix = 'AMPLIFY_';
+  const splitParam = parameter.split('/');
+  const lastPartOfPath = splitParam.slice(-1).pop();
+  return lastPartOfPath!.startsWith(keyPrefix);
+}
+
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
   const keyPrefix = 'AMPLIFY_';
   const parametersUnderPath: Array<string> = [];
@@ -41,9 +48,7 @@ const getAllEnvParametersFromParameterStore = async (appId: string, envName: str
   do {
     const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, recievedNextToken);
     const data = await ssmClient.getParametersByPath(ssmArgument).promise();
-    parametersUnderPath.push(
-      ...data.Parameters.map(returnedParameter => returnedParameter.Name).filter(name => name.startsWith(keyPrefix)),
-    );
+    parametersUnderPath.push(...data.Parameters.map(returnedParameter => returnedParameter.Name).filter(name => isAmplifyParameter(name)));
     recievedNextToken = data.NextToken;
   } while (recievedNextToken);
   return parametersUnderPath;
