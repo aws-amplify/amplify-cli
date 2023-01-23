@@ -417,7 +417,6 @@ export const getSSMParametersFunctionPrefix = async (
   return ssmClient
     .getParameters({
       Names: parameterNames.map(name => `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${name}`),
-      WithDecryption: true,
     })
     .promise();
 };
