@@ -1,6 +1,6 @@
 const subcommand = 'add';
 const category = 'interactions';
-const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
+const { servicesMetadata } = require(`../../provider-utils/supported-services`);
 
 let options;
 
