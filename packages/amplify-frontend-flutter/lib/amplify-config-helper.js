@@ -1,10 +1,11 @@
-function generateConfig(context, amplifyConfig, newAWSConfig) {
+function generateConfig(context, newAWSConfig) {
   const metadata = context.amplify.getProjectMeta();
-  amplifyConfig = amplifyConfig || {
+  const amplifyConfig = {
     UserAgent: 'aws-amplify-cli/2.0',
     Version: '1.0',
   };
   constructAnalytics(metadata, amplifyConfig);
+  constructNotifications(metadata, amplifyConfig);
   constructApi(metadata, amplifyConfig);
   // Auth plugin with entire awsconfiguration contained required for Native GA release
   constructAuth(metadata, amplifyConfig, newAWSConfig);
@@ -20,6 +21,37 @@ function constructAuth(metadata, amplifyConfig, awsConfig) {
     amplifyConfig[categoryName] = {};
     amplifyConfig[categoryName].plugins = {};
     amplifyConfig[categoryName].plugins[pluginName] = awsConfig;
+  }
+}
+
+function constructNotifications(metadata, amplifyConfig) {
+  const notificationChannelsMap = {
+    'SMS': 'awsPinpointSmsNotificationsPlugin',
+    'EMAIL': 'awsPinpointEmailNotificationsPlugin',
+    'APNS': 'awsPinpointPushNotificationsPlugin',
+    'FCM': 'awsPinpointPushNotificationsPlugin',
+    'InAppMessaging': 'awsPinpointInAppMessagingNotificationsPlugin',
+  }
+  const categoryName = 'notifications';
+
+  if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
+    const r = Object.keys(metadata[categoryName])[0]; // only one resource in analytics
+    const resourceMeta = metadata[categoryName][r];
+    if (resourceMeta.output) {
+      for (const [channel, plugin] of Object.entries(notificationChannelsMap)) {
+        const channelOutput = resourceMeta.output[channel];
+        if (channelOutput && channelOutput.Enabled) {
+          amplifyConfig[categoryName] = amplifyConfig[categoryName] ?? {};
+          amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins ?? {};
+          amplifyConfig[categoryName].plugins[plugin] = {};
+
+          amplifyConfig[categoryName].plugins[plugin] = {
+            appId: channelOutput.ApplicationId,
+            region: resourceMeta.output.Region,
+          };
+        }
+      }
+    }
   }
 }
 
