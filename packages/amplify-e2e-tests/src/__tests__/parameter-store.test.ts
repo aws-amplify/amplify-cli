@@ -50,7 +50,7 @@ describe('upload and delete parameters', () => {
       { name: envVariableName, value: envVariableValue },
       { name: 's3Key' },
     ];
-    await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, fnName);
+    await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, 'function', fnName);
 
     await addEnvironmentCarryOverEnvVars(projRoot, { envName: secondEnvName });
     await amplifyPushAuth(projRoot);
@@ -59,19 +59,20 @@ describe('upload and delete parameters', () => {
       { name: envVariableName, value: envVariableValue },
       { name: 's3Key' },
     ];
-    await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, fnName);
-    await expectParametersOptionalValue(expectedParamsAfterAddEnv, [], region, appId, secondEnvName, fnName);
+    await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, 'function', fnName);
+    await expectParametersOptionalValue(expectedParamsAfterAddEnv, [], region, appId, secondEnvName, 'function', fnName);
 
     await checkoutEnvironment(projRoot, { envName: firstEnvName });
     await removeEnvironment(projRoot, { envName: secondEnvName });
     await amplifyPushAuth(projRoot);
-    await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, fnName);
+    await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, 'function', fnName);
     await expectParametersOptionalValue(
       [],
       expectedParamsAfterAddEnv.map(pair => pair.name),
       region,
       appId,
       secondEnvName,
+      'function',
       fnName,
     );
 
@@ -82,6 +83,7 @@ describe('upload and delete parameters', () => {
       region,
       appId,
       firstEnvName,
+      'function',
       fnName,
     );
     await expectParametersOptionalValue(
@@ -90,6 +92,7 @@ describe('upload and delete parameters', () => {
       region,
       appId,
       secondEnvName,
+      'function',
       fnName,
     );
   });
