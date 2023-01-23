@@ -403,11 +403,12 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     .promise();
 };
 
-export const getSSMParametersFunctionPrefix = async (
+export const getSSMParametersCategoryPrefix = async (
   region: string,
   appId: string,
   envName: string,
-  funcName: string,
+  category: string,
+  resourceName: string,
   parameterNames: string[],
 ) => {
   const ssmClient = new SSM({ region });
@@ -416,7 +417,7 @@ export const getSSMParametersFunctionPrefix = async (
   }
   return ssmClient
     .getParameters({
-      Names: parameterNames.map(name => `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${name}`),
+      Names: parameterNames.map(name => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`),
     })
     .promise();
 };
@@ -440,11 +441,12 @@ export const expectParametersOptionalValue = async (
   region: string,
   appId: string,
   envName: string,
-  funcName: string,
+  category: string,
+  resourceName: string,
 ) => {
   const parametersToRequest = expectToExist.map(exist => exist.name).concat(expectNotExist);
-  const result = await getSSMParametersFunctionPrefix(region, appId, envName, funcName, parametersToRequest);
-  const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${name}`;
+  const result = await getSSMParametersCategoryPrefix(region, appId, envName, category, resourceName, parametersToRequest);
+  const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`;
   expect(result.InvalidParameters.length).toBe(expectNotExist.length);
   expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
   expect(result.Parameters.length).toBe(expectToExist.length);
