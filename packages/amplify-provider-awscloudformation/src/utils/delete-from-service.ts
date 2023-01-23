@@ -42,7 +42,6 @@ function isAmplifyParameter(parameter: string) {
 }
 
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
-  const keyPrefix = 'AMPLIFY_';
   const parametersUnderPath: Array<string> = [];
   let recievedNextToken = '';
   do {
