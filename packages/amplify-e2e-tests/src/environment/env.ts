@@ -20,6 +20,20 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
   });
 }
 
+export async function addEnvironmentCarryOverEnvVars(cwd: string, settings: { envName: string }): Promise<void> {
+  return spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
+    .wait('Enter a name for the environment')
+    .sendLine(settings.envName)
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendCarriageReturn()
+    .wait('You have configured environment variables for functions. How do you want to proceed?')
+    .sendCarriageReturn()
+    .wait('Initialized your environment successfully.')
+    .runAsync();
+}
+
 export function updateEnvironment(cwd: string, settings: { permissionsBoundaryArn: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
@@ -75,7 +89,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
   });
 }
 
-export function checkoutEnvironment(cwd: string, settings: { envName: string, restoreBackend?: boolean }): Promise<void> {
+export function checkoutEnvironment(cwd: string, settings: { envName: string; restoreBackend?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'checkout', settings.envName, settings.restoreBackend ? '--restore' : ''], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
@@ -94,7 +108,9 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
   return new Promise((resolve, reject) => {
     const numEnv = settings.numEnv || 1;
     const regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
+      .wait('| Environments |')
+      .wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
