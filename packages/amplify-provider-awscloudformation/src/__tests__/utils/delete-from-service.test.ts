@@ -7,8 +7,11 @@ import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersBy
 jest.mock('../../aws-utils/aws-ssm');
 
 const fakeAppId = 'fakeAppId';
-const keys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two', 'toBeIgnored'];
-const expectedKeys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two'];
+const keyPrefix = '/amplify/id/dev/'
+let keys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two', 'toBeIgnored'];
+let expectedKeys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two'];
+keys = keys.map(key => keyPrefix + key);
+expectedKeys = expectedKeys.map(key => keyPrefix + key);
 const envName: string = 'dev';
 const contextStub = {
   exeInfo: {
