@@ -100,10 +100,10 @@ const postInitQuickStart = projectPath => {
 async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
-  const isFrontendiOS = frontend === 'ios';
+  const isFrontendIOS = frontend === 'ios';
   const isMacOs = process.platform === 'darwin';
   const successMessage = 'Amplify setup completed successfully.';
-  if (!isFrontendiOS || !isXcodeIntegrationEnabled) {
+  if (!isFrontendIOS || !isXcodeIntegrationEnabled) {
     return;
   }
   // Xcode integration is a MacOS-only binary, skip on other platforms
