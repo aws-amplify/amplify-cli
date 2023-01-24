@@ -38,6 +38,10 @@
   },
   "jest": {
     "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },

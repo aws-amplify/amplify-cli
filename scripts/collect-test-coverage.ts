@@ -40,7 +40,7 @@ const mergeCoverageMap = (files: string[]): istanbul.CoverageMap => {
     map.merge(JSON.parse(json));
   });
   // Remove coverage from lib, e2e, and test files
-  map.filter(file => !file.match(/(lib\/.*?|__e2e__|__tests__)/));
+  map.filter(file => !file.match(/(__e2e__|__tests__)/));
   return map;
 };
 
