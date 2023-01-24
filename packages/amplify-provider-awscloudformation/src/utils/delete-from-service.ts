@@ -3,12 +3,19 @@ import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../aws-utils/aws-ssm';
 import { resolveAppId } from './resolve-appId';
 import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from './get-ssm-sdk-parameters';
+import { printer } from 'amplify-prompts';
 
 /**
  * Delete CloudFormation parameters from the service
  */
 export const deleteEnvironmentParametersFromService = async (context: $TSContext, envName: string): Promise<void> => {
-  const appId = resolveAppId(context);
+  let appId;
+  try {
+    appId = resolveAppId(context);
+  } catch {
+    printer.debug(`No AppId found when deleting parameters for environment ${envName}`);
+    return;
+  }
   const { client } = await SSM.getInstance(context);
   await deleteParametersFromParameterStore(appId, envName, client);
 };

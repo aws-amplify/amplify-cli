@@ -443,7 +443,7 @@ export const expectParametersOptionalValue = async (
   envName: string,
   category: string,
   resourceName: string,
-) => {
+): Promise<void> => {
   const parametersToRequest = expectToExist.map(exist => exist.name).concat(expectNotExist);
   const result = await getSSMParametersCategoryPrefix(region, appId, envName, category, resourceName, parametersToRequest);
   const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`;
