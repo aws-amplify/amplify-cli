@@ -15,7 +15,6 @@ export const deleteEnvironmentParametersFromService = async (context: $TSContext
   } catch {
     return;
   }
-  
 };
 
 const deleteParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<void> => {
