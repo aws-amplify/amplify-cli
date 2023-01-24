@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.4-rc.4b3db16df.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.3...amplify-frontend-javascript@3.7.4-rc.4b3db16df.0) (2023-01-24)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [3.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.2...amplify-frontend-javascript@3.7.3) (2023-01-17)
 
 **Note:** Version bump only for package amplify-frontend-javascript
