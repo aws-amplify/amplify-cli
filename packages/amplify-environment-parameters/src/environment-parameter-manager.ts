@@ -108,8 +108,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
 
     // update param mapping
-    this.parameterMapController
-      .removeAllParameters();
+    this.parameterMapController.removeAllParameters();
     for (const [resourceKey, paramManager] of Object.entries(this.resourceParamManagers)) {
       const [category, resourceName] = splitResourceKey(resourceKey);
       const resourceParams = paramManager.getAllParams();
@@ -122,30 +121,37 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       }
     }
 
-    this.parameterMapController.save();
+    await this.parameterMapController.save();
+  }
+
+  async getMissingParameters(): Promise<ResourceParameter[]> {
+    const expectedParameters = this.parameterMapController.getParameters();
+    const allEnvParams = new Set();
+    const missingResourceParameters: ResourceParameter[] = [];
+
+    for (const [resourceKey, paramManager] of Object.entries(this.resourceParamManagers)) {
+      const resourceParams = paramManager.getAllParams();
+      for (const paramName of Object.keys(resourceParams)) {
+        allEnvParams.add(`${resourceKey}_${paramName}`);
+      }
+    }
+
+    Object.keys(expectedParameters).forEach(expectedParameter => {
+      const [categoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(expectedParameter);
+      if (!allEnvParams.has(`${categoryName}_${resourceName}_${parameterName}`)) {
+        missingResourceParameters.push({ categoryName, resourceName, parameterName });
+      }
+    });
+
+
+    return missingResourceParameters;
   }
 
   /**
    * Throw an error if expected parameters are missing
    */
   async verifyExpectedEnvParameters(): Promise<void> {
-    const expectedParameters = this.parameterMapController.getParameters();
-    const allEnvParams = new Set();
-    const missingParameterNames: string[] = [];
-
-    for (const paramManager of Object.values(this.resourceParamManagers)) {
-      const resourceParams = paramManager.getAllParams();
-      for (const paramName of Object.keys(resourceParams)) {
-        allEnvParams.add(paramName);
-      }
-    }
-
-    Object.keys(expectedParameters).forEach(expectedParameter => {
-      const paramName = getParamaterNameFromParameterStoreKey(expectedParameter);
-      if (!allEnvParams.has(paramName)) {
-        missingParameterNames.push(paramName);
-      }
-    });
+    const missingParameterNames = await this.getMissingParameters();
 
     if (missingParameterNames.length > 0) {
       throw new AmplifyError('MissingExpectedParameterError', {
@@ -179,6 +185,7 @@ export type IEnvironmentParameterManager = {
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+  getMissingParameters: () => Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
   verifyExpectedEnvParameters: () => Promise<void>;
 }
 
@@ -190,4 +197,14 @@ const getParameterStoreKey = (
   paramName: string,
 ): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 
-const getParamaterNameFromParameterStoreKey = (fullParameter: string) => fullParameter.split('_').slice(3).join('_');
+const getNamesFromParameterStoreKey = (fullParameter: string) => {
+  const [, categoryName, resourceName] = fullParameter.split('_'); // Ignores the AMPLIFY prefix
+  const parameterName = fullParameter.split('_').slice(3).join('_'); // In case parameterName contains underscores
+  return [categoryName, resourceName, parameterName];
+}
+
+type ResourceParameter = {
+  categoryName: string;
+  resourceName: string;
+  parameterName: string;
+}

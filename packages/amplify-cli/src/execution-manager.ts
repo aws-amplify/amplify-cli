@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import sequential from 'promise-sequential';
 import {
   stateManager, executeHooks, HooksMeta,
 } from 'amplify-cli-core';
@@ -354,7 +353,9 @@ export const raiseEvent = async (context: Context, args: AmplifyEventArgs): Prom
         };
         return eventHandler;
       });
-    await sequential(eventHandlers);
+    for (const eventHandler of eventHandlers) {
+      await eventHandler();
+    }
   }
 };
 
