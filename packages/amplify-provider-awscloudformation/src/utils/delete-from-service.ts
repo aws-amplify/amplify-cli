@@ -8,14 +8,14 @@ import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersBy
  * Delete CloudFormation parameters from the service
  */
 export const deleteEnvironmentParametersFromService = async (context: $TSContext, envName: string): Promise<void> => {
-  let appId;
   try {
-    appId = resolveAppId(context);
+    const appId = resolveAppId(context);
+    const { client } = await SSM.getInstance(context);
+    await deleteParametersFromParameterStore(appId, envName, client);
   } catch {
     return;
   }
-  const { client } = await SSM.getInstance(context);
-  await deleteParametersFromParameterStore(appId, envName, client);
+  
 };
 
 const deleteParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<void> => {
