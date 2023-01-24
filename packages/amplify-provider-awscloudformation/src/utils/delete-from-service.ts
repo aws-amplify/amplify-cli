@@ -11,7 +11,7 @@ export const deleteEnvironmentParametersFromService = async (context: $TSContext
   let appId;
   try {
     appId = resolveAppId(context);
-  } catch (error) {
+  } catch {
     return;
   }
   const { client } = await SSM.getInstance(context);
