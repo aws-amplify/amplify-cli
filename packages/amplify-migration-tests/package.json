@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-migration-tests",
-  "version": "5.3.1",
+  "version": "5.3.2-pinpoint-customer-config.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-e2e-core": "4.6.1",
-    "amplify-cli-core": "3.5.1",
+    "@aws-amplify/amplify-e2e-core": "4.7.0-pinpoint-customer-config.0",
+    "amplify-cli-core": "3.6.0-pinpoint-customer-config.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "^7.6.9",
     "lodash": "^4.17.21",
