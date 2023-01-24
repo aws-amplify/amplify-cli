@@ -10,7 +10,6 @@ import {
   deleteProjectDir,
   getAppId,
   getProjectMeta,
-  amplifyPushWithCDkWarning,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -74,7 +73,7 @@ describe('adding custom resources migration test', () => {
       await amplifyPull(projRoot2, { emptyDir: true, appId }, usingLatestCode);
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
-      await amplifyPushWithCDkWarning(projRoot2, usingLatestCode);
+      await amplifyPushAuth(projRoot2, usingLatestCode);
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
 
