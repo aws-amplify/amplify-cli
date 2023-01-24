@@ -31,9 +31,10 @@ const uploadParameterToParameterStore = (
     try {
       const sdkParameters = {
         Name: `/amplify/${appId}/${envName}/${key}`,
-        Value: value,
         Overwrite: true,
+        Tier: 'Standard',
         Type: 'String',
+        Value: value,
       };
       await ssmClient.putParameter(sdkParameters).promise();
     } catch (e) {
