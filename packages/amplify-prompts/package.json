@@ -1,6 +1,6 @@
 {
   "name": "amplify-prompts",
-  "version": "2.6.2",
+  "version": "2.6.3-upgrade-graphql15-lazyload.0",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {
