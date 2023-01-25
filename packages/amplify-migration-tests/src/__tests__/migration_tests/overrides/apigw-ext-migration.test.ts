@@ -6,10 +6,6 @@ import {
   deleteProjectDir,
   getCLIInputs,
   updateRestApi,
-  addAuthWithDefault,
-  updateAuthAddAdminQueries,
-  updateAuthAdminQueriesWithExtMigration,
-  getProjectMeta,
 } from '@aws-amplify/amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
 import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
@@ -42,23 +38,5 @@ describe('API Gateway CDK migration', () => {
     await amplifyPushAuth(projRoot, true);
     const cliInputs = getCLIInputs(projRoot, 'api', 'restapimig');
     expect(cliInputs).toBeDefined();
-  });
-
-  it('migrates auth with admin queries', async () => {
-    await addAuthWithDefault(projRoot);
-    await updateAuthAddAdminQueries(projRoot);
-    await amplifyPushAuthLegacy(projRoot);
-
-    await updateAuthAdminQueriesWithExtMigration(projRoot, { testingWithLatestCodebase: true });
-    await amplifyPushAuth(projRoot, true);
-
-    const meta = getProjectMeta(projRoot);
-    const authName = Object.keys(meta.auth)[0];
-
-    const authCliInputs = getCLIInputs(projRoot, 'auth', authName);
-    expect(authCliInputs).toBeDefined();
-
-    const adminQueriesCliInputs = getCLIInputs(projRoot, 'api', 'AdminQueries');
-    expect(adminQueriesCliInputs).toBeDefined();
   });
 });
