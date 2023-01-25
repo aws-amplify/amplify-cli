@@ -13,8 +13,7 @@ if [ $# -eq 0 ]
         --deep \
         --upgrade \
         --dep "prod,dev,peer,bundle,optional" \
-        --filter "$FILTER" \
-        --target "@upgrade-graphql15-2"
+        --filter "$FILTER"
   else 
     echo "Updating to $1 tag"
     npx ncu \
@@ -22,6 +21,5 @@ if [ $# -eq 0 ]
         --upgrade \
         --dep "prod,dev,peer,bundle,optional" \
         --filter "$FILTER" \
-        --target $1 \
-        --target "@upgrade-graphql15-2"
+        --target $1
 fi
