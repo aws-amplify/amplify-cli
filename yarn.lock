@@ -181,10 +181,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.3.2-graphql15.0":
-  version "2.3.2-graphql15.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.3.2-graphql15.0.tgz#fcea624a82823e934ed858e4a3e5305d8cc57291"
-  integrity sha512-1Xe75zumDdUGI9vlF7q9t/mggqy6YtX3UqGyxzhcKax5QYHOrxu7/OijdSXCVF2cCYsYwOdlpgLd0RcG5xIVRg==
+"@aws-amplify/appsync-modelgen-plugin@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.3.3.tgz#6f04218dd35743767fc686a3679219723b5ce748"
+  integrity sha512-LBiKnEKlOfYxjtjll+YkgIYNvGEqT62MnzVLEjiw8Gc11attDCACqevk02n+vZFyP4w3LgDM5qCqP/jp+g5irA==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -305,10 +305,10 @@
     graphql-transformer-common "4.24.4-upgrade-graphql15-2.1"
     libphonenumber-js "1.9.47"
 
-"@aws-amplify/graphql-docs-generator@3.0.3-graphql15.0":
-  version "3.0.3-graphql15.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.3-graphql15.0.tgz#e11d3585b8e10d7a5ad237ac07d3aa4b742213a5"
-  integrity sha512-a9KcowJOXff9mbY2kGxJs6iUH0N0FYDiS797oO93pQvEPXTP7LPziOo+EyBT1gQWNUCg7XIHoSki0Ur+Snz1qQ==
+"@aws-amplify/graphql-docs-generator@3.0.3":
+  version "3.0.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.3.tgz#1bc720b6b70293b14bdc8195b47b0fc196aaf4e7"
+  integrity sha512-N1njpO941FgVeOjxlWC8t9czLHGBkcj2EdRSbO6qBzCUErJTeDJ402qtShsbyaBdJfreCeUhBidau+rUxCtJ1w==
   dependencies:
     graphql "^15.5.0"
     handlebars "4.7.7"
@@ -521,10 +521,10 @@
     graphql-transformer-common "4.24.4-upgrade-graphql15-2.1"
     lodash "^4.17.21"
 
-"@aws-amplify/graphql-types-generator@3.0.1-graphql15.0":
-  version "3.0.1-graphql15.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.1-graphql15.0.tgz#cc08b0f473a313359e0d1b3ca4a62e2fc558dbd3"
-  integrity sha512-VtcBv5Vz6NDPnAcgMqPWcaGz53KtbOwr+YFlOXC7eC5iRQ4Z/Cp5RmDnV+dCKW+R9vmnP20o/20mEXmxnrByuA==
+"@aws-amplify/graphql-types-generator@3.0.1":
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.1.tgz#739e98505687e21da2938e3e9e7b0d8444aefe3f"
+  integrity sha512-g9iUquLGiy2XLrOuJwFLSgnDmzOOpfakuKmanWMCV/u+GG5zCipsfU3SOyhhRCAF9JJwxOMhMYBoquJw/vrsiA==
   dependencies:
     "@babel/generator" "7.0.0-beta.4"
     "@babel/types" "7.0.0-beta.4"
@@ -9965,14 +9965,14 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@3.3.5-graphql15.0:
-  version "3.3.5-graphql15.0"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.5-graphql15.0.tgz#09a4f061955c1d15f5dd1df9ba0b7098129d765a"
-  integrity sha512-4NgXBRg5GRthC/QJVxT3BsHoeoRIW7Q6DZNxRWS7f4cyOM8/nAbVxbutTVSTYlMDcHTAJht9ASiWv7SLUiQ3tg==
+amplify-codegen@3.3.6:
+  version "3.3.6"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.6.tgz#3edcbf229b4023b1dd9b5fd4813587b2819f884a"
+  integrity sha512-FWmPUiewP8r5QBQkEXdcnladnYwBluJqBSER9FN+YqOhw8jyqCDHwywzW4kUtgjTtQ5kOO+ml7rejGB5xKTFpw==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.3.2-graphql15.0"
-    "@aws-amplify/graphql-docs-generator" "3.0.3-graphql15.0"
-    "@aws-amplify/graphql-types-generator" "3.0.1-graphql15.0"
+    "@aws-amplify/appsync-modelgen-plugin" "2.3.3"
+    "@aws-amplify/graphql-docs-generator" "3.0.3"
+    "@aws-amplify/graphql-types-generator" "3.0.1"
     "@graphql-codegen/core" "2.6.6"
     chalk "^3.0.0"
     fs-extra "^8.1.0"
