@@ -15,18 +15,15 @@ describe('javascript analytics pinpoint configuration', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('notifications-pinpoint');
+    await initJSProjectWithProfile(projectRoot, projectSettings);
   });
 
   afterEach(async () => {
+    await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
   });
 
   it('should add pinpoint to JS configuration', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    try {
-      await runPinpointConfigTest(projectRoot, envName, frontendConfig, javascriptValidate);
-    } finally {
-      await deleteProject(projectRoot);
-    }
+    await runPinpointConfigTest(projectRoot, envName, frontendConfig, javascriptValidate);
   });
 });

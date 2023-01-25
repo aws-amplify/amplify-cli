@@ -18,18 +18,15 @@ describe('android analytics pinpoint configuration', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('notifications-pinpoint');
+    await initAndroidProjectWithProfile(projectRoot, projectSettings);
   });
 
   afterEach(async () => {
+    await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
   });
 
   it('should add pinpoint to Android configuration', async () => {
-    await initAndroidProjectWithProfile(projectRoot, projectSettings);
-    try {
-      await runPinpointConfigTest(projectRoot, envName, frontendConfig, androidValidate);
-    } finally {
-      await deleteProject(projectRoot);
-    }
+    await runPinpointConfigTest(projectRoot, envName, frontendConfig, androidValidate);
   });
 });

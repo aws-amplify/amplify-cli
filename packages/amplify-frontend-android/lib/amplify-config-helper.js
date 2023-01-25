@@ -26,7 +26,13 @@ function constructAuth(metadata, amplifyConfig, awsConfig) {
   }
 }
 
-function constructNotifications(metadata, amplifyConfig) {
+/**
+ * update amplifyConfiguration notifications channel sections with pinpoint appId
+ * and region if present and enabled in amplify-meta.json notification output section
+ * @param {*} metadata - contents of amplify-meta.json
+ * @param {*} amplifyConfiguration - contents of amplifyconfiguration.json
+ */
+function constructNotifications(metadata, amplifyConfiguration) {
   // ignore APNS channel as it not supported for iOS frontend
   const notificationChannelsMap = {
     'SMS': 'awsPinpointSmsNotificationsPlugin',
@@ -43,11 +49,11 @@ function constructNotifications(metadata, amplifyConfig) {
       for (const [channel, plugin] of Object.entries(notificationChannelsMap)) {
         const channelOutput = resourceMeta.output[channel];
         if (channelOutput && channelOutput.Enabled) {
-          amplifyConfig[categoryName] = amplifyConfig[categoryName] ?? {};
-          amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins ?? {};
-          amplifyConfig[categoryName].plugins[plugin] = {};
+          amplifyConfiguration[categoryName] = amplifyConfiguration[categoryName] ?? {};
+          amplifyConfiguration[categoryName].plugins = amplifyConfiguration[categoryName].plugins ?? {};
+          amplifyConfiguration[categoryName].plugins[plugin] = {};
 
-          amplifyConfig[categoryName].plugins[plugin] = {
+          amplifyConfiguration[categoryName].plugins[plugin] = {
             appId: channelOutput.ApplicationId,
             region: resourceMeta.output.Region,
           };
@@ -279,4 +285,5 @@ function constructGeo(metadata, amplifyConfig) {
 
 module.exports = {
   generateConfig,
+  constructNotifications,
 };

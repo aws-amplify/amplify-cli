@@ -18,18 +18,15 @@ describe('flutter analytics pinpoint configuration', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('notifications-pinpoint');
+    await initFlutterProjectWithProfile(projectRoot, projectSettings);
   });
 
   afterEach(async () => {
+    await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
   });
 
   it('should add pinpoint to Flutter configuration', async () => {
-    await initFlutterProjectWithProfile(projectRoot, projectSettings);
-    try {
-      await runPinpointConfigTest(projectRoot, envName, frontendConfig, flutterValidate);
-    } finally {
-      await deleteProject(projectRoot);
-    }
+    await runPinpointConfigTest(projectRoot, envName, frontendConfig, flutterValidate);
   });
 });

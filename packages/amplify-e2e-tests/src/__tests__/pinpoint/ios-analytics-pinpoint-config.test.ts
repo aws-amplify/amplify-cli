@@ -15,18 +15,15 @@ describe('ios analytics pinpoint configuration', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('notifications-pinpoint');
+    await initIosProjectWithProfile(projectRoot, projectSettings);
   });
 
   afterEach(async () => {
+    await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
   });
 
   it('should add pinpoint to iOS configuration', async () => {
-    await initIosProjectWithProfile(projectRoot, projectSettings);
-    try {
-      await runPinpointConfigTest(projectRoot, envName, frontendConfig, iosValidate);
-    } finally {
-      await deleteProject(projectRoot);
-    }
+    await runPinpointConfigTest(projectRoot, envName, frontendConfig, iosValidate);
   });
 });
