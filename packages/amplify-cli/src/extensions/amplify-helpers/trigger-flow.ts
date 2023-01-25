@@ -395,7 +395,7 @@ export const choicesFromMetadata = (triggerPath: string, selection, isDir?) => {
   const metaData = getTriggerMetadata(triggerPath, selection);
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
   const options: (string | Separator | { name; value })[] = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
-  // add learn more w/ seperator
+  // add learn more w/ separator
   options.unshift(new inquirer.Separator());
   options.unshift({ name: 'Learn More', value: 'learn' });
   return options;

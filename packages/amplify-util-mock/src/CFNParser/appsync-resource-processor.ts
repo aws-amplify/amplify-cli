@@ -125,7 +125,7 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
   registerLambdaResourceProcessor();
   registerOpenSearchResourceProcessor();
 
-  const rootStack = JSON.parse(JSON.stringify(transformResult.rootStack)); // rootstack is not
+  const rootStack = JSON.parse(JSON.stringify(transformResult.rootStack));
   const cfnParams = {
     ...CFN_DEFAULT_PARAMS,
     env: '${env}',

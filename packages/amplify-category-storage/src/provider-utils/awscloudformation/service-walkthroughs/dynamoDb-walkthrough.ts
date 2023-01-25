@@ -234,15 +234,15 @@ async function askGSIQuestion(
   if (
     existingGSIList &&
     !!existingGSIList.length &&
-    (await prompter.yesOrNo('Do you want to keep existing global seconday indexes created on your table?', true))
+    (await prompter.yesOrNo('Do you want to keep existing global secondary indexes created on your table?', true))
   ) {
     gsiList = existingGSIList;
   }
 
   if (await prompter.yesOrNo('Do you want to add global secondary indexes to your table?', true)) {
-    let continuewithGSIQuestions = true;
+    let continueWithGSIQuestions = true;
 
-    while (continuewithGSIQuestions) {
+    while (continueWithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
         const gsiNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
 
@@ -281,7 +281,7 @@ async function askGSIQuestion(
         }
 
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
+        continueWithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
       } else {
         printer.error('You do not have any other attributes remaining to configure');
         break;
@@ -391,11 +391,11 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
 
     attributeAnswers.push({
       AttributeName: attributeName,
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expression is ambiguous... Remove this comment to see the full error message
       AttributeType: attributeTypes[attributeType].code,
     });
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expression is ambiguous... Remove this comment to see the full error message
     if (attributeTypes[attributeType].indexable) {
       indexableAttributeList.push(attributeName);
     }
@@ -660,10 +660,10 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
   /* Current Dynamo CFN's have a trailing comma (accepted by CFN),
   but fails on JSON.parse(), hence removing it */
 
-  let oldcfnString = fs.readFileSync(cfnFilePath, 'utf8');
-  oldcfnString = removeDanglingCommas(oldcfnString);
+  let oldCfnString = fs.readFileSync(cfnFilePath, 'utf8');
+  oldCfnString = removeDanglingCommas(oldCfnString);
 
-  const oldCfn = JSON.parse(oldcfnString);
+  const oldCfn = JSON.parse(oldCfnString);
 
   const newCfn = {};
 

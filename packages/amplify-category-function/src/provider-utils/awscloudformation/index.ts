@@ -366,8 +366,8 @@ function getHeadlessParams(context: $TSContext, resourceName: string) {
 
 export async function updateConfigOnEnvInit(context: $TSContext, resourceName: string, service: ServiceName) {
   if (service === ServiceName.LambdaFunction) {
-    const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
-    const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+    const serviceMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
+    const providerPlugin = context.amplify.getPluginInstance(context, serviceMetaData.provider);
     const functionParametersPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, 'function-parameters.json');
     let resourceParams: $TSAny = {};
     const functionParametersExists = fs.existsSync(functionParametersPath);
@@ -383,7 +383,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     }
 
     if (resourceParams.trigger === true) {
-      envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
+      envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, serviceMetaData);
     }
 
     if (Array.isArray(resourceParams.lambdaLayers) && resourceParams.lambdaLayers.length) {
@@ -426,7 +426,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
   return undefined;
 }
 
-async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {
+async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, serviceMetaData: ServiceConfig<FunctionParameters>) {
   if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
     const parentResourceParams = providerPlugin.loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
     const triggers =
@@ -438,7 +438,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
       const triggerPath = path.join(
         categoryPlugin.packageLocation,
         'provider-utils',
-        `${srvcMetaData.provider}`,
+        `${serviceMetaData.provider}`,
         'triggers',
         `${currentTrigger}`,
       );
