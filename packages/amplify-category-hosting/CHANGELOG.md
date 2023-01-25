@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.8-lazyload-no-graphql15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.4.7...amplify-category-hosting@3.4.8-lazyload-no-graphql15.0) (2023-01-25)
+
+
+### Bug Fixes
+
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [3.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.4.6...amplify-category-hosting@3.4.7) (2023-01-17)
 
 **Note:** Version bump only for package amplify-category-hosting

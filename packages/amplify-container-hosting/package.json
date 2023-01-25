@@ -1,6 +1,6 @@
 {
   "name": "amplify-container-hosting",
-  "version": "2.5.8",
+  "version": "2.5.9-lazyload-no-graphql15.0",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-api": "^4.1.5",
-    "amplify-cli-core": "3.5.1",
+    "amplify-cli-core": "3.6.0-lazyload-no-graphql15.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
