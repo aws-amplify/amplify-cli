@@ -71,7 +71,7 @@ export const cloneEnvWalkthrough = async (
   }
 
   const funcList = Object.keys(deltas);
-  for (let funcToUpdate = await selectFunctionToUpdate(funcList); !!funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
+  for (let funcToUpdate = await selectFunctionToUpdate(funcList); funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
     await secretValuesWalkthrough(deltas[funcToUpdate], Object.keys(getStoredEnvironmentVariables(funcToUpdate)), { preConfirmed: true });
   }
 
@@ -134,7 +134,7 @@ const selectFunctionToUpdate = async (funcNames: string[]) =>
     })
   ).funcToUpdate as string | false;
 
-const addSecretsConfirm = async (preConfirmed: boolean = false) => {
+const addSecretsConfirm = async (preConfirmed = false) => {
   if (preConfirmed) {
     return true;
   }

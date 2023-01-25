@@ -6,6 +6,7 @@ import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { pathManager, stateManager } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
+import { runHelp, commandsInfo } from 'amplify-cli-core';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   const result = new Input(process.argv);
@@ -63,6 +64,40 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   return result;
 }
 
+function preserveHelpInformation(input: Input): Input {
+  const subCommands = input.subCommands ? input.subCommands : [];
+  // preserve non-help command in subcommands
+  if (input.command && input.command.toLowerCase() !== constants.HELP) {
+    subCommands.unshift(input.command.toLocaleLowerCase());
+  }
+
+  const hasLongHelpOption = typeof input.options?.[constants.HELP] === 'string';
+  const hasShortHelpOption = typeof input.options?.[constants.HELP_SHORT] === 'string';
+  // prevent information in help option from being overwritten to true by saving it in subcommands
+  if (hasLongHelpOption) {
+    subCommands.push(input.options?.[constants.HELP] as string);
+  } else if (hasShortHelpOption) {
+    subCommands.push(input.options?.[constants.HELP_SHORT] as string);
+  }
+
+  // preserve command information in plugin field
+  if (input.plugin && input.plugin !== 'core') {
+    const isCommandPreceedingPluginName = subCommands?.length && input.argv.indexOf(input.plugin) > input.argv.indexOf(subCommands[0]);
+    if (isCommandPreceedingPluginName) {
+      subCommands.push(input.plugin);
+    } else {
+      subCommands.unshift(input.plugin);
+    }
+  }
+  if (input.options) {
+    input.options[constants.HELP] = true;
+    delete input.options[constants.HELP_SHORT];
+  }
+  input.command = constants.HELP;
+  input.subCommands = subCommands;
+  return input;
+}
+
 function normalizeInput(input: Input): Input {
   // -v --version => version command
   // -h --help => help command
@@ -74,8 +109,7 @@ function normalizeInput(input: Input): Input {
     }
 
     if (input.options[constants.HELP] || input.options[constants.HELP_SHORT]) {
-      input.options[constants.HELP] = true;
-      delete input.options[constants.HELP_SHORT];
+      preserveHelpInformation(input);
     }
 
     if (input.options[constants.YES] || input.options[constants.YES_SHORT]) {
@@ -143,7 +177,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         }
 
         // same as above, but check if the first sub-command is an alias.
-        if (commandAliases && commandAliases.hasOwnProperty(input.subCommands[0])) {
+        if (commandAliases && Object.prototype.hasOwnProperty.call(commandAliases, input.subCommands[0])) {
           const command = commandAliases[input.subCommands[0]];
           input.subCommands[0] = input.command!;
           input.command = command;
@@ -214,7 +248,9 @@ function aliasArgs(argv: string[]) {
 
 const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
   const newObj = {};
-  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
+  Object.entries(obj).forEach(([key, value]) => {
+    newObj[key.toLowerCase()] = value;
+  });
   return newObj;
 };
 

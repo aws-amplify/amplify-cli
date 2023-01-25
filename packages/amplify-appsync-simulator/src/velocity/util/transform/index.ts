@@ -31,7 +31,7 @@ export const transformUtils = {
       const queryDSL: $TSObject = elasticsearchHelper.getQueryDSL(filter.toJSON());
       return JSON.stringify(queryDSL);
     } catch (err) {
-      printer.error("Error when constructing the Elasticsearch Query DSL using the model transform utils. {}");
+      printer.error('Error when constructing the Elasticsearch Query DSL using the model transform utils. {}');
       return null;
     }
   }

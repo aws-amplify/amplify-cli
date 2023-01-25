@@ -9,8 +9,10 @@ const utilsMock = utils as any;
 
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
+utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue(({}));
+
 jest.mock('../commands/utils/featureFlags', () => ({
-  getTransformerVersion: jest.fn().mockImplementation(() => 2),
+  getTransformerVersion: jest.fn().mockReturnValue(2),
 }));
 
 describe('can generate components', () => {
@@ -36,6 +38,13 @@ describe('can generate components', () => {
           schemaName: 'testSchema',
           name: 'testSchema',
           schemaVersion: '1.0',
+        },
+        {
+          resultType: 'FAILURE',
+          schemaName: 'testSchema',
+          name: 'testSchema',
+          schemaVersion: '1.0',
+          schema: { id: 'f-123456', name: 'testSchema' },
         },
       ],
     };
@@ -70,22 +79,15 @@ describe('can generate components', () => {
     utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue(undefined);
     utilsMock.generateAmplifyUiBuilderIndexFile = jest.fn().mockReturnValue(true);
     utilsMock.generateAmplifyUiBuilderUtilFile = jest.fn().mockReturnValue(true);
+    utilsMock.deleteDetachedForms = jest.fn();
   });
 
   it('runs generateComponents', async () => {
-    await run(context);
+    await run(context, 'PostPull');
     expect(mockedExport).toBeCalledTimes(3);
     expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
-  });
-
-  it('does not run generateComponents if not Amplify Admin app', async () => {
-    utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(false);
-    await run(context);
-    expect(mockedExport).toBeCalledTimes(0);
-    expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(0);
-    expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(0);
-    expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(0);
+    expect(utilsMock.deleteDetachedForms).toBeCalledTimes(1);
   });
 });

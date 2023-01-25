@@ -166,7 +166,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         // Initial size of 104 for version, statement, etc.
         options.policyDocSize = 104 + policySizeIncrease;
         ++options.roleCount;
-        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, (roleName as unknown) as string);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
@@ -239,7 +239,7 @@ export const consolidateApiGatewayPolicies = async (context: $TSContext, stackNa
     const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
     fs.unlinkSync(cfnPath);
   } catch {
-    // noop
+    // ignore error
   }
 
   if (apiGateways.length === 0) {
@@ -283,7 +283,7 @@ const createApiGatewayAuthResources = (stackName: string, apiGateways: $TSAny, e
   const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
   if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
-    return;
+    return undefined;
   }
 
   JSONUtilities.writeJson(cfnPath, cfn);

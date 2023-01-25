@@ -1,24 +1,16 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
-export function addCDKCustomResource(cwd: string, settings: any): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
-      .wait('How do you want to define this custom resource?')
-      .sendCarriageReturn()
-      .wait('Provide a name for your custom resource')
-      .sendLine(settings.name || '\r')
-      .wait('Do you want to edit the CDK stack now?')
-      .sendConfirmNo()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const addCDKCustomResource = async (cwd: string, settings: any): Promise<void> => {
+  await spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
+    .wait('How do you want to define this custom resource?')
+    .sendCarriageReturn()
+    .wait('Provide a name for your custom resource')
+    .sendLine(settings.name || '\r')
+    .wait('Do you want to edit the CDK stack now?')
+    .sendNo()
+    .sendEof()
+    .runAsync();
+};
 
 export function addCFNCustomResource(cwd: string, settings: any, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {

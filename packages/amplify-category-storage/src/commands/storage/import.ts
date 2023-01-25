@@ -15,7 +15,7 @@ export const run = async (context: $TSContext) => {
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
 
   return providerController.importResource(context, categoryName, serviceSelection);

@@ -63,12 +63,13 @@ export function processApiResources(
         }
 
         break;
-      case 'AWS::AppSync::GraphQLApi':
+      case 'AWS::AppSync::GraphQLApi': {
         const resource = result as AppSyncAPIProcessedResource;
         appSyncConfig.appSync.name = resource.name;
         appSyncConfig.appSync.defaultAuthenticationType = resource.defaultAuthenticationType;
         appSyncConfig.appSync.additionalAuthenticationProviders = resource.additionalAuthenticationProviders || [];
         break;
+      }
       case 'AWS::AppSync::ApiKey':
         appSyncConfig.appSync.apiKey = (result as AppSyncAPIKeyProcessedResource).ApiKey;
         break;
@@ -157,19 +158,22 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
   return processCloudFormationResults(processedStacks.resources, transformResult);
 }
 
-export function configureSearchEnabledTables(transformResult: $TSAny, processedResources: AmplifyAppSyncSimulatorConfig): AmplifyAppSyncSimulatorConfig {
+export function configureSearchEnabledTables(
+  transformResult: $TSAny,
+  processedResources: AmplifyAppSyncSimulatorConfig,
+): AmplifyAppSyncSimulatorConfig {
   const searchableStackResources = Object.keys(transformResult?.stacks?.SearchableStack?.Resources);
-  processedResources.tables = processedResources?.tables?.map( (table: $TSAny) => {
+  processedResources.tables = processedResources?.tables?.map((table: $TSAny) => {
     const tableName = table?.Properties?.TableName;
     const eventSourceMappingPrefix = `Searchable${tableName.substring(0, tableName.lastIndexOf('Table'))}LambdaMapping`;
     return {
       ...table,
-      isSearchable: searchableStackResources?.findIndex(resource => resource?.startsWith(eventSourceMappingPrefix)) !== -1
-    }
+      isSearchable: searchableStackResources?.findIndex(resource => resource?.startsWith(eventSourceMappingPrefix)) !== -1,
+    };
   });
   return processedResources;
 }
 
 export function searchableModelExists(transformResult: $TSAny): boolean {
-  return !(_.isEmpty(transformResult?.stacks?.SearchableStack));
+  return !_.isEmpty(transformResult?.stacks?.SearchableStack);
 }

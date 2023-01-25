@@ -28,7 +28,7 @@ async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string):
       addPluginResult.pluginVerificationResult.error
     ) {
       const { error } = addPluginResult.pluginVerificationResult;
-      context.print.info(`Plugin verification error code: \ ${error}`);
+      context.print.info(`Plugin verification error code: ${error}`);
     }
   }
 

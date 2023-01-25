@@ -243,7 +243,7 @@ export class ApiCategoryFacade {
 }
 
 // @public (undocumented)
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL: string;
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
 export const AWS_DOCS_URL = "https://docs.aws.amazon.com/";
@@ -406,6 +406,25 @@ export class CloudformationProviderFacade {
     // (undocumented)
     static prePushCfnTemplateModifier(context: $TSContext, template: Template_2): Promise<(template: Template_2) => Promise<void>>;
 }
+
+// @public (undocumented)
+export type CommandFlagInfo = {
+    short: string;
+    long: string;
+    flagDescription: string;
+};
+
+// @public (undocumented)
+export type CommandInfo = {
+    command: string;
+    commandDescription: string;
+    commandUsage: string;
+    commandFlags: Array<CommandFlagInfo>;
+    subCommands: Array<SubCommandInfo>;
+};
+
+// @public (undocumented)
+export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
 export class ConfigurationError extends Error {
@@ -981,6 +1000,12 @@ export class JSONUtilities {
     } | undefined) => void;
 }
 
+// @public (undocumented)
+export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
+
+// @public (undocumented)
+export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | undefined;
+
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1046,6 +1071,12 @@ export type PackageManager = {
 
 // @public (undocumented)
 export type PackageManagerType = 'yarn' | 'npm';
+
+// @public (undocumented)
+export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
+    command: string;
+    subCommand: string;
+};
 
 // @public (undocumented)
 export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
@@ -1285,6 +1316,9 @@ export interface ResourceTuple {
 }
 
 // @public (undocumented)
+export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): void;
+
+// @public (undocumented)
 export const SecretFileMode = 384;
 
 // @public (undocumented)
@@ -1415,6 +1449,14 @@ export const stateManager: StateManager;
 
 // @public (undocumented)
 export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
+
+// @public (undocumented)
+export type SubCommandInfo = {
+    subCommand: string;
+    subCommandDescription: string;
+    subCommandUsage: string;
+    subCommandFlags: Array<CommandFlagInfo>;
+};
 
 // @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];

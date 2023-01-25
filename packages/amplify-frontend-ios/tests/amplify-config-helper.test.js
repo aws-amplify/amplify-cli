@@ -1,4 +1,4 @@
-const configHelper = require("../../amplify-frontend-android/lib/amplify-config-helper");
+const configHelper = require('../../amplify-frontend-android/lib/amplify-config-helper');
 jest.mock('amplify-cli-core');
 
 const mapServiceName = 'Map';
@@ -41,7 +41,7 @@ describe('generate maps and search configuration', () => {
             isDefault: isDefault
         };
     }
-
+    let mockContext = {}
     beforeEach(() => {
         jest.clearAllMocks();
         mockContext = {

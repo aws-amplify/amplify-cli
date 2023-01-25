@@ -1,8 +1,6 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
-import {
-  stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault,
-} from 'amplify-cli-core';
+import { stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
@@ -42,7 +40,7 @@ export const initializeEnv = async (
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
-    const importCategoryPluginAndQueueInitEnvTask = async (pluginInfo, category) : Promise<void> => {
+    const importCategoryPluginAndQueueInitEnvTask = async (pluginInfo, category): Promise<void> => {
       try {
         const { initEnv } = await import(pluginInfo.packageLocation);
 
@@ -50,10 +48,14 @@ export const initializeEnv = async (
           categoryInitializationTasks.push(() => initEnv(context));
         }
       } catch (e) {
-        throw new AmplifyFault('PluginNotLoadedFault', {
-          message: `Could not load plugin for category ${category}.`,
-          resolution: `Review the error message and stack trace for additional information.`,
-        }, e);
+        throw new AmplifyFault(
+          'PluginNotLoadedFault',
+          {
+            message: `Could not load plugin for category ${category}.`,
+            resolution: `Review the error message and stack trace for additional information.`,
+          },
+          e,
+        );
       }
     };
     for (const category of availableCategories) {
@@ -72,10 +74,14 @@ export const initializeEnv = async (
         const providerModule = await import(providerPlugins[provider]);
         initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
       } catch (e) {
-        throw new AmplifyFault('PluginNotLoadedFault', {
-          message: `Could not load plugin for provider ${provider}.`,
-          resolution: 'Review the error message and stack trace for additional information.',
-        }, e);
+        throw new AmplifyFault(
+          'PluginNotLoadedFault',
+          {
+            message: `Could not load plugin for provider ${provider}.`,
+            resolution: 'Review the error message and stack trace for additional information.',
+          },
+          e,
+        );
       }
     }
 
@@ -87,10 +93,14 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await sequential(initializationTasks);
     } catch (e) {
-      throw new AmplifyFault('ProjectInitFault', {
-        message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
-        resolution: 'Review the error message and stack trace for additional information.',
-      }, e);
+      throw new AmplifyFault(
+        'ProjectInitFault',
+        {
+          message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
+          resolution: 'Review the error message and stack trace for additional information.',
+        },
+        e,
+      );
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
@@ -108,10 +118,14 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
       await sequential(categoryInitializationTasks);
     } catch (e) {
-      throw new AmplifyFault('ProjectInitFault', {
-        message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
-        resolution: 'Review the error message and stack trace for additional information.',
-      }, e);
+      throw new AmplifyFault(
+        'ProjectInitFault',
+        {
+          message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
+          resolution: 'Review the error message and stack trace for additional information.',
+        },
+        e,
+      );
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     }
@@ -156,8 +170,8 @@ const mergeCategoryEnvParamsIntoAmplifyMeta = (
   serviceName: string,
 ): void => {
   if (
-    envParamManager.hasResourceParamManager(category, serviceName)
-    && envParamManager.getResourceParamManager(category, serviceName).hasAnyParams()
+    envParamManager.hasResourceParamManager(category, serviceName) &&
+    envParamManager.getResourceParamManager(category, serviceName).hasAnyParams()
   ) {
     Object.assign(amplifyMeta[category][serviceName], envParamManager.getResourceParamManager(category, serviceName).getAllParams());
   }

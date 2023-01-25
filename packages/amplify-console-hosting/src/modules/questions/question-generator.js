@@ -36,6 +36,7 @@ async function askServeQuestion(type) {
   if (type === pluginConstants.TYPE_CICD) {
     return askConfirmQuestion(constants.APP_CICD_SERVE_QUESTION);
   }
+  return undefined;
 }
 
 async function askConfigureAppQuestion() {

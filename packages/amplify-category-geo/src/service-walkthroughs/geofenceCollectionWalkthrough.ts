@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
 import { ServiceName } from '../service-utils/constants';

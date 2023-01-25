@@ -99,7 +99,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this.addCfnConditions(props);
     // generate Resources
 
-    this._authTemplateObj.generateCognitoStackResources(props);
+    await this._authTemplateObj.generateCognitoStackResources(props);
 
     // generate Output
     this.generateCfnOutputs(props);
@@ -129,12 +129,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
           .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
-      } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+      } catch (err) {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };
@@ -497,6 +501,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     for (const [key, value] of Object.entries(props)) {
+      if (key === 'hostedUIProviderCreds') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+            noEcho: true,
+          },
+          key,
+        );
+        continue;
+      }
       if (typeof value === 'string' || (typeof value === 'object' && !Array.isArray(value))) {
         this._authTemplateObj.addCfnParameter(
           {

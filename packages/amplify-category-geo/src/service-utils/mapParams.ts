@@ -13,30 +13,30 @@ export type MapParameters = ResourceParameters & {
  * The type of Map styles for Esri data provider
  */
 export enum EsriMapStyleType {
-    Navigation = "Navigation",
-    Streets = "Streets",
-    Topographic = "Topographic",
-    DarkGrayCanvas = "DarkGrayCanvas",
-    LightGrayCanvas = "LightGrayCanvas",
-    Imagery = "Imagery"
+    Navigation = 'Navigation',
+    Streets = 'Streets',
+    Topographic = 'Topographic',
+    DarkGrayCanvas = 'DarkGrayCanvas',
+    LightGrayCanvas = 'LightGrayCanvas',
+    Imagery = 'Imagery'
 }
 
 /**
  * The type of Map styles for HERE data provider
  */
  export enum HereMapStyleType {
-   Berlin = "Berlin",
-   Explore = "Explore",
-   ExploreTruck = "ExploreTruck",
-   RasterSatellite = "RasterSatellite",
-   HybridSatellite = "HybridSatellite"
+   Berlin = 'Berlin',
+   Explore = 'Explore',
+   ExploreTruck = 'ExploreTruck',
+   RasterSatellite = 'RasterSatellite',
+   HybridSatellite = 'HybridSatellite'
  }
 
  /**
  * The type of Map styles for Open data provider
  */
  export enum OpenDataMapStyleType {
-   StandardLight = "StandardLight"
+   StandardLight = 'StandardLight'
  }
 
 export type MapStyleType = EsriMapStyleType | HereMapStyleType | OpenDataMapStyleType;
@@ -45,18 +45,18 @@ export type MapStyleType = EsriMapStyleType | HereMapStyleType | OpenDataMapStyl
  * Supported Geo Map Styles
  */
 export enum MapStyle {
-    VectorEsriNavigation = "VectorEsriNavigation",
-    VectorEsriStreets = "VectorEsriStreets",
-    VectorEsriTopographic = "VectorEsriTopographic",
-    VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
-    VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
-    RasterEsriImagery = "RasterEsriImagery",
-    VectorHereBerlin = "VectorHereBerlin",
-    VectorHereExplore = "VectorHereExplore",
-    VectorHereExploreTruck = "VectorHereExploreTruck",
-    RasterHereExploreSatellite = "RasterHereExploreSatellite",
-    HybridHereExploreSatellite = "HybridHereExploreSatellite",
-    VectorOpenDataStandardLight = "VectorOpenDataStandardLight"
+    VectorEsriNavigation = 'VectorEsriNavigation',
+    VectorEsriStreets = 'VectorEsriStreets',
+    VectorEsriTopographic = 'VectorEsriTopographic',
+    VectorEsriDarkGrayCanvas = 'VectorEsriDarkGrayCanvas',
+    VectorEsriLightGrayCanvas = 'VectorEsriLightGrayCanvas',
+    RasterEsriImagery = 'RasterEsriImagery',
+    VectorHereBerlin = 'VectorHereBerlin',
+    VectorHereExplore = 'VectorHereExplore',
+    VectorHereExploreTruck = 'VectorHereExploreTruck',
+    RasterHereExploreSatellite = 'RasterHereExploreSatellite',
+    HybridHereExploreSatellite = 'HybridHereExploreSatellite',
+    VectorOpenDataStandardLight = 'VectorOpenDataStandardLight'
 }
 
 /**

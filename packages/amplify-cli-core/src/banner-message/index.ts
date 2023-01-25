@@ -14,7 +14,7 @@ export type Message = {
   };
 };
 
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL: string = 'https://aws-amplify.github.io/amplify-cli/banner-message.json';
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = 'https://aws-amplify.github.io/amplify-cli/banner-message.json';
 const MAX_SUPPORTED_MESSAGE_CONFIG_VERSION = '1.0.0';
 
 const logger = getLogger('amplify-cli-core', 'banner-message/index.ts');
