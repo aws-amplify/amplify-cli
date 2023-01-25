@@ -46,7 +46,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
 
     // In case if the selected editor was found.
     if (!editorPath) {
-      context.print.warning(`Couldn’t find selected code editor (${editorSelected}) on your machine.`);
+      context.print.warning(`Could not find selected code editor (${editorSelected}) on your machine.`);
 
       const openFile = await context.amplify.confirmPrompt('Try opening with system-default editor instead?', true);
 

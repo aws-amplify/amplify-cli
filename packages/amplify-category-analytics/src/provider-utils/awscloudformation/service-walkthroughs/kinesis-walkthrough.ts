@@ -12,7 +12,7 @@ import {
   IAmplifyResource,
   ResourceDoesNotExistError,
 } from 'amplify-cli-core';
-import { alphanumeric, printer, prompter } from 'amplify-prompts';
+import { alphanumeric, printer, prompter, integer } from 'amplify-prompts';
 import os from 'os';
 import path from 'path';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
@@ -111,9 +111,10 @@ const configure = async (
       validate: alphanumeric('Name is invalid. Has to be non-empty and alphanumeric'),
       initial: defaultValues.kinesisStreamName,
     })),
-    kinesisStreamShardCount: await prompter.input<'one', number>('Enter a number of shards', {
+    kinesisStreamShardCount: await prompter.input<'one', number>('Enter number of shards', {
       transform: input => Number.parseInt(input, 10),
       initial: 1,
+      validate: integer(),
     }),
   };
 

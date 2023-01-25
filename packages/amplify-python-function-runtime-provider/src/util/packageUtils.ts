@@ -32,6 +32,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
         const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
         const plural = conflicts.length > 1 ? 'ies' : 'y';
         context.print.warning(
+          // eslint-disable-next-line spellcheck/spell-checker
           `${libs} subdirector${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
         );
       }

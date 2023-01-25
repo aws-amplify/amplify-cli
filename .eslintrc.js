@@ -20,6 +20,7 @@ module.exports = {
     ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
     project: ['tsconfig.base.json', 'packages/amplify-cli/tsconfig.json'],
+    tsconfigRootDir: __dirname,
     ecmaFeatures: {
       jsx: true, // Allows for the parsing of JSX
       arrowFunctions: true,
@@ -102,7 +103,7 @@ module.exports = {
     },
     {
       // disable spell checker in tests
-      files: ['**/__tests__/**', '*.test.ts', 'packages/amplify-e2e-*/**', '**/test/**'],
+      files: ['**/__tests__/**','**/__test__/**', '*.test.ts', 'packages/amplify-e2e-*/**', '**/test/**', '**/tests/**'],
       plugins: ['jest'],
       extends: ['plugin:jest/recommended'],
       rules: {

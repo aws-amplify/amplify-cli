@@ -35,7 +35,7 @@ export function parseUrl(request, route: string) {
 }
 
 // check for the delimiter in the file for list object request
-export function checkfile(file: string, prefix: string, delimiter: string) {
+export function checkFile(file: string, prefix: string, delimiter: string) {
   if (delimiter === '') {
     return true;
   } else {

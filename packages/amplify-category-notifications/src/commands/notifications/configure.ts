@@ -43,8 +43,6 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
           resolution: 'Deploy Auth and Pinpoint resources manually.',
         }, err);
       }
-      // eslint-disable-next-line no-param-reassign
-      context = pinpointAppStatus.context;
     }
     if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannel)) {
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, selectedChannel);

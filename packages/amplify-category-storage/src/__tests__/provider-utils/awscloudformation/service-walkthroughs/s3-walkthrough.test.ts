@@ -157,7 +157,7 @@ describe('add s3 walkthrough tests', () => {
     prompter.yesOrNo = jest
       .fn()
       .mockReturnValueOnce(true) //Do you want to add a Lambda Trigger ?
-      .mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
+      .mockResolvedValueOnce(false); //Do you want to edit the lambda function now?
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
@@ -199,7 +199,7 @@ describe('add s3 walkthrough tests', () => {
     prompter.yesOrNo = jest
       .fn()
       .mockReturnValueOnce(true) //Do you want to add a Lambda Trigger ?
-      .mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
+      .mockResolvedValueOnce(false); //Do you want to edit the lambda function now?
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
@@ -489,7 +489,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     prompter.confirmContinue = jest
       .fn()
       .mockReturnValueOnce(true) //Do you want to add a Lambda Trigger ?
-      .mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
+      .mockResolvedValueOnce(false); //Do you want to edit the lambda function now?
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMetaForUpdateWalkthroughLambda);
     const returnedResourcename = await updateWalkthrough(mockContext);
@@ -619,7 +619,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
       .mockResolvedValueOnce(S3TriggerFunctionType.NEW_FUNCTION);
 
     //add new function
-    prompter.confirmContinue = jest.fn().mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
+    prompter.confirmContinue = jest.fn().mockResolvedValueOnce(false); //Do you want to edit the lambda function now?
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMetaForUpdateWalkthroughLambda);
 
@@ -668,7 +668,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
       .mockResolvedValueOnce(S3TriggerFunctionType.NEW_FUNCTION);
 
     //add new function
-    prompter.confirmContinue = jest.fn().mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
+    prompter.confirmContinue = jest.fn().mockResolvedValueOnce(false); //Do you want to edit the lambda function now?
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMetaForUpdateWalkthroughLambda);
 
