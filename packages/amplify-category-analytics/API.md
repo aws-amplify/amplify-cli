@@ -15,7 +15,7 @@ import { NotificationChannels } from 'amplify-cli-core';
 export const analyticsPluginAPICreateResource: (context: $TSContext, resourceProviderServiceName: string) => Promise<IAmplifyResource>;
 
 // @public (undocumented)
-export const analyticsPluginAPIGetResources: (resourceProviderServiceName?: string | undefined, context?: $TSContext | undefined) => Array<IAnalyticsResource>;
+export const analyticsPluginAPIGetResources: (resourceProviderServiceName?: string, context?: $TSContext) => Array<IAnalyticsResource>;
 
 // @public (undocumented)
 export const analyticsPluginAPIMigrations: (context: $TSContext) => Promise<void>;
