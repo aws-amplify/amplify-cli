@@ -23,6 +23,9 @@ export const deleteEnvironmentParametersFromService = async (context: $TSContext
 const deleteParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<void> => {
   try {
     const envKeysInParameterStore: Array<string> = await getAllEnvParametersFromParameterStore(appId, envName, ssmClient);
+    if (!envKeysInParameterStore.length) {
+      return;
+    }
     const chunkedKeys: Array<Array<string>> = chunkForParameterStore(envKeysInParameterStore);
     await Promise.all(
       chunkedKeys.map(keys => {
