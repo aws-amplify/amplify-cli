@@ -1,6 +1,6 @@
 import {
+  addAuthWithDefault,
   addNotificationChannel,
-  addPinpointAnalytics,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
@@ -26,14 +26,13 @@ describe('amplify add notifications', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('should add in app notifications if analytics then another notification channel added and pushed with an older version', async () => {
+  it('should add in app notifications if analytics then another notification channel and auth added with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
     await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
-    await addPinpointAnalytics(projectRoot, false);
-    await amplifyPushAuth(projectRoot, false);
-    await addLegacySmsNotificationChannel(projectRoot, settings.resourceName, true);
+    await addAuthWithDefault(projectRoot, true);
+    await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
   });

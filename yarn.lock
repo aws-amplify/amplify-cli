@@ -19186,11 +19186,6 @@ mocha@>=7.0.0:
     yargs-parser "20.2.4"
     yargs-unparser "2.0.0"
 
-mockirer@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/mockirer/-/mockirer-2.0.1.tgz#7a6392257be31f84ae1cddcbe44ef61e94066247"
-  integrity sha1-emOSJXvjH4SuHN3L5E72HpQGYkc=
-
 modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
