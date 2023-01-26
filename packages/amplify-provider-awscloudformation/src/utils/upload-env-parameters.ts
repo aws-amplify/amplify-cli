@@ -9,7 +9,7 @@ import { resolveAppId } from './resolve-appId';
  */
 export const getEnvParametersUploadHandler = async (
   context: $TSContext,
-): Promise<((key: string, value: unknown) => Promise<void>) | undefined> => {
+): Promise<((key: string, value: string | boolean | number) => Promise<void>) | undefined> => {
   let appId: string;
   try {
     appId = resolveAppId(context);
@@ -26,8 +26,8 @@ const uploadParameterToParameterStore = (
   appId: string,
   envName: string,
   ssmClient: SSMType,
-): ((key: string, value: unknown) => Promise<void>) => {
-  return async (key: string, value: unknown): Promise<void> => {
+): ((key: string, value: string | boolean | number) => Promise<void>) => {
+  return async (key: string, value: string | boolean | number): Promise<void> => {
     try {
       const stringValue: string = JSON.stringify(value);
       const sdkParameters = {
