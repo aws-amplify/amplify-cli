@@ -303,7 +303,7 @@ export class S3InputState {
     if (this._inputPayload) {
       this._inputPayload.adminTriggerFunction = adminLambdaTrigger;
     } else {
-      throw new Error('Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.');
+      throw new Error('Error : Admin Lambda Trigger cannot be installed because S3 resource CLI Input is not initialized.');
     }
   }
 
@@ -311,12 +311,12 @@ export class S3InputState {
     if (this._inputPayload) {
       this._inputPayload.adminTriggerFunction = undefined;
     } else {
-      throw new Error('Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.');
+      throw new Error('Error : Admin Lambda Trigger cannot be installed because S3 resource CLI Input is not initialized.');
     }
   }
 
   /**
-   * Insert the triggerfunction on the S3 bucket for the given prefix.
+   * Insert the triggerFunction on the S3 bucket for the given prefix.
    * Throws error if a different trigger function is already configured on the given prefix.
    * used by categories like Predictions
    * @param triggerFunctionParams
@@ -440,7 +440,7 @@ export class S3InputState {
       case S3PermissionType.DELETE:
         return S3TriggerEventType.OBJ_REMOVED;
     }
-    throw new Error(`Unkown Trigger Lambda Permission Type ${triggerPermissions}`);
+    throw new Error(`Unknown Trigger Lambda Permission Type ${triggerPermissions}`);
   }
 
   public static getCfnPermissionsFromInputPermissions(selectedPermissions: S3PermissionType[] | undefined) {

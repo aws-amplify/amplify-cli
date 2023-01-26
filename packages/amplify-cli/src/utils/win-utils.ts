@@ -2,8 +2,11 @@ import * as fs from 'fs-extra';
 import { command } from 'execa';
 import { oldVersionPath, pendingDeletePath, tmpRegPath } from './win-constants';
 
+// eslint-disable-next-line spellcheck/spell-checker
 const regPath = 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager';
 const regKey = 'PendingFileRenameOperations';
+
+// eslint-disable-next-line spellcheck/spell-checker
 const regPreamble = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
