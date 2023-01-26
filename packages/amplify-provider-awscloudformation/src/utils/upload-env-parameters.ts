@@ -9,10 +9,10 @@ import { resolveAppId } from './resolve-appId';
  */
 export const getEnvParametersUploadHandler = async (
   context: $TSContext,
-): Promise<((key: string, value: string) => Promise<void>) | undefined> => {
+): Promise<((key: string, value: unknown) => Promise<void>) | undefined> => {
   let appId: string;
   try {
-    appId = resolveAppId(context)
+    appId = resolveAppId(context);
   } catch {
     printer.warn('Failed to resolve AppId, skipping parameter upload');
     return undefined;
@@ -26,21 +26,26 @@ const uploadParameterToParameterStore = (
   appId: string,
   envName: string,
   ssmClient: SSMType,
-): (key: string, value: string) => Promise<void> => {
-  return async (key: string, value: string): Promise<void> => {
+): ((key: string, value: unknown) => Promise<void>) => {
+  return async (key: string, value: unknown): Promise<void> => {
     try {
+      const stringValue: string = JSON.stringify(value);
       const sdkParameters = {
         Name: `/amplify/${appId}/${envName}/${key}`,
         Overwrite: true,
         Tier: 'Standard',
         Type: 'String',
-        Value: value,
+        Value: stringValue,
       };
       await ssmClient.putParameter(sdkParameters).promise();
     } catch (e) {
-      throw new AmplifyFault('ParameterUploadFault', {
-        message: `Failed to upload ${key} to ParameterStore`,
-      }, e);
+      throw new AmplifyFault(
+        'ParameterUploadFault',
+        {
+          message: `Failed to upload ${key} to ParameterStore`,
+        },
+        e,
+      );
     }
   };
 };
