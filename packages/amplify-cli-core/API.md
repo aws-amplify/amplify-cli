@@ -601,7 +601,7 @@ export type ErrorParameter = {
 export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
-export const executeHooks: (hooksMeta: HooksMeta) => Promise<void>;
+export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;

@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [4.4.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.5.0...@aws-amplify/amplify-e2e-core@4.4.0-beta.4) (2022-12-28)
+## [4.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.0...@aws-amplify/amplify-e2e-core@4.6.1) (2023-01-17)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.5.0...@aws-amplify/amplify-e2e-core@4.6.0) (2023-01-03)
 
 
 ### Bug Fixes

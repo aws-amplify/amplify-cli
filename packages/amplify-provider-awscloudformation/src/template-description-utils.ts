@@ -69,7 +69,7 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
     platformDescription = SupportedPlatforms.OTHER;
   }
 
-  // get deployment mchanism "createdBy"
+  // get deployment mechanism "createdBy"
 
   if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
     deploymentTypeDescription = DeploymentTypes.AMPLIFY_ADMIN;

@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [1.7.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.10...amplify-dotnet-function-runtime-provider@1.7.0-beta.0) (2022-12-28)
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.10...amplify-dotnet-function-runtime-provider@1.7.0) (2023-01-03)
 
 
 ### Features

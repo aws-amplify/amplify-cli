@@ -60,7 +60,7 @@ export async function editorSelection(defaultEditor?) {
 }
 
 // To support earlier version of the value we need to fix-up mixed case 'Code' to 'code',
-// map 'code' to 'vscode' or 'idea14ce' to 'intellij'
+// map code to vscode or idea14ce to intellij
 export function normalizeEditor(editor) {
   if (editor) {
     editor = editor.toLowerCase();

@@ -12,7 +12,7 @@ export const addCDKCustomResource = async (cwd: string, settings: any): Promise<
     .runAsync();
 };
 
-export function addCFNCustomResource(cwd: string, settings: any, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function addCFNCustomResource(cwd: string, settings: any, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['add', 'custom'], { cwd, stripColors: true })
       .wait('How do you want to define this custom resource?')
@@ -39,7 +39,7 @@ export function addCFNCustomResource(cwd: string, settings: any, testingWithLate
   });
 }
 
-export function buildCustomResources(cwd: string, settings: {}, usingLatestCodebase: boolean = false) {
+export function buildCustomResources(cwd: string, settings: {}, usingLatestCodebase = false) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];
 

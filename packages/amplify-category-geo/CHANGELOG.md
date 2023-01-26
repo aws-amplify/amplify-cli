@@ -95,6 +95,7 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-beta.0...amplify-category-geo@3.0.0-beta.1) (2022-11-19)
+## [2.10.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.10.1...amplify-category-geo@2.10.2) (2023-01-17)
 
 **Note:** Version bump only for package amplify-category-geo
 
@@ -113,6 +114,9 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 ### Features
 
 * **category-geo:** add two new map styles 2022.10 ([#11262](https://github.com/aws-amplify/amplify-cli/issues/11262)) ([77a473e](https://github.com/aws-amplify/amplify-cli/commit/77a473ed78a945681d98b2c14822474aef966dcf))
+## [2.10.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.10.0...amplify-category-geo@2.10.1) (2023-01-03)
+
+**Note:** Version bump only for package amplify-category-geo
 
 
 

@@ -31,13 +31,13 @@ export const run = async (context: $TSContext) => {
 
   // override structure for auth resource
   if (selectedAuthResource === 'userPoolGroups') {
-    await generateOverrideforAuthResource(context, selectedAuthResource, 'userPoolGroups');
+    await generateOverrideForAuthResource(context, selectedAuthResource, 'userPoolGroups');
   } else {
-    await generateOverrideforAuthResource(context, selectedAuthResource, 'auth');
+    await generateOverrideForAuthResource(context, selectedAuthResource, 'auth');
   }
 };
 
-const generateOverrideforAuthResource = async (context: $TSContext, resourceName: string, resourceType: string) => {
+const generateOverrideForAuthResource = async (context: $TSContext, resourceName: string, resourceType: string) => {
   const backendDir = pathManager.getBackendDirPath();
   const destPath = path.normalize(path.join(backendDir, category, resourceName));
   const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource', resourceType));

@@ -13,7 +13,7 @@ import { createLayerZipFilename } from './packageLayer';
 
 /**
  * generates CloudFormation for Layer versions and Layer permissions
- * @param versionList is sorted descendingly
+ * @param versionList is sorted in a descending manner
  */
 export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
@@ -26,7 +26,8 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     const [shortId] = uuid().split('-');
     logicalName = `${LayerCfnLogicalNamePrefix.LambdaLayerVersion}${shortId}`;
     const layerCloudState = LayerCloudState.getInstance(parameters.layerName);
-    layerCloudState.latestVersionLogicalId = logicalName; // Store in the given layer's layerCloudState instance so it can be used in zipfile name
+    // Store in the given layer's layerCloudState instance so it can be used in zip file name
+    layerCloudState.latestVersionLogicalId = logicalName;
     versionList.unshift({ LogicalName: logicalName, legacyLayer: false });
   } else {
     logicalName = _.first(versionList).LogicalName;

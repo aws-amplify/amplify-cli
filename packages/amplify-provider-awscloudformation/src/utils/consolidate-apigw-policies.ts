@@ -149,11 +149,8 @@ export class ApiGatewayAuthStack extends cdk.Stack {
     return this._toCloudFormation();
   }
 
-  private createPoliciesFromResources(options: ApiGatewayPolicyCreationState): $TSAny {
-    const {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      apiRef, env, roleName, path, methods, namePrefix, envName,
-    } = options;
+  private createPoliciesFromResources(options: ApiGatewayPolicyCreationState) {
+    const { apiRef, env, roleName, path, methods, namePrefix, envName } = options;
     const apiPath = String(path.name).replace(/{[a-zA-Z0-9-]+}/g, '*');
 
     methods.forEach((method: string) => {
@@ -186,22 +183,19 @@ const createManagedPolicy = (stack: cdk.Stack,
   },
 });
 
-const createApiResource = (regionRef,
-  accountRef,
-  apiNameRef,
-  envRef,
-  method: string, apiPath: string): string => cdk.Fn.join('', [
-  'arn:aws:execute-api:',
-  regionRef,
-  ':',
-  accountRef,
-  ':',
-  apiNameRef,
-  '/',
-    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown as string,
+function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: string, apiPath: string) {
+  return cdk.Fn.join('', [
+    'arn:aws:execute-api:',
+    regionRef,
+    ':',
+    accountRef,
+    ':',
+    apiNameRef,
+    '/',
+    (cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown) as string,
     method,
     apiPath,
-]);
+])};
 // example:
 //          1         2         3         4         5         6         7         8
 // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
@@ -217,10 +211,7 @@ const createApiResource = (regionRef,
 const computePolicySizeIncrease = (stageLength: number,
   methodLength: number, pathLength: number): number => 2 * (64 + stageLength + methodLength + pathLength);
 
-/**
- * consolidate api gateway policies
- */
-export const consolidateApiGatewayPolicies = async (context: $TSContext, stackName: string): Promise<$TSObject> => {
+export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   const apiGateways = [];
   const meta = stateManager.getMeta();
   const envInfo = stateManager.getLocalEnvInfo();

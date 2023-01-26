@@ -19,7 +19,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         short: '',
         long: 'frontend',
-        flagDescription: "Information for the project's frontend appliction",
+        flagDescription: "Information for the project's frontend application",
       },
       {
         short: '',
@@ -68,7 +68,7 @@ export const commandsInfo: Array<CommandInfo> = [
           {
             short: '',
             long: 'frontend',
-            flagDescription: "Information for the project's frontend appliction",
+            flagDescription: "Information for the project's frontend application",
           },
           {
             short: '',
@@ -154,7 +154,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         short: '',
         long: 'frontend',
-        flagDescription: "Information for the project's frontend appliction",
+        flagDescription: "Information for the project's frontend application",
       },
       {
         short: '',
@@ -275,7 +275,7 @@ export const commandsInfo: Array<CommandInfo> = [
           {
             short: '',
             long: 'permissions-boundary <IAM Policy ARN>',
-            flagDescription: 'Set a permisions boundary',
+            flagDescription: 'Set a permissions boundary',
           },
         ],
       },
@@ -578,7 +578,7 @@ export const commandsInfo: Array<CommandInfo> = [
   },
   {
     command: 'export',
-    commandDescription: 'Export Amplify CLI-generated backends as a Cloud Development Kit (CDK) stack',
+    commandDescription: 'Export Amplify CLI-generated backend as a Cloud Development Kit (CDK) stack',
     commandUsage: 'amplify export [flags]',
     commandFlags: [
       {
@@ -723,7 +723,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'gql-compile',
         subCommandDescription: 'Compiles your GraphQL schema and generates a CloudFormation template',
-        subCommandUsage: 'amplify api gql-conpile',
+        subCommandUsage: 'amplify api gql-compile',
         subCommandFlags: [],
       },
       {

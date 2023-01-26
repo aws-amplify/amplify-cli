@@ -58,9 +58,9 @@ export async function askTriggerFunctionTypeQuestion(): Promise<S3TriggerFunctio
   return triggerTypeAnswer as S3TriggerFunctionType;
 }
 
-export async function askSelectExistingFunctionToAddTrigger(choiceslambdaResources: Array<string>): Promise<string> {
+export async function askSelectExistingFunctionToAddTrigger(choicesLambdaResources: Array<string>): Promise<string> {
   const message = 'Select from the following options';
-  const selectedLambdaResourceName = await prompter.pick(message, choiceslambdaResources);
+  const selectedLambdaResourceName = await prompter.pick(message, choicesLambdaResources);
   return selectedLambdaResourceName;
 }
 
@@ -171,7 +171,7 @@ export async function askUserPoolGroupSelectionQuestion(
   const selectedChoices = defaultValues.groupAccess ? Object.keys(defaultValues.groupAccess) : [];
   const selectedIndexes = selectedChoices ? getIndexArray(choices, selectedChoices) : undefined;
   const userPoolGroups = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: selectedIndexes });
-  //prompter pick-many returns string if returnsize is 1, and array otherwise.
+  //prompter pick-many returns string if return size is 1, and array otherwise.
   if (Array.isArray(userPoolGroups)) {
     return userPoolGroups as string[];
   } else {

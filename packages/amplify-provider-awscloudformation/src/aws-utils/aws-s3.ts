@@ -266,7 +266,7 @@ export class S3 {
   }
 
   /**
-   * Delete the file provided as input, if it exists. Noop if the file doesnt exist.
+   * Delete the file provided as input, if it exists. No op if the file does not exist.
    * @param bucketName S3 bucket name
    * @param filePath Path to the file to be deleted
    */

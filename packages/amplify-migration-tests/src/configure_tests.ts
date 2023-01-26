@@ -2,14 +2,13 @@ import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionTo
 
 /*
  *  Migration tests must be run without publishing to local registry
- *  so that the CLI used initally is the installed version and the
+ *  so that the CLI used initially is the installed version and the
  *  tested CLI is the codebase (bin/amplify)
  */
 
 async function setupAmplify(version = 'latest') {
   // install CLI to be used for migration test initial project
   await installAmplifyCLI(version);
-  
   console.log('INSTALLED CLI:', version);
 
   if (isCI()) {

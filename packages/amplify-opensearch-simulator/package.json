@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-opensearch-simulator",
-  "version": "1.2.0-beta.4",
+  "version": "1.2.1",
   "description": "Opensearch local simulator",
   "repository": {
     "type": "git",
@@ -46,6 +46,20 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "collectCoverage": true
+    "collectCoverage": true,
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.+(ts|tsx|js)",
+      "**/?(*.)+(spec|test).+(ts|tsx|js)"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ]
   }
 }
