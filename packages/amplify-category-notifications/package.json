@@ -34,6 +34,10 @@
   },
   "jest": {
     "testURL": "http://localhost",
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
