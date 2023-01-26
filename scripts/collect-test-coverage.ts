@@ -29,9 +29,7 @@ const copyPackageCoverage = (pkg: string) => {
 };
 
 const getCoveragePath = (pkg: string): string => {
-  const p = path.join('./packages', pkg, 'coverage/coverage-final.json');
-  console.log(p);
-  return p;
+  return path.join('./packages', pkg, 'coverage/coverage-final.json');
 };
 
 const mergeCoverageMap = (files: string[]): istanbul.CoverageMap => {
@@ -41,7 +39,7 @@ const mergeCoverageMap = (files: string[]): istanbul.CoverageMap => {
     const fileCoverageMap = istanbul.createCoverageMap(JSON.parse(json));
     map.merge(fileCoverageMap);
   });
-  // Remove coverage from lib, e2e, and test files
+  // Remove coverage from e2e, and test files
   map.filter(file => !file.match(/(__e2e__|__tests__)/));
   return map;
 };
