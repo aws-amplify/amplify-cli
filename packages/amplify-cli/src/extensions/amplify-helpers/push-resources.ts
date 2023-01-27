@@ -2,7 +2,8 @@ import {
   $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
-import { printer } from 'amplify-prompts';
+import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
+import { printer, prompter } from 'amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from './get-env-info';
@@ -82,6 +83,33 @@ export const pushResources = async (
     printer.info('\nNo changes detected');
     context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
+  }
+
+  // Verify any environment parameters before push operation
+  const envParamManager = (await ensureEnvParamManager()).instance;
+
+  const promptMissingParameter = async (
+    categoryName: string,
+    resourceName: string,
+    parameterName: string,
+    envParamManager: IEnvironmentParameterManager,
+  ): Promise<void> => {
+    printer.warn(`Could not find value for parameter ${parameterName}`);
+    const value = await prompter.input(`Enter a value for ${parameterName} for the ${categoryName} resource: ${resourceName}`);
+    const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
+    resourceParamManager.setParam(parameterName, value);
+  };
+
+  if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
+    await envParamManager.verifyExpectedEnvParameters();
+  } else {
+    const missingParameters = await envParamManager.getMissingParameters();
+    if (missingParameters.length > 0) {
+      for (const { categoryName, resourceName, parameterName } of missingParameters) {
+        await promptMissingParameter(categoryName, resourceName, parameterName , envParamManager);
+      }
+      await envParamManager.save(); // Values must be in TPI for CFN deployment to work
+    }
   }
 
   // rebuild has an upstream confirmation prompt so no need to prompt again here
