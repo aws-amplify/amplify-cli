@@ -1,9 +1,13 @@
 import { $TSContext } from 'amplify-cli-core';
-import type { Schema } from '@aws-amplify/datastore';
 import { printer } from 'amplify-prompts';
 import AmplifyUIBuilder from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyStudioClient } from '../clients';
 import { isFormDetachedFromModel, isFormSchemaCustomized, shouldRenderComponents } from '../commands/utils';
+
+// TODO: replace this type when amplify-codegen package export official types
+type Schema = {
+  models: Record<string, unknown>
+};
 
 /**
  * Handles showing a warning for detached forms pre-push.
