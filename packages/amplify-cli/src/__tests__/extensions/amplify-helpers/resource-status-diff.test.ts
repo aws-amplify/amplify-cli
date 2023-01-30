@@ -79,7 +79,7 @@ describe('resource-status-diff helpers', () => {
   });
 
   it('should Glob only cloudformation template files', async () => {
-    const mockCloudformationTemplateName = 'cloudformation-template.json';
+    const mockCloudFormationTemplateName = 'cloudformation-template.json';
     const stubFileFolder = 'stub-file-folder';
     const expectedGlobOptions = {
       absolute: false,
@@ -91,7 +91,7 @@ describe('resource-status-diff helpers', () => {
     const cfnFilename = globCFNFilePath(stubFileFolder);
     expect(globMock.sync.mock.calls.length).toBe(1);
     expect(globMock.sync).toBeCalledWith('**/*template.{yaml,yml,json}', expectedGlobOptions);
-    expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudformationTemplateName}`);
+    expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudFormationTemplateName}`);
   });
 
   it('should search both Build and non Build folders for Cloudformation Templates', async () => {

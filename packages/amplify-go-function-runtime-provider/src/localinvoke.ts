@@ -23,7 +23,7 @@ const buildLocalInvoker = async (context: any) => {
 
   // Check if we need to build it or it already exists
   if (!fs.existsSync(localInvokeExecutablePath)) {
-    // Build localinvoker
+    // Build localInvoker
     context.print.info('Local invoker binary was not found, building it...');
     executeCommand(['mod', 'tidy'], true, undefined, localInvokerDir);
     executeCommand(['build', MAIN_SOURCE], true, undefined, localInvokerDir);

@@ -6,8 +6,8 @@ const CODEGEN_TEMPLATES_FOLDER = 'templates';
 
 const canonicalFunctionName = commandName => _.camelCase(commandName);
 
-const getTemplate = templatName => {
-  const templatePath = path.join(__dirname, CODEGEN_TEMPLATES_FOLDER, templatName);
+const getTemplate = templateName => {
+  const templatePath = path.join(__dirname, CODEGEN_TEMPLATES_FOLDER, templateName);
   const template = fs.readFileSync(templatePath).toString();
   return _.template(template, { interpolate: /<%=([\s\S]+?)%>/g });
 };

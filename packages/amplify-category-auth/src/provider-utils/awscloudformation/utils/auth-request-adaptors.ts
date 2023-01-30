@@ -40,7 +40,7 @@ export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthReque
 
 export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestionHeadlessResult;
 /**
- * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguation output format
+ * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguration output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
 export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {

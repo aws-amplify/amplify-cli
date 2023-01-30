@@ -200,7 +200,7 @@ describe('update ddb walkthrough tests', () => {
       .fn()
       .mockReturnValueOnce(true) // Would you like to add another column
       .mockReturnValueOnce(false) // Would you like to add another column
-      .mockReturnValueOnce(true) // Do you want to keep existing global seconday indexes created on your table?
+      .mockReturnValueOnce(true) // Do you want to keep existing global secondary indexes created on your table?
       .mockReturnValueOnce(true) // Do you want to add global secondary indexes to your table?
       .mockReturnValueOnce(false) // Do you want to add a sort key to your global secondary index
       .mockReturnValueOnce(false); // Do you want to add more global secondary indexes to your table?

@@ -246,7 +246,7 @@ describe('TriggerFlow:  ', () => {
     });
   });
 
-  describe('When deleteting deselected triggers...', () => {
+  describe('When deleting deselected triggers...', () => {
     const currentTriggers = ['arya'];
     let previousTriggers;
     let deleteSpy;

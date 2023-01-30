@@ -61,10 +61,10 @@ export const collectFiles = (resources: { category: string, resourceName: string
     return arr;
   }, filePaths);
   // add root stack
-  const rootstackPath = path.join(pathManager.getRootStackBuildDirPath(rootPath), rootStackFileName);
-  if(fs.existsSync(rootstackPath)) {
+  const rootStackPath = path.join(pathManager.getRootStackBuildDirPath(rootPath), rootStackFileName);
+  if(fs.existsSync(rootStackPath)) {
     filePaths.push({
-      filePath: rootstackPath,
+      filePath: rootStackPath,
       redact: false,
     });
   }

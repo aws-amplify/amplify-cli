@@ -6,6 +6,7 @@ class ElasticsearchHelper {
   private static readonly ERROR_FORMAT: string = 'Could not construct an Elasticsearch Query DSL from {0} and {1}';
 
 
+    // eslint-disable-next-line spellcheck/spell-checker
   /**
    * This method is used by the ModelTransformUtils.
    *

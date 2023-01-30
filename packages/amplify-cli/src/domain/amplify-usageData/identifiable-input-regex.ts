@@ -5,21 +5,21 @@ const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'ap
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
-//matches any string with contiansToRedact in it
-const keyregex = new RegExp(keyMatcher, 'gmi');
+//matches any string with containsToRedact in it
+const keyRegEx = new RegExp(keyMatcher, 'gmi');
 // matches any json and gives values in json
-const jsonregex = new RegExp(completeMatch, 'gmi');
+const jsonRegex = new RegExp(completeMatch, 'gmi');
 function testReplaceJsonValues(json: string, redactedInput: string): string {
   if (!json) return json;
   let s: string = json.toString();
-  if (jsonregex.test(s)) {
-    jsonregex.lastIndex = 0;
+  if (jsonRegex.test(s)) {
+    jsonRegex.lastIndex = 0;
     let m: RegExpExecArray | null;
     const valuesToRedact: any = [];
 
     //find all values to redact
     do {
-      m = jsonregex.exec(s);
+      m = jsonRegex.exec(s);
       if (m != null) {
         valuesToRedact.push(m[3]);
       }
@@ -52,7 +52,7 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: bo
       redactString = false;
       continue;
     }
-    if (!isJson(argv[i]) && keyregex.test(argv[i])) {
+    if (!isJson(argv[i]) && keyRegEx.test(argv[i])) {
       redactString = true;
       continue;
     }
@@ -60,7 +60,7 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: bo
   if (input.options) {
     Object.keys(input.options).forEach(key => {
       if (key && input.options && input.options[key] && typeof input.options[key] === 'string') {
-        if (keyregex.test(key) && !isJson(input.options[key].toString())) {
+        if (keyRegEx.test(key) && !isJson(input.options[key].toString())) {
           input.options[key] = replacementString;
         } else if (typeof input.options[key] === 'string') {
           input.options[key] = testReplaceJsonValues(input.options[key].toString(), replacementString);

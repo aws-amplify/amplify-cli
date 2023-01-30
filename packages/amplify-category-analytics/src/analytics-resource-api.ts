@@ -132,11 +132,8 @@ export const analyticsPluginAPIPush = async (
     pushResponse.reasonMsg = `No Resources of ${resourceProviderServiceName} found for ${AmplifyCategories.ANALYTICS} category`;
   } else {
     try {
-      context.parameters.options.yes = true;
-      context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
-      context.exeInfo.inputParams.yes = true;
       await invokeAuthPush(context);
-      await analyticsPush(context);
+      await analyticsPushYes(context);
     } catch (err) {
       pushResponse.status = false;
       pushResponse.errorCode = PluginAPIError.E_PUSH_FAILED;
@@ -144,6 +141,27 @@ export const analyticsPluginAPIPush = async (
     }
   }
   return pushResponse;
+};
+
+/**
+ * Execute analytics push command with force yes
+ * @param {Object} context - The amplify context.
+ */
+export const analyticsPushYes = async (context: $TSContext): Promise<void> => {
+  const exeInfoClone = { ...context?.exeInfo };
+  const parametersClone = { ...context?.parameters };
+  try {
+    context.exeInfo = (context.exeInfo) || {};
+    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
+    context.parameters = (context.parameters) || {};
+    context.parameters.options.yes = true;
+    context.parameters.first = undefined;
+    await analyticsPush(context);
+  } finally {
+    context.exeInfo = exeInfoClone;
+    context.parameters = parametersClone;
+  }
 };
 
 /**
@@ -171,6 +189,7 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
       pinpointNotificationsMeta.Id = analyticsResource.output.Id;
       pinpointNotificationsMeta.Region = analyticsResource.output.Region;
       // Update Notifications output and channel metadata
+      pinpointNotificationsMeta.output = pinpointNotificationsMeta.output || {};
       pinpointNotificationsMeta.output.Id = analyticsResource.output.Id;
       pinpointNotificationsMeta.output.regulatedResourceName = analyticsResource.resourceName; // without the env suffix
       pinpointNotificationsMeta.output.region = analyticsResource.output.Region;

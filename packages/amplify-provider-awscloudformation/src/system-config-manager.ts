@@ -1,8 +1,6 @@
-import {
-  $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from 'amplify-cli-core';
 
-import * as aws from 'aws-sdk';
+import { STS, ProcessCredentials } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
@@ -10,6 +8,7 @@ import * as inquirer from 'inquirer';
 import proxyAgent from 'proxy-agent';
 import * as constants from './constants';
 import { fileLogger } from './utils/aws-logger';
+import { AwsSdkConfig } from './utils/auth-types';
 
 const logger = fileLogger('system-config-manager');
 
@@ -74,13 +73,17 @@ export const setProfile = (awsConfigInfo: $TSAny, profileName: string): void => 
 /**
  * Gets AWS configuration for a profile
  */
-export const getProfiledAwsConfig = async (context: $TSContext, profileName: string, isRoleSourceProfile?: boolean): Promise<$TSAny> => {
-  let awsConfigInfo;
+export const getProfiledAwsConfig = async (
+  context: $TSContext,
+  profileName: string,
+  isRoleSourceProfile?: boolean,
+): Promise<AwsSdkConfig> => {
+  let awsConfigInfo: AwsSdkConfig;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     logger('getProfiledAwsConfig.profileConfig', [profileConfig])();
-    if (!isRoleSourceProfile && (profileConfig.role_arn || profileConfig.credential_process)) {
+    if (!isRoleSourceProfile && profileConfig.role_arn) {
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
@@ -88,14 +91,17 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
         ...profileConfig,
         ...roleCredentials,
       };
+    } else if (profileConfig.credential_process) {
+      const credentialProcess = new ProcessCredentials({ profile: profileName, filename: configFilePath });
+      await credentialProcess.getPromise();
 
-      if (profileConfig.credential_process) {
-        const chain = new aws.CredentialProviderChain();
-        const processProvider = () => new aws.ProcessCredentials({ profile: profileName });
-        chain.providers.push(processProvider);
-
-        awsConfigInfo.credentialProvider = chain;
-      }
+      awsConfigInfo = {
+        region: profileConfig.region,
+        accessKeyId: credentialProcess.accessKeyId,
+        secretAccessKey: credentialProcess.secretAccessKey,
+        sessionToken: credentialProcess.sessionToken,
+        expiration: credentialProcess.expireTime,
+      };
     } else {
       logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
       const profileCredentials = getProfileCredentials(profileName);
@@ -143,7 +149,7 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
       mfaTokenCode = await getMfaTokenCode();
     }
     logger('getRoleCredentials.aws.STS', [sourceProfileAwsConfig])();
-    const sts = new aws.STS(sourceProfileAwsConfig);
+    const sts = new STS(sourceProfileAwsConfig);
     const assumeRoleRequest = {
       RoleArn: profileConfig.role_arn,
       RoleSessionName: roleSessionName,
@@ -232,10 +238,11 @@ const validateCachedCredentials = (roleCredentials: $TSAny): boolean => {
   let isValid = false;
 
   if (roleCredentials) {
-    isValid = !isCredentialsExpired(roleCredentials)
-      && roleCredentials.accessKeyId
-      && roleCredentials.secretAccessKey
-      && roleCredentials.sessionToken;
+    isValid =
+      !isCredentialsExpired(roleCredentials) &&
+      roleCredentials.accessKeyId &&
+      roleCredentials.secretAccessKey &&
+      roleCredentials.sessionToken;
   }
 
   return isValid;
