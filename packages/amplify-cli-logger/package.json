@@ -24,6 +24,10 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
     "coveragePathIgnorePatterns": [
       "/node_modules/",

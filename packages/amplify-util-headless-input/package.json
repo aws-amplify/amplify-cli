@@ -24,6 +24,10 @@
     "fs-extra": "^8.1.0"
   },
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "clearMocks": true,
     "coverageDirectory": "coverage",
     "testEnvironment": "node",
