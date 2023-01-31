@@ -7,6 +7,7 @@ import { editors, editorSelection, normalizeEditor } from '../extensions/amplify
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
+import { prompter } from 'amplify-prompts';
 
 /**
  * Analyzes the project
@@ -294,12 +295,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
 };
 
 const askCloneEnvParamsQuestion = async (context: $TSContext): Promise<void> => {
-  const cloneFromSrcEnv = await inquirer.prompt({
-    name: 'repeater',
-    type: 'confirm',
-    default: false,
-    message: 'Do you want to clone values from the source environment?',
-  });
+  const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
   context.exeInfo.cloneFromSrcEnv = cloneFromSrcEnv;
 };
 
