@@ -30,18 +30,6 @@ describe('parsing yarn lock files', () => {
       }),
     ).toThrowError();
   });
-  it('parses yarn lock file correctly', async () => {
-    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
-      executable: 'yarn',
-      lockFile: 'yarn-test.lock',
-      packageManager: 'yarn',
-    });
-    const projectRoot = path.join(__dirname, 'resources');
-    const dec = new AmplifyNodePkgDetector({
-      projectRoot,
-    });
-    expect(dec.parseLockFile()).toMatchSnapshot();
-  });
 
   it('throw error on corrupted lock file', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
@@ -53,7 +41,7 @@ describe('parsing yarn lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).parseLockFile()).toThrowErrorMatchingInlineSnapshot(
+    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core')).toThrowErrorMatchingInlineSnapshot(
       `"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`,
     );
   });
@@ -217,18 +205,6 @@ describe('parsing package lock files', () => {
       }),
     ).toThrowError();
   });
-  it('parses package lock file correctly', async () => {
-    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
-      executable: 'npm',
-      lockFile: 'package-lock-test.json',
-      packageManager: 'npm',
-    });
-    const projectRoot = path.join(__dirname, 'resources');
-    const dec = new AmplifyNodePkgDetector({
-      projectRoot,
-    });
-    expect(dec.parseLockFile()).toMatchSnapshot();
-  });
 
   it('throw error on corrupted package lock file', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
@@ -240,7 +216,7 @@ describe('parsing package lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).parseLockFile()).toThrowErrorMatchingInlineSnapshot(
+    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core')).toThrowErrorMatchingInlineSnapshot(
       `"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`,
     );
   });
@@ -414,20 +390,6 @@ describe('parsing package lock files', () => {
 });
 
 describe('parsing yarn2 lock files', () => {
-  it('parses yarn2 lock file correctly', async () => {
-    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
-      executable: 'yarn',
-      lockFile: 'yarn-2-test.lock',
-      packageManager: 'yarn2',
-      yarnrc: '.yarnrc.yml',
-    });
-    const projectRoot = path.join(__dirname, 'resources');
-    const dec = new AmplifyNodePkgDetector({
-      projectRoot,
-    });
-    expect(dec.parseLockFile()).toMatchSnapshot();
-  });
-
   it('throw error on corrupted lock file', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
       executable: 'yarn',
@@ -439,7 +401,7 @@ describe('parsing yarn2 lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).parseLockFile()).toThrowErrorMatchingInlineSnapshot(
+    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core')).toThrowErrorMatchingInlineSnapshot(
       `"yarn.lock parsing failed"`,
     );
   });

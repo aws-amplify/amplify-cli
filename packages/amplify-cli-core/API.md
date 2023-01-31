@@ -187,8 +187,6 @@ export class AmplifyNodePkgDetector {
     constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
     // (undocumented)
     detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
-    // (undocumented)
-    parseLockFile(): Lockfile;
 }
 
 // @public (undocumented)
@@ -1004,12 +1002,6 @@ export class JSONUtilities {
     } | undefined) => void;
 }
 
-// Warning: (ae-forgotten-export) The symbol "PackageLock" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "YarnLock" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type Lockfile = PackageLock | YarnLock;
-
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1126,7 +1118,7 @@ export const PathConstants: {
     ExportManifestJsonFilename: string;
     ExportTagsJsonFileName: string;
     ExportCategoryStackMappingJsonFilename: string;
-    OverrideFilePath: string;
+    OverrideFileName: string;
 };
 
 // @public (undocumented)

@@ -3,7 +3,7 @@ import * as path from 'path';
 import { AmplifyError } from '../errors/amplify-error';
 import { AmplifyFault } from '../errors/amplify-fault';
 import { getPackageManager, PackageManager } from '../utils/packageManager';
-import { Lockfile, LockfileParser } from './lock-file-interface';
+import { LockfileParser } from './lock-file-interface';
 import { PackageJson } from './lock-file-types';
 import { LockFileParserFactory } from './parser-factory';
 
@@ -48,13 +48,6 @@ export class AmplifyNodePkgDetector {
        this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
        this.lockFileContents = this.getLockFileContent(amplifyDetectorProps.projectRoot);
        this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager.packageManager);
-     }
-
-     /**
-      * parses lock file
-      */
-     public parseLockFile():Lockfile {
-       return this.lockFileParser.parseLockFile(this.lockFileContents);
      }
 
      /**
