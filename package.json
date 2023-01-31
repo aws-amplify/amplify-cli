@@ -74,7 +74,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^5.0.0",
+    "lerna": "^6.4.1",
     "strip-ansi": "^6.0.0"
   },
   "workspaces": {
@@ -133,7 +133,6 @@
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
-    "nx": "^14.8.3",
     "pkg": "^5.4.1",
     "rimraf": "^3.0.0",
     "ts-jest": "^27.0.0",
