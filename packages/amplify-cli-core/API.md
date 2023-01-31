@@ -1063,7 +1063,7 @@ export type PackageManager = {
     packageManager: PackageManagerType;
     lockFile: string;
     executable: string;
-    yarnrc?: string;
+    yarnrcPath?: string;
 };
 
 // @public (undocumented)
