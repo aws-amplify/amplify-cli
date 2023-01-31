@@ -24,6 +24,7 @@ import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
 import { cloneEnvParamManager } from './utils/clone-env-param-manager';
+import { prompter } from 'amplify-prompts';
 
 const logger = fileLogger('initialize-env');
 
@@ -90,7 +91,8 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
       });
     });
 
-    if (context.exeInfo.cloneFromSrcEnv) {
+    const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
+    if (cloneFromSrcEnv) {
       await cloneEnvParamManager(context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
     }
 
