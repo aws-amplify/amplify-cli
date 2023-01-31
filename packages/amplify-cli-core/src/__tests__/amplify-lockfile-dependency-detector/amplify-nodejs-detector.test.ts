@@ -28,7 +28,7 @@ describe('parsing yarn lock files', () => {
       () => new AmplifyNodePkgDetector({
         projectRoot,
       }),
-    ).toThrowErrorMatchingInlineSnapshot(`"Lockfile not found at location: \${lockFileFullPath}"`);
+    ).toThrowError();
   });
   it('parses yarn lock file correctly', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
@@ -215,7 +215,7 @@ describe('parsing package lock files', () => {
       () => new AmplifyNodePkgDetector({
         projectRoot,
       }),
-    ).toThrowErrorMatchingInlineSnapshot(`"Lockfile not found at location: \${lockFileFullPath}"`);
+    ).toThrowError();
   });
   it('parses package lock file correctly', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({

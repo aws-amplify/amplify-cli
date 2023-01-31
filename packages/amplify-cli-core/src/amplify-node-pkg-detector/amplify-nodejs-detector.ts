@@ -69,10 +69,10 @@ export class AmplifyNodePkgDetector {
       * get lock file content as string
       */
      private getLockFileContent = (projectRoot: string) : string => {
-       const lockFileFullPath = path.resolve(projectRoot, this.packageManager.lockFile);
+       const lockFileFullPath = path.join(projectRoot, this.packageManager.lockFile);
        if (!fs.existsSync(lockFileFullPath)) {
          throw new AmplifyFault('LockFileNotFoundFault', {
-           message: 'Lockfile not found at location: ${lockFileFullPath}',
+           message: `Lockfile not found at location: ${lockFileFullPath}`,
          });
        }
        return fs.readFileSync(lockFileFullPath, 'utf-8');
@@ -87,7 +87,7 @@ export class AmplifyNodePkgDetector {
        const allPackagesWithDependency = this.lockFileParser.getDependentPackageMap(dependencyToSearch, this.lockFileContents);
        if (allPackagesWithDependency !== undefined) {
          explicitDependencies = Object.keys(allPackagesWithDependency).map(pkg => {
-           if (Object.keys(allPkgJsonDependencies).includes(pkg)) {
+           if (allPkgJsonDependencies[pkg]) {
              const obj: DetectedDependency = {
                packageName: pkg,
                dependentPackage: {

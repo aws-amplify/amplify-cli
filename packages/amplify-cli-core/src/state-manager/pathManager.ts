@@ -66,7 +66,7 @@ export const PathConstants = {
   ExportManifestJsonFilename: 'amplify-export-manifest.json',
   ExportTagsJsonFileName: 'export-tags.json',
   ExportCategoryStackMappingJsonFilename: 'category-stack-mapping.json',
-  OverrideFilePath: 'override.ts',
+  OverrideFileName: 'override.ts',
 };
 
 /**
@@ -269,7 +269,7 @@ export class PathManager {
   ]);
 
   getResourceOverrideFilePath = (projectPath: string | undefined, category: string, resourceName: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName, PathConstants.OverrideFilePath],
+    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName, PathConstants.OverrideFileName],
   );
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
