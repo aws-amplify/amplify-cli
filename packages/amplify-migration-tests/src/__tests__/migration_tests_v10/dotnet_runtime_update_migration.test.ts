@@ -52,7 +52,7 @@ describe('existing dotnet core functions compatibility test', () => {
 
   const assertDotNetVersion = (): void => {
     const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
-    const { functionRuntime } = JSONUtilities.readJson(path.join(functionPath, 'amplify.state'));
+    const { functionRuntime } = JSONUtilities.readJson<any>(path.join(functionPath, 'amplify.state'));
     expect(functionRuntime).toEqual('dotnetcore3.1');
     const functionProjFilePath = path.join(functionPath, 'src', `${funcName}.csproj`);
     const functionProjFileContent = fs.readFileSync(functionProjFilePath, 'utf8');

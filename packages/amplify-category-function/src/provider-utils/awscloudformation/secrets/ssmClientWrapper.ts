@@ -113,11 +113,11 @@ const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
     spinner.start();
     spinner.text = 'Building and packaging resources';
 
-    const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
+    const { client } = await context.amplify.invokePluginMethod<{ client: aws.SSM }>(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
       context,
     ]);
 
-    return client as aws.SSM;
+    return client;
   } finally {
     spinner.stop();
   }
