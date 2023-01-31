@@ -85,6 +85,10 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
+  getResourceParamManagerResourceKeys(): string[] {
+    return Object.keys(this.resourceParamManagers);
+  }
+
   async save(): Promise<void> {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
@@ -129,6 +133,20 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
   }
 }
 
+export const cloneEnvParamsToNewEnvParamManager = (
+  srcManager: IEnvironmentParameterManager,
+  destManager: IEnvironmentParameterManager,
+): void => {
+  const resourceKeys = srcManager.getResourceParamManagerResourceKeys();
+  const categoryResourceNamePairs: string[][] = resourceKeys.map(key => key.split('_'));
+  categoryResourceNamePairs.forEach(([category, resourceName]) => {
+    const srcResourceParamManager: ResourceParameterManager = srcManager.getResourceParamManager(category, resourceName);
+    const allSrcParams: Record<string, string> = srcResourceParamManager.getAllParams();
+    const destResourceParamManager: ResourceParameterManager = destManager.getResourceParamManager(category, resourceName);
+    destResourceParamManager.setAllParams(allSrcParams);
+  });
+};
+
 const getResourceKey = (category: string, resourceName: string): string => `${category}_${resourceName}`;
 
 // split into [category, resourceName]
@@ -144,6 +162,7 @@ export type IEnvironmentParameterManager = {
   init: () => Promise<void>;
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
+  getResourceParamManagerResourceKeys: () => Array<string>;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: () => void;
 };

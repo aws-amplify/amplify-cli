@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -108,6 +106,10 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
   }
 
   const envName = await getEnvName(context);
+
+  if (context.input.command === 'env') {
+    await askCloneEnvParamsQuestion(context);
+  }
 
   let defaultEditor = getDefaultEditor();
 
@@ -289,6 +291,16 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
   }
 
   return envName;
+};
+
+const askCloneEnvParamsQuestion = async (context: $TSContext): Promise<void> => {
+  const cloneFromSrcEnv = await inquirer.prompt({
+    name: 'repeater',
+    type: 'confirm',
+    default: false,
+    message: 'Do you want to clone values from the source environment?',
+  });
+  context.exeInfo.cloneFromSrcEnv = cloneFromSrcEnv;
 };
 
 /**

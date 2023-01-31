@@ -12,9 +12,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import {
-  $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
@@ -25,6 +23,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
+import { cloneEnvParamManager } from './utils/clone-env-param-manager';
 
 const logger = fileLogger('initialize-env');
 
@@ -90,6 +89,10 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
         }
       });
     });
+
+    if (context.exeInfo.cloneFromSrcEnv) {
+      await cloneEnvParamManager(context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
+    }
 
     //
     // Download the meta file from the bucket and see if it has migrated resources (mobileHubMigrated property === true)
