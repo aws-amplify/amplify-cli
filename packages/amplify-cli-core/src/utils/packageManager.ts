@@ -17,7 +17,7 @@ export type PackageManager = {
   lockFile: string;
   executable: string;
   // only exists if yarn2 is used
-  yarnrc?: string
+  yarnrcPath?: string
 };
 
 const isWindows = process.platform === 'win32';
@@ -37,7 +37,7 @@ const packageManagers: Record<string, PackageManager> = {
     packageManager: 'yarn',
     lockFile: 'yarn.lock',
     executable: isWindows ? 'yarn.cmd' : 'yarn',
-    yarnrc: '.yarnrc.yml',
+    yarnrcPath: '.yarnrc.yml',
   },
 };
 
@@ -66,8 +66,8 @@ export const getPackageManager = (rootPath?: string): PackageManager | null => {
   tempFilePath = path.join(effectiveRootPath, packageManagers.yarn.lockFile);
 
   // checks for yarn2
-  if (packageManagers.yarn2.yarnrc !== undefined) {
-    const yarnRcFilePath = path.join(effectiveRootPath, packageManagers.yarn2.yarnrc);
+  if (packageManagers.yarn2.yarnrcPath !== undefined) {
+    const yarnRcFilePath = path.join(effectiveRootPath, packageManagers.yarn2.yarnrcPath);
     if (fs.existsSync(tempFilePath) && checkExecutable(packageManagers.yarn.executable) && fs.existsSync(yarnRcFilePath)) {
       return packageManagers.yarn2;
     }
@@ -85,8 +85,8 @@ export const getPackageManager = (rootPath?: string): PackageManager | null => {
 
   // No lock files present at this point
   // check for yarn2
-  if (packageManagers.yarn2.yarnrc !== undefined) {
-    const yarnRcFilePath = path.join(effectiveRootPath, packageManagers.yarn2.yarnrc);
+  if (packageManagers.yarn2.yarnrcPath !== undefined) {
+    const yarnRcFilePath = path.join(effectiveRootPath, packageManagers.yarn2.yarnrcPath);
     if (fs.existsSync(yarnRcFilePath) && checkExecutable(packageManagers.yarn.executable)) {
       return packageManagers.yarn2;
     }

@@ -28,7 +28,7 @@ describe('packageManager tests', () => {
     expect(which_mock.sync).toBeCalledTimes(1);
     expect(packageManager).toBeDefined();
     expect(packageManager?.packageManager).toEqual('yarn');
-    expect(packageManager?.yarnrc).toEqual('.yarnrc.yml');
+    expect(packageManager?.yarnrcPath).toEqual('.yarnrc.yml');
   });
 
   test('detects yarn correctly', () => {

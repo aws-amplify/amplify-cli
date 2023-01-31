@@ -395,7 +395,7 @@ describe('parsing yarn2 lock files', () => {
       executable: 'yarn',
       lockFile: 'yarn-test-error.lock',
       packageManager: 'yarn2',
-      yarnrc: '.yarnrc.yml',
+      yarnrcPath: '.yarnrc.yml',
     });
     const projectRoot = path.join(__dirname, 'resources');
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
@@ -411,7 +411,7 @@ describe('parsing yarn2 lock files', () => {
       executable: 'yarn',
       lockFile: 'yarn-2-test.lock',
       packageManager: 'yarn2',
-      yarnrc: '.yarnrc.yml',
+      yarnrcPath: '.yarnrc.yml',
     });
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
@@ -456,7 +456,7 @@ describe('parsing yarn2 lock files', () => {
       executable: 'yarn',
       lockFile: 'yarn-2-test.lock',
       packageManager: 'yarn2',
-      yarnrc: '.yarnrc.yml',
+      yarnrcPath: '.yarnrc.yml',
     });
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
@@ -545,7 +545,7 @@ describe('parsing yarn2 lock files', () => {
       executable: 'yarn',
       lockFile: 'yarn-2-test.lock',
       packageManager: 'yarn2',
-      yarnrc: '.yarnrc.yml',
+      yarnrcPath: '.yarnrc.yml',
     });
     const projectRoot = path.join(__dirname, 'resources');
     const dec = new AmplifyNodePkgDetector({
