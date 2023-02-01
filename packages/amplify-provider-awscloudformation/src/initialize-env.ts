@@ -91,11 +91,6 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
       });
     });
 
-    const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
-    if (cloneFromSrcEnv) {
-      await cloneEnvParamManager(context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
-    }
-
     //
     // Download the meta file from the bucket and see if it has migrated resources (mobileHubMigrated property === true)
     // copy those over to the reconstructed meta file.

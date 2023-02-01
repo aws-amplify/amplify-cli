@@ -10,6 +10,7 @@ import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { checkForNestedProject } from './helpers/projectUtils';
+import { prompter } from 'amplify-prompts';
 
 const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
@@ -18,9 +19,10 @@ const constructExeInfo = (context: $TSContext): void => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const runStrategy = (quickstart: boolean) => (quickstart
-  ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-  : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup]);
+const runStrategy = (quickstart: boolean) =>
+  quickstart
+    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
@@ -35,6 +37,15 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
 
   if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
-    await raisePostEnvAddEvent(context as unknown as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
+    await raisePostEnvAddEvent((context as unknown) as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
+  }
+
+  const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
+  if (cloneFromSrcEnv) {
+    const CloudFormationProviderName = 'awscloudformation';
+    await context.amplify.invokePluginMethod(context, CloudFormationProviderName, undefined, 'cloneEnvParamManager', [
+      context.exeInfo.sourceEnvName,
+      context.exeInfo.localEnvInfo.envName,
+    ]);
   }
 };
