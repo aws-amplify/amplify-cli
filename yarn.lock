@@ -8163,6 +8163,11 @@
   dependencies:
     "@types/yargs-parser" "*"
 
+"@types/yarnpkg__lockfile@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.npmjs.org/@types/yarnpkg__lockfile/-/yarnpkg__lockfile-1.1.5.tgz#9639020e1fb65120a2f4387db8f1e8b63efdf229"
+  integrity sha512-8NYnGOctzsI4W0ApsP/BIHD/LnxpJ6XaGf2AZmz4EyDYJMxtprN4279dLNI1CPZcwC9H18qYcaFv4bXi0wmokg==
+
 "@types/yauzl@^2.9.1":
   version "2.9.2"
   resolved "https://registry.npmjs.org/@types/yauzl/-/yauzl-2.9.2.tgz#c48e5d56aff1444409e39fa164b0b4d4552a7b7a"
@@ -24119,6 +24124,11 @@ yaml@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.1.1.tgz#1e06fb4ca46e60d9da07e4f786ea370ed3c3cfec"
   integrity sha512-o96x3OPo8GjWeSLF+wOAbrPfhFOGY0W00GNaxCDv+9hkcDJEnev1yh8S7pgHF0ik6zc8sQLuL8hjHjJULZp8bw==
+
+yaml@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/yaml/-/yaml-2.2.1.tgz#3014bf0482dcd15147aa8e56109ce8632cd60ce4"
+  integrity sha512-e0WHiYql7+9wr4cWMx3TVQrNwejKaEe7/rHNmQmqRjazfOP5W8PB6Jpebb5o6fIapbz9o9+2ipcaTM2ZwDI6lw==
 
 yargs-parser@20.2.4:
   version "20.2.4"
