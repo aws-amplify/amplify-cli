@@ -1,13 +1,8 @@
 import path from 'path';
 import _ from 'lodash';
 import * as uuid from 'uuid';
-import inquirer from 'inquirer';
-import {
-  $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny, $TSObject,
-} from 'amplify-cli-core';
-import {
-  formatter, maxLength, printer, prompter,
-} from 'amplify-prompts';
+import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny, $TSObject } from 'amplify-cli-core';
+import { formatter, maxLength, printer, prompter } from 'amplify-prompts';
 import { getEnvParamManager, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
@@ -60,7 +55,7 @@ export const saveEnvironmentVariables = (resourceName: string, newEnvironmentVar
 /**
  * Walkthrough to move environment variables to new environment
  */
-export const askEnvironmentVariableCarryOut = async (
+export const askEnvironmentVariableCarryOrUpdateQuestions = async (
   context: $TSContext,
   fromEnvName: string,
   yesFlagSet?: boolean,
@@ -79,100 +74,103 @@ export const askEnvironmentVariableCarryOut = async (
 
   // copy the env vars for each function from the previous environment to the new environment
   functionNames.forEach(funcName => {
-    getEnvParamManager().getResourceParamManager(categoryName, funcName).setAllParams(
-      getEnvParamManager(fromEnvName).getResourceParamManager(categoryName, funcName).getAllParams(),
-    );
+    getEnvParamManager()
+      .getResourceParamManager(categoryName, funcName)
+      .setAllParams(
+        getEnvParamManager(fromEnvName)
+          .getResourceParamManager(categoryName, funcName)
+          .getAllParams(),
+      );
   });
 
-  const envVarQuestion = async (): Promise<void> => {
-    const envVarQ: inquirer.ListQuestion = {
-      type: 'list',
-      name: 'envVar',
-      message: 'You have configured environment variables for functions. How do you want to proceed?',
-      choices: [
-        {
-          value: 'carry',
-          name: 'Carry over existing environment variables to this new environment',
-        },
-        {
-          value: 'update',
-          name: 'Update environment variables now',
-        },
-      ],
-    };
-    // eslint-disable-next-line spellcheck/spell-checker
-    if (context.parameters.options.quickstart) return;
-    const { envVar } = yesFlagSet ? { envVar: 'carry' } : await inquirer.prompt(envVarQ);
-    if (envVar === 'carry') return;
-    if (envVar === 'update') await envVarSelectFunction();
-  };
+  // eslint-disable-next-line spellcheck/spell-checker
+  if (context.parameters?.options?.quickstart) return;
+  if (yesFlagSet) return;
 
-  const envVarSelectFunction = async (): Promise<void> => {
-    const abortKey = uuid.v4();
-    const functionNameQuestion: inquirer.ListQuestion = {
-      type: 'list',
-      name: 'functionName',
-      message: 'Select the Lambda function you want to update values',
-      choices: functionNames
-        .map(name => ({
-          name,
-          value: name,
-        }))
-        .concat({
-          name: "I'm done",
-          value: abortKey,
-        }),
-    };
-    const { functionName } = await inquirer.prompt(functionNameQuestion);
-    if (functionName === abortKey) return;
-    await envVarSelectKey(functionName);
-  };
+  await askEnvVarCarryOrUpdateQuestion(functionNames, fromEnvName);
+};
 
-  const envVarSelectKey = async (functionName: string): Promise<void> => {
-    const envVars = getStoredEnvironmentVariables(functionName, fromEnvName);
-    const abortKey = uuid.v4();
-    const keyNameQuestion: inquirer.ListQuestion = {
-      type: 'list',
-      name: 'keyName',
-      message: 'Which function\'s environment variables do you want to edit?',
-      choices: Object.keys(envVars)
-        .map(name => ({
-          name,
-          value: name,
-        }))
-        .concat({
-          name: "I'm done",
-          value: abortKey,
-        }),
-    };
-    const { keyName } = await inquirer.prompt(keyNameQuestion);
-    if (keyName === abortKey) {
-      await envVarSelectFunction();
-      return;
-    }
-    await envVarUpdateValue(functionName, keyName);
-  };
+const askEnvVarCarryOrUpdateQuestion = async (functionNames: string[], fromEnvName: string): Promise<void> => {
+  const choices = [
+    {
+      value: 'carry',
+      name: 'Carry over existing environment variables to this new environment',
+    },
+    {
+      value: 'update',
+      name: 'Update environment variables now',
+    },
+  ];
+  const envVarOperation = await prompter.pick(
+    'You have configured environment variables for functions. How do you want to proceed?',
+    choices,
+  );
 
-  const envVarUpdateValue = async (functionName: string, keyName: string): Promise<void> => {
-    const envVars = getStoredEnvironmentVariables(functionName, fromEnvName);
-    const newValueQuestion: inquirer.InputQuestion = {
-      type: 'input',
-      name: 'newValue',
-      message: 'Enter the environment variable value:',
-      default: envVars[keyName],
-      validate: input => {
-        if (input.length >= 2048) {
-          return 'The value must be 2048 characters or less';
-        }
-        return true;
-      },
-    };
-    const { newValue } = await inquirer.prompt(newValueQuestion);
-    getEnvParamManager().getResourceParamManager(categoryName, functionName).setParam(_.camelCase(keyName), newValue);
-    await envVarSelectKey(functionName);
-  };
+  if (envVarOperation === 'update') {
+    await selectFunctionToUpdateValuesFor(functionNames, fromEnvName);
+  }
 
-  await envVarQuestion();
+  // "carry" was selected, nothing to update
+  return;
+};
+
+const selectFunctionToUpdateValuesFor = async (functionNames: string[], fromEnvName: string): Promise<void> => {
+  const abortKey = uuid.v4();
+  const choices = functionNames
+    .map(name => ({
+      name,
+      value: name,
+    }))
+    .concat({
+      name: "I'm done",
+      value: abortKey,
+    });
+  const functionName = await prompter.pick('Select the Lambda function you want to update values', choices);
+
+  if (functionName === abortKey) return;
+  await selectEnvironmentVariableToUpdate(functionNames, fromEnvName, functionName);
+};
+
+const selectEnvironmentVariableToUpdate = async (functionNames: string[], fromEnvName: string, functionName: string): Promise<void> => {
+  const envVars = getStoredEnvironmentVariables(functionName, fromEnvName);
+  const abortKey = uuid.v4();
+  const choices = Object.keys(envVars)
+    .map(name => ({
+      name,
+      value: name,
+    }))
+    .concat({
+      name: "I'm done",
+      value: abortKey,
+    });
+  const keyName = await prompter.pick("Which function's environment variables do you want to edit?", choices);
+  if (keyName === abortKey) {
+    await selectFunctionToUpdateValuesFor(functionNames, fromEnvName);
+    return;
+  }
+  await askForEnvironmentVariableValue(functionNames, fromEnvName, functionName, keyName);
+};
+
+const askForEnvironmentVariableValue = async (
+  functionNames: string[],
+  fromEnvName: string,
+  functionName: string,
+  keyName: string,
+): Promise<void> => {
+  const envVars = getStoredEnvironmentVariables(functionName, fromEnvName);
+  const newValue = await prompter.input('Enter the environment variable value:', {
+    initial: envVars[keyName],
+    validate: input => {
+      if (input.length >= 2048) {
+        return 'The value must be 2048 characters or less';
+      }
+      return true;
+    },
+  });
+  getEnvParamManager()
+    .getResourceParamManager(categoryName, functionName)
+    .setParam(_.camelCase(keyName), newValue);
+  await selectEnvironmentVariableToUpdate(functionNames, fromEnvName, functionName);
 };
 
 /**
@@ -324,11 +322,13 @@ const setStoredParameters = (resourceName: string, newParameters: $TSAny): void 
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
 
-const getStoredKeyValue = (
-  resourceName: string,
-  envName?: string,
-): Record<string, string> => getEnvParamManager(envName).getResourceParamManager(categoryName, resourceName).getAllParams();
+const getStoredKeyValue = (resourceName: string, envName?: string): Record<string, string> =>
+  getEnvParamManager(envName)
+    .getResourceParamManager(categoryName, resourceName)
+    .getAllParams();
 
 const setStoredKeyValue = (resourceName: string, newKeyValue: $TSAny): void => {
-  getEnvParamManager().getResourceParamManager(categoryName, resourceName).setAllParams(newKeyValue);
+  getEnvParamManager()
+    .getResourceParamManager(categoryName, resourceName)
+    .setAllParams(newKeyValue);
 };
