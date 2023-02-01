@@ -229,7 +229,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 export const getInvoker = async (
   context: $TSContext,
   { handler, resourceName, envVars }: InvokerParameters,
-): Promise<({ event: unknown }) => Promise<$TSAny>> => {
+): Promise<({ event }: { event: unknown }) => Promise<$TSAny>> => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const { pluginId, functionRuntime }: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(categoryName, resourceName);
   const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, pluginId);
