@@ -1,8 +1,6 @@
-import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
-import * as amplifyEnvironmentParameters from '@aws-amplify/amplify-environment-parameters';
-import { cloneEnvParamManager } from '../../utils/clone-env-param-manager';
-
-jest.mock('@aws-amplify/amplify-environment-parameters');
+import { ensureEnvParamManager, IEnvironmentParameterManager } from '../environment-parameter-manager';
+import * as environmentParameterManager from '../environment-parameter-manager';
+import { cloneEnvParamManager } from '../clone-env-param-manager';
 
 describe('clone env params test', () => {
   const mockEnvParamManagerCloneFn = jest.fn().mockReturnValue(Promise.resolve());
@@ -18,7 +16,7 @@ describe('clone env params test', () => {
     } as IEnvironmentParameterManager,
   };
 
-  jest.spyOn(amplifyEnvironmentParameters, 'ensureEnvParamManager').mockReturnValue(Promise.resolve(envPeramManagerA));
+  jest.spyOn(environmentParameterManager, 'ensureEnvParamManager').mockReturnValue(Promise.resolve(envPeramManagerA));
 
   it('check if func is called', async () => {
     await cloneEnvParamManager('envA', 'envB');

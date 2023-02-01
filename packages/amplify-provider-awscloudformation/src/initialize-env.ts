@@ -23,8 +23,6 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
-import { cloneEnvParamManager } from './utils/clone-env-param-manager';
-import { prompter } from 'amplify-prompts';
 
 const logger = fileLogger('initialize-env');
 

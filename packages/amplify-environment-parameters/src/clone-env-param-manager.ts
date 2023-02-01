@@ -1,6 +1,6 @@
-import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, IEnvironmentParameterManager } from './environment-parameter-manager';
 
 export const cloneEnvParamManager = async (srcEnvName: string, destEnvName: string): Promise<void> => {
   const srcEnvParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(srcEnvName)).instance;
-  srcEnvParamManager.cloneEnvParamsToNewEnvParamManager(destEnvName);
+  await srcEnvParamManager.cloneEnvParamsToNewEnvParamManager(destEnvName);
 };
