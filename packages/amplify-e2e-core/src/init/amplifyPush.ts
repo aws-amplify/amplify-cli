@@ -206,19 +206,11 @@ export function amplifyPushUpdateLegacy(
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(false), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait(waitForText || /.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+  return spawn(getCLIPath(false), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(waitForText || /.*/)
+    .runAsync();
 }
 
 /**
@@ -244,20 +236,12 @@ export const amplifyPushAuthV5V6 = (cwd: string): Promise<void> =>
 /**
  * To be used in migrations tests only
  */
-export const amplifyPushAuthLegacy = (cwd: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+export const amplifyPushAuthV5V6 = (cwd: string): Promise<void> =>
+  spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*/)
+    .runAsync();
 
 /**
  * amplify push command for pushing functions
