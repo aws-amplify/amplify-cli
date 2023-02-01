@@ -1,6 +1,6 @@
 import {
   amplifyPushAuth,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -28,7 +28,7 @@ describe('API Gateway CDK migration', () => {
 
   it('migrates on api update', async () => {
     await addRestApiOldDx(projRoot, { existingLambda: false, apiName: 'restapimig' });
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     await updateRestApi(projRoot, {
       updateOperation: 'Add another path',
       newPath: '/foo',

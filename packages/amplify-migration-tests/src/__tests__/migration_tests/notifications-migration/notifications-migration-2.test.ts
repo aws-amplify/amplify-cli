@@ -1,7 +1,7 @@
 import {
   addNotificationChannel,
   amplifyPushAuth,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -42,7 +42,7 @@ describe('amplify add notifications', () => {
 
     await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
-    await amplifyPushAuthLegacy(projectRoot);
+    await amplifyPushAuthV5V6(projectRoot);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
   });

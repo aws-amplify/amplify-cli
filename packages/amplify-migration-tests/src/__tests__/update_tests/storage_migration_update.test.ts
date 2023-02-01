@@ -5,7 +5,7 @@ import {
   addS3StorageWithAuthOnly,
   addSimpleDDB,
   amplifyPushAuth,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
@@ -41,7 +41,7 @@ describe('amplify add/update storage(DDB)', () => {
     await addAuthWithDefault(projRoot);
     await addSimpleDDB(projRoot, {});
     await addDDBWithTrigger(projRoot, {});
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     // update and push with codebase
     await updateDDBWithTriggerMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
@@ -106,7 +106,7 @@ describe('amplify add/update storage(S3)', () => {
     await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3StorageWithAuthOnly(projRoot);
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     // update and push with new codebase
     await updateS3AddTriggerWithAuthOnlyReqMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true /*latest codebase*/);

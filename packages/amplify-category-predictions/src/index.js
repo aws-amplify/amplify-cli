@@ -31,10 +31,7 @@ async function console(context) {
         exitOnNextTick(0);
         return undefined;
       }
-      let resourceObj = predictionsResources[0].value;
-      if (predictionsResources.length > 1) {
-        resourceObj = await prompter.pick(`Select an ${result} resource`, predictionsResources);
-      }
+      let resourceObj = await prompter.pick(`Select an ${result} resource`, predictionsResources);
       const providerController = require(`./provider-utils/${result.provider}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');

@@ -6,7 +6,7 @@ import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithCustomTrigger,
   amplifyPushAuth,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -47,7 +47,7 @@ describe('amplify auth migration a', () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
     await addAuthWithCustomTrigger(projRoot, {});
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;

@@ -5,7 +5,7 @@
 
 import {
   addAuthUserPoolOnly,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -27,7 +27,7 @@ describe('attach amplify to git-cloned project', () => {
     projRoot = await createNewProjectDir('clone-test');
     await initJSProjectWithProfileV10(projRoot, { envName, disableAmplifyAppCreation: false });
     await addAuthUserPoolOnly(projRoot, {});
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
   });

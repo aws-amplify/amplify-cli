@@ -6,7 +6,7 @@ import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
   amplifyPushAuth,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -45,7 +45,7 @@ describe('amplify auth migration b', () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
     const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase

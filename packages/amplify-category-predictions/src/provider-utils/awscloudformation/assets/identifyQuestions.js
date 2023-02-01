@@ -1,10 +1,6 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable no-multi-str */
 
-import { byValue, alphanumeric } from 'amplify-prompts';
-
-// defaults for text, entity, and label categories
-
 function identifyAccess(options) {
   return {
     type: 'list',
@@ -23,171 +19,6 @@ function identifyAccess(options) {
     default: options.access ? options.access : 'auth',
   };
 }
-
-const setup = {
-  type() {
-    return {
-      type: 'list',
-      name: 'identifyType',
-      message: 'What would you like to identify?',
-      choices: [
-        {
-          name: 'Identify Text',
-          value: 'identifyText',
-        },
-        {
-          name: 'Identify Entities',
-          value: 'identifyEntities',
-        },
-        {
-          name: 'Identify Labels',
-          value: 'identifyLabels',
-        },
-      ],
-    };
-  },
-  name(defaultName) {
-    return {
-      name: 'resourceName',
-      message: 'Provide a friendly name for your resource',
-      validate: alphanumeric(),
-      default: defaultName,
-    };
-  },
-};
-
-const identifyText = {
-  questions(options) {
-    return {
-      type: 'confirm',
-      name: 'identifyDoc',
-      message: 'Would you also like to identify documents?',
-      default: options.identifyDoc ? options.identifyDoc : false,
-    };
-  },
-  formatFlag(flag) {
-    if (flag) return { format: 'ALL' };
-    return { format: 'PLAIN' };
-  },
-  auth: identifyAccess,
-};
-
-const identifyEntities = {
-  questions(options) {
-    return [
-      {
-        type: 'list',
-        name: 'setup',
-        message: 'Would you like use the default configuration?',
-        choices: [
-          {
-            name: 'Default Configuration',
-            value: 'default',
-          },
-          {
-            name: 'Advanced Configuration',
-            value: 'advanced',
-          },
-        ],
-        options: {}
-      },
-      {
-        type: 'confirm',
-        name: 'celebrityDetectionEnabled',
-        message: 'Would you like to enable celebrity detection?',
-        initial: options.celebrityDetectionEnabled ? options.celebrityDetectionEnabled : true,
-        when: answers => answers.setup === 'advanced',
-      },
-      {
-        type: 'confirm',
-        name: 'adminTask',
-        message: 'Would you like to identify entities from a collection of images?',
-        initial: options.adminTask ? options.adminTask : false,
-        when: answers => answers.setup === 'advanced',
-      },
-      {
-        type: 'input',
-        name: 'maxEntities',
-        message: 'How many entities would you like to identify?',
-        options: {
-          initial: options.maxEntities ?? 50,
-          validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
-        },
-        when: answers => answers.setup === 'advanced' && answers.adminTask,
-      },
-      {
-        type: 'list',
-        name: 'folderPolicies',
-        message: 'Would you like to allow users to add images to this collection?',
-        choices: [
-          {
-            name: 'Yes',
-            value: 'app',
-          },
-          {
-            name: 'No',
-            value: 'admin',
-          },
-        ],
-        when: answers => answers.setup === 'advanced' && answers.adminTask,
-        options: {
-          initial: options.folderPolicies ? byValue(options.folderPolicies) : 0,
-        },
-      },
-    ];
-  },
-  auth: identifyAccess,
-  defaults: {
-    celebrityDetectionEnabled: true,
-  },
-};
-
-const identifyLabels = {
-  questions(options) {
-    return [
-      {
-        type: 'list',
-        name: 'setup',
-        message: 'Would you like use the default configuration?',
-        choices: [
-          {
-            name: 'Default Configuration',
-            value: 'default',
-          },
-          {
-            name: 'Advanced Configuration',
-            value: 'advanced',
-          },
-        ],
-      },
-      {
-        type: 'list',
-        name: 'type',
-        message: 'What kind of label detection?',
-        choices: [
-          {
-            name: 'Only identify unsafe labels',
-            value: 'UNSAFE',
-          },
-          {
-            name: 'Identify labels',
-            value: 'LABELS',
-          },
-          {
-            name: 'Identify all kinds',
-            value: 'ALL',
-          },
-        ],
-        when: answers => answers.setup === 'advanced',
-        default: [options.type ? options.type : 'LABELS'],
-      },
-    ];
-  },
-  auth: identifyAccess,
-  defaults: {
-    type: 'LABELS',
-  },
-};
 
 const adminTask = [
   {
@@ -237,11 +68,7 @@ const s3bucket = {
 };
 
 export default {
-  setup,
   identifyAccess,
-  identifyText,
-  identifyEntities,
-  identifyLabels,
   adminTask,
   s3bucket,
 };

@@ -1,7 +1,7 @@
 import {
   addAuthWithDefault,
   amplifyPushAuth,
-  amplifyPushAuthLegacy,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -31,7 +31,7 @@ describe('API Gateway CDK migration', () => {
   it('migrates auth with admin queries', async () => {
     await addAuthWithDefault(projRoot);
     await updateAuthAddAdminQueries(projRoot);
-    await amplifyPushAuthLegacy(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
 
     await updateAuthAdminQueriesWithExtMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);

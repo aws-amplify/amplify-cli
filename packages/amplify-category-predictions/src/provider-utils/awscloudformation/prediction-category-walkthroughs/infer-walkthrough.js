@@ -109,7 +109,7 @@ async function configure(context, resourceObj) {
     }
   }
 
-  Object.assign(answers, await followUpQuestions(context, inferAssets[inferType], inferType, defaultValues, parameters));
+  Object.assign(answers, await followUpQuestions(context, defaultValues, parameters));
   answers = { ...answers, service };
   Object.assign(defaultValues, answers);
 
@@ -166,31 +166,48 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
   return await context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function followUpQuestions(context, questionObj, inferType, defaultValues, parameters) {
+async function followUpQuestions(context, defaultValues, parameters) {
   const answers = {
-    [questionObj.endpointPrompt(parameters).name]: await prompter.pick(
-      questionObj.endpointPrompt(parameters).message,
-      questionObj.endpointPrompt(parameters).choices,
-      ...(questionObj.endpointPrompt(parameters).default ? { initial: byValue(questionObj.endpointPrompt(parameters).default) } : {}),
+    endpointConfig: await prompter.pick(
+      'Would you like to create your endpoint or load an use an existing endpoint?',
+      [
+        {
+          name: 'Create an endpoint',
+          value: 'create',
+        },
+        {
+          name: 'Import an existing endpoint',
+          value: 'import',
+        },
+      ],
     ),
   };
 
   if (answers.endpointConfig === 'import') {
     // attempt to get existing endpoints
-    Object.assign(answers, await getEndpoints(context, questionObj, parameters));
+    Object.assign(answers, await getEndpoints(context, parameters));
   }
   if (answers.endpointConfig === 'create') {
     // create endpoint in console
     await createEndpoint(context, defaultValues);
     // import existing endpoint
-    Object.assign(answers, await getEndpoints(context, questionObj, parameters));
+    Object.assign(answers, await getEndpoints(context, parameters));
   }
 
   Object.assign(answers, {
-    [questionObj.authAccess.prompt(parameters).name]: await prompter.pick(
-      questionObj.authAccess.prompt(parameters).message,
-      questionObj.authAccess.prompt(parameters).choices,
-      ...(questionObj.authAccess.prompt(parameters).default ? { initial: byValue(questionObj.authAccess.prompt(parameters).default) } : {}),
+    access: await prompter.pick(
+      'Who should have access?',
+      [
+        {
+          name: 'Auth users only',
+          value: 'auth',
+        },
+        {
+          name: 'Auth and Guest users',
+          value: 'authAndGuest',
+        },
+      ],
+      { initial: byValue(parameters.access ?? 'auth') },
     ),
   });
 
@@ -231,7 +248,7 @@ function resourceAlreadyExists(context, inferType) {
   return type;
 }
 
-async function getEndpoints(context, questionObj, params) {
+async function getEndpoints(context, params) {
   const sagemaker = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getEndpoints');
   const endpoints = [];
   const endpointMap = {};
@@ -245,8 +262,7 @@ async function getEndpoints(context, questionObj, params) {
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
-  const endpointPromptInput = questionObj.importPrompt({ ...params, endpoints });
-  const endpoint = await prompter.pick(endpointPromptInput.message, endpointPromptInput.choices, { initial: byValue(endpointPromptInput.default) });
+  const endpoint = await prompter.pick('Select an endpoint: ', endpoints, { initial: byValue(params.endpointName) });
   return endpointMap[endpoint];
 }
 

@@ -41,7 +41,7 @@ export const addIdentifyCollection = async (cwd: string, settings: any): Promise
     .sendCarriageReturn()
     .wait('Provide a friendly name for your resource')
     .sendLine(`${resourceName}\r`)
-    .wait('Would you like use the default configuration?')
+    .wait('Would you like to use the default configuration?')
     .sendKeyDown()
     .sendCarriageReturn()
     .wait('Would you like to enable celebrity detection?')

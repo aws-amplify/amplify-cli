@@ -4,8 +4,6 @@ import {
   exitOnNextTick,
   JSONUtilities,
   pathManager,
-  ResourceAlreadyExistsError,
-  ResourceDoesNotExistError,
   stateManager,
 } from 'amplify-cli-core';
 import {
@@ -26,8 +24,8 @@ import {
   invokeS3RegisterAdminTrigger,
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
-import { byValue, prompter } from 'amplify-prompts';
-import { prompterAdapter } from '../../../prompter-adapter'
+import { byValue, prompter, alphanumeric, between } from 'amplify-prompts';
+import { AmplifyError } from 'amplify-cli-core';
 
 const path = require('path');
 const fs = require('fs-extra');
@@ -84,10 +82,9 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    const errMessage = 'No resources to update. You need to add a resource.';
-    context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    exitOnNextTick(0);
+    throw new AmplifyError('ResourceDoesNotExistError', {
+      message: 'No resources to update. You need to add a resource.'
+    });
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
@@ -137,29 +134,43 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
 
   // only ask this for add
   if (!parameters.resourceName) {
-    const identityAssetTypeInput = identifyAssets.setup.type();
-    answers[identityAssetTypeInput.name] = await prompter.pick(identityAssetTypeInput.message, identityAssetTypeInput.choices);
+    answers['identifyType'] = await prompter.pick(
+      'What would you like to identify?',
+      [
+        {
+          name: 'Identify Text',
+          value: 'identifyText',
+        },
+        {
+          name: 'Identify Entities',
+          value: 'identifyEntities',
+        },
+        {
+          name: 'Identify Labels',
+          value: 'identifyLabels',
+        },
+      ]
+    );
 
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
-      const errMessage = `${resourceType} has already been added to this project.`;
-      context.print.warning(errMessage);
-      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-      exitOnNextTick(0);
+      throw new AmplifyError('ResourceAlreadyExistsError', {
+        message: `${resourceType} has already been added to this project.`
+      });
     }
 
-    const identityAssetNameInput = identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`);
-    answers[identityAssetNameInput.name] = await prompter.input(identityAssetNameInput.message, {
-      initial: identityAssetNameInput.default,
-      validate: identityAssetNameInput.validate,
+    answers['resourceName'] = await prompter.input(
+      'Provide a friendly name for your resource', {
+      initial: `${answers.identifyType}${defaultValues.resourceName}`,
+      validate: alphanumeric(),
     });
     identifyType = answers.identifyType;
     parameters.resourceName = answers.resourceName;
   }
 
-  // category specific questions
-  Object.assign(answers, await followUpQuestions(identifyAssets[identifyType], identifyType, parameters));
+
+  Object.assign(answers, await followUpQuestions(identifyType, parameters));
   delete answers.setup;
   Object.assign(defaultValues, answers);
 
@@ -227,7 +238,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
       }
     }
   }
-  
+
   const { resourceName } = defaultValues;
   delete defaultValues.service;
   delete defaultValues.region;
@@ -326,51 +337,163 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
   return await context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function followUpQuestions(typeObj, identifyType, parameters) {
+// eslint-disable-next-line consistent-return
+async function followUpQuestions(identifyType, parameters) {
+  switch (identifyType) {
+    case 'identifyText': {
+      return followUpIdentifyTextQuestions(parameters);
+    }
+    case 'identifyEntities': {
+      return followUpIdentifyEntitiesQuestions(parameters);
+    }
+    case 'identifyLabels': {
+      return followUpIdentifyLabelsQuestions(parameters);
+    }
+  }
+}
+
+async function followUpIdentifyTextQuestions(parameters) {
+  const answers = {
+    identifyDoc: await prompter.yesOrNo('Would you also like to identify documents?', parameters?.identifyDoc ?? false),
+    access: await askIdentifyAccess(parameters)
+  };
+
+  if (answers.identifyDoc) {
+    service = 'RekognitionAndTextract';
+  }
+
+  Object.assign(answers, { format: answers.identifyDoc ? 'ALL' : 'PLAIN' });
+
+}
+
+async function askIdentifyAccess(parameters) {
+  return await prompter.pick('Who should have access?', [
+    {
+      name: 'Auth users only',
+      value: 'auth',
+    },
+    {
+      name: 'Auth and Guest users',
+      value: 'authAndGuest',
+    },
+  ], {
+    initial: byValue(parameters.access ?? 'auth')
+  });
+}
+
+async function followUpIdentifyEntitiesQuestions(parameters) {
   const answers = {};
 
-  for (const question of typeObj.questions(parameters)) {
-    if (!question.when || question.when(answers)) {
-      answers[question.name] = await prompterAdapter.prompt(question);
+  answers.setup = await prompter.pick('Would you like use the default configuration?', [
+    {
+      name: 'Default Configuration',
+      value: 'default',
+    },
+    {
+      name: 'Advanced Configuration',
+      value: 'advanced',
+    },
+  ]);
+
+  if (answers.setup === 'advanced') {
+    answers.celebrityDetectionEnabled = await prompter.yesOrNo(
+      'Would you like to enable celebrity detection?',
+      parameters?.celebrityDetectionEnabled ?? true
+    );
+    answers.adminTask = await prompter.yesOrNo(
+      'Would you like to identify entities from a collection of images?',
+      parameters?.adminTask ?? false
+    );
+
+    if (answers.adminTask) {
+      answers.maxEntities = await prompter.input(
+        'How many entities would you like to identify?',
+        {
+          initial: parameters?.maxEntities ?? 50,
+          validate: between(1, 100, 'Please enter a number between 1 and 100!'),
+          transform: input => Number.parseInt(input, 10),
+        }
+      );
+      answers.folderPolicies = await prompter.pick(
+        'Would you like to allow users to add images to this collection?',
+        [
+          {
+            name: 'Yes',
+            value: 'app',
+          },
+          {
+            name: 'No',
+            value: 'admin',
+          },
+        ], {
+        initial: parameters.folderPolicies ? byValue(parameters.folderPolicies) : 0,
+      }
+      );
     }
   }
 
-  if (!typeObj.auth(parameters).when || typeObj.auth(parameters).when(answers)) {
-    answers[typeObj.auth(parameters).name] = await prompter.pick(
-      typeObj.auth(parameters).message,
-      typeObj.auth(parameters).choices,
-      {
-        ...(typeObj.auth(parameters).default ? { initial: byValue(typeObj.auth(parameters).default) } : {}),
-        ...(typeObj.auth(parameters).validate ? { validate: typeObj.questions(parameters).validate } : {}),
-      }
-    );
-  }
+  answers.access = await askIdentifyAccess(parameters);
 
   if (answers.setup && answers.setup === 'default') {
-    Object.assign(answers, typeObj.defaults);
+    Object.assign(answers, { celebrityDetectionEnabled: true });
   }
-  if (identifyType === 'identifyText') {
-    if (answers.identifyDoc) {
-      service = 'RekognitionAndTextract';
-    }
-    Object.assign(answers, typeObj.formatFlag(answers.identifyDoc));
+
+  if (!answers.adminTask) {
+    answers.maxEntities = 0;
+    answers.adminTask = false;
+    answers.folderPolicies = '';
   }
-  // default values for admin tasks are set
-  if (identifyType === 'identifyEntities') {
-    if (!answers.adminTask) {
-      answers.maxEntities = 0;
-      answers.adminTask = false;
-      answers.folderPolicies = '';
-    }
-    if (answers.folderPolicies === 'app') {
-      answers.adminAuthProtected = 'ALLOW';
-      if (answers.access === 'authAndGuest') {
-        answers.adminGuestProtected = 'ALLOW';
-      }
+  if (answers.folderPolicies === 'app') {
+    answers.adminAuthProtected = 'ALLOW';
+    if (answers.access === 'authAndGuest') {
+      answers.adminGuestProtected = 'ALLOW';
     }
   }
 
   return answers;
+}
+
+async function followUpIdentifyLabelsQuestions(parameters) {
+  const answers = {
+    setup: await prompter.pick(
+      'Would you like to use the default configuration',
+      [
+        {
+          name: 'Default Configuration',
+          value: 'default',
+        },
+        {
+          name: 'Advanced Configuration',
+          value: 'advanced',
+        },
+      ]
+    )
+  };
+
+  if (answers.setup === 'advanced') {
+    answers.type = await prompter.pick('What kind of label detection?', [
+      {
+        name: 'Only identify unsafe labels',
+        value: 'UNSAFE',
+      },
+      {
+        name: 'Identify labels',
+        value: 'LABELS',
+      },
+      {
+        name: 'Identify all kinds',
+        value: 'ALL',
+      },
+    ], {
+      initial: byValue(parameters.type ?? 'LABELS')
+    });
+  }
+
+  answers.access = await askIdentifyAccess(parameters);
+
+  if (answers.setup === 'default') {
+    Object.assign(answers, { type: 'LABELS' });
+  }
 }
 
 function checkIfAuthExists(context) {

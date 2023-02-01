@@ -97,7 +97,7 @@ export type ExecutionContext = {
    * @deprecated Use runAsync
    */
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
-  runAsync: () => Promise<void>;
+  runAsync: (expectedErrorPredicate?: (err: Error) => boolean) => Promise<void>;
 };
 
 /**
@@ -662,7 +662,12 @@ function chain(context: Context): ExecutionContext {
   return {
     ...partialExecutionContext,
     run,
-    runAsync: () => new Promise<void>((resolve, reject) => run(err => (err ? reject(err) : resolve()))),
+    runAsync: (expectedErrorPredicate?: (err: Error) => boolean) =>
+      new Promise<void>((resolve, reject) =>
+        run(err =>
+          (expectedErrorPredicate && expectedErrorPredicate(err)) || (!err && !expectedErrorPredicate) ? resolve() : reject(err),
+        ),
+      ),
   };
 }
 
