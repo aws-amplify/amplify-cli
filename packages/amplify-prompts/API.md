@@ -42,7 +42,7 @@ export class AmplifySpinner {
 }
 
 // @public (undocumented)
-export const and: (validators: [Validator, Validator, ...Validator[]], message?: string | undefined) => Validator;
+export const and: (validators: [Validator, Validator, ...Validator[]], message?: string) => Validator;
 
 // @public (undocumented)
 export type BarOptions = {
@@ -64,7 +64,7 @@ export type BarOptions = {
 };
 
 // @public (undocumented)
-export const between: (min: number, max: number, message?: string | undefined) => Validator;
+export const between: (min: number, max: number, message?: string) => Validator;
 
 // Warning: (ae-forgotten-export) The symbol "EqualsFunction" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "SingleFilterFunction" needs to be exported by the entry point index.d.ts
@@ -78,7 +78,7 @@ export const byValue: <T>(selection: T, equals?: EqualsFunction<T>) => SingleFil
 export const byValues: <T>(selection: T[], equals?: EqualsFunction<T>) => MultiFilterFunction<T>;
 
 // @public (undocumented)
-export const exact: (expected: string, message?: string | undefined) => Validator;
+export const exact: (expected: string, message?: string) => Validator;
 
 // @public (undocumented)
 export type Formatter = {
@@ -115,13 +115,13 @@ export type ItemPayload = {
 };
 
 // @public (undocumented)
-export const matchRegex: (validatorRegex: RegExp, message?: string | undefined) => Validator;
+export const matchRegex: (validatorRegex: RegExp, message?: string) => Validator;
 
 // @public (undocumented)
-export const maxLength: (maxLen: number, message?: string | undefined) => Validator;
+export const maxLength: (maxLen: number, message?: string) => Validator;
 
 // @public (undocumented)
-export const minLength: (minLen: number, message?: string | undefined) => Validator;
+export const minLength: (minLen: number, message?: string) => Validator;
 
 // @public (undocumented)
 export class MultiProgressBar {
@@ -171,7 +171,7 @@ export class MultiProgressBar {
 export const not: (validator: Validator, message: string) => Validator;
 
 // @public (undocumented)
-export const or: (validators: [Validator, Validator, ...Validator[]], message?: string | undefined) => Validator;
+export const or: (validators: [Validator, Validator, ...Validator[]], message?: string) => Validator;
 
 // @public (undocumented)
 export type Printer = {

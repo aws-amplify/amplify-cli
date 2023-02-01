@@ -54,6 +54,7 @@
     "moment-timezone": "0.5.35",
     "promise-toolbox": "^0.20.0",
     "slash": "^3.0.0",
+    "ulid": "^2.3.0",
     "uuid": "^8.3.2",
     "ws": "^8.5.0"
   },
