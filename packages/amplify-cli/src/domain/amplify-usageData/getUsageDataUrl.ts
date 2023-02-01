@@ -25,5 +25,6 @@ const getParsedUrl = (): UrlWithStringQuery => {
   return url.parse(process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL || '');
 };
 
-const isProduction = (): boolean => process.env.NODE_ENV === 'production';
-const useBetaUrl = (): boolean => !!(process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL && typeof process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL === 'string');
+const isProduction = (): boolean => process.env.CLI_ENV === 'production';
+const useBetaUrl = (): boolean =>
+  !!(process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL && typeof process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL === 'string');

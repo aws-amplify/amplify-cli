@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-require("isomorphic-fetch");
+require('isomorphic-fetch');
 const AWS = require('aws-sdk');
-const AWSAppSyncClient = require("aws-appsync").default;
-const { AUTH_TYPE } = require("aws-appsync");
+const AWSAppSyncClient = require('aws-appsync').default;
+const { AUTH_TYPE } = require('aws-appsync');
 const gql = require('graphql-tag');
 
 const runGQLMutation = async (gql_url, mutation, variables) => {

@@ -37,8 +37,8 @@ export const detectDotNet = async (runtime: string): Promise<CheckDependenciesRe
     if (installedToolList.match(/^amazon\.lambda\.tools/m)) {
       toolInstalled = true;
     }
-    const requiredtestToolVersionRegex = runtime === dotnetcore31 ? /^amazon\.lambda\.testtool-3\.1/m : /^amazon\.lambda\.testtool-6\.0/m;
-    if (installedToolList.match(requiredtestToolVersionRegex)) {
+    const requiredTestToolVersionRegex = runtime === dotnetcore31 ? /^amazon\.lambda\.testtool-3\.1/m : /^amazon\.lambda\.testtool-6\.0/m;
+    if (installedToolList.match(requiredTestToolVersionRegex)) {
       testToolInstalled = true;
     }
   }

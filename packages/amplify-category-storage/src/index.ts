@@ -1,4 +1,7 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource } from 'amplify-cli-core';
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-description */
+import {
+  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
   validateAddStorageRequest,
@@ -25,12 +28,13 @@ import {
   headlessRemoveStorage,
   headlessUpdateStorage,
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
+
 export { categoryName as category } from './constants';
 export {
   S3UserInputs,
   S3UserInputTriggerFunctionParams,
 } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
-//S3-Control-API used by Predictions
+// S3-Control-API used by Predictions
 export {
   s3AddStorageLambdaTrigger,
   s3CreateStorageResource,
@@ -42,7 +46,7 @@ export {
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
 export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {
-  let defaultS3UserInputs = getAllDefaults(project, shortId);
+  const defaultS3UserInputs = getAllDefaults(project, shortId);
   switch (accessType) {
     case S3AccessType.AUTH_ONLY:
       defaultS3UserInputs.authAccess = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
@@ -69,15 +73,39 @@ export async function add(context: any, providerName: any, service: any) {
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
 
   return providerController.addResource(context, AmplifyCategories.STORAGE, service, options);
 }
 
-export async function console(context: any) {
-  printer.info(`to be implemented: ${AmplifyCategories.STORAGE} console`);
-}
+/**
+ * Open AWS Management Console for resources of storage category.
+ */
+export const console = async (context: $TSContext): Promise<void> => {
+  const { amplify } = context;
+  const amplifyMeta = stateManager.getMeta();
+  if (!amplifyMeta.storage || Object.keys(amplifyMeta.storage).length === 0) {
+    printer.error('Storage has NOT been added to this project.');
+    return;
+  }
+
+  const nameOverrides = {
+    S3: 'S3 bucket - Content (Images, audio, video, etc.)',
+    DynamoDB: 'DynamoDB table - NoSQL Database',
+  };
+
+  const servicesMetadata = ((await import(path.join(__dirname, 'provider-utils', 'supported-services'))) as $TSAny).supportedServices;
+
+  const serviceSelection = await amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata, undefined, nameOverrides);
+
+  const providerController = await import(path.join(__dirname, 'provider-utils', serviceSelection.providerName, 'index'));
+  if (!providerController) {
+    printer.error('Provider not configured for this category');
+    return;
+  }
+  await providerController.console(amplifyMeta, serviceSelection.providerName, serviceSelection.service);
+};
 
 export async function migrateStorageCategory(context: any) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
@@ -137,14 +165,12 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
 
   for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
-      const providerPlugin =
-        'providerPlugin' in resourceOpsMapping[resourceName]
-          ? resourceOpsMapping[resourceName].providerPlugin
-          : amplifyMeta[storageCategory][resourceName].providerPlugin;
-      const service =
-        'service' in resourceOpsMapping[resourceName]
-          ? resourceOpsMapping[resourceName].service
-          : amplifyMeta[storageCategory][resourceName].service;
+      const providerPlugin = 'providerPlugin' in resourceOpsMapping[resourceName]
+        ? resourceOpsMapping[resourceName].providerPlugin
+        : amplifyMeta[storageCategory][resourceName].providerPlugin;
+      const service = 'service' in resourceOpsMapping[resourceName]
+        ? resourceOpsMapping[resourceName].service
+        : amplifyMeta[storageCategory][resourceName].service;
 
       if (providerPlugin) {
         const providerController = await import(`./provider-utils/${providerPlugin}`);

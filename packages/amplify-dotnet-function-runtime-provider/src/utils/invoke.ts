@@ -7,8 +7,8 @@ import { dotnetcore31, executableName } from '../constants';
 export const invoke = async (request: InvocationRequest): Promise<string> => {
   const sourcePath = path.join(request.srcRoot, 'src');
   let result: execa.ExecaSyncReturnValue<string>;
-  let tempDir: string = '';
-  let eventFile: string = '';
+  let tempDir = '';
+  let eventFile = '';
   try {
     tempDir = fs.mkdtempSync(path.join(request.srcRoot, 'amplify'));
     eventFile = path.join(tempDir, 'event.json');

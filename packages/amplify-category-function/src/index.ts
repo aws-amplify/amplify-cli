@@ -36,12 +36,12 @@ export { lambdasWithApiDependency } from './provider-utils/awscloudformation/uti
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
+export { ensureLambdaExecutionRoleOutputs } from './provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 export {
   updateDependentFunctionsCfn,
   addAppSyncInvokeMethodPermission,
 } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
-
 /**
  * Entry point for adding function resource
  */
@@ -233,8 +233,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 export const getInvoker = async (
   context: $TSContext,
   { handler, resourceName, envVars }: InvokerParameters,
-): Promise<({ event: unknown }
-) => Promise<$TSAny>> => {
+): Promise<({ event }: { event: unknown }) => Promise<$TSAny>> => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const { pluginId, functionRuntime }: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(categoryName, resourceName);
   const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, pluginId);

@@ -29,7 +29,9 @@ const getOperationPollerActivityHandler = (
 
       return stackEventPollFn(step);
     }
-    return () => {};
+    return () => {
+      // empty
+    };
   };
 };
 

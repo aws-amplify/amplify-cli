@@ -36,7 +36,7 @@ const GRAPHQL_SCHEMA = 'schema.graphql';
  */
 function getXcodeProjectDir() {
   const files = fs.readdirSync(process.cwd());
-  const targetFiles = files.filter(function extenstionFilter(file) {
+  const targetFiles = files.filter(function extensionFilter(file) {
     return path.extname(file).toLowerCase() === XCODE_PROJ_EXTENSION;
   });
   let projDir;
@@ -127,7 +127,7 @@ function getSchemaFile(rootDir) {
  * @param {string} rootDir
  * @param {string} schemaFile
  * @param {XcodeProj} xcodeProject
- * @returns {boolean} returns true if models have been successufully added to the `xcodeProject`
+ * @returns {boolean} returns true if models have been successfully added to the `xcodeProject`
  */
 function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
   let hasGeneratedFiles = false;
@@ -175,7 +175,7 @@ async function addAmplifyFiles() {
   }
   const rootDir = path.resolve(projectDir, '..', '..');
   const project = xcode.project(projectDir);
-  return new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     project.parse(error => {
       if (error) {
         reject(error);

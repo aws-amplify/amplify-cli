@@ -282,7 +282,7 @@ function printLayerSuccessMessages(context: $TSContext, parameters: LayerParamet
   if (parameters.runtimes.length !== 0) {
     print.info('Move your libraries to the following folder:');
     for (const runtime of parameters.runtimes) {
-      let runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
+      const runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
       print.info(`[${runtime.name}]: ${runtimePath}`);
     }
     print.info('');
@@ -332,7 +332,7 @@ export function migrateResource(context: $TSContext, projectPath: string, servic
 
   if (!serviceConfig.walkthroughs.migrate) {
     context.print.info(`No migration required for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return serviceConfig.walkthroughs.migrate(context, projectPath, resourceName);
@@ -347,7 +347,7 @@ export function getPermissionPolicies(context: $TSContext, service: ServiceName,
 
   if (!serviceConfig.walkthroughs.getIAMPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return serviceConfig.walkthroughs.getIAMPolicies(resourceName, crudOptions);
@@ -366,8 +366,8 @@ function getHeadlessParams(context: $TSContext, resourceName: string) {
 
 export async function updateConfigOnEnvInit(context: $TSContext, resourceName: string, service: ServiceName) {
   if (service === ServiceName.LambdaFunction) {
-    const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
-    const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+    const serviceMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
+    const providerPlugin = context.amplify.getPluginInstance(context, serviceMetaData.provider);
     const functionParametersPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, 'function-parameters.json');
     let resourceParams: $TSAny = {};
     const functionParametersExists = fs.existsSync(functionParametersPath);
@@ -383,7 +383,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     }
 
     if (resourceParams.trigger === true) {
-      envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
+      envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, serviceMetaData);
     }
 
     if (Array.isArray(resourceParams.lambdaLayers) && resourceParams.lambdaLayers.length) {
@@ -423,9 +423,10 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       }
     }
   }
+  return undefined;
 }
 
-async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {
+async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, serviceMetaData: ServiceConfig<FunctionParameters>) {
   if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
     const parentResourceParams = providerPlugin.loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
     const triggers =
@@ -437,7 +438,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
       const triggerPath = path.join(
         categoryPlugin.packageLocation,
         'provider-utils',
-        `${srvcMetaData.provider}`,
+        `${serviceMetaData.provider}`,
         'triggers',
         `${currentTrigger}`,
       );
@@ -459,12 +460,12 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
   return envParams;
 }
 
-export function openConsole(context: $TSContext, service: ServiceName) {
+export async function openConsole(context: $TSContext, service: ServiceName) {
   const amplifyMeta = stateManager.getMeta();
   const region = amplifyMeta.providers[provider].Region;
   const selection = service === ServiceName.LambdaFunction ? 'functions' : 'layers';
   const url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/${selection}`;
-  open(url, { wait: false });
+  await open(url, { wait: false });
 }
 
 export function isMockable(service: ServiceName): IsMockableResponse {

@@ -13,8 +13,8 @@ export type PlaceIndexParameters = ResourceParameters & {
  * Storage option for search data
  */
 export enum DataSourceIntendedUse {
-  SingleUse = "SingleUse",
-  Storage = "Storage"
+  SingleUse = 'SingleUse',
+  Storage = 'Storage'
 }
 
 /**

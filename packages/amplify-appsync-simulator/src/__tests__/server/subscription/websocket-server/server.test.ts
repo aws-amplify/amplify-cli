@@ -92,7 +92,7 @@ describe('WebsocketSubscriptionServer', () => {
   });
 
   describe('Connect', () => {
-    it('should close connection when the protocol is not graphql-ws', done => {
+    it('should close connection when the protocol is not graphql-ws', (done) => {
       const client = new WS(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`, 'something');
       client.addEventListener('close', event => {
         expect(event.code).toEqual(1002);

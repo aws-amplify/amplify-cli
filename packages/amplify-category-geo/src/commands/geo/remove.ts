@@ -7,19 +7,23 @@ import { printer } from 'amplify-prompts';
 
 export const name = 'remove';
 
-export const run = async(context: $TSContext) => {
+export const run = async (context: $TSContext) => {
   const { amplify } = context;
   try {
-    const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove);
+    const result: { service: string; providerName: string } = await amplify.serviceSelectionPrompt(
+      context,
+      category,
+      supportedServices,
+      chooseServiceMessageRemove,
+    );
 
     if (result.providerName !== provider) {
       printer.error(`Provider ${result.providerName} not configured for this category`);
-      return;
+      return undefined;
     }
 
     return await removeResource(context, result.service);
-
-  } catch (error: $TSAny) {
+  } catch (error) {
     if (error.message) {
       printer.error(error.message);
     }
@@ -31,4 +35,5 @@ export const run = async(context: $TSContext) => {
     context.usageData.emitError(error);
     process.exitCode = 1;
   }
+  return undefined;
 };

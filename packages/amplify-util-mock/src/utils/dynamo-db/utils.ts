@@ -4,14 +4,14 @@ import _ from 'lodash';
 import { waitTillTableStateIsActive } from './helpers';
 
 export async function createTables(dynamoDbClient: DynamoDB, tables: CreateTableInput[]): Promise<void> {
-  for (let table of tables) {
+  for (const table of tables) {
     console.log(`Creating new table ${table.TableName}`);
     await dynamoDbClient.createTable(table).promise();
   }
 }
 
 export async function updateTables(dynamoDbClient: DynamoDB, tables: UpdateTableInput[]): Promise<void> {
-  for (let table of tables) {
+  for (const table of tables) {
     const updateType = table.GlobalSecondaryIndexUpdates[0].Delete ? 'Deleting' : 'Creating';
     const indexName =
       updateType == 'Deleting'
@@ -28,7 +28,7 @@ export async function describeTables(dynamoDbClient: DynamoDB, tableNames: strin
   if (_.isEmpty(tableNames)) {
     return tableDetails;
   }
-  for (let tableName of tableNames) {
+  for (const tableName of tableNames) {
     const tableDescription = await dynamoDbClient.describeTable({ TableName: tableName }).promise();
     if (tableDescription.Table) {
       tableDetails[tableName] = tableDescription.Table;

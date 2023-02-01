@@ -6,6 +6,6 @@ module.exports = {
   alias: ['configure'],
   run: async context => {
     context.exeInfo = context.amplify.getProjectDetails();
-    xrManager.configure(context);
+    await xrManager.configure(context);
   },
 };

@@ -9,9 +9,7 @@ import { getLogger } from '../logger/index';
 import { HooksMeta } from './hooksMeta';
 import { skipHooks } from './skipHooks';
 import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
-import {
-  HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter,
-} from './hooksTypes';
+import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { pathManager, stateManager } from '../state-manager';
 
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
@@ -19,7 +17,7 @@ const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 /**
  * execute hooks present in the hooks directory
  */
-export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
+export const executeHooks = async (hooksMetadata: HooksMeta): Promise<void> => {
   if (skipHooks()) {
     return;
   }
@@ -32,15 +30,15 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
   const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
 
-  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
 
   const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
-  if (hooksMeta.getHookEvent().forcePush) {
+  if (hooksMetadata.getHookEvent().forcePush) {
     // we want to run push related hooks when forcePush flag is enabled
-    hooksMeta.setEventCommand('push');
-    hooksMeta.setEventSubCommand(undefined);
-    const { commandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+    hooksMetadata.setEventCommand('push');
+    hooksMetadata.setEventSubCommand(undefined);
+    const { commandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
     executionQueue.push(commandHookFileMeta);
   }
 
@@ -52,7 +50,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
     if (!runtime) {
       continue;
     }
-    await execHelper(runtime, execFileMeta, hooksMeta.getDataParameter(), hooksMeta.getErrorParameter());
+    await execHelper(runtime, execFileMeta, hooksMetadata.getDataParameter(), hooksMetadata.getErrorParameter());
   }
 };
 
@@ -111,7 +109,7 @@ const execHelper = async (
   printer.blankLine();
 };
 
-const getHookFileMetas = (
+const getHookFileMetadata = (
   hooksDirPath: string,
   hookEvent: HookEvent,
   hooksConfig: HooksConfig,
@@ -125,7 +123,7 @@ const getHookFileMetas = (
     .readdirSync(hooksDirPath)
     .filter(relFilePath => fs.lstatSync(path.join(hooksDirPath, relFilePath)).isFile())
     .map(relFilePath => splitFileName(relFilePath))
-    .filter(fileMeta => fileMeta.extension && extensionsSupported.hasOwnProperty(fileMeta.extension))
+    .filter(fileMeta => fileMeta.extension && Object.prototype.hasOwnProperty.call(extensionsSupported, fileMeta.extension))
     .map(fileMeta => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
 
   const commandType = hookEvent.eventPrefix ? [hookEvent.eventPrefix, hookEvent.command].join(hookFileSeparator) : hookEvent.command;
@@ -151,6 +149,7 @@ const throwOnDuplicateHooksFiles = (files: HookFileMeta[]): HookFileMeta | undef
   } else if (files.length === 1) {
     return files[0];
   }
+  return undefined;
 };
 
 const splitFileName = (filename: string): HookFileMeta => {
@@ -166,7 +165,7 @@ const splitFileName = (filename: string): HookFileMeta => {
 const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | undefined => {
   const { extension } = fileMeta;
   if (!extension) {
-    return;
+    return undefined;
   }
   const isWin = process.platform === 'win32' || process.env.OSTYPE === 'cygwin' || process.env.OSTYPE === 'msys';
   const extensionObj = getSupportedExtensions(hooksConfig);
@@ -175,7 +174,7 @@ const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | 
   if (isWin) runtime = extensionObj?.[extension]?.runtime_windows;
   runtime = runtime ?? extensionObj?.[extension]?.runtime;
   if (!runtime) {
-    return;
+    return undefined;
   }
 
   const executablePath = which.sync(runtime, {

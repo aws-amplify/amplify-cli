@@ -1,12 +1,8 @@
 import * as path from 'path';
 import fs from 'fs-extra';
-import {
-  $TSAny, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 
-const {
-  readJson,
-} = JSONUtilities;
+const { readJson } = JSONUtilities;
 
 /**
  * Updates Cognito files that are tracked so that the diff is detected for an `amplify push`
@@ -39,17 +35,19 @@ export const detectCognitoAttributesRequireVerificationBeforeUpdateDiff = async 
 
   const cloudBackendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(currentCloudBackendDir, resourceName);
   const backendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(localBackendDir, resourceName);
-  const updateNotInCloudBackend: boolean = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate
-    || cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] !== 'email';
-  const updateInLocalBackend: boolean = backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1
-    && backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === 'email';
+  const updateNotInCloudBackend: boolean =
+    !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate ||
+    cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] !== 'email';
+  const updateInLocalBackend: boolean =
+    backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1 &&
+    backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === 'email';
 
   return updateNotInCloudBackend && updateInLocalBackend;
 };
 
 type UserAttributeUpdateSettings = {
-  AttributesRequireVerificationBeforeUpdate: string[]
-}
+  AttributesRequireVerificationBeforeUpdate: string[];
+};
 
 const readCfnTemplateUserAttributeSettings = async (
   backendDir: string,
@@ -69,6 +67,6 @@ const addExtraLineToCliInputsJson = async (backendDir: string, resourceName: str
   const cliInputsFile = path.join(backendDir, 'auth', resourceName, 'cli-inputs.json');
 
   if (fs.existsSync(cliInputsFile)) {
-    fs.appendFile(cliInputsFile, ' ');
+    await fs.appendFile(cliInputsFile, ' ');
   }
 };

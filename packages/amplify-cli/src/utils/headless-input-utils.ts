@@ -3,7 +3,7 @@ import { Context } from '../domain/context';
 import { normalizeInputParams } from '../input-params-manager';
 import { $TSContext } from 'amplify-cli-core';
 
-const headlessPayloadReadTimeoutMillis = 2000;
+const headlessPayloadReadTimeoutMilliseconds = 2000;
 
 // checks if the --headless flag is set on the amplify command;
 export const isHeadlessCommand = (context: any): boolean => context.input.options && context.input.options.headless;
@@ -22,7 +22,7 @@ export const readHeadlessPayload = async (): Promise<string> => {
   const id = setTimeout(() => {
     clearTimeout(id);
     rl.close();
-  }, headlessPayloadReadTimeoutMillis);
+  }, headlessPayloadReadTimeoutMilliseconds);
 
   // resolves a promise on the 'line' event
   return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ export const isYesFlagSet = (context: Context): boolean => {
   }
 
   // No exeInfo is constructed, get the yes flag from the input directly.
-  const inputParams = normalizeInputParams(context as unknown as $TSContext);
+  const inputParams = normalizeInputParams((context as unknown) as $TSContext);
 
   return inputParams?.yes;
 };

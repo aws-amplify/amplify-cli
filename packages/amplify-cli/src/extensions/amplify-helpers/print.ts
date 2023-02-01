@@ -1,7 +1,7 @@
 import importedColors from 'colors/safe';
 import CLITable from 'cli-table3';
 
-//TODO: refector, this is a copy of conext-extensions.ts
+//TODO: refactor, this is a copy of context-extensions.ts
 importedColors.setTheme({
   highlight: 'cyan',
   info: 'reset',

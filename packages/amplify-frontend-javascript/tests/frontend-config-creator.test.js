@@ -20,7 +20,7 @@ describe('Get current aws-exports', () => {
 
 const awsmobile = ${JSON.stringify(awsmobile, null, 2)};
 
-module.exports = awsmobile;    
+module.exports = awsmobile;
 `;
   const awsExports = generateAwsExportsFileContents(awsmobile);
   const projectPath = path.resolve('./');
@@ -198,5 +198,67 @@ describe('generate maps and search configuration', () => {
     const generatedConfig = configCreator.getAWSExportsObject(mockGeoResources);
     expect(generatedConfig.geo.amazon_location_service.region).toEqual(resourceRegion);
     expect(generatedConfig).toMatchSnapshot();
+  });
+});
+
+describe('generates pinpoint configuration', () => {
+  it('generates correct configuration for analytics and notifications channels', () => {
+    const mockPinpointResources = {
+      metadata: {
+        Region: 'us-east-1',
+      },
+      serviceResourceMapping: {
+        Pinpoint: [
+          {
+            output: {
+              Region: 'us-east-1',
+              Id: 'fake',
+            },
+          },
+          {
+            Id: 'fake',
+            Region: 'us-east-1',
+            output: {
+              Region: 'us-east-1',
+              InAppMessaging: {
+                Enabled: true,
+                ApplicationId: 'fake'
+              },
+              SMS: {
+                ApplicationId: 'fake',
+                Enabled: true,
+              }
+            }
+          }
+        ],
+      },
+    };
+    const expectedGeneratedConfig = {
+      aws_project_region: 'us-east-1',
+      aws_mobile_analytics_app_id: 'fake',
+      aws_mobile_analytics_app_region: 'us-east-1',
+      Analytics: {
+        AWSPinpoint: {
+          appId: 'fake',
+          region: 'us-east-1'
+        }
+      },
+      Notifications: {
+        InAppMessaging: {
+          AWSPinpoint: {
+            appId: 'fake',
+            region: 'us-east-1'
+          }
+        },
+        SMS: {
+          AWSPinpoint: {
+            appId: 'fake',
+            region: 'us-east-1'
+          }
+        }
+      }
+    };
+    const generatedConfig = configCreator.getAWSExportsObject(mockPinpointResources);
+    expect(generatedConfig).toMatchObject(expectedGeneratedConfig);
   });
 });

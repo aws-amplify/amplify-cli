@@ -244,7 +244,7 @@ export class ApiCategoryFacade {
 }
 
 // @public (undocumented)
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL: string;
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
 export const AWS_DOCS_URL = "https://docs.aws.amazon.com/";
@@ -407,6 +407,25 @@ export class CloudformationProviderFacade {
     // (undocumented)
     static prePushCfnTemplateModifier(context: $TSContext, template: Template_2): Promise<(template: Template_2) => Promise<void>>;
 }
+
+// @public (undocumented)
+export type CommandFlagInfo = {
+    short: string;
+    long: string;
+    flagDescription: string;
+};
+
+// @public (undocumented)
+export type CommandInfo = {
+    command: string;
+    commandDescription: string;
+    commandUsage: string;
+    commandFlags: Array<CommandFlagInfo>;
+    subCommands: Array<SubCommandInfo>;
+};
+
+// @public (undocumented)
+export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
 export class ConfigurationError extends Error {
@@ -583,7 +602,7 @@ export type ErrorParameter = {
 export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
-export const executeHooks: (hooksMeta: HooksMeta) => Promise<void>;
+export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -626,7 +645,7 @@ export class FeatureFlags {
     // (undocumented)
     static getNumber: (flagName: string) => number;
     // (undocumented)
-    static initialize: (environmentProvider: CLIEnvironmentProvider, useNewDefaults?: boolean, additionalFlags?: Record<string, FeatureFlagRegistration[]> | undefined) => Promise<void>;
+    static initialize: (environmentProvider: CLIEnvironmentProvider, useNewDefaults?: boolean, additionalFlags?: Record<string, FeatureFlagRegistration[]>) => Promise<void>;
     // (undocumented)
     static isInitialized: () => boolean;
     // (undocumented)
@@ -688,10 +707,10 @@ export type GetOptions<T> = {
 export type GetPackageAssetPaths = () => Promise<string[]>;
 
 // @public (undocumented)
-export const getPackageManager: (rootPath?: string | undefined) => PackageManager | null;
+export const getPackageManager: (rootPath?: string) => PackageManager | null;
 
 // @public (undocumented)
-export const getPermissionsBoundaryArn: (env?: string | undefined) => string | undefined;
+export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
 
 // @public (undocumented)
 export type HookEvent = {
@@ -735,14 +754,14 @@ export class HooksMeta {
     getHookEvent(): HookEvent;
     // (undocumented)
     static getInstance: (input?: {
-        command?: string | undefined;
-        plugin?: string | undefined;
-        subCommands?: string[] | undefined;
+        command?: string;
+        plugin?: string;
+        subCommands?: string[];
         options?: {
-            forcePush?: boolean | undefined;
-        } | undefined;
-        argv?: string[] | undefined;
-    } | undefined, eventPrefix?: EventPrefix | undefined, errorParameter?: ErrorParameter | undefined) => HooksMeta;
+            forcePush?: boolean;
+        };
+        argv?: string[];
+    }, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter) => HooksMeta;
     // (undocumented)
     mergeDataParameter(newDataParameter: DataParameter): void;
     // (undocumented)
@@ -961,26 +980,32 @@ export const isWindowsPlatform: boolean;
 export class JSONUtilities {
     // (undocumented)
     static parse: <T>(jsonString: string, options?: {
-        preserveComments?: boolean | undefined;
-    } | undefined) => T;
+        preserveComments?: boolean;
+    }) => T;
     // (undocumented)
     static readJson: <T>(fileName: string, options?: {
-        throwIfNotExist?: boolean | undefined;
-        preserveComments?: boolean | undefined;
-    } | undefined) => T | undefined;
+        throwIfNotExist?: boolean;
+        preserveComments?: boolean;
+    }) => T | undefined;
     // (undocumented)
     static stringify: (data: unknown, options?: {
-        minify?: boolean | undefined;
-        orderedKeys?: boolean | undefined;
-    } | undefined) => string | undefined;
+        minify?: boolean;
+        orderedKeys?: boolean;
+    }) => string | undefined;
     // (undocumented)
     static writeJson: (fileName: string, data: unknown, options?: {
-        mode?: number | undefined;
-        minify?: boolean | undefined;
-        secureFile?: boolean | undefined;
-        orderedKeys?: boolean | undefined;
-    } | undefined) => void;
+        mode?: number;
+        minify?: boolean;
+        secureFile?: boolean;
+        orderedKeys?: boolean;
+    }) => void;
 }
+
+// @public (undocumented)
+export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
+
+// @public (undocumented)
+export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //
@@ -1049,6 +1074,12 @@ export type PackageManager = {
 export type PackageManagerType = 'yarn' | 'npm';
 
 // @public (undocumented)
+export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
+    command: string;
+    subCommand: string;
+};
+
+// @public (undocumented)
 export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
     message: string;
 };
@@ -1109,39 +1140,39 @@ export class PathManager {
     // (undocumented)
     getAmplifyAdminDirPath: () => string;
     // (undocumented)
-    getAmplifyDirPath: (projectPath?: string | undefined) => string;
+    getAmplifyDirPath: (projectPath?: string) => string;
     // (undocumented)
     getAmplifyLibRoot: () => string;
     // (undocumented)
-    getAmplifyMetaFilePath: (projectPath?: string | undefined) => string;
+    getAmplifyMetaFilePath: (projectPath?: string) => string;
     // (undocumented)
     getAmplifyPackageLibDirPath: (packageName: string) => string;
     // (undocumented)
-    getAmplifyRcFilePath: (projectPath?: string | undefined) => string;
+    getAmplifyRcFilePath: (projectPath?: string) => string;
     // (undocumented)
     getAWSConfigFilePath: () => string;
     // (undocumented)
     getAWSCredentialsFilePath: () => string;
     // (undocumented)
-    getBackendConfigFilePath: (projectPath?: string | undefined) => string;
+    getBackendConfigFilePath: (projectPath?: string) => string;
     // (undocumented)
-    getBackendDirPath: (projectPath?: string | undefined) => string;
+    getBackendDirPath: (projectPath?: string) => string;
     // (undocumented)
-    getCLIJSONFilePath: (projectPath: string, env?: string | undefined) => string;
+    getCLIJSONFilePath: (projectPath: string, env?: string) => string;
     // (undocumented)
-    getCurrentAmplifyMetaFilePath: (projectPath?: string | undefined) => string;
+    getCurrentAmplifyMetaFilePath: (projectPath?: string) => string;
     // (undocumented)
-    getCurrentBackendConfigFilePath: (projectPath?: string | undefined) => string;
+    getCurrentBackendConfigFilePath: (projectPath?: string) => string;
     // (undocumented)
     getCurrentCfnTemplatePath: (projectPath: string | undefined, categoryName: string, resourceName: string) => string;
     // (undocumented)
-    getCurrentCloudBackendDirPath: (projectPath?: string | undefined) => string;
+    getCurrentCloudBackendDirPath: (projectPath?: string) => string;
     // (undocumented)
     getCurrentCloudRootStackDirPath: (projectPath: string) => string;
     // (undocumented)
     getCurrentResourceParametersJsonPath: (projectPath: string | undefined, categoryName: string, resourceName: string) => string;
     // (undocumented)
-    getCurrentTagFilePath: (projectPath?: string | undefined) => string;
+    getCurrentTagFilePath: (projectPath?: string) => string;
     // (undocumented)
     getCustomPoliciesPath: (category: string, resourceName: string) => string;
     // (undocumented)
@@ -1151,25 +1182,25 @@ export class PathManager {
     // (undocumented)
     getDotAWSDirPath: () => string;
     // (undocumented)
-    getDotConfigDirPath: (projectPath?: string | undefined) => string;
+    getDotConfigDirPath: (projectPath?: string) => string;
     // (undocumented)
-    getGitIgnoreFilePath: (projectPath?: string | undefined) => string;
+    getGitIgnoreFilePath: (projectPath?: string) => string;
     // (undocumented)
     getHomeDotAmplifyDirPath: () => string;
     // (undocumented)
-    getHooksConfigFilePath: (projectPath?: string | undefined) => string;
+    getHooksConfigFilePath: (projectPath?: string) => string;
     // (undocumented)
-    getHooksDirPath: (projectPath?: string | undefined) => string;
+    getHooksDirPath: (projectPath?: string) => string;
     // (undocumented)
-    getLocalAWSInfoFilePath: (projectPath?: string | undefined) => string;
+    getLocalAWSInfoFilePath: (projectPath?: string) => string;
     // (undocumented)
-    getLocalEnvFilePath: (projectPath?: string | undefined) => string;
+    getLocalEnvFilePath: (projectPath?: string) => string;
     // (undocumented)
     getOverrideDirPath: (projectPath: string, category: string, resourceName: string) => string;
     // (undocumented)
-    getProjectConfigFilePath: (projectPath?: string | undefined) => string;
+    getProjectConfigFilePath: (projectPath?: string) => string;
     // (undocumented)
-    getReadMeFilePath: (projectPath?: string | undefined) => string;
+    getReadMeFilePath: (projectPath?: string) => string;
     // (undocumented)
     getResourceCfnTemplatePath: (projectPath: string | undefined, category: string, resourceName: string, buildDirectory?: boolean) => string;
     // (undocumented)
@@ -1183,9 +1214,9 @@ export class PathManager {
     // (undocumented)
     getRootStackBuildDirPath: (projectPath: string) => string;
     // (undocumented)
-    getTagFilePath: (projectPath?: string | undefined) => string;
+    getTagFilePath: (projectPath?: string) => string;
     // (undocumented)
-    getTeamProviderInfoFilePath: (projectPath?: string | undefined) => string;
+    getTeamProviderInfoFilePath: (projectPath?: string) => string;
 }
 
 // @public (undocumented)
@@ -1286,6 +1317,9 @@ export interface ResourceTuple {
 }
 
 // @public (undocumented)
+export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): void;
+
+// @public (undocumented)
 export const SecretFileMode = 384;
 
 // @public (undocumented)
@@ -1296,7 +1330,7 @@ export type ServiceSelection = {
 };
 
 // @public (undocumented)
-export const setPermissionsBoundaryArn: (arn?: string | undefined, env?: string | undefined, teamProviderInfo?: $TSObject | undefined) => void;
+export const setPermissionsBoundaryArn: (arn?: string, env?: string, teamProviderInfo?: $TSObject) => void;
 
 // @public (undocumented)
 export function skipHooks(): boolean;
@@ -1310,69 +1344,69 @@ export const spinner: Ora;
 // @public (undocumented)
 export class StateManager {
     // (undocumented)
-    backendConfigFileExists: (projectPath?: string | undefined) => boolean;
+    backendConfigFileExists: (projectPath?: string) => boolean;
     // (undocumented)
-    cliJSONFileExists: (projectPath: string, env?: string | undefined) => boolean;
+    cliJSONFileExists: (projectPath: string, env?: string) => boolean;
     // (undocumented)
-    currentMetaFileExists: (projectPath?: string | undefined) => boolean;
+    currentMetaFileExists: (projectPath?: string) => boolean;
     // (undocumented)
-    getAmplifyAdminConfigEntry: (appId: string, options?: GetOptions<any> | undefined) => $TSAny;
+    getAmplifyAdminConfigEntry: (appId: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
     getAppID: () => string;
     // (undocumented)
-    getBackendConfig: (projectPath?: string | undefined, options?: GetOptions<any> | undefined, includeParameters?: boolean) => $TSAny;
+    getBackendConfig: (projectPath?: string, options?: GetOptions<$TSAny>, includeParameters?: boolean) => $TSAny;
     // (undocumented)
-    getCLIJSON: (projectPath: string, env?: string | undefined, options?: GetOptions<any> | undefined) => $TSAny;
+    getCLIJSON: (projectPath: string, env?: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
-    getCurrentBackendConfig: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSAny;
+    getCurrentBackendConfig: (projectPath?: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
-    getCurrentEnvName: (projectPath?: string | undefined) => string | undefined;
+    getCurrentEnvName: (projectPath?: string) => string | undefined;
     // (undocumented)
-    getCurrentMeta: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSMeta;
+    getCurrentMeta: (projectPath?: string, options?: GetOptions<$TSMeta>) => $TSMeta;
     // (undocumented)
-    getCurrentProjectTags: (projectPath?: string | undefined) => Tag[];
+    getCurrentProjectTags: (projectPath?: string) => Tag[];
     // (undocumented)
-    getCurrentRegion: (projectPath?: string | undefined) => string | undefined;
+    getCurrentRegion: (projectPath?: string) => string | undefined;
     // (undocumented)
-    getCurrentResourceParametersJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<any> | undefined) => $TSAny;
+    getCurrentResourceParametersJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
     getCustomPolicies: (categoryName: string, resourceName: string) => CustomIAMPolicies;
     // (undocumented)
     getDeploymentSecrets: () => DeploymentSecrets;
     // (undocumented)
-    getHooksConfigJson: (projectPath?: string | undefined) => HooksConfig;
+    getHooksConfigJson: (projectPath?: string) => HooksConfig;
     // (undocumented)
     getHydratedTags: (projectPath?: string | undefined, skipProjEnv?: boolean) => Tag[];
     // (undocumented)
-    getLocalAWSInfo: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSAny;
+    getLocalAWSInfo: (projectPath?: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
-    getLocalEnvInfo: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSAny;
+    getLocalEnvInfo: (projectPath?: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
-    getMeta: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSMeta;
+    getMeta: (projectPath?: string, options?: GetOptions<$TSMeta>) => $TSMeta;
     // (undocumented)
-    getProjectConfig: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSAny;
+    getProjectConfig: (projectPath?: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
     getProjectName: () => string;
     // (undocumented)
-    getProjectTags: (projectPath?: string | undefined) => Tag[];
+    getProjectTags: (projectPath?: string) => Tag[];
     // (undocumented)
     getResourceFromMeta: (amplifyMeta: Record<string, $TSAny>, categoryName: string, serviceName: string, resourceName?: string | undefined, throwIfNotExist?: boolean) => ResourceEntry | null;
     // (undocumented)
-    getResourceInputsJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<any> | undefined) => $TSAny;
+    getResourceInputsJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
-    getResourceParametersJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<any> | undefined) => $TSAny;
+    getResourceParametersJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
-    getTeamProviderInfo: (projectPath?: string | undefined, options?: GetOptions<any> | undefined) => $TSTeamProviderInfo;
+    getTeamProviderInfo: (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>) => $TSTeamProviderInfo;
     // (undocumented)
     isTagFilePresent: (projectPath?: string | undefined) => boolean;
     // (undocumented)
-    localAWSInfoExists: (projectPath?: string | undefined) => boolean;
+    localAWSInfoExists: (projectPath?: string) => boolean;
     // (undocumented)
-    localEnvInfoExists: (projectPath?: string | undefined) => boolean;
+    localEnvInfoExists: (projectPath?: string) => boolean;
     // (undocumented)
-    metaFileExists: (projectPath?: string | undefined) => boolean;
+    metaFileExists: (projectPath?: string) => boolean;
     // (undocumented)
-    projectConfigExists: (projectPath?: string | undefined) => boolean;
+    projectConfigExists: (projectPath?: string) => boolean;
     // (undocumented)
     removeAmplifyAdminConfigEntry: (appId: string) => void;
     // (undocumented)
@@ -1382,7 +1416,7 @@ export class StateManager {
     // (undocumented)
     setBackendConfig: (projectPath: string | undefined, backendConfig: $TSAny) => void;
     // (undocumented)
-    setCLIJSON: (projectPath: string, cliJSON: $TSAny, env?: string | undefined) => void;
+    setCLIJSON: (projectPath: string, cliJSON: $TSAny, env?: string) => void;
     // (undocumented)
     setCurrentBackendConfig: (projectPath: string | undefined, backendConfig: $TSAny) => void;
     // (undocumented)
@@ -1408,7 +1442,7 @@ export class StateManager {
     // (undocumented)
     setTeamProviderInfo: (projectPath: string | undefined, teamProviderInfo: $TSTeamProviderInfo) => void;
     // (undocumented)
-    teamProviderInfoExists: (projectPath?: string | undefined) => boolean;
+    teamProviderInfoExists: (projectPath?: string) => boolean;
 }
 
 // @public (undocumented)
@@ -1416,6 +1450,14 @@ export const stateManager: StateManager;
 
 // @public (undocumented)
 export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
+
+// @public (undocumented)
+export type SubCommandInfo = {
+    subCommand: string;
+    subCommandDescription: string;
+    subCommandUsage: string;
+    subCommandFlags: Array<CommandFlagInfo>;
+};
 
 // @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];
@@ -1513,7 +1555,7 @@ export class ViewResourceTableParams {
 }
 
 // @public (undocumented)
-export const writeCFNTemplate: (template: object, filePath: string, options?: WriteCFNTemplateOptions | undefined) => Promise<void>;
+export const writeCFNTemplate: (template: object, filePath: string, options?: WriteCFNTemplateOptions) => Promise<void>;
 
 // @public (undocumented)
 export type WriteCFNTemplateOptions = {

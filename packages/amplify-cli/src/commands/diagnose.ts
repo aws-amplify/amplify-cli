@@ -1,6 +1,4 @@
-import {
-  stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError,
-} from 'amplify-cli-core';
+import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -81,7 +79,7 @@ const showLearnMore = (showOptOut: boolean): void => {
   if (showOptOut) {
     printer.blankLine();
     printer.info(
-      'This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'',
+      "This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running 'amplify diagnose --auto-send-off'",
     );
   }
 };
@@ -116,7 +114,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
   } catch (ex) {
     printer.blankLine();
     printer.info(ex.message);
-    context.usageData.emitError(ex);
+    void context.usageData.emitError(ex);
     spinner.fail();
   }
 };

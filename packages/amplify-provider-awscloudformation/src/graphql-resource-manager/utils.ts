@@ -51,7 +51,7 @@ function loadDiffableProject(path: string, rootStackName: string): DiffableProje
 export function readFromPath(directory: string): any {
   const pathExists = fs.pathExistsSync(directory);
   if (!pathExists) {
-    return;
+    return undefined;
   }
   const dirStats = fs.lstatSync(directory);
   if (!dirStats.isDirectory()) {
@@ -59,11 +59,11 @@ export function readFromPath(directory: string): any {
     return buf.toString();
   }
   const files = fs.readdirSync(directory);
-  const accum = {};
+  const filesObject = {};
   for (const fileName of files) {
     const fullPath = path.join(directory, fileName);
     const value = readFromPath(fullPath);
-    accum[fileName] = value;
+    filesObject[fileName] = value;
   }
-  return accum;
+  return filesObject;
 }
