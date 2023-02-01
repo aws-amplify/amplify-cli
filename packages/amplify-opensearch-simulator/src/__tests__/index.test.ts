@@ -19,6 +19,7 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
+describe('emulator operations', () => {
   const getMockSearchableFolder = (): string => {
     let pathToSearchableMockResources = join(__dirname, '..', '..', 'resources');
     do {
