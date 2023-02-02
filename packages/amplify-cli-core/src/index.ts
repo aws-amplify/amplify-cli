@@ -33,5 +33,5 @@ export * from './errors/amplify-fault';
 export * from './errors/amplify-exception';
 export * from './errors/project-not-initialized-error';
 export * from './help';
-export * from './help';
+export * from './amplify-node-pkg-detector';
 // force major version bump for cdk v2

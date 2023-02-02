@@ -122,7 +122,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryError' | 'DirectoryAlreadyExistsError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'ModelgenError' | 'NestedProjectInitError' | 'NoUpdateBackendError' | 'NotImplementedError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'StackNotFoundError' | 'StackStateError' | 'UserInputError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryError' | 'DirectoryAlreadyExistsError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'ModelgenError' | 'NestedProjectInitError' | 'NoUpdateBackendError' | 'NotImplementedError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'StackNotFoundError' | 'StackStateError' | 'UnsupportedLockFileTypeError' | 'UserInputError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError';
 
 // @public (undocumented)
 export abstract class AmplifyException extends Error {
@@ -170,7 +170,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
+export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'LockFileNotFoundFault' | 'LockFileParsingFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -181,6 +181,18 @@ export enum AmplifyFrontend {
     // (undocumented)
     javascript = "javascript"
 }
+
+// @public (undocumented)
+export class AmplifyNodePkgDetector {
+    constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
+    // (undocumented)
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+}
+
+// @public (undocumented)
+export type AmplifyNodePkgDetectorProps = {
+    projectRoot: string;
+};
 
 // @public (undocumented)
 export interface AmplifyProjectConfig {
@@ -581,6 +593,15 @@ export enum DeploymentStepStatus {
     // (undocumented)
     'WAITING_FOR_TABLE_TO_BE_READY' = "WAITING_FOR_TABLE_TO_BE_READY"
 }
+
+// @public (undocumented)
+export type DetectedDependency = {
+    packageName?: string;
+    dependentPackage?: {
+        name: string;
+        version: string;
+    };
+};
 
 // @public (undocumented)
 export class DiagnoseReportUploadError extends Error {
@@ -1067,10 +1088,11 @@ export type PackageManager = {
     packageManager: PackageManagerType;
     lockFile: string;
     executable: string;
+    yarnrcPath?: string;
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export type PackageManagerType = 'yarn' | 'npm' | 'yarn2';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
@@ -1127,6 +1149,7 @@ export const PathConstants: {
     ExportManifestJsonFilename: string;
     ExportTagsJsonFileName: string;
     ExportCategoryStackMappingJsonFilename: string;
+    OverrideFileName: string;
 };
 
 // @public (undocumented)
@@ -1206,6 +1229,8 @@ export class PathManager {
     getResourceDirectoryPath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
     getResourceInputsJsonFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
+    // (undocumented)
+    getResourceOverrideFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
     getResourceParametersFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)

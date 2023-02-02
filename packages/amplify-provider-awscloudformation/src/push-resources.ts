@@ -77,6 +77,7 @@ import { prePushTemplateDescriptionHandler } from './template-description-utils'
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
+import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 
 const logger = fileLogger('push-resources');
 
@@ -198,6 +199,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       AmplifySupportedService.LAMBDA, 'ensureLambdaExecutionRoleOutputs', []);
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
+
+    // print cdk migration warning
+    await printCdkMigrationWarning(context);
 
     // Removed api transformation to generate resources before starting deploy/
 
