@@ -1,12 +1,10 @@
 import { stateManager, JSONUtilities, $TSContext, pathManager } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
-import * as m from '../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper';
-import inquirer from 'inquirer';
+import * as envVarHelper from '../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper';
 import * as uuid from 'uuid';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
-jest.mock('inquirer');
 jest.mock('uuid');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
@@ -50,7 +48,7 @@ beforeEach(async () => {
 
 describe('getStoredEnvironmentVariables', () => {
   it('empty return value when resource name does not exist', () => {
-    const value = m.getStoredEnvironmentVariables('test');
+    const value = envVarHelper.getStoredEnvironmentVariables('test');
     expect(value).toEqual({});
   });
 });
@@ -58,7 +56,7 @@ describe('getStoredEnvironmentVariables', () => {
 describe('deleteEnvironmentVariable', () => {
   it('does not throw error', () => {
     expect(() => {
-      m.saveEnvironmentVariables('name', { test: 'test' });
+      envVarHelper.saveEnvironmentVariables('name', { test: 'test' });
     }).not.toThrow();
   });
 });
@@ -84,7 +82,7 @@ describe('ensureEnvironmentVariableValues', () => {
 
     prompterMock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
 
-    await m.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as $TSContext);
+    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as $TSContext);
     expect(
       getEnvParamManager()
         .getResourceParamManager('function', 'testFunc')
@@ -103,7 +101,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
   const context = {} as $TSContext;
   const abortKey = 'abort_token';
   const uuidMock = uuid as jest.Mocked<typeof uuid>;
-  const spyOnGetStoredEnvironmentVariables = jest.spyOn(m, 'getStoredEnvironmentVariables');
+  const spyOnGetStoredEnvironmentVariables = jest.spyOn(envVarHelper, 'getStoredEnvironmentVariables');
 
   const howToProceedChoices = [
     {
@@ -159,7 +157,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       function: {},
     });
 
-    await m.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
+    await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
     expect(prompterMock.pick).toBeCalledTimes(0);
   });
@@ -195,7 +193,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       spyOnGetStoredEnvironmentVariables.mockReturnValueOnce(storedEnvVar);
       prompterMock.pick.mockResolvedValueOnce('carry');
 
-      await m.askEnvironmentVariableCarryOrUpdateQuestions(context, fromEnvName, yesFlagSet);
+      await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, fromEnvName, yesFlagSet);
 
       expect(prompterMock.pick).toBeCalledTimes(numCalls);
     },
@@ -204,7 +202,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
   it('prompts the user with a specific question when the environment has lambda functions and the yes flag is not set', async () => {
     prompterMock.pick.mockResolvedValueOnce('carry');
 
-    await m.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
+    await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
     expect(prompterMock.pick).toBeCalledWith(
       'You have configured environment variables for functions. How do you want to proceed?',
@@ -221,7 +219,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       prompterMock.pick.mockResolvedValueOnce(answer);
       prompterMock.pick.mockResolvedValueOnce(abortKey);
 
-      await m.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
+      await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
       expect(prompterMock.pick).toBeCalledTimes(numCarryUpdateCalls + numSelectFunctionCalls);
     },
@@ -231,7 +229,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
     prompterMock.pick.mockResolvedValueOnce('update');
     prompterMock.pick.mockResolvedValueOnce(abortKey);
 
-    await m.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
+    await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
     expect(prompterMock.pick).toHaveBeenCalledTimes(2);
     expect(prompterMock.pick).toHaveBeenNthCalledWith(
@@ -248,7 +246,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
     prompterMock.pick.mockResolvedValueOnce(abortKey); // select variable
     prompterMock.pick.mockResolvedValueOnce(abortKey); // select function
 
-    await m.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
+    await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
     expect(prompterMock.pick).toHaveBeenCalledTimes(4);
     expect(prompterMock.pick).toHaveBeenNthCalledWith(
@@ -272,7 +270,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
     prompterMock.pick.mockResolvedValueOnce(abortKey);
     prompterMock.pick.mockResolvedValueOnce(abortKey);
 
-    await m.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
+    await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
     // Expecting anything for optional prompter parameters.
     // TODO: figure out how to better expect how this function is called.
