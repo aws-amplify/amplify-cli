@@ -1,4 +1,4 @@
-import * as openSearchEmulator from '../index';
+import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
 import fs from 'fs-extra';
 import { join } from 'path';
 import http from 'http';
@@ -21,7 +21,7 @@ jest.mock('amplify-cli-core', () => ({
 
 describe('emulator operations', () => {
   const getMockSearchableFolder = (): string => {
-    let pathToSearchableMockResources = join(__dirname, '..', '..', 'resources');
+    let pathToSearchableMockResources = join(process.cwd(), '..', '..', 'resources');
     do {
       pathToSearchableMockResources = join('/tmp', `amplify-cli-opensearch-emulator-${v4()}`, 'mock-api-resources', 'searchable');
     } while (fs.existsSync(pathToSearchableMockResources));
@@ -137,9 +137,21 @@ describe('emulator operations', () => {
       }
     });
 
+    describe('ensureOpenSearchLocalExists', () => {
+      it('should download opensearch binary and start the emulator', async () => {
+        const path = join(process.cwd(), 'mock-path-to-emulator', 'opensearchLib', 'bin', 'opensearch');
+        const writeSpy = jest.spyOn(openSearchEmulator, 'writeOpensearchEmulatorArtifacts').mockReturnValueOnce(Promise.resolve());
+        jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
+        jest.spyOn(openSearchEmulator, 'getOpensearchLocalDirectory').mockReturnValueOnce(path);
+        await openSearchEmulator.ensureOpenSearchLocalExists(join(process.cwd(), 'mock-path-to-emulator'));
+        expect(writeSpy).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it('should attempt setting up local instance of opensearch with default configuration', async () => {
       jest.spyOn(openSearchEmulator, 'writeOpensearchEmulatorArtifacts').mockReturnValueOnce(Promise.resolve());
       jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
+      jest.spyOn(openSearchEmulator, 'ensureOpenSearchLocalExists').mockResolvedValue();
       try {
         await openSearchEmulator.launch(pathToSearchableData);
       } catch (err) {

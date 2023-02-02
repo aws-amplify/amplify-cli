@@ -38,13 +38,11 @@ module.exports = {
     '<rootDir>/packages/amplify-cli',
     '<rootDir>/packages/amplify-cli-core',
     '<rootDir>/packages/amplify-cli-logger',
-    '<rootDir>/packages/amplify-dynamodb-simulator',
     '<rootDir>/packages/amplify-frontend-android',
     '<rootDir>/packages/amplify-frontend-ios',
     '<rootDir>/packages/amplify-frontend-javascript',
     // '<rootDir>/packages/amplify-graphiql-explorer',
     '<rootDir>/packages/amplify-provider-awscloudformation',
-    '<rootDir>/packages/amplify-storage-simulator',
     '<rootDir>/packages/amplify-util-mock',
     // '<rootDir>/packages/amplify-velocity-template', // todo: enable after migration to Jest
   ],
