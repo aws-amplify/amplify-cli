@@ -1,7 +1,6 @@
 import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
 import fs from 'fs-extra';
 import { join } from 'path';
-import http from 'http';
 import * as openpgp from 'openpgp';
 import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
 import { v4 } from 'uuid';
@@ -21,7 +20,7 @@ jest.mock('amplify-cli-core', () => ({
 
 describe('emulator operations', () => {
   const getMockSearchableFolder = (): string => {
-    let pathToSearchableMockResources = join(process.cwd(), '..', '..', 'resources');
+    let pathToSearchableMockResources = '';
     do {
       pathToSearchableMockResources = join('/tmp', `amplify-cli-opensearch-emulator-${v4()}`, 'mock-api-resources', 'searchable');
     } while (fs.existsSync(pathToSearchableMockResources));
@@ -75,24 +74,6 @@ describe('emulator operations', () => {
     ensureMockSearchableResourcePath();
     fs.removeSync('mock-path-to-lib');
   });
-
-  const fetchURL = async (url: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      http
-        .get(url, resp => {
-          let data = '';
-          resp.on('data', chunk => {
-            data += chunk;
-          });
-          resp.on('end', () => {
-            resolve(data);
-          });
-        })
-        .on('error', err => {
-          reject(err);
-        });
-    });
-  };
 
   if (isWindowsPlatform) {
     it('should fail to launch on windows OS', async () => {
