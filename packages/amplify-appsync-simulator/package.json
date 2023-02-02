@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.7.0-cdkv2.5",
+  "version": "2.7.0-a-cdkv2-graphql-15.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",

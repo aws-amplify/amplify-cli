@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "7.0.0-cdkv2.5",
+  "version": "7.0.0-a-cdkv2-graphql-15.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",

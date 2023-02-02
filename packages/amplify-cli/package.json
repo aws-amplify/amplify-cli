@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "11.0.0-cdkv2.6",
+  "version": "11.0.0-a-cdkv2-graphql-15.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -70,11 +70,11 @@
     "amplify-nodejs-function-runtime-provider": "2.3.4-cdkv2.5",
     "amplify-nodejs-function-template-provider": "2.6.0-cdkv2.4",
     "amplify-prompts": "2.6.2-cdkv2.2",
-    "amplify-provider-awscloudformation": "7.0.0-cdkv2.5",
+    "amplify-provider-awscloudformation": "7.0.0-a-cdkv2-graphql-15.0",
     "amplify-python-function-runtime-provider": "2.4.4-cdkv2.5",
     "amplify-python-function-template-provider": "1.3.17-cdkv2.1",
     "amplify-util-import": "2.3.0-cdkv2.4",
-    "amplify-util-mock": "4.6.0-cdkv2.6",
+    "amplify-util-mock": "4.6.0-a-cdkv2-graphql-15.0",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
