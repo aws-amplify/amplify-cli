@@ -54,7 +54,7 @@
     "amplify-cli-core": "4.0.0-cdkv2.5",
     "amplify-cli-logger": "1.2.2-cdkv2.2",
     "amplify-cli-shared-interfaces": "1.1.1-cdkv2.1",
-    "amplify-codegen": "^3.3.4",
+    "amplify-codegen": "3.3.5-graphql15.0",
     "amplify-console-hosting": "2.3.4-cdkv2.5",
     "amplify-container-hosting": "2.5.4-cdkv2.6",
     "amplify-dotnet-function-runtime-provider": "1.7.0-cdkv2.0",
