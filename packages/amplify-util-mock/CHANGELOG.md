@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-a-cdkv2-graphql-15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-a-cdkv2-graphql-15.0...amplify-util-mock@4.6.0-a-cdkv2-graphql-15.1) (2023-02-02)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 # [4.6.0-a-cdkv2-graphql-15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-cdkv2.6...amplify-util-mock@4.6.0-a-cdkv2-graphql-15.0) (2023-02-02)
 
 **Note:** Version bump only for package amplify-util-mock
