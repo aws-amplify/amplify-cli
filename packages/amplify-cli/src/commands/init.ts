@@ -10,6 +10,7 @@ import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { checkForNestedProject } from './helpers/projectUtils';
+import { ensureEnvParamManager, cloneEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { prompter } from 'amplify-prompts';
 
 const constructExeInfo = (context: $TSContext): void => {
@@ -42,10 +43,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
   if (cloneFromSrcEnv) {
-    const CloudFormationProviderName = 'awscloudformation';
-    await context.amplify.invokePluginMethod(context, CloudFormationProviderName, undefined, 'cloneEnvParamManager', [
-      context.exeInfo.sourceEnvName,
-      context.exeInfo.localEnvInfo.envName,
-    ]);
+    const srcEnvParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance;
+    await cloneEnvParamManager(srcEnvParamManager, context.exeInfo.localEnvInfo.envName);
   }
 };
