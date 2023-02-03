@@ -352,11 +352,12 @@ export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boole
     args.push('--force');
   }
   const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
-  if (!includeForce) {
+  if (includeForce) {
+    return chain.runAsync();
+  } else {
     chain.wait('If this is intended, rerun the command with'); // in this case, we expect the CLI to error out
+    return chain.runAsync((err: Error) => !!err);
   }
-
-  return chain.runAsync();
 };
 
 /**
