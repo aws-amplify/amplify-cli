@@ -94,7 +94,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       const destResourceParamManager: ResourceParameterManager = destManager.getResourceParamManager(category, resourceName);
       destResourceParamManager.setAllParams(allSrcParams);
     });
-    destManager.save();
+    await destManager.save();
   }
 
   async save(): Promise<void> {
