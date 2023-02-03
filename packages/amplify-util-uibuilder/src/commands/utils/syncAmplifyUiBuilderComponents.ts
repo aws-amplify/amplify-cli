@@ -120,7 +120,9 @@ export const generateUiBuilderForms = (
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
       printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      return {
+        resultType: 'FAILURE', schemaName: schema.name, schema, error: e,
+      };
     }
   };
   const formResults = formSchemas.map((schema: StudioForm) => {

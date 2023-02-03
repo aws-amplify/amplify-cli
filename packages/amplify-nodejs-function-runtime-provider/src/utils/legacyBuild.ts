@@ -58,7 +58,7 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
     });
   } catch (error) {
     if (error.code === 'ENOENT') {
-      throw new Error(`Packaging lambda function failed. Could not find ${packageManager} executable in the PATH.`);
+      throw new Error(`Packaging lambda function failed. Could not find ${packageManager.packageManager} executable in the PATH.`);
     } else if (error.stdout?.includes('YN0050: The --production option is deprecated')) {
       throw new Error('Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.');
     } else {

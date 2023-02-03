@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.2.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.1...amplify-category-analytics@4.2.0-beta.4) (2022-12-28)
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.3.0...amplify-category-analytics@4.3.1) (2023-01-17)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.1...amplify-category-analytics@4.3.0) (2023-01-03)
 
 
 ### Features
@@ -14,67 +22,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [4.2.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.1...amplify-category-analytics@4.2.0-beta.3) (2022-12-13)
-
-
-### Features
-
-* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
-
-
-
-
-
-# [4.2.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.1...amplify-category-analytics@4.2.0-beta.2) (2022-12-01)
-
-**Note:** Version bump only for package amplify-category-analytics
-
-
-
-
-
-# [4.2.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0-beta.0...amplify-category-analytics@4.2.0-beta.1) (2022-11-19)
-
-**Note:** Version bump only for package amplify-category-analytics
-
-
-
-
-
-# [4.2.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0-cdkv2.0...amplify-category-analytics@4.2.0-beta.0) (2022-11-17)
-
-
-### Bug Fixes
-
-* add function access to analytics ([#11276](https://github.com/aws-amplify/amplify-cli/issues/11276)) ([3939d41](https://github.com/aws-amplify/amplify-cli/commit/3939d41b2aca6cf64bd0a36a32ff0d45ae954eaf))
-
-
-
-
-
-# [4.2.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0-cdkv2.0...amplify-category-analytics@4.2.0-cdkv2.2) (2022-11-10)
-
-
-### Bug Fixes
-
-* add function access to analytics ([#11276](https://github.com/aws-amplify/amplify-cli/issues/11276)) ([3939d41](https://github.com/aws-amplify/amplify-cli/commit/3939d41b2aca6cf64bd0a36a32ff0d45ae954eaf))
-
-
-
-
-
-# [4.2.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0-cdkv2.0...amplify-category-analytics@4.2.0-cdkv2.1) (2022-11-10)
-
-
-### Bug Fixes
-
-* add function access to analytics ([#11276](https://github.com/aws-amplify/amplify-cli/issues/11276)) ([3939d41](https://github.com/aws-amplify/amplify-cli/commit/3939d41b2aca6cf64bd0a36a32ff0d45ae954eaf))
-
-
-
-
-
-# [4.2.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.1.3...amplify-category-analytics@4.2.0-cdkv2.0) (2022-11-01)
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0...amplify-category-analytics@4.2.1) (2022-11-17)
 
 

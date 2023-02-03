@@ -21,7 +21,7 @@ const LIST_CONTENT = 'Contents';
 const LIST_COMMOM_PREFIXES = 'CommonPrefixes';
 const EVENT_RECORDS = 'Records';
 
-var corsOptions = {
+const corsOptions = {
   maxAge: 20000,
   exposedHeaders: ['x-amz-server-side-encryption', 'x-amz-request-id', 'x-amz-id-2', 'ETag'],
 };
@@ -45,8 +45,11 @@ export class StorageServer extends EventEmitter {
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
     this.app.use(cors(corsOptions));
+    // eslint-disable-next-line spellcheck/spell-checker
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
+    /* eslint-disable @typescript-eslint/no-misused-promises */
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
+    /* eslint-enable */
 
     this.server = null;
     this.route = config.route;
@@ -84,26 +87,26 @@ export class StorageServer extends EventEmitter {
     // create eventObj for thr trigger
 
     if (request.method === 'PUT') {
-      this.handleRequestPut(request, response);
+      await this.handleRequestPut(request, response);
     }
 
     if (request.method === 'POST') {
-      this.handleRequestPost(request, response);
+      await this.handleRequestPost(request, response);
     }
 
     if (request.method === 'GET') {
-      this.handleRequestGet(request, response);
+      await this.handleRequestGet(request, response);
     }
 
     if (request.method === 'LIST') {
-      this.handleRequestList(request, response);
+      await this.handleRequestList(request, response);
     }
 
     if (request.method === 'DELETE') {
       // emit event for delete
-      let eventObj = this.createEvent(request);
+      const eventObj = this.createEvent(request);
       this.emit('event', eventObj);
-      this.handleRequestDelete(request, response);
+      await this.handleRequestDelete(request, response);
     }
   }
 
@@ -117,7 +120,7 @@ export class StorageServer extends EventEmitter {
         response.send(data);
       });
     } else {
-      // fixup the keyname for proper error message since it is normalized for the given platform
+      // fix up the key name for proper error message since it is normalized for the given platform
       // remove the leading path separator and replace the remaining ones.
       let keyName = request.params.path.replace(/\\/g, '/');
       if (keyName.startsWith('/')) {
@@ -141,19 +144,19 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestList(request, response) {
-    let ListBucketResult = {};
+    const ListBucketResult = {};
     ListBucketResult[LIST_CONTENT] = [];
     ListBucketResult[LIST_COMMOM_PREFIXES] = [];
 
     let maxKeys;
-    let prefix = request.query.prefix || '';
+    const prefix = request.query.prefix || '';
     if (request.query.maxKeys !== undefined) {
       maxKeys = Math.min(request.query.maxKeys, 1000);
     } else {
       maxKeys = 1000;
     }
-    let delimiter = request.query.delimiter || '';
-    let startAfter = request.query.startAfter || '';
+    const delimiter = request.query.delimiter || '';
+    const startAfter = request.query.startAfter || '';
     let keyCount = 0;
     // getting folders recursively
     const dirPath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
@@ -163,7 +166,7 @@ export class StorageServer extends EventEmitter {
       absolute: true,
     });
     for (const file of files) {
-      // We have to normalize glob returned filenames to make sure deriving the keyname will work under every OS.
+      // We have to normalize glob returned filenames to make sure deriving the key name will work under every OS.
       const normalizedFile = path.normalize(file);
       // Remove directory portion, cut starting slash, replace backslash with slash.
       let keyName = normalizedFile.replace(dirPath, '').replace(/\\/g, '/');
@@ -171,7 +174,7 @@ export class StorageServer extends EventEmitter {
         keyName = keyName.slice(1);
       }
 
-      if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
+      if (delimiter !== '' && util.checkFile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
           prefix: request.params.path + keyName,
         });
@@ -227,14 +230,14 @@ export class StorageServer extends EventEmitter {
     const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
     fs.ensureFileSync(directoryPath);
     // strip signature in android , returns same buffer for other clients
-    var new_data = util.stripChunkSignature(request.body);
+    const new_data = util.stripChunkSignature(request.body);
     // loading data in map for each part
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
     } else {
       fs.writeFileSync(directoryPath, new_data);
-      // event trigger  to differentitiate between multipart and normal put
-      let eventObj = this.createEvent(request);
+      // event trigger  to differentiate between multipart and normal put
+      const eventObj = this.createEvent(request);
       this.emit('event', eventObj);
     }
     response.set('Content-Type', 'text/xml');
@@ -244,7 +247,7 @@ export class StorageServer extends EventEmitter {
   private async handleRequestPost(request, response) {
     const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
     if (request.query.uploads !== undefined) {
-      let id = uuid();
+      const id = uuid();
       this.uploadIds.push(id);
       this.upload_bufferMap[id] = {};
       response.set('Content-Type', 'text/xml');
@@ -259,7 +262,7 @@ export class StorageServer extends EventEmitter {
         }),
       );
     } else if (this.uploadIds.includes(request.query.uploadId)) {
-      let arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
+      const arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
       delete this.upload_bufferMap[request.query.uploadId]; // clear the map with current requestID
 
       // remove the current upload ID
@@ -277,18 +280,18 @@ export class StorageServer extends EventEmitter {
           },
         }),
       );
-      let buf = Buffer.concat(arr);
+      const buf = Buffer.concat(arr);
       fs.writeFileSync(directoryPath, buf);
       // event trigger for multipart post
-      let eventObj = this.createEvent(request);
+      const eventObj = this.createEvent(request);
       this.emit('event', eventObj);
     } else {
       const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
       fs.ensureFileSync(directoryPath);
-      var new_data = util.stripChunkSignature(request.body);
+      const new_data = util.stripChunkSignature(request.body);
       fs.writeFileSync(directoryPath, new_data);
       // event trigger for normal post
-      let eventObj = this.createEvent(request);
+      const eventObj = this.createEvent(request);
       this.emit('event', eventObj);
       response.set('Content-Type', 'text/xml');
       response.send(
@@ -304,13 +307,13 @@ export class StorageServer extends EventEmitter {
       );
     }
   }
-  // build eevent obj for s3 trigger
+  // build event obj for s3 trigger
   private createEvent(request) {
     const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
-    let eventObj = {};
+    const eventObj = {};
     eventObj[EVENT_RECORDS] = [];
 
-    let event = {
+    const event = {
       eventVersion: '2.0',
       eventSource: 'aws:s3',
       awsRegion: 'local',
@@ -318,7 +321,7 @@ export class StorageServer extends EventEmitter {
       eventName: `ObjectCreated:${request.method}`,
     };
 
-    let s3 = {
+    const s3 = {
       s3SchemaVersion: '1.0',
       configurationId: 'testConfigRule',
       bucket: {
@@ -332,6 +335,7 @@ export class StorageServer extends EventEmitter {
         key: request.params.path,
         size: fs.statSync(filePath).size,
         eTag: etag(filePath),
+        // eslint-disable-next-line spellcheck/spell-checker
         versionId: '096fKKXTRTtl3on89fVO.nfljtsv6qko',
       },
     };

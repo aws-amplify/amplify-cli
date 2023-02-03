@@ -7,7 +7,7 @@ const category = 'auth';
 
 export const run = async (context: $TSContext) => {
   if (projectHasAuth(context)) {
-    return;
+    return undefined;
   }
   const servicesMetadata = getSupportedServices();
 

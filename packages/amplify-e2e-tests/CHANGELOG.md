@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [4.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.1...amplify-e2e-tests@4.0.0-beta.4) (2022-12-28)
+## [3.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.16.0...amplify-e2e-tests@3.16.1) (2023-01-17)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [3.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.1...amplify-e2e-tests@3.16.0) (2023-01-03)
 
 
 ### Bug Fixes
@@ -20,6 +29,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 * feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+* resource usage cost ([#11433](https://github.com/aws-amplify/amplify-cli/issues/11433)) ([a42d017](https://github.com/aws-amplify/amplify-cli/commit/a42d0170b3e84bec4a58a4d3ddab75b47977e07b))
 
 
 ### Features
@@ -94,6 +108,9 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 * convert cli to cdk v2
 
 Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
 ## [3.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.0...amplify-e2e-tests@3.15.1) (2022-12-09)
 
 

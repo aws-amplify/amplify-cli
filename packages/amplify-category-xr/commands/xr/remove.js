@@ -5,6 +5,6 @@ module.exports = {
   name: subcommand,
   run: async context => {
     context.exeInfo = context.amplify.getProjectDetails();
-    xrManager.remove(context);
+    await xrManager.remove(context);
   },
 };

@@ -36,9 +36,11 @@ const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
 
   const replacedElements = joinElements.map(el => {
     if (typeof el?.Ref === 'string') {
+      // eslint-disable-next-line spellcheck/spell-checker
       if (el.Ref.startsWith('referencetotransformerrootstackGraphQLAPI')) {
         return apiId;
       }
+      // eslint-disable-next-line spellcheck/spell-checker
       if (el.Ref.startsWith('referencetotransformerrootstackenv')) {
         return env;
       }

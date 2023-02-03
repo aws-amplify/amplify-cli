@@ -40,10 +40,10 @@ export const migrateProject = async (context: $TSContext): Promise<void> => {
   if (lt(currentProjectVersion!, minProjectVersion!)) {
     if (await context.prompt.confirm(confirmMigrateMessage)) {
       const infoMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n`
-        + '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n'
-        + 'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n'
-        + '\n2. We will be updating your local Cloudformation files present inside the `amplify` directory of your app project, for all the added categories so that it supports multiple environments\n'
-        + '\n3. After the migration completes, we will give you the option to either push these Cloudformation files right away or you could inspect them yourselves and later push the updated Cloudformation files to the cloud\n'
+        + '\n1. If you have a GraphQL API, we will update the corresponding CloudFormation stack to support larger annotated schemas and custom resolvers.\n'
+        + 'In this process, we will be making CloudFormation API calls to update your GraphQL API CloudFormation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n'
+        + '\n2. We will be updating your local CloudFormation files present inside the `amplify` directory of your app project, for all the added categories so that it supports multiple environments\n'
+        + '\n3. After the migration completes, we will give you the option to either push these CloudFormation files right away or you could inspect them yourselves and later push the updated CloudFormation files to the cloud\n'
         + '\n4. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n'
         + '\n5. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n'
         + `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n`

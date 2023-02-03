@@ -2,4 +2,4 @@
 
 import { install } from '.';
 
-install();
+void install();

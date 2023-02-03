@@ -65,7 +65,7 @@ export const createConfirmQuestion: ConfirmQuestion = {
   default: true,
 };
 
-export const removeProjectComfirmQuestion: ConfirmQuestion = {
+export const removeProjectConfirmQuestion: ConfirmQuestion = {
   type: 'confirm',
   name: 'removeProjectConfig',
   message: 'Remove project level configuration',

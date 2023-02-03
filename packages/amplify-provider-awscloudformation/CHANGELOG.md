@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [7.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-beta.4) (2022-12-28)
+## [6.10.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.0...amplify-provider-awscloudformation@6.10.1) (2023-01-17)
 
 
 ### Bug Fixes
@@ -35,12 +36,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * convert cli to cdk v2
 
 Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
 
 
 
 
 
 # [7.0.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-beta.3) (2022-12-13)
+# [6.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@6.10.0) (2023-01-03)
 
 
 ### Bug Fixes
@@ -185,6 +188,11 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 * feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+
+
+
 ## [6.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.0...amplify-provider-awscloudformation@6.9.1) (2022-11-17)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "2.5.0-beta.4",
+  "version": "2.5.3",
   "description": "DynamoDB emulator nodejs wrapper",
   "repository": {
     "type": "git",
@@ -40,6 +40,9 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "collectCoverage": true
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "index.js"
+    ]
   }
 }

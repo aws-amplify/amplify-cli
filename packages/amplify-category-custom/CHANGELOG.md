@@ -101,6 +101,7 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-beta.0...@aws-amplify/amplify-category-custom@3.0.0-beta.1) (2022-11-19)
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.0...@aws-amplify/amplify-category-custom@2.6.1) (2023-01-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom
 
@@ -109,11 +110,18 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-cdkv2.0...@aws-amplify/amplify-category-custom@3.0.0-beta.0) (2022-11-17)
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.5...@aws-amplify/amplify-category-custom@2.6.0) (2023-01-03)
 
 
 ### Bug Fixes
 
 * update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* Typescript -> TypeScript in customer-facing errors ([#11404](https://github.com/aws-amplify/amplify-cli/issues/11404)) ([a1e63d8](https://github.com/aws-amplify/amplify-cli/commit/a1e63d83c9366f957f7087273e34e36ceacb1293))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
 
 
 

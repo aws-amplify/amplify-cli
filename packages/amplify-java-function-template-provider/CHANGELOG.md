@@ -20,6 +20,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [1.5.15-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.14...amplify-java-function-template-provider@1.5.15-beta.0) (2022-12-01)
+## [1.5.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.14...amplify-java-function-template-provider@1.5.15) (2023-01-03)
 
 **Note:** Version bump only for package amplify-java-function-template-provider
 

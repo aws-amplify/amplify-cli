@@ -47,7 +47,7 @@ export const run = async (context: Context): Promise<PluginPlatform> => {
         await configureScanInterval(context, pluginPlatform);
         break;
       default:
-        configurePluginDirectories(context, pluginPlatform);
+        await configurePluginDirectories(context, pluginPlatform);
         break;
     }
   } while (answer.selection !== exit);
@@ -283,7 +283,7 @@ time has passed for longer than max-scan-interval-in-seconds.');
     default: pluginPlatform.maxScanIntervalInSeconds,
     validate: (input: string) => {
       if (isNaN(Number(input))) {
-        return 'must enter nubmer';
+        return 'must enter number';
       }
       return true;
     },

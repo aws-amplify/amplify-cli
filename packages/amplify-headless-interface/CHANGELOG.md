@@ -15,6 +15,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [1.16.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.16.0...amplify-headless-interface@1.16.0-beta.2) (2022-12-13)
+## [1.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.16.0...amplify-headless-interface@1.16.1) (2023-01-03)
 
 **Note:** Version bump only for package amplify-headless-interface
 

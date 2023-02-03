@@ -91,6 +91,7 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 ## [4.0.1-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.1-beta.1...@aws-amplify/amplify-category-storage@4.0.1-beta.2) (2022-11-19)
+## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.2...@aws-amplify/amplify-category-storage@3.6.3) (2023-01-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
 
@@ -110,6 +111,7 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [4.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.0-cdkv2.0...@aws-amplify/amplify-category-storage@4.0.0-cdkv2.2) (2022-11-10)
+## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.1...@aws-amplify/amplify-category-storage@3.6.2) (2023-01-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
 

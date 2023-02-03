@@ -1,11 +1,12 @@
-import ElasticsearchUtils from "./elasticsearch-utils";
+import ElasticsearchUtils from './elasticsearch-utils';
 
 class ElasticsearchHelper {
   private static readonly ES_UTILS: ElasticsearchUtils = new ElasticsearchUtils();
 
-  private static readonly ERROR_FORMAT: string = "Could not construct an Elasticsearch Query DSL from {0} and {1}";
+  private static readonly ERROR_FORMAT: string = 'Could not construct an Elasticsearch Query DSL from {0} and {1}';
 
 
+    // eslint-disable-next-line spellcheck/spell-checker
   /**
    * This method is used by the ModelTransformUtils.
    *
@@ -66,20 +67,20 @@ class ElasticsearchHelper {
    * 
    */
   public getQueryDSL(filterInput: any): any {
-    let results: any[] = this.getQueryDSLRecursive(filterInput);
+    const results: any[] = this.getQueryDSLRecursive(filterInput);
 
     return this.getOrAndSubexpressions(results)
   }
 
   public getScalarQueryDSL(fieldName: string, conditions: any): any[] {
-    let results: any[] = [];
-    let keys: string[] = Object.keys(conditions);
+    const results: any[] = [];
+    const keys: string[] = Object.keys(conditions);
 
     keys.forEach((key: string) => {
       const condition: string = key;
       const value: any = conditions[key];
 
-      if ("range" === condition) {
+      if ('range' === condition) {
         if (value.length && value.length < 1) {
           return
         }
@@ -89,43 +90,43 @@ class ElasticsearchHelper {
       }
 
       switch (condition) {
-        case "eq":
+        case 'eq':
           results.push(ElasticsearchHelper.ES_UTILS.toEqExpression(fieldName, value));
           break;
-        case "ne":
+        case 'ne':
           results.push(ElasticsearchHelper.ES_UTILS.toNeExpression(fieldName, value));
           break;
-        case "match":
+        case 'match':
           results.push(ElasticsearchHelper.ES_UTILS.toMatchExpression(fieldName, value));
           break;
-        case "matchPhrase":
+        case 'matchPhrase':
           results.push(ElasticsearchHelper.ES_UTILS.toMatchPhraseExpression(fieldName, value));
           break;
-        case "matchPhrasePrefix":
+        case 'matchPhrasePrefix':
           results.push(ElasticsearchHelper.ES_UTILS.toMatchPhrasePrefixExpression(fieldName, value));
           break;
-        case "multiMatch":
+        case 'multiMatch':
           results.push(ElasticsearchHelper.ES_UTILS.toMultiMatchExpression(fieldName, value));
           break;
-        case "exists":
+        case 'exists':
           results.push(ElasticsearchHelper.ES_UTILS.toExistsExpression(fieldName, value));
           break;
-        case "wildcard":
+        case 'wildcard':
           results.push(ElasticsearchHelper.ES_UTILS.toWildcardExpression(fieldName, value));
           break;
-        case "regexp":
+        case 'regexp':
           results.push(ElasticsearchHelper.ES_UTILS.toRegularExpression(fieldName, value));
           break;
-        case "gt":
+        case 'gt':
           results.push(ElasticsearchHelper.ES_UTILS.toGtExpression(fieldName, value));
           break;
-        case "gte":
+        case 'gte':
           results.push(ElasticsearchHelper.ES_UTILS.toGteExpression(fieldName, value));
           break;
-        case "lt":
+        case 'lt':
           results.push(ElasticsearchHelper.ES_UTILS.toLTExpression(fieldName, value));
           break;
-        case "lte":
+        case 'lte':
           results.push(ElasticsearchHelper.ES_UTILS.toLTEExpression(fieldName, value));
           break;
         default:
@@ -137,28 +138,28 @@ class ElasticsearchHelper {
   }
 
   private getQueryDSLRecursive(filterInputFields: any): any[] {
-    let results: any[] = [];
-    let keys: string[] = Object.keys(filterInputFields);
+    const results: any[] = [];
+    const keys: string[] = Object.keys(filterInputFields);
 
     keys.forEach((key: string) => {
       const values: any = filterInputFields[key];
-      if (["and", "or"].includes(key.toLowerCase())) {
+      if (['and', 'or'].includes(key.toLowerCase())) {
         const subexpressions: any[] = [];
 
         values.forEach((value: any) => {
-          let siblingChildExpressions: any[] = this.getQueryDSLRecursive(value);
+          const siblingChildExpressions: any[] = this.getQueryDSLRecursive(value);
           subexpressions.push(this.getOrAndSubexpressions(siblingChildExpressions));
         });
 
-        if ("and" === (key.toLowerCase())) {
+        if ('and' === (key.toLowerCase())) {
           results.push(ElasticsearchHelper.ES_UTILS.toAndExpression(subexpressions));
         } else {
           results.push(ElasticsearchHelper.ES_UTILS.toOrExpression(subexpressions));
         }
 
-      } else if ("not" === (key.toLowerCase())) {
+      } else if ('not' === (key.toLowerCase())) {
 
-        let combinedDSLQuery: any[] = this.getQueryDSLRecursive(values);
+        const combinedDSLQuery: any[] = this.getQueryDSLRecursive(values);
         results.push(ElasticsearchHelper.ES_UTILS.toNotExpression(this.getOrAndSubexpressions(combinedDSLQuery)));
 
       } else {
@@ -180,7 +181,7 @@ class ElasticsearchHelper {
 
   private format(format: string, args: any[]): string {
     if (!args) {
-      return "";
+      return '';
     }
 
     return format.replace(/{(\d+)}/g, function (match, number) {

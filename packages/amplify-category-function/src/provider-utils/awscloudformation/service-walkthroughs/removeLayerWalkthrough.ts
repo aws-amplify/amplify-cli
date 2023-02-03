@@ -70,7 +70,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
 
     // Load configuration for layer and regenerate cfn template
     const layerParameters = loadStoredLayerParameters(context, layerName);
-    updateLayerArtifacts(context, layerParameters, {
+    await updateLayerArtifacts(context, layerParameters, {
       generateCfnFile: true,
       updateDescription: false,
       updateLayerParams: false,
@@ -152,7 +152,7 @@ const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionC
     message: removeLayerQuestion,
     type: 'checkbox',
     choices: layerVersionList
-      .sort((versiona, versionb) => versiona.Version - versionb.Version)
+      .sort((versionA, versionB) => versionA.Version - versionB.Version)
       .map(version => ({
         disabled:
           Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0

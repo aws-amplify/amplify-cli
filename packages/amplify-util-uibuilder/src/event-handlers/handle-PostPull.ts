@@ -7,7 +7,7 @@ import { run as generateComponents } from '../commands/generateComponents';
  */
 export const run = async (context: $TSContext): Promise<void> => {
   try {
-    await generateComponents(context);
+    await generateComponents(context, 'PostPull');
   } catch (e) {
     // Swallow all errors from the uibuilder plugin
     printer.debug(e);

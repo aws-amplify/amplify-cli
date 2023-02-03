@@ -1,5 +1,9 @@
 **/.DS_Store
 .circleci/generated_config.yml
+scripts/cci-job.data.json
+scripts/cci-test.data.json
+artifacts/cci-workflow-results.json
+artifacts/cci-workflow-results.html
 build
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/
 !packages/amplify-graphql-function-transformer/src/__tests__/overrides/build/
@@ -25,6 +29,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 packages/amplify-opensearch-simulator/emulator
 .vscode/*
 .history/*
+!.vscode/amplify-cli.code-workspace
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea

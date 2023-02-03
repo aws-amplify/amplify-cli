@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 # [1.6.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.4) (2022-12-28)
+## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.4...@aws-amplify/amplify-util-uibuilder@1.6.5) (2023-01-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.3...@aws-amplify/amplify-util-uibuilder@1.6.4) (2023-01-06)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** update codegen-ui to 2.7.2 ([14c670e](https://github.com/aws-amplify/amplify-cli/commit/14c670e57ec194da97b4d568508b7dad3b94755f))
+
+
+
+
+
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.3) (2023-01-03)
 
 
 ### Bug Fixes

@@ -47,6 +47,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [2.21.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-beta.0...amplify-category-notifications@2.21.0-beta.1) (2022-11-19)
+## [2.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.22.0...amplify-category-notifications@2.22.1) (2023-01-17)
 
 **Note:** Version bump only for package amplify-category-notifications
 
@@ -55,11 +56,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [2.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-beta.0) (2022-11-17)
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.22.0) (2023-01-03)
 
 
 ### Bug Fixes
 
 * trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
 
 
 
