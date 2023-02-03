@@ -3,7 +3,7 @@ import {
   isCI,
   installAmplifyCLI,
   injectSessionToken,
-  amplifyConfigureBeforeV10_7,
+  amplifyConfigureBeforeOrAtV10_7,
 } from '@aws-amplify/amplify-e2e-core';
 import semver from 'semver';
 
@@ -37,7 +37,7 @@ async function setupAmplify(version = 'latest') {
       });
     } else {
       // version is before 10.7 so use the previous config function
-      await amplifyConfigureBeforeV10_7({
+      await amplifyConfigureBeforeOrAtV10_7({
         accessKeyId: AWS_ACCESS_KEY_ID,
         secretAccessKey: AWS_SECRET_ACCESS_KEY,
         profileName: 'amplify-integ-test-user',

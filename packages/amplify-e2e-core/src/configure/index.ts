@@ -78,7 +78,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
   });
 }
 
-export const amplifyConfigureBeforeV10_7 = (settings: AmplifyConfiguration): Promise<void> => {
+export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration): Promise<void> => {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
