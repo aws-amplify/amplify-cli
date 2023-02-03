@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from '@aws-amplify/amplify-e2e-core';
 
-export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
+export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number; cloneParams?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
@@ -8,7 +8,14 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendCarriageReturn();
+      .sendCarriageReturn()
+      .wait('Do you want to clone values from the source environment?');
+
+    if (settings.cloneParams!) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
+    }
 
     chain.wait('Initialized your environment successfully.').run((err: Error) => {
       if (!err) {
@@ -75,7 +82,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
   });
 }
 
-export function checkoutEnvironment(cwd: string, settings: { envName: string, restoreBackend?: boolean }): Promise<void> {
+export function checkoutEnvironment(cwd: string, settings: { envName: string; restoreBackend?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'checkout', settings.envName, settings.restoreBackend ? '--restore' : ''], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
@@ -94,7 +101,9 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
   return new Promise((resolve, reject) => {
     const numEnv = settings.numEnv || 1;
     const regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
+      .wait('| Environments |')
+      .wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);

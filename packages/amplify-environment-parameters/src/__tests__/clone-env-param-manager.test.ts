@@ -4,7 +4,7 @@ import { cloneEnvParamManager } from '../clone-env-param-manager';
 
 describe('clone env params test', () => {
   const mockEnvParamManagerCloneFn = jest.fn().mockReturnValue(Promise.resolve());
-  const envPeramManagerA = {
+  const envPeramManager = {
     instance: {
       cloneEnvParamsToNewEnvParamManager: mockEnvParamManagerCloneFn,
       init: jest.fn(),
@@ -16,10 +16,11 @@ describe('clone env params test', () => {
     } as IEnvironmentParameterManager,
   };
 
-  jest.spyOn(environmentParameterManager, 'ensureEnvParamManager').mockReturnValue(Promise.resolve(envPeramManagerA));
+  jest.spyOn(environmentParameterManager, 'ensureEnvParamManager').mockReturnValue(Promise.resolve(envPeramManager));
 
   it('check if func is called', async () => {
-    await cloneEnvParamManager('envA', 'envB');
+    const envPeramManagerA: IEnvironmentParameterManager = (await ensureEnvParamManager('enva')).instance;
+    await cloneEnvParamManager(envPeramManagerA, 'envB');
     expect(ensureEnvParamManager).toBeCalledTimes(1);
     expect(mockEnvParamManagerCloneFn).toBeCalledTimes(1);
   });

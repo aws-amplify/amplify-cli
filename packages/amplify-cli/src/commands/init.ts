@@ -40,10 +40,4 @@ export const run = async (context: $TSContext): Promise<void> => {
   if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
     await raisePostEnvAddEvent((context as unknown) as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
   }
-
-  const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
-  if (cloneFromSrcEnv) {
-    const srcEnvParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance;
-    await cloneEnvParamManager(srcEnvParamManager, context.exeInfo.localEnvInfo.envName);
-  }
 };
