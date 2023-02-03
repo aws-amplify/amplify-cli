@@ -1,7 +1,6 @@
-import * as openSearchEmulator from '../index';
+import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
 import fs from 'fs-extra';
 import { join } from 'path';
-import http from 'http';
 import * as openpgp from 'openpgp';
 import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
 import { v4 } from 'uuid';
@@ -21,7 +20,7 @@ jest.mock('amplify-cli-core', () => ({
 
 describe('emulator operations', () => {
   const getMockSearchableFolder = (): string => {
-    let pathToSearchableMockResources = join(__dirname, '..', '..', 'resources');
+    let pathToSearchableMockResources = '';
     do {
       pathToSearchableMockResources = join('/tmp', `amplify-cli-opensearch-emulator-${v4()}`, 'mock-api-resources', 'searchable');
     } while (fs.existsSync(pathToSearchableMockResources));
@@ -76,24 +75,6 @@ describe('emulator operations', () => {
     fs.removeSync('mock-path-to-lib');
   });
 
-  const fetchURL = async (url: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      http
-        .get(url, resp => {
-          let data = '';
-          resp.on('data', chunk => {
-            data += chunk;
-          });
-          resp.on('end', () => {
-            resolve(data);
-          });
-        })
-        .on('error', err => {
-          reject(err);
-        });
-    });
-  };
-
   if (isWindowsPlatform) {
     it('should fail to launch on windows OS', async () => {
       try {
@@ -137,9 +118,21 @@ describe('emulator operations', () => {
       }
     });
 
+    describe('ensureOpenSearchLocalExists', () => {
+      it('should download opensearch binary and start the emulator', async () => {
+        const path = join(process.cwd(), 'mock-path-to-emulator', 'opensearchLib', 'bin', 'opensearch');
+        const writeSpy = jest.spyOn(openSearchEmulator, 'writeOpensearchEmulatorArtifacts').mockReturnValueOnce(Promise.resolve());
+        jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
+        jest.spyOn(openSearchEmulator, 'getOpensearchLocalDirectory').mockReturnValueOnce(path);
+        await openSearchEmulator.ensureOpenSearchLocalExists(join(process.cwd(), 'mock-path-to-emulator'));
+        expect(writeSpy).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it('should attempt setting up local instance of opensearch with default configuration', async () => {
       jest.spyOn(openSearchEmulator, 'writeOpensearchEmulatorArtifacts').mockReturnValueOnce(Promise.resolve());
       jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
+      jest.spyOn(openSearchEmulator, 'ensureOpenSearchLocalExists').mockResolvedValue();
       try {
         await openSearchEmulator.launch(pathToSearchableData);
       } catch (err) {
