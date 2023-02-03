@@ -10,8 +10,6 @@ import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { checkForNestedProject } from './helpers/projectUtils';
-import { ensureEnvParamManager, cloneEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
-import { prompter } from 'amplify-prompts';
 
 const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
