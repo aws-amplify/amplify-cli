@@ -32,6 +32,7 @@
     "@aws-cdk/aws-sqs": "~1.172.0",
     "@aws-cdk/core": "~1.172.0",
     "amplify-cli-core": "3.6.0",
+    "amplify-dynamodb-simulator": "^2.5.3",
     "amplify-headless-interface": "1.17.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
@@ -108,7 +109,6 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {},
       "ts-jest": {
         "diagnostics": false
       }
