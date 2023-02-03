@@ -51,13 +51,15 @@ const displayXrDeprecationMessage = async (): Promise<void> => {
   }
 
   const meta = stateManager.getMeta(rootPath, { throwIfNotExist: false });
-  const hasXr = 'xr' in meta;
-  if (hasXr) {
-    printer.blankLine();
-    printer.warn('Amazon Sumerian is getting deprecated. The XR category depends on Amazon Sumerian to function.' +
-      ' Amazon Sumerian scenes will not be accessible by February 21, 2023.' +
-      ' Please follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
-      ' to understand your migration options.');
-    printer.blankLine();
+  if (meta) {
+    const hasXr = 'xr' in meta;
+    if (hasXr) {
+      printer.blankLine();
+      printer.warn('Amazon Sumerian is getting deprecated. The XR category depends on Amazon Sumerian to function.' +
+        ' Amazon Sumerian scenes will not be accessible by February 21, 2023.' +
+        ' Please follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
+        ' to understand your migration options.');
+      printer.blankLine();
+    }
   }
 }
