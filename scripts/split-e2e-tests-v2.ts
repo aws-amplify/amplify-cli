@@ -238,8 +238,7 @@ export const splitTestsV2 = function splitTests(
       const US_WEST_2 = FORCE_US_WEST_2.find(t => test.startsWith(t));
       const USE_PARENT = USE_PARENT_ACCOUNT.some(usesParent => test.startsWith(usesParent));
 
-      const isMigrationTest = test.includes("/migration_tests");
-      if (isMigrationTest || RUN_SOLO.find(solo => test === solo)) {
+      if (isMigration || RUN_SOLO.find(solo => test === solo)) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
         if (US_WEST_2) {
