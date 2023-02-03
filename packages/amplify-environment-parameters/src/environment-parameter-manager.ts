@@ -158,7 +158,7 @@ export type IEnvironmentParameterManager = {
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
-  save: () => void;
+  save: () => Promise<void>;
 };
 
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
