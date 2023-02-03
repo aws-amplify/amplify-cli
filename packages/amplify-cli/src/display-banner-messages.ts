@@ -57,7 +57,7 @@ const displayXrDeprecationMessage = async (): Promise<void> => {
       printer.blankLine();
       printer.warn('Amazon Sumerian is getting deprecated. The XR category depends on Amazon Sumerian to function.' +
         ' Amazon Sumerian scenes will not be accessible by February 21, 2023.' +
-        ' Please follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
+        ' Follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
         ' to understand your migration options.');
       printer.blankLine();
     }
