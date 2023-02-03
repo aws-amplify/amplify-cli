@@ -134,7 +134,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers['identifyType'] = await prompter.pick(
+    answers.identifyType = await prompter.pick(
       'What would you like to identify?',
       [
         {
@@ -160,7 +160,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
       });
     }
 
-    answers['resourceName'] = await prompter.input(
+    answers.resourceName = await prompter.input(
       'Provide a friendly name for your resource', {
       initial: `${answers.identifyType}${defaultValues.resourceName}`,
       validate: alphanumeric(),
