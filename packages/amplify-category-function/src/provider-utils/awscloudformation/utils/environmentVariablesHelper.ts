@@ -2,7 +2,7 @@ import path from 'path';
 import _ from 'lodash';
 import * as uuid from 'uuid';
 import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny, $TSObject } from 'amplify-cli-core';
-import { formatter, maxLength, printer, prompter } from 'amplify-prompts';
+import { byValue, formatter, maxLength, printer, prompter } from 'amplify-prompts';
 import { getEnvParamManager, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
@@ -104,6 +104,9 @@ const askEnvVarCarryOrUpdateQuestion = async (functionNames: string[], fromEnvNa
   const envVarOperation = await prompter.pick(
     'You have configured environment variables for functions. How do you want to proceed?',
     choices,
+    {
+      initial: byValue('carry'),
+    },
   );
 
   if (envVarOperation === 'update') {
@@ -160,12 +163,7 @@ const askForEnvironmentVariableValue = async (
   const envVars = getStoredEnvironmentVariables(functionName, fromEnvName);
   const newValue = await prompter.input('Enter the environment variable value:', {
     initial: envVars[keyName],
-    validate: input => {
-      if (input.length >= 2048) {
-        return 'The value must be 2048 characters or less';
-      }
-      return true;
-    },
+    validate: maxLength(2048, 'The value must be 2048 characters or less'),
   });
   getEnvParamManager()
     .getResourceParamManager(categoryName, functionName)

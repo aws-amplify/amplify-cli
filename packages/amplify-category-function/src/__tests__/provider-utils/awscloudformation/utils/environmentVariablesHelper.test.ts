@@ -273,7 +273,6 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
     await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
     // Expecting anything for optional prompter parameters.
-    // TODO: figure out how to better expect how this function is called.
     expect(prompterMock.input).toHaveBeenCalledWith('Enter the environment variable value:', expect.anything());
   });
 });
