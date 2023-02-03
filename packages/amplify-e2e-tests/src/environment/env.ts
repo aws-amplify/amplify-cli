@@ -9,7 +9,7 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
-      .wait('Do you want to clone values from the source environment?');
+      .wait(/Do you want to clone parameters from the*/);
 
     if (settings.cloneParams!) {
       chain.sendYes();
