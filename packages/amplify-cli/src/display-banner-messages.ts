@@ -14,6 +14,7 @@ export const displayBannerMessages = async (input: Input): Promise<void> => {
     return;
   }
   await displayLayerMigrationMessage();
+  await displayXrDeprecationMessage();
   if (skipHooks()) {
     printer.warn('Amplify command hooks are disabled in the current execution environment.');
     printer.warn('See https://docs.amplify.aws/cli/usage/command-hooks/ for more information.');
@@ -41,3 +42,22 @@ const displayLayerMigrationMessage = async (): Promise<void> => {
     printer.blankLine();
   }
 };
+
+const displayXrDeprecationMessage = async (): Promise<void> => {
+  const rootPath = pathManager.findProjectRoot();
+  if (rootPath === undefined) {
+    // Not in a valid project
+    return;
+  }
+
+  const meta = stateManager.getMeta(rootPath, { throwIfNotExist: false });
+  const hasXr = 'xr' in meta;
+  if (hasXr) {
+    printer.blankLine();
+    printer.warn('Amazon Sumerian is getting deprecated. The XR category depends on Amazon Sumerian to function.' +
+      ' Amazon Sumerian scenes will not be accessible by February 21, 2023.' +
+      ' Please follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
+      ' to understand your migration options.');
+    printer.blankLine();
+  }
+}
