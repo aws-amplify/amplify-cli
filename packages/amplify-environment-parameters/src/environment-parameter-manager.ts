@@ -123,7 +123,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   private serializeTPICategories(): Record<string, unknown> {
     return Object.entries(this.resourceParamManagers).reduce((acc, [resourceKey, resourceParams]) => {
-      _.set(acc, splitResourceKey(resourceKey), resourceParams.getAllParams());
+      _.setWith(acc, splitResourceKey(resourceKey), resourceParams.getAllParams(), Object);
       return acc;
     }, {} as Record<string, unknown>);
   }
@@ -145,7 +145,7 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  save: () => void;
+  save: () => Promise<void>;
 };
 
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
