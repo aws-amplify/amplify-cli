@@ -85,8 +85,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  async cloneEnvParamsToNewEnvParamManager(destEnvName: string): Promise<void> {
-    const destManager = (await ensureEnvParamManager(destEnvName)).instance;
+  async cloneEnvParamsToNewEnvParamManager(destManager: IEnvironmentParameterManager): Promise<void> {
     const resourceKeys = Object.keys(this.resourceParamManagers);
     const categoryResourceNamePairs: string[][] = resourceKeys.map(key => key.split('_'));
     categoryResourceNamePairs.forEach(([category, resourceName]) => {
@@ -158,7 +157,7 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  cloneEnvParamsToNewEnvParamManager: (destEnvName: string) => Promise<void>;
+  cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   save: () => void;
 };
 

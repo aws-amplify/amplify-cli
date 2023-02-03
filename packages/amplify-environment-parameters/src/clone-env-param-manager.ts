@@ -1,5 +1,6 @@
-import { IEnvironmentParameterManager } from './environment-parameter-manager';
+import { IEnvironmentParameterManager, ensureEnvParamManager } from './environment-parameter-manager';
 
 export const cloneEnvParamManager = async (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string): Promise<void> => {
-  await srcEnvParamManager.cloneEnvParamsToNewEnvParamManager(destEnvName);
+  const destManager = (await ensureEnvParamManager(destEnvName)).instance;
+  await srcEnvParamManager.cloneEnvParamsToNewEnvParamManager(destManager);
 };

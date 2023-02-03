@@ -21,7 +21,7 @@ describe('clone env params test', () => {
   it('check if func is called', async () => {
     const envParamManagerA: IEnvironmentParameterManager = (await ensureEnvParamManager('enva')).instance;
     await cloneEnvParamManager(envParamManagerA, 'envB');
-    expect(ensureEnvParamManager).toBeCalledTimes(1);
+    expect(ensureEnvParamManager).toBeCalledTimes(2);
     expect(mockEnvParamManagerCloneFn).toBeCalledTimes(1);
   });
 });
