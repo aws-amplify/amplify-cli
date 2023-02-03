@@ -135,7 +135,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   private serializeTPICategories(): Record<string, unknown> {
     return Object.entries(this.resourceParamManagers).reduce((acc, [resourceKey, resourceParams]) => {
-      _.set(acc, splitResourceKey(resourceKey), resourceParams.getAllParams());
+      _.setWith(acc, splitResourceKey(resourceKey), resourceParams.getAllParams(), Object);
       return acc;
     }, {} as Record<string, unknown>);
   }

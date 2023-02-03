@@ -434,6 +434,8 @@
   "xcode",
   "xcodeproj",
   "yaml",
+  "ulid",
+  "urlencoded",
   "yesno",
   "yyyymmddhhmmss",
   "zoneinfo"

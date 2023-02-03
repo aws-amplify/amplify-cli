@@ -27,7 +27,6 @@ export type AddAuthUserPoolOnlyWithOAuthSettings = AddAuthUserPoolOnlyNoOAuthSet
 export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnlyWithOAuthSettings & {
   identityPoolName: string;
   allowUnauthenticatedIdentities: boolean;
-  thirdPartyAuth: boolean;
   idpFacebookAppId: string;
   idpGoogleAppId: string;
   idpAmazonAppId: string;
