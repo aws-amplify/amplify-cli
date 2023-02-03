@@ -32,6 +32,14 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
+  'src/__tests__/migration_tests/overrides/api-migration-c.test.ts',
+  'src/__tests__/migration_tests/overrides/auth-migration-d.test.ts',
+  'src/__tests__/migration_tests/overrides/auth-migration-e.test.ts',
+  'src/__tests__/migration_tests_v10/api-rest-serverless.migration.test.ts',
+  'src/__tests__/migration_tests_v10/geo.migration.test.ts',
+  'src/__tests__/migration_tests/notifications-migration/notifications-migration.test.ts',
+  'src/__tests__/migration_tests/notifications-migration/notifications-migration-2.test.ts',
+  'src/__tests__/migration_tests/notifications-migration/notifications-migration-3.test.ts',
 ];
 /**
  * Most Windows tests only run on 'dev', except for this list of smoke tests.
