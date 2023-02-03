@@ -14,18 +14,20 @@ export const addCDKCustomResource = async (cwd: string, settings: any): Promise<
 
 export function addCFNCustomResource(cwd: string, settings: any, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'custom'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'custom'], { cwd, stripColors: true })
       .wait('How do you want to define this custom resource?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Provide a name for your custom resource')
       .sendLine(settings.name || '\r')
       .wait('Do you want to access Amplify generated resources in your custom CloudFormation file?')
-      .sendConfirmYes()
-      .wait('Select the categories you want this custom resource to have access to.')
-      .send(' ')
-      .sendCarriageReturn()
-      .wait(/.*/)
+      .sendConfirmYes();
+      if(settings.promptForCategorySelection){
+        chain.wait('Select the categories you want this custom resource to have access to.')
+        .send(' ')
+        .sendCarriageReturn()
+      }
+      chain.wait(/.*/)
       .wait('Do you want to edit the CloudFormation stack now?')
       .sendConfirmNo()
       .sendEof()

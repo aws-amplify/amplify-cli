@@ -98,7 +98,7 @@ describe('adding custom resources migration test', () => {
       await amplifyPushAuth(projRoot2, usingLatestCode);
 
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN
-      await addCFNCustomResource(projRoot2, { name: cfnResourceName }, usingLatestCode);
+      await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCategorySelection: false }, usingLatestCode);
       const customCFNFilePath = path.join(
         projRoot2,
         'amplify',
