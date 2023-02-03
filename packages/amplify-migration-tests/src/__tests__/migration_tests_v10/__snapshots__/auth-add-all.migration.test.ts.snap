@@ -12,7 +12,7 @@ Parameters
 [-] Parameter googleClientId: {\\"Type\\":\\"String\\"}
 [-] Parameter amazonAppId: {\\"Type\\":\\"String\\"}
 [-] Parameter appleAppId: {\\"Type\\":\\"String\\"}
-[~] Parameter hostedUIProviderCreds: {"Type":"String"} to {"Type":"String","NoEcho":true}
+[~] Parameter hostedUIProviderCreds: {\\"Type\\":\\"String\\"} to {\\"Type\\":\\"String\\",\\"NoEcho\\":true}
 
 Resources
 [~] AWS::Lambda::Function UserPoolClientLambda 
