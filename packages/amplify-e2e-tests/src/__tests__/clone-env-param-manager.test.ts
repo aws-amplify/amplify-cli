@@ -19,7 +19,7 @@ describe('clone environment parameters on add environment', () => {
   let projRoot: string;
   let projName: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('upload-delete-parameters-test');
+    projRoot = await createNewProjectDir('clone-env-params-test');
   });
 
   afterEach(async () => {
