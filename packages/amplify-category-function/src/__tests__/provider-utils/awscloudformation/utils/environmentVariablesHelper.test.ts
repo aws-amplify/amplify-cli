@@ -207,6 +207,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
     expect(prompterMock.pick).toBeCalledWith(
       'You have configured environment variables for functions. How do you want to proceed?',
       howToProceedChoices,
+      expect.anything(),
     );
   });
 
@@ -236,6 +237,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       1,
       'You have configured environment variables for functions. How do you want to proceed?',
       howToProceedChoices,
+      expect.anything(),
     );
     expect(prompterMock.pick).toHaveBeenNthCalledWith(2, 'Select the Lambda function you want to update values', selectFunctionChoices);
   });
@@ -253,6 +255,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       1,
       'You have configured environment variables for functions. How do you want to proceed?',
       howToProceedChoices,
+      expect.anything(),
     );
     expect(prompterMock.pick).toHaveBeenNthCalledWith(2, 'Select the Lambda function you want to update values', selectFunctionChoices);
     expect(prompterMock.pick).toHaveBeenNthCalledWith(
