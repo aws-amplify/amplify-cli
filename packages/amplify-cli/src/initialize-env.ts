@@ -153,7 +153,7 @@ export const initializeEnv = async (
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
 
     if (context.input.command === 'env' && context.input.subCommands[0] === 'add') {
-      const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?');
+      const cloneFromSrcEnv = await prompter.yesOrNo('Do you want to clone values from the source environment?', false);
       if (cloneFromSrcEnv) {
         const srcEnvParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance;
         await cloneEnvParamManager(srcEnvParamManager, context.exeInfo.localEnvInfo.envName);
