@@ -31,6 +31,7 @@
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "^7.6.10",
     "lodash": "^4.17.21",
+    "semver": "^7.3.5",
     "uuid": "^8.3.2"
   },
   "jest": {
