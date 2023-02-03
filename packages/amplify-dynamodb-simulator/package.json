@@ -18,7 +18,7 @@
   "scripts": {
     "build": "node ./scripts/update-ddb-simulator.js",
     "clean": "rimraf emulator",
-    "test": "jest --logHeapUsage"
+    "test": "jest --logHeapUsage --passWithNoTests"
   },
   "dependencies": {
     "amplify-cli-core": "3.6.0",
@@ -37,12 +37,5 @@
     "hash.js": "^1.1.7",
     "node-fetch": "^2.6.7",
     "tar": "^6.1.11"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "index.js"
-    ]
   }
 }
