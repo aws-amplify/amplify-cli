@@ -42,6 +42,9 @@ export const resolveAppId: (context: $TSContext) => string;
 export const rootStackFileName = "root-cloudformation-stack.json";
 
 // @public (undocumented)
+export const storeCurrentCloudBackend: (context: $TSContext) => Promise<void>;
+
+// @public (undocumented)
 export const storeRootStackTemplate: (context: $TSContext, template?: Template) => Promise<void>;
 
 // @public (undocumented)
