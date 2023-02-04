@@ -50,7 +50,6 @@
     "@aws-amplify/amplify-category-interactions": "4.3.2-beta.0",
     "amplify-category-notifications": "2.23.2-beta.0",
     "amplify-category-predictions": "4.3.2-beta.0",
-    "amplify-category-xr": "3.4.2-beta.0",
     "amplify-cli-core": "4.0.0-beta.5",
     "amplify-cli-logger": "1.2.4-beta.0",
     "amplify-cli-shared-interfaces": "1.1.1-beta.3",
@@ -231,11 +230,6 @@
         "name": "storage",
         "type": "category",
         "packageName": "@aws-amplify/amplify-category-storage"
-      },
-      "xr": {
-        "name": "xr",
-        "type": "category",
-        "packageName": "amplify-category-xr"
       },
       "codegen": {
         "name": "codegen",
