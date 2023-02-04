@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.1-rc.01d842464.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.0...@aws-amplify/cli-internal@10.7.1-rc.01d842464.0) (2023-02-04)
+
+
+### Bug Fixes
+
+* warn about xr deprecation ([#11899](https://github.com/aws-amplify/amplify-cli/issues/11899)) ([01d8424](https://github.com/aws-amplify/amplify-cli/commit/01d842464315d39d24ce1649aa7a47e1bf7f9704))
+
+
+
+
+
 # [10.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.6.2...@aws-amplify/cli-internal@10.7.0) (2023-02-02)
 
 
