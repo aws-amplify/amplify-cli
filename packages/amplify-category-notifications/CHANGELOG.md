@@ -3,50 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.21.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-beta.4) (2022-12-28)
+## [2.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.0...amplify-category-notifications@2.23.1) (2023-02-06)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+# [2.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.22.1...amplify-category-notifications@2.23.0) (2023-02-02)
 
 
 ### Bug Fixes
 
-* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
 
 
 ### Features
 
-* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
 
 
 
 
 
-# [2.21.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-beta.3) (2022-12-13)
-
-
-### Bug Fixes
-
-* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
-
-
-### Features
-
-* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
-
-
-
-
-
-# [2.21.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-beta.2) (2022-12-01)
-
-
-### Bug Fixes
-
-* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
-
-
-
-
-
-# [2.21.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-beta.0...amplify-category-notifications@2.21.0-beta.1) (2022-11-19)
 ## [2.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.22.0...amplify-category-notifications@2.22.1) (2023-01-17)
 
 **Note:** Version bump only for package amplify-category-notifications

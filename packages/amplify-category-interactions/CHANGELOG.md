@@ -3,7 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.2.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.5...amplify-category-interactions@4.2.0-beta.1) (2022-12-28)
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.3.0...amplify-category-interactions@4.3.1) (2023-02-06)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.2.1...amplify-category-interactions@4.3.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* default values for interactions prompter ([8208f82](https://github.com/aws-amplify/amplify-cli/commit/8208f82cdc14193b6f8ce4dc4859bd9e0309e725))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.2.0...amplify-category-interactions@4.2.1) (2023-01-17)
 
 **Note:** Version bump only for package amplify-category-interactions

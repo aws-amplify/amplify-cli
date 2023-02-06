@@ -3,7 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.6.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.4) (2022-12-28)
+## [1.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.6...@aws-amplify/amplify-util-uibuilder@1.6.7) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.6.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.5...@aws-amplify/amplify-util-uibuilder@1.6.6) (2023-02-02)
+
+
+### Bug Fixes
+
+* delete detached forms with a warning ([#11610](https://github.com/aws-amplify/amplify-cli/issues/11610)) ([7dc9179](https://github.com/aws-amplify/amplify-cli/commit/7dc9179e6e15e1a261bcb717ec0e777f6f3dd68c))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.4...@aws-amplify/amplify-util-uibuilder@1.6.5) (2023-01-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

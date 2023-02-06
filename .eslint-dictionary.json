@@ -435,6 +435,8 @@
   "xcodeproj",
   "yaml",
   "yarnrc",
+  "ulid",
+  "urlencoded",
   "yesno",
   "yyyymmddhhmmss",
   "zoneinfo"

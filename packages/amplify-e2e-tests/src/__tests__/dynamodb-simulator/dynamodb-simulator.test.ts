@@ -1,15 +1,16 @@
-const ddbSimulator = require('..');
+const path = require('path');
+const ddbSimulator = require('amplify-dynamodb-simulator');
 const fs = require('fs-extra');
 
 jest.setTimeout(90 * 1000);
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
-    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('./'),
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue(path.join(process.cwd(), '../', '/amplify-dynamodb-simulator')),
   },
 }));
 
 describe('emulator operations', () => {
-  const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
+  const dbPath = path.join(process.cwd(), `../amplify-dynamodb-simulator/dynamodb-data/${process.pid}`);
   // taken from dynamodb examples.
   const dbParams = {
     AttributeDefinitions: [

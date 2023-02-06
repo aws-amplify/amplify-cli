@@ -1,4 +1,4 @@
-import { AmplifyStorageSimulator } from '..';
+import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 

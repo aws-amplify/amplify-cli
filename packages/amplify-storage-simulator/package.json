@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "An S3 simulator to test S3 APIs",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --logHeapUsage",
+    "test": "jest --logHeapUsage --passWithNoTests",
     "build": "tsc",
     "watch": "tsc -w",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
@@ -45,31 +45,5 @@
     "@types/uuid": "^8.3.1",
     "@types/xml": "^1.0.4",
     "aws-sdk": "^2.1233.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/*.ts",
-      "!**/node_modules/**",
-      "!**/lib/**",
-      "!__tests__/**"
-    ],
-    "testURL": "http://localhost/",
-    "testRegex": "(src/__tests__/.*.test.*)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/lib/"
-    ]
   }
 }
