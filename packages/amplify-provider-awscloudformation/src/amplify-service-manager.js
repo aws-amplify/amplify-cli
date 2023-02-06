@@ -129,15 +129,15 @@ async function init(amplifyServiceParams) {
       }
     } catch (e) {
       if (e.code === 'LimitExceededException') {
-        printer.error('You have reached the Amplify App limit for this account and region')
-        printer.info('Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify')
-      } else {
-        throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
-          message: e.message,
-          stack: e.stack,
+        throw new AmplifyError('ProjectInitError', {
+          message: 'You have reached the Amplify App limit for this account and region',
+          resolution: 'Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify'
         }, e);
       }
-      throw e;
+      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+        message: e.message,
+        stack: e.stack,
+      }, e);
     }
   }
 
