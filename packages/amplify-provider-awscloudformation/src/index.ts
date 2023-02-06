@@ -53,8 +53,8 @@ import { getApiKeyConfig } from './utils/api-key-helpers';
 import { deleteEnvironmentParametersFromService } from './utils/delete-from-service';
 export { deleteEnvironmentParametersFromService } from './utils/delete-from-service';
 
-import { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
-export { getEnvParametersUploadHandler } from './utils/upload-env-parameters';
+import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/env-parameter-ssm-helpers';
+export { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/env-parameter-ssm-helpers';
 
 function init(context) {
   return initializer.run(context);
@@ -203,6 +203,7 @@ module.exports = {
   hashDirectory,
   prePushCfnTemplateModifier,
   getApiKeyConfig,
+  getEnvParametersDownloadHandler,
   getEnvParametersUploadHandler,
   deleteEnvironmentParametersFromService,
 };

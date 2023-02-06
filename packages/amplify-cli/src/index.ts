@@ -160,9 +160,9 @@ export const run = async (startTime: number): Promise<void> => {
   if (context.input.command === 'push') {
     const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
     const CloudFormationProviderName = 'awscloudformation';
-    let uploaderHandler: ServiceUploadHandler | undefined;
+    let uploadHandler: ServiceUploadHandler | undefined;
     if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
-      uploaderHandler = await context.amplify.invokePluginMethod(
+      uploadHandler = await context.amplify.invokePluginMethod(
         context,
         CloudFormationProviderName,
         undefined,
@@ -170,7 +170,7 @@ export const run = async (startTime: number): Promise<void> => {
         [context],
       );
     }
-    await saveAllEnvParams(uploaderHandler);
+    await saveAllEnvParams(uploadHandler);
   }
   else {
     await saveAllEnvParams();

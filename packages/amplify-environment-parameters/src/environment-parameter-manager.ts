@@ -124,6 +124,17 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     await this.parameterMapController.save();
   }
 
+  async downloadParameters(downloadHandler: ServiceDownloadHandler): Promise<void> {
+    const missingParameters = (await this.getMissingParameters())
+      .map(({ categoryName, resourceName, parameterName }) => getParameterStoreKey(categoryName, resourceName, parameterName));
+    const params = await downloadHandler(missingParameters);
+    Object.entries(params).forEach(([key, value]) => {
+      const [categoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(key);
+      const resourceParamManager = this.getResourceParamManager(categoryName, resourceName);
+      resourceParamManager.setParam(parameterName, value as string); // TODO
+    });
+  }
+
   async getMissingParameters(): Promise<ResourceParameter[]> {
     const expectedParameters = this.parameterMapController.getParameters();
     const allEnvParams = new Set();
@@ -180,6 +191,7 @@ const splitResourceKey = (key: string): readonly [string, string] => {
  * Interface for environment parameter managers
  */
 export type IEnvironmentParameterManager = {
+  downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
   init: () => Promise<void>;
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
@@ -189,7 +201,8 @@ export type IEnvironmentParameterManager = {
   verifyExpectedEnvParameters: () => Promise<void>;
 }
 
-export type ServiceUploadHandler = (key: string, value: string) => Promise<void>;
+export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
+export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
 const getParameterStoreKey = (
   categoryName: string,

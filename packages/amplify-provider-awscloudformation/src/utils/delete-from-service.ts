@@ -53,13 +53,13 @@ function isAmplifyParameter(parameter: string) {
 
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
   const parametersUnderPath: Array<string> = [];
-  let recievedNextToken = '';
+  let receivedNextToken = '';
   do {
-    const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, recievedNextToken);
+    const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, receivedNextToken);
     const data = await ssmClient.getParametersByPath(ssmArgument).promise();
     parametersUnderPath.push(...data.Parameters.map(returnedParameter => returnedParameter.Name).filter(name => isAmplifyParameter(name)));
-    recievedNextToken = data.NextToken;
-  } while (recievedNextToken);
+    receivedNextToken = data.NextToken;
+  } while (receivedNextToken);
   return parametersUnderPath;
 };
 

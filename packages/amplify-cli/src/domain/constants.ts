@@ -12,6 +12,7 @@ export const constants = {
   PLUGINS_FILE_NAME: 'plugins.json',
   CORE: 'core',
   CODEGEN: 'codegen',
+  DEFAULT_PROVIDER: 'awscloudformation',
   Amplify: 'amplify',
   DotAmplifyDirName: '.amplify',
   AmplifyPrefix: 'amplify-',
