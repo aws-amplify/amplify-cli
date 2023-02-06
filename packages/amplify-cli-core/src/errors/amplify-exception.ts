@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-cycle
+import { AMPLIFY_SUPPORT_DOCS } from '../cliConstants';
+
 /**
  * Base class for all Amplify exceptions
  */
@@ -6,6 +9,7 @@ export abstract class AmplifyException extends Error {
   public readonly resolution?: string;
   public readonly details?: string;
   public readonly link?: string;
+  public readonly code?: string;
 
   /**
    * You should use AmplifyError or AmplifyFault to throw an exception.
@@ -25,29 +29,21 @@ export abstract class AmplifyException extends Error {
   constructor(
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
-    private readonly options: AmplifyExceptionOptions,
+    public readonly options: AmplifyExceptionOptions,
     public readonly downstreamException?: Error,
   ) {
     // If an AmplifyException was already thrown, we must allow it to reach the user.
     // This ensures that resolution steps, and the original error are bubbled up.
-    super(downstreamException instanceof AmplifyException ? downstreamException.message : options.message);
+    super(options.message);
 
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    if (downstreamException instanceof AmplifyException) {
-      this.stack = downstreamException.stack ? downstreamException.stack : this.stack;
-      this.message = downstreamException.message;
-      this.details = downstreamException.details;
-      this.resolution = downstreamException.resolution;
-      this.link = downstreamException.link;
-    } else {
-      this.stack = options.stack ? options.stack : this.stack;
-      this.message = options.message;
-      this.details = options.details;
-      this.resolution = 'resolution' in options ? options.resolution : undefined;
-      this.link = 'link' in options ? options.link : undefined;
-    }
+    this.message = options.message;
+    this.details = options.details;
+    this.resolution = options.resolution;
+    this.code = options.code;
+    this.link = options.link ?? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url;
   }
 
   toObject = (): object => {
@@ -72,12 +68,12 @@ export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
 export type AmplifyExceptionOptions = {
   message: string,
   details?: string,
-  stack?: string,
-} & ({
-  resolution: string
-} | {
-  link: string
-});
+  resolution?: string,
+  link?: string,
+
+  // CloudFormation or NodeJS error codes
+  code?: string,
+};
 
 /**
  * Amplify Error partial options object
@@ -100,6 +96,7 @@ export type AmplifyErrorType =
   | 'AmplifyStudioNotEnabledError'
   | 'ApiCategorySchemaNotFoundError'
   | 'AuthImportError'
+  | 'BackendConfigValidationError'
   | 'BucketAlreadyExistsError'
   | 'BucketNotFoundError'
   | 'CategoryNotEnabledError'
@@ -119,11 +116,14 @@ export type AmplifyErrorType =
   | 'FunctionTooLargeError'
   | 'InputValidationError'
   | 'InvalidAmplifyAppIdError'
+  | 'InvalidCustomResourceError'
+  | 'InvalidOverrideError'
   | 'InvalidStackError'
   | 'IterativeRollbackError'
   | 'LambdaLayerDeleteError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
+  | 'MissingOverridesInstallationRequirementsError'
   | 'ModelgenError'
   | 'NestedProjectInitError'
   | 'NoUpdateBackendError'
@@ -133,6 +133,7 @@ export type AmplifyErrorType =
   | 'PermissionsError'
   | 'PluginMethodNotFoundError'
   | 'PluginNotFoundError'
+  | 'PluginPolicyAddError'
   | 'ProfileConfigurationError'
   | 'ProjectAppIdResolveError'
   | 'ProjectInitError'
@@ -146,7 +147,12 @@ export type AmplifyErrorType =
   | 'ResourceNotReadyError'
   | 'StackNotFoundError'
   | 'StackStateError'
-  | 'UserInputError';
+  | 'UnsupportedLockFileTypeError'
+  | 'UserInputError'
+  | 'MockProcessError'
+  | 'SearchableMockUnsupportedPlatformError'
+  | 'SearchableMockUnavailablePortError'
+  | 'SearchableMockProcessError';
 
 /**
  * Amplify fault types
@@ -159,6 +165,8 @@ export type AmplifyFaultType =
   | 'BackendDeleteFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
+  | 'LockFileNotFoundFault'
+  | 'LockFileParsingFault'
   | 'NotificationsChannelAPNSFault'
   | 'NotificationsChannelEmailFault'
   | 'NotificationsChannelFCMFault'
@@ -176,7 +184,12 @@ export type AmplifyFaultType =
   | 'ResourceRemoveFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
+  | 'SnsSandboxModeCheckFault'
   | 'TimeoutFault'
+  | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
-  | 'UnknownNodeJSFault';
+  | 'UnknownNodeJSFault'
+  | 'MockProcessFault'
+  | 'AuthCategoryFault'
+  | 'ZipExtractFault';

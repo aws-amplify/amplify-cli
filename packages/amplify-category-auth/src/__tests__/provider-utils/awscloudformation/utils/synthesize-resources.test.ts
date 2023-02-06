@@ -3,6 +3,8 @@ import {
 } from 'amplify-cli-core';
 import { UserPoolGroupMetadata } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { updateUserPoolGroups } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
+import { createAdminAuthFunction } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
+import * as path from 'path';
 
 jest.mock('amplify-cli-core');
 jest.mock('fs-extra');
@@ -147,5 +149,36 @@ describe('correctly updates userPool group list', () => {
       ]
     `);
     expectAmplifyMetaFileUpdate();
+  });
+});
+
+describe('correctly handles local overwrites', () => {
+  let mockContext: $TSAny;
+  const resourceName = 'mockResource';
+  const functionName = 'mockFunctionName';
+  const adminGroup = 'mockAdminGroup';
+  const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+  beforeEach(() => {
+    mockContext = {
+      amplify: {
+        copyBatch: jest.fn().mockReturnValue({}),
+        pathManager,
+        updateamplifyMetaAfterResourceAdd: jest.fn(),
+      },
+    };
+    pathManagerMock.getBackendDirPath = jest.fn().mockReturnValue('backend');
+  });
+  afterEach(() => jest.resetAllMocks());
+
+  it('ensure local backend chanes are not overwritten on amplify update auth', async () => {
+    const operation = 'update';
+    await createAdminAuthFunction((mockContext as unknown) as $TSContext, resourceName, functionName, adminGroup, operation);
+    expect(mockContext.amplify.copyBatch).not.toBeCalled();
+  });
+
+  it('ensure local backend chanes are not overwritten on amplify update auth', async () => {
+    const operation = 'add';
+    await createAdminAuthFunction((mockContext as unknown) as $TSContext, resourceName, functionName, adminGroup, operation);
+    expect(mockContext.amplify.copyBatch).toBeCalled();
   });
 });

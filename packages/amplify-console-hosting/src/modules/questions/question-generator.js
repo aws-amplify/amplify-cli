@@ -3,16 +3,16 @@ const inquirer = require('inquirer');
 const pluginConstants = require('../../constants/plugin-constants');
 
 async function askDeployType() {
-  const { anwser } = await inquirer.prompt([
+  const { answer } = await inquirer.prompt([
     {
       type: 'list',
-      name: 'anwser',
+      name: 'answer',
       message: constants.DEPLOY_TYPE_QUESTION,
       choices: [constants.DEPLOY_TYPE_QUESTION_CICD, constants.DEPLOY_TYPE_QUESTION_MANUAL, constants.LEARN_MORE],
       default: constants.DEPLOY_TYPE_QUESTION_MANUAL,
     },
   ]);
-  switch (anwser) {
+  switch (answer) {
     case constants.DEPLOY_TYPE_QUESTION_MANUAL:
       return pluginConstants.TYPE_MANUAL;
     case constants.DEPLOY_TYPE_QUESTION_CICD:
@@ -36,6 +36,7 @@ async function askServeQuestion(type) {
   if (type === pluginConstants.TYPE_CICD) {
     return askConfirmQuestion(constants.APP_CICD_SERVE_QUESTION);
   }
+  return undefined;
 }
 
 async function askConfigureAppQuestion() {
@@ -44,7 +45,7 @@ async function askConfigureAppQuestion() {
 
 async function askConfirmQuestion(message) {
   const questionKey = 'question';
-  const anwser = await inquirer.prompt([
+  const answer = await inquirer.prompt([
     {
       type: 'confirm',
       name: questionKey,
@@ -52,19 +53,19 @@ async function askConfirmQuestion(message) {
       default: true,
     },
   ]);
-  return anwser[questionKey];
+  return answer[questionKey];
 }
 
 async function askInputQuestion(message) {
   const questionKey = 'question';
-  const anwser = await inquirer.prompt([
+  const answer = await inquirer.prompt([
     {
       type: 'input',
       name: questionKey,
       message,
     },
   ]);
-  return anwser[questionKey];
+  return answer[questionKey];
 }
 
 module.exports = {

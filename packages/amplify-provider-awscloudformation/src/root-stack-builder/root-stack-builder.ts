@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer, ISynthesisSession } from 'aws-cdk-lib';
-import { amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, JSONUtilities } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, JSONUtilities } from 'amplify-cli-core';
 import { Construct } from 'constructs';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -36,7 +36,9 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   }
 
   /**
-   * adds cfn output to stack
+   *
+   * @param props :cdk.CfnOutputProps
+   * @param logicalId: : logicalId of the Resource
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     new cdk.CfnOutput(this, logicalId, props);
@@ -68,7 +70,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw amplifyErrorWithTroubleshootingLink('DuplicateLogicalIdError', {
+      throw new AmplifyError('DuplicateLogicalIdError', {
         message: `Logical Id already exists: ${logicalId}.`,
       });
     }
@@ -82,7 +84,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
     }
-    throw amplifyErrorWithTroubleshootingLink('ParameterNotFoundError', {
+    throw new AmplifyError('ParameterNotFoundError', {
       message: `Cfn Parameter with LogicalId ${logicalId} doesn't exist`,
     });
   }
@@ -136,7 +138,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
 }
 
 /**
- * additional class to merge CFN parameters and CFN outputs as cdk doesn't allow same logical ID of constructs in same stack
+ * additional class to merge CFN parameters and CFN outputs as cdk does not allow same logical ID of constructs in same stack
  */
 export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootStackTemplate {
   deploymentBucket?: s3.CfnBucket;
@@ -147,8 +149,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn parameter to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnParameter(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -164,8 +166,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn mapping to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnMapping(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -174,8 +176,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn condition to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnCondition(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -184,11 +186,13 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn resource to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnResource(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
 
   public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());
 }
+
+// force major version bump for cdk v2

@@ -11,7 +11,7 @@ import {
   $TSContext,
   INotificationsResourceMeta,
   pathManager,
-  amplifyErrorWithTroubleshootingLink,
+  AmplifyError,
 } from 'amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { invokeGetLastPushTimeStamp } from './plugin-client-api-analytics';
@@ -190,7 +190,7 @@ export const getPinpointRegionMapping = async (context: $TSContext): Promise<str
   const projectPath = pathManager.findProjectRoot();
   const applicationRegion = stateManager.getCurrentRegion(projectPath);
   if (!applicationRegion) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: `Invalid Region for project at ${projectPath}`,
     });
   }
@@ -247,20 +247,21 @@ export const constructPartialNotificationsAppMeta = (
 export const constructResourceMeta = (amplifyMeta : $TSMeta,
   resourceName: string, pinpointOutput:
   Partial<ICategoryMeta>): Partial<ICategoryMeta> => {
-  const tmpAmplifyMeta = amplifyMeta;
-  if (!tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
-    tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: { output: {} } };
+  if (!amplifyMeta[AmplifyCategories.NOTIFICATIONS] || Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length === 0) {
+    // eslint-disable-next-line no-param-reassign
+    amplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: { output: {} } };
   }
-  tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
-    ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
+  // eslint-disable-next-line no-param-reassign
+  amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
+    ...amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
     service: AmplifySupportedService.PINPOINT,
     output: {
-      ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName].output,
+      ...amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName].output,
       ...pinpointOutput,
     },
     lastPushTimeStamp: new Date(),
   };
-  return tmpAmplifyMeta;
+  return amplifyMeta;
 };
 
 /**

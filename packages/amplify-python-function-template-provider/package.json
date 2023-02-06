@@ -1,6 +1,6 @@
 {
   "name": "amplify-python-function-template-provider",
-  "version": "1.3.16",
+  "version": "1.3.17-beta.2",
   "description": "Python templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -18,10 +18,11 @@
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.9.5"
+    "amplify-function-plugin-interface": "1.9.6-beta.2"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

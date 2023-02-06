@@ -10,7 +10,10 @@ describe('map style construction works as expected', () => {
         "RasterEsriImagery",
         "VectorHereBerlin",
         "VectorHereExplore",
-        "VectorHereExploreTruck"
+        "VectorHereExploreTruck",
+        "RasterHereExploreSatellite",
+        "HybridHereExploreSatellite",
+        "VectorOpenDataStandardLight"
     ];
 
     it('parses various supported map styles', () => {

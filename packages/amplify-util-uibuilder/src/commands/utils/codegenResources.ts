@@ -23,6 +23,7 @@ import {
   ScriptKind,
   UtilTemplateType,
   ReactUtilsStudioTemplateRenderer,
+  ReactThemeStudioTemplateRendererOptions,
 } from '@aws-amplify/codegen-ui-react';
 import { printer } from 'amplify-prompts';
 import {
@@ -60,10 +61,14 @@ export const createUiBuilderComponent = (context: $TSContext, schema: StudioComp
 /**
  * Writes theme file to the work space
  */
-export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme): StudioTheme => {
+export const createUiBuilderTheme = (
+  context: $TSContext,
+  schema: StudioTheme,
+  options?: ReactThemeStudioTemplateRendererOptions,
+): StudioTheme => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (component: StudioTheme) => (new ReactThemeStudioTemplateRenderer(component, config) as unknown) as StudioTemplateRenderer<
+    (component: StudioTheme) => (new ReactThemeStudioTemplateRenderer(component, config, options) as unknown) as StudioTemplateRenderer<
         unknown,
         StudioTheme,
         FrameworkOutputManager<unknown>,
@@ -140,7 +145,9 @@ export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: 
   });
 
   try {
-    rendererManager.renderSchemaToTemplate(schemas);
+    if(schemas.length) {
+      rendererManager.renderSchemaToTemplate(schemas);
+    }
   } catch (e) {
     printer.debug(e);
     printer.debug('Failed to generate component index file');

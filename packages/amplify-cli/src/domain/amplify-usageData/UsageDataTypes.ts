@@ -21,6 +21,7 @@ interface IUsageMetricsData {
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
   calculatePushNormalizationFactor: (events: { StackId: string, PhysicalResourceId: string } [], StackId: string) => void;
+  getSessionUuid: () => string;
 }
 
 /**
@@ -34,6 +35,7 @@ export interface IUsageDataPayload {
   inputOptions: InputOptions;
   timestamp: string;
   error: SerializableError;
+  downstreamException: SerializableError;
   payloadVersion: string;
   osPlatform: string;
   osRelease: string;

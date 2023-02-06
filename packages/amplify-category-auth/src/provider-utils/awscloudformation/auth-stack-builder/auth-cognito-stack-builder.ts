@@ -17,7 +17,7 @@ import {
   userPoolClientLambdaFilePath,
 } from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
-import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { configureSmsOption } from '../utils/configure-sms';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
@@ -213,10 +213,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         .concat(props.aliasAttributes ? props.aliasAttributes : [])
         .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
       : [];
-    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
-      || (props.mfaConfiguration !== 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
-      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
-      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = configureSmsOption(props);
 
     if (props.verificationBucketName) {
       this.customMessageConfirmationBucket = new s3.CfnBucket(this, 'CustomMessageConfirmationBucket', {
@@ -615,7 +612,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.userPoolClientLambda.addDependsOn(this.userPoolClientRole);
@@ -689,7 +686,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.hostedUICustomResource.addDependsOn(this.userPoolClientRole!);
@@ -770,7 +767,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.hostedUIProvidersCustomResource.addDependsOn(this.userPoolClientRole!);
@@ -853,7 +850,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
 
@@ -987,7 +984,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('MFALambdaRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.mfaLambda.addDependsOn(this.mfaLambdaRole);
@@ -1130,7 +1127,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('OpenIdLambdaRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.openIdLambda.addDependsOn(this.openIdLambdaRole);

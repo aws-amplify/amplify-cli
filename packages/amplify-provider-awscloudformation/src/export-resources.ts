@@ -1,5 +1,12 @@
 import {
-  $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
+  $TSAny,
+  $TSContext,
+  AmplifyFault,
+  JSONUtilities,
+  PathConstants,
+  spinner,
+  stateManager,
+  validateExportDirectoryPath,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -69,14 +76,17 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
     printer.info('For more information: https://docs.amplify.aws/cli/usage/export-to-cdk');
     printer.blankLine();
   } catch (ex) {
-    revertToBackup(amplifyExportFolder);
+    await revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
-      stack: ex.stack,
-      message: ex.message,
-    }, ex);
+    throw new AmplifyFault(
+      'ResourceNotReadyFault',
+      {
+        message: ex.message,
+      },
+      ex,
+    );
   } finally {
-    removeBackup(amplifyExportFolder);
+    await removeBackup(amplifyExportFolder);
     spinner.stop();
   }
 };

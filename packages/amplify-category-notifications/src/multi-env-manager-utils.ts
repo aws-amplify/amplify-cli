@@ -1,6 +1,6 @@
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService, stateManager,
+  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifyFault, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { getEnabledChannelsFromAppMeta, getNotificationsAppMeta } from './notifications-amplify-meta-api';
@@ -11,11 +11,15 @@ const writeTeamProviderInfo = (pinpointMeta: $TSAny): void => {
   if (!pinpointMeta) {
     return;
   }
-  getEnvParamManager().getResourceParamManager(AmplifyCategories.ANALYTICS, AmplifySupportedService.PINPOINT).setAllParams({
+  const envParamManager = getEnvParamManager();
+  const params = {
     Name: pinpointMeta.Name,
     Id: pinpointMeta.Id,
     Region: pinpointMeta.Region,
-  });
+  };
+  [AmplifyCategories.NOTIFICATIONS, AmplifyCategories.ANALYTICS]
+    .map(category => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
+    .forEach(resourceParamManager => { resourceParamManager.setAllParams(params); });
 };
 
 const updateBackendConfig = (pinpointMeta: $TSAny, backendConfig: $TSAny): $TSAny => {
@@ -67,16 +71,17 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // This normalization will be removed once all notifications are deployed through CFN
     let pinpointMeta;
     if (notificationsServiceMeta) {
-      const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Id;
-      const lastPushTimeStamp = (notificationsServiceMeta.lastPushTimeStamp)
-        || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
+      const applicationId = notificationsServiceMeta.Id || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Id;
+      const lastPushTimeStamp = notificationsServiceMeta.lastPushTimeStamp
+        || analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp;
+      const region = notificationsServiceMeta.Region || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Region;
       pinpointMeta = {
         serviceName: notificationsServiceMeta.ResourceName,
         service: notificationsServiceMeta.service,
         channels: enabledChannels,
         Name: notificationsServiceMeta.output.Name,
         Id: applicationId,
-        Region: notificationsServiceMeta.Region,
+        Region: region,
         lastPushTimeStamp,
       };
     }
@@ -99,7 +104,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     const enabledChannels: Array<string> = await getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
 
     if (!notificationsServiceMeta) {
-      throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
+      throw new AmplifyFault('ConfigurationFault', {
         message: 'Failed to store notifications meta. Amplify Meta not found for Notifications.',
       });
     }

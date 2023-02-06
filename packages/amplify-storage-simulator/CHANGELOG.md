@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.0...amplify-storage-simulator@1.7.0-beta.4) (2022-12-28)
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0...amplify-storage-simulator@1.7.1) (2023-01-03)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+# [1.7.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.0...amplify-storage-simulator@1.7.0-beta.3) (2022-12-13)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+# [1.7.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.0...amplify-storage-simulator@1.7.0-beta.2) (2022-12-01)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+# [1.7.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.0...amplify-storage-simulator@1.7.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+# [1.7.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.6.8...amplify-storage-simulator@1.7.0-cdkv2.0) (2022-11-01)
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.6.8...amplify-storage-simulator@1.7.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
 ## [1.6.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.6.7...amplify-storage-simulator@1.6.8) (2022-10-13)
 
 **Note:** Version bump only for package amplify-storage-simulator

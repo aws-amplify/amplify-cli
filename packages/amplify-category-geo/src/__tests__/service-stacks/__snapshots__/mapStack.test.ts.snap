@@ -112,6 +112,10 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "CustomMapLambda51D5D430": Object {
+      "DependsOn": Array [
+        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "CustomMapLambdaServiceRole4EE7732C",
+      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
@@ -176,7 +180,7 @@ exports.handler = async function (event, context) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -453,6 +457,10 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "CustomMapLambda51D5D430": Object {
+      "DependsOn": Array [
+        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "CustomMapLambdaServiceRole4EE7732C",
+      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
@@ -517,7 +525,7 @@ exports.handler = async function (event, context) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",

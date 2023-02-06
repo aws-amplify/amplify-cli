@@ -36,8 +36,8 @@ import {
   readCFNTemplate,
   Template,
   ApiCategoryFacade,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyError,
+  AmplifyFault,
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -57,14 +57,11 @@ import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
 import amplifyServiceManager from './amplify-service-manager';
-import {
-  DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback,
-} from './iterative-deployment';
+import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
-import { showBuildDirChangesMessage } from './utils/auto-updates';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
@@ -80,6 +77,7 @@ import { prePushTemplateDescriptionHandler } from './template-description-utils'
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
+import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 
 const logger = fileLogger('push-resources');
 
@@ -123,7 +121,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     } = context;
     let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
-    layerResources = resources.filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER);
+    layerResources = resources.filter((r: { service: string }) => r.service === AmplifySupportedService.LAMBDA_LAYER);
     const eventMap = createEventMap(context, resources);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
@@ -138,7 +136,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await createEnvLevelConstructs(context);
 
     // removing dependent functions if @model{Table} is deleted
-    const apiResourceToBeUpdated = resourcesToBeUpdated.filter((resource: { service: string; }) => resource.service === 'AppSync');
+    const apiResourceToBeUpdated = resourcesToBeUpdated.filter((resource: { service: string }) => resource.service === 'AppSync');
     if (apiResourceToBeUpdated.length) {
       const functionResourceToBeUpdated = await ensureValidFunctionModelDependencies(
         context,
@@ -156,7 +154,10 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         const {
           exposedContainer,
           pipelineInfo: { consoleUrl },
-        }: $TSObject = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+        }: $TSObject = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [
+          context,
+          resource,
+        ]);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
 
         printer.blankLine();
@@ -169,7 +170,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           'It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.',
         );
 
-        if (resourcesToBeUpdated.find((res: { resourceName: string; }) => res.resourceName === resource.resourceName)) {
+        if (resourcesToBeUpdated.find((res: { resourceName: string }) => res.resourceName === resource.resourceName)) {
           resource.lastPackageTimeStamp = undefined;
           await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'lastPackageTimeStamp', undefined);
         }
@@ -194,9 +195,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     });
 
     await prePushLambdaLayerPrompt(context, resources);
+    await context.amplify.invokePluginMethod(context, AmplifyCategories.FUNCTION,
+      AmplifySupportedService.LAMBDA, 'ensureLambdaExecutionRoleOutputs', []);
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
-    await showBuildDirChangesMessage();
+
+    // print cdk migration warning
+    await printCdkMigrationWarning(context);
 
     // Removed api transformation to generate resources before starting deploy/
 
@@ -214,13 +219,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
-      const getGqlUpdatedResource = (resourcesToCheck: any[]) => resourcesToCheck.find(
-        resourceToCheck => (
-          resourceToCheck?.service === 'AppSync'
-          && resourceToCheck?.providerMetadata?.logicalId
-          && resourceToCheck?.providerPlugin === 'awscloudformation'
-        ),
-      ) || null;
+      const getGqlUpdatedResource = (resourcesToCheck: any[]) =>
+        resourcesToCheck.find(
+          resourceToCheck =>
+            resourceToCheck?.service === 'AppSync' &&
+            resourceToCheck?.providerMetadata?.logicalId &&
+            resourceToCheck?.providerPlugin === 'awscloudformation',
+        ) || null;
       const gqlResource = getGqlUpdatedResource(rebuild ? resources : resourcesToBeUpdated);
 
       if (gqlResource) {
@@ -265,13 +270,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // We do not need CloudFormation update if only syncable resources are the changes.
     if (
-      resourcesToBeCreated.length > 0
-      || resourcesToBeUpdated.length > 0
-      || resourcesToBeDeleted.length > 0
-      || tagsUpdated
-      || rootStackUpdated
-      || context.exeInfo.forcePush
-      || rebuild
+      resourcesToBeCreated.length > 0 ||
+      resourcesToBeUpdated.length > 0 ||
+      resourcesToBeDeleted.length > 0 ||
+      tagsUpdated ||
+      rootStackUpdated ||
+      context.exeInfo.forcePush ||
+      rebuild
     ) {
       context.usageData.stopCodePathTimer('pushTransform');
       context.usageData.startCodePathTimer('pushDeployment');
@@ -320,10 +325,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         if (stateFolder.cloud) {
           await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
         }
-        postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
+        await postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
-
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
 
         try {
@@ -332,13 +336,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
           await context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
-          if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-            return;
-          }
-          throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-            stack: err.stack,
-            message: err.message,
-          }, err);
+          handleCloudFormationError(err);
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -384,7 +382,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     updatedAllResources = updatedAllResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APIGW);
 
     for (let i = 0; i < updatedAllResources.length; i += 1) {
-      if (resources.findIndex((resource: { resourceName: any; }) => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
+      if (resources.findIndex((resource: { resourceName: any }) => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
         newAPIresources.push(updatedAllResources[i]);
       }
     }
@@ -419,8 +417,8 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
               for (const additionalAuthenticationProvider of additionalAuthenticationProviders) {
                 if (
-                  additionalAuthenticationProvider
-                  && additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+                  additionalAuthenticationProvider &&
+                  additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
                 ) {
                   additionalAuthenticationProvider.userPoolConfig.userPoolId = userPoolId;
 
@@ -440,16 +438,21 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await downloadAPIModels(context, newAPIresources);
 
     // remove ephemeral Lambda layer state
-    if (resources.concat(resourcesToBeDeleted).filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER).length > 0) {
+    if (
+      resources.concat(resourcesToBeDeleted).filter((r: { service: string }) => r.service === AmplifySupportedService.LAMBDA_LAYER).length >
+      0
+    ) {
       await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
 
     // Generate frontend resources for any notifications channels enabled on analytics resources.
-    const analyticsResources = resourcesToBeCreated.filter((resource: { category: string; }) => resource.category === AmplifyCategories.ANALYTICS);
+    const analyticsResources = resourcesToBeCreated.filter(
+      (resource: { category: string }) => resource.category === AmplifyCategories.ANALYTICS,
+    );
     if (analyticsResources && analyticsResources.length > 0) {
       context = await invokePostPushAnalyticsUpdate(context);
-      context.amplify.updateamplifyMetaAfterPush(analyticsResources);
+      await context.amplify.updateamplifyMetaAfterPush(analyticsResources);
     }
 
     // Store current cloud backend in S3 deployment bucket
@@ -458,7 +461,10 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // check for auth resources and remove deployment secret for push
     resources
-      .filter((resource: { category: string; service: string; providerPlugin: string; }) => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
+      .filter(
+        (resource: { category: string; service: string; providerPlugin: string }) =>
+          resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
+      )
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
     await adminModelgen(context, resources);
@@ -469,10 +475,15 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-      stack: error.stack,
-      message: error.message,
-    }, error);
+    throw new AmplifyFault(
+      'DeploymentFault',
+      {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      },
+      error,
+    );
   }
 };
 
@@ -480,9 +491,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
  * update the cloudformation stack for the API migration
  */
 export const updateStackForAPIMigration = async (context: $TSContext, category: string, resourceName: string, options: $TSAny) => {
-  const {
-    resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources,
-  } = await context.amplify.getResourceStatus(
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await context.amplify.getResourceStatus(
     category,
     resourceName,
     providerName,
@@ -492,7 +501,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   let projectDetails = context.amplify.getProjectDetails();
 
-  const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
+  const resources = allResources.filter((resource: { service: string }) => resource.service === 'AppSync');
 
   await uploadAppSyncFiles(context, resources, allResources, {
     useDeprecatedParameters: isReverting,
@@ -658,8 +667,11 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   });
 
   if (cfnFiles.length !== 1) {
-    throw amplifyErrorWithTroubleshootingLink('CloudFormationTemplateError', {
-      message: cfnFiles.length > 1 ? 'Only one CloudFormation template is allowed in the resource directory' : 'No CloudFormation template found in the resource directory',
+    throw new AmplifyError('CloudFormationTemplateError', {
+      message:
+        cfnFiles.length > 1
+          ? 'Only one CloudFormation template is allowed in the resource directory'
+          : 'No CloudFormation template found in the resource directory',
       details: `Resource directory: ${resourceDir}`,
     });
   }
@@ -698,7 +710,9 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
 
 const storeS3BucketInfo = (category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) => {
   const amplifyMeta = stateManager.getMeta();
-  getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
+  getEnvParamManager(envName)
+    .getResourceParamManager(category, resourceName)
+    .setParams({ deploymentBucketName, s3Key });
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
@@ -804,9 +818,7 @@ const updateS3Templates = async (context: $TSContext, resourcesToBeUpdated: $TSA
       await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category, { minify: context.input.options?.minify });
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile), { minify: context.input.options?.minify });
 
-      promises.push(
-        uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta),
-      );
+      promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
   }
 
@@ -853,15 +865,18 @@ export const uploadTemplateToS3 = async (
   }
 };
 
-const createResourceObject = (resource: string, category: string) : {
+const createResourceObject = (
+  resource: string,
   category: string,
-  key: string
+): {
+  category: string;
+  key: string;
 } => ({
   category: `${category}-${resource}`,
   key: category + resource,
 });
 
-const getCategoryResources = (file : string, resourceDir : string) => {
+const getCategoryResources = (file: string, resourceDir: string) => {
   const cloudFormationJsonPath = path.join(resourceDir, file);
   const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
   const categoryResources = Object.keys(cfnTemplate.Resources);
@@ -869,22 +884,19 @@ const getCategoryResources = (file : string, resourceDir : string) => {
 };
 
 type EventMap = {
-  rootStackName: string,
-  envName: string,
-  projectName: string,
-  rootResources: {key: string, category: string}[],
-  eventToCategories: Map<string, string>,
-  categories: {name: string, size: number}[]
-}
+  rootStackName: string;
+  envName: string;
+  projectName: string;
+  rootResources: { key: string; category: string }[];
+  eventToCategories: Map<string, string>;
+  categories: { name: string; size: number }[];
+};
 
 /**
  Create an event map which will be used to map each incoming CloudFormation event into a category.
  This is done so as to group events under progress bars for the root project as well as for each category.
  */
-const createEventMap = (
-  context: $TSContext,
-  resourcesToBeCreatedOrUpdated: $TSAny,
-): EventMap => {
+const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSAny): EventMap => {
   let eventMap = {} as EventMap;
 
   const { envName } = context.amplify.getEnvInfo();
@@ -914,12 +926,7 @@ const createEventMap = (
   return eventMap;
 };
 
-const handleCfnFiles = (
-  eventMap : EventMap,
-  category: string,
-  resource: string,
-  updatedResources: string[],
-) => {
+const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, updatedResources: string[]) => {
   // Getting corresponding cfn template files
   const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
   cfnFiles.forEach(file => {
@@ -1022,7 +1029,7 @@ export const formNestedStack = async (
   }
 
   if (AuthTriggerTemplateURL) {
-    const stack : $TSAny = {
+    const stack: $TSAny = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
         TemplateURL: AuthTriggerTemplateURL,
@@ -1035,20 +1042,25 @@ export const formNestedStack = async (
 
     const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
     const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
-
-    stack.Properties.Parameters.userpoolId = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
-    };
-    stack.Properties.Parameters.userpoolArn = {
-      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
-    };
+    const authTriggerCfnParameters: $TSAny = await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO,
+      'getAuthTriggerStackCfnParameters',
+      [stack, cognitoResource.resourceName],
+    );
+    stack.Properties.Parameters = { ...stack.Properties.Parameters, ...authTriggerCfnParameters };
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = cognitoResource.resource as { dependsOn: any };
 
-    dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any; }) => {
+    dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any }) => {
       const dependsOnStackName = `${resource.category}${resource.resourceName}`;
-
+      if (isAuthTrigger(resource)) {
+        const lambdaRoleKey = `function${resource.resourceName}LambdaExecutionRole`;
+        const lambdaRoleValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.LambdaExecutionRoleArn`] };
+        stack.Properties.Parameters[lambdaRoleKey] = lambdaRoleValue;
+      }
       stack.DependsOn.push(dependsOnStackName);
 
       const dependsOnAttributes = resource?.attributes;
@@ -1112,12 +1124,12 @@ export const formNestedStack = async (
               // If the depends on resource is an imported resource we cannot form GetAtt type reference
               // since there is no such thing. We have to read the output.{AttributeName} from the meta
               // and inject the value itself into the parameters block
-              let parameterValue: { 'Fn::GetAtt': any[]; };
+              let parameterValue: { 'Fn::GetAtt': any[] };
 
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
               if (!dependentResource && dependsOn[i].category) {
-                throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
+                throw new AmplifyError('PushResourcesError', {
                   message: `Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`,
                 });
               }
@@ -1126,7 +1138,7 @@ export const formNestedStack = async (
                 const outputAttributeValue = _.get(dependentResource, ['output', attribute], undefined);
 
                 if (!outputAttributeValue) {
-                  throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
+                  throw new AmplifyError('PushResourcesError', {
                     message: `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
                   });
                 }
@@ -1165,8 +1177,8 @@ export const formNestedStack = async (
         }
 
         if (
-          (category === AmplifyCategories.API || category === AmplifyCategories.HOSTING)
-          && resourceDetails.service === ApiServiceNameElasticContainer
+          (category === AmplifyCategories.API || category === AmplifyCategories.HOSTING) &&
+          resourceDetails.service === ApiServiceNameElasticContainer
         ) {
           parameters.deploymentBucketName = Fn.Ref('DeploymentBucketName');
           parameters.rootStackName = Fn.Ref('AWS::StackName');
@@ -1186,7 +1198,12 @@ export const formNestedStack = async (
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
         const {
-          imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
+          imported,
+          userPoolId,
+          authRoleArn,
+          authRoleName,
+          unauthRoleArn,
+          unauthRoleName,
         } = context.amplify.getImportedAuthProperties(context);
 
         if (category !== AmplifyCategories.AUTH && resourceDetails.service !== 'Cognito' && imported) {
@@ -1207,7 +1224,7 @@ export const formNestedStack = async (
           }
 
           if (parameters.unauthRoleName) {
-            parameters.unauthRoleName = unauthRoleName;
+            parameters.unauthRoleName = unauthRoleName || { Ref: 'UnauthRoleName' }; // if only a user pool is imported, we ref the root stack UnauthRoleName because the child stacks still need this parameter
           }
         }
         if (resourceDetails.providerMetadata) {
@@ -1252,11 +1269,10 @@ const updateIdPRolesInNestedStack = (nestedStack: $TSAny, authResourceName: $TSA
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
 };
 
-const isAuthTrigger = (dependsOnResource: $TSObject) => (
-  FeatureFlags.getBoolean('auth.breakCircularDependency')
-    && dependsOnResource.category === 'function'
-    && dependsOnResource.triggerProvider === 'Cognito'
-);
+const isAuthTrigger = (dependsOnResource: $TSObject) =>
+  FeatureFlags.getBoolean('auth.breakCircularDependency') &&
+  dependsOnResource.category === 'function' &&
+  dependsOnResource.triggerProvider === 'Cognito';
 
 /**
  *
@@ -1292,4 +1308,24 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
 
     stateManager.setMeta(projectRoot, meta);
   }
+};
+
+const handleCloudFormationError = (err: Error): void => {
+  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
+    return;
+  }
+
+  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
+    throw new AmplifyError(
+      'DeploymentInProgressError',
+      {
+        message: 'Deployment is already in progress.',
+        resolution: 'Wait for the other deployment to finish and try again.',
+        code: (err as $TSAny).code,
+      },
+      err,
+    );
+  }
+
+  throw err;
 };

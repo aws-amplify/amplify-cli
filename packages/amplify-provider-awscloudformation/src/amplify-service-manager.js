@@ -8,7 +8,7 @@ const { S3 } = require('./aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { ProviderName, AmplifyAppIdLabel } = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
-const { stateManager, amplifyFaultWithTroubleshootingLink, AmplifyError } = require('amplify-cli-core');
+const { stateManager, AmplifyFault, AmplifyError } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const { printer } = require('amplify-prompts');
@@ -57,10 +57,14 @@ async function init(amplifyServiceParams) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
-        message: `Amplify AppID ${inputAmplifyAppId} not found.`,
-        resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      }, e)
+      throw new AmplifyError(
+        'ProjectNotFoundError',
+        {
+          message: `Amplify AppID ${inputAmplifyAppId} not found.`,
+          resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
+        },
+        e,
+      );
     }
   }
 
@@ -129,15 +133,24 @@ async function init(amplifyServiceParams) {
       }
     } catch (e) {
       if (e.code === 'LimitExceededException') {
-        throw new AmplifyError('ProjectInitError', {
-          message: 'You have reached the Amplify App limit for this account and region',
-          resolution: 'Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify'
-        }, e);
+        throw new AmplifyError(
+          'ProjectInitError',
+          {
+            message: 'You have reached the Amplify App limit for this account and region',
+            resolution:
+              'Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify',
+          },
+          e,
+        );
       }
-      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
-        message: e.message,
-        stack: e.stack,
-      }, e);
+      throw amplifyFaultWithTroubleshootingLink(
+        'ProjectInitFault',
+        {
+          message: e.message,
+          stack: e.stack,
+        },
+        e,
+      );
     }
   }
 
@@ -228,10 +241,13 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         if (ex.code === 'NotFoundException') {
           context.print.warning(ex.message);
         } else {
-          throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
-            message: ex.message,
-            stack: ex.stack,
-          }, ex);
+          throw new AmplifyFault(
+            'ProjectDeleteFault',
+            {
+              message: ex.message,
+            },
+            ex,
+          );
         }
       }
     }
@@ -316,10 +332,13 @@ async function postPushCheck(context) {
         ) {
           // Do nothing
         } else {
-          throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
-            message: e.message,
-            stack: e.stack,
-          }, e);
+          throw new AmplifyFault(
+            'ProjectInitFault',
+            {
+              message: e.message,
+            },
+            e,
+          );
         }
       }
     }
@@ -344,7 +363,6 @@ async function postPushCheck(context) {
   const tpi = stateManager.getTeamProviderInfo();
   tpi[envName][ProviderName][AmplifyAppIdLabel] = amplifyAppId;
   stateManager.setTeamProviderInfo(undefined, tpi);
-
 }
 
 async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion) {

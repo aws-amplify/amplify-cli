@@ -79,7 +79,7 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
 
       let result = verifyCommands(context);
 
-      result = result.verified ? verifyEventHandlers(context) : result;
+      result = result.verified ? await verifyEventHandlers(context) : result;
       result.manifest = manifest;
 
       return result;
@@ -110,16 +110,16 @@ function verifyCommands(context: VerificationContext): PluginVerificationResult 
   return new PluginVerificationResult(true);
 }
 
-function verifyEventHandlers(context: VerificationContext): PluginVerificationResult {
+async function verifyEventHandlers(context: VerificationContext): Promise<PluginVerificationResult> {
   let isVerified = true;
   if (context.manifest!.eventHandlers && context.manifest!.eventHandlers.length > 0) {
     // Lazy load the plugin if not yet loaded
     if (!context.pluginModule) {
-      context.pluginModule = require(context.pluginDirPath);
+      context.pluginModule = await import(context.pluginDirPath);
     }
 
     isVerified =
-      context.pluginModule.hasOwnProperty(constants.HandleAmplifyEvent) &&
+      Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HandleAmplifyEvent) &&
       typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
   }
 

@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "path": ".."
+    },
+    {
+      "path": "../packages/amplify-e2e-tests"
+    }
+  ],
+  "settings": {
+    "eslint.alwaysShowStatus": true,
+    "coverage-gutters.coverageFileNames": [
+      "lcov.info"
+    ],
+    "coverage-gutters.showGutterCoverage": true
+  },
+  "extensions": {
+    "recommendations": [
+      "Orta.vscode-jest",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ryanluker.vscode-coverage-gutters"
+    ]
+  }
+}

@@ -33,7 +33,7 @@ function zipFile(sourceDir, destFilePath, extraFiles) {
       }
     }
 
-    archive.finalize();
+    archive.finalize().catch(reject);
   });
 }
 
@@ -46,7 +46,7 @@ function run(command, projectDirectory) {
     const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
-    execution.on('exit', code => {
+    void execution.on('exit', code => {
       if (code === 0) {
         resolve();
       } else if (!rejectFlag) {
@@ -55,7 +55,7 @@ function run(command, projectDirectory) {
       }
     });
 
-    execution.on('error', err => {
+    void execution.on('error', err => {
       console.log(chalk.red('command execution terminated with error'));
       if (!rejectFlag) {
         rejectFlag = true;

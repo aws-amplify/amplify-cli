@@ -1,0 +1,22 @@
+{
+    "name": "test",
+    "version": "10.5.1",
+    "description": "Amplify CLI",
+    "license": "Apache-2.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "keywords": [
+        "graphql",
+        "appsync",
+        "aws"
+    ],
+    "dependencies": {
+        "@aws-amplify/cli-extensibility-helper": "^2.0.0",
+        "amplify-cli-core": "^2.0.0",
+        "fs-extra": "^8.1.0",
+        "@aws-amplify/amplify-category-custom": "^2.0.0"
+    },
+    "peerDependencies": {
+        "@aws-cdk/core": "^1.172.0"
+    }
+}

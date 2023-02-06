@@ -17,7 +17,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
 import {
-  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile,
+  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0
 } from '../../../migration-helpers';
 
 const defaultSettings = {
@@ -25,18 +25,15 @@ const defaultSettings = {
 };
 describe('amplify auth migration e', () => {
   let projRoot: string;
-
-  beforeAll(async () => {
+  
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth_migration');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth_migration');
   });
 
   afterEach(async () => {
@@ -69,7 +66,7 @@ describe('amplify auth migration e', () => {
       },
     };
 
-    await initJSProjectWithProfile(projRoot, defaultSettings);
+    await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot, {});
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);

@@ -46,6 +46,7 @@ export const importResource = async (
 ): Promise<{ envSpecificParameters: EnvSpecificResourceParameters } | undefined> => {
   // Load provider
   // eslint-disable-next-line import/no-dynamic-require, global-require
+  // eslint-disable-next-line
   const providerPlugin = providerPluginInstance || require(serviceSelection.provider);
   const providerUtils = providerPlugin as ProviderUtils;
 

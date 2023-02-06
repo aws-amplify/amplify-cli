@@ -1,5 +1,11 @@
-import { ISynthesisSession, LegacyStackSynthesizer, Stack } from 'aws-cdk-lib';
-import { amplifyFaultWithTroubleshootingLink, JSONUtilities, Template } from 'amplify-cli-core';
+import {
+  FileAssetSource,
+  ISynthesisSession,
+  LegacyStackSynthesizer,
+  Stack,
+} from 'aws-cdk-lib';
+import { AmplifyFault, JSONUtilities, Template } from 'amplify-cli-core';
+import crypto from 'crypto';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 
 /**
@@ -9,6 +15,10 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
   private stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
+  /**
+   * This method has been deprecated by cdk and is not used in runtime.
+   * @deprecated Replaced by synthesizeTemplate.
+   */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (stack instanceof AmplifyRootStack || stack instanceof AmplifyRootStackOutputs) {
       this.addStack(stack);
@@ -16,10 +26,27 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
     } else {
-      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+      throw new AmplifyFault('UnknownFault', {
         message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack',
       });
     }
+  }
+
+  protected synthesizeTemplate(session: ISynthesisSession, __?: string): FileAssetSource {
+    const stack = this.boundStack;
+    if (stack instanceof AmplifyRootStack || stack instanceof AmplifyRootStackOutputs) {
+      this.addStack(stack);
+      const template = stack.renderCloudFormationTemplate(session) as string;
+      const templateName = stack.node.id;
+      this.setStackAsset(templateName, template);
+      const contentHash = crypto.createHash('sha256').update(template).digest('hex');
+      return {
+        sourceHash: contentHash,
+      };
+    }
+    throw new AmplifyFault('UnknownFault', {
+      message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack',
+    });
   }
 
   /**
@@ -46,7 +73,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
       return this.stacks.get(stackName)!;
     }
 
-    throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+    throw new AmplifyFault('UnknownFault', {
       message: `Stack ${stackName} is not created`,
     });
   };

@@ -1,18 +1,24 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, stateManager
+} from 'amplify-cli-core';
 import { categoryName } from '../constants';
 import {
   FunctionSecretsStateManager,
   getLocalFunctionSecretNames,
-  storeSecretsPendingRemoval,
+  storeSecretsPendingRemoval
 } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
+import { ensureLambdaExecutionRoleOutputs } from '../provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 import { ensureEnvironmentVariableValues } from '../provider-utils/awscloudformation/utils/environmentVariablesHelper';
-
-export const prePushHandler = async (context: $TSContext) => {
+/**
+ * prePush Handler event for function category
+ */
+export const prePushHandler = async (context: $TSContext): Promise<void> => {
   await ensureEnvironmentVariableValues(context);
   await ensureFunctionSecrets(context);
+  await ensureLambdaExecutionRoleOutputs();
 };
 
-const ensureFunctionSecrets = async (context: $TSContext) => {
+const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
   const amplifyMeta = stateManager.getMeta();
   const functionNames = Object.keys(amplifyMeta?.[categoryName]);
   for (const funcName of functionNames) {
@@ -23,3 +29,4 @@ const ensureFunctionSecrets = async (context: $TSContext) => {
   }
   await storeSecretsPendingRemoval(context, functionNames);
 };
+

@@ -1,8 +1,10 @@
-import { Context } from './domain/context';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import importedColors from 'colors/safe';
 import CLITable from 'cli-table3';
+import importedColors from 'colors/safe';
+import ejs from 'ejs';
+import * as fs from 'fs-extra';
+import inquirer from 'inquirer';
+import * as path from 'path';
+import { Context } from './domain/context';
 
 importedColors.setTheme({
   highlight: 'cyan',
@@ -45,9 +47,8 @@ export function attachExtentions(context: Context) {
 }
 
 function attachPrompt(context: Context) {
-  const inquirer = require('inquirer');
   context.prompt = {
-    confirm: async (message: string, defaultValue: boolean = false): Promise<boolean> => {
+    confirm: async (message: string, defaultValue = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
         name: 'yesno',
         type: 'confirm',
@@ -59,6 +60,7 @@ function attachPrompt(context: Context) {
     ask: async (questions: any) => {
       if (Array.isArray(questions)) {
         questions = questions.map(q => {
+          // eslint-disable-next-line spellcheck/spell-checker
           if (q.type === 'rawlist' || q.type === 'list') {
             q.type = 'select';
           }
@@ -114,13 +116,13 @@ function attachRuntime(context: Context) {
     plugins: [],
   };
   Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
-    const pluginInfos = context.pluginPlatform.plugins[pluginShortName];
-    pluginInfos.forEach(pluginInfo => {
-      const name = path.basename(pluginInfo.packageLocation);
-      const directory = pluginInfo.packageLocation;
-      const pluginName = pluginInfo.manifest.name;
-      const pluginType = pluginInfo.manifest.type;
-      const commands = pluginInfo.manifest.commands;
+    const pluginInformation = context.pluginPlatform.plugins[pluginShortName];
+    pluginInformation.forEach(pluginEntry => {
+      const name = path.basename(pluginEntry.packageLocation);
+      const directory = pluginEntry.packageLocation;
+      const pluginName = pluginEntry.manifest.name;
+      const pluginType = pluginEntry.manifest.type;
+      const commands = pluginEntry.manifest.commands;
       context.runtime.plugins.push({
         name,
         directory,
@@ -140,7 +142,7 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding: string = 'utf8'): any => {
+  read: (targetPath: string, encoding = 'utf8'): any => {
     const result = fs.readFileSync(targetPath, encoding);
     return result;
   },
@@ -229,7 +231,7 @@ function fancy(message?: string): void {
   console.log(message);
 }
 
-function debug(message: string, title: string = 'DEBUG'): void {
+function debug(message: string, title = 'DEBUG'): void {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 
@@ -241,7 +243,7 @@ function debug(message: string, title: string = 'DEBUG'): void {
 function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
-    case 'markdown':
+    case 'markdown': {
       const header = data.shift();
       t = new CLITable({
         style: { head: ['reset'] }, // "no color"
@@ -251,6 +253,7 @@ function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {})
       t.push(...data);
       t.unshift(columnHeaderDivider(t));
       break;
+    }
     case 'lean':
       t = new CLITable({
         style: { head: ['reset'] }, // "no color"
@@ -313,14 +316,13 @@ const CLI_TABLE_MARKDOWN = {
 function attachTemplate(context: Context) {
   context.template = {
     async generate(opts: { template: string; target: string; props: object; directory: string }): Promise<string> {
-      const ejs = require('ejs');
       const template = opts.template;
       const target = opts.target;
       const props = opts.props || {};
       const data = {
         props,
       };
-      // If a directory was supplied, append a directory seprator.
+      // If a directory was supplied, append a directory separator.
       // Otherwise, the template path will be use as-is.
       const pathToTemplate = opts.directory ? path.join(opts.directory, template) : template;
 

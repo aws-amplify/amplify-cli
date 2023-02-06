@@ -38,6 +38,7 @@ const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inpu
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
 const { run: authRunPush } = require('./commands/auth/push');
+const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
@@ -528,16 +529,20 @@ async function isSMSWorkflowEnabled(context, resourceName) {
  */
 const authPushYes = async context => {
   const exeInfoClone = { ...context?.exeInfo };
+  const parametersClone = { ...context?.parameters };
   try {
     context.exeInfo = (context.exeInfo) || {};
     context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
     context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
+    context.parameters = (context.parameters) || {};
+    context.parameters.options.yes = true;
+    context.parameters.first = undefined;
     await authRunPush(context);
   } finally {
     context.exeInfo = exeInfoClone;
+    context.parameters = parametersClone;
   }
 };
-
 
 module.exports = {
   externalAuthEnable,
@@ -563,4 +568,7 @@ module.exports = {
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
   authPluginAPIPush: authPushYes,
+  getAuthTriggerStackCfnParameters
 };
+
+// force major version bump for cdk v2

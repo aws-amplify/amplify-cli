@@ -10,22 +10,22 @@ export enum S3TriggerFunctionType {
 }
 
 export enum S3UserAccessRole {
-    AUTH = "Auth",
-    GUEST = "Guest",
-    GROUP = "Group"
+    AUTH = 'Auth',
+    GUEST = 'Guest',
+    GROUP = 'Group'
 }
 
 export function getUserAccessQuestions( accessRole : S3UserAccessRole ): string {
      if( accessRole === S3UserAccessRole.AUTH ){
-         return "Authenticated";
+         return 'Authenticated';
      } else {
          return accessRole.toString()
      }
 }
 
 export enum S3AccessType  {
-    AUTH_AND_GUEST =  "authAndGuest",
-    AUTH_ONLY =  "auth"
+    AUTH_AND_GUEST =  'authAndGuest',
+    AUTH_ONLY =  'auth'
 }
 
 export enum S3PermissionType {
@@ -53,7 +53,7 @@ export interface S3TriggerPrefixType {
 }
 
 export interface S3UserInputTriggerFunctionParams{
-    category :string; //function registed by
+    category :string; //function registered by
     tag ?: string;
     triggerFunction : string;
     permissions : S3PermissionType[];
@@ -73,7 +73,7 @@ export interface S3UserInputs {
      triggerFunction?: string|undefined,
      adminTriggerFunction? : S3UserInputTriggerFunctionParams|undefined,
      additionalTriggerFunctions?: S3UserInputTriggerFunctionParams[]|undefined,
-     groupAccess? : GroupAccessType|undefined, //{ "admingroup": [create, read,  delete, list], "secondgroup" :[...''...] }
+     groupAccess? : GroupAccessType|undefined, //{ "adminGroup": [create, read,  delete, list], "secondGroup" :[...''...] }
 }
 
 export function defaultS3UserInputs() :S3UserInputs {

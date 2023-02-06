@@ -94,7 +94,10 @@
                 "RasterEsriImagery",
                 "VectorHereBerlin",
                 "VectorHereExplore",
-                "VectorHereExploreTruck"
+                "VectorHereExploreTruck",
+                "RasterHereExploreSatellite",
+                "HybridHereExploreSatellite",
+                "VectorOpenDataStandardLight"
             ],
             "type": "string"
         }

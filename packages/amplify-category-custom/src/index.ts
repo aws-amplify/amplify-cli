@@ -50,3 +50,5 @@ export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny): P
 export const transformCategoryStack = async (context: $TSContext, resource: IAmplifyResource): Promise<void> => {
   await buildCustomResources(context, resource.resourceName);
 };
+
+// force major version bump for cdk v2

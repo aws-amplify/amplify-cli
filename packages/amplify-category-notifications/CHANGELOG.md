@@ -3,6 +3,128 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-beta.4) (2022-12-28)
+
+
+### Bug Fixes
+
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
+# [2.21.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
+# [2.21.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+
+
+
+# [2.21.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-beta.0...amplify-category-notifications@2.21.0-beta.1) (2022-11-19)
+## [2.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.22.0...amplify-category-notifications@2.22.1) (2023-01-17)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+# [2.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-beta.0) (2022-11-17)
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.22.0) (2023-01-03)
+
+
+### Bug Fixes
+
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
+# [2.21.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-cdkv2.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+
+
+
+
+
+# [2.21.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-cdkv2.1) (2022-11-10)
+
+
+### Bug Fixes
+
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+
+
+
+
+
+# [2.21.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.3...amplify-category-notifications@2.21.0-cdkv2.0) (2022-11-01)
+## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0...amplify-category-notifications@2.21.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+
+
+
+
+
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.3...amplify-category-notifications@2.21.0) (2022-10-27)
+
+
+### Bug Fixes
+
+* notifications status after env checkout ([#11197](https://github.com/aws-amplify/amplify-cli/issues/11197)) ([cba0ff6](https://github.com/aws-amplify/amplify-cli/commit/cba0ff6b048158e424d14c4c34e88cf35f902a6d))
+
+
+### Features
+
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+* migrates notifications category to support in app messaging channel notifications ([#11170](https://github.com/aws-amplify/amplify-cli/issues/11170)) ([52f5787](https://github.com/aws-amplify/amplify-cli/commit/52f57870bf4b1e67a5aa879d6bcec403b049d6b8))
+
+
+
+
+
 ## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.2...amplify-category-notifications@2.20.3) (2022-10-13)
 
 **Note:** Version bump only for package amplify-category-notifications

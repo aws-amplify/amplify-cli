@@ -136,7 +136,7 @@ describe('TriggerFlow:  ', () => {
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1']);
       spyUpdate = jest.spyOn(func, 'update').mockImplementation(() => Promise.resolve());
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => Promise.resolve());
+      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => null);
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -246,7 +246,7 @@ describe('TriggerFlow:  ', () => {
     });
   });
 
-  describe('When deleteting deselected triggers...', () => {
+  describe('When deleting deselected triggers...', () => {
     const currentTriggers = ['arya'];
     let previousTriggers;
     let deleteSpy;
@@ -569,7 +569,7 @@ describe('TriggerFlow:  ', () => {
 
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
-      copySyncSpy = jest.spyOn(fsExtra, 'copySync').mockImplementation(() => Promise.resolve());
+      copySyncSpy = jest.spyOn(fsExtra, 'copySync').mockImplementation(() => null);
     });
 
     afterEach(() => {
@@ -605,7 +605,7 @@ describe('TriggerFlow:  ', () => {
     let unlinkSyncSpy;
 
     beforeEach(() => {
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => Promise.resolve());
+      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => null);
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {

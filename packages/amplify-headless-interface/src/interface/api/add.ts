@@ -40,6 +40,10 @@ export interface AppSyncServiceConfiguration {
    * The strategy for resolving API write conflicts.
    */
   conflictResolution?: ConflictResolution;
+  /**
+   * Configuration for how long to extend an API key from current set expiration
+   */
+  apiKeyExpiration?: AppSyncAPIKeyExpiration;
 }
 
 /**
@@ -53,12 +57,14 @@ export interface ConflictResolution {
   /**
    * Strategies that will be used for individual models.
    */
+  // eslint-disable-next-line spellcheck/spell-checker
   perModelResolutionStrategy?: PerModelResolutionstrategy[];
 }
 
 /**
  * Defines a resolution strategy for a single model.
  */
+// eslint-disable-next-line spellcheck/spell-checker
 export interface PerModelResolutionstrategy {
   /**
    * The resolution strategy for the model.
@@ -136,6 +142,13 @@ export interface AppSyncAPIKeyAuthType {
 }
 
 /**
+ * Specifies how to extend an AppSync API key
+ */
+export interface AppSyncAPIKeyExpiration {
+  days: number;
+}
+
+/**
  * Specifies that the AppSync API should be secured using AWS IAM.
  */
 export interface AppSyncAWSIAMAuthType {
@@ -168,7 +181,7 @@ export interface AppSyncOpenIDConnectAuthType {
 /**
  * Specifies that the AppSync API should be secured using Lambda.
  */
- export interface AppSyncLambdaAuthType {
+export interface AppSyncLambdaAuthType {
   mode: 'AWS_LAMBDA';
   lambdaFunction: string;
   ttlSeconds?: string;

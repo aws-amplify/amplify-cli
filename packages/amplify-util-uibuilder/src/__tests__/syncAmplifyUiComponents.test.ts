@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import { AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import {
@@ -237,6 +238,18 @@ describe('should sync amplify ui builder components', () => {
     const themes = generateUiBuilderThemes(context, [{}, {}]);
     expect(themes.every(theme => theme.resultType === 'FAILURE')).toBeTruthy();
   });
+  it('can generate ui builder default theme when no themes are passed', async () => {
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
+    const themes = generateUiBuilderThemes(context, []);
+    expect(themes.every(theme => theme.resultType === 'SUCCESS')).toBeTruthy();
+  });
+  it('can handle failed generation generate ui builder default theme when no themes are passed', async () => {
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
+      throw new Error('ahh!');
+    });
+    const themes = generateUiBuilderThemes(context, []);
+    expect(themes.every(theme => theme.resultType === 'FAILURE')).toBeTruthy();
+  });
   it('can generate ui builder forms', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
     const forms = generateUiBuilderForms(context, [{}, {}]);
@@ -249,7 +262,7 @@ describe('should sync amplify ui builder components', () => {
     const forms = generateUiBuilderForms(context, [{}, {}]);
     expect(forms.every(form => form.resultType === 'FAILURE')).toBeTruthy();
   });
-  it('can generate uibuilder forms from data schema if autogen true', async () => {
+  it('can generate uibuilder forms from data schema if autogenerate true', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
     const forms = generateUiBuilderForms(context, [], exampleSchema, true);
     expect(forms.every(form => form.resultType === 'SUCCESS')).toBeTruthy();
@@ -257,7 +270,7 @@ describe('should sync amplify ui builder components', () => {
     expect(forms.length).toEqual(2);
   });
 
-  it('should not autogen forms for join tables or unsupported models', async () => {
+  it('should not autogenerate forms for join tables or unsupported models', async () => {
     expect(Object.keys(exampleSchema.models)).toStrictEqual(['Author', 'JoinTable', 'EmptyModel']);
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -269,7 +282,7 @@ describe('should sync amplify ui builder components', () => {
     expect(forms.map(f => (f.schema as any).name)).toStrictEqual(['Author', 'Author']);
   });
 
-  it('does not generate uibuilder forms from data schema if autogen false', async () => {
+  it('does not generate uibuilder forms from data schema if autogenerate false', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
     const forms = generateUiBuilderForms(context, [], exampleSchema, false);
     expect(forms.length).toEqual(0);

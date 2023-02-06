@@ -41,12 +41,8 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
         throw new AmplifyError('DeploymentError', {
           message: 'Failed to deploy Auth and Pinpoint resources.',
           resolution: 'Deploy Auth and Pinpoint resources manually.',
-          details: err.message,
-          stack: err.stack,
-        });
+        }, err);
       }
-      // eslint-disable-next-line no-param-reassign
-      context = pinpointAppStatus.context;
     }
     if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannel)) {
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, selectedChannel);

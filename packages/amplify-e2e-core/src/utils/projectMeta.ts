@@ -59,6 +59,11 @@ export const getCloudBackendConfig = (projectRoot: string): $TSAny => {
   return JSON.parse(fs.readFileSync(currentCloudPath, 'utf8'));
 };
 
+export const getRootStackTemplate = (projectRoot: string): $TSAny => {
+  const rootStackPath = path.join(projectRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'root-cloudformation-stack.json');
+  return JSON.parse(fs.readFileSync(rootStackPath, 'utf8'));
+};
+
 const getParameterPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 
 const getCLIInputsPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
@@ -126,9 +131,27 @@ export const isDeploymentSecretForEnvExists = (projectRoot: string, envName: str
   return false;
 };
 
+export const parametersExists = (
+  projectRoot: string, category: string, resourceName: string,
+): boolean => fs.existsSync(getParameterPath(projectRoot, category, resourceName));
+
 export const getParameters = (projectRoot: string, category: string, resourceName: string): $TSAny => {
   const parametersPath = getParameterPath(projectRoot, category, resourceName);
   return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
+};
+
+export const getCloudFormationTemplate = (projectRoot: string, category: string, resourceName: string): $TSAny => {
+  let templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', `${resourceName}-cloudformation-template.json`);
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'cloudformation-template.json');
+  }
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, `${resourceName}-cloudformation-template.json`);
+  }
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Unable to locate cloudformation template for ${category} ${resourceName}`);
+  }
+  return JSONUtilities.parse(fs.readFileSync(templatePath, 'utf8'));
 };
 
 export const setParameters = (projectRoot: string, category: string, resourceName: string, parameters: unknown): void => {

@@ -25,7 +25,7 @@ git pull "$remote_name" dev
 git checkout -B dev-main-merge
 git fetch "$remote_name" main
 set +e
-git merge "$remote_name"/main -m "Merge release commit from main to dev"
+git merge "$remote_name"/main -m "chore: merge release commit from main to dev"
 merge_exit_code=$?
 set -e
 if [[ $merge_exit_code != 0 ]]; then

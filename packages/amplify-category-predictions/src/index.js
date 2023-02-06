@@ -31,7 +31,7 @@ async function console(context) {
         context.print.error(errMessage);
         await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
         exitOnNextTick(0);
-        return;
+        return undefined;
       }
       let resourceObj = predictionsResources[0].value;
       if (predictionsResources.length > 1) {
@@ -46,7 +46,7 @@ async function console(context) {
       const providerController = require(`./provider-utils/${result.provider}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
-        return;
+        return undefined;
       }
 
       return providerController.console(context, resourceObj, amplifyMeta);

@@ -1,6 +1,27 @@
 #!/bin/bash -e
-git config --global user.email $GITHUB_EMAIL
-git config --global user.name $GITHUB_USER
+
+if [ -z "$GITHUB_EMAIL" ]; then
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    git config --global user.email not@used.com
+  else
+    echo "GITHUB_EMAIL email is missing"
+    exit 1
+  fi
+else
+  git config --global user.email $GITHUB_EMAIL
+fi
+
+if [ -z "$GITHUB_USER" ]; then
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    git config --global user.name "Doesnt Matter"
+  else
+    echo "GITHUB_USER email is missing"
+    exit 1
+  fi
+else
+  git config --global user.name $GITHUB_USER
+fi
+
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/

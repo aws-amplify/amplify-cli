@@ -5,8 +5,7 @@ import * as net from 'net';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 
-const EMAIL_ADDRESS_REGEX =
-  /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const EMAIL_ADDRESS_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 // Some of the custom scalars in this file are inspired by the graphql-scalars npm module.
 
@@ -17,7 +16,7 @@ const phoneValidator = (ast, options) => {
     throw new GraphQLError(`Query error: Can only parse strings got a: ${kind}`, [ast]);
   }
 
-  let isValid = isValidNumber(value, country);
+  const isValid = isValidNumber(value, country);
   if (!isValid) {
     throw new GraphQLError('Query error: Not a valid phone number', [ast]);
   }

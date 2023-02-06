@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.4) (2022-12-28)
+## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.4...@aws-amplify/amplify-util-uibuilder@1.6.5) (2023-01-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.3...@aws-amplify/amplify-util-uibuilder@1.6.4) (2023-01-06)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** update codegen-ui to 2.7.2 ([14c670e](https://github.com/aws-amplify/amplify-cli/commit/14c670e57ec194da97b4d568508b7dad3b94755f))
+
+
+
+
+
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.3) (2023-01-03)
+
+
+### Bug Fixes
+
+* address UI Builder component generation errors ([#11536](https://github.com/aws-amplify/amplify-cli/issues/11536)) ([aceec4c](https://github.com/aws-amplify/amplify-cli/commit/aceec4c098bc85d2e8da0738bbc5e8089ad8ae6e))
+* **cli:** fix grammar in pull warning message ([#11407](https://github.com/aws-amplify/amplify-cli/issues/11407)) ([984c0f8](https://github.com/aws-amplify/amplify-cli/commit/984c0f8548cec80d0e14269757cd49b031403097))
+
+
+
+
+
+# [1.6.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* address UI Builder component generation errors ([#11536](https://github.com/aws-amplify/amplify-cli/issues/11536)) ([aceec4c](https://github.com/aws-amplify/amplify-cli/commit/aceec4c098bc85d2e8da0738bbc5e8089ad8ae6e))
+* **cli:** fix grammar in pull warning message ([#11407](https://github.com/aws-amplify/amplify-cli/issues/11407)) ([984c0f8](https://github.com/aws-amplify/amplify-cli/commit/984c0f8548cec80d0e14269757cd49b031403097))
+
+
+
+
+
+# [1.6.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.2...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* **cli:** fix grammar in pull warning message ([#11407](https://github.com/aws-amplify/amplify-cli/issues/11407)) ([984c0f8](https://github.com/aws-amplify/amplify-cli/commit/984c0f8548cec80d0e14269757cd49b031403097))
+
+
+
+
+
+# [1.6.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0-beta.0...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.6.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.0...@aws-amplify/amplify-util-uibuilder@1.6.0-beta.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* generate default theme if user has no themes ([#11343](https://github.com/aws-amplify/amplify-cli/issues/11343)) ([13a02ac](https://github.com/aws-amplify/amplify-cli/commit/13a02ac32de717a518336871b1c741aa2714562b))
+
+
+
+
+
+# [1.6.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.0...@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.2) (2022-11-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.6.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.0...@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.1) (2022-11-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.6.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.5.0...@aws-amplify/amplify-util-uibuilder@1.6.0-cdkv2.0) (2022-11-01)
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.1...@aws-amplify/amplify-util-uibuilder@1.6.2) (2022-11-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0...@aws-amplify/amplify-util-uibuilder@1.6.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* generate default theme if user has no themes ([#11343](https://github.com/aws-amplify/amplify-cli/issues/11343)) ([13a02ac](https://github.com/aws-amplify/amplify-cli/commit/13a02ac32de717a518336871b1c741aa2714562b))
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.5.0...@aws-amplify/amplify-util-uibuilder@1.6.0) (2022-10-27)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** make studio app check static ([#11220](https://github.com/aws-amplify/amplify-cli/issues/11220)) ([b1fdc86](https://github.com/aws-amplify/amplify-cli/commit/b1fdc8634f10da558272aa2e98dfdffc28edd74c))
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.4.2...@aws-amplify/amplify-util-uibuilder@1.5.0) (2022-10-13)
 
 

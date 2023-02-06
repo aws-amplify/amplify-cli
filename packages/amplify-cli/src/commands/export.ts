@@ -40,7 +40,7 @@ export const run = async (context: $TSContext) => {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontends = Object.keys(frontendPlugins);
     printer.blankLine();
-    printer.info("'amplify export pull', Allows you to genreate frontend config files at a desired location");
+    printer.info("'amplify export pull', Allows you to generate frontend config files at a desired location");
     printer.blankLine();
     printer.info(`${chalk.yellow('--rootStackName')}         Amplify CLI deployed Root Stack name`);
     printer.info(`${chalk.yellow('--frontend')}             Front end type ex: ${frontends.join(', ')}`);
@@ -48,6 +48,7 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
     printer.info(
       `Example: ${chalk.green(
+        // eslint-disable-next-line spellcheck/spell-checker
         'amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript',
       )}`,
     );
@@ -101,7 +102,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     const meta = stateManager.getMeta();
     const cloudMeta = stateManager.getCurrentMeta();
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule = require(frontendPlugins[frontend]);
+    const frontendHandlerModule = await import(frontendPlugins[frontend]);
     const validatedExportPath = validateExportDirectoryPath(exportPath, PathConstants.DefaultFrontEndExportFolder);
     await frontendHandlerModule.createFrontendConfigsAtPath(
       context,
@@ -110,7 +111,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
       validatedExportPath,
     );
     spinner.succeed('Successfully generated frontend config files');
-  } catch (ex: any) {
+  } catch (ex) {
     spinner.fail('Failed to generate frontend config files ' + ex.message);
     throw ex;
   } finally {

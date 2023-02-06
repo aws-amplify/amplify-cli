@@ -21,12 +21,11 @@ describe('amplify add hosting', () => {
     const hostingBucket = projectMeta?.hosting?.S3AndCloudFront?.output?.HostingBucketName;
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
-
+    await deleteProject(projRoot);
     if (hostingBucket) {
       // Once the Hosting bucket is removed automatically we should get rid of this.
       await deleteS3Bucket(hostingBucket);
     }
-    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 

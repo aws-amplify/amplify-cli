@@ -230,6 +230,19 @@ export default class AmplifyStudioClient {
     }
   };
 
+  deleteForm = async (formId: string, envName?: string, appId?: string): Promise<void> => {
+    const environmentName = envName || this.#envName;
+    const resolvedAppId = appId || this.#appId;
+    try {
+      await this.#amplifyUiBuilder
+        .deleteForm({ id: formId, environmentName, appId: resolvedAppId })
+        .promise();
+    } catch (err) {
+      printer.debug(err.toString());
+      throw err;
+    }
+  }
+
   getModels = async (resourceName: string, envName?: string, appId?: string): Promise<string | undefined> => {
     try {
       const environmentName = envName || this.#envName;

@@ -38,11 +38,11 @@ export const updateApiRequestSchemaSupplier: VersionedSchemaSupplier = version =
 
 export const addGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('AddGeoRequest', 'geo', version);
-}
+};
 
 export const updateGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('UpdateGeoRequest', 'geo', version);
-}
+};
 
 const getSchema = async (type: string, category: string, version: number) => {
   try {
@@ -50,6 +50,6 @@ const getSchema = async (type: string, category: string, version: number) => {
       rootSchema: await import(`amplify-headless-interface/schemas/${category}/${version}/${type}.schema.json`),
     };
   } catch (ex) {
-    return; // resolve the promise with void if the schema does not exist
+    return undefined; // resolve the promise with void if the schema does not exist
   }
 };

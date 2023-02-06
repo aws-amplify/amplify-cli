@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.1...amplify-frontend-javascript@3.7.0-beta.4) (2022-12-28)
+## [3.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.2...amplify-frontend-javascript@3.7.3) (2023-01-17)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.1...amplify-frontend-javascript@3.7.0-beta.3) (2022-12-13)
+## [3.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.1...amplify-frontend-javascript@3.7.2) (2023-01-03)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.1...amplify-frontend-javascript@3.7.0-beta.2) (2022-12-01)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.0-beta.0...amplify-frontend-javascript@3.7.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.0-cdkv2.0...amplify-frontend-javascript@3.7.0-beta.0) (2022-11-17)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.0-cdkv2.0...amplify-frontend-javascript@3.7.0-cdkv2.2) (2022-11-10)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.0-cdkv2.0...amplify-frontend-javascript@3.7.0-cdkv2.1) (2022-11-10)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.3...amplify-frontend-javascript@3.7.0-cdkv2.0) (2022-11-01)
+## [3.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.0...amplify-frontend-javascript@3.7.1) (2022-11-17)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.3...amplify-frontend-javascript@3.7.0) (2022-10-27)
+
+
+### Features
+
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+
+
+
+
+
 ## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.2...amplify-frontend-javascript@3.6.3) (2022-10-13)
 
 **Note:** Version bump only for package amplify-frontend-javascript

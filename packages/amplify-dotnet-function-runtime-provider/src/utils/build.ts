@@ -3,9 +3,13 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import * as execa from 'execa';
 import { BuildRequest, BuildResult, BuildType } from 'amplify-function-plugin-interface';
-import { executableName } from '../constants';
+import { printer } from 'amplify-prompts';
+import { dotnetcore31, executableName } from '../constants';
 
-export const build = async ({ srcRoot, lastBuildTimeStamp, buildType }: BuildRequest): Promise<BuildResult> => {
+export const build = async ({ srcRoot, lastBuildTimeStamp, buildType, runtime }: BuildRequest): Promise<BuildResult> => {
+  if (runtime === dotnetcore31) {
+    printer.warn(`.NET Core 3.1 is deprecated. Migrate your function at ${srcRoot} to .NET 6.`);
+  }
   const distPath = path.join(srcRoot, 'dist');
   const sourceFolder = path.join(srcRoot, 'src');
   if (!lastBuildTimeStamp || !fs.existsSync(distPath) || isBuildStale(sourceFolder, lastBuildTimeStamp)) {

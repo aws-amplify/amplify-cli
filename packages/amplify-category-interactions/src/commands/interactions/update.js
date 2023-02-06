@@ -1,6 +1,6 @@
 const subcommand = 'update';
 const category = 'interactions';
-const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
+const { servicesMetadata } = require(`../../provider-utils/supported-services`);
 
 module.exports = {
   name: subcommand,
@@ -14,7 +14,7 @@ module.exports = {
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
-          return;
+          return undefined;
         }
         return providerController.updateResource(context, category, result.service);
       })

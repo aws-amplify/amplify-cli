@@ -1,7 +1,7 @@
 // @ts-check
 import chalk from 'chalk';
 import {
-  BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, amplifyFaultWithTroubleshootingLink, $TSAny,
+  BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, AmplifyFault, $TSAny,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { fileLogger } from './utils/aws-logger';
@@ -259,9 +259,9 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
       // Network error. Sandbox status is for informational purpose and should not stop deployment
       log(e);
     } else {
-      throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-        stack: e.stack,
+      throw new AmplifyFault('SnsSandboxModeCheckFault', {
         message: e.message,
+        code: e.code,
       }, e);
     }
   }

@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { CfnResource, Duration, Fn } from 'aws-cdk-lib/core';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -97,7 +97,7 @@ export class PlaceIndexStack extends BaseStack {
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       timeout: Duration.seconds(300),
     });
     customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);

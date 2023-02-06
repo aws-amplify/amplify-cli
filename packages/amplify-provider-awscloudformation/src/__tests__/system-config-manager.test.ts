@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import fs from 'fs-extra';
-import * as aws from 'aws-sdk';
+import { ProcessCredentials } from 'aws-sdk';
 import { getProfileCredentials, getProfiledAwsConfig } from '../system-config-manager';
 
 jest.setTimeout(15000);
@@ -10,6 +10,9 @@ jest.mock('../utils/aws-logger', () => ({
 }));
 jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
+
+jest.mock('aws-sdk');
+const ProcessCredentialsMock = ProcessCredentials as jest.MockedClass<typeof ProcessCredentials>;
 
 const context_stub = ({
   print: {
@@ -22,31 +25,57 @@ describe('profile tests', () => {
     jest.clearAllMocks();
   });
 
-  fs_mock.existsSync.mockImplementation(() => {
-    return true;
-  });
+  fs_mock.existsSync.mockReturnValue(true);
 
   it('should use credential_process defined in config file', async () => {
-    fs_mock.readFileSync.mockImplementationOnce(() => {
-      return '[profile fake]\noutput = json\nregion = us-fake-1\ncredential_process = fake credential process';
-    });
-    const getProfileCredentials_mock = jest.fn(getProfileCredentials);
+    // setup
+    const awsConfigContent = `[profile fake]
+    output = json
+    region = us-fake-1
+    credential_process = fake command`;
+
+    fs_mock.readFileSync.mockReturnValue(awsConfigContent);
+
+    const credentialProcessFetcher = jest.fn();
+
+    ProcessCredentialsMock.mockImplementation(() => ({
+      accessKeyId: 'testAccessKey',
+      secretAccessKey: 'testSecret',
+      sessionToken: 'testSessionToken',
+      expireTime: new Date(1234),
+      expired: false,
+      get: jest.fn(),
+      getPromise: credentialProcessFetcher,
+      needsRefresh: jest.fn(),
+      refresh: jest.fn(),
+      refreshPromise: jest.fn(),
+    }));
+
+    // test
     const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
+
+    // expect
+    expect(credentialProcessFetcher).toHaveBeenCalled();
     expect(profile_config).toBeDefined();
-    expect(profile_config.credentialProvider).toBeDefined();
-    expect(profile_config.credentialProvider).toBeInstanceOf(aws.CredentialProviderChain);
-    expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
+    expect(profile_config.accessKeyId).toBe('testAccessKey');
+    expect(profile_config.secretAccessKey).toBe('testSecret');
+    expect(profile_config.sessionToken).toBe('testSessionToken');
+    expect(profile_config.expiration).toEqual(new Date(1234));
   });
 
   it('should fail to return profiled aws credentials', async () => {
-    const profile_file_contents = '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n'
-    fs_mock.readFileSync.mockImplementationOnce(() => {
-      return profile_file_contents;
-    }).mockImplementationOnce(() => {
-      return profile_file_contents;
-    });
+    const profile_file_contents = '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n';
+    fs_mock.readFileSync
+      .mockImplementationOnce(() => {
+        return profile_file_contents;
+      })
+      .mockImplementationOnce(() => {
+        return profile_file_contents;
+      });
     const getProfileCredentials_mock = jest.fn(getProfileCredentials);
-    await expect(() => getProfiledAwsConfig(context_stub, 'fake')).rejects.toThrowError("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
+    await expect(() => getProfiledAwsConfig(context_stub, 'fake')).rejects.toThrowError(
+      "Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key",
+    );
     expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
   });
 

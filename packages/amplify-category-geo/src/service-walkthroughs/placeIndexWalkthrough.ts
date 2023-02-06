@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
@@ -50,7 +50,7 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
         const [shortId] = uuid().split('-');
         const indexNameInput = await prompter.input(
             'Provide a name for the location search index (place index):',
-            { validate: alphanumeric(), initial: `placeindex${shortId}` }
+            { validate: alphanumeric(), initial: `placeIndex${shortId}` }
         );
         if (await checkGeoResourceExists(indexNameInput)) {
             printer.info(`Geo resource ${indexNameInput} already exists. Choose another name.`);
@@ -151,7 +151,7 @@ export const updatePlaceIndexWalkthrough = async (
  * @param context The Amplify Context object
  * @param currentDefault The current default place index name
  * @param availablePlaceIndices The names of available place indices
- * @returns name of the new default place index choosen
+ * @returns name of the new default place index chosen
  */
 export const updateDefaultPlaceIndexWalkthrough = async (
     context: $TSContext,

@@ -1,7 +1,7 @@
 import {
   $TSContext,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyError,
+  AmplifyFault,
   FeatureFlags,
   pathManager,
   stateManager,
@@ -14,7 +14,6 @@ import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
-import { getAmplifyAppId } from './extensions/amplify-helpers/get-amplify-appId';
 import { initializeEnv } from './initialize-env';
 
 const backupAmplifyDirName = 'amplify-backup';
@@ -45,10 +44,8 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
     removeAmplifyFolderStructure();
     restoreOriginalAmplifyFolder();
 
-    throw amplifyFaultWithTroubleshootingLink('PullBackendFault', {
+    throw new AmplifyFault('PullBackendFault', {
       message: 'Failed to pull the backend.',
-      details: e.message,
-      stack: e.stack,
     }, e);
   }
 };
@@ -118,7 +115,7 @@ const backupAmplifyFolder = (): void => {
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
     if (fs.existsSync(backupAmplifyDirPath)) {
-      throw amplifyErrorWithTroubleshootingLink('DirectoryAlreadyExistsError', {
+      throw new AmplifyError('DirectoryAlreadyExistsError', {
         message: `Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`,
       });
     }
@@ -126,17 +123,13 @@ const backupAmplifyFolder = (): void => {
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
       if (e.code === 'EPERM') {
-        throw amplifyErrorWithTroubleshootingLink('DirectoryError', {
+        throw new AmplifyError('DirectoryError', {
           message: `Could not attach the backend to the project.`,
           resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
-          details: e.message,
-          stack: e.stack,
         }, e);
       }
-      throw amplifyFaultWithTroubleshootingLink('AmplifyBackupFault', {
+      throw new AmplifyFault('AmplifyBackupFault', {
         message: `Could not attach the backend to the project.`,
-        details: e.message,
-        stack: e.stack,
       }, e);
     }
   }
@@ -231,7 +224,8 @@ const updateContextForNoUpdateBackendProjects = (context: $TSContext): void => {
     context.exeInfo.inputParams.amplify.envName = context.exeInfo.inputParams.amplify.envName || envName;
     context.exeInfo.inputParams.amplify.frontend = context.exeInfo.inputParams.amplify.frontend
     || context.exeInfo.existingProjectConfig.frontend;
-    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId || getAmplifyAppId();
+    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId
+      || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
     // eslint-disable-next-line max-len
     context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] = context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend]
       || context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];

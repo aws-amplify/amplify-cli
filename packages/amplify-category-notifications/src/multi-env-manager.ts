@@ -9,7 +9,7 @@ import {
   getPinpointAppFromAnalyticsOutput,
   getPinpointAppStatus,
   getPinpointClient,
-  isPinpointAppDeployed,
+  IPinpointAppStatus,
   isPinpointDeploymentRequired,
   pushAuthAndAnalyticsPinpointResources,
   scanCategoryMetaForPinpoint,
@@ -21,7 +21,7 @@ import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { PinpointName } from './pinpoint-name';
 import { writeData } from './multi-env-manager-utils';
 import { viewShowInlineModeInstructionsFail, viewShowInlineModeInstructionsStart, viewShowInlineModeInstructionsStop } from './display-utils';
-import { getAvailableChannels, isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
+import { getAvailableChannels } from './notifications-backend-cfg-channel-api';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -123,44 +123,41 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
   // from cloud meta and as no new resources are created during pull, we should not look for
   // Pinpoint app in analytics category.
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
+    throwIfNotExist: false,
+  });
 
-  if (isPulling) {
-    const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
-      throwIfNotExist: false,
-    });
+  if (isPulling && currentAmplifyMeta) {
+    const currentNotificationsMeta = currentAmplifyMeta[AmplifyCategories.NOTIFICATIONS];
 
-    if (currentAmplifyMeta) {
-      const currentNotificationsMeta = currentAmplifyMeta[AmplifyCategories.NOTIFICATIONS];
-
-      // We only support single Pinpoint across notifications and analytics categories
-      if (currentNotificationsMeta && Object.keys(currentNotificationsMeta).length > 0) {
-        const pinpointResource = _.get(currentNotificationsMeta, Object.keys(currentNotificationsMeta)[0], undefined);
-        // if pinpoint resource ID is not found in Notifications, we will ge it from the Analytics category
-        if (!(pinpointResource.output.Id)) {
-          const analyticsPinpointApp: Partial<ICategoryMeta>|undefined = getPinpointAppFromAnalyticsMeta(currentAmplifyMeta);
-          // eslint-disable-next-line max-depth
-          if (analyticsPinpointApp) {
-            pinpointResource.output.Id = analyticsPinpointApp.Id;
-            pinpointResource.output.Region = analyticsPinpointApp.Region;
-            pinpointResource.output.Name = analyticsPinpointApp.Name;
-            pinpointResource.ResourceName = analyticsPinpointApp.regulatedResourceName;
-          }
+    // We only support single Pinpoint across notifications and analytics categories
+    if (currentNotificationsMeta && Object.keys(currentNotificationsMeta).length > 0) {
+      const pinpointResource = _.get(currentNotificationsMeta, Object.keys(currentNotificationsMeta)[0], undefined);
+      // if pinpoint resource ID is not found in Notifications, we will ge it from the Analytics category
+      if (!(pinpointResource.output.Id)) {
+        const analyticsPinpointApp: Partial<ICategoryMeta>|undefined = getPinpointAppFromAnalyticsMeta(currentAmplifyMeta);
+        // eslint-disable-next-line max-depth
+        if (analyticsPinpointApp) {
+          pinpointResource.output.Id = analyticsPinpointApp.Id;
+          pinpointResource.output.Region = analyticsPinpointApp.Region;
+          pinpointResource.output.Name = analyticsPinpointApp.Name;
+          pinpointResource.ResourceName = analyticsPinpointApp.regulatedResourceName;
         }
-
-        if (!pinpointResource.output.Id) {
-          throw new AmplifyError('ResourceNotReadyError', {
-            message: 'Pinpoint resource ID not found.',
-            resolution: 'Run "amplify add analytics" to create a new Pinpoint resource.',
-          });
-        }
-
-        pinpointApp = {
-          Id: pinpointResource.output.Id,
-        };
-        pinpointApp.Name = pinpointResource.output.Name || pinpointResource.output.appName;
-        pinpointApp.Region = pinpointResource.output.Region;
-        pinpointApp.lastPushTimeStamp = pinpointResource.lastPushTimeStamp;
       }
+
+      if (!pinpointResource.output.Id) {
+        throw new AmplifyError('ResourceNotReadyError', {
+          message: 'Pinpoint resource ID not found.',
+          resolution: 'Run "amplify add analytics" to create a new Pinpoint resource.',
+        });
+      }
+
+      pinpointApp = {
+        Id: pinpointResource.output.Id,
+      };
+      pinpointApp.Name = pinpointResource.output.Name || pinpointResource.output.appName;
+      pinpointApp.Region = pinpointResource.output.Region;
+      pinpointApp.lastPushTimeStamp = pinpointResource.lastPushTimeStamp;
     }
   }
 
@@ -214,7 +211,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
       }
     }
 
-    if (pinpointApp) {
+    if (pinpointApp && (!isPulling || (isPulling && currentAmplifyMeta[AmplifyCategories.NOTIFICATIONS]))) {
       await notificationManager.pullAllChannels(context, pinpointApp);
       pinpointNotificationsMeta = {
         Name: pinpointApp.Name,
@@ -341,36 +338,33 @@ const getEnabledDisabledChannelsFromConfigAndMeta = (
  * @param channelName channel to be enabled
  * @param pinpointAppStatus Deployment status of the Pinpoint resource
  */
-export const checkAndCreatePinpointApp = async (context: $TSContext, channelName: string, pinpointAppStatus: $TSAny) : Promise<$TSAny> => {
+export const checkAndCreatePinpointApp = async (
+  context: $TSContext,
+  channelName: string,
+  pinpointAppStatus: IPinpointAppStatus,
+) : Promise<IPinpointAppStatus> => {
+  let updatedPinpointAppStatus = pinpointAppStatus;
   if (isPinpointDeploymentRequired(channelName, pinpointAppStatus)) {
     await viewShowInlineModeInstructionsStart(channelName);
     try {
       // updates the pinpoint app status
-      // eslint-disable-next-line no-param-reassign
-      pinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
-      // eslint-disable-next-line no-param-reassign
-      pinpointAppStatus = await ensurePinpointApp(context, pinpointAppStatus);
+      updatedPinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
+      updatedPinpointAppStatus = await ensurePinpointApp(context, updatedPinpointAppStatus);
       await viewShowInlineModeInstructionsStop(channelName);
     } catch (err) {
       // if the push fails, the user will be prompted to deploy the resource manually
       await viewShowInlineModeInstructionsFail(channelName, err);
       throw new AmplifyError('DeploymentError', {
         message: 'Failed to deploy Auth and Pinpoint resources.',
-        details: err.message,
         resolution: 'Deploy the Auth and Pinpoint resources manually.',
-      });
+      }, err);
     }
-    // eslint-disable-next-line no-param-reassign
-    context = pinpointAppStatus.context;
   }
 
-  if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
-    const channelAPIResponse = await notificationManager.enableChannel(context, channelName);
-    await writeData(context, channelAPIResponse);
-  }
+  return updatedPinpointAppStatus;
 };
 
-const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny):Promise<Array<IChannelAPIResponse|undefined>> => {
+const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny): Promise<Array<IChannelAPIResponse|undefined>> => {
   let pinpointInputParams : $TSAny;
 
   if (context?.exeInfo?.inputParams?.categories?.[AmplifyCategories.NOTIFICATIONS]?.[AmplifySupportedService.PINPOINT]
@@ -403,10 +397,12 @@ const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAn
   );
 
   for (const channel of channelsToEnable) {
+    await checkAndCreatePinpointApp(context, channel, pinpointAppStatus);
     results.push(await notificationManager.enableChannel(context, channel));
   }
 
   for (const channel of channelsToDisable) {
+    await checkAndCreatePinpointApp(context, channel, pinpointAppStatus);
     results.push(await notificationManager.disableChannel(context, channel));
   }
 
