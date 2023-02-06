@@ -112,6 +112,17 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [4.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.0-beta.0...amplify-cli-core@4.0.0-beta.1) (2022-11-19)
+## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.0...amplify-cli-core@3.6.1) (2023-02-06)
+
+
+### Bug Fixes
+
+* warn about xr deprecation ([#11899](https://github.com/aws-amplify/amplify-cli/issues/11899)) ([01d8424](https://github.com/aws-amplify/amplify-cli/commit/01d842464315d39d24ce1649aa7a47e1bf7f9704))
+
+
+
+
+
 # [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.5.1...amplify-cli-core@3.6.0) (2023-02-02)
 
 

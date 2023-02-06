@@ -5,6 +5,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [3.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.2...@aws-amplify/amplify-category-auth@3.0.0-beta.4) (2022-12-28)
 
+## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.0...@aws-amplify/amplify-category-auth@2.15.1) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 # [2.15.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.14.1...@aws-amplify/amplify-category-auth@2.15.0) (2023-02-02)
 
 
