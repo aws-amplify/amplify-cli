@@ -75,7 +75,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
   });
 }
 
-export function checkoutEnvironment(cwd: string, settings: { envName: string, restoreBackend?: boolean }): Promise<void> {
+export function checkoutEnvironment(cwd: string, settings: { envName: string; restoreBackend?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'checkout', settings.envName, settings.restoreBackend ? '--restore' : ''], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
@@ -94,7 +94,9 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
   return new Promise((resolve, reject) => {
     const numEnv = settings.numEnv || 1;
     const regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
+      .wait('| Environments |')
+      .wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
@@ -237,18 +239,10 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
   });
 }
 
-export function removeEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
-      .wait(`Are you sure you want to continue?`)
-      .sendConfirmYes()
-      .wait('Successfully removed environment from your project locally')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const removeEnvironment = async (cwd: string, settings: { envName: string }): Promise<void> => {
+  return spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
+    .wait(`Are you sure you want to continue?`)
+    .sendYes()
+    .wait('Successfully removed environment from your project locally')
+    .runAsync();
+};
