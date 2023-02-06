@@ -124,7 +124,7 @@ export const launch = async (
   retry = 0,
   startTime: number = Date.now(),
 ): Promise<OpenSearchEmulator> => {
-  if (isWindowsPlatform) {
+  if (isWindowsPlatform()) {
     throw new AmplifyError('SearchableMockUnsupportedPlatformError', {
       message: 'Cannot launch OpenSearch simulator on windows OS',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
