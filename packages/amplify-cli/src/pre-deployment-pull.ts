@@ -1,4 +1,4 @@
-import { run } from 'amplify-app';
+import { run } from '@aws-amplify/amplify-app'
 import {
   $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS, pathManager,
 } from 'amplify-cli-core';
