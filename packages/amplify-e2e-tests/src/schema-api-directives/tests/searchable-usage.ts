@@ -1,12 +1,23 @@
-import { addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addApi, amplifyPush, getTeamProviderInfo, setTeamProviderInfo } from '@aws-amplify/amplify-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 
 import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
 
-export async function runTest(projectDir: string, testModule: any) {
-  await addApi(projectDir, { transformerVersion: 1 });
+export async function runTest(projectDir: string, testModule: any, projectName?: string) {
+  await addApi(projectDir, { transformerVersion: 1 }, true, projectName);
   updateSchemaInTestProject(projectDir, testModule.schema);
+  
+  // override to use larger instance instead of small
+  const tpi = getTeamProviderInfo(projectDir);
+  tpi.integtest.categories = {};
+  tpi.integtest.categories.api = {};
+  tpi.integtest.categories.api[projectName] = {
+    // c5 is used because c6 types are not supported on elastic search
+    'ElasticSearchInstanceType': 'c5.2xlarge.elasticsearch'
+  };
+  setTeamProviderInfo(projectDir, tpi);
+
   await amplifyPush(projectDir);
   await new Promise<void>(res => setTimeout(() => res(), 60000));
 

@@ -4,7 +4,7 @@ import {
   amplifyPush,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, apiEnableDataStore, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema, apiEnableDataStore, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir, getTeamProviderInfo, setTeamProviderInfo,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -41,6 +41,16 @@ describe('transformer model searchable migration test', () => {
     await addApiWithoutSchema(projRoot, { apiName: projectName });
     await apiEnableDataStore(projRoot, {});
     await updateApiSchema(projRoot, projectName, v2Schema);
+
+    // override to use medium instance instead of small
+    const tpi = getTeamProviderInfo(projRoot);
+    tpi.integtest.categories.api = {};
+    tpi.integtest.categories.api[projectName] = {
+      // c6 is the latest compute focused instance type, reduces test speed significantly
+      'OpenSearchInstanceType': 'c6g.xlarge.elasticsearch'
+    };
+    setTeamProviderInfo(projRoot, tpi);
+
     await amplifyPush(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);

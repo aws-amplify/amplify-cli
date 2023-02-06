@@ -31,28 +31,52 @@
   },
   "targetDefaults": {
     "build": {
-      "inputs": [ "default", "^production" ],
-      "dependsOn": [ "^build" ]
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
     },
     "prepare": {
-      "inputs": [ "default", "^default" ],
-      "dependsOn": [ "^prepare" ]
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "dependsOn": [
+        "^prepare"
+      ]
     },
     "package": {
-      "inputs": [ "default", "^default" ],
-      "dependsOn": [ "^package" ]
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "dependsOn": [
+        "^package"
+      ]
     },
     "test": {
-      "inputs": [ "default", "^production" ],
-      "dependsOn": [ "build" ]
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "dependsOn": [
+        "build"
+      ]
     },
     "extract-api": {
-      "dependsOn": [ "build" ],
+      "dependsOn": [
+        "build"
+      ],
       "inputs": [
         "{projectRoot}/src/**/*",
         "!{projectRoot}/src/__tests__/**/*"
       ],
-      "outputs": [ "{projectRoot}/API.md" ]
+      "outputs": [
+        "{projectRoot}/API.md"
+      ]
     }
   },
   "affected": {
