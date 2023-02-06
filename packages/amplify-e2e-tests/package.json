@@ -23,11 +23,12 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.0.0-beta.4",
-    "@aws-amplify/amplify-e2e-core": "4.6.1",
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.3",
+    "@aws-amplify/amplify-category-auth": "3.0.0-beta.4",
+    "@aws-amplify/amplify-e2e-core": "4.6.2",
     "amplify-cli-core": "4.0.0-beta.4",
-    "amplify-headless-interface": "1.16.1",
+    "amplify-dynamodb-simulator": "^2.5.3",
+    "amplify-headless-interface": "1.17.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.53.0",
@@ -105,7 +106,6 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {},
       "ts-jest": {
         "diagnostics": false
       }

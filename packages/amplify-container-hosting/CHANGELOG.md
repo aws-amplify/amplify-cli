@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.5.4-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.6...amplify-container-hosting@2.5.4-beta.4) (2022-12-28)
+## [2.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.8...amplify-container-hosting@2.5.9) (2023-02-02)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [2.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.7...amplify-container-hosting@2.5.8) (2023-01-17)
 
 **Note:** Version bump only for package amplify-container-hosting

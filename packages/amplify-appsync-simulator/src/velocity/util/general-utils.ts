@@ -3,6 +3,7 @@
 import { v4 as autoId } from 'uuid';
 import jsStringEscape from 'js-string-escape';
 import { GraphQLResolveInfo, FieldNode } from 'graphql';
+import { ulid } from 'ulid';
 import { Unauthorized, ValidateError, TemplateSentError } from './errors';
 import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
@@ -45,6 +46,7 @@ export const generalUtils = {
   autoId() {
     return autoId();
   },
+  autoUlid: () => ulid(),
   unauthorized() {
     const err = new Unauthorized('Unauthorized', this.info);
     this.errors.push(err);

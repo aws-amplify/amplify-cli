@@ -1,4 +1,11 @@
-import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken } from '@aws-amplify/amplify-e2e-core';
+import {
+  amplifyConfigure as configure,
+  isCI,
+  installAmplifyCLI,
+  injectSessionToken,
+  amplifyConfigureBeforeOrAtV10_7,
+} from '@aws-amplify/amplify-e2e-core';
+import semver from 'semver';
 
 /*
  *  Migration tests must be run without publishing to local registry
@@ -17,11 +24,24 @@ async function setupAmplify(version = 'latest') {
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
       throw new Error('Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env');
     }
-    await configure({
-      accessKeyId: AWS_ACCESS_KEY_ID,
-      secretAccessKey: AWS_SECRET_ACCESS_KEY,
-      profileName: 'amplify-integ-test-user',
-    });
+
+    const validSemver = semver.parse(version);
+
+    if (!validSemver || semver.gt(version, '10.7.0')) {
+      // version is either after 10.7 or it's a tag name like latest so use the current configure function
+      await configure({
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        profileName: 'amplify-integ-test-user',
+      });
+    } else {
+      // version is before 10.7 so use the previous config function
+      await amplifyConfigureBeforeOrAtV10_7({
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        profileName: 'amplify-integ-test-user',
+      });
+    }
     if (process.env.AWS_SESSION_TOKEN) {
       injectSessionToken('amplify-integ-test-user');
     }

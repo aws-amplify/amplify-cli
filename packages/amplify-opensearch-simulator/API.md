@@ -28,7 +28,7 @@ export const getOpensearchLocalDirectory: () => string;
 export const getPackageAssetPaths: GetPackageAssetPaths;
 
 // @public (undocumented)
-export const getPathToOpenSearchBinary: (pathToOpenSearchLocal?: string | undefined) => Promise<string>;
+export const getPathToOpenSearchBinary: (pathToOpenSearchLocal?: string) => Promise<string>;
 
 // @public (undocumented)
 export const launch: (pathToOpenSearchData: string, givenOptions?: OpenSearchEmulatorOptions, retry?: number, startTime?: number) => Promise<OpenSearchEmulator>;

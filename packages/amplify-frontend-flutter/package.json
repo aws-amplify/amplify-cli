@@ -15,6 +15,10 @@
     "appsync",
     "aws"
   ],
+  "scripts": {
+    "test": "jest --logHeapUsage",
+    "test-watch": "yarn test --watch"
+  },
   "dependencies": {
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",

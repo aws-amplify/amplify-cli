@@ -3,7 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.6.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.6.0...amplify-nodejs-function-template-provider@2.6.0-beta.4) (2022-12-28)
+## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.6.2...amplify-nodejs-function-template-provider@2.6.3) (2023-02-02)
+
+
+### Bug Fixes
+
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.6.1...amplify-nodejs-function-template-provider@2.6.2) (2023-01-17)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider
