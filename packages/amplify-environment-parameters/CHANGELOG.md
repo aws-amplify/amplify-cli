@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4-rc.4affb9331.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.3.4-rc.4affb9331.0) (2023-02-06)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+
+
+
+
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.2...@aws-amplify/amplify-environment-parameters@1.3.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

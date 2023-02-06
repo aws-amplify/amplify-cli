@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0-rc.4affb9331.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.5.9...amplify-frontend-ios@3.6.0-rc.4affb9331.0) (2023-02-06)
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+
+
+
+
+
 ## [3.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.5.8...amplify-frontend-ios@3.5.9) (2023-02-06)
 
 **Note:** Version bump only for package amplify-frontend-ios
