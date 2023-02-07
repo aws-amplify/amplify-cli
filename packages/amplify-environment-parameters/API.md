@@ -14,6 +14,7 @@ export const getEnvParamManager: (envName?: string) => IEnvironmentParameterMana
 
 // @public (undocumented)
 export type IEnvironmentParameterManager = {
+    downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
     init: () => Promise<void>;
     removeResourceParamManager: (category: string, resource: string) => void;
     hasResourceParamManager: (category: string, resource: string) => boolean;
@@ -51,7 +52,10 @@ export class ResourceParameterManager {
 export const saveAll: (serviceUploadHandler?: ServiceUploadHandler | undefined) => Promise<void>;
 
 // @public (undocumented)
-export type ServiceUploadHandler = (key: string, value: string) => Promise<void>;
+export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
+
+// @public (undocumented)
+export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 

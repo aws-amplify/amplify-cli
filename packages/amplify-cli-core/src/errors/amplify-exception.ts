@@ -174,6 +174,7 @@ export type AmplifyFaultType =
   | 'NotificationsChannelSmsFault'
   | 'NotificationsChannelInAppMessagingFault'
   | 'NotImplementedFault'
+  | 'ParameterDownloadFault'
   | 'ParameterUploadFault'
   | 'ProjectDeleteFault'
   | 'ParametersDeleteFault'
