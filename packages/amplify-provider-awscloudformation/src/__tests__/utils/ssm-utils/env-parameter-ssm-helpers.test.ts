@@ -36,14 +36,17 @@ describe('uploading environment parameters', () => {
     stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': { 'AmplifyAppId': 'mockedAppId' } } });
     const returnedFn = await getEnvParametersUploadHandler(contextMock);
     expect(returnedFn).toBeDefined();
-    await returnedFn!('key', 'value');
+    await returnedFn('key', 'value');
     expect(putParameterPromiseMock).toBeCalledTimes(1);
   });
 
-  it('returns undefined when AmplifyAppId is undefined', async () => {
+  it('returns no-op when AmplifyAppId is undefined', async () => {
     stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': {} } });
     const returnedFn = await getEnvParametersUploadHandler(contextMock);
-    expect(returnedFn).not.toBeDefined();
+    expect(returnedFn).toBeDefined();
+    await returnedFn('key1', 'value');
+    await returnedFn('key2', 'value');
+    expect(getParametersPromiseMock).not.toBeCalled();
   });
 });
 
