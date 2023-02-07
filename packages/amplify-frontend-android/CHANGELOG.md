@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@3.4.1...amplify-frontend-android@3.5.0-beta.0) (2023-02-07)
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+
+
+
+
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@3.4.0...amplify-frontend-android@3.4.1) (2023-02-02)
 
 

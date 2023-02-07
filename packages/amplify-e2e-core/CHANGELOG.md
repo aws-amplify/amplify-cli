@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.3...@aws-amplify/amplify-e2e-core@4.7.0-beta.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+
+
+
+
+
 ## [4.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.2...@aws-amplify/amplify-e2e-core@4.6.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core
