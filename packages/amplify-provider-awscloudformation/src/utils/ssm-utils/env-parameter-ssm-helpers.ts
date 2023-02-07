@@ -1,8 +1,9 @@
 import { $TSContext, AmplifyFault, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import type { SSM as SSMType } from 'aws-sdk';
-import { SSM } from '../aws-utils/aws-ssm';
-import { resolveAppId } from './resolve-appId';
+import { SSM } from '../../aws-utils/aws-ssm';
+import { resolveAppId } from '../resolve-appId';
+import { executeSdkPromisesWithExponentialBackoff } from './exp-backoff-executor';
 
 /**
  * Higher order function for uploading CloudFormation parameters to the service
@@ -14,7 +15,7 @@ export const getEnvParametersUploadHandler = async (
   try {
     appId = resolveAppId(context);
   } catch {
-    printer.warn('Failed to resolve AppId, skipping parameter upload');
+    printer.warn('Failed to resolve AppId, skipping parameter upload.');
     return undefined;
   }
   const envName = stateManager.getCurrentEnvName();
@@ -60,7 +61,7 @@ export const getEnvParametersDownloadHandler = async (
   try {
     appId = resolveAppId(context);
   } catch {
-    printer.warn('Failed to resolve AppId, skipping parameter upload');
+    printer.warn('Failed to resolve AppId, skipping parameter download.');
     return undefined;
   }
   const envName = stateManager.getCurrentEnvName();
@@ -79,10 +80,13 @@ const downloadParametersFromParameterStore = (
     }
     try {
       const keyPaths = keys.map(key => `/amplify/${appId}/${envName}/${key}`);
-      const results = await paginatedSSMSdkCallWithExponentialBackoff(keyPaths, ssmClient);
-      return results.reduce((acc, param) => {
-        const [/* leading slash */, /* amplify */, /* appId */, /* envName */, key] = param.Name.split('/');
-        acc[key] = JSON.parse(param.Value);
+      const sdkPromises = convertKeyPathsToSdkPromises(ssmClient, keyPaths);
+      const results = await executeSdkPromisesWithExponentialBackoff<SSMType.GetParametersResult>(sdkPromises);
+      return results.reduce((acc, { Parameters }) => {
+        Parameters.forEach((param) => {
+          const [/* leading slash */, /* amplify */, /* appId */, /* envName */, key] = param.Name.split('/');
+          acc[key] = JSON.parse(param.Value);
+        });
         return acc;
       }, {} as Record<string, string | number | boolean>);
     } catch (e) {
@@ -97,42 +101,14 @@ const downloadParametersFromParameterStore = (
   };
 };
 
-const paginatedSSMSdkCallWithExponentialBackoff = async (
-  keyPaths: string[],
-  ssmClient: SSMType,
-): Promise<SSMType.Parameter[]> => {
-  let backoffSleepTimeInMs = 200;
-  let consecutiveRetries = 0;
-  const MAX_RETRIES = 5;
-  const MAX_BACKOFF_IN_MS = 10 * 1000; // 10 seconds
-
+const convertKeyPathsToSdkPromises = (ssmClient: SSMType, keyPaths: string[]): (() => Promise<SSMType.GetParametersByPathResult>)[] => {
   let parameterSliceIndex = 0;
-  let retrievedParameterResults = [];
-  while (parameterSliceIndex < keyPaths.length) {
-    const sdkParameters = {
+  const sdkParameterChunks = [];
+  for (let i = 0; i < keyPaths.length; i += 10) {
+    sdkParameterChunks.push({
       Names: keyPaths.slice(parameterSliceIndex, Math.min(parameterSliceIndex + 10, keyPaths.length)),
       WithDecryption: false,
-    };
-    try {
-      const { Parameters } = await ssmClient.getParameters(sdkParameters).promise();
-      retrievedParameterResults = retrievedParameterResults.concat(Parameters);
-      parameterSliceIndex += 10;
-      // In case previously throttled, reset backoff
-      backoffSleepTimeInMs = 200;
-      consecutiveRetries = 0;
-    } catch (e) {
-      if (e?.type === 'ThrottlingException') {
-        if (consecutiveRetries < MAX_RETRIES) {
-          ++consecutiveRetries;
-          await new Promise(resolve => setTimeout(resolve, backoffSleepTimeInMs));
-          backoffSleepTimeInMs = 2 ** consecutiveRetries * backoffSleepTimeInMs;
-          backoffSleepTimeInMs = Math.min(Math.random() * backoffSleepTimeInMs, MAX_BACKOFF_IN_MS);
-          continue;
-        }
-      }
-      throw e;
-    }
+    });
   }
-
-  return retrievedParameterResults;
+  return sdkParameterChunks.map((sdkParameters) => () => ssmClient.getParameters(sdkParameters).promise());
 };
