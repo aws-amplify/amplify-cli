@@ -1,7 +1,7 @@
 import { AmplifyTester } from '../amplify_tester';
 import { MemfsVolume } from '../memfs_volume';
 import { AmplifyTestVolume } from '../volume';
-import { StorageMixin } from './storage';
+import WithStorage from './storage';
 
 describe('AmplifyTest storage mixin', () => {
   describe('given an AmplifyTestVolume', () => {
@@ -12,7 +12,7 @@ describe('AmplifyTest storage mixin', () => {
     }
     it('calls setAll when initializing the volume', async () => {
       const volume = new TestVolume();
-      const TestWithStorage = StorageMixin(AmplifyTester, volume);
+      const TestWithStorage = WithStorage(AmplifyTester, volume);
       const tester = new TestWithStorage();
       const fs = {
         '/amplify/team-provider-info.json': JSON.stringify({
@@ -24,7 +24,7 @@ describe('AmplifyTest storage mixin', () => {
     });
     it('calls setFile with a given path and file content when calling withFile', async () => {
       const volume = new TestVolume();
-      const TestWithStorage = StorageMixin(AmplifyTester, volume);
+      const TestWithStorage = WithStorage(AmplifyTester, volume);
       const tester = new TestWithStorage();
       const fs = {
         '/amplify/team-provider-info.json': JSON.stringify({
@@ -39,7 +39,7 @@ describe('AmplifyTest storage mixin', () => {
     });
     it('can call withFile with a null value', async () => {
       const volume = new TestVolume();
-      const TestWithStorage = StorageMixin(AmplifyTester, volume);
+      const TestWithStorage = WithStorage(AmplifyTester, volume);
       const tester = new TestWithStorage();
       const fs = {
         '/amplify/team-provider-info.json': JSON.stringify({
@@ -50,12 +50,12 @@ describe('AmplifyTest storage mixin', () => {
       await tester
         .withStartingVolume(fs)
         .withFile(path, null)
-        .runTest(async context => null);
+        .runTest(async _ => null);
       expect(volume.setFile).toHaveBeenCalledWith(path, null);
     });
     it('calls toJSON on the test volume when returning the result of the test', async () => {
       const volume = new MemfsVolume();
-      const TestWithStorage = StorageMixin(AmplifyTester, volume);
+      const TestWithStorage = WithStorage(AmplifyTester, volume);
       const tester = new TestWithStorage();
       const fs = {
         '/amplify/team-provider-info.json': JSON.stringify({

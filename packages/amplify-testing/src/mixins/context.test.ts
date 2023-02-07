@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { AmplifyTester } from '../amplify_tester';
-import { ContextMixin } from './context';
+import ContextMixin from './context';
 
 describe('Context mixin', () => {
   test('adds a context object to the test parameters', async () => {

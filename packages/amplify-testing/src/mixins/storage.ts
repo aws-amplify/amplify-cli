@@ -1,30 +1,36 @@
-import { Constructor } from '.';
+import { Constructor, MixinResult } from '.';
 import { AmplifyTester } from '../amplify_tester';
 import { AmplifyTestVolume, FileContent, FullPath } from '../volume';
 
-export function StorageMixin<TBase extends Constructor<AmplifyTester>>(Base: TBase, initialVolume: AmplifyTestVolume) {
-  return class AmplifyStorageTester extends Base {
-    private volume: AmplifyTestVolume;
+export interface StorageMixin {
+  withStartingVolume: (volume: Record<FullPath, FileContent>) => this;
+  withFile: (fullPath: FullPath, content: FileContent) => this;
+}
+
+export default function WithStorage<TBase extends Constructor<AmplifyTester>>(
+  Base: TBase,
+  initialVolume: AmplifyTestVolume,
+): MixinResult<StorageMixin, TBase> {
+  return class AmplifyStorageTester extends Base implements StorageMixin {
+    _volume: AmplifyTestVolume;
     constructor(...args: any[]) {
       super(...args);
-      this.addResultProcessor(this.storageResultProcessor);
-      this.addTestParameterCreator(this.storageTestParameterCreator);
-      this.volume = initialVolume;
+      this.addResultProcessor(this._storageResultProcessor);
+      this.addTestParameterCreator(this._storageTestParameterCreator);
+      this._volume = initialVolume;
     }
-    private storageTestParameterCreator = (): Record<string, unknown> & { volume: AmplifyTestVolume } => {
-      return { volume: this.volume };
+    _storageTestParameterCreator = (): Record<string, unknown> & { volume: AmplifyTestVolume } => {
+      return { volume: this._volume };
     };
-    private storageResultProcessor = (
-      result: Record<string, unknown>,
-    ): Record<string, unknown> & { volume: Record<FullPath, FileContent> } => {
-      return { ...result, volume: this.volume.toJSON() };
+    _storageResultProcessor = (result: Record<string, unknown>): Record<string, unknown> & { volume: Record<FullPath, FileContent> } => {
+      return { volume: this._volume.toJSON() };
     };
     public withStartingVolume = (volume: Record<FullPath, FileContent>) => {
-      this.volume.setAll(volume);
+      this._volume.setAll(volume);
       return this;
     };
     public withFile = (fullPath: FullPath, content: FileContent) => {
-      this.volume.setFile(fullPath, content);
+      this._volume.setFile(fullPath, content);
       return this;
     };
   };
