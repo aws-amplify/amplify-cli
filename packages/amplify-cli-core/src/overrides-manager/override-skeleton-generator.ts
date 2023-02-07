@@ -2,9 +2,7 @@ import { printer, prompter } from 'amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  $TSAny, $TSContext, AmplifyError, getPackageManager, pathManager,
-} from '../index';
+import { $TSAny, $TSContext, AmplifyError, getPackageManager, pathManager } from '../index';
 import { JSONUtilities } from '../jsonUtilities';
 
 /**
@@ -24,6 +22,7 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
   fs.ensureDirSync(destDirPath);
 
   // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
+  // eslint-disable-next-line spellcheck/spell-checker
   generateTsConfigforProject(srcResourceDirPath, destDirPath);
 
   // 2. Build Override Directory
@@ -100,17 +99,21 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
       encoding: 'utf-8',
     });
     return true;
-  } catch (error: $TSAny) {
+  } catch (error) {
     if (error.code === 'ENOENT') {
       throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
         message: `Packaging overrides failed. Could not find ${packageManager} executable in the PATH.`,
       });
     } else {
-      throw new AmplifyError('InvalidOverrideError', {
-        message: `Packaging overrides failed.`,
-        details: error.message,
-        resolution: 'There may be errors in your overrides file. If so, fix the errors and try again.',
-      }, error);
+      throw new AmplifyError(
+        'InvalidOverrideError',
+        {
+          message: `Packaging overrides failed.`,
+          details: error.message,
+          resolution: 'There may be errors in your overrides file. If so, fix the errors and try again.',
+        },
+        error,
+      );
     }
   }
 };
@@ -137,6 +140,7 @@ export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, src
 /**
  * this method generates the tsconfig file template for overrides
  */
+// eslint-disable-next-line spellcheck/spell-checker
 export const generateTsConfigforProject = (srcResourceDirPath: string, destDirPath: string): void => {
   const overrideFileName = path.join(destDirPath, 'override.ts');
   // ensure build dir path

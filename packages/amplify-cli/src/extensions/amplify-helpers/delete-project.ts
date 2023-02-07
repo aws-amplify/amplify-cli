@@ -4,7 +4,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
 import { FeatureFlags, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
 import { getPluginInstance } from './get-plugin-instance';
@@ -101,7 +101,7 @@ export const getConfirmation = async (
   }
   const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {
-    proceed: await context.amplify.confirmPrompt(
+    proceed: await prompter.yesOrNo(
       chalk.red(
         `Are you sure you want to continue? This CANNOT be undone. (This will delete ${environmentText} of the project from the cloud${
           env ? '' : ' and wipe out all the local files created by Amplify CLI'

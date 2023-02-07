@@ -12,7 +12,7 @@ const printTypeofResult = (result: any) => console.log(`Response type was [${typ
 const demo = async () => {
   // confirmContinue
   printer.info(
-    'confirmContine is intended to be used anywhere the CLI is doing a potentially dangerous or destructive action and we want the customer to confirm their understanding.',
+    'confirmContinue is intended to be used anywhere the CLI is doing a potentially dangerous or destructive action and we want the customer to confirm their understanding.',
   );
   printResult(await prompter.confirmContinue());
   printer.info('A custom prompt can also be used');
@@ -32,12 +32,12 @@ const demo = async () => {
 
   // input
   printer.blankLine();
-  printer.info('To collect free-form input fromm the customer, use prompter.input');
+  printer.info('To collect free-form input from the customer, use prompter.input');
   printer.info('The simplest case is asking for a string input');
   printResult(await prompter.input("What's your favorite color of Skittle?"));
 
   printer.info('To get an input type besides a string, specify a transform function');
-  const result1 = await prompter.input('How mmany Skittles do you want?', { transform: input => Number.parseInt(input, 10) });
+  const result1 = await prompter.input('How many Skittles do you want?', { transform: input => Number.parseInt(input, 10) });
   printResult(result1);
   printTypeofResult(result1);
 
@@ -76,7 +76,7 @@ const demo = async () => {
 
   // pick
   printer.blankLine();
-  printer.info('prompter.pick is used to select one or more items fromm a selection set');
+  printer.info('prompter.pick is used to select one or more items from a selection set');
   printer.info('It supports autocomplete of choices automatically');
   const choices1 = ['red', 'yellow', 'green', 'orange', 'purple'];
   printResult(await prompter.pick('Pick your favorite Skittle color', choices1));

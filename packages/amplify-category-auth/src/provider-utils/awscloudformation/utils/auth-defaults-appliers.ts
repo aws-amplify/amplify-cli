@@ -8,7 +8,7 @@ import { removeDeprecatedProps } from './synthesize-resources';
 import { verificationBucketName } from './verification-bucket-name';
 
 /**
- * Factory function that returns a function that applies default values to a CognitoConfiguation request.
+ * Factory function that returns a function that applies default values to a CognitoConfiguration request.
  * It does not overwrite existing values in the request.
  *
  * The logic here has been refactored from service-walkthroughs/auth-questions.js and is mostly unchanged

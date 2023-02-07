@@ -47,7 +47,7 @@ export async function execAsStringPromise(command: string, opts?: ExecOptions): 
 
     return stdout;
   } catch (err) {
-    throw new Error(`Recieved error [${err}] running command [${command}]`);
+    throw new Error(`Received error [${err}] running command [${command}]`);
   }
 }
 

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-cycle
-import { getCLIPath, nspawn as spawn } from '..';
+import { TEST_PROFILE_NAME, getCLIPath, nspawn as spawn } from '..';
 
 /**
  * Interactive amplify pull
@@ -87,10 +87,7 @@ export const amplifyPull = (
 /**
  * Interactive pull --sandboxId
  */
-export const amplifyPullSandbox = (
-  cwd: string,
-  settings: { sandboxId: string; appType: string; framework: string },
-): Promise<void> => {
+export const amplifyPullSandbox = (cwd: string, settings: { sandboxId: string; appType: string; framework: string }): Promise<void> => {
   const args = ['pull', '--sandboxId', settings.sandboxId];
 
   return spawn(getCLIPath(), args, { cwd, stripColors: true })
@@ -108,16 +105,16 @@ export const amplifyPullSandbox = (
  */
 export const amplifyPullNonInteractive = (
   cwd: string,
-  settings: {appId: string, envName: string},
+  settings: { appId: string; envName: string; frontend?: { frontend: string; config?: { ResDir?: string } } },
 ): Promise<void> => {
-  const { appId, envName } = settings;
+  const { appId, envName, frontend } = settings;
   const amplifyParamObj = { appId, envName };
   const providersParamObj = {
     awscloudformation: {
       configLevel: 'project',
       useProfile: true,
       // eslint-disable-next-line spellcheck/spell-checker
-      profileName: 'amplify-integ-test-user',
+      profileName: TEST_PROFILE_NAME,
     },
   };
   const args = [
@@ -130,6 +127,11 @@ export const amplifyPullNonInteractive = (
     '--no-codegen',
     '--yes',
   ];
+
+  if (frontend) {
+    args.push('--frontend', JSON.stringify(frontend));
+  }
+
   return spawn(getCLIPath(), args, { cwd, stripColors: true })
     .wait('Successfully pulled backend environment')
     .runAsync();
@@ -146,11 +148,9 @@ export const amplifyPullNonInteractive = (
  */
 export const amplifyStudioHeadlessPull = (
   cwd: string,
-  settings: { appId: string, envName: string, profileName?: string, useDevCLI?: boolean },
+  settings: { appId: string; envName: string; profileName?: string; useDevCLI?: boolean },
 ): Promise<void> => {
-  const {
-    appId, envName, profileName, useDevCLI,
-  } = settings;
+  const { appId, envName, profileName, useDevCLI } = settings;
   const providersConfig = {
     awscloudformation: {
       configLevel: 'project',
@@ -159,14 +159,7 @@ export const amplifyStudioHeadlessPull = (
       profileName: profileName ?? 'amplify-integ-test-user',
     },
   };
-  const args = [
-    'pull',
-    '--amplify',
-    JSON.stringify({ appId, envName }),
-    '--providers',
-    JSON.stringify(providersConfig),
-    '--yes',
-  ];
+  const args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
   return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true })
     .wait('Successfully pulled backend environment')
     .runAsync();

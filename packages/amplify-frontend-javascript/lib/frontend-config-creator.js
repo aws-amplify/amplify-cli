@@ -10,6 +10,7 @@ const graphQLConfig = require('graphql-config');
 const babel = require('@babel/core');
 const babelTransformEsmToCjs = require('@babel/plugin-transform-modules-commonjs').default;
 const constants = require('./constants');
+const _ = require('lodash');
 
 const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
@@ -582,35 +583,46 @@ function getInferConfig(inferResources) {
   };
 }
 
-function isPinpointChannelEnabled(channelName, pinpointResource) {
-  return pinpointResource?.output?.[channelName]?.Enabled;
-}
-
 function getPinpointConfig(pinpointResources) {
-  // There are legacy projects where we could have multiple Pinpoint resources.
-  // We will iterate over all Pinpoint resources in amplify-meta until we get the configured
-  // AppId, Region and Channel configuration for that Pinpoint resource
-
-  const firstPinpointResource = pinpointResources[0];
-  const pinpointConfig = {
-    aws_mobile_analytics_app_id: firstPinpointResource.output.Id,
-    aws_mobile_analytics_app_region: firstPinpointResource.output.Region,
+  const channelMapping = {
+    APNS: 'Push',
+    FCM: 'Push',
+    InAppMessaging: 'InAppMessaging',
+    Email: 'Email',
+    SMS: 'SMS',
   };
-  for (const pinpointResource of pinpointResources) {
-    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointResource.output.Id;
-    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointResource.output.Region;
-    if (isPinpointChannelEnabled('InAppMessaging', pinpointResource)) {
-      pinpointConfig.Notifications = {
-        InAppMessaging: {
-          AWSPinpoint: {
-            appId: pinpointConfig.aws_mobile_analytics_app_id,
-            region: pinpointConfig.aws_mobile_analytics_app_region,
-          },
-        },
-      };
-      break;
+
+  const pinpointConfig = {};
+
+  const pinpointAnalytics = pinpointResources.filter(it => (_.intersection(Object.keys(it.output), Object.keys(channelMapping))).length === 0)
+  const pinpointNotifications = pinpointResources.filter(it => (_.intersection(Object.keys(it.output), Object.keys(channelMapping))).length !== 0)
+
+  if (pinpointAnalytics.length !== 0) {
+    // legacy
+    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointAnalytics[0].output.Id;
+    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointAnalytics[0].output.Region;
+
+    pinpointConfig.Analytics = {
+      AWSPinpoint: {
+        appId: pinpointConfig.aws_mobile_analytics_app_id,
+        region: pinpointConfig.aws_mobile_analytics_app_region,
+      }
     }
   }
+
+  for (const [channel, plugin] of Object.entries(channelMapping)) {
+    const notificationPinpoint = pinpointNotifications.find(it => it.output?.[channel]?.Enabled);
+    if (notificationPinpoint) {
+      pinpointConfig.Notifications = pinpointConfig.Notifications ?? {};
+      pinpointConfig.Notifications[plugin] = {
+        AWSPinpoint: {
+          appId: notificationPinpoint.output[channel].ApplicationId,
+          region: notificationPinpoint.output.Region,
+        }
+      };
+    }
+  }
+
   return pinpointConfig;
 }
 

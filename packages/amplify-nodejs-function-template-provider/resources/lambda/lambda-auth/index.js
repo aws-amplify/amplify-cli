@@ -12,6 +12,7 @@ exports.handler = async (event) => {
   const response = {
     isAuthorized: authorizationToken === 'custom-authorized',
     resolverContext: {
+      // eslint-disable-next-line spellcheck/spell-checker
       userid: 'user-id',
       info: 'contextual information A',
       more_info: 'contextual information B',

@@ -17,7 +17,7 @@ const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 /**
  * execute hooks present in the hooks directory
  */
-export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
+export const executeHooks = async (hooksMetadata: HooksMeta): Promise<void> => {
   if (skipHooks()) {
     return;
   }
@@ -30,15 +30,15 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
   const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
 
-  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
 
   const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
-  if (hooksMeta.getHookEvent().forcePush) {
+  if (hooksMetadata.getHookEvent().forcePush) {
     // we want to run push related hooks when forcePush flag is enabled
-    hooksMeta.setEventCommand('push');
-    hooksMeta.setEventSubCommand(undefined);
-    const { commandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+    hooksMetadata.setEventCommand('push');
+    hooksMetadata.setEventSubCommand(undefined);
+    const { commandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
     executionQueue.push(commandHookFileMeta);
   }
 
@@ -50,7 +50,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
     if (!runtime) {
       continue;
     }
-    await execHelper(runtime, execFileMeta, hooksMeta.getDataParameter(), hooksMeta.getErrorParameter());
+    await execHelper(runtime, execFileMeta, hooksMetadata.getDataParameter(), hooksMetadata.getErrorParameter());
   }
 };
 
@@ -109,7 +109,7 @@ const execHelper = async (
   printer.blankLine();
 };
 
-const getHookFileMetas = (
+const getHookFileMetadata = (
   hooksDirPath: string,
   hookEvent: HookEvent,
   hooksConfig: HooksConfig,

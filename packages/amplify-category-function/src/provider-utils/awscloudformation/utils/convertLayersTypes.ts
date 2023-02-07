@@ -34,7 +34,8 @@ export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[]
 };
 
 //This functions convert external layers to project layers if they belong to the env
-// exmaple Arn to convert external layers to project Layers when changing env
+// example Arn to convert external layers to project Layers when changing env
+// eslint-disable-next-line spellcheck/spell-checker
 // "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:buildlayers8mytestinglayer1-dev:2"
 export const convertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];

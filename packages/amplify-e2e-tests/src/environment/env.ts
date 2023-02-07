@@ -253,18 +253,10 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
   });
 }
 
-export function removeEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
-      .wait(`Are you sure you want to continue?`)
-      .sendConfirmYes()
-      .wait('Successfully removed environment from your project locally')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const removeEnvironment = async (cwd: string, settings: { envName: string }): Promise<void> => {
+  return spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
+    .wait(`Are you sure you want to continue?`)
+    .sendYes()
+    .wait('Successfully removed environment from your project locally')
+    .runAsync();
+};

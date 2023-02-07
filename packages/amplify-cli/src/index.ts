@@ -255,3 +255,5 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
     await commandModule.run(context);
   }
 };
+
+// bump version to 10.8

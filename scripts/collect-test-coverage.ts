@@ -28,42 +28,45 @@ const copyPackageCoverage = (pkg: string) => {
   }
 };
 
-const getCoverageFiles = () => {
-  const files = fs.readdirSync(path.join(process.cwd(), './coverage/workspaces'));
-  return files.map(f => path.join(process.cwd(), `./coverage/workspaces/${f}`));
+const getCoveragePath = (pkg: string): string => {
+  return path.join('./packages', pkg, 'coverage/coverage-final.json');
 };
 
 const mergeCoverageMap = (files: string[]): istanbul.CoverageMap => {
   var map = istanbul.createCoverageMap({});
   files.forEach(file => {
     const json = fs.readFileSync(file).toString();
-    map.merge(JSON.parse(json));
+    const fileCoverageMap = istanbul.createCoverageMap(JSON.parse(json));
+    map.merge(fileCoverageMap);
   });
-  // Remove coverage from lib, e2e, and test files
-  map.filter(file => !file.match(/(lib\/.*?|__e2e__|__tests__)/));
+  // Remove coverage from e2e, and test files
+  map.filter(file => !file.match(/(__e2e__|__tests__)/));
   return map;
 };
 
 const writeCoverageJson = (map: istanbul.CoverageMap) => {
   const json = JSON.stringify(map);
-  fs.writeFileSync(path.join(process.cwd(), './coverage/monorepo-coverage.json'), json);
+  fs.writeFileSync(path.join(process.cwd(), './coverage/coverage-final.json'), json);
 };
 
-const generateReport = (coverage: istanbul.CoverageMap) => {
+const generateReport = (coverage: istanbul.CoverageMap, reportType: keyof reports.ReportOptions = 'html', dir = './coverage') => {
   const context = libReport.createContext({
-    dir: path.join(process.cwd(), './coverage/html'),
-    defaultSummarizer: 'pkg',
+    dir: path.join(process.cwd(), dir),
     coverageMap: coverage,
+    defaultSummarizer: 'flat',
   });
-  reports.create('html-spa', {}).execute(context);
+  reports.create(reportType, {}).execute(context);
 };
 
 const main = () => {
   deleteCoverageDir();
   makeCoverageDir();
   listPackages().forEach(copyPackageCoverage);
-  const coverage = mergeCoverageMap(getCoverageFiles());
-  generateReport(coverage);
+  const coveragePaths = listPackages()
+    .map(getCoveragePath)
+    .filter(fs.existsSync);
+  const coverage = mergeCoverageMap(coveragePaths);
+  generateReport(coverage, 'lcov', './coverage');
   writeCoverageJson(coverage);
 };
 

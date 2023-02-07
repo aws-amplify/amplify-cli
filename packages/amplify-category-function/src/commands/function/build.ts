@@ -4,6 +4,7 @@ import { categoryName } from '../../constants';
 import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
 import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
 import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
+import { prompter } from 'amplify-prompts';
 
 export const name = 'build';
 
@@ -15,7 +16,7 @@ export const run = async (context: $TSContext) => {
   const confirmContinue =
     !!resourceName ||
     context.input?.options?.yes ||
-    (await context.amplify.confirmPrompt('Are you sure you want to continue building the resources?', false));
+    (await prompter.yesOrNo('Are you sure you want to continue building the resources?', false));
   if (!confirmContinue) {
     return;
   }

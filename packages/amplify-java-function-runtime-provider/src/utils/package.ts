@@ -14,7 +14,7 @@ export async function packageResource(request: PackageRequest, context: any): Pr
       output.on('error', err => {
         reject(new Error(`Failed to copy zip with error: [${err}]`));
       });
-      // buld through gradle build
+      // build through gradle build
       const zipFile = 'latest_build.zip';
       fs.createReadStream(path.join(request.srcRoot, 'build', 'distributions', zipFile)).pipe(output);
     });
