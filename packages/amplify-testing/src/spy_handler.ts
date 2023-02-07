@@ -9,11 +9,4 @@ export class SpyProxyHandler<T extends object, U extends keyof T & (string | sym
     }
     return undefined;
   }
-  set(target: T, name: U, value: T[U]) {
-    if (name in target) {
-      target[name] = value;
-      return true;
-    }
-    return false;
-  }
 }

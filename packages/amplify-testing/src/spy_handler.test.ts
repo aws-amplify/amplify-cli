@@ -2,6 +2,13 @@ import { SpyProxyHandler } from './spy_handler';
 
 describe('Jest Spy Proxy Handler', () => {
   describe('when getting a property on the target', () => {
+    describe('that is undefined', () => {
+      test('undefined is returned', () => {
+        const target = ({} as unknown) as any;
+        const proxy = new Proxy(target, new SpyProxyHandler());
+        expect(proxy.foo).toBeUndefined();
+      });
+    });
     describe('whose type is not a function', () => {
       test('the value is returned', () => {
         const target = {
