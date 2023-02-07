@@ -10,14 +10,13 @@ import { executeSdkPromisesWithExponentialBackoff } from './exp-backoff-executor
  */
 export const getEnvParametersUploadHandler = async (
   context: $TSContext,
-): Promise<(key: string, value: string | boolean | number) => Promise<void>> => {
+): Promise<((key: string, value: string | boolean | number) => Promise<void>) | undefined> => {
   let appId: string;
   try {
     appId = resolveAppId(context);
   } catch {
-    return (key: string, value: string | boolean | number) => new Promise(() => {
-      printer.warn('Failed to resolve AppId, skipping parameter upload.');
-    });
+    printer.warn('Failed to resolve AppId, skipping parameter upload.');
+    return undefined;
   }
   const envName = stateManager.getCurrentEnvName();
   const { client } = await SSM.getInstance(context);
@@ -62,8 +61,9 @@ export const getEnvParametersDownloadHandler = async (
   try {
     appId = resolveAppId(context);
   } catch {
-    return (__: string[]) => new Promise(() => {
+    return (__: string[]) => new Promise(resolve => {
       printer.warn('Failed to resolve AppId, skipping parameter download.');
+      resolve({});
     });
   }
   const envName = stateManager.getCurrentEnvName();

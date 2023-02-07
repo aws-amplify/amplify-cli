@@ -1,10 +1,13 @@
 import { $TSContext } from 'amplify-cli-core';
 import type { SSM as SSMType } from 'aws-sdk';
-import { SSM } from '../../aws-utils/aws-ssm';
-import { deleteEnvironmentParametersFromService } from '../../utils/ssm-utils/delete-ssm-parameters';
-import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from '../../utils/ssm-utils/get-ssm-sdk-parameters';
+import { SSM } from '../../../aws-utils/aws-ssm';
+import { deleteEnvironmentParametersFromService } from '../../../utils/ssm-utils/delete-ssm-parameters';
+import {
+  getSsmSdkParametersDeleteParameters,
+  getSsmSdkParametersGetParametersByPath,
+} from '../../../utils/ssm-utils/get-ssm-sdk-parameters';
 
-jest.mock('../../aws-utils/aws-ssm');
+jest.mock('../../../aws-utils/aws-ssm');
 
 const fakeAppId = 'fakeAppId';
 const keyPrefix = '/amplify/id/dev/';

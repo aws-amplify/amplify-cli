@@ -1,10 +1,10 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { SSM } from '../../aws-utils/aws-ssm';
+import { SSM } from '../../../aws-utils/aws-ssm';
 import type { SSM as SSMType } from 'aws-sdk';
-import { getEnvParametersDownloadHandler, getEnvParametersUploadHandler } from '../../utils/ssm-utils/env-parameter-ssm-helpers';
+import { getEnvParametersDownloadHandler, getEnvParametersUploadHandler } from '../../../utils/ssm-utils/env-parameter-ssm-helpers';
 
 jest.mock('amplify-cli-core');
-jest.mock('../../aws-utils/aws-ssm');
+jest.mock('../../../aws-utils/aws-ssm');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const mockSSM = SSM as jest.Mocked<typeof SSM>;
@@ -29,6 +29,7 @@ mockSSM.getInstance = jest.fn().mockResolvedValue({
 
 const contextMock = {} as unknown as $TSContext;
 
+jest.useFakeTimers();
 
 describe('uploading environment parameters', () => {
   it('returns an async function which can invoke the SSM client', async () => {
@@ -47,17 +48,17 @@ describe('uploading environment parameters', () => {
 });
 
 describe('downloading environment parameters', () => {
-  jest.useFakeTimers();
-
   afterEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
-  })
+  });
 
-  it('returns undefined when AmplifyAppId is undefined', async () => {
+  it('returns no-op when AmplifyAppId is undefined', async () => {
     stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': {} } });
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
-    expect(returnedFn).not.toBeDefined();
+    expect(returnedFn).toBeDefined();
+    const mockParams = await returnedFn(['mockMissingParam']);
+    expect(mockParams).toStrictEqual({});
     expect(getParametersPromiseMock).not.toBeCalled();
   });
 
@@ -65,7 +66,7 @@ describe('downloading environment parameters', () => {
     stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': { 'AmplifyAppId': 'mockedAppId' } } });
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
-    const mockParams = await returnedFn!([]);
+    const mockParams = await returnedFn([]);
     expect(mockParams).toStrictEqual({});
     expect(getParametersPromiseMock).not.toBeCalled();
   });
@@ -77,7 +78,7 @@ describe('downloading environment parameters', () => {
 
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
-    const mockParams = await returnedFn!(['key']);
+    const mockParams = await returnedFn(['key']);
     expect(mockParams).toStrictEqual({ 'key': 'value' });
     expect(getParametersPromiseMock).toBeCalledTimes(1);
   });
@@ -99,8 +100,8 @@ describe('downloading environment parameters', () => {
 
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
-    const mockParams = await returnedFn!(keys);
+    const mockParams = await returnedFn(keys);
     expect(mockParams).toStrictEqual(expectedParams);
     expect(getParametersPromiseMock).toBeCalledTimes(2);
-  })
+  });
 });
