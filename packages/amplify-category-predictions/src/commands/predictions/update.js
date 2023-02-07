@@ -8,7 +8,6 @@ module.exports = {
   run: async context =>
     promptCategory()
       .then(result => {
-        result = result.predictionsCategory;
         const providerController = require(`../../provider-utils/${result.provider}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');

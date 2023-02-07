@@ -36,8 +36,6 @@ function testAmplifyConfigureValidation(): Promise<void> {
       .sendCarriageReturn()
       .wait('Specify the AWS Region')
       .sendCarriageReturn()
-      .wait('user name:')
-      .sendCarriageReturn()
       .wait('Press Enter to continue')
       .sendCarriageReturn()
       .wait('accessKeyId')

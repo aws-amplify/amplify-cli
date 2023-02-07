@@ -21,8 +21,8 @@ jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
-    getAmplifyLibRoot: jest.fn().mockReturnValue('')
-  }
+    getAmplifyLibRoot: jest.fn().mockReturnValue(''),
+  },
 }));
 
 export async function launchDDBLocal() {
@@ -42,7 +42,11 @@ export async function launchDDBLocal() {
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB, opensearchURL?: URL): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+export async function deploy(
+  transformerOutput: any,
+  client?: DynamoDB,
+  opensearchURL?: URL,
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
@@ -97,7 +101,7 @@ async function configureLambdaDataSource(config) {
 }
 
 async function configureOpensearchDataSource(config, opensearchURL) {
-  if (isWindowsPlatform) {
+  if (isWindowsPlatform()) {
     return config;
   }
   const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
@@ -119,7 +123,7 @@ async function configureOpensearchDataSource(config, opensearchURL) {
           },
         };
       }),
-    )
+    ),
   };
 }
 
@@ -151,23 +155,27 @@ export function logDebug(...msgs) {
   }
 }
 
-export async function setupSearchableMockResources(pathToSearchableMockResources: string): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator}> {
+export async function setupSearchableMockResources(
+  pathToSearchableMockResources: string,
+): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator }> {
   const pathToSearchableTrigger = path.join(pathToSearchableMockResources, 'searchable-lambda-trigger');
   fs.ensureDirSync(pathToSearchableTrigger);
 
   const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', '..', 'resources', 'mock-searchable-lambda-trigger');
   fs.copySync(searchableLambdaResourceDir, pathToSearchableTrigger, { overwrite: true });
 
-  const pathToOpensearchLocal = path.join(pathToSearchableMockResources, openSearchEmulator.packageName, openSearchEmulator.relativePathToOpensearchLocal);
+  const pathToOpensearchLocal = path.join(
+    pathToSearchableMockResources,
+    openSearchEmulator.packageName,
+    openSearchEmulator.relativePathToOpensearchLocal,
+  );
   fs.ensureDirSync(pathToOpensearchLocal);
   const pathToOpensearchData = path.join(pathToSearchableMockResources, 'searchable-data');
   fs.ensureDirSync(pathToOpensearchData);
 
-  const emulator = await openSearchEmulator.launch(
-    pathToOpensearchData, {
-      port: null,
-    }
-  );
+  const emulator = await openSearchEmulator.launch(pathToOpensearchData, {
+    port: null,
+  });
 
   return { emulator };
 }
