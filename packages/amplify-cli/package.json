@@ -45,7 +45,7 @@
     "amplify-app": "4.3.9",
     "amplify-category-analytics": "4.4.1",
     "amplify-category-function": "4.3.1",
-    "amplify-category-geo": "2.11.1",
+    "@aws-amplify/amplify-category-geo": "2.11.1",
     "amplify-category-hosting": "3.4.9",
     "amplify-category-interactions": "4.3.1",
     "amplify-category-notifications": "2.23.1",
