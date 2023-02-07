@@ -78,7 +78,7 @@ export class APITest {
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
 
       // If any of the model types are searchable, start opensearch local instance
-      if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform) {
+      if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform()) {
         this.opensearchURL = await this.startOpensearchLocalServer(context, isLocalDBEmpty);
       }
       this.appSyncSimulator.init(appSyncConfig);
@@ -320,7 +320,7 @@ export class APITest {
   }
 
   private async configureOpensearchDataSource(config: $TSAny): Promise<$TSAny> {
-    if (isWindowsPlatform) {
+    if (isWindowsPlatform()) {
       return config;
     }
     const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';

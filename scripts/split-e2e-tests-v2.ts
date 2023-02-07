@@ -96,6 +96,7 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/amplify-app.test.ts',
     'src/__tests__/analytics-2.test.ts',
     'src/__tests__/api_2a.test.ts',
