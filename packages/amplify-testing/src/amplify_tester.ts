@@ -23,7 +23,7 @@ export class AmplifyTester {
   public runTest = async <T>(runner: (parameters: TestParameters) => Promise<T>): Promise<TestResult<T>> => {
     const parameters = this.testParameterCreators.reduce((parameters, creator) => ({ ...parameters, ...creator(parameters) }), {});
     const data = await runner(parameters);
-    const processedResult = this.resultProcessors.reduce((result, processor) => processor(result) as Record<string, unknown>, {});
-    return { outputs: processedResult, data, inputs: parameters };
+    const outputs = this.resultProcessors.reduce((result, processor) => ({ ...result, ...processor(result) }), {});
+    return { outputs, data, inputs: parameters };
   };
 }
