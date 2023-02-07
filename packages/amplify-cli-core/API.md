@@ -981,7 +981,7 @@ export const isPackaged: boolean;
 export const isResourceNameUnique: (category: string, resourceName: string, throwOnMatch?: boolean) => boolean;
 
 // @public (undocumented)
-export const isWindowsPlatform: boolean;
+export const isWindowsPlatform: () => boolean;
 
 // @public (undocumented)
 export class JSONUtilities {

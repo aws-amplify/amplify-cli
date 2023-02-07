@@ -1,6 +1,6 @@
 import {
   amplifyPull,
-  amplifyPushAuth,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -35,7 +35,7 @@ describe('amplify add notifications', () => {
     expect(appId).toBeDefined();
 
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
-    await amplifyPushAuth(projectRoot, false);
+    await amplifyPushAuthV5V6(projectRoot);
 
     await removeLegacyAllNotificationChannel(projectRoot);
     const projectRootPull = await createNewProjectDir('removed-notifications-pull');

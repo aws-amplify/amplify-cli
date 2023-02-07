@@ -50,7 +50,7 @@ const printHeaderText = (text: string) => printer.info(chalk.blue.bold(text));
 const printBodyText = (text: string) => printer.info(text);
 const printCategoryMessage = () => {
   printBodyText(DEFAULT_INDENT + 'Where <category> is one of: notifications, api, auth, custom, storage,');
-  printBodyText(DEFAULT_INDENT + 'analytics, function, geo, hosting, interactions, predictions, xr');
+  printBodyText(DEFAULT_INDENT + 'analytics, function, geo, hosting, interactions, predictions, xr (deprecated)');
   printer.blankLine();
 };
 
