@@ -1,7 +1,7 @@
 import { stateManager, pathManager } from 'amplify-cli-core';
 import { readProjectSchema } from 'graphql-transformer-core';
 
-jest.mock('amplify-category-hosting');
+jest.mock('@aws-amplify/amplify-category-hosting');
 jest.mock('amplify-cli-core');
 jest.mock('graphql-transformer-core', () => ({
   readProjectSchema: jest.fn(async (__: string) => ''),
