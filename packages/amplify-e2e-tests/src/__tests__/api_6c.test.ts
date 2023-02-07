@@ -7,7 +7,7 @@ import {
   rebuildApi,
   getProjectMeta,
   updateApiSchema,
-  amplifyDeleteWithLongerTimeout,
+  deleteProject
 } from '@aws-amplify/amplify-e2e-core';
 import { testTableAfterRebuildApi, testTableBeforeRebuildApi } from '../rebuild-test-helpers';
 
@@ -18,7 +18,7 @@ beforeEach(async () => {
   projRoot = await createNewProjectDir(projName);
 });
 afterEach(async () => {
-  await amplifyDeleteWithLongerTimeout(projRoot);
+  await deleteProject(projRoot, undefined, false, 1000 * 60 * 30);
   deleteProjectDir(projRoot);
 });
 
