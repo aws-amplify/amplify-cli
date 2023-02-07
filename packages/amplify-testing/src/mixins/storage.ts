@@ -1,9 +1,9 @@
 import { Constructor } from '.';
-import { AmplifyTester, TestResult } from '../amplify_tester';
+import { AmplifyTester } from '../amplify_tester';
 import { AmplifyTestVolume, FileContent, FullPath } from '../volume';
 
 export function StorageMixin<TBase extends Constructor<AmplifyTester>>(Base: TBase, initialVolume: AmplifyTestVolume) {
-  return class TestVolume extends Base {
+  return class AmplifyStorageTester extends Base {
     private volume: AmplifyTestVolume;
     constructor(...args: any[]) {
       super(...args);
@@ -14,7 +14,9 @@ export function StorageMixin<TBase extends Constructor<AmplifyTester>>(Base: TBa
     private storageTestParameterCreator = (): Record<string, unknown> & { volume: AmplifyTestVolume } => {
       return { volume: this.volume };
     };
-    private storageResultProcessor = <T>(result: TestResult<T>): TestResult<T> & { volume: Record<FullPath, FileContent> } => {
+    private storageResultProcessor = (
+      result: Record<string, unknown>,
+    ): Record<string, unknown> & { volume: Record<FullPath, FileContent> } => {
       return { ...result, volume: this.volume.toJSON() };
     };
     public withStartingVolume = (volume: Record<FullPath, FileContent>) => {

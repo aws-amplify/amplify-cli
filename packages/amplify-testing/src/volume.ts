@@ -1,4 +1,3 @@
-import memfs from 'memfs';
 export type FullPath = string;
 export type FileContent = string | null;
 export interface AmplifyTestVolume {

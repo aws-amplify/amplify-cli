@@ -65,7 +65,7 @@ describe('AmplifyTest storage mixin', () => {
       const toJSONSpy = jest.spyOn(volume, 'toJSON');
       const result = await tester.withStartingVolume(fs).runTest(async context => null);
       expect(toJSONSpy).toHaveBeenCalled();
-      expect(result.volume).toStrictEqual(fs);
+      expect(result.outputs.volume).toStrictEqual(fs);
     });
   });
 });
