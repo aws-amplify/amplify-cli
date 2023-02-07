@@ -81,7 +81,7 @@ const execHelper = async (
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
     // adding default if options arent defined
-    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath])
+    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
     const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
       cwd: projectRoot,
       env: { PATH: process.env.PATH },
