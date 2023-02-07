@@ -5,5 +5,5 @@
 import { $TSContext } from 'amplify-cli-core';
 
 export function createContext(): $TSContext {
-  return {} as $TSContext;
+  return ({} as unknown) as $TSContext;
 }
