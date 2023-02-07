@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.4.1...amplify-category-analytics@4.4.2-cdkv2.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* adding new environment when having a project with notifications ([614a273](https://github.com/aws-amplify/amplify-cli/commit/614a273ec95ecfa43dff40b9793f286805396109))
+
+
+
+
+
 # [4.2.0-cdkv2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.2.0-cdkv2.4...amplify-category-analytics@4.2.0-cdkv2.5) (2022-12-28)
 
 **Note:** Version bump only for package amplify-category-analytics

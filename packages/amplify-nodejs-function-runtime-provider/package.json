@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-runtime-provider",
-  "version": "2.3.9",
+  "version": "2.3.10-cdkv2.0",
   "description": "Provides functionality related to functions in NodeJS on AWS",
   "repository": {
     "type": "git",
@@ -24,8 +24,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-cdkv2.5",
-    "amplify-function-plugin-interface": "1.9.6-cdkv2.1",
+    "amplify-cli-core": "4.0.0-cdkv2.6",
+    "amplify-function-plugin-interface": "1.9.6-cdkv2.2",
     "execa": "^5.1.1",
     "exit": "^0.1.2",
     "fs-extra": "^8.1.0",

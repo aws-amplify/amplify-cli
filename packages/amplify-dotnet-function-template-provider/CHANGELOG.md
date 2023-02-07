@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.3...amplify-dotnet-function-template-provider@2.4.4-cdkv2.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+
+
+
+
+
 # [2.4.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.3.4-cdkv2.4...amplify-dotnet-function-template-provider@2.4.0-cdkv2.0) (2022-12-28)
 
 

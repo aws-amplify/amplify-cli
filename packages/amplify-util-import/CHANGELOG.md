@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.1...amplify-util-import@2.3.2-cdkv2.0) (2023-02-07)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
 # [2.3.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-cdkv2.3...amplify-util-import@2.3.0-cdkv2.4) (2022-12-13)
 
 **Note:** Version bump only for package amplify-util-import

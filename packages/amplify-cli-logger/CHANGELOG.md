@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.3...amplify-cli-logger@1.2.4-cdkv2.0) (2023-02-07)
+
+**Note:** Version bump only for package amplify-cli-logger
+
+
+
+
+
 ## [1.2.2-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.2-cdkv2.1...amplify-cli-logger@1.2.2-cdkv2.2) (2022-12-28)
 
 

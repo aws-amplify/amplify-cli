@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.3.3",
+  "version": "1.3.4-cdkv2.0",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.0-cdkv2.5",
+    "amplify-cli-core": "4.0.0-cdkv2.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

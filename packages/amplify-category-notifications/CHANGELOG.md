@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.1...amplify-category-notifications@2.23.2-cdkv2.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* adding new environment when having a project with notifications ([614a273](https://github.com/aws-amplify/amplify-cli/commit/614a273ec95ecfa43dff40b9793f286805396109))
+* notification channel enabled check ([#11879](https://github.com/aws-amplify/amplify-cli/issues/11879)) ([d7c51f2](https://github.com/aws-amplify/amplify-cli/commit/d7c51f21f840b922587e4f1946756682b44dcf62))
+* store email channel role arn to amplify meta output ([#11883](https://github.com/aws-amplify/amplify-cli/issues/11883)) ([1b39f77](https://github.com/aws-amplify/amplify-cli/commit/1b39f7780f312284f808bd0ff9e8d5e8dce453d2))
+
+
+
+
+
 # [2.21.0-cdkv2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.4...amplify-category-notifications@2.21.0-cdkv2.5) (2022-12-28)
 
 **Note:** Version bump only for package amplify-category-notifications

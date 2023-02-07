@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1...amplify-cli-shared-interfaces@1.1.1-cdkv2.2) (2023-02-07)
+
+**Note:** Version bump only for package amplify-cli-shared-interfaces
+
+
+
+
+
 ## [1.1.1-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1-cdkv2.0...amplify-cli-shared-interfaces@1.1.1-cdkv2.1) (2022-12-13)
 
 **Note:** Version bump only for package amplify-cli-shared-interfaces

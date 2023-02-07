@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.3-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.2...amplify-storage-simulator@1.7.3-cdkv2.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* moved opensearch, dynamodb, and storage simulator tests to e2e tests ([#11876](https://github.com/aws-amplify/amplify-cli/issues/11876)) ([116a50c](https://github.com/aws-amplify/amplify-cli/commit/116a50c3a385ebe06a9b50b5c8fbce78ab67d147))
+
+
+
+
+
 # [1.7.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.0-cdkv2.1...amplify-storage-simulator@1.7.0-cdkv2.2) (2022-12-13)
 
 **Note:** Version bump only for package amplify-storage-simulator

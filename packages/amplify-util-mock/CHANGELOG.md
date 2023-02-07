@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.1...amplify-util-mock@4.8.2-cdkv2.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* **mock:** topo sort for resource in mock ([#11642](https://github.com/aws-amplify/amplify-cli/issues/11642)) ([8247f11](https://github.com/aws-amplify/amplify-cli/commit/8247f11ec1bcebaa43201b9842e57238e5512fab))
+
+
+
+
+
 # [4.6.0-cdkv2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-cdkv2.5...amplify-util-mock@4.6.0-cdkv2.6) (2022-12-28)
 
 **Note:** Version bump only for package amplify-util-mock
