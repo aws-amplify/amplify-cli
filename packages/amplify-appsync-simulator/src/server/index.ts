@@ -20,7 +20,11 @@ export class AppSyncSimulatorServer {
   constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._operationServer = new OperationServer(config, simulatorContext);
     this._httpServer = createServer(this._operationServer.app);
-    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this._httpServer, REALTIME_SUBSCRIPTION_PATH);
+    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(
+      simulatorContext,
+      this._httpServer,
+      REALTIME_SUBSCRIPTION_PATH,
+    );
   }
 
   async start(): Promise<void> {
@@ -31,12 +35,12 @@ export class AppSyncSimulatorServer {
     if (!port) {
       port = await getPort({
         port: getPort.makeRange(BASE_PORT, MAX_PORT),
-      })
+      });
     } else {
       try {
         await getPort({
           port,
-        })
+        });
       } catch (e) {
         throw new Error(`Port ${port} is already in use. Please kill the program using this port and restart Mock`);
       }
@@ -48,8 +52,8 @@ export class AppSyncSimulatorServer {
     });
   }
 
-  stop() {
-    this._realTimeSubscriptionServer.stop();
+  async stop() {
+    await this._realTimeSubscriptionServer.stop();
     this._httpServer.close();
   }
   get url() {

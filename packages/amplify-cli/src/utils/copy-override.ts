@@ -49,6 +49,7 @@ export const copyOverride = () => {
         fs.writeFile(dest, content, callback);
       }
     });
+    return undefined;
   }) as any;
 
   fs.copyFileSync = (src, dest, flags) => {

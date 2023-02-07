@@ -119,7 +119,7 @@ async function verifyEventHandlers(context: VerificationContext): Promise<Plugin
     }
 
     isVerified =
-      context.pluginModule.hasOwnProperty(constants.HandleAmplifyEvent) &&
+      Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HandleAmplifyEvent) &&
       typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
   }
 

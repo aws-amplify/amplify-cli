@@ -40,7 +40,7 @@ export const createIDPAndUserPoolWithOAuthSettings = (
   projectPrefix: string,
   shortId: string,
 ): AddAuthIdentityPoolAndUserPoolWithOAuthSettings => {
-  let settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
+  const settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
 
   return {
     ...settings,
@@ -50,7 +50,7 @@ export const createIDPAndUserPoolWithOAuthSettings = (
     idpGoogleAppId: 'idpGoogleAppId',
     idpAmazonAppId: 'idpAmazonAppId',
     idpAppleAppId: 'idpAppleId',
-  } as AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
+  };
 };
 
 export const createStorageSettings = (projectPrefix: string, shortId: string): AddStorageSettings => {

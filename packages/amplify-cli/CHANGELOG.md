@@ -120,6 +120,48 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [11.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-beta.0...@aws-amplify/cli-internal@11.0.0-beta.1) (2022-11-19)
+## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.0...@aws-amplify/cli-internal@10.7.1) (2023-02-06)
+
+
+### Bug Fixes
+
+* warn about xr deprecation ([#11899](https://github.com/aws-amplify/amplify-cli/issues/11899)) ([01d8424](https://github.com/aws-amplify/amplify-cli/commit/01d842464315d39d24ce1649aa7a47e1bf7f9704))
+
+
+
+
+
+# [10.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.6.2...@aws-amplify/cli-internal@10.7.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* do not overload NODE_ENV env parameter for usage data filtering ([6c7ff38](https://github.com/aws-amplify/amplify-cli/commit/6c7ff38110911f2f9bdd1460ba10e20edfe36596))
+* do not overload NODE_ENV env parameter for usage data filtering ([6dc26b4](https://github.com/aws-amplify/amplify-cli/commit/6dc26b4619cc8c4100583a88935ffe5a3f44a89a))
+* do not overload NODE_ENV env parameter for usage data filtering ([fadd866](https://github.com/aws-amplify/amplify-cli/commit/fadd866c5ae2548827c7bd54abf1facca60dbae6))
+* floating promise on store cloud back-end file ([#11604](https://github.com/aws-amplify/amplify-cli/issues/11604)) ([c8be1c6](https://github.com/aws-amplify/amplify-cli/commit/c8be1c6fd686c9dff151dc1a462150060ee37ded))
+* **global-prefix:** remove global-prefix package ([#11408](https://github.com/aws-amplify/amplify-cli/issues/11408)) ([2ab7757](https://github.com/aws-amplify/amplify-cli/commit/2ab77574543b4422acaa128555c3fb2f75f2fd17))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+* status command with --debug flag ([870f10c](https://github.com/aws-amplify/amplify-cli/commit/870f10c114167c9027a6fe315ff8f3171b104c17))
+* test timeouts on simulator tests ([#11804](https://github.com/aws-amplify/amplify-cli/issues/11804)) ([d9dfa40](https://github.com/aws-amplify/amplify-cli/commit/d9dfa40747c1b71eaa1c9e885dddc0b64f8c73d0))
+
+
+### Features
+
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [10.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.6.1...@aws-amplify/cli-internal@10.6.2) (2023-01-17)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
 
@@ -128,6 +170,15 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [11.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.4.1...@aws-amplify/cli-internal@11.0.0-beta.0) (2022-11-17)
+## [10.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.6.0...@aws-amplify/cli-internal@10.6.1) (2023-01-06)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [10.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.2...@aws-amplify/cli-internal@10.6.0) (2023-01-03)
 
 
 ### Bug Fixes
@@ -138,6 +189,12 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 * feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* fallback to tpi when no backend dir ([#11419](https://github.com/aws-amplify/amplify-cli/issues/11419)) ([e9fb32f](https://github.com/aws-amplify/amplify-cli/commit/e9fb32fa78c3bdbbc5ef2539a1fe6a93109327ae))
+* improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+* print table summary on verbose status ([#11438](https://github.com/aws-amplify/amplify-cli/issues/11438)) ([2ac7164](https://github.com/aws-amplify/amplify-cli/commit/2ac7164931aba7fc70900d6f2680e030e9d12123))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+* suppress CDK deprecation warning in CLI base level ([#11525](https://github.com/aws-amplify/amplify-cli/issues/11525)) ([bfadb37](https://github.com/aws-amplify/amplify-cli/commit/bfadb37efcd29ec011861fab87141d0ba8369b2d))
 
 
 ### Features
@@ -145,6 +202,13 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 * add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
 * add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
 * migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
 ## [10.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.1...@aws-amplify/cli-internal@10.5.2) (2022-12-09)
 
 

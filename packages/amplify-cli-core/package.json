@@ -25,10 +25,11 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.3",
+    "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.4",
+    "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "amplify-cli-logger": "1.2.2-cdkv2.2",
-    "amplify-prompts": "2.6.2-cdkv2.2",
+    "amplify-cli-logger": "1.2.3",
+    "amplify-prompts": "2.6.3",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",
@@ -45,7 +46,8 @@
     "proxy-agent": "^5.0.0",
     "semver": "^7.3.5",
     "typescript-json-schema": "~0.52.0",
-    "which": "^2.0.2"
+    "which": "^2.0.2",
+    "yaml": "^2.2.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
@@ -55,6 +57,7 @@
     "@types/node": "^12.12.6",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
+    "@types/yarnpkg__lockfile": "^1.1.5",
     "amplify-function-plugin-interface": "1.9.6-cdkv2.1",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
@@ -65,6 +68,10 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",

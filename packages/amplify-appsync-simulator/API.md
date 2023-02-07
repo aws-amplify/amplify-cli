@@ -73,6 +73,8 @@ export class AmplifyAppSyncSimulator {
     // (undocumented)
     asyncIterator(trigger: string): AsyncIterator<any>;
     // (undocumented)
+    clearData(): Promise<object>;
+    // (undocumented)
     get config(): AmplifyAppSyncSimulatorConfig;
     // (undocumented)
     getDataLoader(sourceName: string): AmplifyAppSyncSimulatorDataLoader;
@@ -95,7 +97,7 @@ export class AmplifyAppSyncSimulator {
     // (undocumented)
     start(): Promise<void>;
     // (undocumented)
-    stop(): void;
+    stop(): Promise<void>;
     // (undocumented)
     get url(): string;
 }

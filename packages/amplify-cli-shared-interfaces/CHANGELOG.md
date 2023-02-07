@@ -20,6 +20,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [1.1.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1-beta.0) (2022-12-01)
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1) (2023-01-03)
 
 **Note:** Version bump only for package amplify-cli-shared-interfaces
 

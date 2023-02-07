@@ -3,7 +3,12 @@ import { stateManager } from 'amplify-cli-core';
 import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import {
-  ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData,
+  ICommandInput,
+  IFlowData,
+  IFlowReport,
+  IOptionFlowCLIData,
+  IOptionFlowHeadlessData,
+  TypeOptionFlowData,
 } from 'amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
 import { Input } from '../input';
@@ -44,10 +49,7 @@ export class CLIFlowReport implements IFlowData {
         const projectName = stateManager.getProjectName();
         const envName = stateManager.getCurrentEnvName();
         const appId = stateManager.getAppID();
-        const {
-          projectEnvIdentifier,
-          projectIdentifier,
-        } = createHashedIdentifier(projectName, appId, envName);
+        const { projectEnvIdentifier, projectIdentifier } = createHashedIdentifier(projectName, appId, envName);
         this.projectEnvIdentifier = projectEnvIdentifier;
         this.projectIdentifier = projectIdentifier;
         return this.projectEnvIdentifier;
@@ -55,6 +57,7 @@ export class CLIFlowReport implements IFlowData {
         return undefined;
       }
     }
+    return undefined;
   }
 
   /**
@@ -66,11 +69,11 @@ export class CLIFlowReport implements IFlowData {
     this.runtime = input.argv[0] as string;
     this.executable = input.argv[1] as string;
     this.cmd = input.argv[2] as string;
-    this.subCmd = (input.argv[3]) ? input.argv[3] : undefined;
+    this.subCmd = input.argv[3] ? input.argv[3] : undefined;
     this.optionFlowData = []; // key-value store with ordering maintained
     // Parse options
     if (input.options?.prompt) {
-      const prompt: string = input.options.prompt as unknown as string;
+      const prompt: string = (input.options.prompt as unknown) as string;
       this.pushInteractiveFlow(prompt, input.options.input);
     }
   }

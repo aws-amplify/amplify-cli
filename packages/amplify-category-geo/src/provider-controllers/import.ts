@@ -28,7 +28,7 @@ export const importResource = async (context: $TSContext) => {
     return true;
   });
   if (provisionedCollectionNames.length === 0) {
-    throw new Error('No geofence is not provisioned yet. Run \`amplify push\` to provision geofence collection.')
+    throw new Error('No geofence is not provisioned yet. Run `amplify push` to provision geofence collection.')
   }
   // Get collection region
   const collectionRegion = geofenceCollectionResourcesMap[provisionedCollectionNames[0]].output.Region;
@@ -83,7 +83,7 @@ export const importResource = async (context: $TSContext) => {
 const bulkUploadGeofence = async (context: $TSContext, params: ImportParams, region: string) => {
   printer.info('Updating your Geofences in the collection...');
   try {
-    const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredLocationServiceClient', [
+    const { client } = await context.amplify.invokePluginMethod<{ client: aws.Location }>(context, 'awscloudformation', undefined, 'getConfiguredLocationServiceClient', [
       context,
       { region },
     ]);
@@ -95,7 +95,7 @@ const bulkUploadGeofence = async (context: $TSContext, params: ImportParams, reg
         CollectionName: params.collectionToImport,
         Entries: geofenceEntries.splice(0, MAX_ENTRIES_PER_BATCH),
       };
-      uploadTasks.push((client as aws.Location).batchPutGeofence(geofenceCollectionPerBatch).promise());
+      uploadTasks.push((client).batchPutGeofence(geofenceCollectionPerBatch).promise());
     }
     await Promise.all(uploadTasks);
     printer.success(`Successfully added/updated ${totalGeofenceCount} Geofences in your "${params.collectionToImport}" collection`);

@@ -20,6 +20,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [1.9.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.5...amplify-function-plugin-interface@1.9.6-beta.0) (2022-12-01)
+## [1.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.5...amplify-function-plugin-interface@1.9.6) (2023-01-03)
 
 **Note:** Version bump only for package amplify-function-plugin-interface
 

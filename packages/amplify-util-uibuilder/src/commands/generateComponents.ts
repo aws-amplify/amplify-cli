@@ -13,12 +13,15 @@ import {
   generateAmplifyUiBuilderIndexFile,
   generateUiBuilderForms,
   generateAmplifyUiBuilderUtilFile,
+  isStudioForm,
+  isFormDetachedFromModel,
+  deleteDetachedForms,
 } from './utils';
 
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
  */
-export const run = async (context: $TSContext): Promise<void> => {
+export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull'): Promise<void> => {
   if (!(await shouldRenderComponents(context))) {
     return;
   }
@@ -32,9 +35,9 @@ export const run = async (context: $TSContext): Promise<void> => {
       getAmplifyDataSchema(studioClient),
     ]);
 
-    const nothingWouldAutogen = !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported;
+    const nothingWouldAutogenerate = !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported;
 
-    if (nothingWouldAutogen && [componentSchemas, themeSchemas, formSchemas].every(group => !group.entities.length)) {
+    if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every(group => !group.entities.length)) {
       printer.debug('Skipping UI component generation since none are found.');
       return;
     }
@@ -44,13 +47,18 @@ export const run = async (context: $TSContext): Promise<void> => {
       component: generateUiBuilderComponents(context, componentSchemas.entities, dataSchema),
       theme: generateUiBuilderThemes(context, themeSchemas.entities),
       form: generateUiBuilderForms(
-        context, formSchemas.entities, dataSchema, studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+        context,
+        formSchemas.entities,
+        dataSchema,
+        studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
       ),
     };
 
     const successfulSchemas: StudioSchema[] = [];
+    const detachedForms: {id: string, name: string}[] = [];
     let hasSuccessfulForm = false;
     const failedResponseNames: string[] = [];
+    const modelNames = dataSchema?.models ? new Set(Object.keys(dataSchema.models)) : new Set<string>();
 
     Object.entries(generatedResults).forEach(([key, results]) => {
       results.forEach(result => {
@@ -60,6 +68,22 @@ export const run = async (context: $TSContext): Promise<void> => {
             hasSuccessfulForm = true;
           }
         } else {
+          const failedSchema = result.schema;
+          /**
+           * A form resource may fail to generate because it's DataStore model type
+           * no longer exists.
+           */
+          if (
+            isStudioForm(failedSchema)
+            && failedSchema.id
+            && dataSchema
+            && eventType === 'PostPush'
+            && isFormDetachedFromModel(failedSchema, modelNames)
+          ) {
+            // Don't need to add form to failedResponseNames if it is going to be deleted
+            detachedForms.push({id: failedSchema.id, name: failedSchema.name});
+            return;
+          }
           failedResponseNames.push(result.schemaName);
         }
       });
@@ -88,6 +112,8 @@ export const run = async (context: $TSContext): Promise<void> => {
     }
 
     notifyMissingPackages(context);
+
+    deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {
     printer.debug(e);
     spinner.fail('Failed to sync UI components');

@@ -1,10 +1,11 @@
 /* eslint-disable */
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager,
+  $TSAny, $TSContext, $TSMeta, AmplifySupportedService, exitOnNextTick, JSONUtilities, NotImplementedError, open, stateManager,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import _ from 'lodash';
+import { categoryName } from '../../constants';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
 import { importedS3EnvInit, importS3 } from './import/import-s3';
 
@@ -162,5 +163,36 @@ const getHeadlessParams = (context: $TSContext) => {
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);
+  }
+}
+
+export const console = async (amplifyMeta: $TSMeta, provider: string, service: string) => {
+  if (service === AmplifySupportedService.S3) {
+    const s3Resource = Object.values<any>(amplifyMeta[categoryName])
+      .filter((resource) => resource.service === service).pop();
+    if (!s3Resource) {
+      const errMessage = 'No S3 resources to open. You need to add a resource.';
+      printer.error(errMessage);
+      return;
+    }
+    const { BucketName: bucket, Region: region } = s3Resource.output;
+    const url = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}`;
+    open(url, { wait: false });
+  } else if (service === AmplifySupportedService.DYNAMODB) {
+    type Pickchoice = { name: string, value: { tableName: string, region: string } };
+    const tables: Pickchoice[] = Object.values<any>(amplifyMeta[categoryName])
+      .filter((resource) => resource.service === service)
+      .map(resource => ({
+        name: resource.output.Name, 
+        value: { tableName: resource.output.Name, region: resource.output.Region }
+      }));
+    if (!tables.length) {
+      const errMessage = 'No DynamoDB tables to open. You need to add a resource.';
+      printer.error(errMessage);
+      return;
+    }
+    const { tableName, region } = await prompter.pick<'one', Pickchoice['value']>("Select DynamoDB table to open on your browser", tables);
+    const url = `https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#table?name=${tableName}&tab=overview`;
+    open(url, { wait: false });
   }
 }

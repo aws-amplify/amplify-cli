@@ -52,7 +52,7 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
     return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {
     spinner.stop();
-    throw new AmplifyFault('NotificationsChannelEmailFault', {
+    throw new AmplifyFault('NotificationsChannelSmsFault', {
       message: `Failed to enable the ${channelName} channel.`,
     }, e);
   }
@@ -81,7 +81,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {
     spinner.fail(`Failed to disable the ${channelName} channel.`);
-    throw new AmplifyFault('NotificationsChannelEmailFault', {
+    throw new AmplifyFault('NotificationsChannelSmsFault', {
       message: `Failed to disable the ${channelName} channel.`,
     }, e);
   }

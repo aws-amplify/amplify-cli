@@ -13,6 +13,50 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [3.0.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.2...@aws-amplify/amplify-category-auth@3.0.0-cdkv2.4) (2022-12-13)
 
+## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.0...@aws-amplify/amplify-category-auth@2.15.1) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+# [2.15.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.14.1...@aws-amplify/amplify-category-auth@2.15.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.14.0...@aws-amplify/amplify-category-auth@2.14.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* set NoEcho flag on OAuth creds CFN param ([04424cf](https://github.com/aws-amplify/amplify-cli/commit/04424cfbc25000b102bba121e9a8a14b092bf344))
+
+
+
+
+
+# [2.14.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.2...@aws-amplify/amplify-category-auth@2.14.0) (2023-01-03)
+
 
 ### Bug Fixes
 
@@ -52,6 +96,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * convert cli to cdk v2
 
 Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
 
 
 

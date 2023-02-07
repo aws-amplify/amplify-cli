@@ -1,9 +1,7 @@
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from 'aws-cdk-lib';
-import {
-  $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -34,7 +32,7 @@ export class DDBStackTransform {
     // Validate the cli-inputs.json for the resource
     this._cliInputsState = new DynamoDBInputState(context, resourceName);
     this._cliInputs = this._cliInputsState.getCliInputPayload();
-    this._cliInputsState.isCLIInputsValid();
+    void this._cliInputsState.isCLIInputsValid();
   }
 
   /**
@@ -217,15 +215,17 @@ export class DDBStackTransform {
           },
         });
         try {
-          await sandboxNode
-            .run(overrideCode, overrideJSFilePath)
-            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
-        } catch (err: $TSAny) {
-          throw new AmplifyError('InvalidOverrideError', {
-            message: `Executing overrides failed.`,
-            details: err.message,
-            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-          }, err);
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+        } catch (err) {
+          throw new AmplifyError(
+            'InvalidOverrideError',
+            {
+              message: `Executing overrides failed.`,
+              details: err.message,
+              resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+            },
+            err,
+          );
         }
       }
     }

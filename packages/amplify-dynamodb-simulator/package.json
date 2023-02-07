@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "2.5.0-cdkv2.5",
+  "version": "2.5.5",
   "description": "DynamoDB emulator nodejs wrapper",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   "scripts": {
     "build": "node ./scripts/update-ddb-simulator.js",
     "clean": "rimraf emulator",
-    "test": "jest --logHeapUsage"
+    "test": "jest --logHeapUsage --passWithNoTests"
   },
   "dependencies": {
     "amplify-cli-core": "4.0.0-cdkv2.5",
@@ -37,9 +37,5 @@
     "hash.js": "^1.1.7",
     "node-fetch": "^2.6.7",
     "tar": "^6.1.11"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverage": true
   }
 }

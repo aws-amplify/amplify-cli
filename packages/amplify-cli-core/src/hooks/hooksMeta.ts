@@ -129,7 +129,7 @@ export class HooksMeta {
       command = 'mock';
     }
 
-    if (supportedEvents.hasOwnProperty(command)) {
+    if (Object.prototype.hasOwnProperty.call(supportedEvents, command)) {
       this.hookEvent.command = command;
       if (supportedEvents?.[command as HooksVerb]?.includes(subCommand as HooksNoun)) {
         this.hookEvent.subCommand = subCommand;

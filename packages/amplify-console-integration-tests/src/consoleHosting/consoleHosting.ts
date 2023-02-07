@@ -17,7 +17,7 @@ const defaultSettings = {
   profileName: EOL,
 };
 
-export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true): Promise<void> {
+export function deleteProject(cwd: string, deleteDeploymentBucket = true): Promise<void> {
   return new Promise((resolve, reject) => {
     const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
@@ -137,7 +137,7 @@ export function amplifyServe(cwd: string): Promise<void> {
 
 export function amplifyStatus(cwd: string, expectedStatus: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let regex = new RegExp(`.*${expectedStatus}*`);
+    const regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
       .wait(regex)
       .sendCarriageReturn()

@@ -1,6 +1,4 @@
-import {
-  AmplifyFault, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -12,7 +10,7 @@ const envParamManagerMap: Record<string, IEnvironmentParameterManager> = {};
  */
 export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
-): Promise<{instance: IEnvironmentParameterManager}> => {
+): Promise<{ instance: IEnvironmentParameterManager }> => {
   if (!envParamManagerMap[envName]) {
     const envManager = new EnvironmentParameterManager(envName, getParametersControllerInstance());
     await envManager.init();
@@ -110,24 +108,22 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
 
     // update param mapping
-    this.parameterMapController
-      .removeAllParameters();
+    this.parameterMapController.removeAllParameters();
     Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
       const [category, resourceName] = splitResourceKey(resourceKey);
       const resourceParams = paramManager.getAllParams();
-      Object.entries(resourceParams)
-        .forEach(([paramName]) => {
-          const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
-          this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
-        });
+      Object.entries(resourceParams).forEach(([paramName]) => {
+        const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
+        this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
+      });
     });
     // uploading values to PS will go here
-    this.parameterMapController.save();
+    await this.parameterMapController.save();
   }
 
   private serializeTPICategories(): Record<string, unknown> {
     return Object.entries(this.resourceParamManagers).reduce((acc, [resourceKey, resourceParams]) => {
-      _.set(acc, splitResourceKey(resourceKey), resourceParams.getAllParams());
+      _.setWith(acc, splitResourceKey(resourceKey), resourceParams.getAllParams(), Object);
       return acc;
     }, {} as Record<string, unknown>);
   }
@@ -149,11 +145,8 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  save: () => void;
-}
+  save: () => Promise<void>;
+};
 
-const getParameterStoreKey = (
-  categoryName: string,
-  resourceName: string,
-  paramName: string,
-): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
+const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
+  `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;

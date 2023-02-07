@@ -40,7 +40,7 @@ export const run = async (context: Context) => {
 async function resolvePluginPathAndAdd(context: Context, inputPath: string) {
   const pluginDirPath = await resolvePluginPackagePath(context, inputPath);
   if (pluginDirPath) {
-    addNewPluginPackage(context, pluginDirPath);
+    await addNewPluginPackage(context, pluginDirPath);
   }
 }
 
@@ -56,16 +56,16 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
   searchDirPaths = searchDirPaths.filter(dirPath => !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
   searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
 
-  const candicatePluginDirPaths = searchDirPaths
+  const candidatePluginDirPaths = searchDirPaths
     .map(dirPath => path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)))
     .filter(pluginDirPath => fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory());
 
-  if (candicatePluginDirPaths.length === 0) {
+  if (candidatePluginDirPaths.length === 0) {
     context.print.error('Can not locate the plugin package.');
     result = await promptForPluginPath();
-  } else if (candicatePluginDirPaths.length === 1) {
+  } else if (candidatePluginDirPaths.length === 1) {
     context.print.green('Plugin package found.');
-    context.print.blue(candicatePluginDirPaths[0]);
+    context.print.blue(candidatePluginDirPaths[0]);
     const { confirmed } = await inquirer.prompt({
       type: 'confirm',
       name: 'confirmed',
@@ -73,12 +73,12 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
       default: true,
     });
     if (confirmed) {
-      result = candicatePluginDirPaths[0];
+      result = candidatePluginDirPaths[0];
     }
-  } else if (candicatePluginDirPaths.length > 1) {
+  } else if (candidatePluginDirPaths.length > 1) {
     context.print.warning('Multiple plugins with the package name are found.');
 
-    const options = candicatePluginDirPaths.concat([CANCEL]);
+    const options = candidatePluginDirPaths.concat([CANCEL]);
     const answer = await inquirer.prompt({
       type: 'list',
       name: 'selection',
@@ -181,7 +181,7 @@ async function addNewPluginPackage(context: Context, pluginDirPath: string) {
 async function addExcludedPluginPackage(context: Context, userSelection: PluginInfo[]) {
   if (userSelection.length > 0) {
     if (userSelection.length === 1) {
-      addFromExcluded(context.pluginPlatform, userSelection[0]);
+      await addFromExcluded(context.pluginPlatform, userSelection[0]);
     } else {
       const options = new Array<InquirerOption>();
       userSelection.forEach(pluginInfo => {
@@ -199,7 +199,7 @@ async function addExcludedPluginPackage(context: Context, userSelection: PluginI
         choices: options,
       });
 
-      addFromExcluded(context.pluginPlatform, answer.selection);
+      await addFromExcluded(context.pluginPlatform, answer.selection);
     }
     await confirmAndScan(context.pluginPlatform);
   }

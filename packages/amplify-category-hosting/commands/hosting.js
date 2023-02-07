@@ -39,5 +39,6 @@ module.exports = {
     context.amplify.showHelp(header, commands);
 
     context.print.info('');
+    return undefined;
   },
 };

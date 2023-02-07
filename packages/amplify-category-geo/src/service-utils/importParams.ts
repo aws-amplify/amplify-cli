@@ -1,17 +1,17 @@
 export type FeatureCollection = {
-  type: "FeatureCollection";
+  type: 'FeatureCollection';
   features: Feature[];
 }
 
 export type Feature = {
-  type: "Feature";
+  type: 'Feature';
   properties: Record<string, any>;
   geometry: Geometry;
   id: string;
 }
 
 export type Geometry = {
-  type: "Polygon";
+  type: 'Polygon';
   coordinates: Array<Array<Array<number>>>;
 }
 
@@ -35,8 +35,8 @@ export type ImportParams = {
 }
 
 export enum IdentifierOption {
-  RootLevelID = "RootLevelID",
-  CustomProperty = "CustomProperty"
+  RootLevelID = 'RootLevelID',
+  CustomProperty = 'CustomProperty'
 }
 
 export type IdentifierInfo = {

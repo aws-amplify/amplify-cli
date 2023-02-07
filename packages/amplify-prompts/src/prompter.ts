@@ -20,7 +20,7 @@ import { Stopwatch } from './stopwatch';
  * Provides methods for collecting interactive customer responses from the shell
  */
 class AmplifyPrompter implements Prompter {
-  flowData: IFlowData|undefined; // interactive cli flow data journal
+  flowData: IFlowData | undefined; // interactive cli flow data journal
   stopWatch: Stopwatch;
   constructor(private readonly prompter: typeof prompt = prompt, private readonly print: typeof printer = printer) {
     // construct a shim on top of enquirer to throw an error if it is called when stdin is non-interactive
@@ -36,23 +36,23 @@ class AmplifyPrompter implements Prompter {
     this.stopWatch = new Stopwatch();
   }
 
-  private throwLoggedError = (message: string, errorMsg : string) : void => {
+  private throwLoggedError = (message: string, errorMsg: string): void => {
     this.flowData?.pushInteractiveFlow(message, errorMsg);
     throw new Error(errorMsg);
-  }
+  };
 
   setFlowData = (flowData: IFlowData): void => {
     this.flowData = flowData;
-  }
+  };
 
   private pushInteractiveFlow = (promptString: string, input: unknown, redact = false) => {
     if (isInteractiveShell) {
       if (this.flowData && input) {
-        const finalInput = (redact) ? '*'.repeat((input as string).length) : input;
+        const finalInput = redact ? '*'.repeat((input as string).length) : input;
         this.flowData.pushInteractiveFlow(promptString, finalInput);
       }
     }
-  }
+  };
 
   /**
    * Asks a continue prompt.
@@ -116,9 +116,17 @@ class AmplifyPrompter implements Prompter {
    * @param options Prompt options. options.transform is required if T !== string
    * @returns The prompt response
    */
-  input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>): Promise<PromptReturn<RS, T>> => {
+  input = async <RS extends ReturnSize = 'one', T = string>(
+    message: string,
+    ...options: MaybeOptionalInputOptions<RS, T>
+  ): Promise<PromptReturn<RS, T>> => {
     const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
-    const enquirerPromptType : EnquirerPromptType = 'hidden' in opts && opts.hidden ? EnquirerPromptType.INVISIBLE : opts.returnSize === 'many' ? EnquirerPromptType.LIST : EnquirerPromptType.INPUT;
+    const enquirerPromptType: EnquirerPromptType =
+      'hidden' in opts && opts.hidden
+        ? EnquirerPromptType.INVISIBLE
+        : opts.returnSize === 'many'
+        ? EnquirerPromptType.LIST
+        : EnquirerPromptType.INPUT;
 
     if (isYes) {
       if (opts.initial !== undefined) {
@@ -147,16 +155,18 @@ class AmplifyPrompter implements Prompter {
     if (typeof opts.transform === 'function') {
       let functionResult;
       if (Array.isArray(result)) {
-        functionResult = (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as unknown as PromptReturn<RS, T>;
+        functionResult = ((await Promise.all(
+          result.map(async part => (opts.transform as Function)(part) as T),
+        )) as unknown) as PromptReturn<RS, T>;
       } else {
-        functionResult = opts.transform(result as string) as unknown as PromptReturn<RS, T>;
+        functionResult = (opts.transform(result as string) as unknown) as PromptReturn<RS, T>;
       }
       this.pushInteractiveFlow(message, functionResult, enquirerPromptType == EnquirerPromptType.INVISIBLE);
       return functionResult;
     }
 
     this.pushInteractiveFlow(message, result, enquirerPromptType == EnquirerPromptType.INVISIBLE);
-    return result as unknown as PromptReturn<RS, T>;
+    return (result as unknown) as PromptReturn<RS, T>;
   };
 
   /**
@@ -185,10 +195,11 @@ class AmplifyPrompter implements Prompter {
     const opts = options?.[0] || {};
 
     // map string[] choices into GenericChoice<T>[]
-    const genericChoices: GenericChoice<T>[] = typeof choices[0] === 'string'
-      // this assertion is safe because the choice array can only be a string[] if the generic type is a string
-      ? ((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown as GenericChoice<T>[])
-      : (choices as GenericChoice<T>[]);
+    const genericChoices: GenericChoice<T>[] =
+      typeof choices[0] === 'string'
+        ? // this assertion is safe because the choice array can only be a string[] if the generic type is a string
+          (((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown) as GenericChoice<T>[])
+        : (choices as GenericChoice<T>[]);
 
     const initialIndexes = initialOptsToIndexes(
       genericChoices.map(choice => choice.value),
@@ -253,7 +264,11 @@ class AmplifyPrompter implements Prompter {
         choices: enquirerChoices,
         pointer(_: unknown, i: number) {
           // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
+          // @ts-ignore
           return this.state.index === i ? chalk.cyan('❯') : ' ';
+        },
+        indicator(_: unknown, choice: { enabled: boolean }) {
+          return choice.enabled ? chalk.cyan('●') : '○';
         },
         validate() {
           if (opts && ('pickAtLeast' in opts || 'pickAtMost' in opts)) {
@@ -290,7 +305,7 @@ class AmplifyPrompter implements Prompter {
     return loggedRet;
   };
 
-  getTotalPromptElapsedTime = () : number => this.stopWatch.getElapsedMilliseconds()
+  getTotalPromptElapsedTime = (): number => this.stopWatch.getElapsedMilliseconds();
 }
 
 export const prompter: Prompter = new AmplifyPrompter();
@@ -301,9 +316,8 @@ export const prompter: Prompter = new AmplifyPrompter();
  * @param equals An optional function to determine if two elements are equal. If not specified, === is used
  * Note that choices are assumed to be unique by the equals function definition
  */
-export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (
-  choices: T[],
-) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (choices: T[]) =>
+  selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
 
 /**
  * Helper function to generate a function that will return an index of a single selection from a list
@@ -366,8 +380,8 @@ type Prompter = {
 type MaybeAvailableHiddenInputOption<RS extends ReturnSize> = RS extends 'many'
   ? unknown
   : {
-    hidden?: boolean;
-  };
+      hidden?: boolean;
+    };
 
 // The initial selection for a pick prompt can be specified either by index or a selection function that generates indexes.
 // See byValues and byValue above
@@ -386,14 +400,14 @@ type InitialValueOption<T> = {
 type MultiSelectMinimum<RS extends ReturnSize> = RS extends 'one'
   ? unknown
   : {
-    pickAtLeast?: number;
-  };
+      pickAtLeast?: number;
+    };
 
 type MultiSelectMaximum<RS extends ReturnSize> = RS extends 'one'
   ? unknown
   : {
-    pickAtMost?: number;
-  };
+      pickAtMost?: number;
+    };
 
 type ValidateValueOption = {
   validate?: Validator;
@@ -409,11 +423,11 @@ type MaybeOptionalTransformOption<T> = T extends string ? Partial<TransformOptio
 
 type ReturnSizeOption<RS extends ReturnSize> = RS extends 'many'
   ? {
-    returnSize: 'many';
-  }
+      returnSize: 'many';
+    }
   : {
-    returnSize?: 'one';
-  };
+      returnSize?: 'one';
+    };
 
 type Choices<T> = T extends string ? GenericChoice<T>[] | string[] : GenericChoice<T>[];
 
@@ -450,7 +464,7 @@ type InputOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> &
 
 // abstraction over equirer prompt types
 enum EnquirerPromptType {
-    INVISIBLE = 'invisible',
-    LIST = 'list',
-    INPUT = 'input'
+  INVISIBLE = 'invisible',
+  LIST = 'list',
+  INPUT = 'input',
 }

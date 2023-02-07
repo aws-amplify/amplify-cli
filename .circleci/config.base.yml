@@ -398,24 +398,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             verifyPkgCli
 
-  graphql_e2e_tests:
-    <<: *defaults
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Run GraphQL end-to-end tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            cd packages/graphql-transformers-e2e-tests/
-            retry yarn e2e --maxWorkers=3 $TEST_SUITE
-          environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
-          no_output_timeout: 90m
-      - store_test_results:
-          path: ~/repo/packages/graphql-transformers-e2e-tests/
   amplify_sudo_install_test:
     <<: *defaults
     steps:
@@ -503,8 +485,8 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v5.2.0 --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 90m
+            retry yarn run migration_v5.2.0 --no-cache  --maxWorkers=3 --forceExit $TEST_SUITE
+          no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
@@ -533,8 +515,8 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 90m
+            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+          no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
@@ -565,8 +547,8 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 90m
+            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+          no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
@@ -595,7 +577,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -625,7 +607,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -653,7 +635,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --maxWorkers=3
+            retry yarn run console-integration --no-cache --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
@@ -899,6 +881,13 @@ jobs:
                   sleep 60
                 done
           no_output_timeout: 180m
+      - run:
+          name: 'Collect Results'
+          command: yarn workflow-results
+      - run: *scan_e2e_test_artifacts
+      - store_artifacts:
+          path: ~/repo/artifacts
+
     working_directory: ~/repo
 
 workflows:
@@ -963,18 +952,6 @@ workflows:
                 - beta
                 - release
                 - /tagged-release-without-e2e-tests\/.*/
-      - graphql_e2e_tests:
-          context:
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - upload_pkg_binaries
       - integration_test:
           context:
             - e2e-test-context
@@ -1200,7 +1177,6 @@ workflows:
           requires:
             - test
             - mock_e2e_tests
-            - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
@@ -1306,9 +1282,11 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  source $BASH_ENV
+                  amplify version
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 60m
+                  retry yarn run e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+                no_output_timeout: 65m
       - when:
           condition:
             or:
@@ -1322,7 +1300,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 90m
+                no_output_timeout: 65m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:

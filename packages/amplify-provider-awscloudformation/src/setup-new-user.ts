@@ -7,6 +7,7 @@ import * as systemConfigManager from './system-config-manager';
 import obfuscationUtil from './utility-obfuscate';
 
 import awsRegions from './aws-regions.js';
+import { printer } from 'amplify-prompts';
 
 /**
  * setup new user entry point
@@ -23,7 +24,9 @@ export const run = async (context): Promise<string> => {
   context.print.info('');
   context.print.info('Sign in to your AWS administrator account:');
   context.print.info(chalk.green(constants.AWSAmazonConsoleUrl));
-  open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {});
+  open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {
+    // empty
+  });
 
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
@@ -38,24 +41,19 @@ export const run = async (context): Promise<string> => {
     },
   ]);
   awsConfigInfo.region = answers.region;
-  context.print.info('Specify the username of the new IAM user:');
-  const { userName } = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'userName',
-      message: 'user name: ',
-      default: `amplify-${context.amplify.makeId()}`,
-    },
-  ]);
 
-  let deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfigInfo.region);
-  const isOnWindows = process.platform === 'win32';
-  if (isOnWindows || isOnWsl) {
-    deepLinkURL = deepLinkURL.replace('$new', '`$new');
-  }
-  context.print.info('Complete the user creation using the AWS console');
-  context.print.info(chalk.green(deepLinkURL.replace('`', '')));
-  open(deepLinkURL, { wait: false }).catch(() => {});
+  printer.info('Follow the instructions at');
+  printer.info(constants.CreateIAMUserAmplifyDocs, 'blue');
+  printer.blankLine();
+  printer.info('to complete the user creation in the AWS console');
+  printer.info(constants.AWSCreateIAMUsersUrl, 'blue');
+
+  open(constants.CreateIAMUserAmplifyDocs, { wait: false }).catch(() => {
+    // empty
+  });
+  open(constants.AWSCreateIAMUsersUrl, { wait: false }).catch(() => {
+    // empty
+  });
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
   context.print.info('Enter the access key of the newly created user:');
@@ -131,6 +129,5 @@ export const run = async (context): Promise<string> => {
   });
 };
 
-const validateAWSConfig = (awsConfigInfo): boolean => (
-  awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey
-);
+const validateAWSConfig = (awsConfigInfo): boolean =>
+  awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey;

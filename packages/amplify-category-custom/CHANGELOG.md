@@ -90,6 +90,33 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-beta.0...@aws-amplify/amplify-category-custom@3.0.0-beta.1) (2022-11-19)
+## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.2...@aws-amplify/amplify-category-custom@2.6.3) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.1...@aws-amplify/amplify-category-custom@2.6.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* custom category prompter tests ([2bd6c9d](https://github.com/aws-amplify/amplify-cli/commit/2bd6c9deb67631640c564b2098f1c7262efe0a0d))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.0...@aws-amplify/amplify-category-custom@2.6.1) (2023-01-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom
 
@@ -98,11 +125,18 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-cdkv2.0...@aws-amplify/amplify-category-custom@3.0.0-beta.0) (2022-11-17)
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.5...@aws-amplify/amplify-category-custom@2.6.0) (2023-01-03)
 
 
 ### Bug Fixes
 
 * update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* Typescript -> TypeScript in customer-facing errors ([#11404](https://github.com/aws-amplify/amplify-cli/issues/11404)) ([a1e63d8](https://github.com/aws-amplify/amplify-cli/commit/a1e63d83c9366f957f7087273e34e36ceacb1293))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
 
 
 

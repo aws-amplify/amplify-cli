@@ -2,7 +2,7 @@ import { AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { reportError } from '../commands/diagnose';
 import { Context } from '../domain/context';
-import { init, handleException } from '../amplify-exception-handler';
+import { init, handleException, handleUnhandledRejection } from '../amplify-exception-handler';
 
 const printerMock = printer as any;
 
@@ -109,5 +109,47 @@ describe('test exception handler', () => {
     expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
+  });
+});
+
+describe('test unhandled rejection handler', () => {
+  it('should return error with message when unhandled promise rejected with string', async () => {
+    const testString = 'test';
+    const testError = new Error(testString);
+    expect(() => {
+      handleUnhandledRejection(testString);
+    }).toThrowError(testError);
+  });
+
+  it('should return error with message when unhandled promise rejected with an object', async () => {
+    const testObject = { error: 'test' };
+    const testError = new Error(JSON.stringify(testObject));
+    expect(() => {
+      handleUnhandledRejection(testObject);
+    }).toThrowError(testError);
+  });
+
+  it('should return error with message when unhandled promise rejected with an error', async () => {
+    const testString = 'test';
+    const testError = new Error(testString);
+    expect(() => {
+      handleUnhandledRejection(testError);
+    }).toThrowError(testError);
+  });
+
+  it('should return error with message when unhandled promise rejected with a number', async () => {
+    const testNumber = 1;
+    const testError = new Error(testNumber.toString());
+    expect(() => {
+      handleUnhandledRejection(testNumber);
+    }).toThrowError(testError);
+  });
+
+  it('should return error with unknown message when unhandled promise rejected with null', async () => {
+    const testString = 'Unhandled promise rejection';
+    const testError = new Error(testString);
+    expect(() => {
+      handleUnhandledRejection(null);
+    }).toThrowError(testError);
   });
 });

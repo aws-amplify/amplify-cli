@@ -1,0 +1,452 @@
+{
+    "name": "test",
+    "version": "10.5.1",
+    "lockfileVersion": 2,
+    "requires": true,
+    "packages": {
+      "": {
+        "name": "test",
+        "version": "10.5.1",
+        "license": "Apache-2.0",
+        "peerDependencies": {
+          "@aws-cdk/core": "^1.172.0"
+        }
+      },
+      "node_modules/@aws-cdk/cloud-assembly-schema": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-1.188.0.tgz",
+        "integrity": "sha512-jyidQby1aUhxyJF+7neWDdzLf+nT3jOgx3NhkMipWOtPm3miXwckhjglBZqnSn+DL9njL/g4AO0xZgkn2wJM5g==",
+        "bundleDependencies": [
+          "jsonschema",
+          "semver"
+        ],
+        "peer": true,
+        "dependencies": {
+          "jsonschema": "^1.4.1",
+          "semver": "^7.3.8"
+        },
+        "engines": {
+          "node": ">= 14.15.0"
+        }
+      },
+      "node_modules/@aws-cdk/cloud-assembly-schema/node_modules/jsonschema": {
+        "version": "1.4.1",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true,
+        "engines": {
+          "node": "*"
+        }
+      },
+      "node_modules/@aws-cdk/cloud-assembly-schema/node_modules/lru-cache": {
+        "version": "6.0.0",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true,
+        "dependencies": {
+          "yallist": "^4.0.0"
+        },
+        "engines": {
+          "node": ">=10"
+        }
+      },
+      "node_modules/@aws-cdk/cloud-assembly-schema/node_modules/semver": {
+        "version": "7.3.8",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true,
+        "dependencies": {
+          "lru-cache": "^6.0.0"
+        },
+        "bin": {
+          "semver": "bin/semver.js"
+        },
+        "engines": {
+          "node": ">=10"
+        }
+      },
+      "node_modules/@aws-cdk/cloud-assembly-schema/node_modules/yallist": {
+        "version": "4.0.0",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true
+      },
+      "node_modules/@aws-cdk/core": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/core/-/core-1.188.0.tgz",
+        "integrity": "sha512-oYer2Aj7kFHC6zlfIJLnB/iUYW0KMas6FbWyfANxDDnmYhN/8kL+ScL3mwJGfmvnZkOB7mGj1hNzXanF+BfG3g==",
+        "bundleDependencies": [
+          "fs-extra",
+          "minimatch",
+          "@balena/dockerignore",
+          "ignore"
+        ],
+        "peer": true,
+        "dependencies": {
+          "@aws-cdk/cloud-assembly-schema": "1.188.0",
+          "@aws-cdk/cx-api": "1.188.0",
+          "@aws-cdk/region-info": "1.188.0",
+          "@balena/dockerignore": "^1.0.2",
+          "constructs": "^3.3.69",
+          "fs-extra": "^9.1.0",
+          "ignore": "^5.2.4",
+          "minimatch": "^3.1.2"
+        },
+        "engines": {
+          "node": ">= 14.15.0"
+        },
+        "peerDependencies": {
+          "@aws-cdk/cloud-assembly-schema": "1.188.0",
+          "@aws-cdk/cx-api": "1.188.0",
+          "@aws-cdk/region-info": "1.188.0",
+          "constructs": "^3.3.69"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/@balena/dockerignore": {
+        "version": "1.0.2",
+        "inBundle": true,
+        "license": "Apache-2.0",
+        "peer": true
+      },
+      "node_modules/@aws-cdk/core/node_modules/at-least-node": {
+        "version": "1.0.0",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true,
+        "engines": {
+          "node": ">= 4.0.0"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/balanced-match": {
+        "version": "1.0.2",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true
+      },
+      "node_modules/@aws-cdk/core/node_modules/brace-expansion": {
+        "version": "1.1.11",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true,
+        "dependencies": {
+          "balanced-match": "^1.0.0",
+          "concat-map": "0.0.1"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/concat-map": {
+        "version": "0.0.1",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true
+      },
+      "node_modules/@aws-cdk/core/node_modules/constructs": {
+        "version": "3.4.217",
+        "resolved": "https://registry.npmjs.org/constructs/-/constructs-3.4.217.tgz",
+        "integrity": "sha512-o2TcscfwmQTzxAu+ebHkfiMuGv9pyWtt7j0lmDCTOrYUqLmtmdltQGWM+gGmC03F5eZelZJ5UTjF/l5SCB/eyg==",
+        "peer": true,
+        "engines": {
+          "node": ">= 14.17.0"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/fs-extra": {
+        "version": "9.1.0",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true,
+        "dependencies": {
+          "at-least-node": "^1.0.0",
+          "graceful-fs": "^4.2.0",
+          "jsonfile": "^6.0.1",
+          "universalify": "^2.0.0"
+        },
+        "engines": {
+          "node": ">=10"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/graceful-fs": {
+        "version": "4.2.10",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true
+      },
+      "node_modules/@aws-cdk/core/node_modules/ignore": {
+        "version": "5.2.4",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true,
+        "engines": {
+          "node": ">= 4"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/jsonfile": {
+        "version": "6.1.0",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true,
+        "dependencies": {
+          "universalify": "^2.0.0"
+        },
+        "optionalDependencies": {
+          "graceful-fs": "^4.1.6"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/minimatch": {
+        "version": "3.1.2",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true,
+        "dependencies": {
+          "brace-expansion": "^1.1.7"
+        },
+        "engines": {
+          "node": "*"
+        }
+      },
+      "node_modules/@aws-cdk/core/node_modules/universalify": {
+        "version": "2.0.0",
+        "inBundle": true,
+        "license": "MIT",
+        "peer": true,
+        "engines": {
+          "node": ">= 10.0.0"
+        }
+      },
+      "node_modules/@aws-cdk/cx-api": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-1.188.0.tgz",
+        "integrity": "sha512-o0WWYzNvX+BwWwuedpy3OdZDE0vYBJCIGW8TwP6fN+fAJYG7x85nk7cod5FPigKg4Cq1FaYZZUU/sdVo3ovAqg==",
+        "bundleDependencies": [
+          "semver"
+        ],
+        "peer": true,
+        "dependencies": {
+          "@aws-cdk/cloud-assembly-schema": "1.188.0",
+          "semver": "^7.3.8"
+        },
+        "engines": {
+          "node": ">= 14.15.0"
+        },
+        "peerDependencies": {
+          "@aws-cdk/cloud-assembly-schema": "1.188.0"
+        }
+      },
+      "node_modules/@aws-cdk/cx-api/node_modules/lru-cache": {
+        "version": "6.0.0",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true,
+        "dependencies": {
+          "yallist": "^4.0.0"
+        },
+        "engines": {
+          "node": ">=10"
+        }
+      },
+      "node_modules/@aws-cdk/cx-api/node_modules/semver": {
+        "version": "7.3.8",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true,
+        "dependencies": {
+          "lru-cache": "^6.0.0"
+        },
+        "bin": {
+          "semver": "bin/semver.js"
+        },
+        "engines": {
+          "node": ">=10"
+        }
+      },
+      "node_modules/@aws-cdk/cx-api/node_modules/yallist": {
+        "version": "4.0.0",
+        "inBundle": true,
+        "license": "ISC",
+        "peer": true
+      },
+      "node_modules/@aws-cdk/region-info": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/region-info/-/region-info-1.188.0.tgz",
+        "integrity": "sha512-PM4VrtKnBakTGIK+fh7yoE/9YXxoBsJ1Uv4Q0J5ypdxGolnyctb8dgWSCgGZ9IQVAGsghXAekGWSDQh41wdkJw==",
+        "peer": true,
+        "engines": {
+          "node": ">= 14.15.0"
+        }
+      }
+    },
+    "dependencies": {
+      "@aws-cdk/cloud-assembly-schema": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-1.188.0.tgz",
+        "integrity": "sha512-jyidQby1aUhxyJF+7neWDdzLf+nT3jOgx3NhkMipWOtPm3miXwckhjglBZqnSn+DL9njL/g4AO0xZgkn2wJM5g==",
+        "peer": true,
+        "requires": {
+          "jsonschema": "^1.4.1",
+          "semver": "^7.3.8"
+        },
+        "dependencies": {
+          "jsonschema": {
+            "version": "1.4.1",
+            "bundled": true,
+            "peer": true
+          },
+          "lru-cache": {
+            "version": "6.0.0",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "yallist": "^4.0.0"
+            }
+          },
+          "semver": {
+            "version": "7.3.8",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "lru-cache": "^6.0.0"
+            }
+          },
+          "yallist": {
+            "version": "4.0.0",
+            "bundled": true,
+            "peer": true
+          }
+        }
+      },
+      "@aws-cdk/core": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/core/-/core-1.188.0.tgz",
+        "integrity": "sha512-oYer2Aj7kFHC6zlfIJLnB/iUYW0KMas6FbWyfANxDDnmYhN/8kL+ScL3mwJGfmvnZkOB7mGj1hNzXanF+BfG3g==",
+        "peer": true,
+        "requires": {
+          "@aws-cdk/cloud-assembly-schema": "1.188.0",
+          "@aws-cdk/cx-api": "1.188.0",
+          "@aws-cdk/region-info": "1.188.0",
+          "@balena/dockerignore": "^1.0.2",
+          "constructs": "^3.3.69",
+          "fs-extra": "^9.1.0",
+          "ignore": "^5.2.4",
+          "minimatch": "^3.1.2"
+        },
+        "dependencies": {
+          "@balena/dockerignore": {
+            "version": "1.0.2",
+            "bundled": true,
+            "peer": true
+          },
+          "at-least-node": {
+            "version": "1.0.0",
+            "bundled": true,
+            "peer": true
+          },
+          "balanced-match": {
+            "version": "1.0.2",
+            "bundled": true,
+            "peer": true
+          },
+          "brace-expansion": {
+            "version": "1.1.11",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "balanced-match": "^1.0.0",
+              "concat-map": "0.0.1"
+            }
+          },
+          "concat-map": {
+            "version": "0.0.1",
+            "bundled": true,
+            "peer": true
+          },
+          "constructs": {
+            "version": "3.4.217",
+            "resolved": "https://registry.npmjs.org/constructs/-/constructs-3.4.217.tgz",
+            "integrity": "sha512-o2TcscfwmQTzxAu+ebHkfiMuGv9pyWtt7j0lmDCTOrYUqLmtmdltQGWM+gGmC03F5eZelZJ5UTjF/l5SCB/eyg==",
+            "peer": true
+          },
+          "fs-extra": {
+            "version": "9.1.0",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "at-least-node": "^1.0.0",
+              "graceful-fs": "^4.2.0",
+              "jsonfile": "^6.0.1",
+              "universalify": "^2.0.0"
+            }
+          },
+          "graceful-fs": {
+            "version": "4.2.10",
+            "bundled": true,
+            "peer": true
+          },
+          "ignore": {
+            "version": "5.2.4",
+            "bundled": true,
+            "peer": true
+          },
+          "jsonfile": {
+            "version": "6.1.0",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "graceful-fs": "^4.1.6",
+              "universalify": "^2.0.0"
+            }
+          },
+          "minimatch": {
+            "version": "3.1.2",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "brace-expansion": "^1.1.7"
+            }
+          },
+          "universalify": {
+            "version": "2.0.0",
+            "bundled": true,
+            "peer": true
+          }
+        }
+      },
+      "@aws-cdk/cx-api": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-1.188.0.tgz",
+        "integrity": "sha512-o0WWYzNvX+BwWwuedpy3OdZDE0vYBJCIGW8TwP6fN+fAJYG7x85nk7cod5FPigKg4Cq1FaYZZUU/sdVo3ovAqg==",
+        "peer": true,
+        "requires": {
+          "@aws-cdk/cloud-assembly-schema": "1.188.0",
+          "semver": "^7.3.8"
+        },
+        "dependencies": {
+          "lru-cache": {
+            "version": "6.0.0",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "yallist": "^4.0.0"
+            }
+          },
+          "semver": {
+            "version": "7.3.8",
+            "bundled": true,
+            "peer": true,
+            "requires": {
+              "lru-cache": "^6.0.0"
+            }
+          },
+          "yallist": {
+            "version": "4.0.0",
+            "bundled": true,
+            "peer": true
+          }
+        }
+      },
+      "@aws-cdk/region-info": {
+        "version": "1.188.0",
+        "resolved": "https://registry.npmjs.org/@aws-cdk/region-info/-/region-info-1.188.0.tgz",
+        "integrity": "sha512-PM4VrtKnBakTGIK+fh7yoE/9YXxoBsJ1Uv4Q0J5ypdxGolnyctb8dgWSCgGZ9IQVAGsghXAekGWSDQh41wdkJw==",
+        "peer": true
+      }
+    }
+  }
+  

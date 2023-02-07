@@ -10,7 +10,6 @@ import {
   deleteProjectDir,
   getAppId,
   getProjectMeta,
-  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -36,7 +35,7 @@ describe('adding custom resources migration test', () => {
     await initJSProjectWithProfileV10(projRoot, { name: 'customMigration', disableAmplifyAppCreation: false });
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
-    
+
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
 
     // this is where we will write our custom cdk stack logic to
@@ -86,7 +85,7 @@ describe('adding custom resources migration test', () => {
       const destVLatestCustomResourceFilePath = path.join(projRoot2, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
       fs.copyFileSync(srcVLatestCustomResourceFilePath, destVLatestCustomResourceFilePath);
 
-      // this should fail because customer also needs to update package.json dependencies for cdkv2
+      // this should fail because customer also needs to update package.json dependencies for cdkV2
       await expect(buildCustomResources(projRoot2, {}, usingLatestCode)).rejects.toThrow();
 
       // emulate updating the package.json dependencies
@@ -99,7 +98,7 @@ describe('adding custom resources migration test', () => {
       await amplifyPushAuth(projRoot2, usingLatestCode);
 
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN
-      await addCFNCustomResource(projRoot2, { name: cfnResourceName }, usingLatestCode);
+      await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCategorySelection: false }, usingLatestCode);
       const customCFNFilePath = path.join(
         projRoot2,
         'amplify',
@@ -117,7 +116,6 @@ describe('adding custom resources migration test', () => {
           Description: `Input parameter describing snsTopicArn attribute for custom/${cdkResourceName} resource`,
         },
       });
-
     } finally {
       deleteProjectDir(projRoot2);
     }

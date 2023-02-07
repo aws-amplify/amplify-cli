@@ -25,9 +25,9 @@
   "dependencies": {
     "ajv": "^6.12.6",
     "amplify-cli-core": "4.0.0-cdkv2.5",
-    "amplify-headless-interface": "1.16.0-cdkv2.2",
-    "amplify-prompts": "2.6.2-cdkv2.2",
-    "amplify-util-headless-input": "1.9.6",
+    "amplify-headless-interface": "1.17.0",
+    "amplify-prompts": "2.6.3",
+    "amplify-util-headless-input": "1.9.9",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "constructs": "^10.0.5",
@@ -37,6 +37,10 @@
   },
   "jest": {
     "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },

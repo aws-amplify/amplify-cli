@@ -19,7 +19,7 @@ export type IndexChange = {
 /**
  * Generate a list of GSI changes that needs to be pushed to update the
  * GSIs
- * @param current DynamoDB table represnting currently deployed
+ * @param current DynamoDB table representing currently deployed
  * @param next DynamoDB table configuration that needs to be deployed
  */
 export const getGSIDiffs = (current: DynamoDB.Table, next: DynamoDB.Table): IndexChange[] => {
@@ -39,7 +39,7 @@ export const getGSIDiffs = (current: DynamoDB.Table, next: DynamoDB.Table): Inde
 /**
  * Generates a list of operation that needs to be performed in iterative push to update
  * the DynamoDB tables GSIs
- * @param currentIndexes DynamoDB GlobalSecondaryIndexes represnting currently deployed table
+ * @param currentIndexes DynamoDB GlobalSecondaryIndexes representing currently deployed table
  * @param nextIndexes DynamoDB GlobalSecondaryIndexes that needs to be deployed in next push
  */
 export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], nextIndexes: GlobalSecondaryIndex[]): IndexChange[] => {
@@ -90,7 +90,7 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
 export const isIndexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: GlobalSecondaryIndex): boolean => {
   const diffs = getDiffs(currentIndex, nextIndex);
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
-    return;
+    return undefined;
   }
   return diffs?.some(diff => {
     const leaf = diff.path?.slice(-1)[0];

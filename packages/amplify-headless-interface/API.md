@@ -505,13 +505,13 @@ export interface MapConfiguration {
     // (undocumented)
     mapStyle: MapStyle;
     // (undocumented)
-    serviceName: "Map";
+    serviceName: 'Map';
 }
 
 // @public (undocumented)
 export interface MapModification {
     // (undocumented)
-    serviceName: "Map";
+    serviceName: 'Map';
 }
 
 // @public (undocumented)

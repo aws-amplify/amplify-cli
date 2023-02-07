@@ -239,7 +239,7 @@ export class ResourceExport extends ResourcePackager {
     }
   }
 
-  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters: boolean = true) {
+  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters = true) {
     const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
     return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat, deleteParameters);
   }
@@ -258,7 +258,7 @@ export class ResourceExport extends ResourcePackager {
 
   private async copyResource(sourcePath: string, destinationPath: string) {
     let dir = destinationPath;
-    if(!fs.existsSync(sourcePath)){
+    if (!fs.existsSync(sourcePath)) {
       return;
     }
     // if there is an extension then get the dir path
@@ -300,6 +300,7 @@ export class ResourceExport extends ResourcePackager {
               resource.resourceName,
               AMPLIFY_APPSYNC_FILES,
               APPSYNC_STACK_FOLDER,
+              // eslint-disable-next-line spellcheck/spell-checker
               key === 'CustomResourcesjson' ? 'CustomResources.json' : `${key}.json`,
             );
 
@@ -323,7 +324,7 @@ export class ResourceExport extends ResourcePackager {
             });
           await this.processAndWriteCfnTemplate(cfnTemplate, destination, templateFormat, false);
         } else {
-          this.copyResource(cfnFile, destination);
+          await this.copyResource(cfnFile, destination);
         }
         stackParameters[stackName].nestedStacks[logicalId] = nestedStack;
 
@@ -335,7 +336,7 @@ export class ResourceExport extends ResourcePackager {
     }
 
     if (this.resourcesHasContainers(resources)) {
-      // create network resouce
+      // create network resource
       const template = (await getNetworkResourceCfn(this.context, stackName)) as Template;
       const destinationPath = path.join(this.exportDirectoryPath, AMPLIFY_CFN_TEMPLATES, NETWORK_STACK_FILENAME);
       stackParameters[stackName].nestedStacks[NETWORK_STACK_LOGICAL_ID] = {
