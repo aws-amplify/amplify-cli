@@ -9,10 +9,16 @@ import { getLogger } from '../logger/index';
 import { HooksMeta } from './hooksMeta';
 import { skipHooks } from './skipHooks';
 import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
-import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, HooksRuntime, DataParameter, ErrorParameter } from './hooksTypes';
+import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { pathManager, stateManager } from '../state-manager';
 
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
+
+/**
+ *  runtime for hooks
+ */
+type HooksRuntime = { runtimePath: string, runtimeOptions?: string[] };
+
 
 /**
  * execute hooks present in the hooks directory
@@ -74,14 +80,8 @@ const execHelper = async (
 
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
-    let runtimeArgs;
-    // addings runtime options passed in hooks_config.json
-    if(Array.isArray(hooksRuntime.runtime_options) && hooksRuntime.runtime_options.length > 0){
-      runtimeArgs = hooksRuntime.runtime_options;
-      runtimeArgs = runtimeArgs.concat([execFileMeta.filePath]);
-    }
     // adding default if options arent defined
-    runtimeArgs = runtimeArgs ?? [execFileMeta.filePath];
+    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath])
     const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
       cwd: projectRoot,
       env: { PATH: process.env.PATH },
@@ -193,11 +193,11 @@ const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): HooksRunt
   }
   const hooksRuntime: HooksRuntime = {
     runtimePath : executablePath,
-  }
+  };
   // check runtime options
   const runtimeOptions = extensionObj?.[extension]?.runtime_options;
   if(Array.isArray(runtimeOptions) && runtimeOptions.length > 0){
-    hooksRuntime.runtime_options = extensionObj?.[extension]?.runtime_options;
+    hooksRuntime.runtimeOptions = extensionObj?.[extension]?.runtime_options;
   }
 
   return hooksRuntime;

@@ -793,12 +793,6 @@ export class HooksMeta {
 export type HooksNoun = 'notifications' | 'analytics' | 'api' | 'auth' | 'function' | 'hosting' | 'interactions' | 'predictions' | 'storage' | 'xr' | 'codegen' | 'env';
 
 // @public (undocumented)
-export type HooksRuntime = {
-    runtimePath: string;
-    runtime_options?: string[];
-};
-
-// @public (undocumented)
 export type HooksVerb = 'add' | 'update' | 'remove' | 'push' | 'pull' | 'publish' | 'delete' | 'checkout' | 'list' | 'get' | 'mock' | 'build' | 'status' | 'import' | 'gqlcompile' | 'addgraphqldatasource' | 'statements' | 'types';
 
 // Warning: (ae-forgotten-export) The symbol "TagVariables" needs to be exported by the entry point index.d.ts

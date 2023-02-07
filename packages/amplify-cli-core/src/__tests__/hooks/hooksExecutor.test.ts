@@ -140,13 +140,20 @@ describe('hooksExecutioner tests', () => {
   test('should determine runtime from hooks-config', async () => {
     stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
     await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
-    expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, expect.anything(), expect.anything());
+    expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, ['testProjectHooksDirPath/pre-pull.py'], expect.anything());
   });
 
   test('should determine runtime options from hooks-config', async () => {
     stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' , runtime_options: ['mock1', 'mock2'] } } });
     await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, ['mock1','mock2', 'testProjectHooksDirPath/pre-pull.py'], expect.anything());
+  });
+
+  test('should determine empty array runtime options from hooks-config', async () => {
+    stateManagerMock.getHooksConfigJson.mockClear();
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' , runtime_options: [] } } });
+    await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
+    expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, ['testProjectHooksDirPath/pre-pull.py'], expect.anything());
   });
 
   test('should determine windows runtime from hooks-config', async () => {
