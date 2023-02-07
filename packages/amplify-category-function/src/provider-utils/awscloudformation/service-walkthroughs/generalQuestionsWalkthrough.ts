@@ -1,46 +1,27 @@
-import inquirer from 'inquirer';
-import { v4 as uuid } from 'uuid';
+import { alphanumeric, prompter } from 'amplify-prompts';
+import * as uuid from 'uuid';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
-import { advancedSettingsList } from '../utils/constants';
+import { $TSContext } from 'amplify-cli-core';
 
 /**
  * Asks general questions about the function and populates corresponding FunctionParameters
  * @param context The Amplify Context object
  */
-export async function generalQuestionsWalkthrough(context: any): Promise<Partial<FunctionParameters>> {
-  return await inquirer.prompt(generalQuestions(context));
+export async function generalQuestionsWalkthrough(context: $TSContext): Promise<Partial<FunctionParameters>> {
+  const defaultName = getDefaultProjectNameFromContext(context);
+  const lambdaFunctionName = await prompter.input('Provide an AWS Lambda function name:', {
+    validate: alphanumeric('You can use the following characters: a-z A-Z 0-9'),
+    initial: defaultName,
+  });
+
+  return { functionName: lambdaFunctionName };
 }
 
-function generalQuestions(context: any): object[] {
-  return [
-    {
-      type: 'input',
-      name: 'functionName',
-      message: 'Provide an AWS Lambda function name:',
-      validate: context.amplify.inputValidation({
-        operator: 'regex',
-        value: '^[a-zA-Z0-9]+$',
-        onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
-        required: true,
-      }),
-      default: () => {
-        const appName = context.amplify
-          .getProjectDetails()
-          .projectConfig.projectName.toLowerCase()
-          .replace(/[^0-9a-zA-Z]/gi, '');
-        const [shortId] = uuid().split('-');
-        return `${appName}${shortId}`;
-      },
-    },
-  ];
-}
-
-export async function settingsUpdateSelection() {
-  const settingsSelectionQuestion = {
-    type: 'list',
-    name: 'selectedSettings',
-    message: 'Which setting do you want to update?',
-    choices: advancedSettingsList,
-  };
-  return await inquirer.prompt([settingsSelectionQuestion]);
-}
+export const getDefaultProjectNameFromContext = (context: $TSContext): string => {
+  const appName = context.amplify
+    .getProjectDetails()
+    .projectConfig.projectName.toLowerCase()
+    .replace(/[^0-9a-zA-Z]/gi, '');
+  const [shortId] = uuid.v4().split('-');
+  return `${appName}${shortId}`;
+};

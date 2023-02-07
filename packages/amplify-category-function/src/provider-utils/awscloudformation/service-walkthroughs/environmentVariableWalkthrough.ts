@@ -1,7 +1,9 @@
-import inquirer from 'inquirer';
 import _ from 'lodash';
 import { validKey, getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
 import { getLocalFunctionSecretNames } from '../secrets/functionSecretsStateManager';
+import { prompter, byValue, maxLength } from 'amplify-prompts';
+
+type Operation = 'add' | 'update' | 'remove' | 'abort';
 
 /* eslint-disable no-param-reassign */
 /**
@@ -13,7 +15,7 @@ export const askEnvironmentVariableQuestions = async (
   skipWalkthrough?: boolean,
 ): Promise<Record<string, unknown>> => {
   if (!environmentVariables) {
-    environmentVariables = await getStoredEnvironmentVariables(resourceName);
+    environmentVariables = getStoredEnvironmentVariables(resourceName);
   }
   let firstLoop = true;
   for (
@@ -60,71 +62,58 @@ export const askEnvironmentVariableQuestions = async (
   };
 };
 
-const selectEnvironmentVariableQuestion = async (
-  hasExistingEnvVars: boolean,
-  firstLoop: boolean,
-): Promise<'add' | 'update' | 'remove' | 'abort'> => {
+const selectEnvironmentVariableQuestion = async (hasExistingEnvVars: boolean, firstLoop: boolean): Promise<Operation> => {
   if (!hasExistingEnvVars && firstLoop) {
     return 'add';
   }
-  const { operation } = await inquirer.prompt([
-    {
-      name: 'operation',
-      message: 'Select what you want to do with environment variables:',
-      type: 'list',
-      choices: [
-        {
-          value: 'add',
-          name: 'Add new environment variable',
-        },
-        {
-          value: 'update',
-          name: 'Update existing environment variables',
-          disabled: !hasExistingEnvVars,
-        },
-        {
-          value: 'remove',
-          name: 'Remove existing environment variables',
-          disabled: !hasExistingEnvVars,
-        },
-        {
-          value: 'abort',
-          name: "I'm done",
-        },
-      ],
-      default: firstLoop ? 'add' : 'abort',
-    },
-  ]);
 
-  return operation;
+  const choices = [
+    {
+      value: 'add',
+      name: 'Add new environment variable',
+    },
+    {
+      value: 'update',
+      name: 'Update existing environment variables',
+      disabled: !hasExistingEnvVars,
+    },
+    {
+      value: 'remove',
+      name: 'Remove existing environment variables',
+      disabled: !hasExistingEnvVars,
+    },
+    {
+      value: 'abort',
+      name: "I'm done",
+    },
+  ];
+  const initialValue = firstLoop ? 'add' : 'abort';
+  const response: Operation = (await prompter.pick('Select what you want to do with environment variables:', choices, {
+    initial: byValue(initialValue),
+  })) as Operation;
+
+  return response;
 };
 
 const addEnvironmentVariableQuestion = async (
   environmentVariables: Record<string, string>,
   secretNames: string[],
 ): Promise<{ newEnvironmentVariableKey: string; newEnvironmentVariableValue: string }> => {
-  const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await inquirer.prompt([
-    {
-      name: 'newEnvironmentVariableKey',
-      message: 'Enter the environment variable name:',
-      type: 'input',
-      validate: input => {
-        if (!validKey.test(input)) {
-          return 'You can use the following characters: a-z A-Z 0-9 _';
-        }
-        if (_.has(environmentVariables, input) || secretNames.includes(input)) {
-          return `Key "${input}" is already used`;
-        }
-        return true;
-      },
+  const newEnvironmentVariableKey = await prompter.input('Enter the environment variable name:', {
+    validate: (input: string) => {
+      if (!validKey.test(input)) {
+        return 'You can use the following characters: a-z A-Z 0-9 _';
+      }
+      if (_.has(environmentVariables, input) || secretNames.includes(input)) {
+        return `Key "${input}" is already used`;
+      }
+      return true;
     },
-    {
-      name: 'newEnvironmentVariableValue',
-      message: 'Enter the environment variable value:',
-      type: 'input',
-      validate: envVarValueValidator,
-    },
-  ]);
+  });
+  const newEnvironmentVariableValue = await prompter.input('Enter the environment variable value:', {
+    validate: maxLength(2048, 'The value must be 2048 characters or less'),
+  });
+
   return {
     newEnvironmentVariableKey,
     newEnvironmentVariableValue,
@@ -135,39 +124,25 @@ const updateEnvironmentVariableQuestion = async (
   environmentVariables: Record<string, string>,
   secretNames: string[] = [],
 ): Promise<{ newEnvironmentVariableKey: string; newEnvironmentVariableValue: string; targetedKey: string }> => {
-  const { targetedKey } = await inquirer.prompt([
-    {
-      name: 'targetedKey',
-      message: 'Which environment variable do you want to update:',
-      type: 'list',
-      choices: Object.keys(environmentVariables),
-    },
-  ]);
+  const targetedKey = await prompter.pick('Which environment variable do you want to update:', Object.keys(environmentVariables));
 
-  const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await inquirer.prompt([
-    {
-      name: 'newEnvironmentVariableKey',
-      message: 'Enter the environment variable name:',
-      type: 'input',
-      validate: input => {
-        if (!validKey.test(input)) {
-          return 'You can use the following characters: a-z A-Z 0-9 _';
-        }
-        if ((_.has(environmentVariables, input) && input !== targetedKey) || secretNames.includes(input)) {
-          return `Key "${input}" is already used.`;
-        }
-        return true;
-      },
-      default: targetedKey,
+  const newEnvironmentVariableKey = await prompter.input('Enter the environment variable name:', {
+    validate: input => {
+      if (!validKey.test(input)) {
+        return 'You can use the following characters: a-z A-Z 0-9 _';
+      }
+      if ((_.has(environmentVariables, input) && input !== targetedKey) || secretNames.includes(input)) {
+        return `Key "${input}" is already used.`;
+      }
+      return true;
     },
-    {
-      name: 'newEnvironmentVariableValue',
-      message: 'Enter the environment variable value:',
-      type: 'input',
-      validate: envVarValueValidator,
-      default: environmentVariables[targetedKey],
-    },
-  ]);
+    initial: targetedKey,
+  });
+
+  const newEnvironmentVariableValue = await prompter.input('Enter the environment variable value:', {
+    validate: maxLength(2048, 'The value must be 2048 characters or less'),
+    initial: environmentVariables[targetedKey],
+  });
 
   return {
     newEnvironmentVariableKey,
@@ -177,21 +152,7 @@ const updateEnvironmentVariableQuestion = async (
 };
 
 const removeEnvironmentVariableQuestion = async (environmentVariables: Record<string, string>): Promise<string> => {
-  const { targetedKey } = await inquirer.prompt([
-    {
-      name: 'targetedKey',
-      message: 'Which environment variable do you want to remove:',
-      type: 'list',
-      choices: Object.keys(environmentVariables),
-    },
-  ]);
+  const targetedKey = await prompter.pick('Which environment variable do you want to remove:', Object.keys(environmentVariables));
 
   return targetedKey;
-};
-
-const envVarValueValidator = (input: string): true | string => {
-  if (input.length < 1 || input.length > 2048) {
-    return 'The value must be between 1 and 2048 characters long';
-  }
-  return true;
 };
