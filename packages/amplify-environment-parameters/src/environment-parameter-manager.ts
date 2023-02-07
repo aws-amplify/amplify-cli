@@ -131,7 +131,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     Object.entries(params).forEach(([key, value]) => {
       const [categoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(key);
       const resourceParamManager = this.getResourceParamManager(categoryName, resourceName);
-      resourceParamManager.setParam(parameterName, value as string); // TODO
+      resourceParamManager.setParam(parameterName, value as string); // TODO remove need for type assertion
     });
   }
 
