@@ -194,42 +194,12 @@ export function amplifyPushUpdateLegacy(
 }
 
 /**
- * Function to test amplify push with allowDestructiveUpdates flag option
- */
-export function amplifyPushUpdateLegacy(
-  cwd: string,
-  waitForText?: RegExp,
-  allowDestructiveUpdates = false,
-  overridePushTimeoutMS = 0,
-): Promise<void> {
-  const args = ['push'];
-  if (allowDestructiveUpdates) {
-    args.push('--allow-destructive-graphql-schema-updates');
-  }
-  return spawn(getCLIPath(false), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
-    .wait('Are you sure you want to continue?')
-    .sendConfirmYes()
-    .wait(waitForText || /.*/)
-    .runAsync();
-}
-
-/**
  * Function to test amplify push
  */
 export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
   spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
-    .wait(/.*/)
-    .runAsync();
-
-/**
- * To be used in migrations tests only
- */
-export const amplifyPushAuthV5V6 = (cwd: string): Promise<void> =>
-  spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait('Are you sure you want to continue?')
-    .sendConfirmYes()
     .wait(/.*/)
     .runAsync();
 
