@@ -32,7 +32,7 @@
     "amplify-cli-core": "4.0.0-beta.4",
     "amplify-headless-interface": "1.17.0",
     "amplify-prompts": "2.6.3",
-    "amplify-util-import": "2.3.1",
+    "amplify-util-import": "2.3.2-beta.0",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
