@@ -1,7 +1,7 @@
 import { $TSContext, pathManager, stateManager, JSONUtilities, $TSObject } from 'amplify-cli-core';
 import * as path from 'path';
 import _ = require('lodash');
-import { ServiceName } from 'amplify-category-function';
+import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { getMockSearchableTriggerDirectory } from '../mock-directory';
 
 type LambdaTriggersMap = { [index: string] : LambdaTrigger[]};

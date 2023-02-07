@@ -44,7 +44,7 @@
     "@aws-cdk/cloudformation-diff": "~1.172.0",
     "amplify-app": "4.3.8",
     "amplify-category-analytics": "4.4.0",
-    "amplify-category-function": "4.3.0",
+    "@aws-amplify/amplify-category-function": "4.3.0",
     "amplify-category-geo": "2.11.0",
     "amplify-category-hosting": "3.4.8",
     "amplify-category-interactions": "4.3.0",

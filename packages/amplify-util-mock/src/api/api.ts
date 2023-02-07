@@ -24,7 +24,7 @@ import {
   LambdaTrigger,
 } from '../utils/lambda/find-lambda-triggers';
 import { getMockConfig } from '../utils/mock-config-file';
-import { getInvoker } from 'amplify-category-function';
+import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
