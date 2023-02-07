@@ -25,6 +25,10 @@
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "collectCoverage": true,
     "testMatch": [
       "**/*.test.ts"
     ]

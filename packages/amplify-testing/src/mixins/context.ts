@@ -11,11 +11,11 @@ export function ContextMixin<TBase extends Constructor<AmplifyTester>>(Base: TBa
       this.addResultProcessor(this.contextResultProcessor);
       this.addTestParameterCreator(this.testParameterCreator);
     }
-    private testParameterCreator(options: Record<string, unknown>): Record<string, unknown> & { context: $TSContext } {
+    private testParameterCreator = (options: Record<string, unknown>): Record<string, unknown> & { context: $TSContext } => {
       return { context: this.context };
-    }
-    private contextResultProcessor<T>(result: TestResult<T>): TestResult<T> & { context: $TSContext } {
+    };
+    private contextResultProcessor = <T>(result: TestResult<T>): TestResult<T> & { context: $TSContext } => {
       return { ...result, context: this.context };
-    }
+    };
   };
 }

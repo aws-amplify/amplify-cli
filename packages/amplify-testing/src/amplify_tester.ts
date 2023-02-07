@@ -10,9 +10,6 @@ export type TestParameters = Record<string, unknown>;
 export type TestResultProcessor = <T>(result: TestResult<T>) => TestResult<T>;
 
 export class AmplifyTester {
-  public get hasValidState() {
-    return true;
-  }
   private resultProcessors: Array<TestResultProcessor> = [];
   protected addResultProcessor = (processor: TestResultProcessor) => {
     this.resultProcessors.push(processor);
