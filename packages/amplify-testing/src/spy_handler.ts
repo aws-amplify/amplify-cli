@@ -6,7 +6,6 @@ export class SpyProxyHandler<T extends object, U extends keyof T & (string | sym
       } else {
         return target[name];
       }
-      return target[name];
     }
     return undefined;
   }

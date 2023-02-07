@@ -1,50 +1,32 @@
-import { $TSContext, $TSMeta } from 'amplify-cli-core';
-import { AmplifyTestVolume, FileContent, FullPath } from './volume';
-
 export type TestResult<T> = {
-  context: $TSContext;
-  meta: $TSMeta;
-  fileSystem: Record<FullPath, FileContent>;
   data: T;
+  [key: string]: unknown;
 };
 
 export type AmplifyTesterOptions = Record<string, unknown>;
-export class AmplifyTester {
-  constructor(context: $TSContext, meta: $TSMeta, volume: AmplifyTestVolume, options: AmplifyTesterOptions = {}) {
-    this.context = context;
-    this.amplifyMeta = meta;
-    this.volume = volume;
-  }
-  private context: Partial<$TSContext>;
-  private amplifyMeta: Partial<$TSMeta>;
-  private volume: AmplifyTestVolume;
+export type AmplifyTestConfiguration = Record<string, unknown>;
+export type TestParameterCreator = (options: AmplifyTesterOptions) => TestParameters;
+export type TestParameters = Record<string, unknown>;
+export type TestResultProcessor = <T>(result: TestResult<T>) => TestResult<T>;
 
-  public withStartingVolume(volume: Record<FullPath, FileContent>) {
-    this.volume.setAll(volume);
-    return this;
-  }
+export class AmplifyTester {
   public get hasValidState() {
     return true;
   }
-  public withAmplifyMeta(meta: Partial<$TSMeta>) {
-    this.amplifyMeta = meta;
-    return this;
-  }
-  public withContextProperty<T extends keyof $TSContext>(key: T, value: $TSContext[T]) {
-    this.context[key] = value;
-    return this;
-  }
-  public withFile(fullPath: FullPath, content: FileContent) {
-    this.volume.setFile(fullPath, content);
-    return this;
-  }
-  public async runTest<T>(runner: (context: $TSContext, meta: $TSMeta) => Promise<T>): Promise<TestResult<T>> {
-    const data = await runner((this.context as unknown) as $TSContext, (this.amplifyMeta as unknown) as $TSMeta);
-    return {
-      context: (this.context as unknown) as $TSContext,
-      meta: (this.amplifyMeta as unknown) as $TSMeta,
-      fileSystem: this.volume.toJSON(),
-      data,
-    };
-  }
+  private resultProcessors: Array<TestResultProcessor> = [];
+  protected addResultProcessor = (processor: TestResultProcessor) => {
+    this.resultProcessors.push(processor);
+  };
+  private testParameterCreators: Array<TestParameterCreator> = [];
+  protected addTestParameterCreator = (creator: TestParameterCreator) => {
+    this.testParameterCreators.push(creator);
+  };
+
+  public runTest = async <T>(runner: (parameters: TestParameters) => Promise<T>): Promise<TestResult<T>> => {
+    const parameters = this.testParameterCreators.reduce((parameters, creator) => ({ ...parameters, ...creator(parameters) }), {});
+    const data = await runner(parameters);
+    const result: TestResult<T> = { data };
+    const processedResult = this.resultProcessors.reduce((result, processor) => processor(result) as TestResult<T>, result);
+    return { ...processedResult, data };
+  };
 }
