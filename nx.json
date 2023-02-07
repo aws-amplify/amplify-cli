@@ -10,7 +10,7 @@
           "test",
           "lint",
           "package",
-          "prepare", 
+          "prepare",
           "extract-api"
         ],
         "parallel": 8
