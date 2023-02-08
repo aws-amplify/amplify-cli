@@ -24,7 +24,7 @@ describe('encryption helper', () => {
     decipher.setAuthTag(tag);
 
     // encrypt the given text
-    const decrypted = decipher.update(text, 'binary', 'utf-8') + decipher.final('utf8');
+    const decrypted = decipher.update(text as any, 'binary', 'utf-8' as any) + decipher.final('utf8');
     expect(decrypted).toEqual(plainText.toString('utf8'));
   });
 

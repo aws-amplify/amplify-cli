@@ -2,12 +2,7 @@ import url from 'url';
 import nock from 'nock';
 import * as uuid from 'uuid';
 
-import { UsageData } from '../domain/amplify-usageData/UsageData';
-import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
-import { Input, AmplifyError } from 'amplify-cli-core';
-import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
-import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-import { SerializableError } from '../domain/amplify-usageData/SerializableError';
+import { UsageData, getUrl, Input, AmplifyError, ManuallyTimedCodePath, UsageDataPayload, SerializableError } from 'amplify-cli-core';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';

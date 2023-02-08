@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { Input } from '../context/input';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
-import redactInput from './identifiable-input-regex';
+import { redactInput } from './identifiable-input-regex';
 import { Timer } from './Timer';
 import { UsageDataPayload } from './UsageDataPayload';
 import {

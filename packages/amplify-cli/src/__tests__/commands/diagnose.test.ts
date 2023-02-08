@@ -10,16 +10,13 @@ import { run } from '../../commands/diagnose';
 import { Context } from '../../domain/context';
 
 jest.mock('uuid');
-jest.mock('amplify-cli-core');
 jest.mock('../../commands/helpers/collect-files');
-jest.mock('../../commands/helpers/encryption-helpers', () => ({
-  createHashedIdentifier: jest.fn().mockReturnValue({
-    projectIdentifier: 'projectId',
-    projectEnvIdentifier: 'projectId',
-  }),
-  encryptBuffer: jest.fn().mockReturnValue('encryptedString'),
-  encryptKey: jest.fn().mockReturnValue('encryptedKey'),
-}));
+// jest.spyOn(cliCore, 'createHashedIdentifier').mockReturnValue({
+//   projectIdentifier: 'projectId',
+//   projectEnvIdentifier: 'projectId',
+// });
+// jest.spyOn(cliCore, 'encryptBuffer').mockResolvedValue('encryptedString');
+// jest.spyOn(cliCore, 'encryptKey').mockResolvedValue('encryptedString');
 jest.mock('archiver');
 jest.mock('fs-extra');
 jest.mock('amplify-cli-logger', () => ({
@@ -54,7 +51,7 @@ const mockMeta = {
     },
   },
 };
-const collectedFiles : { filePath: string, redact: boolean }[] = [
+const collectedFiles: { filePath: string; redact: boolean }[] = [
   {
     filePath: 'file.ts',
     redact: false,
@@ -72,25 +69,28 @@ describe('run report command', () => {
         getUsageDataPayload: jest.fn().mockReturnValue({
           sessionUuid: 'sessionId',
           installationUuid: '',
-
         }),
+        emitError: jest.fn(),
       },
       exeInfo: {
         /* eslint-disable spellcheck/spell-checker */
         cloudFormationEvents: [
           {
-            StackId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            StackId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             EventId: 'd006c2e0-c0f4-11ec-841d-0e43d8dbed1f',
             StackName: 'amplify-pushfail-dev-230444',
             LogicalResourceId: 'amplify-pushfail-dev-230444',
-            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            PhysicalResourceId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             ResourceType: 'AWS::CloudFormation::Stack',
             Timestamp: '2022-04-20T21:57:03.599Z',
             ResourceStatus: 'UPDATE_IN_PROGRESS',
             ResourceStatusReason: 'User Initiated',
           },
           {
-            StackId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            StackId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             EventId: 'apipushfail-CREATE_IN_PROGRESS-2022-04-20T21:57:09.528Z',
             StackName: 'amplify-pushfail-dev-230444',
             LogicalResourceId: 'apipushfail',
@@ -100,7 +100,8 @@ describe('run report command', () => {
             ResourceStatus: 'CREATE_IN_PROGRESS',
           },
           {
-            StackId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            StackId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             EventId: 'UpdateRolesWithIDPFunctionRole-CREATE_IN_PROGRESS-2022-04-20T21:57:09.540Z',
             StackName: 'amplify-pushfail-dev-230444',
             LogicalResourceId: 'UpdateRolesWithIDPFunctionRole',
@@ -111,7 +112,6 @@ describe('run report command', () => {
           },
         ],
         /* eslint-enable spellcheck/spell-checker */
-
       },
       input: {
         options: {
@@ -140,25 +140,25 @@ describe('run report command', () => {
     mockArchiver.create = jest.fn().mockReturnValue(zipperMock);
 
     const fsMock = fs as jest.Mocked<typeof fs>;
-    fsMock.createWriteStream.mockReturnValue({
+    fsMock.createWriteStream.mockReturnValue(({
       on: jest.fn().mockImplementation((event, resolveFunction) => {
         if (event === 'close') {
           resolveFunction();
         }
       }),
       error: jest.fn(),
-    } as unknown as WriteStream);
+    } as unknown) as WriteStream);
 
     const uuidMock = uuid as jest.Mocked<typeof uuid>;
     uuidMock.v4.mockReturnValue('randomPassPhrase');
 
-    const contextMockTyped = contextMock as unknown as Context;
+    const contextMockTyped = (contextMock as unknown) as Context;
     await run(contextMockTyped, new Error('mock error'));
     expect(fsMock.readFileSync).toBeCalled();
     expect(Redactor).toBeCalledTimes(1);
     expect(zipperMock.pipe).toBeCalled();
     expect(zipperMock.finalize).toBeCalled();
-    expect(fetch).toBeCalled();
+    expect(contextMockTyped.usageData.emitError).toHaveBeenCalled();
     expect(zipperMock.append).toBeCalledTimes(3);
   });
 });

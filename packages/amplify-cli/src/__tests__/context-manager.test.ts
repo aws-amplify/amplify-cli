@@ -1,28 +1,14 @@
-import { Input, PluginPlatform, stateManager, PluginInfo, PluginManifest } from 'amplify-cli-core';
+import { UsageData, NoUsageData, CLINoFlowReport, Input, PluginPlatform, stateManager, PluginInfo, PluginManifest } from 'amplify-cli-core';
 import * as appConfig from '../app-config';
 import { constructContext, attachUsageData } from '../context-manager';
 import { Context } from '../domain/context';
-import { UsageData, NoUsageData } from '../domain/amplify-usageData';
 
-jest.mock('../domain/amplify-usageData/', () => ({
-  UsageData: {
-    Instance: {
-      setIsHeadless: jest.fn(),
-      init: jest.fn(),
-    },
-  },
-  NoUsageData: {
-    Instance: {
-      setIsHeadless: jest.fn(),
-      init: jest.fn(),
-    },
-  },
-  CLINoFlowReport: {
-    instance: jest.fn(() => ({
-      setIsHeadless: jest.fn(),
-    })),
-  },
-}));
+jest.spyOn(UsageData.Instance, 'setIsHeadless');
+jest.spyOn(UsageData.Instance, 'init');
+jest.spyOn(NoUsageData.Instance, 'setIsHeadless');
+jest.spyOn(NoUsageData.Instance, 'init');
+jest.spyOn(CLINoFlowReport, 'instance', 'get').mockReturnValue(({ setIsHeadless: jest.fn() } as unknown) as any);
+jest.spyOn(NoUsageData.Instance, 'init');
 jest.mock('../app-config');
 describe('test attachUsageData', () => {
   const version = 'latestVersion';

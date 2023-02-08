@@ -1,4 +1,4 @@
-import redactInput from '../domain/amplify-usageData/identifiable-input-regex';
+import { redactInput } from 'amplify-cli-core';
 import { Input } from 'amplify-cli-core';
 
 describe('input-redaction', () => {

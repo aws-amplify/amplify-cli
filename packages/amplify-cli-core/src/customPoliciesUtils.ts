@@ -24,10 +24,7 @@ export const CustomIAMPoliciesSchema = {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
       Resource: {
         type: 'array',
-        anyOf: [
-          { contains: { type: 'string' } },
-          { contains: { type: 'object', additionalProperties: true } }
-        ],
+        anyOf: [{ contains: { type: 'string' } }, { contains: { type: 'object', additionalProperties: true } }],
         minItems: 1,
         nullable: false,
       },
@@ -128,8 +125,8 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
       'arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:(([a-z]{2}|\\*)(-gov)?-[a-z-*]+-(\\d{1}|\\*)|\\*)?:(\\d{12}|\\*)?:(.*)',
     );
     const actionRegex = new RegExp('[a-zA-Z0-9]+:[a-z|A-Z|0-9|*]+');
-    const wrongResourcesRegex = [];
-    const wrongActionsRegex = [];
+    const wrongResourcesRegex: string[] = [];
+    const wrongActionsRegex: string[] = [];
     let errorMessage = '';
 
     for (const resource of resources) {
@@ -138,13 +135,13 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
       }
 
       if (!(resourceRegex.test(resource) || resource === '*')) {
-        wrongResourcesRegex.push(resource);
+        wrongResourcesRegex.push(resource as any);
       }
     }
 
     for (const action of actions) {
       if (!actionRegex.test(action)) {
-        wrongActionsRegex.push(action);
+        wrongActionsRegex.push(action as any);
       }
     }
 

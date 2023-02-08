@@ -1,3 +1,13 @@
+import cliCore, {
+  BannerMessage,
+  executeHooks,
+  FeatureFlags,
+  HooksMeta,
+  JSONUtilities,
+  pathManager,
+  skipHooks,
+  stateManager,
+} from 'amplify-cli-core';
 import { Context } from '../domain/context';
 
 describe('test SIGINT with execute', () => {
@@ -9,49 +19,24 @@ describe('test SIGINT with execute', () => {
     const input = { argv: ['/usr/local/bin/node', '/usr/local/bin/amplify-dev', '-v'], options: { v: true } };
     const mockExit = jest.fn();
 
-    jest.setMock('amplify-cli-core', {
-      ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
-      JSONUtilities: {
-        readJson: jest.fn().mockReturnValue({
-          name: 'cli',
-          version: '12.12.1',
-        }),
-        stringify: jest.fn().mockReturnValue(''),
-      },
-      exitOnNextTick: mockExit,
-      pathManager: {
-        getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
-        getAWSCredentialsFilePath: jest.fn(),
-        getAWSConfigFilePath: jest.fn(),
-        findProjectRoot: jest.fn(),
-      },
-      stateManager: {
-        getMeta: jest.fn(),
-        projectConfigExists: jest.fn(),
-        localEnvInfoExists: jest.fn().mockReturnValue(true),
-        teamProviderInfoExists: jest.fn().mockReturnValue(true),
-      },
-      FeatureFlags: {
-        initialize: jest.fn(),
-      },
-      BannerMessage: {
-        initialize: jest.fn(),
-        getMessage: jest.fn(),
-      },
-      PathConstants: {
-        TeamProviderFileName: 'team-provider-info.json',
-        DeploymentSecretsFileName: 'deployment-secrets.json',
-      },
-      CLIContextEnvironmentProvider: jest.fn(),
-      executeHooks: jest.fn(),
-      HooksMeta: {
-        getInstance: jest.fn().mockReturnValue({
-          setAmplifyVersion: jest.fn(),
-          setHookEventFromInput: jest.fn(),
-        }),
-      },
-      skipHooks: jest.fn(),
+    jest.spyOn(JSONUtilities, 'readJson').mockReturnValue({
+      name: 'cli',
+      version: '12.12.1',
     });
+    jest.spyOn(JSONUtilities, 'stringify').mockReturnValue('');
+    jest.spyOn(stateManager, 'getMeta');
+    jest.spyOn(stateManager, 'teamProviderInfoExists').mockReturnValue(true);
+    jest.spyOn(stateManager, 'localEnvInfoExists').mockReturnValue(true);
+    jest.spyOn(stateManager, 'projectConfigExists').mockImplementation(() => true);
+    jest.spyOn(FeatureFlags, 'initialize');
+    jest.spyOn(BannerMessage, 'initialize');
+    jest.spyOn(BannerMessage, 'getMessage');
+    jest.spyOn(pathManager, 'getHomeDotAmplifyDirPath').mockReturnValue('homedir/.amplify');
+    jest.spyOn(pathManager, 'getAWSCredentialsFilePath');
+    jest.spyOn(pathManager, 'getAWSConfigFilePath');
+    jest.spyOn(pathManager, 'findProjectRoot');
+    jest.spyOn(HooksMeta, 'getInstance').mockReturnValue({ setAmplifyVersion: jest.fn(), setHookEventFromInput: jest.fn() } as any);
+
     jest.setMock('../plugin-manager', {
       getPluginPlatform: jest.fn(),
     });
@@ -114,6 +99,7 @@ describe('test SIGINT with execute', () => {
       process.emit('SIGINT', 'SIGINT');
       process.exitCode = 2;
     }, 10);
+    jest.spyOn(process, 'exit').mockImplementation(mockExit as any);
 
     // for some reason this test doesn't work when hoisting this require to a top level import
     // probably something to do with how the mocks are constructed

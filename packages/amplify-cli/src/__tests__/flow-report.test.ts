@@ -1,17 +1,23 @@
 import { stateManager } from 'amplify-cli-core';
 import {
-  AddS3ServiceConfiguration, AddStorageRequest,
-  ImportAuthRequest, CrudOperation, AddGeoRequest,
-  GeoServiceConfiguration, AccessType, MapStyle, AppSyncServiceConfiguration, AppSyncAPIKeyAuthType, AddApiRequest,
+  AddS3ServiceConfiguration,
+  AddStorageRequest,
+  ImportAuthRequest,
+  CrudOperation,
+  AddGeoRequest,
+  GeoServiceConfiguration,
+  AccessType,
+  MapStyle,
+  AppSyncServiceConfiguration,
+  AppSyncAPIKeyAuthType,
+  AddApiRequest,
 } from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
 import { Redactor } from 'amplify-cli-logger';
-import crypto from 'crypto';
-import { CLIFlowReport } from '../domain/amplify-usageData/FlowReport';
+import { CLIFlowReport } from 'amplify-cli-core';
 
 describe('Test FlowReport Logging', () => {
-  beforeAll(() => {
-  });
+  beforeAll(() => {});
 
   afterAll(() => {
     jest.clearAllMocks();
@@ -80,8 +86,8 @@ describe('Test FlowReport Logging', () => {
     flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('api', 'add'));
     expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.apiName); // resource name redacted
     expect(flowReport.optionFlowData[0].input).toContain(redactValue('apiName', input.serviceConfiguration.apiName));
-    const redactedInput = JSON.parse(flowReport.optionFlowData[0].input as unknown as string);
-    expect(redactedInput.serviceConfiguration.transformSchema).toEqual(input.serviceConfiguration.transformSchema);// transform schema must exist
+    const redactedInput = JSON.parse((flowReport.optionFlowData[0].input as unknown) as string);
+    expect(redactedInput.serviceConfiguration.transformSchema).toEqual(input.serviceConfiguration.transformSchema); // transform schema must exist
   });
 
   it('flow-log-headless-payload: (Geo) is redacted in flowReport', () => {
@@ -140,13 +146,14 @@ const mockAddGeoInput: GeoServiceConfiguration = {
 
 const appSyncAPIKeyAuthType: AppSyncAPIKeyAuthType = {
   mode: 'API_KEY',
-  expirationTime: Math.floor((Date.now() / 1000) + 86400), // one day
+  expirationTime: Math.floor(Date.now() / 1000 + 86400), // one day
 };
 
 const mockAddAPIInput: AppSyncServiceConfiguration = {
   serviceName: 'AppSync',
   apiName: 'mockGQLAPIName',
-  transformSchema: 'type User @model(subscriptions: null)\
+  transformSchema:
+    'type User @model(subscriptions: null)\
                         @key(fields: ["userId"])\
                         @auth(rules: [\
                             { allow: owner, ownerField: "userId" }\
@@ -208,9 +215,7 @@ const getGeoHeadlessTestInput = () => {
   return headlessPayload;
 };
 
-const getAPIHeadlessTestInput = () => {
-
-};
+const getAPIHeadlessTestInput = () => {};
 
 const getGraphQLHeadlessTestInput = () => {
   const headlessPayload: AddApiRequest = {
