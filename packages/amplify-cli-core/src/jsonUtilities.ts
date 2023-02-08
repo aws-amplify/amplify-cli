@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as jsonReader from 'hjson';
+import { WriteFileOptions } from 'fs';
 
 /**
  * Wrappers around reading and writing JSON strings
@@ -73,12 +74,12 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    const writeFileOptions: { encoding: string; mode?: number } = { encoding: 'utf8', mode: options?.mode };
+    const writeFileOptions: fs.WriteFileOptions = { encoding: 'utf8', mode: options?.mode };
     if (mergedOptions.secureFile) {
       writeFileOptions.mode = 0o600;
     }
 
-    fs.writeFileSync(fileName, jsonString, writeFileOptions);
+    fs.writeFileSync(fileName, jsonString ?? '', writeFileOptions as WriteFileOptions);
   };
 
   public static parse = <T>(
@@ -142,7 +143,10 @@ export class JSONUtilities {
     if (mergedOptions.orderedKeys) {
       const allKeys: string[] = [];
       // using JSON.stringify to walk the object and push all keys onto a list
-      JSON.stringify(data, (k, v) => { allKeys.push(k); return v; });
+      JSON.stringify(data, (k, v) => {
+        allKeys.push(k);
+        return v;
+      });
       sortKeys = allKeys.sort();
     }
 

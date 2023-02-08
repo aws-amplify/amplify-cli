@@ -1,5 +1,5 @@
 import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
-import { Input } from 'amplify-cli-core';
+import { Input } from '..';
 import { SerializableError } from './SerializableError';
 
 /**

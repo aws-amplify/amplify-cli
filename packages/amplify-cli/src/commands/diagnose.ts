@@ -1,4 +1,11 @@
-import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from 'amplify-cli-core';
+import {
+  UsageDataPayload,
+  stateManager,
+  pathManager,
+  spinner,
+  DiagnoseReportUploadError,
+  projectNotInitializedError,
+} from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -10,12 +17,11 @@ import os from 'os';
 import { v4 } from 'uuid';
 import { prompter, printer } from 'amplify-prompts';
 import { collectFiles } from './helpers/collect-files';
-import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
-import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
+import { encryptBuffer, encryptKey, createHashedIdentifier } from 'amplify-cli-core';
 import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
 import { Context } from '../domain/context';
-import { reporterEndpoint } from './helpers/reporter-apis';
+import { reporterEndpoint } from 'amplify-cli-core/src/reporter-apis';
 
 /**
  * Prompts if there is a failure in the CLI

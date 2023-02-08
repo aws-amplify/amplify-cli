@@ -3,7 +3,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { Input, PluginPlatform } from 'amplify-cli-core';
 import { AmplifyToolkit } from './amplify-toolkit';
-import { IUsageData } from './amplify-usageData';
+import { IUsageData } from 'amplify-cli-core';
 
 /**
  * Amplify Context object to manage global state

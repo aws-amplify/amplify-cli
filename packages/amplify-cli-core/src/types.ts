@@ -113,7 +113,7 @@ export type IContextPrint = {
  */
 export type IContextFilesystem = {
   remove: (targetPath: string) => void;
-  read: (targetPath: string, encoding?: string) => $TSAny;
+  read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
   write: (targetPath: string, data: unknown) => void;
   exists: (targetPath: string) => boolean;
   isFile: (targetPath: string) => boolean;

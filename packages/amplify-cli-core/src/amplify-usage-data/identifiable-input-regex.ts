@@ -1,5 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
-import { Input } from 'amplify-cli-core';
+import { JSONUtilities, Input } from '..';
 
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
 const quotes = '\\\\?"';
@@ -26,7 +25,7 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
     } while (m !== null);
 
     //replace them
-    valuesToRedact.forEach(val => {
+    valuesToRedact.forEach((val: any) => {
       s = s.replace(val, redactedInput);
     });
   } else {

@@ -17,7 +17,7 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
-import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
+import { ManuallyTimedCodePath } from 'amplify-cli-core';
 import { showBuildDirChangesMessage } from './auto-updates';
 
 /**

@@ -141,7 +141,7 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding = 'utf8'): any => {
+  read: (targetPath: string, encoding: BufferEncoding = 'utf8'): any => {
     const result = fs.readFileSync(targetPath, encoding);
     return result;
   },

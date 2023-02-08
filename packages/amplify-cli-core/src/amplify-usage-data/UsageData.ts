@@ -1,12 +1,12 @@
 /* eslint-disable class-methods-use-this */
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '../jsonUtilities';
 import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { prompter } from 'amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
-import { Input } from 'amplify-cli-core';
+import { Input } from '../context/input';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';

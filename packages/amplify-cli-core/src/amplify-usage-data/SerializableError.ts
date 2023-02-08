@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '..';
 import * as path from 'path';
 
 const stackTraceRegex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;

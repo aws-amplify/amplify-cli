@@ -41,4 +41,8 @@ export * from './context/plugin-info';
 export * from './context/plugin-manifest';
 export * from './context/plugin-verification-result';
 export * from './constants';
+export * from './amplify-usage-data';
 export * from './help';
+export * from 'amplify-cli-shared-interfaces';
+export * from './encryption-helpers';
+export * from './reporter-apis';
