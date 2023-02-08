@@ -1,8 +1,7 @@
-import { $TSAny, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
 import * as _ from 'lodash';
 import { init } from './app-config';
-// eslint-disable-next-line spellcheck/spell-checker
-import { attachExtentions as attachExtensions } from './context-extensions';
+import { attachExtensions } from 'amplify-cli-core';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
 import { ProjectSettings } from './domain/amplify-usageData/UsageDataTypes';
 import { Context } from './domain/context';
@@ -14,7 +13,7 @@ import { PluginPlatform } from './domain/plugin-platform';
  */
 export const constructContext = (pluginPlatform: PluginPlatform, input: Input): Context => {
   const context = new Context(pluginPlatform, input);
-  attachExtensions(context);
+  attachExtensions((context as unknown) as $TSContext);
   return context;
 };
 

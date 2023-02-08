@@ -32,4 +32,5 @@ export * from './errors/amplify-error';
 export * from './errors/amplify-fault';
 export * from './errors/amplify-exception';
 export * from './errors/project-not-initialized-error';
+export * from './context/context-extensions';
 export * from './help';

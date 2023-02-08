@@ -4,12 +4,9 @@ import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-
 import { Input } from '../../domain/input';
 import { constructContext } from '../../context-manager';
 
-jest.mock('amplify-cli-core');
-
-const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-stateManagerMock.getLocalAWSInfo.mockReturnValue({ envA: 'test', envB: 'test' });
-stateManagerMock.getLocalEnvInfo.mockReturnValue({ defaultEditor: 'Visual Studio Code' });
-stateManagerMock.getTeamProviderInfo.mockReturnValue({});
+jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({ envA: 'test', envB: 'test' });
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ defaultEditor: 'Visual Studio Code' });
+jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({});
 
 describe('analyzeProject', () => {
   let mockContext;
@@ -22,7 +19,7 @@ describe('analyzeProject', () => {
       '-y',
     ];
     const mockInput = new Input(mockProcessArgv);
-    mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
+    mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
     const frontendPlugins = [
       {
         name: 'amplify-frontend-javascript',
@@ -47,7 +44,9 @@ describe('analyzeProject', () => {
   });
 
   it('recognizes the default editor', async () => {
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /* noop */ });
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {
+      /* noop */
+    });
     const result = await analyzeProject(mockContext);
     expect(result.exeInfo.localEnvInfo.defaultEditor).toStrictEqual('Visual Studio Code');
     consoleLogSpy.mockClear();
@@ -59,8 +58,8 @@ describe('analyzeProject', () => {
         envName: 'test',
       },
     };
-    stateManagerMock.getLocalAWSInfo.mockReturnValue({});
-    stateManagerMock.getTeamProviderInfo.mockReturnValue({ test: {}, other: {} });
+    jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({ test: {}, other: {} });
+    jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({});
     await analyzeProject(mockContext);
     expect(mockContext.exeInfo.isNewEnv).toBe(false);
   });
@@ -71,8 +70,8 @@ describe('analyzeProject', () => {
         envName: 'new',
       },
     };
-    stateManagerMock.getLocalAWSInfo.mockReturnValue({});
-    stateManagerMock.getTeamProviderInfo.mockReturnValue({ test: {}, other: {} });
+    jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({ test: {}, other: {} });
+    jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({});
     await analyzeProject(mockContext);
     expect(mockContext.exeInfo.isNewEnv).toBe(true);
   });
