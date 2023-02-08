@@ -27,6 +27,7 @@ export type $TSContext = {
     migrationInfo: $TSAny;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
+    patching: $TSAny;
     exeInfo: $TSAny;
     input: $TSAny;
     parameters: $TSAny;
@@ -242,6 +243,9 @@ export class ApiCategoryFacade {
     // (undocumented)
     static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | DeploymentResources_2 | undefined>;
 }
+
+// @public (undocumented)
+export function attachExtensions(context: $TSContext): void;
 
 // @public (undocumented)
 export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
@@ -860,7 +864,7 @@ export type IContextTemplate = {
         target: string;
         props: $TSObject;
         directory: string;
-    }) => string;
+    }) => Promise<string>;
 };
 
 // @public (undocumented)
@@ -1241,6 +1245,22 @@ export enum PluginAPIError {
 }
 
 // @public (undocumented)
+const print_2: {
+    info: typeof info;
+    fancy: typeof fancy;
+    warning: typeof warning;
+    error: typeof error;
+    success: typeof success;
+    table: typeof table;
+    debug: typeof debug;
+    green: typeof green;
+    yellow: typeof yellow;
+    red: typeof red;
+    blue: typeof blue;
+};
+export { print_2 as print }
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
 
 // @public (undocumented)
@@ -1565,6 +1585,17 @@ export type WriteCFNTemplateOptions = {
 
 // Warnings were encountered during analysis:
 //
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "info" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "fancy" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "warning" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "error" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "success" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "table" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "debug" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "green" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "yellow" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "red" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "blue" needs to be exported by the entry point index.d.ts
 // src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
