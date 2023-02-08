@@ -1,5 +1,5 @@
 import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
-import { Input } from 'amplify-cli-core';
+import { CommandLineInput } from 'amplify-cli-core';
 import { SerializableError } from './SerializableError';
 
 /**
@@ -12,7 +12,7 @@ interface IUsageMetricsData {
   init: (
     installationUuid: string,
     version: string,
-    input: Input,
+    input: CommandLineInput,
     accountId: string,
     projectSettings: ProjectSettings,
     processStartTimeStamp: number,
@@ -31,7 +31,7 @@ export interface IUsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
   amplifyCliVersion: string;
-  input: Input | null;
+  input: CommandLineInput | null;
   inputOptions: InputOptions;
   timestamp: string;
   error: SerializableError;
