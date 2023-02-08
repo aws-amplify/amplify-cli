@@ -1585,17 +1585,17 @@ export type WriteCFNTemplateOptions = {
 
 // Warnings were encountered during analysis:
 //
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "info" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "fancy" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "warning" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "error" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "success" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "table" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "debug" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "green" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "yellow" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "red" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:182:12 - (ae-forgotten-export) The symbol "blue" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "info" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "fancy" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "warning" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "error" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "success" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "table" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "debug" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "green" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "yellow" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "red" needs to be exported by the entry point index.d.ts
+// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "blue" needs to be exported by the entry point index.d.ts
 // src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

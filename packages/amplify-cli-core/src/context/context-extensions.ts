@@ -179,22 +179,6 @@ function attachPrint(context: $TSContext) {
   context.print = print;
 }
 
-const print = {
-  info,
-  fancy,
-  warning,
-  error,
-  success,
-  table,
-  debug,
-  green,
-  yellow,
-  red,
-  blue,
-};
-
-export { print };
-
 function info(message: string): void {
   console.log(colors.info(message));
 }
@@ -269,6 +253,20 @@ function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {})
   }
   console.log(t.toString());
 }
+
+export const print = {
+  info,
+  fancy,
+  warning,
+  error,
+  success,
+  table,
+  debug,
+  green,
+  yellow,
+  red,
+  blue,
+};
 
 function columnHeaderDivider(cliTable: CLITable.Table): string[] {
   return findWidths(cliTable).map(w => Array(w).join('-'));
