@@ -27,9 +27,6 @@ export type $TSContext = {
     migrationInfo: $TSAny;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
-    patching: {
-        replace(filePath: string, oldContent: string, newContent: string): Promise<string>;
-    };
     exeInfo: $TSAny;
     input: $TSAny;
     parameters: $TSAny;

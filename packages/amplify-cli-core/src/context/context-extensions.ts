@@ -40,7 +40,6 @@ export function attachExtensions(context: $TSContext) {
   attachFilesystem(context);
   attachPrint(context);
   attachParameters(context);
-  attachPatching(context);
   attachRuntime(context);
   attachPrompt(context);
   attachTemplate(context);
@@ -163,17 +162,6 @@ const contextFileSystem = {
     return result;
   },
 };
-
-function attachPatching(context: $TSContext) {
-  context.patching = {
-    replace: async (filePath: string, oldContent: string, newContent: string): Promise<string> => {
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-      const updatedFileContent = fileContent.replace(oldContent, newContent);
-      fs.writeFileSync(filePath, updatedFileContent, 'utf-8');
-      return Promise.resolve(updatedFileContent);
-    },
-  };
-}
 
 export function attachPrint(context: $TSContext) {
   context.print = print;
