@@ -457,7 +457,7 @@ export class GraphQLResourceManager {
     template.Resources = {};
     template.Resources[OpenSearchDomainLogicalID] = searchDomain;
     template.Outputs = {};
-  }
+  };
 
   private clearTemplateState = (stackName: string) => {
     while (this.templateState.has(stackName)) {
