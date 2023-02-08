@@ -1,4 +1,4 @@
-import { getInvoker, category, isMockable, getBuilder } from 'amplify-category-function';
+import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
