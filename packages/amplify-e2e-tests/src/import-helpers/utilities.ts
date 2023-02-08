@@ -349,14 +349,11 @@ export const setupOgProjectWithAuth = async (
   withIdentityPool = false,
 ): Promise<AuthProjectDetails> => {
   const ogShortId = getShortId();
-  const ogSettings = withIdentityPool
-    ? createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId)
-    : createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
-  if ('identityPoolName' in ogSettings) {
-    await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
+  if (withIdentityPool) {
+    await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId));
   } else {
-    await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
+    await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId));
   }
   await amplifyPushAuth(ogProjectRoot);
 

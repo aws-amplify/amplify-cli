@@ -82,8 +82,8 @@ function preserveHelpInformation(input: Input): Input {
 
   // preserve command information in plugin field
   if (input.plugin && input.plugin !== 'core') {
-    const isCommandPreceedingPluginName = subCommands?.length && input.argv.indexOf(input.plugin) > input.argv.indexOf(subCommands[0]);
-    if (isCommandPreceedingPluginName) {
+    const isCommandPrecedingPluginName = subCommands?.length && input.argv.indexOf(input.plugin) > input.argv.indexOf(subCommands[0]);
+    if (isCommandPrecedingPluginName) {
       subCommands.push(input.plugin);
     } else {
       subCommands.unshift(input.plugin);
@@ -239,7 +239,7 @@ function aliasArgs(argv: string[]) {
   if (argv.length >= 4 && argv[2] === 'override' && argv[3] === 'project') {
     argv[3] = 'root';
 
-    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitingore for older projects
+    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitignore for older projects
     const { projectPath } = stateManager.getLocalEnvInfo();
     const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
     insertAmplifyIgnore(gitIgnoreFilePath);

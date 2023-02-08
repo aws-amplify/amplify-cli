@@ -1,9 +1,9 @@
-var currentdate = new Date();
-var datetime = 'Current time: ' + currentdate.getDate() + '/'
-                + (currentdate.getMonth()+1)  + '/'
-                + currentdate.getFullYear() + ' @ '
-                + currentdate.getHours() + ':'
-                + currentdate.getMinutes() + ':'
-                + currentdate.getSeconds();
+var currentDate = new Date();
+var datetime = 'Current time: ' + currentDate.getDate() + '/'
+                + (currentDate.getMonth()+1)  + '/'
+                + currentDate.getFullYear() + ' @ '
+                + currentDate.getHours() + ':'
+                + currentDate.getMinutes() + ':'
+                + currentDate.getSeconds();
 // eslint-disable-next-line
 document.getElementById("welcome").innerHTML = datetime;

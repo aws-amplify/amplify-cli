@@ -212,7 +212,7 @@ module.exports = {
   getLambdaFunctions: async context => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
-    const lambdafunctions = [];
+    const lambdaFunctions = [];
 
     do {
       logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
@@ -226,18 +226,18 @@ module.exports = {
         })
         .promise();
       if (paginatedFunctions && paginatedFunctions.Functions) {
-        lambdafunctions.push(...paginatedFunctions.Functions);
+        lambdaFunctions.push(...paginatedFunctions.Functions);
       }
       nextMarker = paginatedFunctions.NextMarker;
     } while (nextMarker);
-    return lambdafunctions;
+    return lambdaFunctions;
   },
   /**
    *
    */
   getPollyVoices: async context => {
     const pollyModel = await new Polly(context);
-    logger('getPollyVoices.polluModel.polly.describeVoices', [])();
+    logger('getPollyVoices.pollyModel.polly.describeVoices', [])();
     return pollyModel.polly.describeVoices().promise();
   },
   /**

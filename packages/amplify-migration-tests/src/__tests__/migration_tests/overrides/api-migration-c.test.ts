@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import {
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -37,7 +37,7 @@ describe('api migration update test c', () => {
     // init and add api with locally installed cli
     await initJSProjectWithProfileV4_52_0(projRoot, { name });
     await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.ResolverConfig).toBeDefined();

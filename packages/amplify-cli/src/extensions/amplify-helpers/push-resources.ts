@@ -1,5 +1,11 @@
 import {
-  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  exitOnNextTick,
+  IAmplifyResource,
+  stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
@@ -120,7 +126,7 @@ export const pushResources = async (
       printer.info('The CLI will rollback the last known iterative deployment.');
     }
     await showBuildDirChangesMessage();
-    continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
+    continueToPush = await prompter.yesOrNo('Are you sure you want to continue?');
   }
 
   if (!continueToPush) {
@@ -142,11 +148,17 @@ export const pushResources = async (
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {
-        throw new AmplifyFault('PushResourcesFault', {
-          message: err.message,
-          link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-          resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
-        }, err);
+        throw new AmplifyFault(
+          'PushResourcesFault',
+          {
+            message: err.message,
+            link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+            resolution: isAuthError
+              ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.'
+              : undefined,
+          },
+          err,
+        );
       }
     }
   } while (retryPush);
@@ -164,11 +176,13 @@ const providersPush = async (
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  await Promise.all(providers.map(async (provider: string) => {
-    const providerModule = await import(providerPlugins[provider]);
-    const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    return providerModule.pushResources(context, resourceDefinition, rebuild);
-  }));
+  await Promise.all(
+    providers.map(async (provider: string) => {
+      const providerModule = await import(providerPlugins[provider]);
+      const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
+      return providerModule.pushResources(context, resourceDefinition, rebuild);
+    }),
+  );
 };
 
 /**
@@ -178,8 +192,10 @@ export const storeCurrentCloudBackend = async (context: $TSContext): Promise<voi
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
 
-  await Promise.all(providers.map(async (provider: string) => {
-    const providerModule = await import(providerPlugins[provider]);
-    return providerModule.storeCurrentCloudBackend(context);
-  }));
+  await Promise.all(
+    providers.map(async (provider: string) => {
+      const providerModule = await import(providerPlugins[provider]);
+      return providerModule.storeCurrentCloudBackend(context);
+    }),
+  );
 };

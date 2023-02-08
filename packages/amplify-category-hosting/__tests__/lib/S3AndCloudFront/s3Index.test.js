@@ -9,8 +9,6 @@ jest.mock('../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 const fs = require('fs-extra');
 const path = require('path');
 const { open } = require('amplify-cli-core');
-const inquirer = require('inquirer');
-const mockirer = require('mockirer');
 
 const configManager = require('../../../lib/S3AndCloudFront/configuration-manager');
 const fileUPloader = require('../../../lib/S3AndCloudFront/helpers/file-uploader');
@@ -26,9 +24,19 @@ const parametersFileName = 'parameters.json';
 
 const DEV = 'DEV (S3 only with HTTP)';
 const PROD = 'PROD (S3 with CloudFront using HTTPS)';
-const Environments = [DEV, PROD];
 
 const s3IndexModule = require('../../../lib/S3AndCloudFront/index');
+
+const amplifyPrompts = require('amplify-prompts');
+
+jest.mock('amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
 
 describe('s3IndexModule', () => {
   const INTERNAL_TEMPLATE_FILE_PATH = path.normalize(path.join(__dirname, '../../../lib/', templateFileName));
@@ -102,7 +110,7 @@ describe('s3IndexModule', () => {
   };
 
   beforeAll(() => {
-    mockirer(inquirer, mockAnswers);
+    amplifyPrompts.prompter.pick.mockReturnValue(mockAnswers.environment);
     fs.ensureDirSync = jest.fn();
     fs.existsSync = jest.fn(() => {
       return true;

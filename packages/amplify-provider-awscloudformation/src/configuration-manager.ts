@@ -19,7 +19,7 @@ import {
   authTypeQuestion,
   createConfirmQuestion,
   profileNameQuestion,
-  removeProjectComfirmQuestion,
+  removeProjectConfirmQuestion,
   updateOrRemoveQuestion,
   retryAuthConfig,
 } from './question-flows/configuration-questions';
@@ -368,7 +368,7 @@ async function setProjectConfigAction(context: $TSContext) {
 
 async function confirmProjectConfigRemoval(context: $TSContext) {
   if (!context.exeInfo.inputParams.yes) {
-    const answer = await prompt(removeProjectComfirmQuestion);
+    const answer = await prompt(removeProjectConfirmQuestion);
     context.exeInfo.awsConfigInfo.action = answer.removeProjectConfig ? 'remove' : 'cancel';
   }
   return context;
@@ -634,18 +634,28 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
 
     try {
       awsConfig = await getTempCredsWithAdminTokens(context, appId);
-    } catch (e) {
-      context.print.error(`Failed to get credentials: ${e.message || e}`);
-      await context.usageData.emitError(e);
-      exitOnNextTick(1);
+    } catch (err) {
+      throw new AmplifyError(
+        'ProfileConfigurationError',
+        {
+          message: 'Failed to get AWS credentials',
+          details: err.message,
+        },
+        err,
+      );
     }
   } else if (authType.type === 'profile') {
     try {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, authType.profileName);
-    } catch (e) {
-      context.print.error(`Failed to get profile: ${e.message || e}`);
-      await context.usageData.emitError(e);
-      exitOnNextTick(1);
+    } catch (err) {
+      throw new AmplifyError(
+        'ProfileConfigurationError',
+        {
+          message: 'Failed to get profile credentials',
+          details: err.message,
+        },
+        err,
+      );
     }
   } else if (authType.type === 'accessKeys') {
     awsConfig = loadConfigFromPath(projectConfigInfo.config.awsConfigFilePath);
@@ -777,10 +787,15 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
     if (awsConfigInfo.config.useProfile) {
       try {
         resultAWSConfigInfo = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
-      } catch (e) {
-        context.print.error(`Failed to get profile: ${e.message || e}`);
-        await context.usageData.emitError(e);
-        exitOnNextTick(1);
+      } catch (err) {
+        throw new AmplifyError(
+          'ProfileConfigurationError',
+          {
+            message: 'Failed to get profile credentials',
+            details: err.message,
+          },
+          err,
+        );
       }
     } else {
       resultAWSConfigInfo = {
@@ -904,7 +919,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     const errorMessage = 'Failed to resolve AWS credentials with --yes flag.';
     const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
     context.print.error(errorMessage);
-    context.print.info(`Access keys for continuous integration can be configured with headless paramaters: ${chalk.green(docsUrl)}`);
+    context.print.info(`Access keys for continuous integration can be configured with headless parameters: ${chalk.green(docsUrl)}`);
     await context.usageData.emitError(errorMessage);
     exitOnNextTick(1);
   }

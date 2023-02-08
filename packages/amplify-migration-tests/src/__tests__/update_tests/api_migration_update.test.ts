@@ -1,5 +1,6 @@
 import {
   amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -53,7 +54,7 @@ describe('api migration update test', () => {
     const { projectName } = getProjectConfig(projRoot);
     await addApiWithoutSchemaOldDx(projRoot);
     updateApiSchema(projRoot, projectName, initialSchema);
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
 
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);

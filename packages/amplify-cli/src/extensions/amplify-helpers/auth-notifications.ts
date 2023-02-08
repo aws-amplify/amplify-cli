@@ -25,9 +25,9 @@ const setNotificationFlag = async (projectPath: string, flagName: string, value:
  */
 export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promise<boolean> => {
   const flagName = 'showFieldAuthNotification';
-  const dontShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
+  const doNotShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
 
-  if (dontShowNotification) return false;
+  if (doNotShowNotification) return false;
 
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const apiResourceDir = await getApiResourceDir();

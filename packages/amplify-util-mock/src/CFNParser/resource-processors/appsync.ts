@@ -23,8 +23,8 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
       StreamSpecification: {
         StreamEnabled: true,
-        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES'
-      }
+        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES',
+      },
     },
   };
 
@@ -86,7 +86,7 @@ export function appSyncDataSourceHandler(
   }
 
   if (typeName === 'AMAZON_ELASTICSEARCH') {
-    if (isWindowsPlatform) {
+    if (isWindowsPlatform()) {
       printer.info(`@searchable mocking is not supported on Windows. Search queries against the mock API will not work.`);
     }
 
@@ -154,7 +154,9 @@ export function appSyncAPIKeyResourceHandler(
   resource,
   cfnContext: CloudFormationParseContext,
 ): AppSyncAPIKeyProcessedResource {
-  const value = 'da2-fakeApiId123456'; // TODO: Generate
+  // eslint-disable-next-line spellcheck/spell-checker
+  const value = 'da2-fakeApiId123456';
+  // eslint-disable-next-line spellcheck/spell-checker
   const arn = `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/apikey/apikeya1bzhi${value}`;
   const processedResource = {
     cfnExposedAttributes: { ApiKey: 'ApiKey', Arn: 'ref' },

@@ -30,7 +30,7 @@ import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
-import { getMockOpenseachDataDirectory } from '../utils/mock-directory';
+import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
 import { printer } from 'amplify-prompts';
 
@@ -78,7 +78,7 @@ export class APITest {
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
 
       // If any of the model types are searchable, start opensearch local instance
-      if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform) {
+      if (appSyncConfig?.tables?.some((table: $TSAny) => table?.isSearchable) && !isWindowsPlatform()) {
         this.opensearchURL = await this.startOpensearchLocalServer(context, isLocalDBEmpty);
       }
       this.appSyncSimulator.init(appSyncConfig);
@@ -320,7 +320,7 @@ export class APITest {
   }
 
   private async configureOpensearchDataSource(config: $TSAny): Promise<$TSAny> {
-    if (isWindowsPlatform) {
+    if (isWindowsPlatform()) {
       return config;
     }
     const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
@@ -403,7 +403,7 @@ export class APITest {
       const mockConfig = await getMockConfig(context);
       await this.createMockSearchableArtifacts(context);
       checkJavaHome();
-      this.opensearchEmulator = await opensearchEmulator.launch(getMockOpenseachDataDirectory(context), {
+      this.opensearchEmulator = await opensearchEmulator.launch(getMockOpensearchDataDirectory(context), {
         port: null, // let the emulator choose the default
         ...mockConfig,
       });
@@ -476,7 +476,7 @@ export class APITest {
     const runtimeManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
     printer.info('Building the searchable lambda trigger');
     await buildLambdaTrigger(runtimeManager, triggerConfig);
-    fs.ensureDirSync(getMockOpenseachDataDirectory(context));
+    fs.ensureDirSync(getMockOpensearchDataDirectory(context));
   }
 
   private async getAPIBackendDirectory(context) {

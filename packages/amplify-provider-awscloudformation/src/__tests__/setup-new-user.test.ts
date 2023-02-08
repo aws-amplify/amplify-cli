@@ -1,7 +1,8 @@
 import { $TSContext, open } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { run } from '../setup-new-user';
 
-const context_stub = {
+const context_stub = ({
   print: {
     info: jest.fn(),
     warning: jest.fn(),
@@ -13,7 +14,7 @@ const context_stub = {
       run: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
     },
   },
-} as unknown as jest.Mocked<$TSContext>;
+} as unknown) as jest.Mocked<$TSContext>;
 
 jest.mock('amplify-cli-core', () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),
@@ -32,6 +33,9 @@ jest.mock('../system-config-manager', () => ({
 }));
 jest.mock('../utility-obfuscate');
 
+jest.mock('amplify-prompts');
+const printerMock = printer as jest.Mocked<typeof printer>;
+
 describe('setupNewUser.run', () => {
   let originalPlatform;
   beforeAll(() => {
@@ -42,21 +46,15 @@ describe('setupNewUser.run', () => {
       value: originalPlatform,
     });
   });
-  it('should print deepLinkURL', async () => {
+  it('should open console link and docs link', async () => {
     await run(context_stub);
-    expect(open).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
-      { wait: false },
-    );
+    expect(open).toBeCalledWith('https://console.aws.amazon.com/iamv2/home#/users/create', { wait: false });
+    expect(open).toBeCalledWith('https://docs.amplify.aws/cli/start/install/#configure-the-amplify-cli', { wait: false });
   });
-  it('should print deepLinkURL with backtick on win32', async () => {
-    Object.defineProperty(process, 'platform', {
-      value: 'win32',
-    });
+
+  it('should print console link and docs link', async () => {
     await run(context_stub);
-    expect(open).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
-      { wait: false },
-    );
+    expect(printerMock.info).toBeCalledWith('https://console.aws.amazon.com/iamv2/home#/users/create', 'blue');
+    expect(printerMock.info).toBeCalledWith('https://docs.amplify.aws/cli/start/install/#configure-the-amplify-cli', 'blue');
   });
 });

@@ -300,6 +300,7 @@ export class ResourceExport extends ResourcePackager {
               resource.resourceName,
               AMPLIFY_APPSYNC_FILES,
               APPSYNC_STACK_FOLDER,
+              // eslint-disable-next-line spellcheck/spell-checker
               key === 'CustomResourcesjson' ? 'CustomResources.json' : `${key}.json`,
             );
 
@@ -335,7 +336,7 @@ export class ResourceExport extends ResourcePackager {
     }
 
     if (this.resourcesHasContainers(resources)) {
-      // create network resouce
+      // create network resource
       const template = (await getNetworkResourceCfn(this.context, stackName)) as Template;
       const destinationPath = path.join(this.exportDirectoryPath, AMPLIFY_CFN_TEMPLATES, NETWORK_STACK_FILENAME);
       stackParameters[stackName].nestedStacks[NETWORK_STACK_LOGICAL_ID] = {
