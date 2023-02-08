@@ -1,10 +1,10 @@
 import CLITable from 'cli-table3';
 import importedColors from 'colors/safe';
 import ejs from 'ejs';
+import { $TSContext } from '../types';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import * as path from 'path';
-import { Context } from './domain/context';
 
 importedColors.setTheme({
   highlight: 'cyan',
@@ -36,17 +36,16 @@ type CliPrintColors = typeof importedColors & {
 
 const colors = importedColors as CliPrintColors;
 
-export function attachExtentions(context: Context) {
+export function attachExtensions(context: $TSContext) {
   attachFilesystem(context);
   attachPrint(context);
   attachParameters(context);
-  attachPatching(context);
   attachRuntime(context);
   attachPrompt(context);
   attachTemplate(context);
 }
 
-function attachPrompt(context: Context) {
+function attachPrompt(context: $TSContext) {
   context.prompt = {
     confirm: async (message: string, defaultValue = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
@@ -84,7 +83,7 @@ function attachPrompt(context: Context) {
   };
 }
 
-function attachParameters(context: Context) {
+function attachParameters(context: $TSContext) {
   const { argv, plugin, command, subCommands, options } = context.input;
 
   context.parameters = {
@@ -111,7 +110,7 @@ function attachParameters(context: Context) {
   /* tslint:enable */
 }
 
-function attachRuntime(context: Context) {
+function attachRuntime(context: $TSContext) {
   context.runtime = {
     plugins: [],
   };
@@ -134,7 +133,7 @@ function attachRuntime(context: Context) {
   });
 }
 
-function attachFilesystem(context: Context) {
+function attachFilesystem(context: $TSContext) {
   context.filesystem = contextFileSystem;
 }
 
@@ -164,74 +163,47 @@ const contextFileSystem = {
   },
 };
 
-function attachPatching(context: Context) {
-  context.patching = {
-    replace: async (filePath: string, oldContent: string, newContent: string): Promise<string> => {
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-      const updatedFileContent = fileContent.replace(oldContent, newContent);
-      fs.writeFileSync(filePath, updatedFileContent, 'utf-8');
-      return Promise.resolve(updatedFileContent);
-    },
-  };
-}
-
-function attachPrint(context: Context) {
+export function attachPrint(context: $TSContext) {
   context.print = print;
 }
 
-const print = {
-  info,
-  fancy,
-  warning,
-  error,
-  success,
-  table,
-  debug,
-  green,
-  yellow,
-  red,
-  blue,
-};
-
-export { print };
-
-function info(message: string): void {
+export function info(message: string): void {
   console.log(colors.info(message));
 }
 
-function warning(message: string): void {
+export function warning(message: string): void {
   console.log(colors.warning(message));
 }
 
-function error(message: string): void {
+export function error(message: string): void {
   console.log(colors.error(message));
 }
 
-function success(message: string): void {
+export function success(message: string): void {
   console.log(colors.success(message));
 }
 
-function green(message: string): void {
+export function green(message: string): void {
   console.log(colors.green(message));
 }
 
-function yellow(message: string): void {
+export function yellow(message: string): void {
   console.log(colors.yellow(message));
 }
 
-function red(message: string): void {
+export function red(message: string): void {
   console.log(colors.red(message));
 }
 
-function blue(message: string): void {
+export function blue(message: string): void {
   console.log(colors.blue(message));
 }
 
-function fancy(message?: string): void {
+export function fancy(message?: string): void {
   console.log(message);
 }
 
-function debug(message: string, title = 'DEBUG'): void {
+export function debug(message: string, title = 'DEBUG'): void {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 
@@ -240,7 +212,7 @@ function debug(message: string, title = 'DEBUG'): void {
   console.log(colors.rainbow(botLine));
 }
 
-function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
+export function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
     case 'markdown': {
@@ -269,6 +241,20 @@ function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {})
   }
   console.log(t.toString());
 }
+
+export const print = {
+  info,
+  fancy,
+  warning,
+  error,
+  success,
+  table,
+  debug,
+  green,
+  yellow,
+  red,
+  blue,
+};
 
 function columnHeaderDivider(cliTable: CLITable.Table): string[] {
   return findWidths(cliTable).map(w => Array(w).join('-'));
@@ -313,7 +299,7 @@ const CLI_TABLE_MARKDOWN = {
   middle: '|',
 };
 
-function attachTemplate(context: Context) {
+function attachTemplate(context: $TSContext) {
   context.template = {
     async generate(opts: { template: string; target: string; props: object; directory: string }): Promise<string> {
       const template = opts.template;
