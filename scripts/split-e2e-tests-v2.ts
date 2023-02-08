@@ -166,6 +166,15 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/transformer-migrations/model-migration.test.ts',
     'src/__tests__/transformer-migrations/searchable-migration.test.ts',
     'src/__tests__/uibuilder.test.ts',
+    'src/__tests__/pinpoint/android-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/android-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/flutter-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/flutter-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/ios-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/ios-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/javascript-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/javascript-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
   ],
 };
 const MAX_WORKERS = 3;

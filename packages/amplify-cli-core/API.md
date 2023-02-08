@@ -244,6 +244,12 @@ export class ApiCategoryFacade {
 }
 
 // @public (undocumented)
+export function attachExtensions(context: $TSContext): void;
+
+// @public (undocumented)
+export function attachPrint(context: $TSContext): void;
+
+// @public (undocumented)
 export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
@@ -261,6 +267,9 @@ export class BannerMessage {
     // (undocumented)
     static initialize: (cliVersion: string) => BannerMessage;
 }
+
+// @public (undocumented)
+export function blue(message: string): void;
 
 // @public (undocumented)
 export type BooleanFeatureFlag = {
@@ -511,6 +520,9 @@ export type DataParameter = {
 };
 
 // @public (undocumented)
+export function debug(message: string, title?: string): void;
+
+// @public (undocumented)
 export class DebugConfigValueNotSetError extends Error {
 }
 
@@ -593,6 +605,9 @@ export class EnvVarFormatError extends Error {
 }
 
 // @public (undocumented)
+export function error(message: string): void;
+
+// @public (undocumented)
 export type ErrorParameter = {
     message: string;
     stack: string;
@@ -618,6 +633,9 @@ export class ExportedStackNotInValidStateError extends Error {
 // @public (undocumented)
 export class ExportPathValidationError extends Error {
 }
+
+// @public (undocumented)
+export function fancy(message?: string): void;
 
 // @public (undocumented)
 export type FeatureFlagConfiguration = {
@@ -711,6 +729,9 @@ export const getPackageManager: (rootPath?: string) => PackageManager | null;
 
 // @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
+
+// @public (undocumented)
+export function green(message: string): void;
 
 // @public (undocumented)
 export type HookEvent = {
@@ -860,7 +881,7 @@ export type IContextTemplate = {
         target: string;
         props: $TSObject;
         directory: string;
-    }) => string;
+    }) => Promise<string>;
 };
 
 // @public (undocumented)
@@ -888,6 +909,9 @@ export interface IDeploymentStateManager {
     // (undocumented)
     updateStatus: (status: DeploymentStatus) => Promise<void>;
 }
+
+// @public (undocumented)
+export function info(message: string): void;
 
 // @public (undocumented)
 export type INotificationsResource = IAnalyticsResource;
@@ -1241,6 +1265,22 @@ export enum PluginAPIError {
 }
 
 // @public (undocumented)
+const print_2: {
+    info: typeof info;
+    fancy: typeof fancy;
+    warning: typeof warning;
+    error: typeof error;
+    success: typeof success;
+    table: typeof table;
+    debug: typeof debug;
+    green: typeof green;
+    yellow: typeof yellow;
+    red: typeof red;
+    blue: typeof blue;
+};
+export { print_2 as print }
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
 
 // @public (undocumented)
@@ -1275,6 +1315,9 @@ export function ReadTags(tagsFilePath: string): Tag[];
 
 // @public (undocumented)
 export const recursiveOmit: (obj: $TSObject, path: Array<string>) => void;
+
+// @public (undocumented)
+export function red(message: string): void;
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretsRemove" needs to be exported by the entry point index.d.ts
 //
@@ -1460,10 +1503,18 @@ export type SubCommandInfo = {
 };
 
 // @public (undocumented)
+export function success(message: string): void;
+
+// @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];
 
 // @public (undocumented)
 export const supportedEvents: Record<HooksVerb, HooksNoun[]>;
+
+// @public (undocumented)
+export function table(data: string[][], options?: {
+    format?: 'markdown' | 'lean';
+}): void;
 
 // @public (undocumented)
 export interface Tag {
@@ -1555,6 +1606,9 @@ export class ViewResourceTableParams {
 }
 
 // @public (undocumented)
+export function warning(message: string): void;
+
+// @public (undocumented)
 export const writeCFNTemplate: (template: object, filePath: string, options?: WriteCFNTemplateOptions) => Promise<void>;
 
 // @public (undocumented)
@@ -1562,6 +1616,9 @@ export type WriteCFNTemplateOptions = {
     templateFormat?: CFNTemplateFormat;
     minify?: boolean;
 };
+
+// @public (undocumented)
+export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
