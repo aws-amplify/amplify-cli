@@ -450,7 +450,7 @@ export const expectParametersOptionalValue = async (
   expect(result.InvalidParameters.length).toBe(expectNotExist.length);
   expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
   expect(result.Parameters.length).toBe(expectToExist.length);
-  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: param.Value })).sort(sortByName);
+  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: JSON.parse(param.Value) })).sort(sortByName);
   const mappedExpect = expectToExist.map(exist => ({ name: mapName(exist.name), value: exist.value ? exist.value : '' })).sort(sortByName);
 
   const mappedResultKeys = mappedResult.map(parameter => parameter.name);
