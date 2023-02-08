@@ -176,6 +176,18 @@ jobs:
           command: |
             yarn verify-api-extract
 
+  verify-yarn-lock:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: verify yarn lock
+          command: |
+            yarn verify-yarn-lock
+
   verify-versions-match:
     <<: *linux-e2e-executor-medium
     steps:
@@ -914,6 +926,9 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - verify-yarn-lock:
+          requires:
+            - build
       - verify-versions-match:
           requires:
             - publish_to_local_registry
