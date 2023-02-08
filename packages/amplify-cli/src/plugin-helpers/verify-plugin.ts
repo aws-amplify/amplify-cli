@@ -91,8 +91,8 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
 function verifyCommands(context: VerificationContext): PluginVerificationResult {
   //   let isVerified = true;
   //   if (manifest.commands && manifest.commands.length > 0) {
-  //     isVerified = pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
-  //         typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function';
+  //     isVerified = pluginModule.hasOwnProperty(constants.EXECUTE_AMPLIFY_COMMAND) &&
+  //         typeof pluginModule[constants.EXECUTE_AMPLIFY_COMMAND] === 'function';
   //   }
 
   //   if (isVerified) {
@@ -116,8 +116,8 @@ async function verifyEventHandlers(context: VerificationContext): Promise<Plugin
     }
 
     isVerified =
-      Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HandleAmplifyEvent) &&
-      typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
+      Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HANDLE_AMPLIFY_EVENT) &&
+      typeof context.pluginModule[constants.HANDLE_AMPLIFY_EVENT] === 'function';
   }
 
   if (isVerified) {

@@ -529,17 +529,17 @@ export const constants: {
     PLUGINS_FILE_NAME: string;
     CORE: string;
     CODEGEN: string;
-    Amplify: string;
-    DotAmplifyDirName: string;
-    AmplifyPrefix: string;
-    LocalNodeModules: string;
-    ParentDirectory: string;
-    GlobalNodeModules: string;
-    PackagedNodeModules: string;
-    ExecuteAmplifyCommand: string;
-    ExecuteAmplifyHeadlessCommand: string;
-    HandleAmplifyEvent: string;
-    LogFilename: string;
+    AMPLIFY: string;
+    DOT_AMPLIFY_DIR_NAME: string;
+    AMPLIFY_PREFIX: string;
+    LOCAL_NODE_MODULES: string;
+    PARENT_DIRECTORY: string;
+    GLOBAL_NODE_MODULES: string;
+    PACKAGED_NODE_MODULES: string;
+    EXECUTE_AMPLIFY_COMMAND: string;
+    EXECUTE_AMPLIFY_HEADLESS_COMMAND: string;
+    HANDLE_AMPLIFY_EVENT: string;
+    LOG_FILENAME: string;
 };
 
 // @public (undocumented)

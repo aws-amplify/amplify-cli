@@ -22,7 +22,7 @@ function getPluginsJsonFilePath(): string {
 }
 
 function getSystemDotAmplifyDirPath(): string {
-  return path.join(os.homedir(), constants.DotAmplifyDirName);
+  return path.join(os.homedir(), constants.DOT_AMPLIFY_DIR_NAME);
 }
 
 function getPluginsJsonFileName(): string {

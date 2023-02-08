@@ -5,15 +5,7 @@ import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import {
-  AmplifyEvent,
-  AmplifyEventArgs,
-  stateManager,
-  executeHooks,
-  HooksMeta,
-  PluginInfo,
-  constants,
-} from 'amplify-cli-core';
+import { AmplifyEvent, AmplifyEventArgs, stateManager, executeHooks, HooksMeta, PluginInfo, constants } from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
@@ -165,16 +157,16 @@ const executePluginModuleCommand = async (context: Context, plugin: PluginInfo):
 
 const getHandler = async (pluginInfo: PluginInfo, context: Context): Promise<() => Promise<void>> => {
   const pluginModule = await import(pluginInfo.packageLocation);
-  let commandName = constants.ExecuteAmplifyCommand;
+  let commandName = constants.EXECUTE_AMPLIFY_COMMAND;
   let fallbackFn = (): Promise<void> => legacyCommandExecutor(context, pluginInfo);
 
   if (isHeadlessCommand(context)) {
-    commandName = constants.ExecuteAmplifyHeadlessCommand;
+    commandName = constants.EXECUTE_AMPLIFY_HEADLESS_COMMAND;
     fallbackFn = () => context.print.error(`Headless mode is not implemented for ${pluginInfo.packageName}`);
   }
 
   if (typeof pluginModule?.[commandName] === 'function') {
-    if (commandName === constants.ExecuteAmplifyHeadlessCommand) {
+    if (commandName === constants.EXECUTE_AMPLIFY_HEADLESS_COMMAND) {
       return async () => pluginModule[commandName](context, await readHeadlessPayload());
     }
     return () => pluginModule[commandName](context);
