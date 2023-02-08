@@ -1,9 +1,8 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable spellcheck/spell-checker */
-import { Input } from 'amplify-cli-core';
+import { Input, PluginPlatform } from 'amplify-cli-core';
 import { AmplifyToolkit } from './amplify-toolkit';
-import { PluginPlatform } from 'amplify-cli-core';
 import { IUsageData } from './amplify-usageData';
 
 /**

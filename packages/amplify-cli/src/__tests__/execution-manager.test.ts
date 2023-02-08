@@ -11,12 +11,12 @@ import {
   AmplifyPreInitEventData,
   AmplifyPrePullEventData,
   AmplifyPrePushEventData,
+  Input,
+  PluginManifest,
+  PluginPlatform,
 } from 'amplify-cli-core';
 import { Context } from '../domain/context';
-import { Input } from 'amplify-cli-core';
 import { PluginInfo } from 'amplify-cli-core';
-import { PluginManifest } from 'amplify-cli-core';
-import { PluginPlatform } from 'amplify-cli-core';
 import { executeCommand } from '../execution-manager';
 
 const handleAmplifyEventMock = jest.fn();

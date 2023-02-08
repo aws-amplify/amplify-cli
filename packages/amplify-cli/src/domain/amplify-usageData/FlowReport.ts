@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, Input } from 'amplify-cli-core';
 import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import {
@@ -11,7 +11,6 @@ import {
   TypeOptionFlowData,
 } from 'amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
-import { Input } from 'amplify-cli-core';
 
 /**
  * Store the data and sequence of events of CLI walkthrough

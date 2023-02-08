@@ -10,6 +10,8 @@ import {
   stateManager,
   HooksMeta,
   AmplifyError,
+  constants,
+  Input,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -20,9 +22,7 @@ import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-pa
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
-import { constants } from 'amplify-cli-core';
 import { Context } from './domain/context';
-import { Input } from 'amplify-cli-core';
 import { executeCommand } from './execution-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { getPluginPlatform, scan } from './plugin-manager';

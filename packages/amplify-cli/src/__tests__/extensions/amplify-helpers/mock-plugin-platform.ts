@@ -1,5 +1,4 @@
-import { PluginPlatform } from 'amplify-cli-core';
-import { PluginInfo } from 'amplify-cli-core';
+import { PluginInfo, PluginPlatform } from 'amplify-cli-core';
 
 export function constructMockPluginPlatform(): PluginPlatform {
   const mockPluginPlatform = new PluginPlatform();

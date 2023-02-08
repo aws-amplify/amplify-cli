@@ -1,13 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import sequential from 'promise-sequential';
-import { stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
-import { constants } from 'amplify-cli-core';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import { PluginInfo } from 'amplify-cli-core';
 import {
   AmplifyEvent,
   AmplifyEventArgs,
@@ -21,6 +18,11 @@ import {
   AmplifyPostCodegenModelsEventData,
   AmplifyInternalOnlyPostEnvRemoveEventData,
   AmplifyPostEnvAddEventData,
+  stateManager,
+  executeHooks,
+  HooksMeta,
+  PluginInfo,
+  constants,
 } from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';

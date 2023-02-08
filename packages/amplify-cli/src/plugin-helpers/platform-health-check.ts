@@ -4,10 +4,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as path from 'path';
 import chalk from 'chalk';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, PluginInfo, PluginPlatform } from 'amplify-cli-core';
 import { satisfies } from 'semver';
-import { PluginInfo } from 'amplify-cli-core';
-import { PluginPlatform } from 'amplify-cli-core';
 
 /**
  *

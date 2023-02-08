@@ -1,12 +1,10 @@
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager, PluginPlatform, Input } from 'amplify-cli-core';
 import * as _ from 'lodash';
 import { init } from './app-config';
 import { attachExtensions } from 'amplify-cli-core';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
 import { ProjectSettings } from './domain/amplify-usageData/UsageDataTypes';
 import { Context } from './domain/context';
-import { Input } from 'amplify-cli-core';
-import { PluginPlatform } from 'amplify-cli-core';
 
 /**
  * Initialize the context object

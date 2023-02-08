@@ -1460,6 +1460,37 @@ export class PluginPlatform implements IPluginPlatform {
 }
 
 // @public (undocumented)
+export enum PluginVerificationError {
+    // (undocumented)
+    InvalidManifest = "InvalidManifest",
+    // (undocumented)
+    InvalidNodePackage = "InvalidNodePackage",
+    // (undocumented)
+    MissingExecuteAmplifyCommandMethod = "MissingExecuteAmplifyCommandMethod",
+    // (undocumented)
+    MissingHandleAmplifyEventMethod = "MissingHandleAmplifyEventMethod",
+    // (undocumented)
+    MissingManifest = "MissingManifest",
+    // (undocumented)
+    PluginDirPathNotExist = "PluginDirPathNotExist"
+}
+
+// @public (undocumented)
+export class PluginVerificationResult {
+    constructor(verified?: boolean, error?: PluginVerificationError | undefined, errorInfo?: any, packageJson?: any, manifest?: PluginManifest | undefined);
+    // (undocumented)
+    error?: PluginVerificationError | undefined;
+    // (undocumented)
+    errorInfo?: any;
+    // (undocumented)
+    manifest?: PluginManifest | undefined;
+    // (undocumented)
+    packageJson?: any;
+    // (undocumented)
+    verified: boolean;
+}
+
+// @public (undocumented)
 const print_2: {
     info: typeof info;
     fancy: typeof fancy;

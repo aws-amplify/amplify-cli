@@ -2,13 +2,11 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import { Context } from '../domain/context';
-import { constants } from 'amplify-cli-core';
-import { AmplifyEvent } from 'amplify-cli-core';
+import { constants, AmplifyEvent, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
 import { InputQuestion, ConfirmQuestion } from 'inquirer';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 const INDENTATIONSPACE = 4;
 

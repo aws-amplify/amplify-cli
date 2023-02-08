@@ -1,9 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { constants } from 'amplify-cli-core';
-import { PluginManifest } from 'amplify-cli-core';
-import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { PluginManifest, constants, JSONUtilities, $TSAny, PluginVerificationResult, PluginVerificationError } from 'amplify-cli-core';
 
 type VerificationContext = {
   pluginDirPath: string;

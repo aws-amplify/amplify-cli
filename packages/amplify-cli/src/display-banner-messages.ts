@@ -1,7 +1,6 @@
-import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks, Input } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { printer } from 'amplify-prompts';
-import { Input } from 'amplify-cli-core';
 
 /**
  * display banner messages

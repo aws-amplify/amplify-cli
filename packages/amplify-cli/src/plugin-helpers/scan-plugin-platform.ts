@@ -1,17 +1,21 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { PluginCollection } from 'amplify-cli-core';
-import { PluginPlatform } from 'amplify-cli-core';
-import { constants } from 'amplify-cli-core';
 import { getGlobalNodeModuleDirPath } from '../utils/global-prefix';
-import { PluginManifest } from 'amplify-cli-core';
-import { PluginInfo } from 'amplify-cli-core';
 import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
 import isChildPath from '../utils/is-child-path';
-import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
+import {
+  JSONUtilities,
+  $TSAny,
+  isPackaged,
+  PluginCollection,
+  PluginPlatform,
+  constants,
+  PluginManifest,
+  PluginInfo,
+} from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {

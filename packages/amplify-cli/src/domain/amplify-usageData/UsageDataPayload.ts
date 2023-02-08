@@ -1,7 +1,6 @@
-import { $TSAny, isCI } from 'amplify-cli-core';
+import { $TSAny, isCI, Input } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
 import * as os from 'os';
-import { Input } from 'amplify-cli-core';
 import { InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from './UsageDataTypes';
 import { SerializableError } from './SerializableError';
 import { getLatestPayloadVersion } from './VersionManager';

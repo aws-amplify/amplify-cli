@@ -39,5 +39,6 @@ export * from './context/amplify-event';
 export * from './context/plugin-collection';
 export * from './context/plugin-info';
 export * from './context/plugin-manifest';
+export * from './context/plugin-verification-result';
 export * from './constants';
 export * from './help';
