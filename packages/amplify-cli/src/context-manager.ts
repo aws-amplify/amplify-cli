@@ -1,7 +1,6 @@
 import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
 import * as _ from 'lodash';
 import { init } from './app-config';
-// eslint-disable-next-line spellcheck/spell-checker
 import { attachExtensions } from 'amplify-cli-core';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
 import { ProjectSettings } from './domain/amplify-usageData/UsageDataTypes';
