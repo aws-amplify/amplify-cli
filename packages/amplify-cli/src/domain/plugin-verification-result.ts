@@ -1,4 +1,4 @@
-import { PluginManifest } from './plugin-manifest';
+import { PluginManifest } from 'amplify-cli-core';
 
 export class PluginVerificationResult {
   constructor(
@@ -6,7 +6,7 @@ export class PluginVerificationResult {
     public error?: PluginVerificationError,
     public errorInfo?: any,
     public packageJson?: any,
-    public manifest?: PluginManifest
+    public manifest?: PluginManifest,
   ) {}
 }
 

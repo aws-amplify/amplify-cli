@@ -1,4 +1,4 @@
-import { Input } from './domain/input';
+import { Input } from 'amplify-cli-core';
 import { JSONUtilities } from 'amplify-cli-core';
 import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 

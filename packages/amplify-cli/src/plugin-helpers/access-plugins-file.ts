@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as os from 'os';
-import { PluginPlatform } from '../domain/plugin-platform';
-import { constants } from '../domain/constants';
+import { PluginPlatform } from 'amplify-cli-core';
+import { constants } from 'amplify-cli-core';
 import { JSONUtilities } from 'amplify-cli-core';
 
 export function readPluginsJsonFile(): PluginPlatform | undefined {

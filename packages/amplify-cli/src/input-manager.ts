@@ -1,7 +1,7 @@
 // normalize command line arguments, allow verb / noun place switch
-import { Input } from './domain/input';
-import { constants } from './domain/constants';
-import { PluginPlatform } from './domain/plugin-platform';
+import { Input } from 'amplify-cli-core';
+import { constants } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { pathManager, stateManager } from 'amplify-cli-core';

@@ -1,11 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { PluginCollection } from '../domain/plugin-collection';
-import { PluginPlatform } from '../domain/plugin-platform';
-import { constants } from '../domain/constants';
+import { PluginCollection } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
+import { constants } from 'amplify-cli-core';
 import { getGlobalNodeModuleDirPath } from '../utils/global-prefix';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginInfo } from '../domain/plugin-info';
+import { PluginManifest } from 'amplify-cli-core';
+import { PluginInfo } from 'amplify-cli-core';
 import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';

@@ -1,6 +1,6 @@
 import { PluginCollection } from './plugin-collection';
-import { constants } from './constants';
-import { IPluginPlatform } from 'amplify-cli-core';
+import { constants } from '../constants';
+import { IPluginPlatform } from '../types';
 
 const SECONDSINADAY = 86400;
 

@@ -1,15 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import sequential from 'promise-sequential';
-import {
-  stateManager, executeHooks, HooksMeta,
-} from 'amplify-cli-core';
+import { stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
-import { constants } from './domain/constants';
+import { constants } from 'amplify-cli-core';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import { PluginInfo } from './domain/plugin-info';
+import { PluginInfo } from 'amplify-cli-core';
 import {
   AmplifyEvent,
   AmplifyEventArgs,
@@ -23,11 +21,9 @@ import {
   AmplifyPostCodegenModelsEventData,
   AmplifyInternalOnlyPostEnvRemoveEventData,
   AmplifyPostEnvAddEventData,
-} from './domain/amplify-event';
+} from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import {
-  FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath,
-} from './domain/amplify-usageData/UsageDataTypes';
+import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command
@@ -70,7 +66,7 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
   if (promptForSelection) {
     // only use the manifest's displayName if there are no duplicates
     const displayNames = pluginCandidates.map(candidate => candidate?.manifest?.displayName);
-    const noDuplicateDisplayNames = (new Set(displayNames)).size === displayNames.length;
+    const noDuplicateDisplayNames = new Set(displayNames).size === displayNames.length;
 
     // special handling for hosting plugins
     const consoleHostingPlugins = pluginCandidates.filter(pluginInfo => pluginInfo.packageName === 'amplify-console-hosting');
@@ -90,15 +86,19 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
-    result = await prompter.pick('Select the plugin module to execute', pluginCandidates.map(plugin => {
-      const displayName = plugin.manifest.displayName && noDuplicateDisplayNames
-        ? plugin.manifest.displayName
-        : `${plugin.packageName}@${plugin.packageVersion}`;
-      return {
-        name: displayName,
-        value: plugin,
-      };
-    }));
+    result = await prompter.pick(
+      'Select the plugin module to execute',
+      pluginCandidates.map(plugin => {
+        const displayName =
+          plugin.manifest.displayName && noDuplicateDisplayNames
+            ? plugin.manifest.displayName
+            : `${plugin.packageName}@${plugin.packageVersion}`;
+        return {
+          name: displayName,
+          value: plugin,
+        };
+      }),
+    );
   }
 
   return result;
@@ -249,7 +249,7 @@ const raisePreEvent = async (context: Context): Promise<void> => {
       await raisePreExportEvent(context);
       break;
     default:
-      // fall through
+    // fall through
   }
 };
 
@@ -293,7 +293,7 @@ const raisePostEvent = async (context: Context): Promise<void> => {
       await raisePostCodegenModelsEvent(context);
       break;
     default:
-      // fall through
+    // fall through
   }
   await executeHooks(HooksMeta.getInstance(context.input, 'post'));
 };

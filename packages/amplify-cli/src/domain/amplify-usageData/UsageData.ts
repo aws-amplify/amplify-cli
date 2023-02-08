@@ -6,7 +6,7 @@ import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
-import { Input } from '../input';
+import { Input } from 'amplify-cli-core';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';
@@ -137,10 +137,10 @@ export class UsageData implements IUsageData {
   }
 
   /**
-    * Append record to non-interactive Flow data
-    * @param headlessParameterString - Stringified headless parameter string
-    * @param input  - CLI input entered by Cx
-    */
+   * Append record to non-interactive Flow data
+   * @param headlessParameterString - Stringified headless parameter string
+   * @param input  - CLI input entered by Cx
+   */
   pushHeadlessFlow(headlessParameterString: string, input: ICommandInput): void {
     this.flow.pushHeadlessFlow(headlessParameterString, input);
   }
@@ -172,12 +172,13 @@ export class UsageData implements IUsageData {
    * Calculates all the leaves that were updated
    * @param events CloudFormation Stack Events
    */
-  calculatePushNormalizationFactor(events: { StackId: string, PhysicalResourceId: string } [], StackId: string) : void {
+  calculatePushNormalizationFactor(events: { StackId: string; PhysicalResourceId: string }[], StackId: string): void {
     const cfnStackStack = [StackId];
     let count = 0;
     while (cfnStackStack.length !== 0) {
       const head = cfnStackStack.pop();
-      const children = events.filter(r => r.StackId === head && r.PhysicalResourceId !== head)
+      const children = events
+        .filter(r => r.StackId === head && r.PhysicalResourceId !== head)
         .map(r => r.PhysicalResourceId)
         .reduce((set, val) => set.add(val), new Set<string>());
       if (children.size > 0) {
@@ -196,7 +197,7 @@ export class UsageData implements IUsageData {
     }
     this.codePathDurations.set(codePath, timer.stop());
     this.codePathTimers.delete(codePath);
-  }
+  };
 
   private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
     // initialize the unique project identifier if work space is initialized
@@ -228,8 +229,8 @@ export class UsageData implements IUsageData {
   }
 
   /**
-  * get usage data partial payload to use in reporter
-  */
+   * get usage data partial payload to use in reporter
+   */
   getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
     return new UsageDataPayload(
       this.sessionUuid,
@@ -261,7 +262,9 @@ export class UsageData implements IUsageData {
           'content-length': data.length,
         },
       });
-      req.on('error', () => { /* noop */ });
+      req.on('error', () => {
+        /* noop */
+      });
       req.setTimeout(this.requestTimeout, () => {
         resolve();
       });

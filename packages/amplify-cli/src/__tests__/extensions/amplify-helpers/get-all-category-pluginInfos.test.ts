@@ -1,7 +1,7 @@
-import { Input } from '../../../domain/input';
+import { Input } from 'amplify-cli-core';
 import { constructContext } from '../../../context-manager';
 
-import { PluginCollection } from '../../../domain/plugin-collection';
+import { PluginCollection } from 'amplify-cli-core';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 
 import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
@@ -17,7 +17,7 @@ test('getAllCategoryPluginInfo', () => {
   const mockInput = new Input(mockProcessArgv);
   const mockContext = constructContext(mockPluginPlatform, mockInput);
 
-  const categoryPluginInfoList = getAllCategoryPluginInfo(mockContext) as unknown as PluginCollection;
+  const categoryPluginInfoList = (getAllCategoryPluginInfo(mockContext) as unknown) as PluginCollection;
   expect(categoryPluginInfoList.hosting).toBeDefined();
   expect(Object.keys(categoryPluginInfoList.hosting).length).toEqual(2);
 });

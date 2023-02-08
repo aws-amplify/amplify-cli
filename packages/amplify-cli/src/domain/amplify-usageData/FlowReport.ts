@@ -11,7 +11,7 @@ import {
   TypeOptionFlowData,
 } from 'amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
-import { Input } from '../input';
+import { Input } from 'amplify-cli-core';
 
 /**
  * Store the data and sequence of events of CLI walkthrough

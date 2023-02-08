@@ -5,8 +5,8 @@ import { attachExtensions } from 'amplify-cli-core';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
 import { ProjectSettings } from './domain/amplify-usageData/UsageDataTypes';
 import { Context } from './domain/context';
-import { Input } from './domain/input';
-import { PluginPlatform } from './domain/plugin-platform';
+import { Input } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
 
 /**
  * Initialize the context object

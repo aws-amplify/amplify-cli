@@ -1,8 +1,8 @@
 import util from 'util';
 import { Context } from '../domain/context';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginCollection } from '../domain/plugin-collection';
-import { PluginPlatform } from '../domain/plugin-platform';
+import { PluginInfo } from 'amplify-cli-core';
+import { PluginCollection } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
 
 const defaultIndentationStr = '  ';
 

@@ -1,10 +1,10 @@
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { removePluginPackage, confirmAndScan } from '../../plugin-manager';
-import { PluginPlatform } from '../../domain/plugin-platform';
-import { constants } from '../../domain/constants';
+import { PluginPlatform } from 'amplify-cli-core';
+import { constants } from 'amplify-cli-core';
 import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
-import { PluginInfo } from '../../domain/plugin-info';
+import { PluginInfo } from 'amplify-cli-core';
 
 export const run = async (context: Context) => {
   const options = new Array<InquirerOption>();

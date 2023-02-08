@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { constants } from '../domain/constants';
-import { PluginManifest } from '../domain/plugin-manifest';
+import { constants } from 'amplify-cli-core';
+import { PluginManifest } from 'amplify-cli-core';
 import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
 import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 

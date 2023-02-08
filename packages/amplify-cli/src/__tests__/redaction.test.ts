@@ -1,5 +1,5 @@
 import redactInput from '../domain/amplify-usageData/identifiable-input-regex';
-import { Input } from '../domain/input';
+import { Input } from 'amplify-cli-core';
 
 describe('input-redaction', () => {
   const input = new Input([

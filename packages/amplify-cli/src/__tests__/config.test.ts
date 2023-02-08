@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import { init } from '../app-config';
 import { Context } from '../domain/context';
-import { Input } from '../domain/input';
+import { Input } from 'amplify-cli-core';
 
 describe('test usageData', () => {
   afterEach(() => {

@@ -6,8 +6,8 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { satisfies } from 'semver';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginPlatform } from '../domain/plugin-platform';
+import { PluginInfo } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
 
 /**
  *
@@ -69,9 +69,7 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   if (missingOfficialPlugins.length > 0) {
     console.log(chalk.yellow('The following official plugins are missing or inactive:'));
     missingOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const {
-        name, type, packageName, packageVersion,
-      } = pluginDescription;
+      const { name, type, packageName, packageVersion } = pluginDescription;
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
     });
   }
@@ -79,9 +77,7 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   if (mismatchedOfficialPlugins.length > 0) {
     console.log(chalk.yellow('The following official plugins have mismatched packages:'));
     mismatchedOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const {
-        name, type, packageName, packageVersion,
-      } = pluginDescription;
+      const { name, type, packageName, packageVersion } = pluginDescription;
       console.log('Expected:');
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
       console.log('Found:');
