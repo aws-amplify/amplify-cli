@@ -3,7 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.3.5...amplify-dotnet-function-template-provider@2.4.0-beta.0) (2022-12-28)
+## [2.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.3...amplify-dotnet-function-template-provider@2.4.4-beta.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.2...amplify-dotnet-function-template-provider@2.4.3) (2023-02-06)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.1...amplify-dotnet-function-template-provider@2.4.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.0...amplify-dotnet-function-template-provider@2.4.1) (2023-01-17)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

@@ -27,8 +27,21 @@ export class OperationServer {
     this._app.post('/graphql', this.handleRequest);
     /* eslint-enable */
     this._app.get('/api-config', this.handleAPIInfoRequest);
+    this._app.delete('/clear-data', this.handleClearDBData);
     this._app.use('/', express.static(STATIC_ROOT));
   }
+
+  private handleClearDBData = async (request: express.Request, response: express.Response) => {
+    console.log('Clearing DB data...');
+    try {
+      const deletedItems = await this.simulatorContext.clearData();
+      console.log('DB data cleared');
+      return response.status(200).send({ message: `Successfully deleted ${JSON.stringify(deletedItems)} tables` });
+    } catch (e) {
+      console.error(`Error clearing DB data. Error: ${e.message}`);
+      return response.status(500).send({ message: e.message });
+    }
+  };
 
   private handleAPIInfoRequest = (request: express.Request, response: express.Response) => {
     return response.send(this.simulatorContext.appSyncConfig);

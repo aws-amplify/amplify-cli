@@ -3,7 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.5.0-beta.4](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.0...@aws-amplify/amplify-console-integration-tests@2.5.0-beta.4) (2022-12-28)
+## [2.6.5-beta.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.4...@aws-amplify/amplify-console-integration-tests@2.6.5-beta.0) (2023-02-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+## [2.6.4](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.3...@aws-amplify/amplify-console-integration-tests@2.6.4) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+## [2.6.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.2...@aws-amplify/amplify-console-integration-tests@2.6.3) (2023-02-02)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-console-integration-tests/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-console-integration-tests/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11696)
+
+
+
+
+
 ## [2.6.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.1...@aws-amplify/amplify-console-integration-tests@2.6.2) (2023-01-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests

@@ -3,7 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.16.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.16.0...amplify-headless-interface@1.16.0-beta.3) (2022-12-28)
+## [1.17.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.0...amplify-headless-interface@1.17.1-beta.0) (2023-02-07)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
+# [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.16.1...amplify-headless-interface@1.17.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
 
 
 ### Features
@@ -11,10 +24,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **category-geo:** add new map style 2022.12 ([#11621](https://github.com/aws-amplify/amplify-cli/issues/11621)) ([dc60f7d](https://github.com/aws-amplify/amplify-cli/commit/dc60f7d1368b3bb4721f51f2404bf7a8f84075c0))
 
 
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
 
 
 
-# [1.16.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.16.0...amplify-headless-interface@1.16.0-beta.2) (2022-12-13)
+
+
 ## [1.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.16.0...amplify-headless-interface@1.16.1) (2023-01-03)
 
 **Note:** Version bump only for package amplify-headless-interface

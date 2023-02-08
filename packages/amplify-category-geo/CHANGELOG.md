@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.11.1...amplify-category-geo@3.0.0-beta.5) (2023-02-07)
+
+
+### Bug Fixes
+
+* removes preparepp()  cdkV1 shim layer ([#11313](https://github.com/aws-amplify/amplify-cli/issues/11313)) ([e3908c8](https://github.com/aws-amplify/amplify-cli/commit/e3908c821d3bd12c6a2a078026903e6f8848f913))
+* upgrade e2e tests for cdkv2 ([#11282](https://github.com/aws-amplify/amplify-cli/issues/11282)) ([ddf66f2](https://github.com/aws-amplify/amplify-cli/commit/ddf66f20aed847d36e4cac60b7030be295a716c6))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [3.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.10.0...amplify-category-geo@3.0.0-beta.4) (2022-12-28)
 
 
@@ -95,6 +125,38 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-beta.0...amplify-category-geo@3.0.0-beta.1) (2022-11-19)
+## [2.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.11.0...amplify-category-geo@2.11.1) (2023-02-06)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+# [2.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.10.2...amplify-category-geo@2.11.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* **category-geo:** add new map style 2022.12 ([#11621](https://github.com/aws-amplify/amplify-cli/issues/11621)) ([dc60f7d](https://github.com/aws-amplify/amplify-cli/commit/dc60f7d1368b3bb4721f51f2404bf7a8f84075c0))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
 ## [2.10.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.10.1...amplify-category-geo@2.10.2) (2023-01-17)
 
 **Note:** Version bump only for package amplify-category-geo

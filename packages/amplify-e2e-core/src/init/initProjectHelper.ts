@@ -162,13 +162,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
 
   addCircleCITags(cwd);
 
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -340,6 +346,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
+
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {

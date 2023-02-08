@@ -3,7 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.1...amplify-e2e-tests@4.0.0-beta.4) (2022-12-28)
+# [4.0.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.1...amplify-e2e-tests@4.0.0-beta.5) (2023-02-07)
+
+
+### Bug Fixes
+
+* adding new environment when having a project with notifications ([614a273](https://github.com/aws-amplify/amplify-cli/commit/614a273ec95ecfa43dff40b9793f286805396109))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* fixes custom resources e2e ([#11295](https://github.com/aws-amplify/amplify-cli/issues/11295)) ([d051dcd](https://github.com/aws-amplify/amplify-cli/commit/d051dcdbdc782892e96d560fc75478e261bb3fe3))
+* moved opensearch, dynamodb, and storage simulator tests to e2e tests ([#11876](https://github.com/aws-amplify/amplify-cli/issues/11876)) ([116a50c](https://github.com/aws-amplify/amplify-cli/commit/116a50c3a385ebe06a9b50b5c8fbce78ab67d147))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+* upgrade e2e tests for cdkv2 ([#11282](https://github.com/aws-amplify/amplify-cli/issues/11282)) ([ddf66f2](https://github.com/aws-amplify/amplify-cli/commit/ddf66f20aed847d36e4cac60b7030be295a716c6))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+## [3.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.0...amplify-e2e-tests@3.17.1) (2023-02-06)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [3.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.16.1...amplify-e2e-tests@3.17.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* back off on cfn event pull ([#11624](https://github.com/aws-amplify/amplify-cli/issues/11624)) ([1e53965](https://github.com/aws-amplify/amplify-cli/commit/1e53965c4ba3ccc5aad72b37791bbef807ec5fc3))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* added code workspace to simplify running individual e2e tests ([#11767](https://github.com/aws-amplify/amplify-cli/issues/11767)) ([9a3bbd2](https://github.com/aws-amplify/amplify-cli/commit/9a3bbd2b1b07dc6d1b4389a01e8593591fdd9de6))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+* Revert "chore: cleanup orphan appsync apis" ([e92513a](https://github.com/aws-amplify/amplify-cli/commit/e92513a5b2185270ecf6f1cbbb886d802fad83a4))
+
+
+
+
+
 ## [3.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.16.0...amplify-e2e-tests@3.16.1) (2023-01-17)
 
 **Note:** Version bump only for package amplify-e2e-tests

@@ -73,15 +73,9 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
 }
 
 function getAmplifyConfig(context, amplifyResources, cloudAmplifyResources, targetFilePath) {
-  let amplifyConfig;
-  if (fs.existsSync(targetFilePath)) {
-    amplifyConfig = readJsonFromDart(targetFilePath);
-  }
-
   // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
   const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-  amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
-  return amplifyConfig;
+  return amplifyConfigHelper.generateConfig(context, newAWSConfig);
 }
 
 function writeToFile(filePath, fileName, configObject) {
