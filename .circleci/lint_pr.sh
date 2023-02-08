@@ -1,4 +1,4 @@
-set -xeo pipefail
+set -xe
 # extract the PR number from the PR link
 PR_NUM=${CIRCLE_PULL_REQUEST##*/}
 
