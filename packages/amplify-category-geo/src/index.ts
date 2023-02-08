@@ -68,6 +68,7 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
 };
 
 /**
+ * Dummy change to trigger linter
  * Entry point for headless commands
  * @param {any} context The amplify context object
  * @param {string} headlessPayload The serialized payload from the platform
