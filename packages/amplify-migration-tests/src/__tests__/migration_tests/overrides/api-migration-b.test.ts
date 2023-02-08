@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import {
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   cliInputsExists,
   createNewProjectDir,
@@ -38,7 +38,7 @@ describe('api migration update test b', () => {
     await initJSProjectWithProfileV4_52_0(projRoot, { name: 'simplemodelmultiauth' });
     await addApiWithoutSchemaOldDx(projRoot);
     await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     // update and push with codebase
     await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true, doMigrate: false });
     // cli-inputs should not exist

@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import GeoJSONSchema from 'amplify-category-geo/schema/GeoJSONSchema.json';
+import GeoJSONSchema from '@aws-amplify/amplify-category-geo/schema/GeoJSONSchema.json';
 import { v4 as uuid } from 'uuid';
 import { printer } from 'amplify-prompts';
 import { FeatureCollection, IdentifierOption } from './importParams';

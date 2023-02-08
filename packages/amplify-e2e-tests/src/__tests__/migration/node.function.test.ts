@@ -88,22 +88,14 @@ describe('nodejs version migration tests', () => {
     expect(functionStackContent.indexOf('nodejs14.x')).toBeGreaterThan(0);
   });
 
-  function amplifyNodeMigrationAndPush(cwd: string) {
-    return new Promise((resolve, reject) => {
-      spawn(getCLIPath(), ['push'], { cwd, stripColors: true, disableCIDetection: true })
-        .wait('Confirm to update the Node.js runtime version to nodejs')
-        .sendConfirmYes()
-        .wait('Node.js runtime version successfully updated')
-        .wait('Are you sure you want to continue?')
-        .sendConfirmYes()
-        .wait(/.*/)
-        .run((err: Error) => {
-          if (!err) {
-            resolve(undefined);
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
+  const amplifyNodeMigrationAndPush = async (cwd: string): Promise<void> => {
+    return spawn(getCLIPath(), ['push'], { cwd, stripColors: true, disableCIDetection: true })
+      .wait('Confirm to update the Node.js runtime version to nodejs')
+      .sendConfirmYes()
+      .wait('Node.js runtime version successfully updated')
+      .wait('Are you sure you want to continue?')
+      .sendYes()
+      .wait(/.*/)
+      .runAsync();
+  };
 });
