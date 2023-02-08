@@ -49,7 +49,7 @@ export class ResourceParameterManager {
 }
 
 // @public (undocumented)
-export const saveAll: (serviceUploadHandler?: ServiceUploadHandler | undefined) => Promise<void>;
+export const saveAll: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
 
 // @public (undocumented)
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
