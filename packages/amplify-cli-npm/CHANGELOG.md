@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.8.0-rc.259f75c68.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.1...@aws-amplify/cli@10.8.0-rc.259f75c68.0) (2023-02-08)
+
+
+### Features
+
+* force version bump ([#11913](https://github.com/aws-amplify/amplify-cli/issues/11913)) ([330b053](https://github.com/aws-amplify/amplify-cli/commit/330b05304467916bdaad955836a3c47930efa0d4))
+
+
+
+
+
 ## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.0...@aws-amplify/cli@10.7.1) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/cli

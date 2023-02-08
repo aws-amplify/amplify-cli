@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.2-rc.259f75c68.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.1...amplify-util-mock@4.8.2-rc.259f75c68.0) (2023-02-08)
+
+
+### Bug Fixes
+
+* **mock:** topo sort for resource in mock ([#11642](https://github.com/aws-amplify/amplify-cli/issues/11642)) ([8247f11](https://github.com/aws-amplify/amplify-cli/commit/8247f11ec1bcebaa43201b9842e57238e5512fab))
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+
+
+
+
+
 ## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0...amplify-util-mock@4.8.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-util-mock

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-rc.259f75c68.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.3...@aws-amplify/amplify-e2e-core@4.7.0-rc.259f75c68.0) (2023-02-08)
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([fe79f29](https://github.com/aws-amplify/amplify-cli/commit/fe79f294a09ca2f9b6ee06e833b1f8426fd2543e))
+
+
+
+
+
 ## [4.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.2...@aws-amplify/amplify-e2e-core@4.6.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

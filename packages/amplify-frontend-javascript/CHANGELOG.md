@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-rc.259f75c68.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.5...amplify-frontend-javascript@3.8.0-rc.259f75c68.0) (2023-02-08)
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+
+
+
+
+
 ## [3.7.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.4...amplify-frontend-javascript@3.7.5) (2023-02-06)
 
 **Note:** Version bump only for package amplify-frontend-javascript

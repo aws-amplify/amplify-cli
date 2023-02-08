@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.2-rc.259f75c68.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.1...amplify-cli-core@3.6.2-rc.259f75c68.0) (2023-02-08)
+
+
+### Bug Fixes
+
+* get credentials from credential_process in aws profile config ([#11821](https://github.com/aws-amplify/amplify-cli/issues/11821)) ([0aacbb3](https://github.com/aws-amplify/amplify-cli/commit/0aacbb3b4e029e8006d37e227379734d8a5dacfa))
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+
+
+
+
+
 ## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.0...amplify-cli-core@3.6.1) (2023-02-06)
 
 
