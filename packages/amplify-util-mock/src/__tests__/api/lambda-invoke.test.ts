@@ -2,7 +2,7 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { invokeTrigger } from '../../api/lambda-invoke';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { loadLambdaConfig } from '../../utils/lambda/load-lambda-config';
-import { getInvoker, getBuilder } from 'amplify-category-function';
+import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { timeConstrainedInvoker } from '../../func';
 import { printer } from 'amplify-prompts';
 
@@ -13,7 +13,7 @@ jest.mock('../../utils/lambda/load-lambda-config', () => ({
 }));
 const loadLambdaConfigMock = loadLambdaConfig as jest.MockedFunction<typeof loadLambdaConfig>;
 
-jest.mock('amplify-category-function', () => ({
+jest.mock('@aws-amplify/amplify-category-function', () => ({
     getInvoker: jest.fn().mockResolvedValue(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 10))),
     getBuilder: jest.fn().mockReturnValue(() => {}),
     isMockable: jest.fn().mockReturnValue({ isMockable: true }),
