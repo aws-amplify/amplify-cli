@@ -8,16 +8,6 @@ import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from '
 import {
   AmplifyEvent,
   AmplifyEventArgs,
-  AmplifyPreInitEventData,
-  AmplifyPostInitEventData,
-  AmplifyPrePushEventData,
-  AmplifyPostPushEventData,
-  AmplifyPrePullEventData,
-  AmplifyPostPullEventData,
-  AmplifyPreCodegenModelsEventData,
-  AmplifyPostCodegenModelsEventData,
-  AmplifyInternalOnlyPostEnvRemoveEventData,
-  AmplifyPostEnvAddEventData,
   stateManager,
   executeHooks,
   HooksMeta,
@@ -256,23 +246,23 @@ const raisePreEvent = async (context: Context): Promise<void> => {
 };
 
 const raisePreInitEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreInit, new AmplifyPreInitEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PreInit, data: {} });
 };
 
 const raisePrePushEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePush, new AmplifyPrePushEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PrePush, data: {} });
 };
 
 const raisePrePullEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PrePull, data: {} });
 };
 
 const raisePreExportEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreExport));
+  await raiseEvent(context, { event: AmplifyEvent.PreExport, data: {} });
 };
 
 const raisePreCodegenModelsEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreCodegenModels, new AmplifyPreCodegenModelsEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PreCodegenModels, data: {} });
 };
 
 const raisePostEvent = async (context: Context): Promise<void> => {
@@ -301,42 +291,39 @@ const raisePostEvent = async (context: Context): Promise<void> => {
 };
 
 const raisePostInitEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostInitEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostInit, data: {} });
 };
 
 const raisePostPushEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostPushEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostPush, data: {} });
 };
 
 const raisePostPullEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPull, new AmplifyPostPullEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostPull, data: {} });
 };
 
 const raisePostCodegenModelsEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostCodegenModels, new AmplifyPostCodegenModelsEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostCodegenModels, data: {} });
 };
 
 /**
  * Should only be used internally by the platform (ie not part of our exposed event API)
  */
 export const raiseInternalOnlyPostEnvRemoveEvent = async (context: Context, envName: string): Promise<void> => {
-  await raiseEvent(
-    context,
-    new AmplifyEventArgs(AmplifyEvent.InternalOnlyPostEnvRemove, new AmplifyInternalOnlyPostEnvRemoveEventData(envName)),
-  );
+  await raiseEvent(context, { event: AmplifyEvent.InternalOnlyPostEnvRemove, data: { envName } });
 };
 
 /**
  * Raises the postEnvAdd event
  */
 export const raisePostEnvAddEvent = async (context: Context, prevEnvName: string, newEnvName: string): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostEnvAdd, new AmplifyPostEnvAddEventData(prevEnvName, newEnvName)));
+  await raiseEvent(context, { event: AmplifyEvent.PostEnvAdd, data: { prevEnvName, newEnvName } });
 };
 
 /**
  * Raise a lifecycle hook event
  */
-export const raiseEvent = async (context: Context, args: AmplifyEventArgs): Promise<void> => {
+export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args: AmplifyEventArgs<T>): Promise<void> => {
   const plugins = getPluginsWithEventHandler(context.pluginPlatform, args.event);
   if (plugins.length > 0) {
     const eventHandlers = plugins

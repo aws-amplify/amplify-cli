@@ -16,35 +16,30 @@ export enum AmplifyEvent {
   InternalOnlyPostEnvRemove = 'InternalOnlyPostEnvRemove',
 }
 
-export class AmplifyEventData {}
+export interface AmplifyEventData {
+  [AmplifyEvent.PreInit]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PostInit]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PreExport]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PrePush]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PostPush]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PrePull]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PostPull]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PostEnvAdd]: AmplifyPostEnvAddEventData;
+  [AmplifyEvent.PreCodegenModels]: NoArgsAmplifyEventData;
+  [AmplifyEvent.PostCodegenModels]: NoArgsAmplifyEventData;
+  [AmplifyEvent.InternalOnlyPostEnvRemove]: AmplifyInternalOnlyPostEnvRemoveEventData;
+}
+export type NoArgsAmplifyEventData = Record<string, never>;
 
-export class AmplifyPreInitEventData extends AmplifyEventData {}
-
-export class AmplifyPostInitEventData extends AmplifyEventData {}
-
-export class AmplifyPrePushEventData extends AmplifyEventData {}
-
-export class AmplifyPostPushEventData extends AmplifyEventData {}
-
-export class AmplifyPrePullEventData extends AmplifyEventData {}
-
-export class AmplifyPostPullEventData extends AmplifyEventData {}
-
-export class AmplifyPreCodegenModelsEventData extends AmplifyEventData {}
-
-export class AmplifyPostCodegenModelsEventData extends AmplifyEventData {}
-
-export class AmplifyInternalOnlyPostEnvRemoveEventData extends AmplifyEventData {
-  constructor(public readonly envName: string) {
-    super();
-  }
+export interface AmplifyInternalOnlyPostEnvRemoveEventData {
+  envName: string;
 }
 
-export class AmplifyPostEnvAddEventData extends AmplifyEventData {
-  constructor(public readonly prevEnvName: string, public readonly newEnvName: string) {
-    super();
-  }
+export interface AmplifyPostEnvAddEventData {
+  prevEnvName: string;
+  newEnvName: string;
 }
-export class AmplifyEventArgs {
-  constructor(public event: AmplifyEvent, public data?: AmplifyEventData) {}
+export interface AmplifyEventArgs<T extends AmplifyEvent> {
+  event: T;
+  data?: AmplifyEventData[T];
 }

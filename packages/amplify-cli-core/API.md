@@ -152,16 +152,37 @@ export enum AmplifyEvent {
 }
 
 // @public (undocumented)
-export class AmplifyEventArgs {
-    constructor(event: AmplifyEvent, data?: AmplifyEventData | undefined);
+export interface AmplifyEventArgs<T extends AmplifyEvent> {
     // (undocumented)
-    data?: AmplifyEventData | undefined;
+    data?: AmplifyEventData[T];
     // (undocumented)
-    event: AmplifyEvent;
+    event: T;
 }
 
 // @public (undocumented)
-export class AmplifyEventData {
+export interface AmplifyEventData {
+    // (undocumented)
+    [AmplifyEvent.InternalOnlyPostEnvRemove]: AmplifyInternalOnlyPostEnvRemoveEventData;
+    // (undocumented)
+    [AmplifyEvent.PostCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostEnvAdd]: AmplifyPostEnvAddEventData;
+    // (undocumented)
+    [AmplifyEvent.PostInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPush]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreExport]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePush]: NoArgsAmplifyEventData;
 }
 
 // @public (undocumented)
@@ -223,51 +244,17 @@ export enum AmplifyFrontend {
 }
 
 // @public (undocumented)
-export class AmplifyInternalOnlyPostEnvRemoveEventData extends AmplifyEventData {
-    constructor(envName: string);
+export interface AmplifyInternalOnlyPostEnvRemoveEventData {
     // (undocumented)
-    readonly envName: string;
+    envName: string;
 }
 
 // @public (undocumented)
-export class AmplifyPostCodegenModelsEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPostEnvAddEventData extends AmplifyEventData {
-    constructor(prevEnvName: string, newEnvName: string);
+export interface AmplifyPostEnvAddEventData {
     // (undocumented)
-    readonly newEnvName: string;
+    newEnvName: string;
     // (undocumented)
-    readonly prevEnvName: string;
-}
-
-// @public (undocumented)
-export class AmplifyPostInitEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPostPullEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPostPushEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPreCodegenModelsEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPreInitEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPrePullEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPrePushEventData extends AmplifyEventData {
+    prevEnvName: string;
 }
 
 // @public (undocumented)
@@ -1183,6 +1170,9 @@ export type Message = {
 // @public (undocumented)
 export class MissingParametersError extends Error {
 }
+
+// @public (undocumented)
+export type NoArgsAmplifyEventData = Record<string, never>;
 
 // @public (undocumented)
 export enum NotificationChannels {
