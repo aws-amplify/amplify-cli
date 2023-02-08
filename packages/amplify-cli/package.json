@@ -219,7 +219,7 @@
       "notifications": {
         "name": "notifications",
         "type": "category",
-        "packageName": "@aws-amplify/amplify-category-notifications"
+        "packageName": "amplify-category-notifications"
       },
       "predictions": {
         "name": "predictions",
