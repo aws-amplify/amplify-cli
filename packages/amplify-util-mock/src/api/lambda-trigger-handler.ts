@@ -1,7 +1,7 @@
 import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
 import { invokeTrigger } from './lambda-invoke';
-import { isMockable } from 'amplify-category-function';
+import { isMockable } from '@aws-amplify/amplify-category-function';
 import { printer } from 'amplify-prompts';
 import { LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
 

@@ -384,7 +384,7 @@ async function askIdentifyAccess(parameters) {
 async function followUpIdentifyEntitiesQuestions(parameters) {
   const answers = {};
 
-  answers.setup = await prompter.pick('Would you like use the default configuration?', [
+  answers.setup = await prompter.pick('Would you like to use the default configuration?', [
     {
       name: 'Default Configuration',
       value: 'default',
