@@ -175,47 +175,47 @@ function attachPatching(context: $TSContext) {
   };
 }
 
-function attachPrint(context: $TSContext) {
+export function attachPrint(context: $TSContext) {
   context.print = print;
 }
 
-function info(message: string): void {
+export function info(message: string): void {
   console.log(colors.info(message));
 }
 
-function warning(message: string): void {
+export function warning(message: string): void {
   console.log(colors.warning(message));
 }
 
-function error(message: string): void {
+export function error(message: string): void {
   console.log(colors.error(message));
 }
 
-function success(message: string): void {
+export function success(message: string): void {
   console.log(colors.success(message));
 }
 
-function green(message: string): void {
+export function green(message: string): void {
   console.log(colors.green(message));
 }
 
-function yellow(message: string): void {
+export function yellow(message: string): void {
   console.log(colors.yellow(message));
 }
 
-function red(message: string): void {
+export function red(message: string): void {
   console.log(colors.red(message));
 }
 
-function blue(message: string): void {
+export function blue(message: string): void {
   console.log(colors.blue(message));
 }
 
-function fancy(message?: string): void {
+export function fancy(message?: string): void {
   console.log(message);
 }
 
-function debug(message: string, title = 'DEBUG'): void {
+export function debug(message: string, title = 'DEBUG'): void {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 
@@ -224,7 +224,7 @@ function debug(message: string, title = 'DEBUG'): void {
   console.log(colors.rainbow(botLine));
 }
 
-function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
+export function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
     case 'markdown': {

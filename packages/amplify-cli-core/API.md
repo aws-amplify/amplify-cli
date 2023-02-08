@@ -250,6 +250,9 @@ export class ApiCategoryFacade {
 export function attachExtensions(context: $TSContext): void;
 
 // @public (undocumented)
+export function attachPrint(context: $TSContext): void;
+
+// @public (undocumented)
 export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
@@ -267,6 +270,9 @@ export class BannerMessage {
     // (undocumented)
     static initialize: (cliVersion: string) => BannerMessage;
 }
+
+// @public (undocumented)
+export function blue(message: string): void;
 
 // @public (undocumented)
 export type BooleanFeatureFlag = {
@@ -517,6 +523,9 @@ export type DataParameter = {
 };
 
 // @public (undocumented)
+export function debug(message: string, title?: string): void;
+
+// @public (undocumented)
 export class DebugConfigValueNotSetError extends Error {
 }
 
@@ -599,6 +608,9 @@ export class EnvVarFormatError extends Error {
 }
 
 // @public (undocumented)
+export function error(message: string): void;
+
+// @public (undocumented)
 export type ErrorParameter = {
     message: string;
     stack: string;
@@ -624,6 +636,9 @@ export class ExportedStackNotInValidStateError extends Error {
 // @public (undocumented)
 export class ExportPathValidationError extends Error {
 }
+
+// @public (undocumented)
+export function fancy(message?: string): void;
 
 // @public (undocumented)
 export type FeatureFlagConfiguration = {
@@ -717,6 +732,9 @@ export const getPackageManager: (rootPath?: string) => PackageManager | null;
 
 // @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
+
+// @public (undocumented)
+export function green(message: string): void;
 
 // @public (undocumented)
 export type HookEvent = {
@@ -894,6 +912,9 @@ export interface IDeploymentStateManager {
     // (undocumented)
     updateStatus: (status: DeploymentStatus) => Promise<void>;
 }
+
+// @public (undocumented)
+export function info(message: string): void;
 
 // @public (undocumented)
 export type INotificationsResource = IAnalyticsResource;
@@ -1298,6 +1319,9 @@ export function ReadTags(tagsFilePath: string): Tag[];
 // @public (undocumented)
 export const recursiveOmit: (obj: $TSObject, path: Array<string>) => void;
 
+// @public (undocumented)
+export function red(message: string): void;
+
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretsRemove" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1482,10 +1506,18 @@ export type SubCommandInfo = {
 };
 
 // @public (undocumented)
+export function success(message: string): void;
+
+// @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];
 
 // @public (undocumented)
 export const supportedEvents: Record<HooksVerb, HooksNoun[]>;
+
+// @public (undocumented)
+export function table(data: string[][], options?: {
+    format?: 'markdown' | 'lean';
+}): void;
 
 // @public (undocumented)
 export interface Tag {
@@ -1577,6 +1609,9 @@ export class ViewResourceTableParams {
 }
 
 // @public (undocumented)
+export function warning(message: string): void;
+
+// @public (undocumented)
 export const writeCFNTemplate: (template: object, filePath: string, options?: WriteCFNTemplateOptions) => Promise<void>;
 
 // @public (undocumented)
@@ -1585,19 +1620,11 @@ export type WriteCFNTemplateOptions = {
     minify?: boolean;
 };
 
+// @public (undocumented)
+export function yellow(message: string): void;
+
 // Warnings were encountered during analysis:
 //
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "info" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "fancy" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "warning" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "error" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "success" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "table" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "debug" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "green" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "yellow" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "red" needs to be exported by the entry point index.d.ts
-// src/context/context-extensions.ts:257:19 - (ae-forgotten-export) The symbol "blue" needs to be exported by the entry point index.d.ts
 // src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
