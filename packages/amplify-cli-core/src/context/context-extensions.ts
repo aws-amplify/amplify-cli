@@ -1,10 +1,10 @@
 import CLITable from 'cli-table3';
 import importedColors from 'colors/safe';
 import ejs from 'ejs';
+import { $TSContext } from '../types';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import * as path from 'path';
-import { Context } from './domain/context';
 
 importedColors.setTheme({
   highlight: 'cyan',
@@ -36,7 +36,7 @@ type CliPrintColors = typeof importedColors & {
 
 const colors = importedColors as CliPrintColors;
 
-export function attachExtentions(context: Context) {
+export function attachExtensions(context: $TSContext) {
   attachFilesystem(context);
   attachPrint(context);
   attachParameters(context);
@@ -46,7 +46,7 @@ export function attachExtentions(context: Context) {
   attachTemplate(context);
 }
 
-function attachPrompt(context: Context) {
+function attachPrompt(context: $TSContext) {
   context.prompt = {
     confirm: async (message: string, defaultValue = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
@@ -84,7 +84,7 @@ function attachPrompt(context: Context) {
   };
 }
 
-function attachParameters(context: Context) {
+function attachParameters(context: $TSContext) {
   const { argv, plugin, command, subCommands, options } = context.input;
 
   context.parameters = {
@@ -111,7 +111,7 @@ function attachParameters(context: Context) {
   /* tslint:enable */
 }
 
-function attachRuntime(context: Context) {
+function attachRuntime(context: $TSContext) {
   context.runtime = {
     plugins: [],
   };
@@ -134,7 +134,7 @@ function attachRuntime(context: Context) {
   });
 }
 
-function attachFilesystem(context: Context) {
+function attachFilesystem(context: $TSContext) {
   context.filesystem = contextFileSystem;
 }
 
@@ -164,7 +164,7 @@ const contextFileSystem = {
   },
 };
 
-function attachPatching(context: Context) {
+function attachPatching(context: $TSContext) {
   context.patching = {
     replace: async (filePath: string, oldContent: string, newContent: string): Promise<string> => {
       const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -175,7 +175,7 @@ function attachPatching(context: Context) {
   };
 }
 
-function attachPrint(context: Context) {
+function attachPrint(context: $TSContext) {
   context.print = print;
 }
 
@@ -313,7 +313,7 @@ const CLI_TABLE_MARKDOWN = {
   middle: '|',
 };
 
-function attachTemplate(context: Context) {
+function attachTemplate(context: $TSContext) {
   context.template = {
     async generate(opts: { template: string; target: string; props: object; directory: string }): Promise<string> {
       const template = opts.template;
