@@ -4,15 +4,23 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from '@aws-cdk/core';
 import { ChildProcess } from 'child_process';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
+import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
+import { ICommandInput } from 'amplify-cli-shared-interfaces';
+import { IFlowData } from 'amplify-cli-shared-interfaces';
+import { IFlowReport } from 'amplify-cli-shared-interfaces';
 import opn from 'open';
 import { Ora } from 'ora';
 import { Template as Template_2 } from 'cloudform-types';
+import { TypeOptionFlowData } from 'amplify-cli-shared-interfaces';
+import { UrlWithStringQuery } from 'url';
 
 // @public (undocumented)
 export type $IPluginManifest = $TSAny;
@@ -414,6 +422,53 @@ export interface CLIEnvironmentProvider {
 }
 
 // @public (undocumented)
+export class CLIFlowReport implements IFlowData {
+    constructor();
+    // (undocumented)
+    assignProjectIdentifier(): undefined | string;
+    // (undocumented)
+    category: string;
+    // (undocumented)
+    cmd: string;
+    // (undocumented)
+    envName?: string;
+    // (undocumented)
+    executable: string;
+    // (undocumented)
+    getFlowReport(): IFlowReport;
+    // (undocumented)
+    input: Input;
+    // (undocumented)
+    isHeadless: boolean;
+    // (undocumented)
+    logger: IAmplifyLogger;
+    // (undocumented)
+    optionFlowData: Array<TypeOptionFlowData>;
+    // (undocumented)
+    projectEnvIdentifier?: string;
+    // (undocumented)
+    projectIdentifier?: string;
+    // (undocumented)
+    pushHeadlessFlow(headlessParameterString: string, cliInput: ICommandInput): void;
+    // (undocumented)
+    pushInteractiveFlow(prompt: string, input: unknown): void;
+    // (undocumented)
+    runtime: string;
+    // (undocumented)
+    setInput(input: Input): void;
+    // (undocumented)
+    setIsHeadless(isHeadless: boolean): void;
+    // (undocumented)
+    setVersion(version: string): void;
+    // (undocumented)
+    subCmd: string | undefined;
+    // (undocumented)
+    timestamp: string;
+    // (undocumented)
+    version: string;
+}
+
+// @public (undocumented)
 export class CLIInputSchemaGenerator {
     constructor(typeDefs: TypeDef[]);
     // (undocumented)
@@ -443,6 +498,22 @@ export class CLIInputSchemaValidator {
     _service: string;
     // (undocumented)
     validateInput(userInput: string): Promise<boolean>;
+}
+
+// @public (undocumented)
+export class CLINoFlowReport implements IFlowData {
+    // (undocumented)
+    assignProjectIdentifier: () => string | undefined;
+    // (undocumented)
+    getFlowReport: () => IFlowReport | Record<string, never>;
+    // (undocumented)
+    static get instance(): CLINoFlowReport;
+    // (undocumented)
+    pushHeadlessFlow: (headlessFlowDataString: string, input: ICommandInput) => void;
+    // (undocumented)
+    pushInteractiveFlow: (prompt: string, input: unknown) => void;
+    // (undocumented)
+    setIsHeadless: (isHeadless: boolean) => void;
 }
 
 // @public (undocumented)
@@ -563,6 +634,12 @@ export const convertNumBytes: (numBytes: number) => {
 
 // @public (undocumented)
 export function createDefaultCustomPoliciesFile(categoryName: string, resourceName: string): void;
+
+// @public (undocumented)
+export const createHashedIdentifier: (projectName: string, appId: string, envName: string | undefined) => {
+    projectIdentifier: string;
+    projectEnvIdentifier: string;
+};
 
 // @public (undocumented)
 export type CustomIAMPolicies = CustomIAMPolicy[];
@@ -715,6 +792,12 @@ export class DiagnoseReportUploadError extends Error {
 }
 
 // @public (undocumented)
+export const encryptBuffer: (text: Buffer, passKey: string) => Promise<string>;
+
+// @public (undocumented)
+export const encryptKey: (key: string) => Promise<string>;
+
+// @public (undocumented)
 export class EnvVarFormatError extends Error {
     constructor(variableName: string);
 }
@@ -794,6 +877,14 @@ export type FeatureFlagsEntry = Record<string, Record<string, $TSAny>>;
 export type FeatureFlagType = 'boolean' | 'number';
 
 // @public (undocumented)
+export enum FromStartupTimedCodePaths {
+    // (undocumented)
+    PLATFORM_STARTUP = "platformStartup",
+    // (undocumented)
+    TOTAL_DURATION = "totalDuration"
+}
+
+// @public (undocumented)
 export const generateAmplifyOverrideProjectBuildFiles: (backendDir: string, srcResourceDirPath: string) => void;
 
 // @public (undocumented)
@@ -827,6 +918,12 @@ export function getGraphQLTransformerOpenSearchDocLink(version: number): string;
 export function getGraphQLTransformerOpenSearchProductionDocLink(version: number): string;
 
 // @public (undocumented)
+export function getLatestApiVersion(): string;
+
+// @public (undocumented)
+export function getLatestPayloadVersion(): string;
+
+// @public (undocumented)
 export function getMigrateResourceMessageForOverride(categoryName: string, resourceName: string, isUpdate?: boolean): string;
 
 // @public (undocumented)
@@ -844,6 +941,12 @@ export const getPackageManager: (rootPath?: string) => PackageManager | null;
 
 // @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
+
+// @public (undocumented)
+export const getPublicKey: () => Promise<string>;
+
+// @public (undocumented)
+export const getUrl: () => UrlWithStringQuery;
 
 // @public (undocumented)
 export function green(message: string): void;
@@ -965,7 +1068,7 @@ export type IAuthResource = IAmplifyResource;
 // @public (undocumented)
 export type IContextFilesystem = {
     remove: (targetPath: string) => void;
-    read: (targetPath: string, encoding?: string) => $TSAny;
+    read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
     write: (targetPath: string, data: unknown) => void;
     exists: (targetPath: string) => boolean;
     isFile: (targetPath: string) => boolean;
@@ -1025,6 +1128,8 @@ export interface IDeploymentStateManager {
     updateStatus: (status: DeploymentStatus) => Promise<void>;
 }
 
+export { IFlowData }
+
 // @public (undocumented)
 export function info(message: string): void;
 
@@ -1069,6 +1174,9 @@ export class Input {
     // (undocumented)
     subCommands?: string[];
 }
+
+// @public (undocumented)
+export type InputOptions = Record<string, string | boolean>;
 
 // @public (undocumented)
 export class InvalidSubCommandError extends Error {
@@ -1132,6 +1240,54 @@ export const isResourceNameUnique: (category: string, resourceName: string, thro
 // @public (undocumented)
 export const isWindowsPlatform: () => boolean;
 
+// Warning: (ae-forgotten-export) The symbol "IUsageMetricsData" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface IUsageData extends IUsageMetricsData, IFlowData {
+}
+
+// @public (undocumented)
+export interface IUsageDataPayload {
+    // (undocumented)
+    accountId: string;
+    // (undocumented)
+    amplifyCliVersion: string;
+    // (undocumented)
+    codePathDurations: Partial<Record<TimedCodePath, number>>;
+    // (undocumented)
+    downstreamException: SerializableError;
+    // (undocumented)
+    error: SerializableError;
+    // (undocumented)
+    flowReport: IFlowReport;
+    // (undocumented)
+    input: Input | null;
+    // (undocumented)
+    inputOptions: InputOptions;
+    // (undocumented)
+    installationUuid: string;
+    // (undocumented)
+    isCi: boolean;
+    // (undocumented)
+    nodeVersion: string;
+    // (undocumented)
+    osPlatform: string;
+    // (undocumented)
+    osRelease: string;
+    // (undocumented)
+    payloadVersion: string;
+    // (undocumented)
+    projectSetting: ProjectSettings;
+    // (undocumented)
+    pushNormalizationFactor: number;
+    // (undocumented)
+    sessionUuid: string;
+    // (undocumented)
+    state: string;
+    // (undocumented)
+    timestamp: string;
+}
+
 // @public (undocumented)
 export class JSONUtilities {
     // (undocumented)
@@ -1162,6 +1318,22 @@ export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: str
 
 // @public (undocumented)
 export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | undefined;
+
+// @public (undocumented)
+export enum ManuallyTimedCodePath {
+    // (undocumented)
+    INIT_ENV_CATEGORIES = "initEnvCategories",
+    // (undocumented)
+    INIT_ENV_PLATFORM = "initEnvPlatform",
+    // (undocumented)
+    PLUGIN_TIME = "pluginTime",
+    // (undocumented)
+    PROMPT_TIME = "promptTime",
+    // (undocumented)
+    PUSH_DEPLOYMENT = "pushDeployment",
+    // (undocumented)
+    PUSH_TRANSFORM = "pushTransform"
+}
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //
@@ -1202,6 +1374,45 @@ export enum NotificationChannels {
 
 // @public (undocumented)
 export class NotImplementedError extends Error {
+}
+
+// @public (undocumented)
+export class NoUsageData implements IUsageData, IFlowData {
+    // (undocumented)
+    assignProjectIdentifier(): string | undefined;
+    // (undocumented)
+    calculatePushNormalizationFactor(__events: {
+        StackId: string;
+        PhysicalResourceId: string;
+    }[], __stackId: string): void;
+    // (undocumented)
+    emitAbort(): Promise<void>;
+    // (undocumented)
+    emitError(): Promise<void>;
+    // (undocumented)
+    emitSuccess(): Promise<void>;
+    // (undocumented)
+    static get flowInstance(): IFlowData;
+    // (undocumented)
+    getFlowReport(): IFlowReport | Record<string, never>;
+    // (undocumented)
+    getSessionUuid(): string;
+    // (undocumented)
+    getUsageDataPayload(error: Error | null, state: string): UsageDataPayload;
+    // (undocumented)
+    init(): void;
+    // (undocumented)
+    static get Instance(): IUsageData;
+    // (undocumented)
+    pushHeadlessFlow: (__headlessFlowDataString: string, __input: ICommandInput) => void;
+    // (undocumented)
+    pushInteractiveFlow: (__prompt: string, __input: unknown) => void;
+    // (undocumented)
+    setIsHeadless: (__headless: boolean) => void;
+    // (undocumented)
+    startCodePathTimer(): void;
+    // (undocumented)
+    stopCodePathTimer(): void;
 }
 
 // @public (undocumented)
@@ -1507,7 +1718,17 @@ const print_2: {
 export { print_2 as print }
 
 // @public (undocumented)
+export const prodUrl: string;
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
+
+// @public (undocumented)
+export type ProjectSettings = {
+    frontend?: string;
+    editor?: string;
+    framework?: string;
+};
 
 // @public (undocumented)
 export function promptConfirmationRemove(context: $TSContext, serviceType?: string): Promise<boolean>;
@@ -1545,10 +1766,16 @@ export const recursiveOmit: (obj: $TSObject, path: Array<string>) => void;
 // @public (undocumented)
 export function red(message: string): void;
 
+// @public (undocumented)
+export function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString?: string): Input;
+
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretsRemove" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const removeFromDeploymentSecrets: (deploymentSecretsModifier: deploymentSecretsRemove) => DeploymentSecrets;
+
+// @public (undocumented)
+export const reporterEndpoint: () => string;
 
 // @public (undocumented)
 export class ResourceAlreadyExistsError extends Error {
@@ -1592,6 +1819,23 @@ export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): 
 export const SecretFileMode = 384;
 
 // @public (undocumented)
+export class SerializableError {
+    constructor(error: Error);
+    // (undocumented)
+    code?: string;
+    // (undocumented)
+    details?: string;
+    // (undocumented)
+    message: string;
+    // (undocumented)
+    name: string;
+    // Warning: (ae-forgotten-export) The symbol "Trace" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    trace?: Trace[];
+}
+
+// @public (undocumented)
 export type ServiceSelection = {
     provider: string;
     service: string;
@@ -1609,6 +1853,9 @@ export const skipHooksFilePath = "/opt/amazon";
 
 // @public (undocumented)
 export const spinner: Ora;
+
+// @public (undocumented)
+export type StartableTimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath;
 
 // @public (undocumented)
 export class StateManager {
@@ -1721,6 +1968,9 @@ export const stateManager: StateManager;
 export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
 
 // @public (undocumented)
+export type StoppableTimedCodePath = ManuallyTimedCodePath | FromStartupTimedCodePaths;
+
+// @public (undocumented)
 export type SubCommandInfo = {
     subCommand: string;
     subCommandDescription: string;
@@ -1777,6 +2027,9 @@ export interface Template {
 }
 
 // @public (undocumented)
+export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
+
+// @public (undocumented)
 export type TypeDef = {
     typeName: string;
     service: string;
@@ -1796,6 +2049,120 @@ export class UnrecognizedFrameworkError extends Error {
 
 // @public (undocumented)
 export class UnrecognizedFrontendError extends Error {
+}
+
+// @public (undocumented)
+export enum UntilExitTimedCodePath {
+    // (undocumented)
+    POST_PROCESS = "postProcess"
+}
+
+// @public (undocumented)
+export class UsageData implements IUsageData {
+    // (undocumented)
+    accountId: string;
+    // (undocumented)
+    assignProjectIdentifier(): string | undefined;
+    // (undocumented)
+    calculatePushNormalizationFactor(events: {
+        StackId: string;
+        PhysicalResourceId: string;
+    }[], StackId: string): void;
+    // (undocumented)
+    codePathDurations: Map<TimedCodePath, number>;
+    // Warning: (ae-forgotten-export) The symbol "Timer" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    codePathTimers: Map<TimedCodePath, Timer>;
+    // (undocumented)
+    emitAbort(): Promise<void>;
+    // (undocumented)
+    emitError(error: Error | null): Promise<void>;
+    // (undocumented)
+    emitSuccess(): Promise<void>;
+    // (undocumented)
+    flow: CLIFlowReport;
+    // (undocumented)
+    getFlowReport(): IFlowReport;
+    // (undocumented)
+    getSessionUuid(): string;
+    // (undocumented)
+    getUsageDataPayload(error: Error | null, state: string): UsageDataPayload;
+    // (undocumented)
+    init(installationUuid: string, version: string, input: Input, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
+    // (undocumented)
+    input: Input;
+    // (undocumented)
+    inputOptions: InputOptions;
+    // (undocumented)
+    installationUuid: string;
+    // (undocumented)
+    static get Instance(): IUsageData;
+    // (undocumented)
+    projectSettings: ProjectSettings;
+    // (undocumented)
+    pushHeadlessFlow(headlessParameterString: string, input: ICommandInput): void;
+    // (undocumented)
+    pushInteractiveFlow(prompt: string, input: unknown): void;
+    // (undocumented)
+    pushNormalizationFactor: number;
+    // (undocumented)
+    requestTimeout: number;
+    // (undocumented)
+    sessionUuid: string;
+    // (undocumented)
+    setIsHeadless(isHeadless: boolean): void;
+    // (undocumented)
+    startCodePathTimer(codePath: StartableTimedCodePath): void;
+    // (undocumented)
+    stopCodePathTimer(codePath: StoppableTimedCodePath): void;
+    // (undocumented)
+    url: UrlWithStringQuery;
+    // (undocumented)
+    version: string;
+}
+
+// @public (undocumented)
+export class UsageDataPayload implements IUsageDataPayload {
+    constructor(sessionUuid: string, installationUuid: string, version: string, input: Input, error: Error | null, state: string, accountId: string, project: ProjectSettings, inputOptions: InputOptions, codePathDurations: Partial<Record<TimedCodePath, number>>, flowReport: IFlowReport);
+    // (undocumented)
+    accountId: string;
+    // (undocumented)
+    amplifyCliVersion: string;
+    // (undocumented)
+    codePathDurations: Partial<Record<TimedCodePath, number>>;
+    // (undocumented)
+    downstreamException: SerializableError;
+    // (undocumented)
+    error: SerializableError;
+    // (undocumented)
+    flowReport: IFlowReport;
+    // (undocumented)
+    input: Input | null;
+    // (undocumented)
+    inputOptions: InputOptions;
+    // (undocumented)
+    installationUuid: string;
+    // (undocumented)
+    isCi: boolean;
+    // (undocumented)
+    nodeVersion: string;
+    // (undocumented)
+    osPlatform: string;
+    // (undocumented)
+    osRelease: string;
+    // (undocumented)
+    payloadVersion: string;
+    // (undocumented)
+    projectSetting: ProjectSettings;
+    // (undocumented)
+    pushNormalizationFactor: number;
+    // (undocumented)
+    sessionUuid: string;
+    // (undocumented)
+    state: string;
+    // (undocumented)
+    timestamp: string;
 }
 
 // @public (undocumented)
@@ -1845,6 +2212,9 @@ export type WriteCFNTemplateOptions = {
 
 // @public (undocumented)
 export function yellow(message: string): void;
+
+
+export * from "amplify-cli-shared-interfaces";
 
 // Warnings were encountered during analysis:
 //
