@@ -18,9 +18,10 @@ const constructExeInfo = (context: $TSContext): void => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const runStrategy = (quickstart: boolean) => (quickstart
-  ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-  : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup]);
+const runStrategy = (quickstart: boolean) =>
+  quickstart
+    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
@@ -29,12 +30,12 @@ export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
   checkForNestedProject();
 
-  const steps = runStrategy(context?.parameters?.options?.quickstart);
+  const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
     await step(context);
   }
 
   if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
-    await raisePostEnvAddEvent(context as unknown as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
+    await raisePostEnvAddEvent((context as unknown) as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
   }
 };

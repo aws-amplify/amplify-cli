@@ -36,7 +36,7 @@ export class NoUsageData implements IUsageData, IFlowData {
         category: '',
         cmd: '',
         executable: '',
-        input: { argv: [] },
+        input: { argv: [], command: '' },
         isHeadless: true,
         optionFlowData: [],
         runtime: '',

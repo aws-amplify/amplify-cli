@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -21,7 +19,7 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
   setExeInfo(context, projectPath, undefined, env);
   // default behavior in quick start used to be android.
   // default to that here unless different param specified
-  const { frontend } = context?.parameters?.options;
+  const { frontend } = context?.parameters?.options ?? {};
   if (!frontend) {
     context.print.warning('No frontend specified. Defaulting to android.');
     context.exeInfo.projectConfig.frontend = 'android';
@@ -96,7 +94,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
  */
 export const analyzeProject = async (context: $TSContext): Promise<$TSContext> => {
   // eslint-disable-next-line spellcheck/spell-checker
-  if (!context.parameters.options.app || !context.parameters.options.quickstart) {
+  if (!context.parameters.options?.app || !context.parameters.options?.quickstart) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   }
   const projectPath = process.cwd();

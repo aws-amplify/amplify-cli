@@ -1,20 +1,11 @@
-import {
-  $TSAny,
-  $TSContext,
-  AmplifyError,
-  AmplifyFault,
-  spinner,
-  stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, spinner, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,
   notifySecurityEnhancement,
 } from '../extensions/amplify-helpers/auth-notifications';
-import {
-  getProviderPlugins,
-} from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 
 /**
@@ -67,7 +58,7 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
   if (context.exeInfo.localEnvInfo.noUpdateBackend) {
     throw new AmplifyError('NoUpdateBackendError', { message: 'The local environment configuration does not allow backend updates.' });
   }
-  if (context.parameters.options.force) {
+  if (context.parameters.options?.force) {
     context.exeInfo.forcePush = true;
   }
   await syncCurrentCloudBackend(context);

@@ -920,7 +920,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
     context.print.error(errorMessage);
     context.print.info(`Access keys for continuous integration can be configured with headless parameters: ${chalk.green(docsUrl)}`);
-    await context.usageData.emitError(errorMessage);
+    await context.usageData.emitError(new Error(errorMessage));
     exitOnNextTick(1);
   }
 

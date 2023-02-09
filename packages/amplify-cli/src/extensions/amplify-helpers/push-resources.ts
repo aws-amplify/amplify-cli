@@ -32,9 +32,9 @@ export const pushResources = async (
 ): Promise<boolean> => {
   context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
 
-  if (context.parameters.options['iterative-rollback']) {
+  if (context.parameters.options?.['iterative-rollback']) {
     // validate --iterative-rollback with --force
-    if (context.parameters.options.force) {
+    if (context.parameters.options?.force) {
       throw new AmplifyError('CommandNotSupportedError', {
         message: '--iterative-rollback and --force are not supported together',
         resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
@@ -43,7 +43,7 @@ export const pushResources = async (
     context.exeInfo.iterativeRollback = true;
   }
 
-  if (context.parameters.options.env) {
+  if (context.parameters.options?.env) {
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
 

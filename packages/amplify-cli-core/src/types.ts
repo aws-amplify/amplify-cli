@@ -32,18 +32,27 @@ export type $TSContext = {
   newUserInfo?: string;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  updatingAuth: Record<string, unknown>; // this seems to actually implement CognitoStackOptions
+  updatingAuth: any; // this seems to actually implement CognitoStackOptions
 };
 
 export interface MigrationInfo {
   amplifyMeta: $TSMeta;
+  newVersion: string;
+  initVersion: string;
   currentAmplifyMeta: $TSMeta;
   projectConfig: ProjectConfig;
+  projectPath: string;
   localEnvInfo: LocalEnvInfo;
   localAwsInfo: LocalAwsInfo;
-  teamProviderInfo: Record<string, unknown>;
+  teamProviderInfo: TeamProviderInfo;
   backendConfig: Record<string, unknown>;
 }
+export type TeamProviderEnvironment = {
+  categories: Record<string, unknown>;
+};
+export type TeamProviderInfo = {
+  [envName: string]: Record<string, unknown>;
+};
 export type LocalAwsInfo = {
   NONE: unknown;
 };
@@ -145,6 +154,7 @@ export interface IUsageMetricsData {
 
 export type StartableTimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath;
 export type StoppableTimedCodePath = ManuallyTimedCodePath | FromStartupTimedCodePaths;
+
 export enum FromStartupTimedCodePaths {
   PLATFORM_STARTUP = 'platformStartup', // time from CLI process start to plugin invoke. This timer is auto started on process startup
   TOTAL_DURATION = 'totalDuration', // time from CLI process start to exit
@@ -170,17 +180,37 @@ export enum ManuallyTimedCodePath {
 export interface ContextParameters extends Pick<$CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
   raw: $CommandLineInput['argv'];
   array: $CommandLineInput['subCommands'];
-  first: string | undefined;
-  second: string | undefined;
-  third: string | undefined;
+  first?: string;
+  second?: string;
+  third?: string;
 }
 
 export type $CommandLineInput = {
   argv: Array<string>;
   plugin?: string;
-  command?: string;
+  command: string;
   subCommands?: string[];
-  options?: Record<string, string | boolean>;
+  options?: {
+    restore?: boolean;
+    json?: boolean;
+    name?: string;
+    awsInfo?: string;
+    config?: string;
+    'iterative-rollback'?: boolean;
+    force?: boolean;
+    env?: string;
+    rootStackName?: string;
+    frontend?: string;
+    quickstart?: boolean;
+    app?: string | boolean;
+    timeout?: string;
+    event?: string;
+    minify?: boolean;
+    help?: boolean;
+    localEnvFilePath?: string;
+    yes?: boolean;
+    appId?: string;
+  } & Record<string, string | boolean>;
 };
 
 export type Plugin = {
@@ -364,7 +394,11 @@ export type GetPackageAssetPaths = () => Promise<string[]>;
 export type $IPluginManifest = {
   name: string;
   type: string;
-  commands: string[];
+  commands?: string[];
+  services?: string[];
+  functionRuntime?: {
+    pluginId: string;
+  };
 };
 
 /**
@@ -488,7 +522,7 @@ interface AmplifyToolkit {
   removeResource: (
     context: $TSContext,
     category: string,
-    resource: string,
+    resource?: string,
     questionOptions?: {
       headless?: boolean;
       serviceSuffix?: { [serviceName: string]: string };

@@ -13,7 +13,7 @@ export const initializeEnv = async (
   currentAmplifyMeta: $TSMeta = stateManager.currentMetaFileExists() ? stateManager.getCurrentMeta() : undefined,
 ): Promise<void> => {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;

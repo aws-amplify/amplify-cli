@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, getPackageManager, pathManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, getPackageManager, pathManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
@@ -10,12 +8,12 @@ import { generateLocalEnvInfoFile } from './s9-onSuccess';
  * Executes before init
  */
 export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => {
-  if (context.parameters.options.app) {
+  if (context.parameters.options?.app) {
     // Setting up a sample app
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
     const repoUrl = context.parameters.options.app;
 
-    await validateGithubRepo(repoUrl);
+    validateGithubRepo(repoUrl);
     await cloneRepo(repoUrl);
     cleanAmplifyArtifacts();
     await installPackage();
@@ -29,18 +27,22 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
  *
  * @throws error if url is not a valid remote github url
  */
-const validateGithubRepo = async (repoUrl: string): Promise<void> => {
+function validateGithubRepo(repoUrl: any): asserts repoUrl is string {
   try {
     url.parse(repoUrl);
 
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Invalid remote github url',
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    }, e);
+    throw new AmplifyError(
+      'ProjectInitError',
+      {
+        message: 'Invalid remote github url',
+        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+      },
+      e,
+    );
   }
-};
+}
 
 /**
  * Clones repo from url to current directory (must be empty)
@@ -58,11 +60,15 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Unable to clone repository',
-      details: e.message,
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    }, e);
+    throw new AmplifyError(
+      'ProjectInitError',
+      {
+        message: 'Unable to clone repository',
+        details: e.message,
+        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+      },
+      e,
+    );
   }
 };
 

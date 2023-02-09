@@ -90,11 +90,10 @@ function attachParameters(context: $TSContext) {
     argv,
     plugin,
     command,
-    options,
+    options: options ?? {},
+    raw: argv,
+    array: subCommands,
   };
-  context.parameters.options = context.parameters.options || {};
-  context.parameters.raw = argv;
-  context.parameters.array = subCommands;
   /* tslint:disable */
   if (subCommands && subCommands.length > 0) {
     if (subCommands.length > 0) {
@@ -121,7 +120,7 @@ function attachRuntime(context: $TSContext) {
       const directory = pluginEntry.packageLocation;
       const pluginName = pluginEntry.manifest.name;
       const pluginType = pluginEntry.manifest.type;
-      const commands = pluginEntry.manifest.commands;
+      const commands = pluginEntry.manifest.commands ?? [];
       context.runtime.plugins.push({
         name,
         directory,

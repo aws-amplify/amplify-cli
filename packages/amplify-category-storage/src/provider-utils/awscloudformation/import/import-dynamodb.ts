@@ -1,7 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IDynamoDBService } from 'amplify-util-import';
 import Enquirer from 'enquirer';
@@ -290,8 +288,8 @@ export const importedDynamoDBEnvInit = async (
   const dynamoDB = await providerUtils.createDynamoDBService(context);
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
@@ -310,7 +308,14 @@ export const importedDynamoDBEnvInit = async (
       if (currentResource && currentResource.output) {
         const {
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          Name, Region, Arn, StreamArn, PartitionKeyName, PartitionKeyType, SortKeyName, SortKeyType,
+          Name,
+          Region,
+          Arn,
+          StreamArn,
+          PartitionKeyName,
+          PartitionKeyType,
+          SortKeyName,
+          SortKeyType,
         } = currentResource.output;
 
         /* eslint-disable no-param-reassign */
@@ -329,15 +334,19 @@ export const importedDynamoDBEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance
-      .getResourceParamManager(AmplifyCategories.STORAGE, resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager(
+      AmplifyCategories.STORAGE,
+      resourceName,
+    );
 
     if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
         message: importMessages.ImportPreviousTable(
-          resourceName, resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!, context.exeInfo.sourceEnvName,
+          resourceName,
+          resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!,
+          context.exeInfo.sourceEnvName,
         ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,

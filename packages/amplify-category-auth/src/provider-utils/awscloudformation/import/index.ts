@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, ServiceSelection, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
 import {
@@ -87,7 +85,7 @@ const printSuccess = (context: $TSContext, authSelections: AuthSelections, userP
   context.print.info('');
   context.print.info('Next steps:');
   context.print.info('');
-  context.print.info('- This resource will be available for GraphQL APIs (\'amplify add api\')');
+  context.print.info("- This resource will be available for GraphQL APIs ('amplify add api')");
   context.print.info('- Use Amplify libraries to add sign up, sign in, and sign out capabilities to your client');
   context.print.info('  application.');
   context.print.info('  - iOS: https://docs.amplify.aws/lib/auth/getting-started/q/platform/ios');
@@ -216,8 +214,9 @@ const importServiceWalkthrough = async (
     if (answers.authSelections === 'identityPoolAndUserPool') {
       if (questionParameters.validatedIdentityPools && questionParameters.validatedIdentityPools!.length >= 1) {
         // No need to check to have 1 web and 1 native since prefiltering already done that check in ValidateUserPool
-        questionParameters.validatedIdentityPools = questionParameters.validatedIdentityPools
-          .filter(ipc => ipc.providers.filter(p => p.ClientId === answers.appClientWebId || p.ClientId === answers.appClientNativeId));
+        questionParameters.validatedIdentityPools = questionParameters.validatedIdentityPools.filter(ipc =>
+          ipc.providers.filter(p => p.ClientId === answers.appClientWebId || p.ClientId === answers.appClientNativeId),
+        );
       } else {
         // There are no Identity Pool candidates print out a message and signal to skip further checks to get back into the loop.
         // This is a fail safe check as we already filtered the Identity Pools upon User Pool selection.
@@ -329,9 +328,7 @@ const importServiceWalkthrough = async (
     }
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const {
-      authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
-    } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;
@@ -396,10 +393,10 @@ const validateUserPool = async (
     const validatedIdentityPools: { identityPool: IdentityPool; providers: CognitoIdentityProvider[] }[] = [];
 
     for (const candidate of identityPoolCandidates) {
-      const hasWebClientProvider = candidate.providers
-        .filter(p => p.ClientId && webClients.map(c => c.ClientId).includes(p.ClientId!)).length > 0;
-      const hasNativeClientProvider = candidate.providers
-        .filter(p => p.ClientId && nativeClients.map(c => c.ClientId).includes(p.ClientId!)).length > 0;
+      const hasWebClientProvider =
+        candidate.providers.filter(p => p.ClientId && webClients.map(c => c.ClientId).includes(p.ClientId!)).length > 0;
+      const hasNativeClientProvider =
+        candidate.providers.filter(p => p.ClientId && nativeClients.map(c => c.ClientId).includes(p.ClientId!)).length > 0;
 
       if (hasWebClientProvider && hasNativeClientProvider) {
         validatedIdentityPools.push(candidate);
@@ -503,10 +500,10 @@ const selectAppClients = async (
       // eslint-disable-next-line no-param-reassign
       answers.appClientNativeId = undefined; // Only to be used by enquirer
 
-      changeAppClientSelection = answers.appClientNative === answers.appClientWeb
-
-        ? await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient)
-        : false;
+      changeAppClientSelection =
+        answers.appClientNative === answers.appClientWeb
+          ? await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient)
+          : false;
     }
     // eslint-disable-next-line no-param-reassign
     questionParameters.bothAppClientsWereAutoSelected = autoSelected === 2;
@@ -530,18 +527,19 @@ const appClientsOAuthPropertiesMatching = async (
   const logoutUrlsMatching = isArraysEqual(appClientWeb.LogoutURLs!, appClientNative.LogoutURLs!);
   const allowedOAuthFlowsMatching = isArraysEqual(appClientWeb.AllowedOAuthFlows!, appClientNative.AllowedOAuthFlows!);
   const allowedOAuthScopesMatching = isArraysEqual(appClientWeb.AllowedOAuthScopes!, appClientNative.AllowedOAuthScopes!);
-  const allowedOAuthFlowsUserPoolClientMatching = appClientWeb.AllowedOAuthFlowsUserPoolClient
-    === appClientNative.AllowedOAuthFlowsUserPoolClient;
+  const allowedOAuthFlowsUserPoolClientMatching =
+    appClientWeb.AllowedOAuthFlowsUserPoolClient === appClientNative.AllowedOAuthFlowsUserPoolClient;
   const supportedIdentityProvidersMatching = isArraysEqual(
     appClientWeb.SupportedIdentityProviders!,
     appClientNative.SupportedIdentityProviders!,
   );
-  const propertiesMatching = supportedIdentityProvidersMatching
-    && callbackUrlMatching
-    && logoutUrlsMatching
-    && allowedOAuthFlowsMatching
-    && allowedOAuthScopesMatching
-    && allowedOAuthFlowsUserPoolClientMatching;
+  const propertiesMatching =
+    supportedIdentityProvidersMatching &&
+    callbackUrlMatching &&
+    logoutUrlsMatching &&
+    allowedOAuthFlowsMatching &&
+    allowedOAuthScopesMatching &&
+    allowedOAuthFlowsUserPoolClientMatching;
 
   // If we are in silent mode, just return without showing errors and differences
   if (!propertiesMatching && !printErrors) {
@@ -704,17 +702,18 @@ const updateStateFiles = async (
     customAuth: isCustomAuthConfigured(answers.userPool!),
   };
 
-  const hasOAuthConfig = !!answers.oauthProviders
-    && answers.oauthProviders.length > 0
-    && !!answers.oauthProperties
-    && !!answers.oauthProperties.allowedOAuthFlows
-    && answers.oauthProperties.allowedOAuthFlows.length > 0
-    && !!answers.oauthProperties.allowedOAuthScopes
-    && answers.oauthProperties.allowedOAuthScopes.length > 0
-    && !!answers.oauthProperties.callbackURLs
-    && answers.oauthProperties.callbackURLs.length > 0
-    && !!answers.oauthProperties.logoutURLs
-    && answers.oauthProperties.logoutURLs.length > 0;
+  const hasOAuthConfig =
+    !!answers.oauthProviders &&
+    answers.oauthProviders.length > 0 &&
+    !!answers.oauthProperties &&
+    !!answers.oauthProperties.allowedOAuthFlows &&
+    answers.oauthProperties.allowedOAuthFlows.length > 0 &&
+    !!answers.oauthProperties.allowedOAuthScopes &&
+    answers.oauthProperties.allowedOAuthScopes.length > 0 &&
+    !!answers.oauthProperties.callbackURLs &&
+    answers.oauthProperties.callbackURLs.length > 0 &&
+    !!answers.oauthProperties.logoutURLs &&
+    answers.oauthProperties.logoutURLs.length > 0;
 
   // Create and persist parameters
   const resourceParameters: ResourceParameters = {
@@ -933,14 +932,15 @@ const createParameters = (providerName: string, userPoolList: UserPoolDescriptio
 };
 
 const isCustomAuthConfigured = (userPool: UserPoolType): boolean => {
-  const customAuthConfigured = !!userPool
-    && !!userPool.LambdaConfig
-    && !!userPool.LambdaConfig.DefineAuthChallenge
-    && userPool.LambdaConfig.DefineAuthChallenge.length > 0
-    && !!userPool.LambdaConfig.CreateAuthChallenge
-    && userPool.LambdaConfig.CreateAuthChallenge.length > 0
-    && !!userPool.LambdaConfig.VerifyAuthChallengeResponse
-    && userPool.LambdaConfig.VerifyAuthChallengeResponse.length > 0;
+  const customAuthConfigured =
+    !!userPool &&
+    !!userPool.LambdaConfig &&
+    !!userPool.LambdaConfig.DefineAuthChallenge &&
+    userPool.LambdaConfig.DefineAuthChallenge.length > 0 &&
+    !!userPool.LambdaConfig.CreateAuthChallenge &&
+    userPool.LambdaConfig.CreateAuthChallenge.length > 0 &&
+    !!userPool.LambdaConfig.VerifyAuthChallengeResponse &&
+    userPool.LambdaConfig.VerifyAuthChallengeResponse.length > 0;
 
   return customAuthConfigured;
 };
@@ -965,8 +965,8 @@ export const importedAuthEnvInit = async (
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
   const projectConfig = context.amplify.getProjectConfig();
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
@@ -992,9 +992,7 @@ export const importedAuthEnvInit = async (
       const currentResource = _.get(currentMeta, ['auth', resourceName], undefined);
 
       if (currentResource && currentResource.output) {
-        const {
-          UserPoolId, AppClientIDWeb, AppClientID, IdentityPoolId,
-        } = currentResource.output;
+        const { UserPoolId, AppClientIDWeb, AppClientID, IdentityPoolId } = currentResource.output;
 
         /* eslint-disable no-param-reassign */
         currentEnvSpecificParameters.userPoolId = UserPoolId;
@@ -1011,14 +1009,19 @@ export const importedAuthEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager('auth', resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager(
+      'auth',
+      resourceName,
+    );
 
     if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
         message: importMessages.Questions.ImportPreviousResource(
-          resourceName, resourceParamManager.getParam(AuthParam.USER_POOL_ID)!, context.exeInfo.sourceEnvName,
+          resourceName,
+          resourceParamManager.getParam(AuthParam.USER_POOL_ID)!,
+          context.exeInfo.sourceEnvName,
         ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
@@ -1047,11 +1050,11 @@ export const importedAuthEnvInit = async (
   // If there are no current parameters a service walkthrough is required, it can happen when pulling to an empty directory.
   if (
     !(
-      currentEnvSpecificParameters.userPoolId
-      && currentEnvSpecificParameters.webClientId
-      && currentEnvSpecificParameters.nativeClientId
-      && (resourceParameters.authSelections === 'userPoolOnly'
-        || (resourceParameters.authSelections === 'identityPoolAndUserPool' && currentEnvSpecificParameters.identityPoolId))
+      currentEnvSpecificParameters.userPoolId &&
+      currentEnvSpecificParameters.webClientId &&
+      currentEnvSpecificParameters.nativeClientId &&
+      (resourceParameters.authSelections === 'userPoolOnly' ||
+        (resourceParameters.authSelections === 'identityPoolAndUserPool' && currentEnvSpecificParameters.identityPoolId))
     )
   ) {
     context.print.info(importMessages.ImportNewResourceRequired(resourceName));
@@ -1161,9 +1164,7 @@ export const importedAuthEnvInit = async (
     answers.identityProviders = identityPools[0].providers;
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const {
-      authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
-    } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;
@@ -1294,9 +1295,7 @@ export const headlessImport = async (
     answers.identityProviders = identityPools[0].providers;
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const {
-      authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
-    } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;

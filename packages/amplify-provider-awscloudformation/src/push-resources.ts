@@ -38,6 +38,7 @@ import {
   ApiCategoryFacade,
   AmplifyError,
   AmplifyFault,
+  ManuallyTimedCodePath,
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -279,8 +280,8 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       context.exeInfo.forcePush ||
       rebuild
     ) {
-      context.usageData.stopCodePathTimer('pushTransform');
-      context.usageData.startCodePathTimer('pushDeployment');
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
+      context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT);
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
@@ -340,7 +341,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           handleCloudFormationError(err);
         }
       }
-      context.usageData.stopCodePathTimer('pushDeployment');
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT);
       // Cleanup the deployment-state file
       await deploymentStateManager.deleteDeploymentStateFile();
     }

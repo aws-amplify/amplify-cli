@@ -1,9 +1,7 @@
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import sequential from 'promise-sequential';
-import {
-  CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
-} from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny } from 'amplify-cli-core';
 import _ from 'lodash';
 import { printer, prompter } from 'amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
@@ -87,7 +85,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   await initializeEnv(context, currentAmplifyMeta);
 
-  if (!context.parameters.options.app) {
+  if (!context.parameters.options?.app) {
     printWelcomeMessage(context);
   }
 

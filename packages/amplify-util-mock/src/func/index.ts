@@ -94,7 +94,7 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
     onErrorMsg: 'Provide a valid unix-like path to a .json file',
     required: true,
   });
-  let eventName: string = context.input.options ? context.input.options.event : undefined;
+  let eventName: string = context.input.options?.event;
   let promptForEvent = true;
   if (eventName) {
     const validatorOutput = eventNameValidator(eventName);
