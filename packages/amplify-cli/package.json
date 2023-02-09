@@ -192,7 +192,7 @@
       "geo": {
         "name": "geo",
         "type": "category",
-        "packageName": "amplify-category-geo"
+        "packageName": "@aws-amplify/amplify-category-geo"
       },
       "hosting": [
         {
