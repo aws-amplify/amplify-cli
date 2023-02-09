@@ -1,4 +1,6 @@
-export class CommandLineInput {
+import { $CommandLineInput } from '../types';
+
+export class CommandLineInput implements $CommandLineInput {
   argv: Array<string>;
   plugin?: string;
   command?: string;

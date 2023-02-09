@@ -20,19 +20,179 @@ export type $TSContext = {
    * @deprecated
    */
   print: IContextPrint;
-  migrationInfo: $TSAny;
+  migrationInfo: MigrationInfo;
   projectHasMobileHubResources: boolean;
   prompt: $TSAny;
   exeInfo: $TSAny;
-  input: $TSAny;
-  parameters: $TSAny;
-  usageData: $TSAny;
-  runtime: $TSAny;
+  input: $CommandLineInput;
+  parameters: ContextParameters;
+  usageData: IUsageData;
+  runtime: Runtime;
   pluginPlatform: IPluginPlatform;
-  newUserInfo?: $TSAny;
+  newUserInfo?: string;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  updatingAuth: $TSAny;
+  updatingAuth: Record<string, unknown>; // this seems to actually implement CognitoStackOptions
+};
+
+export interface MigrationInfo {
+  amplifyMeta: $TSMeta;
+  currentAmplifyMeta: $TSMeta;
+  projectConfig: ProjectConfig;
+  localEnvInfo: LocalEnvInfo;
+  localAwsInfo: LocalAwsInfo;
+  teamProviderInfo: Record<string, unknown>;
+  backendConfig: Record<string, unknown>;
+}
+export type LocalAwsInfo = {
+  NONE: unknown;
+};
+export type ProjectConfig<T extends string = ''> = {
+  frontend: T;
+  version: string;
+  providers: string[];
+  projectPath?: string;
+  defaultEditor?: string;
+  frontendHandler?: unknown;
+} & Record<T, string>;
+export interface LocalEnvInfo {
+  projectPath: string;
+  defaultEditor: string;
+  envName: string;
+}
+export interface IFlowData {
+  setIsHeadless: (headless: boolean) => void;
+  pushHeadlessFlow: (headlessFlowDataString: string, input: $CommandLineInput) => void;
+  pushInteractiveFlow: (prompt: string, input: unknown) => void;
+  getFlowReport: () => IFlowReport | Record<string, never>;
+  assignProjectIdentifier: (envName?: string) => string | undefined;
+}
+export interface IUsageData extends IUsageMetricsData, IFlowData {}
+export type ProjectSettings = {
+  frontend?: string;
+  editor?: string;
+  framework?: string;
+};
+export interface IUsageDataPayload {
+  sessionUuid: string;
+  installationUuid: string;
+  amplifyCliVersion: string;
+  input: $CommandLineInput | null;
+  inputOptions: InputOptions;
+  timestamp: string;
+  error: SerializableError;
+  downstreamException: SerializableError;
+  payloadVersion: string;
+  osPlatform: string;
+  osRelease: string;
+  nodeVersion: string;
+  state: string;
+  isCi: boolean;
+  accountId: string;
+  projectSetting: ProjectSettings;
+  codePathDurations: Partial<Record<TimedCodePath, number>>;
+  flowReport: IFlowReport;
+  pushNormalizationFactor: number;
+}
+
+type Trace = {
+  methodName: string;
+  file: string;
+  lineNumber: string;
+  columnNumber: string;
+};
+export type SerializableError = {
+  name: string;
+  message: string;
+  details?: string;
+  code?: string;
+  trace?: Trace[];
+};
+export type InputOptions = Record<string, string | boolean>;
+export interface IFlowReport {
+  version: string;
+  runtime: string;
+  executable: string;
+  category: string;
+  isHeadless: boolean;
+  cmd: string;
+  subCmd: string | undefined;
+  optionFlowData: Array<TypeOptionFlowData>; //IOptionFlowHeadlessData | IOptionFlowCLIData
+  input: $CommandLineInput;
+  timestamp: string;
+  projectEnvIdentifier?: string; // hash(ProjectName + Amplify AppId + EnvName)
+  projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
+}
+export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
+export interface IUsageMetricsData {
+  emitAbort: () => Promise<void>;
+  emitError: (error: Error | null) => Promise<void>;
+  emitSuccess: () => Promise<void>;
+  init: (
+    installationUuid: string,
+    version: string,
+    input: $CommandLineInput,
+    accountId: string,
+    projectSettings: ProjectSettings,
+    processStartTimeStamp: number,
+  ) => void;
+  getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload;
+  startCodePathTimer: (codePath: StartableTimedCodePath) => void;
+  stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
+  calculatePushNormalizationFactor: (events: { StackId: string; PhysicalResourceId: string }[], StackId: string) => void;
+  getSessionUuid: () => string;
+}
+
+export type StartableTimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath;
+export type StoppableTimedCodePath = ManuallyTimedCodePath | FromStartupTimedCodePaths;
+export enum FromStartupTimedCodePaths {
+  PLATFORM_STARTUP = 'platformStartup', // time from CLI process start to plugin invoke. This timer is auto started on process startup
+  TOTAL_DURATION = 'totalDuration', // time from CLI process start to exit
+}
+export enum UntilExitTimedCodePath {
+  POST_PROCESS = 'postProcess', // time from plugin exit to process exit. This timer is automatically stopped at the end of the process
+}
+export enum ManuallyTimedCodePath {
+  // general paths (applies to all commands)
+  PLUGIN_TIME = 'pluginTime', // time spent in command handler plugin
+
+  // push-specific paths
+  PUSH_TRANSFORM = 'pushTransform', // total time spent transforming resources and uploading assets to prepare for a push
+  PUSH_DEPLOYMENT = 'pushDeployment', // time spent deploying CFN
+
+  // init-specific paths (also called during env checkout and pull)
+  INIT_ENV_PLATFORM = 'initEnvPlatform', // time to call awscloudformation provider initEnv. This includes downloading deployment bucket and updating local files
+  INIT_ENV_CATEGORIES = 'initEnvCategories', // time to call all of the category's initEnv methods
+
+  PROMPT_TIME = 'promptTime', // total time to takes to answer a prompt
+}
+
+export interface ContextParameters extends Pick<$CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
+  raw: $CommandLineInput['argv'];
+  array: $CommandLineInput['subCommands'];
+  first: string | undefined;
+  second: string | undefined;
+  third: string | undefined;
+}
+
+export type $CommandLineInput = {
+  argv: Array<string>;
+  plugin?: string;
+  command?: string;
+  subCommands?: string[];
+  options?: Record<string, string | boolean>;
+};
+
+export type Plugin = {
+  name: string;
+  directory: string;
+  pluginName: string;
+  pluginType: string;
+  commands: string[];
+};
+
+export type Runtime = {
+  plugins: Plugin[];
 };
 
 /**
@@ -201,7 +361,11 @@ export type GetPackageAssetPaths = () => Promise<string[]>;
 /**
  * Placeholder type
  */
-export type $IPluginManifest = $TSAny;
+export type $IPluginManifest = {
+  name: string;
+  type: string;
+  commands: string[];
+};
 
 /**
  * Use it for all file content read from amplify-meta.json
@@ -403,3 +567,13 @@ interface AmplifyToolkit {
   invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
   getTags: (context: $TSContext) => Tag[];
 }
+export interface IOptionFlowHeadlessData {
+  input: string;
+  timestamp: number;
+}
+export interface IOptionFlowCLIData {
+  prompt: string;
+  input: unknown;
+  timestamp: number;
+}
+export type TypeOptionFlowData = IOptionFlowHeadlessData | IOptionFlowCLIData;
