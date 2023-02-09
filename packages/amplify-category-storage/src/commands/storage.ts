@@ -7,15 +7,15 @@ import { categoryName } from '../constants';
 export { categoryName as name } from '../constants';
 import { run as runHelp } from './storage/help';
 
-export async function run(context: $TSContext) {
+export async function run(context: $TSContext): Promise<void> {
   if (context.parameters.options.help) {
-    return runHelp(context);
+    runHelp(context);
+    return;
   }
   if (/^win/.test(process.platform)) {
     try {
       const { run } = await import(path.join('.', categoryName, context.parameters.first));
-
-      return run(context);
+      run(context);
     } catch (e) {
       printer.error('Command not found');
     }

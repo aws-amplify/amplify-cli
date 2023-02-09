@@ -82,7 +82,7 @@ export function processConditions(conditions: CloudFormationConditions, processe
 }
 
 export function getDependencyResources(node: object | any[], params: Record<string, any> = {}): string[] {
-  let result: string[] = [];
+  const result: string[] = [];
   if (typeof node === 'string') {
     return [];
   }

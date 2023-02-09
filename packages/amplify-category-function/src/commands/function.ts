@@ -3,14 +3,16 @@ import { run as runHelp } from './function/help';
 
 module.exports = {
   name: categoryName,
-  run: async context => {
+  run: async (context): Promise<void> => {
     if (context.parameters.options.help) {
-      return runHelp(context);
+      runHelp(context);
+      return;
     }
     if (/^win/.test(process.platform)) {
       try {
         const { run } = require(`./${categoryName}/${context.parameters.first}`);
-        return run(context);
+        run(context);
+        return;
       } catch (e) {
         context.print.error('Command not found');
       }

@@ -132,7 +132,7 @@ export type AmplifyAppSyncSimulatorRequestContext = {
     jwt?: object;
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
     request: Request_2;
-    appsyncErrors: {};
+    appsyncErrors: any[];
 };
 
 // @public (undocumented)

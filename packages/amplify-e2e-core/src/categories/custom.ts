@@ -27,7 +27,7 @@ export const addCFNCustomResource = async (cwd: string, settings: any): Promise<
     .runAsync();
 };
 
-export function buildCustomResources(cwd: string, settings: {}) {
+export function buildCustomResources(cwd: string) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];
 
