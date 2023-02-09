@@ -9,7 +9,7 @@ import { processTransformerStacks } from '../../CFNParser/appsync-resource-proce
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
-import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
+import { functionRuntimeContributorFactory } from '@aws-amplify/amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
 import { isWindowsPlatform } from 'amplify-cli-core';
 
