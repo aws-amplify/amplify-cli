@@ -72,7 +72,6 @@
     "@aws-amplify/amplify-console-hosting": "2.4.2",
     "@aws-amplify/amplify-container-hosting": "2.5.12",
     "amplify-dotnet-function-runtime-provider": "1.7.1",
-    "amplify-dotnet-function-template-provider": "2.4.4",
     "amplify-go-function-runtime-provider": "2.3.10",
     "amplify-java-function-runtime-provider": "2.3.10",
     "amplify-java-function-template-provider": "1.5.15",
