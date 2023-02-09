@@ -78,8 +78,7 @@ export class AmplifyToolkit {
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
   private _getImportedAuthProperties: any;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  private _cleanUpTasks: Array<Function>;
+  private _cleanUpTasks: Array<(...args) => any>;
   private _invokePluginMethod?: <T>(
     context: $TSContext,
     category: string,

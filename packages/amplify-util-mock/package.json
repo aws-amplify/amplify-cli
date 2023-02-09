@@ -33,7 +33,7 @@
     "@aws-amplify/amplify-opensearch-simulator": "1.1.4",
     "@hapi/topo": "^5.0.0",
     "amplify-codegen": "^3.3.6",
-    "amplify-category-function": "4.3.1",
+    "@aws-amplify/amplify-category-function": "4.3.1",
     "amplify-cli-core": "3.6.1",
     "amplify-dynamodb-simulator": "2.5.5",
     "amplify-prompts": "2.6.3",

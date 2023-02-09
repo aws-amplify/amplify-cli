@@ -2,7 +2,7 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-cycle */
-import { hashLayerResource, ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { hashLayerResource, ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
 import {
   $TSAny,
   pathManager, projectNotInitializedError, stateManager, ViewResourceTableParams,
