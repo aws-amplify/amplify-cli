@@ -43,6 +43,7 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'error',
     'no-bitwise': 'warn',
     'consistent-return': 'error',
+    'eol-last': [ 'error', 'always' ],
     'no-restricted-syntax': [
       'error',
       {

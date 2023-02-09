@@ -56,7 +56,7 @@ import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
-import amplifyServiceManager from './amplify-service-manager';
+import { storeArtifactsForAmplifyService, postPushCheck } from './amplify-service-manager';
 import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
@@ -194,8 +194,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     });
 
     await prePushLambdaLayerPrompt(context, resources);
-    await context.amplify.invokePluginMethod(context, AmplifyCategories.FUNCTION,
-      AmplifySupportedService.LAMBDA, 'ensureLambdaExecutionRoleOutputs', []);
+    await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.FUNCTION,
+      AmplifySupportedService.LAMBDA,
+      'ensureLambdaExecutionRoleOutputs',
+      [],
+    );
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
 
@@ -341,7 +346,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     await postPushGraphQLCodegen(context);
-    await amplifyServiceManager.postPushCheck(context);
+    await postPushCheck(context);
 
     if (resources.concat(resourcesToBeDeleted).length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
@@ -453,7 +458,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // Store current cloud backend in S3 deployment bucket
     await storeCurrentCloudBackend(context);
-    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
+    await storeArtifactsForAmplifyService(context);
 
     // check for auth resources and remove deployment secret for push
     resources
