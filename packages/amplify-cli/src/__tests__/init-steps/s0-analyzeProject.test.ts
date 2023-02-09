@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, Input } from 'amplify-cli-core';
+import { $TSContext, stateManager, CommandLineInput } from 'amplify-cli-core';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
 import { constructContext } from '../../context-manager';
@@ -17,7 +17,7 @@ describe('analyzeProject', () => {
       'init',
       '-y',
     ];
-    const mockInput = new Input(mockProcessArgv);
+    const mockInput = new CommandLineInput(mockProcessArgv);
     mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
     const frontendPlugins = [
       {

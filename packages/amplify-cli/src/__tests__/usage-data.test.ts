@@ -4,7 +4,7 @@ import * as uuid from 'uuid';
 
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
-import { Input, AmplifyError } from 'amplify-cli-core';
+import { CommandLineInput, AmplifyError } from 'amplify-cli-core';
 import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
@@ -38,8 +38,22 @@ describe('test usageData', () => {
     const a = UsageData.Instance;
     const b = UsageData.Instance;
     const timeStamp = Date.now();
-    a.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
-    b.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
+    a.init(
+      uuid.v4(),
+      '',
+      new CommandLineInput([]),
+      'accountId',
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' },
+      timeStamp,
+    );
+    b.init(
+      uuid.v4(),
+      '',
+      new CommandLineInput([]),
+      'accountId',
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' },
+      timeStamp,
+    );
     expect(a).toEqual(b);
   });
 

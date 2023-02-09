@@ -1,4 +1,4 @@
-import { Input, PluginPlatform, stateManager, PluginInfo, PluginManifest } from 'amplify-cli-core';
+import { CommandLineInput, PluginPlatform, stateManager, PluginInfo, PluginManifest } from 'amplify-cli-core';
 import * as appConfig from '../app-config';
 import { constructContext, attachUsageData } from '../context-manager';
 import { Context } from '../domain/context';
@@ -28,7 +28,7 @@ describe('test attachUsageData', () => {
   const version = 'latestVersion';
   const mockContext = jest.createMockFromModule<Context>('../domain/context');
 
-  mockContext.input = new Input([
+  mockContext.input = new CommandLineInput([
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
     'status',

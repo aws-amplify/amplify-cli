@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import path from 'path';
-import { AmplifyEvent, Input, PluginManifest, PluginPlatform } from 'amplify-cli-core';
+import { AmplifyEvent, CommandLineInput, PluginManifest, PluginPlatform } from 'amplify-cli-core';
 import { Context } from '../domain/context';
 import { PluginInfo } from 'amplify-cli-core';
 import { executeCommand } from '../execution-manager';
@@ -15,7 +15,7 @@ describe('execution manager', () => {
   const mockFs = fs as jest.Mocked<typeof fs>;
   const mockContext = jest.createMockFromModule<Context>('../domain/context');
 
-  mockContext.input = new Input([
+  mockContext.input = new CommandLineInput([
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
     'push',

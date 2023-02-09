@@ -1,6 +1,6 @@
 import { constructContext } from '../../../context-manager';
 
-import { PluginCollection, Input } from 'amplify-cli-core';
+import { PluginCollection, CommandLineInput } from 'amplify-cli-core';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 
 import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
@@ -13,7 +13,7 @@ test('getAllCategoryPluginInfo', () => {
     'hosting',
     'add',
   ];
-  const mockInput = new Input(mockProcessArgv);
+  const mockInput = new CommandLineInput(mockProcessArgv);
   const mockContext = constructContext(mockPluginPlatform, mockInput);
 
   const categoryPluginInfoList = (getAllCategoryPluginInfo(mockContext) as unknown) as PluginCollection;
