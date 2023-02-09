@@ -917,6 +917,7 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+                - /run-e2e\/.*/
       - verify-api-extract:
           requires:
             - build
