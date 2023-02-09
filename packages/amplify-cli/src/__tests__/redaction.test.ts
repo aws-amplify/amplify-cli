@@ -1,8 +1,8 @@
 import { redactInput } from 'amplify-cli-core';
-import { Input } from 'amplify-cli-core';
+import { CommandLineInput } from 'amplify-cli-core';
 
 describe('input-redaction', () => {
-  const input = new Input([
+  const input = new CommandLineInput([
     '/usr/local/bin/node',
     '/usr/local/bin/amplify-dev',
     'init',

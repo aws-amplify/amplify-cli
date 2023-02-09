@@ -5,12 +5,12 @@
 ```ts
 
 import { $TSAny } from 'amplify-cli-core';
-import { Input } from 'amplify-cli-core';
+import { CommandLineInput } from 'amplify-cli-core';
 import { IUsageData } from 'amplify-cli-core';
 import { PluginPlatform } from 'amplify-cli-core';
 
 // @public (undocumented)
-export const execute: (input: Input) => Promise<void>;
+export const execute: (input: CommandLineInput) => Promise<void>;
 
 // Warning: (ae-forgotten-export) The symbol "Context" needs to be exported by the entry point index.d.ts
 //

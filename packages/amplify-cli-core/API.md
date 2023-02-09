@@ -160,16 +160,37 @@ export enum AmplifyEvent {
 }
 
 // @public (undocumented)
-export class AmplifyEventArgs {
-    constructor(event: AmplifyEvent, data?: AmplifyEventData | undefined);
+export interface AmplifyEventArgs<T extends AmplifyEvent> {
     // (undocumented)
-    data?: AmplifyEventData | undefined;
+    data?: AmplifyEventData[T];
     // (undocumented)
-    event: AmplifyEvent;
+    event: T;
 }
 
 // @public (undocumented)
-export class AmplifyEventData {
+export interface AmplifyEventData {
+    // (undocumented)
+    [AmplifyEvent.InternalOnlyPostEnvRemove]: AmplifyInternalOnlyPostEnvRemoveEventData;
+    // (undocumented)
+    [AmplifyEvent.PostCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostEnvAdd]: AmplifyPostEnvAddEventData;
+    // (undocumented)
+    [AmplifyEvent.PostInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPush]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreExport]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePush]: NoArgsAmplifyEventData;
 }
 
 // @public (undocumented)
@@ -231,51 +252,17 @@ export enum AmplifyFrontend {
 }
 
 // @public (undocumented)
-export class AmplifyInternalOnlyPostEnvRemoveEventData extends AmplifyEventData {
-    constructor(envName: string);
+export interface AmplifyInternalOnlyPostEnvRemoveEventData {
     // (undocumented)
-    readonly envName: string;
+    envName: string;
 }
 
 // @public (undocumented)
-export class AmplifyPostCodegenModelsEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPostEnvAddEventData extends AmplifyEventData {
-    constructor(prevEnvName: string, newEnvName: string);
+export interface AmplifyPostEnvAddEventData {
     // (undocumented)
-    readonly newEnvName: string;
+    newEnvName: string;
     // (undocumented)
-    readonly prevEnvName: string;
-}
-
-// @public (undocumented)
-export class AmplifyPostInitEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPostPullEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPostPushEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPreCodegenModelsEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPreInitEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPrePullEventData extends AmplifyEventData {
-}
-
-// @public (undocumented)
-export class AmplifyPrePushEventData extends AmplifyEventData {
+    prevEnvName: string;
 }
 
 // @public (undocumented)
@@ -437,7 +424,7 @@ export class CLIFlowReport implements IFlowData {
     // (undocumented)
     getFlowReport(): IFlowReport;
     // (undocumented)
-    input: Input;
+    input: CommandLineInput;
     // (undocumented)
     isHeadless: boolean;
     // (undocumented)
@@ -455,7 +442,7 @@ export class CLIFlowReport implements IFlowData {
     // (undocumented)
     runtime: string;
     // (undocumented)
-    setInput(input: Input): void;
+    setInput(input: CommandLineInput): void;
     // (undocumented)
     setIsHeadless(isHeadless: boolean): void;
     // (undocumented)
@@ -592,6 +579,23 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
+export class CommandLineInput {
+    constructor(argv: Array<string>);
+    // (undocumented)
+    argv: Array<string>;
+    // (undocumented)
+    command?: string;
+    // (undocumented)
+    options?: {
+        [key: string]: string | boolean;
+    };
+    // (undocumented)
+    plugin?: string;
+    // (undocumented)
+    subCommands?: string[];
+}
+
+// @public (undocumented)
 export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
@@ -613,17 +617,17 @@ export const constants: {
     PLUGINS_FILE_NAME: string;
     CORE: string;
     CODEGEN: string;
-    Amplify: string;
-    DotAmplifyDirName: string;
-    AmplifyPrefix: string;
-    LocalNodeModules: string;
-    ParentDirectory: string;
-    GlobalNodeModules: string;
-    PackagedNodeModules: string;
-    ExecuteAmplifyCommand: string;
-    ExecuteAmplifyHeadlessCommand: string;
-    HandleAmplifyEvent: string;
-    LogFilename: string;
+    AMPLIFY: string;
+    DOT_AMPLIFY_DIR_NAME: string;
+    AMPLIFY_PREFIX: string;
+    LOCAL_NODE_MODULES: string;
+    PARENT_DIRECTORY: string;
+    GLOBAL_NODE_MODULES: string;
+    PACKAGED_NODE_MODULES: string;
+    EXECUTE_AMPLIFY_COMMAND: string;
+    EXECUTE_AMPLIFY_HEADLESS_COMMAND: string;
+    HANDLE_AMPLIFY_EVENT: string;
+    LOG_FILENAME: string;
 };
 
 // @public (undocumented)
@@ -1159,23 +1163,6 @@ export interface INotificationsResourceMeta {
 }
 
 // @public (undocumented)
-export class Input {
-    constructor(argv: Array<string>);
-    // (undocumented)
-    argv: Array<string>;
-    // (undocumented)
-    command?: string;
-    // (undocumented)
-    options?: {
-        [key: string]: string | boolean;
-    };
-    // (undocumented)
-    plugin?: string;
-    // (undocumented)
-    subCommands?: string[];
-}
-
-// @public (undocumented)
 export type InputOptions = Record<string, string | boolean>;
 
 // @public (undocumented)
@@ -1261,7 +1248,7 @@ export interface IUsageDataPayload {
     // (undocumented)
     flowReport: IFlowReport;
     // (undocumented)
-    input: Input | null;
+    input: CommandLineInput | null;
     // (undocumented)
     inputOptions: InputOptions;
     // (undocumented)
@@ -1355,6 +1342,9 @@ export type Message = {
 // @public (undocumented)
 export class MissingParametersError extends Error {
 }
+
+// @public (undocumented)
+export type NoArgsAmplifyEventData = Record<string, never>;
 
 // @public (undocumented)
 export enum NotificationChannels {
@@ -1767,7 +1757,7 @@ export const recursiveOmit: (obj: $TSObject, path: Array<string>) => void;
 export function red(message: string): void;
 
 // @public (undocumented)
-export function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString?: string): Input;
+export function redactInput(originalCommandLineInput: CommandLineInput, deleteArgAndOption: boolean, replacementString?: string): CommandLineInput;
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretsRemove" needs to be exported by the entry point index.d.ts
 //
@@ -2089,9 +2079,9 @@ export class UsageData implements IUsageData {
     // (undocumented)
     getUsageDataPayload(error: Error | null, state: string): UsageDataPayload;
     // (undocumented)
-    init(installationUuid: string, version: string, input: Input, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
+    init(installationUuid: string, version: string, input: CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
     // (undocumented)
-    input: Input;
+    input: CommandLineInput;
     // (undocumented)
     inputOptions: InputOptions;
     // (undocumented)
@@ -2124,7 +2114,7 @@ export class UsageData implements IUsageData {
 
 // @public (undocumented)
 export class UsageDataPayload implements IUsageDataPayload {
-    constructor(sessionUuid: string, installationUuid: string, version: string, input: Input, error: Error | null, state: string, accountId: string, project: ProjectSettings, inputOptions: InputOptions, codePathDurations: Partial<Record<TimedCodePath, number>>, flowReport: IFlowReport);
+    constructor(sessionUuid: string, installationUuid: string, version: string, input: CommandLineInput, error: Error | null, state: string, accountId: string, project: ProjectSettings, inputOptions: InputOptions, codePathDurations: Partial<Record<TimedCodePath, number>>, flowReport: IFlowReport);
     // (undocumented)
     accountId: string;
     // (undocumented)
@@ -2138,7 +2128,7 @@ export class UsageDataPayload implements IUsageDataPayload {
     // (undocumented)
     flowReport: IFlowReport;
     // (undocumented)
-    input: Input | null;
+    input: CommandLineInput | null;
     // (undocumented)
     inputOptions: InputOptions;
     // (undocumented)

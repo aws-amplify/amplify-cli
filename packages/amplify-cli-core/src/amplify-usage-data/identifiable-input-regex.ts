@@ -1,4 +1,4 @@
-import { JSONUtilities, Input } from '..';
+import { JSONUtilities, CommandLineInput } from '..';
 
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
 const quotes = '\\\\?"';
@@ -34,8 +34,12 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
   return s;
 }
 
-export function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString = '************'): Input {
-  const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
+export function redactInput(
+  originalCommandLineInput: CommandLineInput,
+  deleteArgAndOption: boolean,
+  replacementString = '************',
+): CommandLineInput {
+  const input: CommandLineInput = JSONUtilities.parse(JSONUtilities.stringify(originalCommandLineInput)!);
   const argv = input.argv;
   const length = argv.length;
   let redactString = false;

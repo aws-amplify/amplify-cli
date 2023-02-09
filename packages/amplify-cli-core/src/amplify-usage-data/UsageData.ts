@@ -6,7 +6,7 @@ import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
-import { Input } from '../context/input';
+import { CommandLineInput } from '../context/command-input';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
 import { redactInput } from './identifiable-input-regex';
@@ -31,7 +31,7 @@ export class UsageData implements IUsageData {
   accountId = '';
   installationUuid = '';
   version = '';
-  input: Input;
+  input: CommandLineInput;
   projectSettings: ProjectSettings;
   url: UrlWithStringQuery;
   inputOptions: InputOptions;
@@ -45,7 +45,7 @@ export class UsageData implements IUsageData {
   private constructor() {
     this.sessionUuid = uuid();
     this.url = getUrl();
-    this.input = new Input([]);
+    this.input = new CommandLineInput([]);
     this.projectSettings = {};
     this.inputOptions = {};
   }
@@ -56,7 +56,7 @@ export class UsageData implements IUsageData {
   init(
     installationUuid: string,
     version: string,
-    input: Input,
+    input: CommandLineInput,
     accountId: string,
     projectSettings: ProjectSettings,
     processStartTimeStamp: number,

@@ -39,7 +39,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   }
 
   if (isPackaged) {
-    pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
+    pluginPlatform!.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
   }
 
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
@@ -96,13 +96,13 @@ async function addCore(pluginPlatform: PluginPlatform) {
 
 export function normalizePluginDirectory(directory: string): string {
   switch (directory) {
-    case constants.PackagedNodeModules:
+    case constants.PACKAGED_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../../..'));
-    case constants.LocalNodeModules:
+    case constants.LOCAL_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../node_modules'));
-    case constants.ParentDirectory:
+    case constants.PARENT_DIRECTORY:
       return path.normalize(path.join(__dirname, '../../../'));
-    case constants.GlobalNodeModules:
+    case constants.GLOBAL_NODE_MODULES:
       return getGlobalNodeModuleDirPath();
     default:
       return directory;

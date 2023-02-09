@@ -33,7 +33,7 @@ export * from './errors/amplify-fault';
 export * from './errors/amplify-exception';
 export * from './errors/project-not-initialized-error';
 export * from './context/context-extensions';
-export * from './context/input';
+export * from './context/command-input';
 export * from './context/plugin-platform';
 export * from './context/amplify-event';
 export * from './context/plugin-collection';

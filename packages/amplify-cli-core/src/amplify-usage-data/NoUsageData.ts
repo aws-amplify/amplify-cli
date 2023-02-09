@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { ICommandInput, IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
-import { Input } from '../context/input';
+import { CommandLineInput } from '..';
 import { IUsageData } from './UsageDataTypes';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
@@ -23,7 +23,7 @@ export class NoUsageData implements IUsageData, IFlowData {
       '',
       '',
       '',
-      new Input([]),
+      new CommandLineInput([]),
       error,
       state,
       '',

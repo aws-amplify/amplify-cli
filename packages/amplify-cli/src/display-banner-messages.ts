@@ -1,11 +1,11 @@
-import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks, Input } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks, CommandLineInput } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { printer } from 'amplify-prompts';
 
 /**
  * display banner messages
  */
-export const displayBannerMessages = async (input: Input): Promise<void> => {
+export const displayBannerMessages = async (input: CommandLineInput): Promise<void> => {
   const excludedCommands = ['delete', 'env', 'help', 'logout', 'version'];
   if (isCI || (input.command && excludedCommands.includes(input.command))) {
     return;

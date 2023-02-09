@@ -11,7 +11,7 @@ import {
   HooksMeta,
   AmplifyError,
   constants,
-  Input,
+  CommandLineInput,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -188,7 +188,7 @@ async function sigIntHandler(context: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: Input): Promise<void> => {
+export const execute = async (input: CommandLineInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 

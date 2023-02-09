@@ -2,7 +2,15 @@ import url from 'url';
 import nock from 'nock';
 import * as uuid from 'uuid';
 
-import { UsageData, getUrl, Input, AmplifyError, ManuallyTimedCodePath, UsageDataPayload, SerializableError } from 'amplify-cli-core';
+import {
+  UsageData,
+  getUrl,
+  CommandLineInput,
+  AmplifyError,
+  ManuallyTimedCodePath,
+  UsageDataPayload,
+  SerializableError,
+} from 'amplify-cli-core';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
@@ -33,8 +41,22 @@ describe('test usageData', () => {
     const a = UsageData.Instance;
     const b = UsageData.Instance;
     const timeStamp = Date.now();
-    a.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
-    b.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
+    a.init(
+      uuid.v4(),
+      '',
+      new CommandLineInput([]),
+      'accountId',
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' },
+      timeStamp,
+    );
+    b.init(
+      uuid.v4(),
+      '',
+      new CommandLineInput([]),
+      'accountId',
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' },
+      timeStamp,
+    );
     expect(a).toEqual(b);
   });
 
