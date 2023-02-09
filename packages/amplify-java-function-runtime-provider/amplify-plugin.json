@@ -4,7 +4,7 @@
   "commands": [],
   "eventHandlers": [],
   "functionRuntime": {
-    "pluginId": "amplify-java-function-runtime-provider",
+    "pluginId": "@aws-amplify/amplify-java-function-runtime-provider",
     "conditions": {
       "provider": "awscloudformation",
       "services": ["Lambda"]
