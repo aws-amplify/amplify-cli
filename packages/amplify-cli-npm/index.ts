@@ -16,4 +16,4 @@ export const install = async (): Promise<void> => {
   return binary.install();
 };
 
-// force major version bump for cdk v2
+// force minor version bump to 10.8

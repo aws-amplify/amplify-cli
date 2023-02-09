@@ -1,5 +1,5 @@
 {
-  "name": "amplify-category-analytics",
+  "name": "@aws-amplify/amplify-category-analytics",
   "version": "4.4.2-beta.0",
   "description": "amplify-cli analytics plugin",
   "repository": {
@@ -14,6 +14,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",

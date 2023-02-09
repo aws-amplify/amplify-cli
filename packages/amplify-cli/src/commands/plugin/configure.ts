@@ -2,8 +2,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import { PluginPlatform } from '../../domain/plugin-platform';
-import { constants } from '../../domain/constants';
+import { constants, PluginPlatform } from 'amplify-cli-core';
 import { writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';
@@ -97,24 +96,24 @@ function displayPluginDirectoriesLearnMore(context: Context) {
 scan behavior, and consequently its outcome.');
   context.print.green('There are three well-known directories that the CLI \
 usually scans for plugins.');
-  context.print.red(constants.ParentDirectory);
-  context.print.green(`${constants.ParentDirectory} \
+  context.print.red(constants.PARENT_DIRECTORY);
+  context.print.green(`${constants.PARENT_DIRECTORY} \
 is the directory that contains the Amplify CLI Core package.`);
-  context.print.blue(normalizePluginDirectory(constants.ParentDirectory));
-  context.print.red(constants.LocalNodeModules);
-  context.print.green(`${constants.LocalNodeModules} \
+  context.print.blue(normalizePluginDirectory(constants.PARENT_DIRECTORY));
+  context.print.red(constants.LOCAL_NODE_MODULES);
+  context.print.green(`${constants.LOCAL_NODE_MODULES} \
 is the Amplify CLI Core package's local node_modules directory. `);
-  context.print.blue(normalizePluginDirectory(constants.LocalNodeModules));
-  context.print.red(constants.GlobalNodeModules);
-  context.print.green(`${constants.GlobalNodeModules} \
+  context.print.blue(normalizePluginDirectory(constants.LOCAL_NODE_MODULES));
+  context.print.red(constants.GLOBAL_NODE_MODULES);
+  context.print.green(`${constants.GLOBAL_NODE_MODULES} \
 is the global node_modules directory.`);
-  context.print.blue(normalizePluginDirectory(constants.GlobalNodeModules));
+  context.print.blue(normalizePluginDirectory(constants.GLOBAL_NODE_MODULES));
   context.print.info('');
 }
 
 async function addPluginDirectory(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMDIRECTORY = 'Add custom directory >';
-  let options = [constants.ParentDirectory, constants.LocalNodeModules, constants.GlobalNodeModules];
+  let options = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES];
 
   options = options.filter(item => !pluginPlatform.pluginDirectories.includes(item.toString()));
 
@@ -209,13 +208,13 @@ are checked in plugin scans.');
   context.print.green('You can add or remove from this list to change the plugin \
 scan behavior, and consequently its outcome.');
   context.print.green('The offical prefix is:');
-  context.print.red(constants.AmplifyPrefix);
+  context.print.red(constants.AMPLIFY_PREFIX);
   context.print.info('');
 }
 
 async function addPrefix(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMPREFIX = 'Add custom prefix >';
-  let options = [constants.AmplifyPrefix];
+  let options = [constants.AMPLIFY_PREFIX];
 
   options = options.filter(item => !pluginPlatform.pluginPrefixes.includes(item.toString()));
 

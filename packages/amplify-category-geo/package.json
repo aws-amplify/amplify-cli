@@ -1,5 +1,5 @@
 {
-  "name": "amplify-category-geo",
+  "name": "@aws-amplify/amplify-category-geo",
   "version": "3.0.0-beta.5",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
@@ -22,6 +22,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "ajv": "^6.12.6",
     "amplify-cli-core": "4.0.0-beta.5",

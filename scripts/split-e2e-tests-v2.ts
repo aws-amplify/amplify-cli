@@ -96,6 +96,9 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
+    'src/__tests__/storage-simulator/S3server.test.ts',
+    'src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts',
     'src/__tests__/amplify-app.test.ts',
     'src/__tests__/analytics-2.test.ts',
     'src/__tests__/api_2a.test.ts',
@@ -163,6 +166,15 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/transformer-migrations/model-migration.test.ts',
     'src/__tests__/transformer-migrations/searchable-migration.test.ts',
     'src/__tests__/uibuilder.test.ts',
+    'src/__tests__/pinpoint/android-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/android-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/flutter-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/flutter-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/ios-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/ios-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/javascript-analytics-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/javascript-notifications-pinpoint-config.test.ts',
+    'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
   ],
 };
 const MAX_WORKERS = 3;

@@ -87,7 +87,7 @@ export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo
     if (input.subCommands.length === 1) {
       if (input.options) {
         // check if subcommands are in options field
-        const subcommandsInOptions = acceptableCommands.filter(i => input.options.hasOwnProperty(i));
+        const subcommandsInOptions = acceptableCommands.filter(i => Object.prototype.hasOwnProperty.call(input.options, i));
         if (subcommandsInOptions && subcommandsInOptions.length === 1) {
           specifiedCommands = { command: input.subCommands[0], subCommand: subcommandsInOptions[0] };
         }

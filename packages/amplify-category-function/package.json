@@ -1,5 +1,5 @@
 {
-  "name": "amplify-category-function",
+  "name": "@aws-amplify/amplify-category-function",
   "version": "4.3.2-beta.0",
   "description": "amplify-cli function plugin",
   "repository": {
@@ -22,6 +22,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@aws-amplify/amplify-environment-parameters": "1.3.4-beta.0",
     "amplify-cli-core": "4.0.0-beta.5",

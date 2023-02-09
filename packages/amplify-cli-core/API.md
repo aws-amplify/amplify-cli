@@ -125,6 +125,66 @@ export class AmplifyError extends AmplifyException {
 export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryError' | 'DirectoryAlreadyExistsError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'ModelgenError' | 'NestedProjectInitError' | 'NoUpdateBackendError' | 'NotImplementedError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'StackNotFoundError' | 'StackStateError' | 'UnsupportedLockFileTypeError' | 'UserInputError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError';
 
 // @public (undocumented)
+export enum AmplifyEvent {
+    // (undocumented)
+    InternalOnlyPostEnvRemove = "InternalOnlyPostEnvRemove",
+    // (undocumented)
+    PostCodegenModels = "PostCodegenModels",
+    // (undocumented)
+    PostEnvAdd = "PostEnvAdd",
+    // (undocumented)
+    PostInit = "PostInit",
+    // (undocumented)
+    PostPull = "PostPull",
+    // (undocumented)
+    PostPush = "PostPush",
+    // (undocumented)
+    PreCodegenModels = "PreCodegenModels",
+    // (undocumented)
+    PreExport = "PreExport",
+    // (undocumented)
+    PreInit = "PreInit",
+    // (undocumented)
+    PrePull = "PrePull",
+    // (undocumented)
+    PrePush = "PrePush"
+}
+
+// @public (undocumented)
+export interface AmplifyEventArgs<T extends AmplifyEvent> {
+    // (undocumented)
+    data?: AmplifyEventData[T];
+    // (undocumented)
+    event: T;
+}
+
+// @public (undocumented)
+export interface AmplifyEventData {
+    // (undocumented)
+    [AmplifyEvent.InternalOnlyPostEnvRemove]: AmplifyInternalOnlyPostEnvRemoveEventData;
+    // (undocumented)
+    [AmplifyEvent.PostCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostEnvAdd]: AmplifyPostEnvAddEventData;
+    // (undocumented)
+    [AmplifyEvent.PostInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPush]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreExport]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePush]: NoArgsAmplifyEventData;
+}
+
+// @public (undocumented)
 export abstract class AmplifyException extends Error {
     constructor(name: AmplifyExceptionType, classification: AmplifyExceptionClassification, options: AmplifyExceptionOptions, downstreamException?: Error | undefined);
     // (undocumented)
@@ -183,6 +243,12 @@ export enum AmplifyFrontend {
 }
 
 // @public (undocumented)
+export interface AmplifyInternalOnlyPostEnvRemoveEventData {
+    // (undocumented)
+    envName: string;
+}
+
+// @public (undocumented)
 export class AmplifyNodePkgDetector {
     constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
     // (undocumented)
@@ -193,6 +259,14 @@ export class AmplifyNodePkgDetector {
 export type AmplifyNodePkgDetectorProps = {
     projectRoot: string;
 };
+
+// @public (undocumented)
+export interface AmplifyPostEnvAddEventData {
+    // (undocumented)
+    newEnvName: string;
+    // (undocumented)
+    prevEnvName: string;
+}
 
 // @public (undocumented)
 export interface AmplifyProjectConfig {
@@ -255,6 +329,12 @@ export class ApiCategoryFacade {
 }
 
 // @public (undocumented)
+export function attachExtensions(context: $TSContext): void;
+
+// @public (undocumented)
+export function attachPrint(context: $TSContext): void;
+
+// @public (undocumented)
 export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
 
 // @public (undocumented)
@@ -272,6 +352,9 @@ export class BannerMessage {
     // (undocumented)
     static initialize: (cliVersion: string) => BannerMessage;
 }
+
+// @public (undocumented)
+export function blue(message: string): void;
 
 // @public (undocumented)
 export type BooleanFeatureFlag = {
@@ -436,11 +519,56 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
+export class CommandLineInput {
+    constructor(argv: Array<string>);
+    // (undocumented)
+    argv: Array<string>;
+    // (undocumented)
+    command?: string;
+    // (undocumented)
+    options?: {
+        [key: string]: string | boolean;
+    };
+    // (undocumented)
+    plugin?: string;
+    // (undocumented)
+    subCommands?: string[];
+}
+
+// @public (undocumented)
 export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
 export class ConfigurationError extends Error {
 }
+
+// @public (undocumented)
+export const constants: {
+    HELP: string;
+    HELP_SHORT: string;
+    VERSION: string;
+    VERSION_SHORT: string;
+    VERBOSE: string;
+    YES: string;
+    YES_SHORT: string;
+    PLUGIN_DEFAULT_COMMAND: string;
+    MANIFEST_FILE_NAME: string;
+    PACKAGEJSON_FILE_NAME: string;
+    PLUGINS_FILE_NAME: string;
+    CORE: string;
+    CODEGEN: string;
+    AMPLIFY: string;
+    DOT_AMPLIFY_DIR_NAME: string;
+    AMPLIFY_PREFIX: string;
+    LOCAL_NODE_MODULES: string;
+    PARENT_DIRECTORY: string;
+    GLOBAL_NODE_MODULES: string;
+    PACKAGED_NODE_MODULES: string;
+    EXECUTE_AMPLIFY_COMMAND: string;
+    EXECUTE_AMPLIFY_HEADLESS_COMMAND: string;
+    HANDLE_AMPLIFY_EVENT: string;
+    LOG_FILENAME: string;
+};
 
 // @public (undocumented)
 export const convertNumBytes: (numBytes: number) => {
@@ -520,6 +648,9 @@ export type DataParameter = {
         argv?: string[];
     };
 };
+
+// @public (undocumented)
+export function debug(message: string, title?: string): void;
 
 // @public (undocumented)
 export class DebugConfigValueNotSetError extends Error {
@@ -613,6 +744,9 @@ export class EnvVarFormatError extends Error {
 }
 
 // @public (undocumented)
+export function error(message: string): void;
+
+// @public (undocumented)
 export type ErrorParameter = {
     message: string;
     stack: string;
@@ -638,6 +772,9 @@ export class ExportedStackNotInValidStateError extends Error {
 // @public (undocumented)
 export class ExportPathValidationError extends Error {
 }
+
+// @public (undocumented)
+export function fancy(message?: string): void;
 
 // @public (undocumented)
 export type FeatureFlagConfiguration = {
@@ -731,6 +868,9 @@ export const getPackageManager: (rootPath?: string) => PackageManager | null;
 
 // @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
+
+// @public (undocumented)
+export function green(message: string): void;
 
 // @public (undocumented)
 export type HookEvent = {
@@ -880,7 +1020,7 @@ export type IContextTemplate = {
         target: string;
         props: $TSObject;
         directory: string;
-    }) => string;
+    }) => Promise<string>;
 };
 
 // @public (undocumented)
@@ -908,6 +1048,9 @@ export interface IDeploymentStateManager {
     // (undocumented)
     updateStatus: (status: DeploymentStatus) => Promise<void>;
 }
+
+// @public (undocumented)
+export function info(message: string): void;
 
 // @public (undocumented)
 export type INotificationsResource = IAnalyticsResource;
@@ -994,7 +1137,7 @@ export const isPackaged: boolean;
 export const isResourceNameUnique: (category: string, resourceName: string, throwOnMatch?: boolean) => boolean;
 
 // @public (undocumented)
-export const isWindowsPlatform: boolean;
+export const isWindowsPlatform: () => boolean;
 
 // @public (undocumented)
 export class JSONUtilities {
@@ -1047,6 +1190,9 @@ export type Message = {
 // @public (undocumented)
 export class MissingParametersError extends Error {
 }
+
+// @public (undocumented)
+export type NoArgsAmplifyEventData = Record<string, never>;
 
 // @public (undocumented)
 export enum NotificationChannels {
@@ -1265,6 +1411,116 @@ export enum PluginAPIError {
 }
 
 // @public (undocumented)
+export class PluginCollection implements IPluginCollection {
+    // (undocumented)
+    [key: string]: Array<PluginInfo>;
+}
+
+// @public (undocumented)
+export class PluginInfo implements IPluginInfo {
+    constructor(packageName: string, packageVersion: string, packageLocation: string, manifest: PluginManifest);
+    // (undocumented)
+    manifest: PluginManifest;
+    // (undocumented)
+    packageLocation: string;
+    // (undocumented)
+    packageName: string;
+    // (undocumented)
+    packageVersion: string;
+}
+
+// @public (undocumented)
+export class PluginManifest {
+    constructor(name: string, type: string, displayName?: string | undefined, aliases?: string[] | undefined, commands?: string[] | undefined, commandAliases?: {
+        [key: string]: string;
+    } | undefined, services?: string[] | undefined, eventHandlers?: AmplifyEvent[] | undefined);
+    // (undocumented)
+    aliases?: string[] | undefined;
+    // (undocumented)
+    commandAliases?: {
+        [key: string]: string;
+    } | undefined;
+    // (undocumented)
+    commands?: string[] | undefined;
+    // (undocumented)
+    displayName?: string | undefined;
+    // (undocumented)
+    eventHandlers?: AmplifyEvent[] | undefined;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    services?: string[] | undefined;
+    // (undocumented)
+    type: string;
+}
+
+// @public (undocumented)
+export class PluginPlatform implements IPluginPlatform {
+    constructor();
+    // (undocumented)
+    excluded: PluginCollection;
+    // (undocumented)
+    lastScanTime: Date;
+    // (undocumented)
+    maxScanIntervalInSeconds: number;
+    // (undocumented)
+    pluginDirectories: string[];
+    // (undocumented)
+    pluginPrefixes: string[];
+    // (undocumented)
+    plugins: PluginCollection;
+    // (undocumented)
+    userAddedLocations: string[];
+}
+
+// @public (undocumented)
+export enum PluginVerificationError {
+    // (undocumented)
+    InvalidManifest = "InvalidManifest",
+    // (undocumented)
+    InvalidNodePackage = "InvalidNodePackage",
+    // (undocumented)
+    MissingExecuteAmplifyCommandMethod = "MissingExecuteAmplifyCommandMethod",
+    // (undocumented)
+    MissingHandleAmplifyEventMethod = "MissingHandleAmplifyEventMethod",
+    // (undocumented)
+    MissingManifest = "MissingManifest",
+    // (undocumented)
+    PluginDirPathNotExist = "PluginDirPathNotExist"
+}
+
+// @public (undocumented)
+export class PluginVerificationResult {
+    constructor(verified?: boolean, error?: PluginVerificationError | undefined, errorInfo?: any, packageJson?: any, manifest?: PluginManifest | undefined);
+    // (undocumented)
+    error?: PluginVerificationError | undefined;
+    // (undocumented)
+    errorInfo?: any;
+    // (undocumented)
+    manifest?: PluginManifest | undefined;
+    // (undocumented)
+    packageJson?: any;
+    // (undocumented)
+    verified: boolean;
+}
+
+// @public (undocumented)
+const print_2: {
+    info: typeof info;
+    fancy: typeof fancy;
+    warning: typeof warning;
+    error: typeof error;
+    success: typeof success;
+    table: typeof table;
+    debug: typeof debug;
+    green: typeof green;
+    yellow: typeof yellow;
+    red: typeof red;
+    blue: typeof blue;
+};
+export { print_2 as print }
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
 
 // @public (undocumented)
@@ -1299,6 +1555,9 @@ export function ReadTags(tagsFilePath: string): Tag[];
 
 // @public (undocumented)
 export const recursiveOmit: (obj: $TSObject, path: Array<string>) => void;
+
+// @public (undocumented)
+export function red(message: string): void;
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretsRemove" needs to be exported by the entry point index.d.ts
 //
@@ -1484,10 +1743,18 @@ export type SubCommandInfo = {
 };
 
 // @public (undocumented)
+export function success(message: string): void;
+
+// @public (undocumented)
 export const supportedEnvEvents: HooksVerb[];
 
 // @public (undocumented)
 export const supportedEvents: Record<HooksVerb, HooksNoun[]>;
+
+// @public (undocumented)
+export function table(data: string[][], options?: {
+    format?: 'markdown' | 'lean';
+}): void;
 
 // @public (undocumented)
 export interface Tag {
@@ -1579,6 +1846,9 @@ export class ViewResourceTableParams {
 }
 
 // @public (undocumented)
+export function warning(message: string): void;
+
+// @public (undocumented)
 export const writeCFNTemplate: (template: object, filePath: string, options?: WriteCFNTemplateOptions) => Promise<void>;
 
 // @public (undocumented)
@@ -1586,6 +1856,9 @@ export type WriteCFNTemplateOptions = {
     templateFormat?: CFNTemplateFormat;
     minify?: boolean;
 };
+
+// @public (undocumented)
+export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
