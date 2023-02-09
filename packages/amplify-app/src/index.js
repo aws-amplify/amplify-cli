@@ -177,7 +177,7 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
   const frontendPlugins = {
     javascript: 'amplify-frontend-javascript',
     android: '@aws-amplify/amplify-frontend-android',
-    ios: 'amplify-frontend-ios',
+    ios: '@aws-amplify/amplify-frontend-ios',
     flutter: '@aws-amplify/amplify-frontend-flutter',
   };
 

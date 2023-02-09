@@ -61,7 +61,7 @@
     "amplify-dotnet-function-template-provider": "2.4.3",
     "@aws-amplify/amplify-frontend-android": "3.4.1",
     "@aws-amplify/amplify-frontend-flutter": "1.3.5",
-    "amplify-frontend-ios": "3.5.9",
+    "@aws-amplify/amplify-frontend-ios": "3.5.9",
     "amplify-frontend-javascript": "3.7.5",
     "amplify-go-function-runtime-provider": "2.3.9",
     "amplify-go-function-template-provider": "1.3.15",
@@ -254,7 +254,7 @@
       "ios": {
         "name": "ios",
         "type": "frontend",
-        "packageName": "amplify-frontend-ios"
+        "packageName": "@aws-amplify/amplify-frontend-ios"
       },
       "javascript": {
         "name": "javascript",

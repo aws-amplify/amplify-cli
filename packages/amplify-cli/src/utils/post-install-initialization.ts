@@ -45,7 +45,7 @@ const resolvePackageRoot = (packageName: string) => {
 // Registry of packages that have files that need to be copied to the .amplify folder on CLI installation
 const copyPkgAssetRegistry = [
   'amplify-dynamodb-simulator',
-  'amplify-frontend-ios',
+  '@aws-amplify/amplify-frontend-ios',
   'amplify-go-function-runtime-provider',
   'amplify-java-function-runtime-provider',
   '@aws-amplify/amplify-opensearch-simulator',
