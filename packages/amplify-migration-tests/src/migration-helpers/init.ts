@@ -18,7 +18,7 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
 };
 
-export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
+export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Record<string, unknown>, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -66,7 +66,7 @@ export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Object, t
   });
 }
 
-export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
+export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Record<string, unknown>, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -116,7 +116,7 @@ export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Object, t
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);

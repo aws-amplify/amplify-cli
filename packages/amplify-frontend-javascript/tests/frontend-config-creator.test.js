@@ -78,22 +78,14 @@ module.exports = awsmobile;
     expect.assertions(1);
     fs.writeFileSync(awsExportsPath, generateAwsExportsFileContents(null));
     const ERROR_MESSAGE = 'Unable to find aws-exports.js. Has this file been modified?';
-    try {
-      await configCreator.getCurrentAWSExports(context);
-    } catch (error) {
-      expect(error.message).toEqual(ERROR_MESSAGE);
-    }
+    await expect(configCreator.getCurrentAWSExports(context)).rejects.toThrow(ERROR_MESSAGE);
   });
 
   it('should throw error if file contains a syntax error', async () => {
     expect.assertions(1);
     fs.writeFileSync(awsExportsPath, 'awsmobile = {');
     const ERROR_MESSAGE = 'Unable to parse aws-exports.js. Has this file been modified?';
-    try {
-      await configCreator.getCurrentAWSExports(context);
-    } catch (error) {
-      expect(error.message).toEqual(ERROR_MESSAGE);
-    }
+    await expect(configCreator.getCurrentAWSExports(context)).rejects.toThrow(ERROR_MESSAGE);
   });
 });
 

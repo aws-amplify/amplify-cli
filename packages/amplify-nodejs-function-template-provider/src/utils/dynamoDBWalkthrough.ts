@@ -68,7 +68,7 @@ export async function askDynamoDBQuestions(context: $TSContext, currentProjectOn
   throw new Error('Invalid option selected');
 }
 
-export async function getTableParameters(dynamoAnswers: any): Promise<TableParams | {}> {
+export async function getTableParameters(dynamoAnswers: any): Promise<TableParams | Record<string, unknown>> {
   if (dynamoAnswers.Arn) {
     // Looking for table parameters on DynamoDB public API
     const hashKey = dynamoAnswers.KeySchema.find((attr: any) => attr.KeyType === 'HASH') || {};

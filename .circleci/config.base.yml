@@ -162,7 +162,7 @@ jobs:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
+      - run: yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 1250
 
   verify-api-extract:
     <<: *linux-e2e-executor-xlarge

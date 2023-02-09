@@ -23,7 +23,7 @@ const triggerPackagePath = '';
 const triggerDir = '';
 const triggerTemplate = '';
 
-describe('TriggerFlow:  ', () => {
+describe('TriggerFlow:', () => {
   beforeEach(() => {
     context = {
       runtime: {
@@ -646,12 +646,6 @@ describe('TriggerFlow:  ', () => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(metadataSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('...should call readdirSync once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
-      await triggerFlow.cleanFunctions(key, values, category, context, path);
-      expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call readdirSync once', async () => {
