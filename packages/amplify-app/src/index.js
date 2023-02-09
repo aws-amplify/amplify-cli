@@ -176,7 +176,7 @@ const updateFrameworkInProjectConfig = framework => {
 const guessPlatform = async (providedPlatform, providedJSFramework) => {
   const frontendPlugins = {
     javascript: 'amplify-frontend-javascript',
-    android: 'amplify-frontend-android',
+    android: '@aws-amplify/amplify-frontend-android',
     ios: 'amplify-frontend-ios',
     flutter: 'amplify-frontend-flutter',
   };
