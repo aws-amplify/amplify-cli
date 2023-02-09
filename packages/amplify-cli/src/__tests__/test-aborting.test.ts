@@ -1,13 +1,4 @@
-import cliCore, {
-  BannerMessage,
-  executeHooks,
-  FeatureFlags,
-  HooksMeta,
-  JSONUtilities,
-  pathManager,
-  skipHooks,
-  stateManager,
-} from 'amplify-cli-core';
+import { BannerMessage, FeatureFlags, HooksMeta, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { Context } from '../domain/context';
 
 describe('test SIGINT with execute', () => {

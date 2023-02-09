@@ -1,5 +1,13 @@
 import url from 'url';
-import { prodUrl, UsageDataPayload, CommandLineInput, IFlowReport UsageData, getLatestApiVersion, getLatestPayloadVersion } from 'amplify-cli-core';
+import {
+  prodUrl,
+  UsageDataPayload,
+  CommandLineInput,
+  IFlowReport,
+  UsageData,
+  getLatestApiVersion,
+  getLatestPayloadVersion,
+} from 'amplify-cli-core';
 
 describe('test version manager', () => {
   it('url version should be the latest URL', () => {
