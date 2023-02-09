@@ -1,5 +1,5 @@
 {
-  "name": "amplify-category-notifications",
+  "name": "@aws-amplify/amplify-category-notifications",
   "version": "2.23.1",
   "description": "amplify-cli notifications plugin",
   "repository": {

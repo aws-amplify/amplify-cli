@@ -48,7 +48,7 @@
     "@aws-amplify/amplify-category-geo": "2.11.1",
     "@aws-amplify/amplify-category-function": "4.3.1",
     "@aws-amplify/amplify-category-interactions": "4.3.1",
-    "amplify-category-notifications": "2.23.1",
+    "@aws-amplify/amplify-category-notifications": "2.23.1",
     "amplify-category-predictions": "4.3.1",
     "amplify-category-xr": "3.4.1",
     "amplify-cli-core": "3.6.1",
@@ -219,7 +219,7 @@
       "notifications": {
         "name": "notifications",
         "type": "category",
-        "packageName": "amplify-category-notifications"
+        "packageName": "@aws-amplify/amplify-category-notifications"
       },
       "predictions": {
         "name": "predictions",
