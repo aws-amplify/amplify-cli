@@ -126,6 +126,66 @@ export class AmplifyError extends AmplifyException {
 export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryError' | 'DirectoryAlreadyExistsError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'ModelgenError' | 'NestedProjectInitError' | 'NoUpdateBackendError' | 'NotImplementedError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'StackNotFoundError' | 'StackStateError' | 'UserInputError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError';
 
 // @public (undocumented)
+export enum AmplifyEvent {
+    // (undocumented)
+    InternalOnlyPostEnvRemove = "InternalOnlyPostEnvRemove",
+    // (undocumented)
+    PostCodegenModels = "PostCodegenModels",
+    // (undocumented)
+    PostEnvAdd = "PostEnvAdd",
+    // (undocumented)
+    PostInit = "PostInit",
+    // (undocumented)
+    PostPull = "PostPull",
+    // (undocumented)
+    PostPush = "PostPush",
+    // (undocumented)
+    PreCodegenModels = "PreCodegenModels",
+    // (undocumented)
+    PreExport = "PreExport",
+    // (undocumented)
+    PreInit = "PreInit",
+    // (undocumented)
+    PrePull = "PrePull",
+    // (undocumented)
+    PrePush = "PrePush"
+}
+
+// @public (undocumented)
+export interface AmplifyEventArgs<T extends AmplifyEvent> {
+    // (undocumented)
+    data?: AmplifyEventData[T];
+    // (undocumented)
+    event: T;
+}
+
+// @public (undocumented)
+export interface AmplifyEventData {
+    // (undocumented)
+    [AmplifyEvent.InternalOnlyPostEnvRemove]: AmplifyInternalOnlyPostEnvRemoveEventData;
+    // (undocumented)
+    [AmplifyEvent.PostCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostEnvAdd]: AmplifyPostEnvAddEventData;
+    // (undocumented)
+    [AmplifyEvent.PostInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PostPush]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreCodegenModels]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreExport]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PreInit]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePull]: NoArgsAmplifyEventData;
+    // (undocumented)
+    [AmplifyEvent.PrePush]: NoArgsAmplifyEventData;
+}
+
+// @public (undocumented)
 export abstract class AmplifyException extends Error {
     constructor(name: AmplifyExceptionType, classification: AmplifyExceptionClassification, options: AmplifyExceptionOptions, downstreamException?: Error | undefined);
     // (undocumented)
@@ -181,6 +241,20 @@ export enum AmplifyFrontend {
     ios = "ios",
     // (undocumented)
     javascript = "javascript"
+}
+
+// @public (undocumented)
+export interface AmplifyInternalOnlyPostEnvRemoveEventData {
+    // (undocumented)
+    envName: string;
+}
+
+// @public (undocumented)
+export interface AmplifyPostEnvAddEventData {
+    // (undocumented)
+    newEnvName: string;
+    // (undocumented)
+    prevEnvName: string;
 }
 
 // @public (undocumented)
@@ -434,11 +508,56 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
+export class CommandLineInput {
+    constructor(argv: Array<string>);
+    // (undocumented)
+    argv: Array<string>;
+    // (undocumented)
+    command?: string;
+    // (undocumented)
+    options?: {
+        [key: string]: string | boolean;
+    };
+    // (undocumented)
+    plugin?: string;
+    // (undocumented)
+    subCommands?: string[];
+}
+
+// @public (undocumented)
 export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
 export class ConfigurationError extends Error {
 }
+
+// @public (undocumented)
+export const constants: {
+    HELP: string;
+    HELP_SHORT: string;
+    VERSION: string;
+    VERSION_SHORT: string;
+    VERBOSE: string;
+    YES: string;
+    YES_SHORT: string;
+    PLUGIN_DEFAULT_COMMAND: string;
+    MANIFEST_FILE_NAME: string;
+    PACKAGEJSON_FILE_NAME: string;
+    PLUGINS_FILE_NAME: string;
+    CORE: string;
+    CODEGEN: string;
+    AMPLIFY: string;
+    DOT_AMPLIFY_DIR_NAME: string;
+    AMPLIFY_PREFIX: string;
+    LOCAL_NODE_MODULES: string;
+    PARENT_DIRECTORY: string;
+    GLOBAL_NODE_MODULES: string;
+    PACKAGED_NODE_MODULES: string;
+    EXECUTE_AMPLIFY_COMMAND: string;
+    EXECUTE_AMPLIFY_HEADLESS_COMMAND: string;
+    HANDLE_AMPLIFY_EVENT: string;
+    LOG_FILENAME: string;
+};
 
 // @public (undocumented)
 export const convertNumBytes: (numBytes: number) => {
@@ -1053,6 +1172,9 @@ export class MissingParametersError extends Error {
 }
 
 // @public (undocumented)
+export type NoArgsAmplifyEventData = Record<string, never>;
+
+// @public (undocumented)
 export enum NotificationChannels {
     // (undocumented)
     APNS = "APNS",
@@ -1262,6 +1384,100 @@ export enum PluginAPIError {
     E_SVC_PROVIDER_SDK = "E_SVC_SDK",
     // (undocumented)
     E_UNKNOWN = "E_UNKNOWN"
+}
+
+// @public (undocumented)
+export class PluginCollection implements IPluginCollection {
+    // (undocumented)
+    [key: string]: Array<PluginInfo>;
+}
+
+// @public (undocumented)
+export class PluginInfo implements IPluginInfo {
+    constructor(packageName: string, packageVersion: string, packageLocation: string, manifest: PluginManifest);
+    // (undocumented)
+    manifest: PluginManifest;
+    // (undocumented)
+    packageLocation: string;
+    // (undocumented)
+    packageName: string;
+    // (undocumented)
+    packageVersion: string;
+}
+
+// @public (undocumented)
+export class PluginManifest {
+    constructor(name: string, type: string, displayName?: string | undefined, aliases?: string[] | undefined, commands?: string[] | undefined, commandAliases?: {
+        [key: string]: string;
+    } | undefined, services?: string[] | undefined, eventHandlers?: AmplifyEvent[] | undefined);
+    // (undocumented)
+    aliases?: string[] | undefined;
+    // (undocumented)
+    commandAliases?: {
+        [key: string]: string;
+    } | undefined;
+    // (undocumented)
+    commands?: string[] | undefined;
+    // (undocumented)
+    displayName?: string | undefined;
+    // (undocumented)
+    eventHandlers?: AmplifyEvent[] | undefined;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    services?: string[] | undefined;
+    // (undocumented)
+    type: string;
+}
+
+// @public (undocumented)
+export class PluginPlatform implements IPluginPlatform {
+    constructor();
+    // (undocumented)
+    excluded: PluginCollection;
+    // (undocumented)
+    lastScanTime: Date;
+    // (undocumented)
+    maxScanIntervalInSeconds: number;
+    // (undocumented)
+    pluginDirectories: string[];
+    // (undocumented)
+    pluginPrefixes: string[];
+    // (undocumented)
+    plugins: PluginCollection;
+    // (undocumented)
+    userAddedLocations: string[];
+}
+
+// @public (undocumented)
+export enum PluginVerificationError {
+    // (undocumented)
+    InvalidManifest = "InvalidManifest",
+    // (undocumented)
+    InvalidNodePackage = "InvalidNodePackage",
+    // (undocumented)
+    MissingExecuteAmplifyCommandMethod = "MissingExecuteAmplifyCommandMethod",
+    // (undocumented)
+    MissingHandleAmplifyEventMethod = "MissingHandleAmplifyEventMethod",
+    // (undocumented)
+    MissingManifest = "MissingManifest",
+    // (undocumented)
+    PluginDirPathNotExist = "PluginDirPathNotExist"
+}
+
+// @public (undocumented)
+export class PluginVerificationResult {
+    constructor(verified?: boolean, error?: PluginVerificationError | undefined, errorInfo?: any, packageJson?: any, manifest?: PluginManifest | undefined);
+    // (undocumented)
+    error?: PluginVerificationError | undefined;
+    // (undocumented)
+    errorInfo?: any;
+    // (undocumented)
+    manifest?: PluginManifest | undefined;
+    // (undocumented)
+    packageJson?: any;
+    // (undocumented)
+    verified: boolean;
 }
 
 // @public (undocumented)

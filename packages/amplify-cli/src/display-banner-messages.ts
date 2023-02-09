@@ -1,14 +1,11 @@
-import {
-  $TSAny, BannerMessage, pathManager, stateManager, skipHooks,
-} from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks, CommandLineInput } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { printer } from 'amplify-prompts';
-import { Input } from './domain/input';
 
 /**
  * display banner messages
  */
-export const displayBannerMessages = async (input: Input): Promise<void> => {
+export const displayBannerMessages = async (input: CommandLineInput): Promise<void> => {
   const excludedCommands = ['delete', 'env', 'help', 'logout', 'version'];
   if (isCI || (input.command && excludedCommands.includes(input.command))) {
     return;
@@ -32,9 +29,10 @@ const displayLayerMigrationMessage = async (): Promise<void> => {
   }
 
   const meta = stateManager.getMeta(rootPath, { throwIfNotExist: false });
-  const hasDeprecatedLayerResources = Object.values(meta?.function || {}).filter(
-    (resource: $TSAny) => resource?.service === 'LambdaLayer' && resource?.layerVersionMap !== undefined,
-  ).length > 0;
+  const hasDeprecatedLayerResources =
+    Object.values(meta?.function || {}).filter(
+      (resource: $TSAny) => resource?.service === 'LambdaLayer' && resource?.layerVersionMap !== undefined,
+    ).length > 0;
 
   if (hasDeprecatedLayerResources && layerMigrationBannerMessage) {
     printer.blankLine();
@@ -55,11 +53,13 @@ const displayXrDeprecationMessage = async (): Promise<void> => {
     const hasXr = 'xr' in meta;
     if (hasXr) {
       printer.blankLine();
-      printer.warn('The XR category depends on Amazon Sumerian to function.' +
-        ' Amazon Sumerian scenes will not be accessible as of February 21, 2023.' +
-        ' Follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
-        ' to learn more about your migration options.');
+      printer.warn(
+        'The XR category depends on Amazon Sumerian to function.' +
+          ' Amazon Sumerian scenes will not be accessible as of February 21, 2023.' +
+          ' Follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
+          ' to learn more about your migration options.',
+      );
       printer.blankLine();
     }
   }
-}
+};

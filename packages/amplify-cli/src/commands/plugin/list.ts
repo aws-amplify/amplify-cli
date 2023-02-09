@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import { PluginCollection } from '../../domain/plugin-collection';
+import { PluginCollection } from 'amplify-cli-core';
 import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
 
 export const run = async (context: Context) => {
