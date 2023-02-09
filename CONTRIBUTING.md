@@ -204,13 +204,7 @@ To run the test suite:
 yarn test
 ```
 
-Unit tests can be run on a per-project basis:
-
-```bash
-yarn nx test amplify-category-function
-```
-
-Or, optionally,
+Or, to run the tests for a specific package,
 
 ```bash
 cd packages/amplify-category-function
