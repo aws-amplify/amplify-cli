@@ -27,28 +27,28 @@ export const getShortId = (): string => {
 };
 
 /**
- * Given the parameter objects of each project for the provided category & resource key, 
+ * Given the parameter objects of each project for the provided category & resource key,
  * you can modify the parameter objects before the diff is performed.
- * 
+ *
  * You can use conditional logic to delete attributes on the parameter objects before they are diffed, if
  * you want to exclude those attributes from the comparison. Make sure to return the modified objects
  * that you want to be diffed.
  */
 export type ExcludeFromParameterDiff = (
-  currentCategory: string, 
+  currentCategory: string,
   currentResourceKey: string,
   parameters: {
-    project1: any,
-    project2: any,
-  }) => { project1: any, project2: any };
+    project1: Record<string, unknown>,
+    project2: Record<string, unknown>,
+  }) => { project1: Record<string, unknown>, project2: Record<string, unknown> };
 
 /**
  * Asserts that parameters between two project directories didn't drift.
  */
 export const assertNoParameterChangesBetweenProjects = (
-  projectRoot1: string, 
-  projectRoot2: string, 
-  options?: { 
+  projectRoot1: string,
+  projectRoot2: string,
+  options?: {
     excludeFromParameterDiff?: ExcludeFromParameterDiff
   }): void => {
   const backendConfig1 = getBackendConfig(projectRoot1);
@@ -83,7 +83,7 @@ export const assertNoParameterChangesBetweenProjects = (
 class InMemoryWritable extends Writable {
   private _payload = '';
 
-  _write(chunk: any, __encoding: BufferEncoding, callback: (error?: (Error | null)) => void): void {
+  _write(chunk: unknown, __encoding: BufferEncoding, callback: (error?: (Error | null)) => void): void {
     if (chunk) {
       this._payload += chunk.toString();
     }
@@ -96,20 +96,20 @@ class InMemoryWritable extends Writable {
 }
 
 /**
- * Given the CFN templates of each project for the provided category & resource key, 
+ * Given the CFN templates of each project for the provided category & resource key,
  * you can modify the CFN templates objects before the diff is performed.
- * 
+ *
  * You can use conditional logic to delete attributes on the CFN object before they are diffed, if
  * you want to exclude those attributes from the comparison. Make sure to return the modified objects
  * that you want to be diffed.
  */
 export type ExcludeFromCFNDiff = (
-  currentCategory: string, 
+  currentCategory: string,
   currentResourceKey: string,
   cfnTemplates: {
-    project1: any,
-    project2: any,
-  }) => { project1: any, project2: any };
+    project1: Record<string, unknown>,
+    project2: Record<string, unknown>,
+  }) => { project1: Record<string, unknown>, project2: Record<string, unknown> };
 
 /**
  * Collects all differences between cloud formation templates into a single string.

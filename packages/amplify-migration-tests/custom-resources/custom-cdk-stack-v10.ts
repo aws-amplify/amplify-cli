@@ -8,7 +8,7 @@ export class cdkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input paramater */
+    /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input parameter */
     new cdk.CfnParameter(this, 'env', {
       type: 'String',
       description: 'Current Amplify CLI env name',
@@ -20,12 +20,12 @@ export class cdkStack extends cdk.Stack {
 
     const queue = new sqs.Queue(this, 'sqs-queue', {
       queueName: cdk.Fn.join('-', ['custom-cdk-generated-sqs-queue-test', cdk.Fn.ref('env')]),
-    }); // For name unqieueness
+    }); // For name uniqueness
 
     // 👇 create sns topic
     const topic = new sns.Topic(this, 'sns-topic', {
       topicName: cdk.Fn.join('-', ['custom-cdk-generated-sns-topic-test', cdk.Fn.ref('env')]),
-    }); // For name unqieueness
+    }); // For name uniqueness
 
     // 👇 subscribe queue to topic
     topic.addSubscription(new subs.SqsSubscription(queue));
@@ -37,7 +37,7 @@ export class cdkStack extends cdk.Stack {
 
     /* Example 2: Adding IAM role to the custom stack */
     const role = new iam.Role(this, 'CustomRole', {
-      roleName: cdk.Fn.join('-', ['custom-cdk-generated-custom-role-test', cdk.Fn.ref('env')]), // For name unqieueness
+      roleName: cdk.Fn.join('-', ['custom-cdk-generated-custom-role-test', cdk.Fn.ref('env')]), // For name uniqueness
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
