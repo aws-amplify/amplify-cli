@@ -9,7 +9,7 @@ const { addAmplifyFiles } = require('./xcodeHelpers');
 const ini = require('ini');
 const semver = require('semver');
 const { engines } = require('../package.json');
-const { initializeAwsExports } = require('amplify-frontend-javascript');
+const { initializeAwsExports } = require('@aws-amplify/amplify-frontend-javascript');
 const { initializeAmplifyConfiguration } = require('@aws-amplify/amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
 const Ora = require('ora');
@@ -175,7 +175,7 @@ const updateFrameworkInProjectConfig = framework => {
  */
 const guessPlatform = async (providedPlatform, providedJSFramework) => {
   const frontendPlugins = {
-    javascript: 'amplify-frontend-javascript',
+    javascript: '@aws-amplify/amplify-frontend-javascript',
     android: '@aws-amplify/amplify-frontend-android',
     ios: '@aws-amplify/amplify-frontend-ios',
     flutter: '@aws-amplify/amplify-frontend-flutter',
