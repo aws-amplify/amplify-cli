@@ -5,7 +5,7 @@ import {
   GeoServiceConfiguration, AccessType, MapStyle, AppSyncServiceConfiguration, AppSyncAPIKeyAuthType, AddApiRequest,
 } from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
-import { Redactor } from 'amplify-cli-logger';
+import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import crypto from 'crypto';
 import { CLIFlowReport } from '../domain/amplify-usageData/FlowReport';
 

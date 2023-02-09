@@ -12,7 +12,7 @@ import { CloudFormation } from 'aws-sdk';
 import { getPreviousDeploymentRecord } from '../../utils/amplify-resource-state-utils';
 import Template from 'cloudform-types/types/template';
 import { DeploymentOp, DeploymentStep } from '../../iterative-deployment';
-import { Redactor } from 'amplify-cli-logger';
+import { Redactor } from '@aws-amplify/amplify-cli-logger';
 
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core');
@@ -46,7 +46,10 @@ describe('getDependentFunctions', () => {
         },
       },
     };
-    const funcParamsSupplier = jest.fn().mockReturnValueOnce(func1Params).mockReturnValueOnce(func2Params);
+    const funcParamsSupplier = jest
+      .fn()
+      .mockReturnValueOnce(func1Params)
+      .mockReturnValueOnce(func2Params);
     const result = await getDependentFunctions(['ModelName', 'OtherModel'], ['func1', 'func2'], funcParamsSupplier);
     expect(result).toEqual(['func2']);
   });
@@ -97,7 +100,7 @@ describe('uploadTempFuncDeploymentFiles', () => {
       uploadFile: jest.fn(),
     };
 
-    await uploadTempFuncDeploymentFiles(s3Client_stub as unknown as S3, ['func1', 'func2']);
+    await uploadTempFuncDeploymentFiles((s3Client_stub as unknown) as S3, ['func1', 'func2']);
     expect(s3Client_stub.uploadFile.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
@@ -137,7 +140,7 @@ describe('uploadTempFuncDeploymentFiles', () => {
       uploadFile: jest.fn().mockRejectedValue(new Error('test error')),
     };
     try {
-      await uploadTempFuncDeploymentFiles(s3Client_stub as unknown as S3, ['func1', 'func2']);
+      await uploadTempFuncDeploymentFiles((s3Client_stub as unknown) as S3, ['func1', 'func2']);
       fail('function call should error');
     } catch (err) {
       expect(err.message).toMatchInlineSnapshot(`"test error"`);
@@ -174,7 +177,7 @@ describe('generateIterativeFuncDeploymentSteps', () => {
     stateManager_mock.getResourceParametersJson.mockReturnValue({});
     stateManager_mock.getTeamProviderInfo.mockReturnValue({});
     stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'testenv' });
-    const result = await generateIterativeFuncDeploymentSteps(cfnClient_stub as unknown as CloudFormation, 'testRootStackId', [
+    const result = await generateIterativeFuncDeploymentSteps((cfnClient_stub as unknown) as CloudFormation, 'testRootStackId', [
       'func1',
       'func2',
     ]);
@@ -229,7 +232,7 @@ describe('prependDeploymentSteps', () => {
   });
 
   it('returns after array if before array is empty', () => {
-    const afterSteps = ['test step' as unknown as DeploymentStep];
+    const afterSteps = [('test step' as unknown) as DeploymentStep];
     const result = prependDeploymentSteps([], afterSteps, 'testmetakey');
     expect(result).toEqual(afterSteps);
   });
