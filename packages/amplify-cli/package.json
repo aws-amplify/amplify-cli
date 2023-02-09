@@ -68,7 +68,7 @@
     "@aws-amplify/amplify-java-function-runtime-provider": "2.3.9",
     "amplify-java-function-template-provider": "1.5.15",
     "@aws-amplify/amplify-nodejs-function-runtime-provider": "2.3.9",
-    "amplify-nodejs-function-template-provider": "2.6.4",
+    "@aws-amplify/amplify-nodejs-function-template-provider": "2.6.4",
     "amplify-prompts": "2.6.3",
     "amplify-provider-awscloudformation": "6.10.3",
     "amplify-python-function-runtime-provider": "2.4.9",
