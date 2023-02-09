@@ -192,7 +192,7 @@ The "pre-commit" hook runs the [verify-commit](https://github.com/aws-amplify/am
 
 #### "pre-push" hook:
 
-The "pre-push" hook will build test files and run the `split-e2e-tests` script to ensure the correct configuration file is generated for our CICD workflow.
+The "pre-push" hook will build test files and run the `split-e2e-tests` script to ensure the correct configuration file is generated for our CI/CD workflow.
 
 ## Tests
 
