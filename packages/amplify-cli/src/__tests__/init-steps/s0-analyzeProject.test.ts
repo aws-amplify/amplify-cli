@@ -27,10 +27,10 @@ describe('analyzeProject', () => {
         directory: 'amplify-frontend-javascript',
       },
       {
-        name: 'amplify-frontend-flutter',
+        name: '@aws-amplify/amplify-frontend-flutter',
         pluginType: 'frontend',
         pluginName: 'flutter',
-        directory: 'amplify-frontend-flutter',
+        directory: '@aws-amplify/amplify-frontend-flutter',
       },
     ];
     mockContext.exeInfo = {

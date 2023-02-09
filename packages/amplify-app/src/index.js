@@ -10,7 +10,7 @@ const ini = require('ini');
 const semver = require('semver');
 const { engines } = require('../package.json');
 const { initializeAwsExports } = require('amplify-frontend-javascript');
-const { initializeAmplifyConfiguration } = require('amplify-frontend-flutter');
+const { initializeAmplifyConfiguration } = require('@aws-amplify/amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
 const Ora = require('ora');
 const isWin = process.platform.startsWith('win');
@@ -178,7 +178,7 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
     javascript: 'amplify-frontend-javascript',
     android: '@aws-amplify/amplify-frontend-android',
     ios: 'amplify-frontend-ios',
-    flutter: 'amplify-frontend-flutter',
+    flutter: '@aws-amplify/amplify-frontend-flutter',
   };
 
   let suitableFrontend;

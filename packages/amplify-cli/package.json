@@ -60,7 +60,7 @@
     "amplify-dotnet-function-runtime-provider": "1.7.1",
     "amplify-dotnet-function-template-provider": "2.4.3",
     "@aws-amplify/amplify-frontend-android": "3.4.1",
-    "amplify-frontend-flutter": "1.3.5",
+    "@aws-amplify/amplify-frontend-flutter": "1.3.5",
     "amplify-frontend-ios": "3.5.9",
     "amplify-frontend-javascript": "3.7.5",
     "amplify-go-function-runtime-provider": "2.3.9",
@@ -244,7 +244,7 @@
       "flutter": {
         "name": "flutter",
         "type": "frontend",
-        "packageName": "amplify-frontend-flutter"
+        "packageName": "@aws-amplify/amplify-frontend-flutter"
       },
       "android": {
         "name": "android",
