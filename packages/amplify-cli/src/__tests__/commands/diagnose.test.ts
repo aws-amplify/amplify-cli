@@ -3,7 +3,6 @@ import archiver from 'archiver';
 import { pathManager, stateManager } from 'amplify-cli-core';
 import { Redactor } from 'amplify-cli-logger';
 import { WriteStream } from 'fs-extra';
-import fetch from 'node-fetch';
 import * as uuid from 'uuid';
 import { collectFiles } from '../../commands/helpers/collect-files';
 import { run } from '../../commands/diagnose';
@@ -11,12 +10,6 @@ import { Context } from '../../domain/context';
 
 jest.mock('uuid');
 jest.mock('../../commands/helpers/collect-files');
-// jest.spyOn(cliCore, 'createHashedIdentifier').mockReturnValue({
-//   projectIdentifier: 'projectId',
-//   projectEnvIdentifier: 'projectId',
-// });
-// jest.spyOn(cliCore, 'encryptBuffer').mockResolvedValue('encryptedString');
-// jest.spyOn(cliCore, 'encryptKey').mockResolvedValue('encryptedString');
 jest.mock('archiver');
 jest.mock('fs-extra');
 jest.mock('amplify-cli-logger', () => ({
