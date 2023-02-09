@@ -4,12 +4,11 @@ import winstonDailyRotateFile from 'winston-daily-rotate-file';
 import { constants } from './constants';
 import { IAmplifyLogger } from './IAmplifyLogger';
 import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from './getLogFilePath';
-import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
+import { LogPayload, LogErrorPayload } from './Types';
 const { combine, timestamp, splat, printf } = format;
 export class AmplifyLogger implements IAmplifyLogger {
   logger: Logger;
   loggerFormat: winston.Logform.Format;
-  localProjectData!: LocalProjectData;
   disabledAmplifyLogging: boolean = process.env.AMPLIFY_CLI_DISABLE_LOGGING === 'true';
   constructor() {
     this.logger = winston.createLogger();
