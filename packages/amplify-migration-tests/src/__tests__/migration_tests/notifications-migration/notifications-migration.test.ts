@@ -2,6 +2,7 @@ import {
   addNotificationChannel,
   addPinpointAnalytics,
   amplifyPushAuth,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -42,7 +43,7 @@ describe('amplify add notifications', () => {
 
     await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addPinpointAnalytics(projectRoot, false);
-    await amplifyPushAuth(projectRoot, false);
+    await amplifyPushAuthV5V6(projectRoot);
 
     const settings = { resourceName: `notification${getShortId()}` };
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);

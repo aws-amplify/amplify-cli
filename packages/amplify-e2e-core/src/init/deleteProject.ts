@@ -1,7 +1,5 @@
 /* eslint-disable import/no-cycle */
-import {
-  nspawn as spawn, retry, getCLIPath, describeCloudFormationStack,
-} from '..';
+import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from '..';
 import { getBackendAmplifyMeta } from '../utils';
 
 /**
@@ -16,13 +14,14 @@ export const deleteProject = async (cwd: string, profileConfig?: any, usingLates
       () => describeCloudFormationStack(stackName, region, profileConfig),
       stack => stack.StackStatus.endsWith('_COMPLETE') || stack.StackStatus.endsWith('_FAILED'),
     );
+
     const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
     return spawn(getCLIPath(usingLatestCodebase), ['delete'], { cwd, stripColors: true, noOutputTimeout })
       .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
+      .sendYes()
       .wait('Project deleted locally.')
       .runAsync();
-  } catch (e){
+  } catch (e) {
     console.log('Error on deleting project at:', cwd);
   }
 };

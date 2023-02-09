@@ -46,7 +46,7 @@ export const ensureLambdaExecutionRoleOutputs: () => Promise<void>;
 export const executeAmplifyCommand: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
-export const getBuilder: (context: $TSContext, resourceName: string, buildType: BuildType) => () => Promise<void>;
+export const getBuilder: (context: $TSContext, resourceName: string, buildType: BuildType) => (() => Promise<void>);
 
 // @public (undocumented)
 export const getInvoker: (context: $TSContext, { handler, resourceName, envVars }: InvokerParameters) => Promise<({ event }: {

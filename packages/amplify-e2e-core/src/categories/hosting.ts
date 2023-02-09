@@ -114,48 +114,32 @@ export function removePRODCloudFront(cwd: string): Promise<void> {
   });
 }
 
-export function amplifyPushWithUpdate(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushWithUpdate = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn()
+    .runAsync();
+};
 
-export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPublishWithUpdate = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn()
+    .runAsync();
+};
 
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-    .wait('Do you still want to publish the frontend')
-    .sendConfirmYes()
-    .run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .wait('Do you still want to publish the frontend')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
 

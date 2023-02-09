@@ -9991,15 +9991,6 @@ amplify-codegen@^3.3.6:
     semver "^7.3.5"
     slash "^3.0.0"
 
-amplify-prompts@2.6.2:
-  version "2.6.2"
-  resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.6.2.tgz#30c80307f47a992a9beb57636fcf7bc6ba730f10"
-  integrity sha512-ewRz7jz/J2oX5z5Rh0u7Is2yDC99rrqKKcrv1c0WsDroYE2cYwIg8eVxkxNhjRw8qADrSRrnf4zb4uQI3caZuA==
-  dependencies:
-    amplify-cli-shared-interfaces "1.1.1"
-    chalk "^4.1.1"
-    enquirer "^2.3.6"
-
 ansi-align@^3.0.0, ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"
@@ -15963,9 +15954,9 @@ htmlparser2@^6.1.0:
     entities "^2.0.0"
 
 http-cache-semantics@^4.0.0, http-cache-semantics@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
-  integrity sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.1.tgz#abe02fcb2985460bf0323be664436ec3476a6d5a"
+  integrity sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==
 
 http-deceiver@^1.2.7:
   version "1.2.7"

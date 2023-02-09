@@ -100,3 +100,48 @@ describe('save', () => {
     `);
   });
 });
+
+describe('verifyExpectedEnvParameters', () => {
+  it('does not throw when nothing is missing', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    envParamManager.save();
+    await envParamManager.verifyExpectedEnvParameters();
+  });
+
+  it('throws when a parameter is missing', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
+
+    funcParamManager.setParam('missingParam', 'missingValue');
+    envParamManager.save();
+    funcParamManager.deleteParam('missingParam');
+
+    let error = undefined;
+    try {
+      await envParamManager.verifyExpectedEnvParameters();
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBeDefined();
+  });
+});
+
+describe('getMissingParameters', () => {
+  it('returns an empty array when nothing is missing', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    envParamManager.save();
+    expect(await envParamManager.getMissingParameters()).toEqual([]);
+  });
+
+  it('returns array of missing parameters', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
+
+    funcParamManager.setParam('missingParam', 'missingValue');
+    envParamManager.save();
+    funcParamManager.deleteParam('missingParam');
+
+    expect(await envParamManager.getMissingParameters())
+      .toEqual([{ categoryName: 'function', resourceName: 'funcName', parameterName: 'missingParam' }]);
+  });
+});
