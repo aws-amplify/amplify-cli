@@ -30,7 +30,7 @@ const corePackageJson = {
         {
           name: 'hosting',
           type: 'category',
-          packageName: 'amplify-console-hosting',
+          packageName: '@aws-amplify/amplify-console-hosting',
         },
       ],
       codegen: {
@@ -44,8 +44,8 @@ const corePackageJson = {
     'amplify-category-api': '2.31.20',
     '@aws-amplify/amplify-category-hosting': '2.7.18',
     'amplify-codegen': '^2.23.1',
-    'amplify-console-hosting': '1.9.9',
-    'amplify-container-hosting': '1.3.20',
+    '@aws-amplify/amplify-console-hosting': '1.9.9',
+    '@aws-amplify/amplify-container-hosting': '1.3.20',
   },
 };
 
@@ -87,7 +87,7 @@ describe('platform-health-check', () => {
           },
           {
             name: 'hosting',
-            packageName: 'amplify-console-hosting',
+            packageName: '@aws-amplify/amplify-console-hosting',
             packageVersion: '1.9.9',
             type: 'category',
           },
@@ -111,7 +111,7 @@ describe('platform-health-check', () => {
         core: [new PluginInfo('@aws-amplify/cli', '5.4.0', '', new PluginManifest('core', 'core'))],
         hosting: [
           new PluginInfo('@aws-amplify/amplify-category-hosting', '2.7.18', '', new PluginManifest('hosting', 'category')),
-          new PluginInfo('amplify-console-hosting', '1.9.9', '', new PluginManifest('hosting', 'category')),
+          new PluginInfo('@aws-amplify/amplify-console-hosting', '1.9.9', '', new PluginManifest('hosting', 'category')),
         ],
         codegen: [new PluginInfo('amplify-codegen', '2.27.0', '', new PluginManifest('codegen', 'util'))],
         api: [new PluginInfo('amplify-category-api', '2.31.20', '', new PluginManifest('api', 'category'))],
@@ -125,7 +125,7 @@ describe('platform-health-check', () => {
         core: [new PluginInfo('@aws-amplify/cli', '5.4.0', '', new PluginManifest('core', 'core'))],
         hosting: [
           new PluginInfo('@aws-amplify/amplify-category-hosting', '2.7.18', '', new PluginManifest('hosting', 'category')),
-          new PluginInfo('amplify-console-hosting', '1.9.9', '', new PluginManifest('hosting', 'category')),
+          new PluginInfo('@aws-amplify/amplify-console-hosting', '1.9.9', '', new PluginManifest('hosting', 'category')),
         ],
         codegen: [
           // version mismatch
@@ -154,7 +154,7 @@ describe('platform-health-check', () => {
 
       expect(await checkPlatformHealth(pluginPlatform)).toBe(false);
       expect(console.log).toBeCalledWith('The following official plugins are missing or inactive:');
-      expect(console.log).toBeCalledWith('    hosting: category | amplify-console-hosting@1.9.9');
+      expect(console.log).toBeCalledWith('    hosting: category | @aws-amplify/amplify-console-hosting@1.9.9');
       expect(console.log).toBeCalledWith('    api: category | amplify-category-api@2.31.20');
     });
   });
