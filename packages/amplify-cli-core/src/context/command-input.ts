@@ -1,4 +1,4 @@
-export class Input {
+export class CommandLineInput {
   argv: Array<string>;
   plugin?: string;
   command?: string;
