@@ -7,8 +7,8 @@
 /// <reference types="node" />
 
 import { $TSAny } from 'amplify-cli-core';
-import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger/lib/IAmplifyLogger';
 import { CommandLineInput } from 'amplify-cli-core';
+import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger/lib/IAmplifyLogger';
 import { ICommandInput } from 'amplify-cli-shared-interfaces';
 import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
