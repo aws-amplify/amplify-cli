@@ -4,6 +4,7 @@ import {
   addCFNCustomResource,
   amplifyPull,
   amplifyPushAuth,
+  amplifyPushAuthV10,
   buildCustomResources,
   createNewProjectDir,
   deleteProject,
@@ -52,7 +53,7 @@ describe('adding custom resources migration test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-v10.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
     await buildCustomResources(projRoot);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV10(projRoot);
 
     // check if cfn file is generated in the build dir
     expect(fs.existsSync(cfnFilePath)).toEqual(true);

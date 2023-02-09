@@ -204,6 +204,16 @@ export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false):
     .runAsync();
 
 /**
+ * Function to test amplify push
+ */
+export const amplifyPushAuthV10 = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*/)
+    .runAsync();
+
+/**
  * To be used in migrations tests only
  */
 export const amplifyPushAuthV5V6 = (cwd: string): Promise<void> =>

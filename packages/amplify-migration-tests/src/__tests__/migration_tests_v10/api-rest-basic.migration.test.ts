@@ -1,20 +1,20 @@
-import { 
-    addRestApi, 
-    addSimpleDDB, 
-    amplifyPull, 
-    amplifyPushAuth, 
-    amplifyPushUpdate, 
-    createNewProjectDir, 
-    deleteProject, 
-    deleteProjectDir, 
-    generateRandomShortId, 
-    getAppId, 
-    getProjectMeta, 
+import {
+    addRestApi,
+    addSimpleDDB,
+    amplifyPull,
+    amplifyPushAuth,
+    amplifyPushUpdateLegacy,
+    createNewProjectDir,
+    deleteProject,
+    deleteProjectDir,
+    generateRandomShortId,
+    getAppId,
+    getProjectMeta,
     validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
 import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
-import { 
-    assertNoParameterChangesBetweenProjects, 
+import {
+    assertNoParameterChangesBetweenProjects,
     collectCloudformationDiffBetweenProjects,
 } from "../../migration-helpers/utils";
 
@@ -36,11 +36,11 @@ describe('api REST migration tests', () => {
         await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
         await addSimpleDDB(projRoot, { name: DDB_NAME });
         await addRestApi(projRoot, { isCrud: true, projectContainsFunctions: false });
-        await amplifyPushUpdate(projRoot);
+        await amplifyPushUpdateLegacy(projRoot);
 
         const meta = getProjectMeta(projRoot);
         validateRestApiMeta(projRoot, meta);
-        
+
 
         // pull down with vlatest
         const appId = getAppId(projRoot);
