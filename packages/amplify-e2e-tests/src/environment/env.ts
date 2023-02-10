@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from '@aws-amplify/amplify-e2e-core';
 
-export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
+export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number; cloneParams?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
@@ -8,7 +8,14 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendCarriageReturn();
+      .sendCarriageReturn()
+      .wait(/Do you want to clone parameters from the*/);
+
+    if (settings.cloneParams!) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
+    }
 
     chain.wait('Initialized your environment successfully.').run((err: Error) => {
       if (!err) {

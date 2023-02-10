@@ -5,6 +5,9 @@
 ```ts
 
 // @public (undocumented)
+export const cloneEnvParamManager: (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string) => Promise<void>;
+
+// @public (undocumented)
 export const ensureEnvParamManager: (envName?: string) => Promise<{
     instance: IEnvironmentParameterManager;
 }>;
@@ -19,6 +22,7 @@ export type IEnvironmentParameterManager = {
     removeResourceParamManager: (category: string, resource: string) => void;
     hasResourceParamManager: (category: string, resource: string) => boolean;
     getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
+    cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
     save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
     getMissingParameters: () => Promise<{
         categoryName: string;

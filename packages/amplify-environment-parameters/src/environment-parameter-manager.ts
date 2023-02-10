@@ -85,6 +85,18 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
+  async cloneEnvParamsToNewEnvParamManager(destManager: IEnvironmentParameterManager): Promise<void> {
+    const resourceKeys = Object.keys(this.resourceParamManagers);
+    const categoryResourceNamePairs: string[][] = resourceKeys.map(key => key.split('_'));
+    categoryResourceNamePairs.forEach(([category, resourceName]) => {
+      const srcResourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
+      const allSrcParams: Record<string, string> = srcResourceParamManager.getAllParams();
+      const destResourceParamManager: ResourceParameterManager = destManager.getResourceParamManager(category, resourceName);
+      destResourceParamManager.setAllParams(allSrcParams);
+    });
+    await destManager.save();
+  }
+
   async save(serviceUploadHandler?: ServiceUploadHandler): Promise<void> {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
@@ -196,6 +208,7 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
+  cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
   getMissingParameters: () => Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
   verifyExpectedEnvParameters: () => Promise<void>;

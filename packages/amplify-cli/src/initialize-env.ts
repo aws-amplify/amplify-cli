@@ -1,8 +1,9 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import { stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
+import { printer, prompter } from 'amplify-prompts';
+import { ensureEnvParamManager, IEnvironmentParameterManager, cloneEnvParamManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
+
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 import { constants } from './domain/constants';
@@ -163,6 +164,16 @@ export const initializeEnv = async (
 
     // Generate AWS exports/configuration file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
+
+    if (context.input.command === 'env' && context.input.subCommands[0] === 'add') {
+      const srcEnvName = context.exeInfo.sourceEnvName;
+      const destEnvName = context.exeInfo.localEnvInfo.envName;
+      const cloneFromSrcEnv = await prompter.yesOrNo(`Do you want to clone parameters from the "${srcEnvName}" environment?`, false);
+      if (cloneFromSrcEnv) {
+        const srcEnvParamManager: IEnvironmentParameterManager = (await ensureEnvParamManager(srcEnvName)).instance;
+        await cloneEnvParamManager(srcEnvParamManager, destEnvName);
+      }
+    }
 
     printer.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
