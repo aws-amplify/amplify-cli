@@ -1,10 +1,6 @@
-import {
-  $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
-import {
-  ensureDir, existsSync, readFileSync, readJSON, readdirSync,
-} from 'fs-extra';
+import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
 import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
@@ -122,7 +118,7 @@ describe('amplify init:', () => {
           },
         },
       };
-      await preInitSetup(context);
+      await preInitSetup((context as unknown) as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
       expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });

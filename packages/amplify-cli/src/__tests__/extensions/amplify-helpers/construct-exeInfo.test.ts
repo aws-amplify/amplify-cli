@@ -8,13 +8,13 @@ jest.mock('../../../extensions/amplify-helpers/get-project-details', () => ({
 
 describe('constructExeInfo', () => {
   beforeEach(() => {
-    context_stub = {
+    context_stub = ({
       parameters: {
         options: {
           y: 'test',
         },
       },
-    } as $TSContext;
+    } as unknown) as $TSContext;
   });
   it('should return normalised inputParams', () => {
     const expected = Object.assign(
