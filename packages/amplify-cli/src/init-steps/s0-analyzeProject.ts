@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
