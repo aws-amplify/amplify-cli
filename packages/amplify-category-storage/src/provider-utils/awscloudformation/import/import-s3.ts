@@ -1,7 +1,7 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { $TSAny, $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { IS3Service } from 'amplify-util-import';
+import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
