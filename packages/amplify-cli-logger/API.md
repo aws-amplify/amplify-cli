@@ -9,14 +9,10 @@ export const getAmplifyLogger: () => IAmplifyLogger;
 
 // @public (undocumented)
 export interface IAmplifyLogger {
-    // Warning: (ae-forgotten-export) The symbol "LogErrorPayload" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     logError(content: LogErrorPayload): void;
     // (undocumented)
     loggerEnd(): void;
-    // Warning: (ae-forgotten-export) The symbol "LogPayload" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     logInfo(content: LogPayload): void;
     // (undocumented)
@@ -25,6 +21,16 @@ export interface IAmplifyLogger {
 
 // @public (undocumented)
 export const LocalLogDirectory: string;
+
+// @public (undocumented)
+export type LogErrorPayload = LogPayload & {
+    error: Error;
+};
+
+// @public (undocumented)
+export type LogPayload = {
+    message: string;
+};
 
 // @public (undocumented)
 export const Redactor: (arg: string | undefined) => string;

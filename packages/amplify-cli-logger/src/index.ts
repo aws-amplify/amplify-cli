@@ -4,6 +4,7 @@ import { constants } from './constants';
 
 export { Redactor, stringMasker } from './Redactor';
 export { IAmplifyLogger } from './IAmplifyLogger';
+export { LogErrorPayload, LogPayload } from './Types';
 
 export const LocalLogDirectory = constants.LOG_DIRECTORY;
 let logger: IAmplifyLogger | undefined;
