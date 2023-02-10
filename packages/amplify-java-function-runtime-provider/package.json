@@ -1,5 +1,5 @@
 {
-  "name": "amplify-java-function-runtime-provider",
+  "name": "@aws-amplify/amplify-java-function-runtime-provider",
   "version": "2.3.9",
   "description": "Provides functionality related to functions in JAVA on AWS",
   "repository": {
@@ -16,6 +16,9 @@
     "lambda",
     "java"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",

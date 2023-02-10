@@ -10,7 +10,7 @@ export const alias = ['notification'];
  * @param context amplify cli context
  * @returns Returns Notifications feature flow output in test/windows environment , and undefined otherwise
  */
-export const run = async (context: $TSContext) : Promise<$TSAny|undefined> => {
+export const run = async (context: $TSContext): Promise<$TSAny | undefined> => {
   if (context.parameters.options.help) {
     return runHelp(context);
   }

@@ -1,5 +1,5 @@
 {
-  "name": "amplify-frontend-javascript",
+  "name": "@aws-amplify/amplify-frontend-javascript",
   "version": "3.7.5",
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "scripts": {
@@ -19,6 +19,9 @@
     "appsync",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@babel/core": "^7.10.5",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",

@@ -5,7 +5,7 @@ import { printEnvInfo } from '../helpers/envUtils';
 /**
  * Executes the 'env get' command
  */
-export const run = async (context: $TSContext) : Promise<void> => {
+export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
   const allEnvs = context.amplify.getEnvDetails();
 

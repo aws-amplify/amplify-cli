@@ -1,5 +1,5 @@
 {
-  "name": "amplify-go-function-runtime-provider",
+  "name": "@aws-amplify/amplify-go-function-runtime-provider",
   "version": "2.3.9",
   "description": "Provides functionality related to functions in Go 1.x on AWS",
   "repository": {
@@ -16,6 +16,9 @@
     "lambda",
     "golang"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo resources/localinvoke/go.sum resources/localinvoke/main resources/localinvoke/main.exe",

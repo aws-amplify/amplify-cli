@@ -1,5 +1,5 @@
 {
-  "name": "amplify-nodejs-function-runtime-provider",
+  "name": "@aws-amplify/amplify-nodejs-function-runtime-provider",
   "version": "2.3.9",
   "description": "Provides functionality related to functions in NodeJS on AWS",
   "repository": {
@@ -16,6 +16,9 @@
     "lambda",
     "nodejs"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",

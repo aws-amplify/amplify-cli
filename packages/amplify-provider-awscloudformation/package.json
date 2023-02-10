@@ -1,5 +1,5 @@
 {
-  "name": "amplify-provider-awscloudformation",
+  "name": "@aws-amplify/amplify-provider-awscloudformation",
   "version": "6.10.3",
   "description": "AWS CloudFormation Provider",
   "repository": {
@@ -16,6 +16,9 @@
     "appsync",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "test": "yarn jest",
@@ -58,7 +61,7 @@
     "amplify-cli-core": "3.6.1",
     "amplify-cli-logger": "1.2.3",
     "amplify-prompts": "2.6.3",
-    "amplify-util-import": "2.3.1",
+    "@aws-amplify/amplify-util-import": "2.3.1",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1233.0",
     "bottleneck": "2.19.5",

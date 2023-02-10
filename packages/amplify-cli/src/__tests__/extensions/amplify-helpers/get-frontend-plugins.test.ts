@@ -6,16 +6,16 @@ describe('get-frontend-plugins', () => {
       runtime: {
         plugins: [
           {
-            name: 'amplify-frontend-javascript',
+            name: '@aws-amplify/amplify-frontend-javascript',
             pluginType: 'frontend',
             pluginName: 'javascript',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-javascript',
+            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-frontend-javascript',
           },
           {
-            name: 'amplify-frontend-flutter',
+            name: '@aws-amplify/amplify-frontend-flutter',
             pluginType: 'frontend',
             pluginName: 'flutter',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter',
+            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-frontend-flutter',
           },
           {
             name: '@aws-amplify/amplify-category-auth',
@@ -28,8 +28,8 @@ describe('get-frontend-plugins', () => {
     };
     const plugins = getFrontendPlugins(context as any);
     expect(plugins).toEqual({
-      javascript: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-javascript',
-      flutter: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter',
+      javascript: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-frontend-javascript',
+      flutter: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-frontend-flutter',
     });
   });
 

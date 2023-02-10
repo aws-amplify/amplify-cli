@@ -8,7 +8,7 @@ jest.mock('amplify-cli-core', () => ({
   },
   generateOverrideSkeleton: jest.fn(),
 }));
-jest.mock('amplify-provider-awscloudformation');
+jest.mock('@aws-amplify/amplify-provider-awscloudformation');
 jest.mock('amplify-prompts', () => ({
   printer: {
     info: jest.fn(),
@@ -30,7 +30,7 @@ describe('run override command for root stack', () => {
       },
     };
 
-    const context_stub_typed = context_stub as unknown as $TSContext;
+    const context_stub_typed = (context_stub as unknown) as $TSContext;
     await run(context_stub_typed);
     const mockSrcPath = path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource');
     const mockDestPath = path.join('mockPath', 'awscloudformation');
