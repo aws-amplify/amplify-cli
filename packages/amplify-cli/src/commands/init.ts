@@ -18,9 +18,10 @@ const constructExeInfo = (context: $TSContext): void => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const runStrategy = (quickstart: boolean) => (quickstart
-  ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-  : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup]);
+const runStrategy = (quickstart: boolean) =>
+  quickstart
+    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command

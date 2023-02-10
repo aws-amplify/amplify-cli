@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import _ from 'lodash';
 import * as path from 'path';
@@ -27,10 +25,14 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
       if (e instanceof AmplifyError) {
         throw e;
       }
-      throw new AmplifyFault('ProjectInitFault', {
-        message: 'An error occurred during project initialization',
-        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-      }, e);
+      throw new AmplifyFault(
+        'ProjectInitFault',
+        {
+          message: 'An error occurred during project initialization',
+          link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+        },
+        e,
+      );
     }
   }
 };
@@ -61,8 +63,8 @@ const getPackageScript = (): string => {
   const scripts = _.get(packageJsonContent, 'scripts', {});
 
   return (
-    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName))
-    || (() => {
+    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName)) ||
+    (() => {
       throw MISSING_SCRIPTS_ERROR;
     })()
   );
