@@ -124,6 +124,12 @@ export interface AmplifyDDBResourceTemplate extends AmplifyCDKL1 {
     dynamoDBTable?: ddb.CfnTable;
 }
 
+// @public (undocumented)
+export type AmplifyProjectInfo = {
+    envName: string;
+    projectName: string;
+};
+
 export { AmplifyResourceProps }
 
 // @public (undocumented)
@@ -182,8 +188,6 @@ export type ApigwPathPolicy = {
     };
 };
 
-// Warning: (ae-forgotten-export) The symbol "AmplifyProjectInfo" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export const getProjectInfo: () => AmplifyProjectInfo;
 
