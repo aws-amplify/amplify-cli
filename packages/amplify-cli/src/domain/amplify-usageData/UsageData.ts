@@ -1,27 +1,28 @@
 /* eslint-disable class-methods-use-this */
-import { JSONUtilities } from 'amplify-cli-core';
 import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { prompter } from 'amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
-import { CommandLineInput } from 'amplify-cli-core';
+import {
+  JSONUtilities,
+  CommandLineInput,
+  FromStartupTimedCodePaths,
+  InputOptions,
+  IUsageData,
+  ManuallyTimedCodePath,
+  IUsageDataPayload,
+  ProjectSettings,
+  StartableTimedCodePath,
+  StoppableTimedCodePath,
+  TimedCodePath,
+} from 'amplify-cli-core';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';
 import { Timer } from './Timer';
 import { UsageDataPayload } from './UsageDataPayload';
-import {
-  FromStartupTimedCodePaths,
-  InputOptions,
-  IUsageData,
-  ManuallyTimedCodePath,
-  ProjectSettings,
-  StartableTimedCodePath,
-  StoppableTimedCodePath,
-  TimedCodePath,
-} from './UsageDataTypes';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
@@ -231,7 +232,7 @@ export class UsageData implements IUsageData {
   /**
    * get usage data partial payload to use in reporter
    */
-  getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
+  getUsageDataPayload(error: Error | null, state: string): IUsageDataPayload {
     return new UsageDataPayload(
       this.sessionUuid,
       this.installationUuid,

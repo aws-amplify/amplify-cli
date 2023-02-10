@@ -5,9 +5,19 @@ import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import { AmplifyEvent, AmplifyEventArgs, stateManager, executeHooks, HooksMeta, PluginInfo, constants } from 'amplify-cli-core';
+import {
+  FromStartupTimedCodePaths,
+  ManuallyTimedCodePath,
+  UntilExitTimedCodePath,
+  AmplifyEvent,
+  AmplifyEventArgs,
+  stateManager,
+  executeHooks,
+  HooksMeta,
+  PluginInfo,
+  constants,
+} from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command

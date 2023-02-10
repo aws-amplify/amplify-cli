@@ -1,9 +1,8 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable spellcheck/spell-checker */
-import { CommandLineInput, PluginPlatform } from 'amplify-cli-core';
+import { IUsageData, CommandLineInput, PluginPlatform } from 'amplify-cli-core';
 import { AmplifyToolkit } from './amplify-toolkit';
-import { IUsageData } from './amplify-usageData';
 
 /**
  * Amplify Context object to manage global state

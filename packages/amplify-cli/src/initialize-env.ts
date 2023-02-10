@@ -1,9 +1,8 @@
 import sequential from 'promise-sequential';
-import { stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault, spinner } from 'amplify-cli-core';
+import { ManuallyTimedCodePath, stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault, spinner } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function

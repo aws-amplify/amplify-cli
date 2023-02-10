@@ -1262,7 +1262,7 @@ export interface IUsageDataPayload {
     // (undocumented)
     input: $CommandLineInput | null;
     // (undocumented)
-    inputOptions: InputOptions;
+    inputOptions: Pick<$CommandLineInput, 'options'>;
     // (undocumented)
     installationUuid: string;
     // (undocumented)
@@ -1867,7 +1867,7 @@ export type SerializableError = {
     message: string;
     details?: string;
     code?: string;
-    trace?: Trace[];
+    trace?: StackTraceElement[];
 };
 
 // @public (undocumented)
@@ -1888,6 +1888,14 @@ export const skipHooksFilePath = "/opt/amazon";
 
 // @public (undocumented)
 export const spinner: Ora;
+
+// @public (undocumented)
+export type StackTraceElement = {
+    methodName: string;
+    file: string;
+    lineNumber: string;
+    columnNumber: string;
+};
 
 // @public (undocumented)
 export type StartableTimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath;
@@ -2156,7 +2164,6 @@ export function yellow(message: string): void;
 // Warnings were encountered during analysis:
 //
 // src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
-// src/types.ts:118:3 - (ae-forgotten-export) The symbol "Trace" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

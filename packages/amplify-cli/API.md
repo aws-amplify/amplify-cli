@@ -12,7 +12,14 @@ import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import { ICommandInput } from 'amplify-cli-shared-interfaces';
 import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
+import { InputOptions } from 'amplify-cli-core';
+import { IUsageData } from 'amplify-cli-core';
+import { IUsageDataPayload } from 'amplify-cli-core';
 import { PluginPlatform } from 'amplify-cli-core';
+import { ProjectSettings } from 'amplify-cli-core';
+import { StartableTimedCodePath } from 'amplify-cli-core';
+import { StoppableTimedCodePath } from 'amplify-cli-core';
+import { TimedCodePath } from 'amplify-cli-core';
 import { TypeOptionFlowData } from 'amplify-cli-shared-interfaces';
 import { UrlWithStringQuery } from 'url';
 
@@ -27,8 +34,6 @@ export const executeAmplifyCommand: (context: Context) => Promise<void>;
 // @public (undocumented)
 export const run: (startTime: number) => Promise<void>;
 
-// Warning: (ae-forgotten-export) The symbol "IUsageData" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export class UsageData implements IUsageData {
     // (undocumented)
@@ -42,7 +47,6 @@ export class UsageData implements IUsageData {
     }[], StackId: string): void;
     // (undocumented)
     codePathDurations: Map<TimedCodePath, number>;
-    // Warning: (ae-forgotten-export) The symbol "TimedCodePath" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "Timer" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -61,24 +65,18 @@ export class UsageData implements IUsageData {
     getFlowReport(): IFlowReport;
     // (undocumented)
     getSessionUuid(): string;
-    // Warning: (ae-forgotten-export) The symbol "UsageDataPayload" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    getUsageDataPayload(error: Error | null, state: string): UsageDataPayload;
+    getUsageDataPayload(error: Error | null, state: string): IUsageDataPayload;
     // (undocumented)
     init(installationUuid: string, version: string, input: CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
     // (undocumented)
     input: CommandLineInput;
-    // Warning: (ae-forgotten-export) The symbol "InputOptions" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     inputOptions: InputOptions;
     // (undocumented)
     installationUuid: string;
     // (undocumented)
     static get Instance(): IUsageData;
-    // Warning: (ae-forgotten-export) The symbol "ProjectSettings" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     projectSettings: ProjectSettings;
     // (undocumented)
@@ -93,12 +91,8 @@ export class UsageData implements IUsageData {
     sessionUuid: string;
     // (undocumented)
     setIsHeadless(isHeadless: boolean): void;
-    // Warning: (ae-forgotten-export) The symbol "StartableTimedCodePath" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     startCodePathTimer(codePath: StartableTimedCodePath): void;
-    // Warning: (ae-forgotten-export) The symbol "StoppableTimedCodePath" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     stopCodePathTimer(codePath: StoppableTimedCodePath): void;
     // (undocumented)

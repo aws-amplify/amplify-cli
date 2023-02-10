@@ -6,6 +6,7 @@ import {
   exitOnNextTick,
   IAmplifyResource,
   stateManager,
+  ManuallyTimedCodePath,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer, prompter } from 'amplify-prompts';
@@ -17,7 +18,6 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
-import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
 import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
