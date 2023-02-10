@@ -1,5 +1,5 @@
 {
-  "name": "amplify-python-function-runtime-provider",
+  "name": "@aws-amplify/amplify-python-function-runtime-provider",
   "version": "2.4.9",
   "description": "Provides functionality related to functions in Python on AWS",
   "repository": {
@@ -16,6 +16,9 @@
     "lambda",
     "python"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
