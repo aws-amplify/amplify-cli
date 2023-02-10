@@ -1,19 +1,18 @@
 /* eslint-disable no-param-reassign */
 import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
-import {
-  ensurePinpointApp, isPinpointAppDeployed,
-} from '../../pinpoint-helper';
+import { ensurePinpointApp, isPinpointAppDeployed } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';
 
 import { ChannelConfigDeploymentType } from '../../channel-types';
 import { writeData } from '../../multi-env-manager-utils';
+import { viewShowAllChannelsEnabledWarning, viewShowDeferredModeInstructions } from '../../display-utils';
 import {
-  viewShowAllChannelsEnabledWarning,
-  viewShowDeferredModeInstructions,
-} from '../../display-utils';
-import {
-  getChannelViewName, getChannelNameFromView, getAvailableChannels, isValidChannel, isChannelDeploymentDeferred,
+  getChannelViewName,
+  getChannelNameFromView,
+  getAvailableChannels,
+  isValidChannel,
+  isChannelDeploymentDeferred,
 } from '../../notifications-backend-cfg-channel-api';
 import { checkMigratedFromMobileHub, getDisabledChannelsFromAmplifyMeta } from '../../notifications-amplify-meta-api';
 import { checkAndCreatePinpointApp } from '../../multi-env-manager';
@@ -31,9 +30,9 @@ export const alias = 'enable';
 const viewQuestionAskNotificationChannelToBeEnabled = async (
   availableChannels: Array<string>,
   disabledChannels: Array<string>,
-  selectedChannel: string|undefined,
-): Promise<string|undefined> => {
-  let channelViewName = (selectedChannel) ? getChannelViewName(selectedChannel) : undefined;
+  selectedChannel: string | undefined,
+): Promise<string | undefined> => {
+  let channelViewName = selectedChannel ? getChannelViewName(selectedChannel) : undefined;
   const availableChannelViewNames = availableChannels.map(channelName => getChannelViewName(channelName));
   const disabledChannelViewNames = disabledChannels.map(channelName => getChannelViewName(channelName));
 
@@ -43,7 +42,7 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
     printer.info(`The ${channelViewName} channel has already been enabled.`);
     channelViewName = undefined;
   }
-  return (channelViewName) ? getChannelNameFromView(channelViewName) : undefined;
+  return channelViewName ? getChannelNameFromView(channelViewName) : undefined;
 };
 
 /**
