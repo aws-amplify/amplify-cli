@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.4-rdsv2preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.3...amplify-provider-awscloudformation@6.10.4-rdsv2preview.0) (2023-02-10)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [6.10.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.2...amplify-provider-awscloudformation@6.10.3) (2023-02-06)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

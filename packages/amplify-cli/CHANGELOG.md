@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.2-rdsv2preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.1...@aws-amplify/cli-internal@10.7.2-rdsv2preview.0) (2023-02-10)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 ## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.0...@aws-amplify/cli-internal@10.7.1) (2023-02-06)
 
 
