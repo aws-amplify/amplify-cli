@@ -365,7 +365,7 @@ const translateFuncParamsToResourceOpts = (params: FunctionParameters | Function
 const createBreadcrumbs = (params: FunctionParameters | FunctionTriggerParameters): FunctionBreadcrumbs => {
   if ('trigger' in params) {
     return {
-      pluginId: 'amplify-nodejs-function-runtime-provider',
+      pluginId: '@aws-amplify/amplify-nodejs-function-runtime-provider',
       functionRuntime: 'nodejs',
       useLegacyBuild: true,
       defaultEditorFile: 'src/index.js',

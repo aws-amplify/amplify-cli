@@ -11,7 +11,7 @@ export function readBreadcrumbs(category: string, resourceName: string) {
 
   if (!breadcrumbs) {
     breadcrumbs = {
-      pluginId: 'amplify-nodejs-function-runtime-provider',
+      pluginId: '@aws-amplify/amplify-nodejs-function-runtime-provider',
       functionRuntime: 'nodejs',
       defaultEditorFile: 'src/index.js',
       useLegacyBuild: true,

@@ -107,7 +107,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
   await Promise.all(
     layerConfiguration.runtimes.map(async runtime => {
       if (runtime.value === 'nodejs') {
-        runtime.runtimePluginId = 'amplify-nodejs-function-runtime-provider';
+        runtime.runtimePluginId = '@aws-amplify/amplify-nodejs-function-runtime-provider';
       } else if (runtime.value === 'python') {
         runtime.runtimePluginId = '@aws-amplify/amplify-python-function-runtime-provider';
       }
