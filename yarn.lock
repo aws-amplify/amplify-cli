@@ -48,10 +48,10 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^4.1.5":
-  version "4.1.5"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.5.tgz#1949adb842a095a993564212d69f06966500236b"
-  integrity sha512-6GfRtmX5UBEuSLJ54dDtxx6HbvdAcW2T10A0x7TtIjOnhQJb6GQkamkRA4joVC53wfOxxy82cL4GuuDtwiVIjw==
+"@aws-amplify/amplify-category-api@4.1.6-legacyrdsfix.0":
+  version "4.1.6-legacyrdsfix.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.6-legacyrdsfix.0.tgz#b497aa10f180a085dfa81be4dd71b7fcfea85458"
+  integrity sha512-UWH8R8jy054YuoudbtsByKgiJvqGwB+P1sgesEftI7r4jM9MFQWxM8MuqiVJeWeqRUfXb6JeNm8IXljy5vk78Q==
   dependencies:
     "@aws-amplify/graphql-auth-transformer" "1.2.4"
     "@aws-amplify/graphql-default-value-transformer" "0.7.6"
@@ -123,7 +123,7 @@
     graphql-http-transformer "5.2.46"
     graphql-key-transformer "3.2.46"
     graphql-predictions-transformer "3.2.46"
-    graphql-relational-schema-transformer "2.21.13"
+    graphql-relational-schema-transformer "2.21.14-legacyrdsfix.0"
     graphql-transformer-common "4.24.3"
     graphql-transformer-core "7.6.9"
     graphql-versioned-transformer "5.2.46"
@@ -15597,10 +15597,10 @@ graphql-predictions-transformer@3.2.46, graphql-predictions-transformer@^3.2.46:
     graphql-transformer-common "4.24.3"
     graphql-transformer-core "7.6.9"
 
-graphql-relational-schema-transformer@2.21.13:
-  version "2.21.13"
-  resolved "https://registry.npmjs.org/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.13.tgz#266aeeea307efd478b8127537bb13854e26db5a8"
-  integrity sha512-40IUDKwJhyq3/dZKw4ytQlBZQPJEDzenJTkp4lAzjCESOgXbaF7m0NsdibBGbarSfWhfdPlSFWVB0ywiM+kFmg==
+graphql-relational-schema-transformer@2.21.14-legacyrdsfix.0:
+  version "2.21.14-legacyrdsfix.0"
+  resolved "https://registry.npmjs.org/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.14-legacyrdsfix.0.tgz#aefa29e6b0b9822239f008f5c573ddaa99ecd511"
+  integrity sha512-tmSb9Ken4mb4hxp2R0R7y4xWzRKqZoLDma790fQGFO2CtFmmiZHtmrWXjq/tJhdO3L0SI+ge4FzoGjsdlSMsiA==
   dependencies:
     cloudform "^4.2.0"
     cloudform-types "^4.2.0"
