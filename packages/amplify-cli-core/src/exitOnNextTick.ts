@@ -1,4 +1,4 @@
-import { getAmplifyLogger } from 'amplify-cli-logger';
+import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
 /**
  * closes the logger and exits the process

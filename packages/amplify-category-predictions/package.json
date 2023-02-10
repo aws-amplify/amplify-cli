@@ -1,5 +1,5 @@
 {
-  "name": "amplify-category-predictions",
+  "name": "@aws-amplify/amplify-category-predictions",
   "version": "4.3.1",
   "description": "amplify-cli predictions plugin",
   "repository": {
@@ -14,6 +14,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc && yarn copy-templates",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
