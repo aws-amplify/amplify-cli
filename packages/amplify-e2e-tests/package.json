@@ -33,7 +33,7 @@
     "@aws-cdk/core": "~1.172.0",
     "amplify-dynamodb-simulator": "^2.5.3",
     "amplify-cli-core": "3.6.1",
-    "amplify-headless-interface": "1.17.0",
+    "@aws-amplify/amplify-headless-interface": "1.17.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1233.0",

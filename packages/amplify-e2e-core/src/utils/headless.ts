@@ -9,8 +9,8 @@ import {
   UpdateApiRequest,
   UpdateAuthRequest,
   UpdateStorageRequest,
-  UpdateGeoRequest
-} from 'amplify-headless-interface';
+  UpdateGeoRequest,
+} from '@aws-amplify/amplify-headless-interface';
 import execa, { ExecaChildProcess } from 'execa';
 import { getCLIPath } from '..';
 
@@ -73,11 +73,11 @@ export const updateHeadlessStorage = async (cwd: string, request: UpdateStorageR
 
 export const addHeadlessGeo = async (cwd: string, request: AddGeoRequest): Promise<ExecaChildProcess<string>> => {
   return await executeHeadlessCommand(cwd, 'geo', 'add', request);
-}
+};
 
 export const updateHeadlessGeo = async (cwd: string, request: UpdateGeoRequest): Promise<ExecaChildProcess<string>> => {
   return await executeHeadlessCommand(cwd, 'geo', 'update', request);
-}
+};
 
 const headlessRemoveResource = async (cwd: string, category: string, resourceName: string): Promise<ExecaChildProcess<string>> => {
   return await execa(getCLIPath(), ['remove', category, resourceName, '--yes'], { cwd });

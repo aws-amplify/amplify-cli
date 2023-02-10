@@ -1,5 +1,5 @@
 import { executeAmplifyHeadlessCommand } from '../../../src';
-import { ImportAuthRequest } from 'amplify-headless-interface';
+import { ImportAuthRequest } from '@aws-amplify/amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { printer } from 'amplify-prompts';
 import { stateManager } from 'amplify-cli-core';
@@ -137,9 +137,9 @@ describe('import auth headless', () => {
       input: {
         command: 'import',
       },
-      usageData : {
-        pushHeadlessFlow : jest.fn()
-      }
+      usageData: {
+        pushHeadlessFlow: jest.fn(),
+      },
     };
   });
 

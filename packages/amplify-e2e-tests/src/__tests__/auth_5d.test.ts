@@ -12,8 +12,9 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import {
   // eslint-disable-next-line spellcheck/spell-checker
-  CognitoUserPoolSigninMethod, CognitoUserProperty,
-} from 'amplify-headless-interface';
+  CognitoUserPoolSigninMethod,
+  CognitoUserProperty,
+} from '@aws-amplify/amplify-headless-interface';
 
 const PROJECT_NAME = 'authTest';
 const defaultsSettings = {

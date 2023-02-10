@@ -7,7 +7,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import { ImportAuthRequest } from 'amplify-headless-interface';
+import { ImportAuthRequest } from '@aws-amplify/amplify-headless-interface';
 import {
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
@@ -52,9 +52,7 @@ describe('headless auth', () => {
       deleteProjectDir(ogProjectRoot);
     });
 
-    test.each([
-      ['userpool with identitypool', true],
-    ])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
+    test.each([['userpool with identitypool', true]])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
       const ogProjectDetails = await setupOgProjectWithAuth(ogProjectRoot, ogProjectSettings, withIdentityPool);
 
       const importAuthRequest: ImportAuthRequest = {
