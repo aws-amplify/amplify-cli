@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
 
+jest.mock('amplify-prompts');
+const prompterMock = prompter as jest.Mocked<typeof prompter>;
 const printerMock = printer as jest.Mocked<typeof printer>;
 printerMock.success = jest.fn();
 
@@ -58,10 +60,9 @@ describe('getConfirmation', () => {
   it('should return proceed object', async () => {
     const contextStub: $TSAny = {
       input: {},
-      amplify: {
-        confirmPrompt: () => {},
-      },
+      amplify: {},
     };
+    prompterMock.yesOrNo = jest.fn();
     const result = await getConfirmation(contextStub);
     expect(result).toHaveProperty('proceed');
     expect(result).toHaveProperty('deleteS3');

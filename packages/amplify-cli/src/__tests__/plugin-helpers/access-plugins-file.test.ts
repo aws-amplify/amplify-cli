@@ -1,13 +1,8 @@
 import { readPluginsJsonFile, writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
-import { JSONUtilities } from 'amplify-cli-core';
-import { PluginPlatform } from '../../domain/plugin-platform';
+import { JSONUtilities, PluginPlatform } from 'amplify-cli-core';
 
-jest.mock('amplify-cli-core', () => ({
-  JSONUtilities: {
-    readJson: jest.fn(),
-    writeJson: jest.fn(),
-  },
-}));
+jest.spyOn(JSONUtilities, 'readJson');
+jest.spyOn(JSONUtilities, 'writeJson');
 
 describe('access-plugins-file', () => {
   describe('readPluginsJsonFile', () => {

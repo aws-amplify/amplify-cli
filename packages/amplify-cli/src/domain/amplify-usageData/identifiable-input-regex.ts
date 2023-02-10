@@ -1,5 +1,5 @@
 import { JSONUtilities } from 'amplify-cli-core';
-import { Input } from '../input';
+import { CommandLineInput } from 'amplify-cli-core';
 
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
 const quotes = '\\\\?"';
@@ -35,8 +35,12 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
   return s;
 }
 
-export default function redactInput(originalInput: Input, deleteArgAndOption: boolean, replacementString = '************'): Input {
-  const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
+export default function redactInput(
+  originalInput: CommandLineInput,
+  deleteArgAndOption: boolean,
+  replacementString = '************',
+): CommandLineInput {
+  const input: CommandLineInput = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
   const argv = input.argv;
   const length = argv.length;
   let redactString = false;

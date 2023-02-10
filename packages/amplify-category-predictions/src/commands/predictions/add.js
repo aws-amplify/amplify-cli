@@ -9,7 +9,6 @@ module.exports = {
   run: async context =>
     promptCategory()
       .then(result => {
-        result = result.predictionsCategory;
         options = {
           providerPlugin: result.provider,
         };

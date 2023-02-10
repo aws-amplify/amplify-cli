@@ -33,25 +33,17 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
-      .wait('Do you want to use the default authentication')
-      .sendCarriageReturn()
-      .wait('How do you want users to be able to sign in')
-      .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings?')
-      .sendCarriageReturn()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const addAuthWithDefault = async (cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> => {
+  return spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendCarriageReturn()
+    .wait('Do you want to configure advanced settings?')
+    .sendCarriageReturn()
+    .sendEof()
+    .runAsync();
+};
 
 export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -69,7 +61,7 @@ export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   });
 }
 
-export function removeAuthWithDefault(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function removeAuthWithDefault(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'auth'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')

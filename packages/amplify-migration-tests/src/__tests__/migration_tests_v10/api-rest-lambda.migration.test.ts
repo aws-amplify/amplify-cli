@@ -1,7 +1,7 @@
-import { addFunction, addRestApi, addSimpleDDB, amplifyPull, amplifyPushAuth, amplifyPushUpdate, amplifyPushWithoutCodegen, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, listAttachedRolePolicies, listRolePolicies, updateAuthAddAdminQueries, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
+import { addFunction, addRestApi, amplifyPull, amplifyPushAuth, amplifyPushUpdateLegacy, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, listAttachedRolePolicies, listRolePolicies, updateAuthAddAdminQueries, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
 import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
-import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects, pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from "../../migration-helpers/utils";
+import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from "../../migration-helpers/utils";
 
 describe('api lambda migration tests', () => {
     let projRoot: string;
@@ -48,12 +48,12 @@ describe('api lambda migration tests', () => {
         }
         await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
         await updateAuthAddAdminQueries(projRoot, undefined, {});
-        await amplifyPushUpdate(projRoot);
+        await amplifyPushUpdateLegacy(projRoot);
 
         // make sure current project meta is valid
         const meta = getProjectMeta(projRoot);
         validateRestApiMeta(projRoot, meta);
-        
+
         // pull down with vlatest
         const appId = getAppId(projRoot);
         expect(appId).toBeDefined();
@@ -61,7 +61,7 @@ describe('api lambda migration tests', () => {
         try {
             await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
-            
+
             expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
             await amplifyPushAuth(projRoot2, true);
             assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
@@ -75,7 +75,7 @@ describe('api lambda migration tests', () => {
             // validate role policies
             const cfnMeta = meta2.providers.awscloudformation;
             const { AuthRoleName, UnauthRoleName, Region } = cfnMeta;
-            
+
             // there should be no inline policies attached to the roles
             expect(await listRolePolicies(AuthRoleName, Region)).toEqual([]);
             expect(await listRolePolicies(UnauthRoleName, Region)).toEqual([]);

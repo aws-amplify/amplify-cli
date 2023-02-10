@@ -35,19 +35,19 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-api": "5.1.0-beta.4",
+    "@aws-amplify/graphql-auth-transformer": "2.1.0-beta.4",
     "@aws-amplify/amplify-category-auth": "3.0.0-beta.5",
     "@aws-amplify/amplify-category-custom": "3.0.0-beta.5",
     "@aws-amplify/amplify-category-storage": "5.0.0-beta.3",
     "@aws-amplify/amplify-environment-parameters": "1.3.4-beta.0",
     "@aws-amplify/amplify-util-uibuilder": "1.6.8-beta.0",
-    "@aws-amplify/graphql-auth-transformer": "2.1.0-beta.4",
     "@aws-cdk/cloudformation-diff": "~2.53.0",
     "amplify-app": "4.3.10-beta.0",
-    "amplify-category-analytics": "4.4.2-beta.0",
-    "amplify-category-function": "4.3.2-beta.0",
-    "amplify-category-geo": "3.0.0-beta.5",
-    "amplify-category-hosting": "3.4.10-beta.0",
-    "amplify-category-interactions": "4.3.2-beta.0",
+    "@aws-amplify/amplify-category-hosting": "3.4.10-beta.0",
+    "@aws-amplify/amplify-category-analytics": "4.4.2-beta.0",
+    "@aws-amplify/amplify-category-geo": "3.0.0-beta.5",
+    "@aws-amplify/amplify-category-function": "4.3.2-beta.0",
+    "@aws-amplify/amplify-category-interactions": "4.3.2-beta.0",
     "amplify-category-notifications": "2.23.2-beta.0",
     "amplify-category-predictions": "4.3.2-beta.0",
     "amplify-category-xr": "3.4.2-beta.0",
@@ -166,7 +166,7 @@
       "analytics": {
         "name": "analytics",
         "type": "category",
-        "packageName": "amplify-category-analytics"
+        "packageName": "@aws-amplify/amplify-category-analytics"
       },
       "api": {
         "name": "api",
@@ -188,18 +188,18 @@
       "function": {
         "name": "function",
         "type": "category",
-        "packageName": "amplify-category-function"
+        "packageName": "@aws-amplify/amplify-category-function"
       },
       "geo": {
         "name": "geo",
         "type": "category",
-        "packageName": "amplify-category-geo"
+        "packageName": "@aws-amplify/amplify-category-geo"
       },
       "hosting": [
         {
           "name": "hosting",
           "type": "category",
-          "packageName": "amplify-category-hosting"
+          "packageName": "@aws-amplify/amplify-category-hosting"
         },
         {
           "name": "hosting",
@@ -215,7 +215,7 @@
       "interactions": {
         "name": "interactions",
         "type": "category",
-        "packageName": "amplify-category-interactions"
+        "packageName": "@aws-amplify/amplify-category-interactions"
       },
       "notifications": {
         "name": "notifications",

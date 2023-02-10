@@ -10,6 +10,8 @@ import {
   stateManager,
   HooksMeta,
   AmplifyError,
+  constants,
+  CommandLineInput,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -20,9 +22,7 @@ import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-pa
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
-import { constants } from './domain/constants';
 import { Context } from './domain/context';
-import { Input } from './domain/input';
 import { executeCommand } from './execution-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { getPluginPlatform, scan } from './plugin-manager';
@@ -190,7 +190,7 @@ async function sigIntHandler(context: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: Input): Promise<void> => {
+export const execute = async (input: CommandLineInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 
@@ -239,4 +239,4 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
   }
 };
 
-// force major version bump for cdk v2
+// bump version to 10.8

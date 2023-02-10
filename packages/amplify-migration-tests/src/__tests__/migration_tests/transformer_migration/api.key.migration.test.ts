@@ -1,5 +1,5 @@
 import {
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushForce,
   apiGqlCompile,
   createNewProjectDir,
@@ -8,7 +8,12 @@ import {
   updateApiSchema,
   getProjectConfig,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfileV4_52_0, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import {
+  initJSProjectWithProfileV4_52_0,
+  versionCheck,
+  addApiWithoutSchemaOldDx,
+  allowedVersionsToMigrateFrom,
+} from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;
@@ -36,7 +41,7 @@ describe('amplify key force push', () => {
     // add api and push with installed cli
     await addApiWithoutSchemaOldDx(projRoot);
     updateApiSchema(projRoot, projectName, initialSchema);
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     // gql-compile and force push with codebase cli
     await apiGqlCompile(projRoot, true);
     await amplifyPushForce(projRoot, true);

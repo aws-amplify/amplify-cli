@@ -1,6 +1,6 @@
 import { $TSAny } from 'amplify-cli-core';
 import { start } from '../../func';
-import { getInvoker, getBuilder } from 'amplify-category-function';
+import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as inquirer from 'inquirer';
@@ -19,7 +19,7 @@ jest.mock('amplify-cli-core', () => ({
     getMeta: jest.fn().mockReturnValue({}),
   },
 }));
-jest.mock('amplify-category-function', () => ({
+jest.mock('@aws-amplify/amplify-category-function', () => ({
   getInvoker: jest.fn().mockResolvedValue(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 10))),
   getBuilder: jest.fn().mockReturnValue(() => {}),
   isMockable: jest.fn().mockReturnValue({ isMockable: true }),

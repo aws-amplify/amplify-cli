@@ -145,13 +145,17 @@ export class WebsocketSubscriptionServer {
 
       const onClose = async (error?: Error | string) => {
         socket.off('message', onMessage);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         socket.off('close', onClose);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         socket.off('error', onClose);
         await this.onSocketDisconnection(connectionContext, error);
       };
 
       socket.on('message', onMessage);
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       socket.on('close', onClose);
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       socket.on('error', onClose);
     } catch (e) {
       socket.close(1002); // protocol error

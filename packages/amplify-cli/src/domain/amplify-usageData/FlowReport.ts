@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, CommandLineInput } from 'amplify-cli-core';
 import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import {
@@ -11,7 +11,6 @@ import {
   TypeOptionFlowData,
 } from 'amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
-import { Input } from '../input';
 
 /**
  * Store the data and sequence of events of CLI walkthrough
@@ -26,7 +25,7 @@ export class CLIFlowReport implements IFlowData {
   subCmd: string | undefined;
   optionFlowData!: Array<TypeOptionFlowData>;
   logger!: IAmplifyLogger;
-  input!: Input;
+  input!: CommandLineInput;
   timestamp: string;
   projectEnvIdentifier?: string; // hash(ProjectName + Amplify AppId + EnvName)
   projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
@@ -64,7 +63,7 @@ export class CLIFlowReport implements IFlowData {
    * Set the CLI input args
    * @param input - first arguments provided in the CLI flow
    */
-  setInput(input: Input): void {
+  setInput(input: CommandLineInput): void {
     this.input = input;
     this.runtime = input.argv[0] as string;
     this.executable = input.argv[1] as string;

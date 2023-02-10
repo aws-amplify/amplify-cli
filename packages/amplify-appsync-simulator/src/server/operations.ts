@@ -27,7 +27,9 @@ export class OperationServer {
     this._app.post('/graphql', this.handleRequest);
     /* eslint-enable */
     this._app.get('/api-config', this.handleAPIInfoRequest);
+    /* eslint-disable @typescript-eslint/no-misused-promises */
     this._app.delete('/clear-data', this.handleClearDBData);
+    /* eslint-enable */
     this._app.use('/', express.static(STATIC_ROOT));
   }
 
