@@ -1,14 +1,12 @@
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-description */
-import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
   validateAddStorageRequest,
   validateImportStorageRequest,
   validateRemoveStorageRequest,
   validateUpdateStorageRequest,
-} from 'amplify-util-headless-input';
+} from '@aws-amplify/amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { categoryName } from './constants';
@@ -165,12 +163,14 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
 
   for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
-      const providerPlugin = 'providerPlugin' in resourceOpsMapping[resourceName]
-        ? resourceOpsMapping[resourceName].providerPlugin
-        : amplifyMeta[storageCategory][resourceName].providerPlugin;
-      const service = 'service' in resourceOpsMapping[resourceName]
-        ? resourceOpsMapping[resourceName].service
-        : amplifyMeta[storageCategory][resourceName].service;
+      const providerPlugin =
+        'providerPlugin' in resourceOpsMapping[resourceName]
+          ? resourceOpsMapping[resourceName].providerPlugin
+          : amplifyMeta[storageCategory][resourceName].providerPlugin;
+      const service =
+        'service' in resourceOpsMapping[resourceName]
+          ? resourceOpsMapping[resourceName].service
+          : amplifyMeta[storageCategory][resourceName].service;
 
       if (providerPlugin) {
         const providerController = await import(`./provider-utils/${providerPlugin}`);

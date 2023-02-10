@@ -1,5 +1,5 @@
 {
-  "name": "amplify-util-headless-input",
+  "name": "@aws-amplify/amplify-util-headless-input",
   "version": "1.9.9",
   "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
   "main": "lib/index.js",
@@ -13,6 +13,9 @@
     "amplify",
     "headless"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {

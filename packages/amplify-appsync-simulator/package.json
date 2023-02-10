@@ -34,7 +34,7 @@
     "@graphql-tools/utils": "^8.5.1",
     "amplify-cli-core": "3.6.1",
     "amplify-prompts": "2.6.3",
-    "amplify-velocity-template": "1.4.8",
+    "@aws-amplify/amplify-velocity-template": "1.4.8",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
