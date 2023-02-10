@@ -203,14 +203,14 @@ const splitResourceKey = (key: string): readonly [string, string] => {
  * Interface for environment parameter managers
  */
 export type IEnvironmentParameterManager = {
+  cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
+  getMissingParameters: () => Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
+  getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
+  hasResourceParamManager: (category: string, resource: string) => boolean;
   init: () => Promise<void>;
   removeResourceParamManager: (category: string, resource: string) => void;
-  hasResourceParamManager: (category: string, resource: string) => boolean;
-  getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-  getMissingParameters: () => Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
   verifyExpectedEnvParameters: () => Promise<void>;
 }
 

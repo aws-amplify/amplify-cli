@@ -17,18 +17,18 @@ export const getEnvParamManager: (envName?: string) => IEnvironmentParameterMana
 
 // @public (undocumented)
 export type IEnvironmentParameterManager = {
-    downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
-    init: () => Promise<void>;
-    removeResourceParamManager: (category: string, resource: string) => void;
-    hasResourceParamManager: (category: string, resource: string) => boolean;
-    getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
     cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
-    save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+    downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
     getMissingParameters: () => Promise<{
         categoryName: string;
         resourceName: string;
         parameterName: string;
     }[]>;
+    getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
+    hasResourceParamManager: (category: string, resource: string) => boolean;
+    init: () => Promise<void>;
+    removeResourceParamManager: (category: string, resource: string) => void;
+    save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
     verifyExpectedEnvParameters: () => Promise<void>;
 };
 

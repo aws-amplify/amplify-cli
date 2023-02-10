@@ -7,12 +7,14 @@ describe('clone env params test', () => {
   const envParamManager = {
     instance: {
       cloneEnvParamsToNewEnvParamManager: mockEnvParamManagerCloneFn,
+      downloadParameters: jest.fn(),
+      getMissingParameters: jest.fn(),
+      getResourceParamManager: jest.fn(),
+      hasResourceParamManager: jest.fn(),
       init: jest.fn(),
       removeResourceParamManager: jest.fn(),
-      hasResourceParamManager: jest.fn(),
-      getResourceParamManagerResourceKeys: jest.fn(),
-      getResourceParamManager: jest.fn(),
       save: jest.fn(),
+      verifyExpectedEnvParameters: jest.fn(),
     } as IEnvironmentParameterManager,
   };
 
