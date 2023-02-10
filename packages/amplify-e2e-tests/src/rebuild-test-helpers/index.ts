@@ -1,4 +1,4 @@
-import { putItemInTable, scanTable } from "@aws-amplify/amplify-e2e-core";
+import { putItemInTable, scanTable } from '@aws-amplify/amplify-e2e-core';
 
 export const testTableBeforeRebuildApi = async (apiId: string, region: string, modelName: string) => {
   const tableName = `${modelName}-${apiId}-integtest`;
