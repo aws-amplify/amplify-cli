@@ -1,5 +1,5 @@
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
-import { Compile, parse } from 'amplify-velocity-template';
+import { Compile, parse } from '@aws-amplify/amplify-velocity-template';
 import { TemplateSentError, create as createUtil, ValidateError } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
 
