@@ -129,8 +129,12 @@ export class APITest {
       );
     }
 
-    await this.appSyncSimulator.stop();
-    this.resolverOverrideManager.stop();
+    if (this.appSyncSimulator) {
+      await this.appSyncSimulator.stop();
+    }
+    if (this.resolverOverrideManager) {
+      this.resolverOverrideManager.stop();
+    }
   }
 
   private async runTransformer(context, parameters = {}) {
