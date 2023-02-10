@@ -15,7 +15,7 @@ import {
   CognitoUserPoolModification,
   CognitoIdentityPoolModification,
   CognitoAutoVerifiedAttributesConfiguration,
-} from 'amplify-headless-interface';
+} from '@aws-amplify/amplify-headless-interface';
 import { isEmpty, merge } from 'lodash';
 import { pascalCase } from 'change-case';
 import { FeatureFlags } from 'amplify-cli-core';
@@ -43,35 +43,34 @@ export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestion
  * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguration output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
-export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
-  (projectType) =>
-  ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
-    const userPoolConfig = cognitoConfig.userPoolConfiguration;
-    const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
-    const requiredAttributes = userPoolConfig.requiredSignupAttributes.map((att) => att.toLowerCase());
-    return {
-      serviceName: cognitoConfig.serviceName,
-      resourceName,
+export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({
+  serviceConfiguration: cognitoConfig,
+  resourceName,
+}): ServiceQuestionHeadlessResult => {
+  const userPoolConfig = cognitoConfig.userPoolConfiguration;
+  const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
+  const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
+  return {
+    serviceName: cognitoConfig.serviceName,
+    resourceName,
+    requiredAttributes,
+    ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
+    ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
+  };
+};
+
+export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({
+  serviceModification,
+}: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
+  const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
+  return {
+    serviceName: serviceModification.serviceName,
+    requiredAttributes,
+    ...mutableAttributeAdaptor(
+      projectType,
       requiredAttributes,
       ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
       ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
-    };
-  };
-
-export const getUpdateAuthRequestAdaptor =
-  (projectType: string, requiredAttributes: string[]) =>
-  ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
-    const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
-    return {
-      serviceName: serviceModification.serviceName,
-      requiredAttributes,
-      ...mutableAttributeAdaptor(
-        projectType,
-        requiredAttributes,
-        serviceModification.userPoolModification,
-        serviceModification.includeIdentityPool,
-        idPoolModification,
-      ),
     };
   };
 

@@ -104,7 +104,7 @@ test('update dependent functions', async () => {
         },
       },
     });
-  await updateDependentFunctionsCfn((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });
 
@@ -142,6 +142,6 @@ test('update dependent functions', async () => {
         },
       ],
     });
-  await updateDependentFunctionsCfn((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });

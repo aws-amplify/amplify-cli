@@ -9,11 +9,10 @@ import {
 } from 'amplify-cli-core';
 import {
   AddStorageRequest,
-  CrudOperation,
   ImportStorageRequest,
   RemoveStorageRequest,
   UpdateStorageRequest,
-} from 'amplify-headless-interface';
+} from '@aws-amplify/amplify-headless-interface';
 import { printer } from 'amplify-prompts';
 import { v4 as uuid } from 'uuid';
 import { S3UserInputTriggerFunctionParams } from '../..';
@@ -194,7 +193,7 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
 
   try {
     await context.amplify.removeResource(context, categoryName, resourceName, { headless: true });
-  } catch (error: $TSAny) {
+  } catch (error) {
     printer.error(`An error occurred when headlessly removing the storage resource "${resourceName}": ${error.message || error}`);
 
     await context.usageData.emitError(error);

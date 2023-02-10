@@ -315,9 +315,7 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
     });
   }
 
-  const envVarStringList = Array.from(envVars)
-    .sort()
-    .join('\n\t');
+  const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
   if (envVarStringList) {
     printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);

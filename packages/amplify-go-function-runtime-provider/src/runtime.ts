@@ -173,7 +173,7 @@ const winZip = async (src: string, dest: string, print: any) => {
     } else {
       await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
     }
-  } catch (error) {
+  } catch (error: unknown) {
     throw new Error(`Error installing build-lambda-zip: ${error}`);
   }
   const goPath = process.env.GOPATH;
