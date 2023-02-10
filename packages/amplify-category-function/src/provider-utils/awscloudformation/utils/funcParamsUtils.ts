@@ -1,4 +1,4 @@
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import _ from 'lodash';
 
 // Merges other with existing in a non-destructive way.

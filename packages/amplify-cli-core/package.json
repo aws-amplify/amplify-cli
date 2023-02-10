@@ -61,7 +61,7 @@
     "@types/node": "^12.12.6",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
-    "amplify-function-plugin-interface": "1.9.6",
+    "@aws-amplify/amplify-function-plugin-interface": "1.9.6",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",

@@ -1,4 +1,4 @@
-import { FunctionTemplateParameters, TemplateContributionRequest } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters, TemplateContributionRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { templateRoot } from '../utils/constants';
 import path from 'path';
 

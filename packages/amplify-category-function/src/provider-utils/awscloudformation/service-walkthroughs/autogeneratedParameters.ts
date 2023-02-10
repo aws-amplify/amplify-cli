@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { $TSContext } from 'amplify-cli-core';
 
 /**

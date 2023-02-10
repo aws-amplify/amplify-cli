@@ -1,5 +1,5 @@
 import { AmplifyError, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
-import { LambdaLayer } from 'amplify-function-plugin-interface';
+import { LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { lambdaPackageLimitInMB } from './constants';

@@ -1,4 +1,4 @@
-import { FunctionDependency } from 'amplify-function-plugin-interface';
+import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface';
 import { consolidateDependsOnForLambda } from '../../../../provider-utils/awscloudformation/utils/consolidateDependsOn';
 import { lambdaLayerSetting, resourceAccessSetting } from '../../../../provider-utils/awscloudformation/utils/constants';
 

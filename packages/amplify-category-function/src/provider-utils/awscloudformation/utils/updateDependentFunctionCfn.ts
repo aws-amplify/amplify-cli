@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
 import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
 import { loadFunctionParameters } from './loadFunctionParameters';

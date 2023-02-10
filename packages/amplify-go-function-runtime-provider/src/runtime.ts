@@ -5,7 +5,7 @@ import {
   BuildRequest,
   BuildResult,
   BuildType,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
@@ -173,7 +173,7 @@ const winZip = async (src: string, dest: string, print: any) => {
     } else {
       await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
     }
-  } catch (error: unknown) {
+  } catch (error) {
     throw new Error(`Error installing build-lambda-zip: ${error}`);
   }
   const goPath = process.env.GOPATH;

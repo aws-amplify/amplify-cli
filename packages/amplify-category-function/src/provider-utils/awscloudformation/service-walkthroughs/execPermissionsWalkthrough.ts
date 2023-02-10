@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionDependency, FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { printer } from 'amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
@@ -315,7 +315,9 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
     });
   }
 
-  const envVarStringList = Array.from(envVars).sort().join('\n\t');
+  const envVarStringList = Array.from(envVars)
+    .sort()
+    .join('\n\t');
 
   if (envVarStringList) {
     printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);

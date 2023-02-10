@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
+import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';

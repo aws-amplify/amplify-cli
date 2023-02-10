@@ -1,4 +1,4 @@
-import { ZipEntry } from 'amplify-function-plugin-interface';
+import { ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
 
