@@ -1,4 +1,4 @@
-import { exec, execSync, spawn } from 'child_process';
+import { exec, execSync } from 'child_process';
 import yargs from 'yargs';
 import * as fs from 'fs';
 import * as path from 'path';
