@@ -19,7 +19,6 @@ import {
 import {
   addEnvironmentCarryOverEnvVars,
   checkoutEnvironment,
-  importEnvironment,
   removeEnvironment,
 } from '../environment/env';
 
