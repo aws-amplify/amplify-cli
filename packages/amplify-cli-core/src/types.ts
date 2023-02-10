@@ -104,7 +104,7 @@ export interface IUsageDataPayload {
   pushNormalizationFactor: number;
 }
 
-type Trace = {
+export type StackTraceElement = {
   methodName: string;
   file: string;
   lineNumber: string;
@@ -115,7 +115,7 @@ export type SerializableError = {
   message: string;
   details?: string;
   code?: string;
-  trace?: Trace[];
+  trace?: StackTraceElement[];
 };
 export type InputOptions = Record<string, string | boolean>;
 export interface IFlowReport {
@@ -588,7 +588,9 @@ interface AmplifyToolkit {
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
   readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-  getImportedAuthProperties: (context: $TSContext) => {
+  getImportedAuthProperties: (
+    context: $TSContext,
+  ) => {
     imported: boolean;
     userPoolId?: string;
     authRoleArn?: string;

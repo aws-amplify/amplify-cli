@@ -32,7 +32,7 @@ export interface IUsageDataPayload {
   installationUuid: string;
   amplifyCliVersion: string;
   input: CommandLineInput | null;
-  inputOptions: InputOptions;
+  inputOptions: Pick<CommandLineInput, 'options'>;
   timestamp: string;
   error: SerializableError;
   downstreamException: SerializableError;
