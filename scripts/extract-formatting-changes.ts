@@ -74,7 +74,7 @@ const createBranch = (baseBranch: string, newBranchName: string) => {
 };
 
 const checkoutBranch = (branch: string) => {
-  execSync(`git checkout ${branch}`);
+  execSync(`git switch ${branch}`);
 };
 
 const assertCleanWorkingTree = () => {
