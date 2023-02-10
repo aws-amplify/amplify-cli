@@ -54,33 +54,33 @@ export type TeamProviderInfo = {
   [envName: string]: Record<string, unknown>;
 };
 export type LocalAwsInfo = {
-  NONE: unknown;
+  NONE: Record<string, unknown>;
 };
-export type ProjectConfig<T extends string = ''> = {
-  frontend: T;
-  version: string;
-  providers: string[];
-  projectPath?: string;
-  defaultEditor?: string;
-  frontendHandler?: unknown;
-} & Record<T, string>;
-export interface LocalEnvInfo {
-  projectPath: string;
-  defaultEditor: string;
-  envName: string;
-}
-export interface IFlowData {
+
+export type ProjectConfig<T extends string = ''> = Pick<
+  ProjectSettings,
+  'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'
+> &
+  Record<T, string>;
+export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
+export interface FlowRecorder {
   setIsHeadless: (headless: boolean) => void;
   pushHeadlessFlow: (headlessFlowDataString: string, input: $CommandLineInput) => void;
   pushInteractiveFlow: (prompt: string, input: unknown) => void;
   getFlowReport: () => IFlowReport | Record<string, never>;
   assignProjectIdentifier: (envName?: string) => string | undefined;
 }
-export interface IUsageData extends IUsageMetricsData, IFlowData {}
+export interface IUsageData extends IUsageMetricsData, FlowRecorder {}
 export type ProjectSettings = {
   frontend?: string;
   editor?: string;
+  envName?: string;
   framework?: string;
+  version?: string;
+  providers?: string[];
+  projectPath?: string;
+  defaultEditor?: string;
+  frontendHandler?: unknown;
 };
 export interface IUsageDataPayload {
   sessionUuid: string;

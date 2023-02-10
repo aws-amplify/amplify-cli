@@ -1,3 +1,4 @@
+import { $CommandLineInput } from 'amplify-cli-core';
 import { Context } from '../domain/context';
 
 describe('test SIGINT with execute', () => {
@@ -69,7 +70,7 @@ describe('test SIGINT with execute', () => {
     });
 
     const mockContext: Context = jest.createMockFromModule('../domain/context');
-    mockContext.input = input;
+    mockContext.input = (input as unknown) as $CommandLineInput;
     mockContext.print = {
       warning: jest.fn(),
     };
