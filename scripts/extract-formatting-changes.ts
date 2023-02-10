@@ -6,25 +6,16 @@ import * as readline from 'readline';
 
 const getArgs = (latestRevision: string) => {
   return yargs(process.argv.slice(2))
-    .usage('Usage: $0 -1 [rev1] -2 [rev2] -b [branch]')
-    .option('base', {
-      alias: 's',
-      type: 'string',
-      default: 'dev',
-      describe: 'The base revision to compare (normally dev)',
-    })
-    .option('head', {
-      alias: 'h',
-      type: 'string',
-      default: latestRevision,
-      describe: 'The second revision to compare. Defaults to the latest commit.',
-    })
-    .option('b', {
-      alias: 'branch',
-      type: 'string',
-      requiresArg: true,
-      describe: 'The new branch to create',
-    }).argv;
+    .usage('Usage: $0 -s [rev1] -h [rev2] -b [branch]')
+    .nargs('s', 1)
+    .describe('s', 'Base revision')
+    .default('s', 'dev')
+    .nargs('h', 1)
+    .describe('h', 'Head revision')
+    .default('h', latestRevision)
+    .nargs('b', 1)
+    .default('b', '')
+    .describe('b', 'Branch name').argv;
 };
 
 const getHashForRevision = (revision: string) => {
@@ -103,7 +94,7 @@ const main = async () => {
   try {
     const shortHashLatestRevision = getHashForRevision('HEAD').slice(0, 7);
     const args = getArgs(shortHashLatestRevision);
-    const { base, head } = args;
+    const { s: base, h: head, b: branch } = args;
     if (!base || !head) {
       throw new Error('Missing revisions to compare');
     }
@@ -114,8 +105,9 @@ const main = async () => {
       console.info('No files changed. Exiting...');
       process.exit(0);
     }
-    const defaultBranchName = args.b || `formatting-changes-${base}-${head}`;
-    if (await confirmBranchCreation(defaultBranchName)) {
+    const defaultBranchName = branch || `formatting-changes-${base}-${head}`;
+    if (branch || (await confirmBranchCreation(defaultBranchName))) {
+      console.log(args);
       const baseRevision = getHashForRevision(base);
       createBranch(baseRevision, defaultBranchName);
       checkoutBranch(defaultBranchName);
