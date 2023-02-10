@@ -24,7 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "3.6.1",
     "amplify-function-plugin-interface": "1.9.6",
-    "graphql-transformer-core": "^7.6.9"
+    "graphql-transformer-core": "^7.7.0-rdsv2preview.0"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
