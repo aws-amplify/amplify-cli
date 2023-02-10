@@ -27,7 +27,7 @@ export function showACM(sdl: string, nodeName: string) {
     const parentAuthDirective = type.directives?.find(dir => dir.name.value === 'auth');
     if (parentAuthDirective) {
       const authRules: AuthRule[] = getAuthDirectiveRules(
-        new DirectiveWrapper(parentAuthDirective),
+        new DirectiveWrapper(parentAuthDirective) as any,
         {
           isField: false,
           deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
@@ -41,7 +41,7 @@ export function showACM(sdl: string, nodeName: string) {
         if (parentAuthDirective) {
           acm.resetAccessForResource(fieldNode.name.value);
         }
-        const authRules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(fieldAuthDir));
+        const authRules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(fieldAuthDir) as any);
         convertModelRulesToRoles(acm, authRules, fieldNode.name.value);
       }
     }
