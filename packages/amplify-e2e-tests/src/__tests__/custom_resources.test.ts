@@ -58,7 +58,7 @@ describe('adding custom resources test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
-    await buildCustomResources(projRoot, {});
+    await buildCustomResources(projRoot);
 
     await amplifyPushAuth(projRoot);
 

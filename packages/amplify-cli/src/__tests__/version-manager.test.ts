@@ -1,9 +1,9 @@
 import url from 'url';
 import { prodUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-import { UsageData } from '../domain/amplify-usageData'
+import { UsageData } from '../domain/amplify-usageData';
 import { getLatestApiVersion, getLatestPayloadVersion } from '../domain/amplify-usageData/VersionManager';
-import { Input } from '../domain/input';
+import { CommandLineInput } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
 
 describe('test version manager', () => {
@@ -19,14 +19,14 @@ describe('test version manager', () => {
       '',
       '',
       '',
-      new Input([]),
+      new CommandLineInput([]),
       new Error(''),
       '',
       '12311232',
       { frontend: 'javascript', editor: 'vscode', framework: 'react' },
       {},
       {},
-      usageData.getFlowReport() as IFlowReport
+      usageData.getFlowReport() as IFlowReport,
     );
     expect(payload.payloadVersion).toEqual(getLatestPayloadVersion());
   });

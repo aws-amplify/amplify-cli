@@ -1,6 +1,6 @@
 import {
   addFeatureFlag,
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -8,7 +8,12 @@ import {
   updateApiSchema,
   getProjectConfig,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfileV4_52_0, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import {
+  initJSProjectWithProfileV4_52_0,
+  versionCheck,
+  addApiWithoutSchemaOldDx,
+  allowedVersionsToMigrateFrom,
+} from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;
@@ -36,7 +41,7 @@ describe('amplify key force push', () => {
     const { projectName } = getProjectConfig(projRoot);
     await addApiWithoutSchemaOldDx(projRoot);
     updateApiSchema(projRoot, projectName, initialSchema);
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     // add feature flag
     addFeatureFlag(projRoot, 'graphqltransformer', 'secondaryKeyAsGSI', true);
     // forceUpdateSchema

@@ -1,7 +1,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-unused-vars */
 const triggerFlow = require('../../lib/extensions/amplify-helpers/trigger-flow');
-const func = require('amplify-category-function');
+const func = require('@aws-amplify/amplify-category-function');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
@@ -23,7 +23,7 @@ const triggerPackagePath = '';
 const triggerDir = '';
 const triggerTemplate = '';
 
-describe('TriggerFlow:  ', () => {
+describe('TriggerFlow:', () => {
   beforeEach(() => {
     context = {
       runtime: {
@@ -646,12 +646,6 @@ describe('TriggerFlow:  ', () => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(metadataSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('...should call readdirSync once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
-      await triggerFlow.cleanFunctions(key, values, category, context, path);
-      expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call readdirSync once', async () => {

@@ -23,7 +23,7 @@ export function addCustomResolver(projectDir: string, apiName: string, resolverN
   fs.writeFileSync(resolverPath, resolver);
 }
 
-export function writeToCustomResourcesJson(projectDir: string, apiName: string, json?: Object) {
+export function writeToCustomResourcesJson(projectDir: string, apiName: string, json?: Record<string, unknown>) {
   const jsonPath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'stacks', 'CustomResources.json');
   const customResourceJson = JSON.parse(fs.readFileSync(jsonPath).toString());
   const mergedJson = { ...customResourceJson, ...json };

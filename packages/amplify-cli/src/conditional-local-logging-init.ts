@@ -1,8 +1,8 @@
-import { Input } from './domain/input';
+import { CommandLineInput } from 'amplify-cli-core';
 import { JSONUtilities } from 'amplify-cli-core';
 import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 
-export function logInput(input: Input): void {
+export function logInput(input: CommandLineInput): void {
   getAmplifyLogger().logInfo({
     message: `amplify ${input.command ? input.command : ''} \
 ${input.plugin ? input.plugin : ''} \

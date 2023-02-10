@@ -1,5 +1,6 @@
 export { addCDKResourceDependency as addResourceDependency, AmplifyResourceProps } from '@aws-amplify/amplify-category-custom';
 export { getProjectInfo } from './helpers/project-info';
+export { AmplifyProjectInfo } from './types';
 export { AmplifyApiGraphQlResourceStackTemplate } from './types/api/amplify-api-resource-stack-types';
 export { AmplifyApiRestResourceStackTemplate, ApigwPathPolicy } from './types/api/types';
 export { AmplifyAuthCognitoStackTemplate, AmplifyUserPoolGroupStackTemplate } from './types/auth/types';

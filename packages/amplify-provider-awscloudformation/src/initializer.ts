@@ -23,7 +23,7 @@ import sequential from 'promise-sequential';
 import { getDefaultTemplateDescription } from './template-description-utils';
 import { rootStackFileName } from './push-resources';
 import { transformRootStack } from './override-manager';
-import amplifyServiceManager from './amplify-service-manager';
+import { init } from './amplify-service-manager';
 import * as amplifyServiceMigrate from './amplify-service-migrate';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
@@ -37,11 +37,11 @@ import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 const logger = fileLogger('initializer');
 
 type ParamType = {
-  StackName: string,
-  Capabilities: string[],
-  TemplateBody: string,
-  Parameters: {ParameterKey: string, ParameterValue: string}[],
-  Tags: Tag[],
+  StackName: string;
+  Capabilities: string[];
+  TemplateBody: string;
+  Parameters: { ParameterKey: string; ParameterValue: string }[];
+  Tags: Tag[];
 };
 
 /**
@@ -68,7 +68,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       envName,
       stackName,
     };
-    const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
+    const { amplifyAppId, verifiedStackName, deploymentBucketName } = await init(amplifyServiceParams);
 
     // start root stack builder and deploy
 
@@ -115,11 +115,15 @@ export const run = async (context: $TSContext): Promise<void> => {
         }
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
 
@@ -164,10 +168,10 @@ export const run = async (context: $TSContext): Promise<void> => {
     // the `#current-cloud-backend` and the `backend` directories, and the team-provider-info file to exist.
     // It allows the local project's env to be added to an existing Amplify Console project, as specified
     // by the appId, without unnecessarily creating another Amplify Console project by the post push migration.
-    !context.exeInfo.isNewProject
-    && context.exeInfo.inputParams
-    && context.exeInfo.inputParams.amplify
-    && context.exeInfo.inputParams.amplify.appId
+    !context.exeInfo.isNewProject &&
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams.amplify &&
+    context.exeInfo.inputParams.amplify.appId
   ) {
     await amplifyServiceMigrate.run(context);
   } else {
@@ -176,12 +180,12 @@ export const run = async (context: $TSContext): Promise<void> => {
 };
 
 type EventMap = {
-  rootStackName: string,
-  rootResources: {key: string}[],
-  categories: string[],
-  envName: string,
-  projectName: string
-}
+  rootStackName: string;
+  rootResources: { key: string }[];
+  categories: string[];
+  envName: string;
+  projectName: string;
+};
 
 function createInitEventMap(params: ParamType, envName: string, projectName: string): EventMap {
   return {

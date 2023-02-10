@@ -55,7 +55,7 @@ import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
-import amplifyServiceManager from './amplify-service-manager';
+import { storeArtifactsForAmplifyService, postPushCheck } from './amplify-service-manager';
 import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
@@ -193,8 +193,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     });
 
     await prePushLambdaLayerPrompt(context, resources);
-    await context.amplify.invokePluginMethod(context, AmplifyCategories.FUNCTION,
-      AmplifySupportedService.LAMBDA, 'ensureLambdaExecutionRoleOutputs', []);
+    await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.FUNCTION,
+      AmplifySupportedService.LAMBDA,
+      'ensureLambdaExecutionRoleOutputs',
+      [],
+    );
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
 
@@ -340,7 +345,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     await postPushGraphQLCodegen(context);
-    await amplifyServiceManager.postPushCheck(context);
+    await postPushCheck(context);
 
     if (resources.concat(resourcesToBeDeleted).length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
@@ -452,7 +457,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // Store current cloud backend in S3 deployment bucket
     await storeCurrentCloudBackend(context);
-    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
+    await storeArtifactsForAmplifyService(context);
 
     // check for auth resources and remove deployment secret for push
     resources
@@ -629,9 +634,7 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
 
 const storeS3BucketInfo = (category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) => {
   const amplifyMeta = stateManager.getMeta();
-  getEnvParamManager(envName)
-    .getResourceParamManager(category, resourceName)
-    .setParams({ deploymentBucketName, s3Key });
+  getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
@@ -1116,14 +1119,8 @@ export const formNestedStack = async (
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
+          context.amplify.getImportedAuthProperties(context);
 
         if (category !== AmplifyCategories.AUTH && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {

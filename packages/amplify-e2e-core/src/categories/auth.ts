@@ -33,25 +33,17 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
-      .wait('Do you want to use the default authentication')
-      .sendCarriageReturn()
-      .wait('How do you want users to be able to sign in')
-      .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings?')
-      .sendCarriageReturn()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const addAuthWithDefault = async (cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> => {
+  return spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendCarriageReturn()
+    .wait('Do you want to configure advanced settings?')
+    .sendCarriageReturn()
+    .sendEof()
+    .runAsync();
+};
 
 export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -753,7 +745,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
       .wait('Enter your Key ID for your OAuth flow:')
       .send(APPLE_KEY_ID)
       .sendCarriageReturn()
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .send(APPLE_PRIVATE_KEY)
       .sendCarriageReturn()
       .sendEof()
@@ -1438,7 +1430,7 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .sendLine(settings.appleAppTeamId)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(settings.appleAppKeyID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
@@ -1562,7 +1554,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendLine(settings.appleAppTeamId)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(settings.appleAppKeyID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()

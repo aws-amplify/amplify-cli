@@ -7,20 +7,17 @@
 /// <reference types="node" />
 
 import { $TSAny } from 'amplify-cli-core';
+import { CommandLineInput } from 'amplify-cli-core';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import { ICommandInput } from 'amplify-cli-shared-interfaces';
 import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
-import { IPluginCollection } from 'amplify-cli-core';
-import { IPluginInfo } from 'amplify-cli-core';
-import { IPluginPlatform } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
 import { TypeOptionFlowData } from 'amplify-cli-shared-interfaces';
 import { UrlWithStringQuery } from 'url';
 
-// Warning: (ae-forgotten-export) The symbol "Input" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export const execute: (input: Input) => Promise<void>;
+export const execute: (input: CommandLineInput) => Promise<void>;
 
 // Warning: (ae-forgotten-export) The symbol "Context" needs to be exported by the entry point index.d.ts
 //
@@ -69,9 +66,9 @@ export class UsageData implements IUsageData {
     // (undocumented)
     getUsageDataPayload(error: Error | null, state: string): UsageDataPayload;
     // (undocumented)
-    init(installationUuid: string, version: string, input: Input, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
+    init(installationUuid: string, version: string, input: CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
     // (undocumented)
-    input: Input;
+    input: CommandLineInput;
     // Warning: (ae-forgotten-export) The symbol "InputOptions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

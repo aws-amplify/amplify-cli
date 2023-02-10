@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Context } from '../../domain/context';
-import { constants } from '../../domain/constants';
+import { constants } from 'amplify-cli-core';
 import { createNewPlugin } from '../../plugin-manager';
 import { addUserPluginPackage } from '../../plugin-manager';
 import { AddPluginError } from '../../domain/add-plugin-result';

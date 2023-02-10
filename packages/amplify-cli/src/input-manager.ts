@@ -1,15 +1,11 @@
 // normalize command line arguments, allow verb / noun place switch
-import { Input } from './domain/input';
-import { constants } from './domain/constants';
-import { PluginPlatform } from './domain/plugin-platform';
+import { CommandLineInput, constants, PluginPlatform, pathManager, stateManager } from 'amplify-cli-core';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
-import { pathManager, stateManager } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
-import { runHelp, commandsInfo } from 'amplify-cli-core';
 
-export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
-  const result = new Input(process.argv);
+export function getCommandLineInput(pluginPlatform: PluginPlatform): CommandLineInput {
+  const result = new CommandLineInput(process.argv);
   /* tslint:disable */
   if (result.argv && result.argv.length > 2) {
     let index = 2;
@@ -64,7 +60,7 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   return result;
 }
 
-function preserveHelpInformation(input: Input): Input {
+function preserveHelpInformation(input: CommandLineInput): CommandLineInput {
   const subCommands = input.subCommands ? input.subCommands : [];
   // preserve non-help command in subcommands
   if (input.command && input.command.toLowerCase() !== constants.HELP) {
@@ -98,7 +94,7 @@ function preserveHelpInformation(input: Input): Input {
   return input;
 }
 
-function normalizeInput(input: Input): Input {
+function normalizeInput(input: CommandLineInput): CommandLineInput {
   // -v --version => version command
   // -h --help => help command
   // -y --yes => yes option
@@ -129,7 +125,7 @@ function normalizeInput(input: Input): Input {
   return input;
 }
 
-export function verifyInput(pluginPlatform: PluginPlatform, input: Input): InputVerificationResult {
+export function verifyInput(pluginPlatform: PluginPlatform, input: CommandLineInput): InputVerificationResult {
   const result = new InputVerificationResult();
 
   // Normalize status command options
@@ -254,7 +250,7 @@ const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> =>
   return newObj;
 };
 
-const normalizeStatusCommandOptions = (input: Input): Input => {
+const normalizeStatusCommandOptions = (input: CommandLineInput): CommandLineInput => {
   const options = input.options ? input.options : {};
   const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
   // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'

@@ -2,7 +2,9 @@ import { JavaInteger } from './integer';
 import { toJSON } from './to-json';
 
 export class JavaArray extends Array<any> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private mapper: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   constructor(values = [], mapper: Function) {
     if (!Array.isArray(values)) {
       // splice sends a single object
@@ -51,8 +53,7 @@ export class JavaArray extends Array<any> {
   }
 
   removeAll(value) {
-    const self = this;
-    value.forEach(val => self.remove(val));
+    value.forEach(val => this.remove(val));
   }
 
   retainAll() {

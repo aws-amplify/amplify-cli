@@ -6,7 +6,7 @@ export class PluginVerificationResult {
     public error?: PluginVerificationError,
     public errorInfo?: any,
     public packageJson?: any,
-    public manifest?: PluginManifest
+    public manifest?: PluginManifest,
   ) {}
 }
 
