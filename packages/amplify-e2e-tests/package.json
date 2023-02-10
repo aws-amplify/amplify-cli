@@ -23,7 +23,7 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "^0.18.3",
+    "@aws-amplify/graphql-transformer-core": "^0.18.4",
     "@aws-amplify/amplify-category-auth": "2.15.1",
     "@aws-amplify/amplify-e2e-core": "4.6.3",
     "@aws-cdk/aws-iam": "~1.172.0",
