@@ -48,24 +48,24 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^4.1.5":
-  version "4.1.5"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.5.tgz#1949adb842a095a993564212d69f06966500236b"
-  integrity sha512-6GfRtmX5UBEuSLJ54dDtxx6HbvdAcW2T10A0x7TtIjOnhQJb6GQkamkRA4joVC53wfOxxy82cL4GuuDtwiVIjw==
+"@aws-amplify/amplify-category-api@^4.2.0-rdsv2preview.0":
+  version "4.2.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.2.0-rdsv2preview.0.tgz#d0aad9bc6d0727385b5767079434d36d82ce25ad"
+  integrity sha512-Iw0cvla75loyt1LjF5fFcANHhxyUJCeDgN3iCx0/dg7CnANMYkzq/UbWVI4x3UMsrEW8HuBW2mFmh/iltnKDrw==
   dependencies:
-    "@aws-amplify/graphql-auth-transformer" "1.2.4"
-    "@aws-amplify/graphql-default-value-transformer" "0.7.6"
-    "@aws-amplify/graphql-function-transformer" "0.7.34"
-    "@aws-amplify/graphql-http-transformer" "0.8.34"
-    "@aws-amplify/graphql-index-transformer" "0.14.7"
-    "@aws-amplify/graphql-maps-to-transformer" "1.1.40"
-    "@aws-amplify/graphql-model-transformer" "0.16.6"
-    "@aws-amplify/graphql-predictions-transformer" "0.6.34"
-    "@aws-amplify/graphql-relational-transformer" "0.12.8"
-    "@aws-amplify/graphql-searchable-transformer" "0.16.7"
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
-    "@aws-amplify/graphql-transformer-migrator" "1.4.14"
+    "@aws-amplify/graphql-auth-transformer" "1.2.6-rdsv2preview.0"
+    "@aws-amplify/graphql-default-value-transformer" "0.7.8-rdsv2preview.0"
+    "@aws-amplify/graphql-function-transformer" "0.7.36-rdsv2preview.0"
+    "@aws-amplify/graphql-http-transformer" "0.8.36-rdsv2preview.0"
+    "@aws-amplify/graphql-index-transformer" "0.15.0-rdsv2preview.0"
+    "@aws-amplify/graphql-maps-to-transformer" "1.1.42-rdsv2preview.0"
+    "@aws-amplify/graphql-model-transformer" "0.17.0-rdsv2preview.0"
+    "@aws-amplify/graphql-predictions-transformer" "0.6.36-rdsv2preview.0"
+    "@aws-amplify/graphql-relational-transformer" "0.12.10-rdsv2preview.0"
+    "@aws-amplify/graphql-searchable-transformer" "0.16.9-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-migrator" "1.4.16-rdsv2preview.0"
     "@aws-cdk/assets" "~1.172.0"
     "@aws-cdk/aws-apigateway" "~1.172.0"
     "@aws-cdk/aws-apigatewayv2" "~1.172.0"
@@ -110,23 +110,24 @@
     "@aws-cdk/region-info" "~1.172.0"
     "@graphql-tools/merge" "^6.0.18"
     "@octokit/rest" "^18.0.9"
+    aws-sdk "^2.1113.0"
     chalk "^4.1.1"
     cloudform "^4.2.0"
     constructs "^3.3.125"
     fs-extra "^8.1.0"
-    graphql "^14.5.8"
-    graphql-auth-transformer "7.2.47"
-    graphql-connection-transformer "5.2.46"
-    graphql-dynamodb-transformer "7.2.46"
-    graphql-elasticsearch-transformer "5.2.47"
-    graphql-function-transformer "3.3.37"
-    graphql-http-transformer "5.2.46"
-    graphql-key-transformer "3.2.46"
-    graphql-predictions-transformer "3.2.46"
-    graphql-relational-schema-transformer "2.21.13"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
-    graphql-versioned-transformer "5.2.46"
+    graphql "^15.5.0"
+    graphql-auth-transformer "7.2.49-rdsv2preview.0"
+    graphql-connection-transformer "5.2.48-rdsv2preview.0"
+    graphql-dynamodb-transformer "7.2.48-rdsv2preview.0"
+    graphql-elasticsearch-transformer "5.2.49-rdsv2preview.0"
+    graphql-function-transformer "3.3.39-rdsv2preview.0"
+    graphql-http-transformer "5.2.48-rdsv2preview.0"
+    graphql-key-transformer "3.2.48-rdsv2preview.0"
+    graphql-predictions-transformer "3.2.48-rdsv2preview.0"
+    graphql-relational-schema-transformer "2.21.15-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
+    graphql-versioned-transformer "5.2.48-rdsv2preview.0"
     import-from "^3.0.0"
     import-global "^0.1.0"
     inquirer "^7.3.3"
@@ -275,34 +276,64 @@
     "@aws-sdk/client-location" "3.41.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-auth-transformer@1.2.4", "@aws-amplify/graphql-auth-transformer@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.4.tgz#1c08c90aa7eba982f4430464fbadf9a5d8b1f954"
-  integrity sha512-Smf054Ie35uaqm8o4kSVTPIXKB8vQ+LysxNezXAwiQabXu6Z2XzIgZdQHEb2Qu+4XDNoDNu7FhFd2lAcUf6agw==
+"@aws-amplify/graphql-auth-transformer@1.2.6-rdsv2preview.0":
+  version "1.2.6-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.6-rdsv2preview.0.tgz#b58ac11c8a1cee899f716e72b56d7295bf3a6540"
+  integrity sha512-NJcZxN4DVZhiXZxk+UWXPYvvMHq81l434ulm0Xh9p7rpfd6zwKVPjpTQ65bD2ePr4dU6nPcAUCLiB6babFAphA==
   dependencies:
-    "@aws-amplify/graphql-model-transformer" "0.16.6"
-    "@aws-amplify/graphql-relational-transformer" "0.12.8"
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-model-transformer" "0.17.0-rdsv2preview.0"
+    "@aws-amplify/graphql-relational-transformer" "0.12.10-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
     "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     constructs "^3.3.125"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
     lodash "^4.17.21"
     md5 "^2.3.0"
 
-"@aws-amplify/graphql-default-value-transformer@0.7.6", "@aws-amplify/graphql-default-value-transformer@^0.7.6":
-  version "0.7.6"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-0.7.6.tgz#c9f924255de570c6309c1235e61f413c5901197a"
-  integrity sha512-nxkIwRcPzgSyhXvmrhCFSixARVZpDsLDo3NRcCRTIZxCxtKBosss4YWOLG6fgljse72hAAvBIU9OTJ8/AfegEA==
+"@aws-amplify/graphql-auth-transformer@^1.2.6-rdsv2preview.0":
+  version "1.2.6"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.6.tgz#4421b51595ef90d62f0cfc5c5df6731e4b636bd4"
+  integrity sha512-paMZQRy0FRKYQmjizLcD+1msYaWhg9T6hgpau5V2i9LU9PxstKY1tMLOtPvS9WbTrV2lVADCGkN2g07IDtGMew==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
-    graphql "^14.5.8"
+    "@aws-amplify/graphql-model-transformer" "0.16.8"
+    "@aws-amplify/graphql-relational-transformer" "0.12.10"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    constructs "^3.3.125"
+    graphql "^15.5.0"
     graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql-transformer-common "4.24.4"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+
+"@aws-amplify/graphql-default-value-transformer@0.7.8-rdsv2preview.0":
+  version "0.7.8-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-0.7.8-rdsv2preview.0.tgz#adbe303f64c45d7251d94a5a2aecc3f16d92b4ec"
+  integrity sha512-PaO7tifmbPhJrGQHBhmN5SMuCDY0dLa1AvYJPKpXW1lkwGfryGtA4U7BDLU/r6Z9Jovgahq0ZxUEG4KsKwJMZA==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    libphonenumber-js "1.9.47"
+
+"@aws-amplify/graphql-default-value-transformer@^0.7.8-rdsv2preview.0":
+  version "0.7.8"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-0.7.8.tgz#3b179c9ea5fc4d819c3c174b4500d1756f8a408f"
+  integrity sha512-KKneo1bSkkm9dCljWL02mpOMelBKLyMpkkT62DotX3DG8JLxabW9n9TMEt9pvqkOF/ocIUNEDJfHAvAtjTSoyw==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
     libphonenumber-js "1.9.47"
 
 "@aws-amplify/graphql-docs-generator@3.0.2":
@@ -315,69 +346,125 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
-"@aws-amplify/graphql-function-transformer@0.7.34", "@aws-amplify/graphql-function-transformer@^0.7.34":
-  version "0.7.34"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-0.7.34.tgz#1b40ed8750a2f4ed7c59c406d2396a99fb0be0d9"
-  integrity sha512-NIeuzkgJdkiAtPXhwgFrSbaKIVO2+iUhe5yXY8GuG9i4kiYQjCHbVA5Ra4KqlTdSHvEBOL54FMWpsvKUIGU/3Q==
+"@aws-amplify/graphql-function-transformer@0.7.36-rdsv2preview.0":
+  version "0.7.36-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-0.7.36-rdsv2preview.0.tgz#49fb64bb25952ab294aa0223fd29e6b997239ff8"
+  integrity sha512-CGN2a4R0jP4TkRAjoWTYJtGkPcFXanJhD9dilKnZXTt/i+Spb/1lPUj/1tvmX7eWNL4jvMinZaFmGD5DAPBamw==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
 
-"@aws-amplify/graphql-http-transformer@0.8.34", "@aws-amplify/graphql-http-transformer@^0.8.34":
-  version "0.8.34"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-0.8.34.tgz#3fc8ceda82db790fe0be75c58bba9fbc77c9bf32"
-  integrity sha512-NJ9KXzpMfJt9ullxSJyUfDf1GSL7n33xBtQHaJSCAvRfHHCVxSjAXo9qBmZZfKRaj/kyWXp6opeJiylh1DpVwg==
+"@aws-amplify/graphql-function-transformer@^0.7.36-rdsv2preview.0":
+  version "0.7.36"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-0.7.36.tgz#c053b009c5041ddd72be3caaefbae7ed926844c5"
+  integrity sha512-50s5X1mFZA+cjeLAGephn8EP68ksZ0f+ASkdDBQ+DRkUvLzTW7hLMJIyTQ4li00Ti23pJsQvDGd0VNNKTS8kcw==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
+
+"@aws-amplify/graphql-http-transformer@0.8.36-rdsv2preview.0":
+  version "0.8.36-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-0.8.36-rdsv2preview.0.tgz#14d1090364f957959ddd1bf4c246b1097b1b7c0e"
+  integrity sha512-mAy+GA7QPCyldMqRH5s6ZgoXIZZ8Hbv+3mZzRwBJPRIWsQlqcKO2bGJvmun25XYU4xQyNKS3ea+sGERo6AN05g==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
 
-"@aws-amplify/graphql-index-transformer@0.14.7", "@aws-amplify/graphql-index-transformer@^0.14.7":
-  version "0.14.7"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.14.7.tgz#faa7f2dbaca3953236fe7b8c8352bf7e82ae861d"
-  integrity sha512-1gF7bKQDZzYpkHCnpbeHfKWO6IKRFpncsDpHgmC7TiCQD49S5rB0GyjzlPJOxul0bAZQDKjK9TcwN1MKz1RUXQ==
+"@aws-amplify/graphql-http-transformer@^0.8.36-rdsv2preview.0":
+  version "0.8.36"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-0.8.36.tgz#c7ebda7df3d1a58f032e58eca87e766334c6c33f"
+  integrity sha512-H7lKdp9eB5N+fWkPeVt6xkTUbuH/imSFzaYRzYebC9J9kt929pcbZ15DiaZlWP7qFdxVb9PVjzPhTe9unVeeDQ==
   dependencies:
-    "@aws-amplify/graphql-model-transformer" "0.16.6"
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
+
+"@aws-amplify/graphql-index-transformer@0.14.9":
+  version "0.14.9"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.14.9.tgz#de9acf06a4f5fd5f65f0005d051d6ef8f0472085"
+  integrity sha512-k6q80RpS+2XMNPbCJRUBqSUhTwK3D2W0rnaeGWA1fvRw16kK7fuzs/DYxtzWnYqjB03nywSVWkTx0gtEALtDPA==
+  dependencies:
+    "@aws-amplify/graphql-model-transformer" "0.16.8"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-dynamodb" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql "^14.5.8"
+    graphql "^15.5.0"
     graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql-transformer-common "4.24.4"
 
-"@aws-amplify/graphql-maps-to-transformer@1.1.40", "@aws-amplify/graphql-maps-to-transformer@^1.1.40":
-  version "1.1.40"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-1.1.40.tgz#3327680e068ba15ccd2ed4773689283bc9dc0b11"
-  integrity sha512-axIdKml7dIuNJ1RxaaI/w5np2qVVRDzCa+TFebOoD7znh5HXEW4bd8xcQnZA/0kB06bEQ5bXMmCSxryVkVB7Ew==
+"@aws-amplify/graphql-index-transformer@0.15.0-rdsv2preview.0", "@aws-amplify/graphql-index-transformer@^0.15.0-rdsv2preview.0":
+  version "0.15.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.15.0-rdsv2preview.0.tgz#2adad9d4ac419487461a19d98a095f2d9f39aca9"
+  integrity sha512-yjCsgmqTASds6tiVvviqT9tfaGxXN0oy5if3iaWDyxf9TvqtGAxdeiF1dvonh/BVMBeGYgDnNCUSRQFO7xTHAg==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-model-transformer" "0.17.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+
+"@aws-amplify/graphql-maps-to-transformer@1.1.42-rdsv2preview.0":
+  version "1.1.42-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-1.1.42-rdsv2preview.0.tgz#f69c0371b359a189f888111f6e201cc59e6c61f9"
+  integrity sha512-mlEXJlRdHGSRDNSe8SjjwDWHTLHN1/ixWgrFAzmfIg8Xce4XyC4DiJwSTB/jk/brGRCgjwi4Bwi2BMLUbvJeTA==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+
+"@aws-amplify/graphql-maps-to-transformer@^1.1.42-rdsv2preview.0":
+  version "1.1.42"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-1.1.42.tgz#72a6c945f20d4dd9d2d101c1102501c5020a397f"
+  integrity sha512-Le0IujN7gCR2AWZhzeLCVApsVKhIi88vdHyzv7Mq8bIB2ZHSVFtT8Nkc3cRWhBe2KwriNq9aytiF3MMCBmya8A==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
     graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql-transformer-common "4.24.4"
 
-"@aws-amplify/graphql-model-transformer@0.16.6", "@aws-amplify/graphql-model-transformer@^0.16.6":
-  version "0.16.6"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-0.16.6.tgz#100d4a1830321bb946dcf7e7d32c056d57086511"
-  integrity sha512-tpDtt4FZ7TX7Wb3mETfPSyfZzE5S5q7F3a/hmnVkKr2tG/YmBgnGI0c4nRFCwDa2MNvKowRNiRLkNck5l2hLWg==
+"@aws-amplify/graphql-model-transformer@0.16.8":
+  version "0.16.8"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-0.16.8.tgz#0d921be5ecd51742d3d1e6dca443bb09859720cc"
+  integrity sha512-vst4eje/Jx2y+X5sInVGuSfpSZdxx7EOwDycQBOV6ysOW71UZGxTjQ9gnvK8wIseaQPIZc1vVaJB0cS6UvAPjQ==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
     "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-cloudwatch" "~1.172.0"
@@ -393,48 +480,114 @@
     "@aws-cdk/cx-api" "~1.172.0"
     "@aws-cdk/region-info" "~1.172.0"
     constructs "^3.3.125"
-    graphql "^14.5.8"
+    graphql "^15.5.0"
     graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql-transformer-common "4.24.4"
 
-"@aws-amplify/graphql-predictions-transformer@0.6.34", "@aws-amplify/graphql-predictions-transformer@^0.6.34":
-  version "0.6.34"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-0.6.34.tgz#4e952d357478837162ace218d4dfe5c1a166b294"
-  integrity sha512-aPT89o2kvM+uWi//El0xoIs8uNxlPbO0OlOs0EtJ3//fznX6zdF6lV4chLCLRyRnhkgELq4ozbln4pVDDQtjPg==
+"@aws-amplify/graphql-model-transformer@0.17.0-rdsv2preview.0", "@aws-amplify/graphql-model-transformer@^0.17.0-rdsv2preview.0":
+  version "0.17.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-0.17.0-rdsv2preview.0.tgz#d1590e7a1f982f75f8717cc9fb620ed2800e4208"
+  integrity sha512-UTM0NLeLlxEkNOSQq2HaUM0a6w9f/EIlXvPSMj7a6sidm30dsnvlkJkqVsfuBVWRp/AhQ3JQWNBJCrX7IJ2QIA==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-s3-assets" "~1.172.0"
+    "@aws-cdk/cloud-assembly-schema" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    "@aws-cdk/cx-api" "~1.172.0"
+    "@aws-cdk/region-info" "~1.172.0"
+    constructs "^3.3.125"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+
+"@aws-amplify/graphql-predictions-transformer@0.6.36-rdsv2preview.0":
+  version "0.6.36-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-0.6.36-rdsv2preview.0.tgz#3b7a4ddbfbd305c06988f113b3df6f35e3b5fafe"
+  integrity sha512-V8XbO4rKL7JGHbz++II9oZ74AByf8VyeVjYn/9w4u1DNDZ8jUY8gBcwswqXghMdMQLWOuKjhIeqKSySWscuC1w==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
 
-"@aws-amplify/graphql-relational-transformer@0.12.8", "@aws-amplify/graphql-relational-transformer@^0.12.8":
-  version "0.12.8"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-0.12.8.tgz#74b91bb6c79a37640bfabd19516459fc0054f371"
-  integrity sha512-X+LZ9r7L9mZkKuaYexTC7IxJ3Hb6OT1ECUIXj8hcazkVaHWOCF9J+6kXMiPwG7gpZwFpmiOdS+s6DISv53ojLg==
+"@aws-amplify/graphql-predictions-transformer@^0.6.36-rdsv2preview.0":
+  version "0.6.36"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-0.6.36.tgz#e98a3ac6a37b2f64b382d404c385ca6b867255e2"
+  integrity sha512-sYYsh92gdXuoXaqCBqPrjpJYuM1woXyKybcJyi3k7ZfeIMVCGjX/VogdrGOvayOJvIjrO5G+1yArxR+z6rt1qA==
   dependencies:
-    "@aws-amplify/graphql-index-transformer" "0.14.7"
-    "@aws-amplify/graphql-model-transformer" "0.16.6"
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql "^14.5.8"
+    graphql "^15.5.0"
     graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql-transformer-common "4.24.4"
+
+"@aws-amplify/graphql-relational-transformer@0.12.10", "@aws-amplify/graphql-relational-transformer@^0.12.10-rdsv2preview.0":
+  version "0.12.10"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-0.12.10.tgz#33f05840e4ae9ce090a5d1c2684408c9b6080724"
+  integrity sha512-HV5jQ/gtAiKUgGZTJIBXFLlZmN0TZtU6i0LRZRpWHynKb/RevjmNhXRDxcueNKC2E/7A//8zZaKhSydCRy3kPw==
+  dependencies:
+    "@aws-amplify/graphql-index-transformer" "0.14.9"
+    "@aws-amplify/graphql-model-transformer" "0.16.8"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/core" "~1.172.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
     immer "^9.0.12"
 
-"@aws-amplify/graphql-searchable-transformer@0.16.7", "@aws-amplify/graphql-searchable-transformer@^0.16.7":
-  version "0.16.7"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-0.16.7.tgz#39c06ff284a07291ee72aa66c667176620b806ce"
-  integrity sha512-L8TwQYeWu0/gYDQpUB90dqrxjXG7tJwRQQwHPWzeCgK+gf67IDndomKL6EgKH8YgkGgRTHSigeTqgdJLTlNXgA==
+"@aws-amplify/graphql-relational-transformer@0.12.10-rdsv2preview.0":
+  version "0.12.10-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-0.12.10-rdsv2preview.0.tgz#960e722c3b4625b6ee67d2c74041b406e2144aae"
+  integrity sha512-RO3Wdq/P9l5ctqKiASzU1nNqRbHL/uQsR95m/+ynOn40TAzuRT5lbCHYPZnKQzViNTXvhEhjvs+3mmwcTwTzlQ==
   dependencies:
-    "@aws-amplify/graphql-model-transformer" "0.16.6"
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-index-transformer" "0.15.0-rdsv2preview.0"
+    "@aws-amplify/graphql-model-transformer" "0.17.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    "@aws-cdk/core" "~1.172.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    immer "^9.0.12"
+
+"@aws-amplify/graphql-schema-generator@0.1.0-rdsv2preview.0":
+  version "0.1.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-schema-generator/-/graphql-schema-generator-0.1.0-rdsv2preview.0.tgz#54de1a698f56d75838501b6886fd031f361d65c2"
+  integrity sha512-9D+mnc5KA+J/0PE27sQqb/ddaMZ4fYUpf5TpdV1ln+zpHdRHIbquaqqUcXOrv7oFly/3YHIgNJNWXwgAJqupRQ==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.17.15"
+    graphql "^14.5.8"
+    knex "~2.3.0"
+    mysql2 "~2.3.3"
+
+"@aws-amplify/graphql-searchable-transformer@0.16.9-rdsv2preview.0":
+  version "0.16.9-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-0.16.9-rdsv2preview.0.tgz#debb25f311f1a7aa7bd9286617c23c7868bb6f7e"
+  integrity sha512-60UtHIe0oT2hZdmjsJyo5ZCc/7LF4I5ULvzPnbi/VQM1XlXnENqtWnv6M50UxhtjSc5o3mRwONgTzJHZjWTm6A==
+  dependencies:
+    "@aws-amplify/graphql-model-transformer" "0.17.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-dynamodb" "~1.172.0"
     "@aws-cdk/aws-ec2" "~1.172.0"
@@ -442,16 +595,35 @@
     "@aws-cdk/aws-iam" "~1.172.0"
     "@aws-cdk/aws-lambda" "~1.172.0"
     "@aws-cdk/core" "~1.172.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
 
-"@aws-amplify/graphql-transformer-core@0.18.2", "@aws-amplify/graphql-transformer-core@^0.18.2":
-  version "0.18.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.18.2.tgz#af82988d0ac668786f9422401f7693e22a1fdac1"
-  integrity sha512-XaZROPd21ptvquLWAblPdWq+YpbMBU7iYVF9LswtXlnYkHJQWfUpM+x8UywvU6kWdFMFrGApDGlQlczgYdajnA==
+"@aws-amplify/graphql-searchable-transformer@^0.16.9-rdsv2preview.0":
+  version "0.16.9"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-0.16.9.tgz#b81861c1c043808dbb407c23f3a27400a53c9b36"
+  integrity sha512-M0Fei8S3iVofOZYkCUOpCi1w5DgQTgOZqm1CC4bmmZ3Id7FiivyAHKb9XUSNW6J4CcQbIWKi4bbXnSrqVmlFyQ==
   dependencies:
-    "@aws-amplify/graphql-transformer-interfaces" "1.14.11"
+    "@aws-amplify/graphql-model-transformer" "0.16.8"
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
+
+"@aws-amplify/graphql-transformer-core@0.17.15":
+  version "0.17.15"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.17.15.tgz#f5f6bffc3520dd2f05419a040fbe29a8384a1c6f"
+  integrity sha512-B+zyht8Z7N/emjyeXJ5nh/YYSy2PBDPVz3i6RQqoxa24AYqc/fo0+Tz6bw5RzqbKE3K50pJnfb9MfV08lYqUNg==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.9"
     "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-certificatemanager" "~1.172.0"
@@ -479,17 +651,121 @@
     constructs "^3.3.125"
     fs-extra "^8.1.0"
     graphql "^14.5.8"
-    graphql-transformer-common "4.24.3"
+    graphql-transformer-common "4.24.0"
     lodash "^4.17.21"
     md5 "^2.3.0"
     object-hash "^3.0.0"
     ts-dedent "^2.0.0"
     vm2 "^3.9.8"
 
-"@aws-amplify/graphql-transformer-interfaces@1.14.11", "@aws-amplify/graphql-transformer-interfaces@^1.14.11":
-  version "1.14.11"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.14.11.tgz#84391297d43fe84440af0a38498fd8dc9c271a93"
-  integrity sha512-ShTtfAic3y1Sq72E2xkGg+GdpUysE9UXmBCRR7JsU7WwOduowPEQXAaCh66QNX21zZgo7+Szks4n/0W9umcMhw==
+"@aws-amplify/graphql-transformer-core@0.18.4":
+  version "0.18.4"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.18.4.tgz#7f8eb36bf6bfed9d527c4ee9475d96b300328a84"
+  integrity sha512-Al9XLIOpbdb9BwxQWPY+typn+dj6+aYGNKK78J9nZVkPrMVjnSS1JyF2siHolUmsLqDbl4wXsIlxmep8xDAKOQ==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "1.14.12"
+    "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-certificatemanager" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-codeguruprofiler" "~1.172.0"
+    "@aws-cdk/aws-cognito" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-efs" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-events" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-logs" "~1.172.0"
+    "@aws-cdk/aws-route53" "~1.172.0"
+    "@aws-cdk/aws-s3" "~1.172.0"
+    "@aws-cdk/aws-s3-assets" "~1.172.0"
+    "@aws-cdk/aws-sqs" "~1.172.0"
+    "@aws-cdk/cloud-assembly-schema" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    "@aws-cdk/cx-api" "~1.172.0"
+    "@aws-cdk/region-info" "~1.172.0"
+    constructs "^3.3.125"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.4"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+    vm2 "^3.9.8"
+
+"@aws-amplify/graphql-transformer-core@0.19.0-rdsv2preview.0", "@aws-amplify/graphql-transformer-core@^0.19.0-rdsv2preview.0":
+  version "0.19.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.19.0-rdsv2preview.0.tgz#308659d5fcb5dfe9a4c240e2d6e0349f756dd787"
+  integrity sha512-ZczLCas4pKbnlcopPy3IjCML7c+5qcKnCleywb/K/Pj/rISDrYfTVBVsVtwfGGbeHZIdfddOYG3qN1Z3IsJmjg==
+  dependencies:
+    "@aws-amplify/graphql-schema-generator" "0.1.0-rdsv2preview.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.15.0-rdsv2preview.0"
+    "@aws-cdk/aws-applicationautoscaling" "~1.172.0"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-certificatemanager" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-codeguruprofiler" "~1.172.0"
+    "@aws-cdk/aws-cognito" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-efs" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-events" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-logs" "~1.172.0"
+    "@aws-cdk/aws-route53" "~1.172.0"
+    "@aws-cdk/aws-s3" "~1.172.0"
+    "@aws-cdk/aws-s3-assets" "~1.172.0"
+    "@aws-cdk/aws-sqs" "~1.172.0"
+    "@aws-cdk/cloud-assembly-schema" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    "@aws-cdk/cx-api" "~1.172.0"
+    "@aws-cdk/region-info" "~1.172.0"
+    constructs "^3.3.125"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+    vm2 "^3.9.8"
+
+"@aws-amplify/graphql-transformer-interfaces@1.14.12":
+  version "1.14.12"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.14.12.tgz#9efd77492437a27c302e79c941eae3599edd00d2"
+  integrity sha512-DSbor6zEcArpaV1pht+LhUH2QsOnO3DlHIoA3Ou9GelYSizRxV7YasYfvKuIcvppKZlrXPhaDXwZFEGRhtMNvQ==
+  dependencies:
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-events" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-logs" "~1.172.0"
+    "@aws-cdk/aws-rds" "~1.172.0"
+    "@aws-cdk/aws-s3" "~1.172.0"
+    "@aws-cdk/aws-secretsmanager" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    constructs "^3.3.125"
+    graphql "^15.5.0"
+
+"@aws-amplify/graphql-transformer-interfaces@1.14.9":
+  version "1.14.9"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.14.9.tgz#ec5e09ca88f30dcc592bb65a04313124e7f8a78b"
+  integrity sha512-n+99kuk/VhZTC82fz/6lGeQFcnYajE4FpSVi5JtW5EnvnGCk6HZsQWU4THnX5JcNe7BArodM4KntZu0lYIoAVg==
   dependencies:
     "@aws-cdk/aws-appsync" "~1.172.0"
     "@aws-cdk/aws-cloudwatch" "~1.172.0"
@@ -509,16 +785,51 @@
     constructs "^3.3.125"
     graphql "^14.5.8"
 
-"@aws-amplify/graphql-transformer-migrator@1.4.14", "@aws-amplify/graphql-transformer-migrator@^1.4.14":
-  version "1.4.14"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-1.4.14.tgz#9c215cbe034bca5ec0a9bbbf51f740066945a233"
-  integrity sha512-UynNaQvBfxvszg3V9ufnYzKrCKMHHX+OkrkmhBSlh9i8qk1BJlH+70SwLgUCY7t6RvBq+gApmDMxNoyPJuW0Aw==
+"@aws-amplify/graphql-transformer-interfaces@1.15.0-rdsv2preview.0", "@aws-amplify/graphql-transformer-interfaces@^1.15.0-rdsv2preview.0":
+  version "1.15.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.15.0-rdsv2preview.0.tgz#ed775b4a9b03decf89cf6c4c75777eada9117959"
+  integrity sha512-XkHli0j/YBwwM4iYejQHlAMnXR4Yw4igSzxt84lrTWdxjAqt+H7GDuXg7iljuyy247sZshnqzbA4YGlm92NuGw==
   dependencies:
-    "@aws-amplify/graphql-transformer-core" "0.18.2"
+    "@aws-cdk/aws-appsync" "~1.172.0"
+    "@aws-cdk/aws-cloudwatch" "~1.172.0"
+    "@aws-cdk/aws-dynamodb" "~1.172.0"
+    "@aws-cdk/aws-ec2" "~1.172.0"
+    "@aws-cdk/aws-elasticsearch" "~1.172.0"
+    "@aws-cdk/aws-events" "~1.172.0"
+    "@aws-cdk/aws-iam" "~1.172.0"
+    "@aws-cdk/aws-kms" "~1.172.0"
+    "@aws-cdk/aws-lambda" "~1.172.0"
+    "@aws-cdk/aws-logs" "~1.172.0"
+    "@aws-cdk/aws-rds" "~1.172.0"
+    "@aws-cdk/aws-s3" "~1.172.0"
+    "@aws-cdk/aws-secretsmanager" "~1.172.0"
+    "@aws-cdk/core" "~1.172.0"
+    "@aws-cdk/custom-resources" "~1.172.0"
+    constructs "^3.3.125"
+    graphql "^15.5.0"
+
+"@aws-amplify/graphql-transformer-migrator@1.4.16-rdsv2preview.0":
+  version "1.4.16-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-1.4.16-rdsv2preview.0.tgz#be6bebf950f04d698df35a7ba05ee08d4ee0e529"
+  integrity sha512-JkeOcLvTJ7yv53C5WMh4wIwjff5Hq1lmP8YYt24wPbSvJCoXS/ULSZZsipD+RGacl0t/r40rxVvxS+0/Mqu/tQ==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.19.0-rdsv2preview.0"
     fs-extra "^8.1.0"
     glob "^7.2.0"
-    graphql "^14.5.8"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    lodash "^4.17.21"
+
+"@aws-amplify/graphql-transformer-migrator@^1.4.16-rdsv2preview.0":
+  version "1.4.16"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-1.4.16.tgz#6260311543779b88fa480cf11f5ca3602bbb7d6f"
+  integrity sha512-nuebqC+6acKgSxYUjyGh0CbufX/hnvERK/8NE5JcTKXwGJpyqJO3+gvhOcXxLTSy4DRkZXcKrhc07OqTiNnaVA==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.18.4"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.4"
     lodash "^4.17.21"
 
 "@aws-amplify/graphql-types-generator@3.0.0":
@@ -10621,6 +10932,22 @@ aws-sdk-mock@^5.8.0:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
+aws-sdk@^2.1113.0:
+  version "2.1312.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1312.0.tgz#5b52ba9cef0984b0d86a1755a79b11c3ec775797"
+  integrity sha512-NG6ERxxxU6p+CDWrq7wLinp0siKRcCNN98iY0qr/2WKZbz5JCtDyiQV/l+6jLmNKP5qIT5z++jnDy9cgNP6ICQ==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.4.19"
+
 aws-sdk@^2.1231.0, aws-sdk@^2.1233.0:
   version "2.1233.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1233.0.tgz#3386515966ca8a5baac048d986ad0977119c0765"
@@ -12042,6 +12369,11 @@ colord@^2.9.1:
   resolved "https://registry.npmjs.org/colord/-/colord-2.9.2.tgz#25e2bacbbaa65991422c07ea209e2089428effb1"
   integrity sha512-Uqbg+J445nc1TKn4FoDPS6ZZqAvEDnwrH42yo8B40JSOgSLxMZ/gt3h4nmCtPLQeXhjJJkqBx7SCY35WnIixaQ==
 
+colorette@2.0.19:
+  version "2.0.19"
+  resolved "https://registry.npmjs.org/colorette/-/colorette-2.0.19.tgz#cdf044f47ad41a0f4b56b3a0d5b4e6e1a2d5a798"
+  integrity sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==
+
 colorette@^2.0.10:
   version "2.0.16"
   resolved "https://registry.npmjs.org/colorette/-/colorette-2.0.16.tgz#713b9af84fdb000139f04546bd4a93f62a5085da"
@@ -12117,6 +12449,11 @@ commander@^8.3.0:
   version "8.3.0"
   resolved "https://registry.npmjs.org/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
   integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
+
+commander@^9.1.0:
+  version "9.5.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-9.5.0.tgz#bc08d1eb5cedf7ccb797a96199d41c7bc3e60d30"
+  integrity sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==
 
 commander@^9.4.0:
   version "9.4.0"
@@ -12962,7 +13299,7 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.1.0, debug@^4.3.1, debug@^4.3.3, debug@^4.3.4:
+debug@4, debug@4.3.4, debug@^4.1.0, debug@^4.3.1, debug@^4.3.3, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -13147,6 +13484,11 @@ delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==
+
+denque@^2.0.1:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/denque/-/denque-2.1.0.tgz#e93e1a6569fb5e66f16a3c2a2964617d349d6ab1"
+  integrity sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==
 
 depd@^1.1.2, depd@~1.1.2:
   version "1.1.2"
@@ -15024,6 +15366,13 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
+generate-function@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.npmjs.org/generate-function/-/generate-function-2.3.1.tgz#f069617690c10c868e73b8465746764f97c3479f"
+  integrity sha512-eeB5GfMNeevm/GRYq20ShmsaGcmI81kIX2K9XQx5miC8KdHaC6Jm0qQ8ZNeGOi7wYB8OsdxKs+Y2oVuTFuVwKQ==
+  dependencies:
+    is-property "^1.0.2"
+
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
@@ -15130,6 +15479,11 @@ get-value@^2.0.3, get-value@^2.0.6:
   version "2.0.6"
   resolved "https://registry.npmjs.org/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
+
+getopts@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/getopts/-/getopts-2.3.0.tgz#71e5593284807e03e2427449d4f6712a268666f4"
+  integrity sha512-5eDf9fuSXwxBL6q5HX+dhDj+dslFGWzU5thZ9kNKUkcPtaPdatmUFKwHFrLb/uf/WpA4BHET+AX3Scl56cAjpA==
 
 getpass@^0.1.1:
   version "0.1.7"
@@ -15411,16 +15765,16 @@ graphiql@^1.3.2:
     graphql-language-service "^4.1.4"
     markdown-it "^12.2.0"
 
-graphql-auth-transformer@7.2.47, graphql-auth-transformer@^7.2.47:
-  version "7.2.47"
-  resolved "https://registry.npmjs.org/graphql-auth-transformer/-/graphql-auth-transformer-7.2.47.tgz#7092583684492a12ebc500500352477990e64ea2"
-  integrity sha512-UbpK3Sin5kCECbdpX/2Yp7RPfPLSE37rNOXmNCmX/xX8CJPKfSp4QanYzqBsHElwKZGiQwRM8xBkuak7Ogw0Rg==
+graphql-auth-transformer@7.2.49-rdsv2preview.0, graphql-auth-transformer@^7.2.49-rdsv2preview.0:
+  version "7.2.49-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-auth-transformer/-/graphql-auth-transformer-7.2.49-rdsv2preview.0.tgz#53bd5a6021ce0c808c8ad41612f4aa7377704269"
+  integrity sha512-znimnyDd86NVOmGNQy+ZFZ0leozDP9mjEdhBVs0qZ0BgC3iwdSTThJlddBw8ye4vp+xrkhgiFZRyFuZ4dJg0wQ==
   dependencies:
-    graphql "^14.5.8"
-    graphql-connection-transformer "5.2.46"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-connection-transformer "5.2.48-rdsv2preview.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
 graphql-config@^2.2.1:
   version "2.2.2"
@@ -15450,65 +15804,65 @@ graphql-config@^4.1.0:
     minimatch "3.0.4"
     string-env-interpolation "1.0.1"
 
-graphql-connection-transformer@5.2.46, graphql-connection-transformer@^5.2.46:
-  version "5.2.46"
-  resolved "https://registry.npmjs.org/graphql-connection-transformer/-/graphql-connection-transformer-5.2.46.tgz#48704e6ca3d20931380f895bdb41c4bd158faf4e"
-  integrity sha512-fOCYxYapXeolSePaTQC5epqAPEWxTrIgspgc6ctZ9/YtA/2JDFAyZ0FfTdn4w+bL1LfjJ3+9E8UUEtMg/Q2e5w==
+graphql-connection-transformer@5.2.48-rdsv2preview.0, graphql-connection-transformer@^5.2.48-rdsv2preview.0:
+  version "5.2.48-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-connection-transformer/-/graphql-connection-transformer-5.2.48-rdsv2preview.0.tgz#67e4890a1388ab2b679e6b255fd496c74fc6dc36"
+  integrity sha512-JhjwgQKFgMz3v+5kqFSIygoieO0k8xv8Hzb73NKOgZ/cGPkFzp5f8Ytq80R01V0+pjxlJt5rGJ4WQ9Jd5tAK5g==
   dependencies:
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-dynamodb-transformer "7.2.46"
-    graphql-key-transformer "3.2.46"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-dynamodb-transformer "7.2.48-rdsv2preview.0"
+    graphql-key-transformer "3.2.48-rdsv2preview.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
-graphql-dynamodb-transformer@7.2.46, graphql-dynamodb-transformer@^7.2.46:
-  version "7.2.46"
-  resolved "https://registry.npmjs.org/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.46.tgz#96f326449f4e27960a98bfe3e613239dc4d5136e"
-  integrity sha512-b+g5qmZPO1jjECK26P1WxdwlpEOn++xd/TYS1m7AAMpzdiZQ00oZGMGzkntuSwRa1fY8+oiBpCBq/HZV0VFV6w==
+graphql-dynamodb-transformer@7.2.48-rdsv2preview.0, graphql-dynamodb-transformer@^7.2.48-rdsv2preview.0:
+  version "7.2.48-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.48-rdsv2preview.0.tgz#dc0d06fda9ee7bc408fdf1dd32064fa4f38ff47d"
+  integrity sha512-IlUlOM7RW1WQ14LTHHM1yUUq7QjwiJOXeMHZZsFWSUKEK9KD1LFyJy3zTcEizd6YhlRp7DP3uBFKXiQeEPVs2Q==
   dependencies:
     "@types/pluralize" "^0.0.29"
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
     md5 "^2.2.1"
     pluralize "^8.0.0"
 
-graphql-elasticsearch-transformer@5.2.47, graphql-elasticsearch-transformer@^5.2.47:
-  version "5.2.47"
-  resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.47.tgz#88b65ecac3a259c2beed172b98225750a818b679"
-  integrity sha512-V3aSWUL59GLdM+kg9pp/Oa7h2AZJ30q0oT8u5iaMkkGfZH1h98EIoXVzXUBMfzjh75yJz+7CsGblDO7+tKa4lA==
+graphql-elasticsearch-transformer@5.2.49-rdsv2preview.0, graphql-elasticsearch-transformer@^5.2.49-rdsv2preview.0:
+  version "5.2.49-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.49-rdsv2preview.0.tgz#517b10a9178a1c69324501c681b534c5f948309b"
+  integrity sha512-iZYP03PwcMK7k9aZtJZBSGF5WAqwLwJSk7Ia7ifYB8FL8kfD/L6fLyTYt836G2zwajVD0MgJSV7nbCAjmSlIcQ==
   dependencies:
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
-graphql-function-transformer@3.3.37, graphql-function-transformer@^3.3.37:
-  version "3.3.37"
-  resolved "https://registry.npmjs.org/graphql-function-transformer/-/graphql-function-transformer-3.3.37.tgz#67198ea86e6aa868656112d25a5e2f8036e3ddaf"
-  integrity sha512-BJDekf+MJnGutF6eJtHZIcL4fAoTu3kv+GRwl4auW0GVXLlosl4hxhuaf18g9rxikZ7dhPrM+8JqqXI0Oore7Q==
+graphql-function-transformer@3.3.39-rdsv2preview.0, graphql-function-transformer@^3.3.39-rdsv2preview.0:
+  version "3.3.39-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-function-transformer/-/graphql-function-transformer-3.3.39-rdsv2preview.0.tgz#6008a7b971731a682b7890bd5e78c0fccaaccb3a"
+  integrity sha512-iGohRNTBGmQtWVAc+E1SXuFaCpBBHYP7M0kyNgQlOh8jFuoAnjunW8Zrssu6ptVy0eP4jb6AGNUPuDs1U1Y/+g==
   dependencies:
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
-graphql-http-transformer@5.2.46, graphql-http-transformer@^5.2.46:
-  version "5.2.46"
-  resolved "https://registry.npmjs.org/graphql-http-transformer/-/graphql-http-transformer-5.2.46.tgz#99e9cfbdad26aa96303942f1a01f94ec35b876c3"
-  integrity sha512-hZ9H3RCWCP82z5cUJrCuYo/69rhRSr/CiKB4iI7lJWr4JjAJzg1wnifxngjBlnCq8rPvs1pcd4OLF+2j0JuTqg==
+graphql-http-transformer@5.2.48-rdsv2preview.0, graphql-http-transformer@^5.2.48-rdsv2preview.0:
+  version "5.2.48-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-http-transformer/-/graphql-http-transformer-5.2.48-rdsv2preview.0.tgz#3257dbc0f632925c79497cb08bbd94d9865f8ab1"
+  integrity sha512-4lamd6IKJnUUOgVBjsphICtnm8Nr3uWUMEzeXHLy50N12OrRc5Tp82gIFE14ug2bZQj0LKDhVcKgDRJJfeOP3w==
   dependencies:
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
 graphql-import@^0.7.1:
   version "0.7.1"
@@ -15523,17 +15877,17 @@ graphql-iso-date@^3.6.1:
   resolved "https://registry.npmjs.org/graphql-iso-date/-/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
   integrity sha512-AwFGIuYMJQXOEAgRlJlFL4H1ncFM8n8XmoVDTNypNOZyQ8LFDG2ppMFlsS862BSTCDcSUfHp8PD3/uJhv7t59Q==
 
-graphql-key-transformer@3.2.46, graphql-key-transformer@^3.2.46:
-  version "3.2.46"
-  resolved "https://registry.npmjs.org/graphql-key-transformer/-/graphql-key-transformer-3.2.46.tgz#e1b2bfc444b8db38f5540a81af62a0ab6591cbac"
-  integrity sha512-yBZ7RMNAymAvOcNPjPzerWoFsgTq6IBKmRT1tEXekegsGdMtVdiswx0C1rceervIF37bRD77v7k5FB0Jl05xzg==
+graphql-key-transformer@3.2.48-rdsv2preview.0, graphql-key-transformer@^3.2.48-rdsv2preview.0:
+  version "3.2.48-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-key-transformer/-/graphql-key-transformer-3.2.48-rdsv2preview.0.tgz#5fd88562c8c15ae825f4f1bda8e48586ba5e2283"
+  integrity sha512-Jl3bNHnHSfrv2OOsfejvliXurwoMC6I0DQvUdxoEXDF7F+9Cqyppvdx0pvGbhZ6bGT2g0muVEEN6TIKTXOu4WA==
   dependencies:
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-dynamodb-transformer "7.2.46"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-dynamodb-transformer "7.2.48-rdsv2preview.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
     lodash "^4.17.21"
 
 graphql-language-service-interface@^2.10.2:
@@ -15581,33 +15935,43 @@ graphql-language-service@^4.1.4:
     graphql-language-service-types "^1.8.7"
     graphql-language-service-utils "^2.7.1"
 
+graphql-mapping-template@4.20.5:
+  version "4.20.5"
+  resolved "https://registry.npmjs.org/graphql-mapping-template/-/graphql-mapping-template-4.20.5.tgz#17ed2967d665bf06135e82181db6766366bfbc32"
+  integrity sha512-bjouJJGZ67cIV0VjzUPsM4/q44inLprEsNpSZAfmdpQ3V7sKU5gKXpkJ5m+ftVsgOQ1RE3/t7SqABXwvx8NNSg==
+
 graphql-mapping-template@4.20.7:
   version "4.20.7"
   resolved "https://registry.npmjs.org/graphql-mapping-template/-/graphql-mapping-template-4.20.7.tgz#d0e266da63ba24968e564b1c044759e610af2999"
   integrity sha512-gJBk+uC5w13jYTWjIuQNkVNGw2cM3i3MuqXlU+EW8+sQwqrYjHAMNxQyC2sSd0BKzGM8u6eV8AUrCNm8qmCv0A==
 
-graphql-predictions-transformer@3.2.46, graphql-predictions-transformer@^3.2.46:
-  version "3.2.46"
-  resolved "https://registry.npmjs.org/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.46.tgz#8745af342825e449d74799623de1a63bfcb39c85"
-  integrity sha512-qMXCXxBb5tnjVq8qDizXGCF1ht8a5oJRP3KP8eb+Hxs1t17E+zJ++2AZzq1qlH6EwD50t2lWZQ10iiWn7jap0Q==
+graphql-mapping-template@4.20.8-rdsv2preview.0:
+  version "4.20.8-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-mapping-template/-/graphql-mapping-template-4.20.8-rdsv2preview.0.tgz#e304b3147a542e1c8e97ec3a35d455b1c2419082"
+  integrity sha512-23TO83HToqxzTZl4XZKRbVB9Afl2BzUd2ghNMYoQshQVWP4bnr4sljhyGilCXKwoi9qLZvWPCS2twbYq+imCOg==
+
+graphql-predictions-transformer@3.2.48-rdsv2preview.0, graphql-predictions-transformer@^3.2.48-rdsv2preview.0:
+  version "3.2.48-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.48-rdsv2preview.0.tgz#430ab522b0b0637016d078664ffc1ad03e4be9d0"
+  integrity sha512-GntlF2tKqnXoqzrWjLuRoC2LCNlQzf5coDXHVZiZnMqaKkyog22dTqpgADnSJg5dS9UsRurRrPoV5i5bRv4uZg==
   dependencies:
     cloudform-types "^4.2.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
-graphql-relational-schema-transformer@2.21.13:
-  version "2.21.13"
-  resolved "https://registry.npmjs.org/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.13.tgz#266aeeea307efd478b8127537bb13854e26db5a8"
-  integrity sha512-40IUDKwJhyq3/dZKw4ytQlBZQPJEDzenJTkp4lAzjCESOgXbaF7m0NsdibBGbarSfWhfdPlSFWVB0ywiM+kFmg==
+graphql-relational-schema-transformer@2.21.15-rdsv2preview.0:
+  version "2.21.15-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.15-rdsv2preview.0.tgz#fe7567b1d808136d83a65332ad7f9fd4fedb24c3"
+  integrity sha512-ck6zeFvecCwdKRFyfliILds/kQ5VGomxzgMpBTTkgtyBVND/ztCkgAkttztrrAmAfVCNlu597hppIqPQxNZkKw==
   dependencies:
     cloudform "^4.2.0"
     cloudform-types "^4.2.0"
     fs-extra "^8.1.0"
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
 
 graphql-request@^1.5.0:
   version "1.8.2"
@@ -15635,38 +15999,58 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   dependencies:
     tslib "^2.1.0"
 
-graphql-transformer-common@4.24.3:
-  version "4.24.3"
-  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.24.3.tgz#950f32f7d041438804eec129efff7b434e60bb4e"
-  integrity sha512-71bIXFfW4qwKG2RKajiieaExqomQGyBQ+5qYwfb1sKmrZqZE2s3KNNgo6nozM76/WzzuwSNhJjZarZUbURWm1A==
+graphql-transformer-common@4.24.0:
+  version "4.24.0"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.24.0.tgz#f3be95c4b5ca2ada23fc3d0b01810810ad87810d"
+  integrity sha512-wleRNCFJLrqhYUT4j3KOfh2zTkvVjA6MX/s0HBIFWbNfnzd/W0VDAvpE9q8sMipOvXJ4zcVIZggI7TttrA/fOw==
   dependencies:
     graphql "^14.5.8"
+    graphql-mapping-template "4.20.5"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
+
+graphql-transformer-common@4.24.4:
+  version "4.24.4"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.24.4.tgz#8b10ab3eadc607a6a67858f0f12963340d7b2a6b"
+  integrity sha512-fxWdexQPUzhX02vGVQXCZpEp5YOXvOvQ7n7C+FCh3SPFsA3AGmu2n9xjcj26rnAqOeI+Ky4LCQUVtas9wJAhQw==
+  dependencies:
+    graphql "^15.5.0"
     graphql-mapping-template "4.20.7"
     md5 "^2.2.1"
     pluralize "8.0.0"
 
-graphql-transformer-core@7.6.9, graphql-transformer-core@^7.6.9:
-  version "7.6.9"
-  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-7.6.9.tgz#5874b70c23231c21b2dfeccb1e27574c2b52f95d"
-  integrity sha512-wo0guj9l+ErBZ+HiRtMCL2MQGKeRPjhnOOyVASC2k+KjezYayblzW+RQVGPzYQkMgYOBouyHrAb3ciQLbvFAnQ==
+graphql-transformer-common@4.24.5-rdsv2preview.0:
+  version "4.24.5-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.24.5-rdsv2preview.0.tgz#a87044da9c6a9bdcbf27332f8115fc1445dc73e6"
+  integrity sha512-zoMUKXld6tLidU67UVyG4e/7zim1tvw1BS1wYoYsxISlGal46yrTwjd+tJSSqbRbe0pwqiTOVYJmXVaQEJAQsA==
+  dependencies:
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
+
+graphql-transformer-core@7.7.0-rdsv2preview.0, graphql-transformer-core@^7.7.0-rdsv2preview.0:
+  version "7.7.0-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-7.7.0-rdsv2preview.0.tgz#58dd25c4629a4d820d775c4c820ef947a68e31f8"
+  integrity sha512-Wtkle6/nXW9vwcM9jccVQcX4DYIubNGlmKb/TVZv4a1Z4w39HkHCi05OGJQm4tw70w8GWD10iVoTn5hqghhFkQ==
   dependencies:
     cloudform-types "^4.2.0"
     deep-diff "^1.0.2"
     fs-extra "^8.1.0"
     glob "^7.2.0"
-    graphql "^14.5.8"
-    graphql-transformer-common "4.24.3"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
     lodash "^4.17.21"
 
-graphql-versioned-transformer@5.2.46, graphql-versioned-transformer@^5.2.46:
-  version "5.2.46"
-  resolved "https://registry.npmjs.org/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.46.tgz#c2f7944175da2b8a015aef608cc1375b9c181cd5"
-  integrity sha512-7j/cM3TowG84M2/3Tw7E+O0eSWZhX7umCsHwKg0ewlJJRokz3bX8eNKXRRWsoYX9eICBaKeYb2yEh9Ec88dBuA==
+graphql-versioned-transformer@5.2.48-rdsv2preview.0, graphql-versioned-transformer@^5.2.48-rdsv2preview.0:
+  version "5.2.48-rdsv2preview.0"
+  resolved "https://registry.npmjs.org/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.48-rdsv2preview.0.tgz#687d90dbe91087a896f86d7f4eb666c1e606ad71"
+  integrity sha512-nuoXWj3uQhpLc0mvMm/W+hcpb/sZT8sGr1DrkT494vO+XanObeLnObtQpPYoLmI+cncwmdcsjVsOifoCtZ93sw==
   dependencies:
-    graphql "^14.5.8"
-    graphql-mapping-template "4.20.7"
-    graphql-transformer-common "4.24.3"
-    graphql-transformer-core "7.6.9"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.8-rdsv2preview.0"
+    graphql-transformer-common "4.24.5-rdsv2preview.0"
+    graphql-transformer-core "7.7.0-rdsv2preview.0"
 
 graphql-ws@^5.4.1:
   version "5.5.5"
@@ -16446,6 +16830,11 @@ internal-slot@^1.0.3:
     has "^1.0.3"
     side-channel "^1.0.4"
 
+interpret@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/interpret/-/interpret-2.2.0.tgz#1a78a0b5965c40a5416d007ad6f50ad27c417df9"
+  integrity sha512-Ju0Bz/cEia55xDwUWEa8+olFpCiQoypjnQySseKtmjNrnps3P+xfpUmGr90T7yjlVJmOtybRvPXhKMbHr+fWnw==
+
 into-stream@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/into-stream/-/into-stream-6.0.0.tgz#4bfc1244c0128224e18b8870e85b2de8e66c6702"
@@ -16822,6 +17211,11 @@ is-potential-custom-element-name@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/is-potential-custom-element-name/-/is-potential-custom-element-name-1.0.1.tgz#171ed6f19e3ac554394edf78caa05784a45bebb5"
   integrity sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ==
+
+is-property@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/is-property/-/is-property-1.0.2.tgz#57fe1c4e48474edd65b09911f26b1cd4095dda84"
+  integrity sha512-Ks/IoX00TtClbGQr4TWXemAnktAQvYB7HzcCxDGqEZU6oCmb2INHuOoKxbtR+HFkmYWBKv/dOZtGRiAjDhj92g==
 
 is-regex@^1.1.4:
   version "1.1.4"
@@ -18285,6 +18679,26 @@ klona@^2.0.4, klona@^2.0.5:
   resolved "https://registry.npmjs.org/klona/-/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==
 
+knex@~2.3.0:
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/knex/-/knex-2.3.0.tgz#87fa2a9553d7cafb125d7a0645256fbe29ef5967"
+  integrity sha512-WMizPaq9wRMkfnwKXKXgBZeZFOSHGdtoSz5SaLAVNs3WRDfawt9O89T4XyH52PETxjV8/kRk0Yf+8WBEP/zbYw==
+  dependencies:
+    colorette "2.0.19"
+    commander "^9.1.0"
+    debug "4.3.4"
+    escalade "^3.1.1"
+    esm "^3.2.25"
+    get-package-type "^0.1.0"
+    getopts "2.3.0"
+    interpret "^2.2.0"
+    lodash "^4.17.21"
+    pg-connection-string "2.5.0"
+    rechoir "^0.8.0"
+    resolve-from "^5.0.0"
+    tarn "^3.0.2"
+    tildify "2.0.0"
+
 kuler@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
@@ -18642,6 +19056,11 @@ lolex@^5.0.1:
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+long@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
+  integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
+
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -18693,6 +19112,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+lru-cache@^7.14.1:
+  version "7.14.1"
+  resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-7.14.1.tgz#8da8d2f5f59827edb388e63e459ac23d6d408fea"
+  integrity sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==
 
 lru-cache@^7.4.4, lru-cache@^7.5.1, lru-cache@^7.7.1:
   version "7.14.0"
@@ -19264,6 +19688,27 @@ mute-stream@0.0.8, mute-stream@~0.0.4:
   version "0.0.8"
   resolved "https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
+
+mysql2@~2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/mysql2/-/mysql2-2.3.3.tgz#944f3deca4b16629052ff8614fbf89d5552545a0"
+  integrity sha512-wxJUev6LgMSgACDkb/InIFxDprRa6T95+VEoR+xPvtngtccNH2dGjEB/fVZ8yg1gWv1510c9CvXuJHi5zUm0ZA==
+  dependencies:
+    denque "^2.0.1"
+    generate-function "^2.3.1"
+    iconv-lite "^0.6.3"
+    long "^4.0.0"
+    lru-cache "^6.0.0"
+    named-placeholders "^1.1.2"
+    seq-queue "^0.0.5"
+    sqlstring "^2.3.2"
+
+named-placeholders@^1.1.2:
+  version "1.1.3"
+  resolved "https://registry.npmjs.org/named-placeholders/-/named-placeholders-1.1.3.tgz#df595799a36654da55dda6152ba7a137ad1d9351"
+  integrity sha512-eLoBxg6wE/rZkJPhU/xRX1WTpkFEwDJEN96oxFrTsqBdbT5ec295Q+CoHrL9IT0DipqKhmGcaZmwOt8OON5x1w==
+  dependencies:
+    lru-cache "^7.14.1"
 
 nan@^2.14.0:
   version "2.15.0"
@@ -20510,6 +20955,11 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
+
+pg-connection-string@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.5.0.tgz#538cadd0f7e603fc09a12590f3b8a452c2c0cf34"
+  integrity sha512-r5o/V/ORTA6TmUnyWZR9nCj1klXCO2CEKNRlVuJptZe85QuhFayC7WeMic7ndayT5IRIR0S0xFxFi2ousartlQ==
 
 picocolors@^0.2.1:
   version "0.2.1"
@@ -21842,6 +22292,13 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
+rechoir@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.npmjs.org/rechoir/-/rechoir-0.8.0.tgz#49f866e0d32146142da3ad8f0eff352b3215ff22"
+  integrity sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==
+  dependencies:
+    resolve "^1.20.0"
+
 recursive-readdir@^2.2.2:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/recursive-readdir/-/recursive-readdir-2.2.3.tgz#e726f328c0d69153bcabd5c322d3195252379372"
@@ -22643,6 +23100,11 @@ sentence-case@^3.0.4:
     tslib "^2.0.3"
     upper-case-first "^2.0.2"
 
+seq-queue@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/seq-queue/-/seq-queue-0.0.5.tgz#d56812e1c017a6e4e7c3e3a37a1da6d78dd3c93e"
+  integrity sha512-hr3Wtp/GZIc/6DAGPDcV4/9WoZhjrkXsi5B/07QgX8tsdc6ilr7BFM6PM6rbdAX1kFSDYeZGLipIZZKyQP0O5Q==
+
 serialize-javascript@6.0.0, serialize-javascript@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-6.0.0.tgz#efae5d88f45d7924141da8b5c3a7a7e663fefeb8"
@@ -23196,6 +23658,11 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+sqlstring@^2.3.2:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.3.tgz#2ddc21f03bce2c387ed60680e739922c65751d0c"
+  integrity sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==
 
 sshpk@^1.7.0:
   version "1.16.1"
@@ -23761,6 +24228,11 @@ tar@^6.1.0, tar@^6.1.11, tar@^6.1.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
+tarn@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/tarn/-/tarn-3.0.2.tgz#73b6140fbb881b71559c4f8bfde3d9a4b3d27693"
+  integrity sha512-51LAVKUSZSVfI05vjPESNc5vwqqZpbXCsU+/+wxlOrUjk2SnFTt97v9ZgQrD4YmxYW1Px6w2KjaDitCfkvgxMQ==
+
 teeny-request@7.1.1:
   version "7.1.1"
   resolved "https://registry.npmjs.org/teeny-request/-/teeny-request-7.1.1.tgz#2b0d156f4a8ad81de44303302ba8d7f1f05e20e6"
@@ -23884,6 +24356,11 @@ thunky@^1.0.2:
   version "1.1.0"
   resolved "https://registry.npmjs.org/thunky/-/thunky-1.1.0.tgz#5abaf714a9405db0504732bbccd2cedd9ef9537d"
   integrity sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==
+
+tildify@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/tildify/-/tildify-2.0.0.tgz#f205f3674d677ce698b7067a99e949ce03b4754a"
+  integrity sha512-Cc+OraorugtXNfs50hU9KS369rFXCfgGLpfCfvlc+Ud5u6VWmUQsOAa9HbTvheQdYnrdJqqv1e5oIqXppMYnSw==
 
 tiny-async-pool@^2.1.0:
   version "2.1.0"
