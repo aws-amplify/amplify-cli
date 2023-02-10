@@ -1,4 +1,4 @@
-import { LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
+import { LambdaLayer, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { isMultiEnvLayer } from './layerHelpers';
 
 /**

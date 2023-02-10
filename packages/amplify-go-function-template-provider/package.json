@@ -22,7 +22,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.9.6"
+    "@aws-amplify/amplify-function-plugin-interface": "1.9.6"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

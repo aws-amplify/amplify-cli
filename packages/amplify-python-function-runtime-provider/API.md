@@ -4,7 +4,7 @@
 
 ```ts
 
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 // @public (undocumented)

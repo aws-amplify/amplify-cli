@@ -5,7 +5,7 @@ import {
   generateEnvVariablesForCfn,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 import { $TSContext } from 'amplify-cli-core';
-import { FunctionDependency } from 'amplify-function-plugin-interface/src';
+import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface/src';
 import { updateCFNFileForResourcePermissions } from '../../../../provider-utils/awscloudformation/service-walkthroughs/lambda-walkthrough';
 jest.mock('fs-extra');
 
@@ -104,7 +104,7 @@ test('update dependent functions', async () => {
         },
       },
     });
-  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  await updateDependentFunctionsCfn((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });
 
@@ -142,6 +142,6 @@ test('update dependent functions', async () => {
         },
       ],
     });
-  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  await updateDependentFunctionsCfn((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });

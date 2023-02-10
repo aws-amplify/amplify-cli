@@ -1,4 +1,4 @@
-import { PackageRequest, PackageResult, ZipEntry } from 'amplify-function-plugin-interface';
+import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import * as path from 'path';
@@ -46,7 +46,21 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       zipEntries.push({
         sourceFolder: path.join(params.srcRoot, 'src'),
         packageFolder: await getPipenvDir(params.srcRoot),
-        ignoreFiles: ['**/dist/**', '**/__pycache__/**', '**/test/**', '**/tests/**', 'distutils**', 'pip**', 'pkg_resources**', 'setuptools**', 'src.egg-info/**', 'wheel**', '_virtualenv**', 'easy-install.pth', 'src.egg-link'],
+        ignoreFiles: [
+          '**/dist/**',
+          '**/__pycache__/**',
+          '**/test/**',
+          '**/tests/**',
+          'distutils**',
+          'pip**',
+          'pkg_resources**',
+          'setuptools**',
+          'src.egg-info/**',
+          'wheel**',
+          '_virtualenv**',
+          'easy-install.pth',
+          'src.egg-link',
+        ],
       });
     }
     return Promise.resolve({ packageHash, zipEntries });

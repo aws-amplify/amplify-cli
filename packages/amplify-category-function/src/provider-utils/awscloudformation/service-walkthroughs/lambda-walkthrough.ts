@@ -1,11 +1,9 @@
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interface';
+import { FunctionParameters, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import {
-  categoryName, envVarPrintoutPrefix, topLevelCommentPrefix, topLevelCommentSuffix,
-} from '../../../constants';
+import { categoryName, envVarPrintoutPrefix, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 import { getNewCFNEnvVariables, getNewCFNParameters } from '../utils/cloudformationHelpers';
 import {
   advancedSettingsList,
@@ -288,9 +286,8 @@ export const updateWalkthrough = async (context: $TSContext, lambdaToUpdate?: st
 
   // ask lambda layer questions and merge results
   if (selectedSettings.includes(lambdaLayerSetting)) {
-    const currentFunctionParameters: $TSAny = JSONUtilities.readJson(
-      path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false },
-    ) || {};
+    const currentFunctionParameters: $TSAny =
+      JSONUtilities.readJson(path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false }) || {};
     merge(
       functionParameters,
       await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers, true),

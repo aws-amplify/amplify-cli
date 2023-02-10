@@ -1,5 +1,5 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
+import { FunctionDependency, LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { addLayersToFunctionWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/addLayerToFunctionWalkthrough';
 import {
   askCustomArnQuestion,

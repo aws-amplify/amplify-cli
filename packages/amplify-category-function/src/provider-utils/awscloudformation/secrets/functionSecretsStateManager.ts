@@ -1,9 +1,5 @@
-import {
-  $TSContext, JSONUtilities, pathManager, ResourceName,
-} from 'amplify-cli-core';
-import {
-  removeSecret, retainSecret, SecretDeltas, SecretName, setSecret,
-} from 'amplify-function-plugin-interface';
+import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
+import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -76,7 +72,7 @@ export class FunctionSecretsStateManager {
             await this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
             break;
           default:
-            // retain is a noop
+          // retain is a noop
         }
       }),
     );
@@ -132,13 +128,15 @@ export class FunctionSecretsStateManager {
    */
   syncSecretsPendingRemoval = async (): Promise<void> => {
     await Promise.all(
-      Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) => this.syncSecretDeltas(
-        {
-          ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
-          ...secretNamesToSecretDeltas(secretNames, removeSecret),
-        },
-        functionName,
-      )),
+      Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) =>
+        this.syncSecretDeltas(
+          {
+            ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
+            ...secretNamesToSecretDeltas(secretNames, removeSecret),
+          },
+          functionName,
+        ),
+      ),
     );
     secretsPendingRemoval = {};
   };
@@ -279,11 +277,15 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
 };
 
 const setAppIdForFunctionInTeamProvider = (functionName: string): void => {
-  getEnvParamManager().getResourceParamManager(categoryName, functionName).setParam(secretsPathAmplifyAppIdKey, getAppId());
+  getEnvParamManager()
+    .getResourceParamManager(categoryName, functionName)
+    .setParam(secretsPathAmplifyAppIdKey, getAppId());
 };
 
 const removeAppIdForFunctionInTeamProvider = (functionName: string): void => {
-  getEnvParamManager().getResourceParamManager(categoryName, functionName).deleteParam(secretsPathAmplifyAppIdKey);
+  getEnvParamManager()
+    .getResourceParamManager(categoryName, functionName)
+    .deleteParam(secretsPathAmplifyAppIdKey);
 };
 
 /**

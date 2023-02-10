@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs-extra';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
 import { constructCloudWatchEventComponent } from '../utils/cloudformationHelpers';

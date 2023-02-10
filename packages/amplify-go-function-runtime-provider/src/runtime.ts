@@ -5,19 +5,15 @@ import {
   BuildRequest,
   BuildResult,
   BuildType,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
-import {
-  SemVer, coerce, gte, lt,
-} from 'semver';
-import {
-  BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN,
-} from './constants';
+import { SemVer, coerce, gte, lt } from 'semver';
+import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -177,7 +173,7 @@ const winZip = async (src: string, dest: string, print: any) => {
     } else {
       await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
     }
-  } catch (error: unknown) {
+  } catch (error) {
     throw new Error(`Error installing build-lambda-zip: ${error}`);
   }
   const goPath = process.env.GOPATH;

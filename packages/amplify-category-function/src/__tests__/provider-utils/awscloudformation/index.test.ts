@@ -3,7 +3,7 @@ import { ServiceName } from '../../../provider-utils/awscloudformation/utils/con
 import { open, $TSContext, stateManager } from 'amplify-cli-core';
 import { buildFunction } from '../../../provider-utils/awscloudformation/utils/buildFunction';
 import { getBuilder } from '../../..';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 
 jest.mock('amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;

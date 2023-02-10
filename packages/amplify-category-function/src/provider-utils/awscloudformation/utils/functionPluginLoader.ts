@@ -8,7 +8,7 @@ import {
   FunctionRuntimeLifecycleManager,
   RuntimeContributionRequest,
   TemplateContributionRequest,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
@@ -197,8 +197,10 @@ async function getSelectionsFromContributors<T>(
 }
 
 function isDefaultDefined(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>) {
-  return selectionOptions.defaultSelection &&
-    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime');
+  return (
+    selectionOptions.defaultSelection &&
+    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime')
+  );
 }
 
 export async function loadPluginFromFactory(pluginPath: string, expectedFactoryFunction: string, context: $TSContext): Promise<$TSAny> {
