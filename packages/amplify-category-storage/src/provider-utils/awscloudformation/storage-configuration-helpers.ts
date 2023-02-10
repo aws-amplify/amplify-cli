@@ -9,7 +9,6 @@ import {
 } from 'amplify-cli-core';
 import {
   AddStorageRequest,
-  CrudOperation,
   ImportStorageRequest,
   RemoveStorageRequest,
   UpdateStorageRequest,
