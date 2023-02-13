@@ -11,8 +11,8 @@ import {
   HooksMeta,
   AmplifyError,
   constants,
-  CommandLineInput,
 } from 'amplify-cli-core';
+import { CommandLineInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';

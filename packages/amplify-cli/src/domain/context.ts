@@ -1,7 +1,8 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable spellcheck/spell-checker */
-import { IUsageData, CommandLineInput, PluginPlatform } from 'amplify-cli-core';
+import { IUsageData, PluginPlatform } from 'amplify-cli-core';
+import { CommandLineInput } from './command-input';
 import { AmplifyToolkit } from './amplify-toolkit';
 
 /**

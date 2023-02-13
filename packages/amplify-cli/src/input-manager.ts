@@ -1,8 +1,9 @@
 // normalize command line arguments, allow verb / noun place switch
-import { CommandLineInput, constants, PluginPlatform, pathManager, stateManager } from 'amplify-cli-core';
+import { constants, PluginPlatform, pathManager, stateManager } from 'amplify-cli-core';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
+import { CommandLineInput } from './domain/command-input';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): CommandLineInput {
   const result = new CommandLineInput(process.argv);

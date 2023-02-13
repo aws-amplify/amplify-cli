@@ -1,5 +1,5 @@
 import { JSONUtilities } from 'amplify-cli-core';
-import { CommandLineInput } from 'amplify-cli-core';
+import { CommandLineInput } from '../command-input';
 
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
 const quotes = '\\\\?"';

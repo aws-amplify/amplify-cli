@@ -5,9 +5,9 @@ import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
+import { CommandLineInput } from '../command-input';
 import {
   JSONUtilities,
-  CommandLineInput,
   FromStartupTimedCodePaths,
   InputOptions,
   IUsageData,

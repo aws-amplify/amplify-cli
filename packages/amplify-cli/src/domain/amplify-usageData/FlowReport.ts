@@ -1,5 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager, CommandLineInput } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
+import { CommandLineInput } from '../command-input';
 import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import {

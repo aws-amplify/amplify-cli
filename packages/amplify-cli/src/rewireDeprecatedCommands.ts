@@ -1,4 +1,4 @@
-import { CommandLineInput } from 'amplify-cli-core';
+import { CommandLineInput } from './domain/command-input';
 
 const rewiredCommands: { [key: string]: { warningMsg: string; plugin: string; command: string } } = {
   'function.invoke': {
