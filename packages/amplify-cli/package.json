@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "10.7.1",
+  "version": "10.7.2",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -56,7 +56,7 @@
     "amplify-cli-shared-interfaces": "1.1.1",
     "amplify-codegen": "^3.3.6",
     "amplify-console-hosting": "2.4.1",
-    "amplify-container-hosting": "2.5.10",
+    "amplify-container-hosting": "2.5.11",
     "amplify-dotnet-function-runtime-provider": "1.7.1",
     "amplify-dotnet-function-template-provider": "2.4.3",
     "@aws-amplify/amplify-java-function-runtime-provider": "2.3.9",
