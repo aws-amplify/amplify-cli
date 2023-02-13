@@ -1,6 +1,7 @@
-import { $TSContext, stateManager, CommandLineInput } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
+import { CLIInput as CommandLineInput } from '../../domain/command-input';
 import { constructContext } from '../../context-manager';
 
 jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({ envA: 'test', envB: 'test' });

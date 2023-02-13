@@ -5,7 +5,7 @@ import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
-import { CommandLineInput } from '../command-input';
+import { CLIInput } from '../command-input';
 import {
   JSONUtilities,
   FromStartupTimedCodePaths,
@@ -32,7 +32,7 @@ export class UsageData implements IUsageData {
   accountId = '';
   installationUuid = '';
   version = '';
-  input: CommandLineInput;
+  input: CLIInput;
   projectSettings: ProjectSettings;
   url: UrlWithStringQuery;
   inputOptions: InputOptions;
@@ -46,7 +46,7 @@ export class UsageData implements IUsageData {
   private constructor() {
     this.sessionUuid = uuid();
     this.url = getUrl();
-    this.input = new CommandLineInput([]);
+    this.input = new CLIInput([]);
     this.projectSettings = {};
     this.inputOptions = {};
   }
@@ -57,7 +57,7 @@ export class UsageData implements IUsageData {
   init(
     installationUuid: string,
     version: string,
-    input: CommandLineInput,
+    input: CLIInput,
     accountId: string,
     projectSettings: ProjectSettings,
     processStartTimeStamp: number,

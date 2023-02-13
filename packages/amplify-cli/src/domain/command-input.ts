@@ -1,6 +1,6 @@
-import { $CommandLineInput } from 'amplify-cli-core/src/types';
+import { CommandLineInput } from 'amplify-cli-core/src/types';
 
-export class CommandLineInput implements $CommandLineInput {
+export class CLIInput implements CommandLineInput {
   argv: Array<string>;
   plugin?: string;
   command = '';

@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, stateManager, PluginPlatform } from 'amplify-cli-core';
-import { CommandLineInput } from './domain/command-input';
+import { CLIInput } from './domain/command-input';
 import * as _ from 'lodash';
 import { init } from './app-config';
 import { attachExtensions, ProjectSettings } from 'amplify-cli-core';
@@ -9,7 +9,7 @@ import { Context } from './domain/context';
 /**
  * Initialize the context object
  */
-export const constructContext = (pluginPlatform: PluginPlatform, input: CommandLineInput): Context => {
+export const constructContext = (pluginPlatform: PluginPlatform, input: CLIInput): Context => {
   const context = new Context(pluginPlatform, input);
   attachExtensions((context as unknown) as $TSContext);
   return context;

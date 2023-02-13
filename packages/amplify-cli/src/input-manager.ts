@@ -3,10 +3,10 @@ import { constants, PluginPlatform, pathManager, stateManager } from 'amplify-cl
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
-import { CommandLineInput } from './domain/command-input';
+import { CLIInput } from './domain/command-input';
 
-export function getCommandLineInput(pluginPlatform: PluginPlatform): CommandLineInput {
-  const result = new CommandLineInput(process.argv);
+export function getCommandLineInput(pluginPlatform: PluginPlatform): CLIInput {
+  const result = new CLIInput(process.argv);
   /* tslint:disable */
   if (result.argv && result.argv.length > 2) {
     let index = 2;
@@ -61,7 +61,7 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): CommandLine
   return result;
 }
 
-function preserveHelpInformation(input: CommandLineInput): CommandLineInput {
+function preserveHelpInformation(input: CLIInput): CLIInput {
   const subCommands = input.subCommands ? input.subCommands : [];
   // preserve non-help command in subcommands
   if (input.command && input.command.toLowerCase() !== constants.HELP) {
@@ -95,7 +95,7 @@ function preserveHelpInformation(input: CommandLineInput): CommandLineInput {
   return input;
 }
 
-function normalizeInput(input: CommandLineInput): CommandLineInput {
+function normalizeInput(input: CLIInput): CLIInput {
   // -v --version => version command
   // -h --help => help command
   // -y --yes => yes option
@@ -126,7 +126,7 @@ function normalizeInput(input: CommandLineInput): CommandLineInput {
   return input;
 }
 
-export function verifyInput(pluginPlatform: PluginPlatform, input: CommandLineInput): InputVerificationResult {
+export function verifyInput(pluginPlatform: PluginPlatform, input: CLIInput): InputVerificationResult {
   const result = new InputVerificationResult();
 
   // Normalize status command options
@@ -251,7 +251,7 @@ const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> =>
   return newObj;
 };
 
-const normalizeStatusCommandOptions = (input: CommandLineInput): CommandLineInput => {
+const normalizeStatusCommandOptions = (input: CLIInput): CLIInput => {
   const options = input.options ? input.options : {};
   const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
   // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'

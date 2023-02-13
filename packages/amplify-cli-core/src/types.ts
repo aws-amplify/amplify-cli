@@ -24,7 +24,7 @@ export type $TSContext = {
   projectHasMobileHubResources: boolean;
   prompt: $TSAny;
   exeInfo: $TSAny;
-  input: $CommandLineInput;
+  input: CommandLineInput;
   parameters: ContextParameters;
   usageData: IUsageData;
   runtime: Runtime;
@@ -65,7 +65,7 @@ export type ProjectConfig<T extends string = ''> = Pick<
 export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
 export interface FlowRecorder {
   setIsHeadless: (headless: boolean) => void;
-  pushHeadlessFlow: (headlessFlowDataString: string, input: $CommandLineInput) => void;
+  pushHeadlessFlow: (headlessFlowDataString: string, input: CommandLineInput) => void;
   pushInteractiveFlow: (prompt: string, input: unknown) => void;
   getFlowReport: () => IFlowReport | Record<string, never>;
   assignProjectIdentifier: (envName?: string) => string | undefined;
@@ -86,8 +86,8 @@ export interface IUsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
   amplifyCliVersion: string;
-  input: $CommandLineInput | null;
-  inputOptions: Pick<$CommandLineInput, 'options'>;
+  input: CommandLineInput | null;
+  inputOptions: Pick<CommandLineInput, 'options'>;
   timestamp: string;
   error: SerializableError;
   downstreamException: SerializableError;
@@ -127,7 +127,7 @@ export interface IFlowReport {
   cmd: string;
   subCmd: string | undefined;
   optionFlowData: Array<TypeOptionFlowData>; //IOptionFlowHeadlessData | IOptionFlowCLIData
-  input: $CommandLineInput;
+  input: CommandLineInput;
   timestamp: string;
   projectEnvIdentifier?: string; // hash(ProjectName + Amplify AppId + EnvName)
   projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
@@ -140,7 +140,7 @@ export interface IUsageMetricsData {
   init: (
     installationUuid: string,
     version: string,
-    input: $CommandLineInput,
+    input: CommandLineInput,
     accountId: string,
     projectSettings: ProjectSettings,
     processStartTimeStamp: number,
@@ -177,15 +177,15 @@ export enum ManuallyTimedCodePath {
   PROMPT_TIME = 'promptTime', // total time to takes to answer a prompt
 }
 
-export interface ContextParameters extends Pick<$CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
-  raw: $CommandLineInput['argv'];
-  array: $CommandLineInput['subCommands'];
+export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
+  raw: CommandLineInput['argv'];
+  array: CommandLineInput['subCommands'];
   first?: string;
   second?: string;
   third?: string;
 }
 
-export type $CommandLineInput = {
+export type CommandLineInput = {
   argv: Array<string>;
   plugin?: string;
   command: string;

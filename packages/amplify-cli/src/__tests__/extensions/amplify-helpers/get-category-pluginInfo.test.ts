@@ -1,4 +1,4 @@
-import { CommandLineInput } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../../../domain/command-input';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 import { constructContext } from '../../../context-manager';
 import { getCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-category-pluginInfo';

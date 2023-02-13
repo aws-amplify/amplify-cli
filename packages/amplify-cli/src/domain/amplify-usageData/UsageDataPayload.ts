@@ -1,4 +1,4 @@
-import { $TSAny, isCI, $CommandLineInput, InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from 'amplify-cli-core';
+import { $TSAny, isCI, CommandLineInput, InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
 import * as os from 'os';
 import { SerializableError } from './SerializableError';
@@ -11,8 +11,8 @@ export class UsageDataPayload implements IUsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
   amplifyCliVersion: string;
-  input: $CommandLineInput | null;
-  inputOptions: Pick<$CommandLineInput, 'options'>;
+  input: CommandLineInput | null;
+  inputOptions: Pick<CommandLineInput, 'options'>;
   timestamp: string;
   error!: SerializableError;
   downstreamException!: SerializableError;
@@ -32,7 +32,7 @@ export class UsageDataPayload implements IUsageDataPayload {
     sessionUuid: string,
     installationUuid: string,
     version: string,
-    input: $CommandLineInput,
+    input: CommandLineInput,
     error: Error | null,
     state: string,
     accountId: string,

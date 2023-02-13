@@ -12,7 +12,7 @@ import {
   AmplifyError,
   constants,
 } from 'amplify-cli-core';
-import { CommandLineInput } from './domain/command-input';
+import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
@@ -190,7 +190,7 @@ async function sigIntHandler(context: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: CommandLineInput): Promise<void> => {
+export const execute = async (input: CLIInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 
