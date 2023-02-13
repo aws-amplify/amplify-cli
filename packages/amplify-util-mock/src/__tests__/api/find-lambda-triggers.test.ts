@@ -124,6 +124,6 @@ describe('Find Searchable Lambda Triggers for API Models', () => {
     expect(receivedConfig?.handler).toEqual('index.handler');
     expect(receivedConfig?.reBuild).toEqual(false);
     expect(receivedConfig?.runtime).toEqual('python');
-    expect(receivedConfig?.runtimePluginId).toEqual('@aws-amplify/amplify-python-function-runtime-provider');
+    expect(receivedConfig?.runtimePluginId).toEqual('amplify-python-function-runtime-provider');
   });
 });
