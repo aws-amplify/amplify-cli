@@ -106,11 +106,10 @@ const downloadParametersFromParameterStore = (
 };
 
 const convertKeyPathsToSdkPromises = (ssmClient: SSMType, keyPaths: string[]): (() => Promise<SSMType.GetParametersByPathResult>)[] => {
-  let parameterSliceIndex = 0;
   const sdkParameterChunks = [];
   for (let i = 0; i < keyPaths.length; i += 10) {
     sdkParameterChunks.push({
-      Names: keyPaths.slice(parameterSliceIndex, Math.min(parameterSliceIndex + 10, keyPaths.length)),
+      Names: keyPaths.slice(i, Math.min(i + 10, keyPaths.length)),
       WithDecryption: false,
     });
   }
