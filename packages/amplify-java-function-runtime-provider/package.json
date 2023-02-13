@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-java-function-runtime-provider",
+  "name": "amplify-java-function-runtime-provider",
   "version": "2.3.9",
   "description": "Provides functionality related to functions in JAVA on AWS",
   "repository": {
