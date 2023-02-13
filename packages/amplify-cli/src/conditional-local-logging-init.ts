@@ -1,6 +1,6 @@
 import { JSONUtilities } from 'amplify-cli-core';
-import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
 import { CLIInput } from './domain/command-input';
+import { getAmplifyLogger, Redactor } from '@aws-amplify/amplify-cli-logger';
 
 export function logInput(input: CLIInput): void {
   getAmplifyLogger().logInfo({

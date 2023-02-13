@@ -3,7 +3,7 @@ import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import fetch from 'node-fetch';
-import { Redactor, stringMasker } from 'amplify-cli-logger';
+import { Redactor, stringMasker } from '@aws-amplify/amplify-cli-logger';
 import columnify from 'columnify';
 import * as _ from 'lodash';
 import os from 'os';

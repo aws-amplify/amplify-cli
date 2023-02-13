@@ -1,7 +1,7 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { IDynamoDBService } from 'amplify-util-import';
+import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { importMessages } from './messages';

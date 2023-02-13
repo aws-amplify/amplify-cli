@@ -1,5 +1,5 @@
 import { pathManager } from 'amplify-cli-core';
-import { rootStackFileName } from 'amplify-provider-awscloudformation';
+import { rootStackFileName } from '@aws-amplify/amplify-provider-awscloudformation';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import * as path from 'path';

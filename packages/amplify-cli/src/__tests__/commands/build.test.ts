@@ -2,7 +2,7 @@ import { run } from '../../commands/build';
 import { $TSContext } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-provider-awscloudformation');
+jest.mock('@aws-amplify/amplify-provider-awscloudformation');
 jest.mock('@aws-amplify/amplify-category-custom');
 
 describe('run build command', () => {
@@ -44,7 +44,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = context_stub as unknown as $TSContext;
+    const context_stub_typed = (context_stub as unknown) as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(1);
   });
@@ -87,7 +87,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = context_stub as unknown as $TSContext;
+    const context_stub_typed = (context_stub as unknown) as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(3);
   });
@@ -127,7 +127,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = context_stub as unknown as $TSContext;
+    const context_stub_typed = (context_stub as unknown) as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(5);
   });
@@ -145,7 +145,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = context_stub as unknown as $TSContext;
+    const context_stub_typed = (context_stub as unknown) as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(1);
   });

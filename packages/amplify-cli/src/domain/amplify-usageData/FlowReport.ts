@@ -1,8 +1,8 @@
 /* eslint-disable spellcheck/spell-checker */
 import { stateManager } from 'amplify-cli-core';
 import { CLIInput } from '../command-input';
-import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
-import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
+import { getAmplifyLogger, Redactor, IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
+
 import {
   ICommandInput,
   IFlowData,
