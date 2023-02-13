@@ -47,7 +47,7 @@ const copyPkgAssetRegistry = [
   'amplify-dynamodb-simulator',
   'amplify-java-function-runtime-provider',
   '@aws-amplify/amplify-frontend-ios',
-  '@aws-amplify/amplify-go-function-runtime-provider',
+  'amplify-go-function-runtime-provider',
 
   '@aws-amplify/amplify-opensearch-simulator',
   'amplify-python-function-runtime-provider',
