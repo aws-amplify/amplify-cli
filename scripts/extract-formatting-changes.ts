@@ -97,7 +97,7 @@ const main = async () => {
     if (!base || !head) {
       throw new Error('Missing revisions to compare');
     }
-    // assertCleanWorkingTree();
+    assertCleanWorkingTree();
     const unfilteredFiles = getChangedFiles(base, head);
     const prettierCompatibleFiles = unfilteredFiles.filter(doesFileExist).filter(isCompatibleWithPrettier);
     if (prettierCompatibleFiles.length === 0) {
