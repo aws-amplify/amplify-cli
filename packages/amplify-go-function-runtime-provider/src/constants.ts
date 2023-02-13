@@ -12,5 +12,5 @@ export const MAIN_BINARY_WIN = 'main.exe';
 export const BASE_PORT = 8900;
 export const MAX_PORT = 9999;
 
-export const packageName = '@aws-amplify/amplify-go-function-runtime-provider';
+export const packageName = 'amplify-go-function-runtime-provider';
 export const relativeShimSrcPath = join('resources', 'localinvoke');

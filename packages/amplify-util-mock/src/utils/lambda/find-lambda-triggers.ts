@@ -77,7 +77,7 @@ export const getSearchableLambdaTriggerConfig = (context: $TSContext, opensearch
   const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
   return {
     handler: 'index.handler',
-    runtimePluginId: '@aws-amplify/amplify-python-function-runtime-provider',
+    runtimePluginId: 'amplify-python-function-runtime-provider',
     runtime: 'python',
     directory: mockSearchableTriggerDirectory,
     envVars: {
