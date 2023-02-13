@@ -849,6 +849,20 @@ export type FeatureFlagsEntry = Record<string, Record<string, $TSAny>>;
 export type FeatureFlagType = 'boolean' | 'number';
 
 // @public (undocumented)
+export interface FlowRecorder {
+    // (undocumented)
+    assignProjectIdentifier: (envName?: string) => string | undefined;
+    // (undocumented)
+    getFlowReport: () => IFlowReport | Record<string, never>;
+    // (undocumented)
+    pushHeadlessFlow: (headlessFlowDataString: string, input: $CommandLineInput) => void;
+    // (undocumented)
+    pushInteractiveFlow: (prompt: string, input: unknown) => void;
+    // (undocumented)
+    setIsHeadless: (headless: boolean) => void;
+}
+
+// @public (undocumented)
 export enum FromStartupTimedCodePaths {
     // (undocumented)
     PLATFORM_STARTUP = "platformStartup",
@@ -1089,20 +1103,6 @@ export interface IDeploymentStateManager {
 }
 
 // @public (undocumented)
-export interface IFlowData {
-    // (undocumented)
-    assignProjectIdentifier: (envName?: string) => string | undefined;
-    // (undocumented)
-    getFlowReport: () => IFlowReport | Record<string, never>;
-    // (undocumented)
-    pushHeadlessFlow: (headlessFlowDataString: string, input: $CommandLineInput) => void;
-    // (undocumented)
-    pushInteractiveFlow: (prompt: string, input: unknown) => void;
-    // (undocumented)
-    setIsHeadless: (headless: boolean) => void;
-}
-
-// @public (undocumented)
 export interface IFlowReport {
     // (undocumented)
     category: string;
@@ -1242,7 +1242,7 @@ export const isResourceNameUnique: (category: string, resourceName: string, thro
 export const isWindowsPlatform: () => boolean;
 
 // @public (undocumented)
-export interface IUsageData extends IUsageMetricsData, IFlowData {
+export interface IUsageData extends IUsageMetricsData, FlowRecorder {
 }
 
 // @public (undocumented)
@@ -1339,18 +1339,11 @@ export class JSONUtilities {
 
 // @public (undocumented)
 export type LocalAwsInfo = {
-    NONE: unknown;
+    NONE: Record<string, unknown>;
 };
 
 // @public (undocumented)
-export interface LocalEnvInfo {
-    // (undocumented)
-    defaultEditor: string;
-    // (undocumented)
-    envName: string;
-    // (undocumented)
-    projectPath: string;
-}
+export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
 
 // @public (undocumented)
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
@@ -1755,14 +1748,7 @@ const print_2: {
 export { print_2 as print }
 
 // @public (undocumented)
-export type ProjectConfig<T extends string = ''> = {
-    frontend: T;
-    version: string;
-    providers: string[];
-    projectPath?: string;
-    defaultEditor?: string;
-    frontendHandler?: unknown;
-} & Record<T, string>;
+export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
 
 // @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
@@ -1771,7 +1757,13 @@ export const projectNotInitializedError: () => AmplifyError;
 export type ProjectSettings = {
     frontend?: string;
     editor?: string;
+    envName?: string;
     framework?: string;
+    version?: string;
+    providers?: string[];
+    projectPath?: string;
+    defaultEditor?: string;
+    frontendHandler?: unknown;
 };
 
 // @public (undocumented)
