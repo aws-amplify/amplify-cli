@@ -3,9 +3,9 @@ import { AmplifyError, stateManager } from 'amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
-import { storeCurrentCloudBackend } from './push-resources';
 import constants from './constants';
 import { fileLogger } from './utils/aws-logger';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 
 const logger = fileLogger('amplify-service-migrate');
 

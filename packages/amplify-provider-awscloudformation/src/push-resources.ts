@@ -23,7 +23,6 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   pathManager,
-  PathConstants,
   stateManager,
   FeatureFlags,
   JSONUtilities,
@@ -41,7 +40,7 @@ import {
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { AmplifySpinner, printer } from 'amplify-prompts';
+import { printer } from 'amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -55,7 +54,7 @@ import { downloadAPIModels } from './download-api-models';
 import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
-import archiver from './utils/archiver';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { storeArtifactsForAmplifyService, postPushCheck } from './amplify-service-manager';
 import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
@@ -543,82 +542,6 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
   }
 
   await context.amplify.updateamplifyMetaAfterPush(resources);
-};
-
-/**
- * Publish files that Amplify Studio depends on outside the zip file so that can read
- * without streaming from the zip.
- */
-const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
-  const amplifyDirPath = pathManager.getAmplifyDirPath();
-  const studioBackendDirName = 'studio-backend';
-  // Delete the contents of the studio backend directory first
-  await s3.deleteDirectory(bucketName, studioBackendDirName);
-  // Create a list of file params to upload to the deployment bucket
-  const uploadFileParams = [
-    'cli.json',
-    'amplify-meta.json',
-    'backend-config.json',
-    'schema.graphql',
-    'transform.conf.json',
-    'parameters.json',
-  ]
-    .flatMap(baseName => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath }))
-    .filter(filePath => !filePath.startsWith('backend'))
-    .map(filePath => ({
-      Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
-      Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
-    }));
-
-  const spinner = new AmplifySpinner();
-  try {
-    spinner.start('Uploading files.');
-    await Promise.all(uploadFileParams.map(params => s3.uploadFile(params, false)));
-  } finally {
-    spinner.stop();
-  }
-};
-
-/**
- * Upload files that Amplify Studio depends on
- */
-export const storeCurrentCloudBackend = async (context: $TSContext) => {
-  const zipFilename = '#current-cloud-backend.zip';
-  const backendDir = pathManager.getBackendDirPath();
-  const tempDir = path.join(backendDir, '.temp');
-  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
-
-  // handle tag file
-  const tagFilePath = pathManager.getTagFilePath();
-  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
-  if (fs.existsSync(tagFilePath)) {
-    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
-  }
-
-  const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
-    cwd: pathManager.getAmplifyDirPath(),
-    absolute: true,
-  });
-
-  const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const result = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
-  const s3Key = `${result.zipFilename}`;
-  const s3 = await S3.getInstance(context);
-
-  const s3Params = {
-    Body: fs.createReadStream(result.zipFilePath),
-    Key: s3Key,
-  };
-
-  logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
-  const deploymentBucketName = await s3.uploadFile(s3Params);
-  await uploadStudioBackendFiles(s3, deploymentBucketName);
-
-  fs.removeSync(tempDir);
 };
 
 const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {

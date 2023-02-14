@@ -6,21 +6,17 @@ import {
   $TSContext,
   $TSObject,
   AmplifyError,
-  AmplifyFault,
   JSONUtilities,
-  PathConstants,
   pathManager,
   stateManager,
   Tag,
   Template,
 } from 'amplify-cli-core';
-import { AmplifySpinner } from 'amplify-prompts';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
 
 import fs from 'fs-extra';
-import glob from 'glob';
 import moment from 'moment';
 import path from 'path';
 import sequential from 'promise-sequential';
@@ -35,8 +31,8 @@ import * as configurationManager from './configuration-manager';
 import constants from './constants';
 import { configurePermissionsBoundaryForInit } from './permissions-boundary/permissions-boundary';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
-import archiver from './utils/archiver';
 import { fileLogger } from './utils/aws-logger';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 
 const logger = fileLogger('initializer');
 
@@ -294,71 +290,16 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
   fs.copySync(path.join(rootStackBackendBuildDir, '..'), path.join(rootStackCloudBackendBuildDir, '..'));
 };
 
-const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
-  const projectRoot = pathManager.findProjectRoot();
-  const zipFilename = '#current-cloud-backend.zip';
-  const backendDir = pathManager.getBackendDirPath(projectRoot);
-  const tempDir = path.join(backendDir, '.temp');
-  const currentCloudBackendDir = context.exeInfo
-    ? path.join(context.exeInfo.localEnvInfo.projectPath, PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName)
-    : pathManager.getCurrentCloudBackendDirPath(projectRoot);
+const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> => S3.getInstance(context).then(async s3 => {
+  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+  const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
+  const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
+  const fileUploadTasks = [];
 
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
-
-  const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
-    cwd: pathManager.getAmplifyDirPath(projectRoot),
-    absolute: true,
-  });
-
-  // handle tag file
-  const tagFilePath = pathManager.getTagFilePath(projectRoot);
-  const tagCloudFilePath = pathManager.getCurrentTagFilePath(projectRoot);
-  if (fs.existsSync(tagFilePath)) {
-    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
-  }
-
-  const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const spinner = new AmplifySpinner();
-
-  try {
-    spinner.start('Saving deployment state.');
-    const archive = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
-    const s3Key = `${archive.zipFilename}`;
-    const s3Instance = await S3.getInstance(context);
-    const s3Params = {
-      Body: fs.createReadStream(archive.zipFilePath),
-      Key: s3Key,
-    };
-    logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
-    await s3Instance.uploadFile(s3Params);
-    spinner.stop('Deployment state saved successfully.');
-  } catch (ex) {
-    spinner.stop('Deployment state save failed.', false);
-    throw new AmplifyFault(
-      'DeploymentFault',
-      {
-        message: ex.message,
-      },
-      ex,
-    );
-  } finally {
-    fs.removeSync(tempDir);
-  }
-};
-
-const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> =>
-  S3.getInstance(context).then(async s3 => {
-    const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-    const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-    const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
-    const fileUploadTasks = [];
-
-    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
-    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
-    await sequential(fileUploadTasks);
-  });
+  fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
+  fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
+  await sequential(fileUploadTasks);
+});
 
 const uploadFile = async (s3, filePath: string, key): Promise<void> => {
   if (fs.existsSync(filePath)) {

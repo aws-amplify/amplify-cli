@@ -24,6 +24,7 @@ import { IdentityPoolService, createIdentityPoolService } from './aws-utils/Iden
 import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { loadConfigurationForEnv } from './configuration-manager';
 import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
@@ -34,6 +35,7 @@ import * as resourceExport from './export-resources';
 import * as exportUpdateMeta from './export-update-amplify-meta';
 
 export { resolveAppId } from './utils/resolve-appId';
+export { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 export { loadConfigurationForEnv } from './configuration-manager';
 export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { updateEnv } from './update-env';
@@ -79,10 +81,6 @@ function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string
 
 function pushResources(context, resourceList, rebuild: boolean) {
   return resourcePusher.run(context, resourceList, rebuild);
-}
-
-function storeCurrentCloudBackend(context) {
-  return resourcePusher.storeCurrentCloudBackend(context);
 }
 
 function deleteEnv(context, envName, deleteS3) {
