@@ -21,16 +21,16 @@ describe('analyzeProject', () => {
     mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
     const frontendPlugins = [
       {
-        name: 'amplify-frontend-javascript',
+        name: '@aws-amplify/amplify-frontend-javascript',
         pluginType: 'frontend',
         pluginName: 'javascript',
-        directory: 'amplify-frontend-javascript',
+        directory: '@aws-amplify/amplify-frontend-javascript',
       },
       {
-        name: 'amplify-frontend-flutter',
+        name: '@aws-amplify/amplify-frontend-flutter',
         pluginType: 'frontend',
         pluginName: 'flutter',
-        directory: 'amplify-frontend-flutter',
+        directory: '@aws-amplify/amplify-frontend-flutter',
       },
     ];
     mockContext.exeInfo = {

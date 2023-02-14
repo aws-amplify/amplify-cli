@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.1...@aws-amplify/cli@10.7.2) (2023-02-13)
+
+
+### Bug Fixes
+
+* bump API plugin version to update legacy rds transformers ([705d65c](https://github.com/aws-amplify/amplify-cli/commit/705d65cb3385543a37e276ae1e05a707d98cdd5c))
+
+
+
+
+
 ## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.0...@aws-amplify/cli@10.7.1) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/cli

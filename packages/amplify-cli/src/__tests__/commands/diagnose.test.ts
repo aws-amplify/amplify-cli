@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
 import { pathManager, stateManager } from 'amplify-cli-core';
-import { Redactor } from 'amplify-cli-logger';
+import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { WriteStream } from 'fs-extra';
 import fetch from 'node-fetch';
 import * as uuid from 'uuid';
@@ -22,7 +22,7 @@ jest.mock('../../commands/helpers/encryption-helpers', () => ({
 }));
 jest.mock('archiver');
 jest.mock('fs-extra');
-jest.mock('amplify-cli-logger', () => ({
+jest.mock('@aws-amplify/amplify-cli-logger', () => ({
   Redactor: jest.fn(),
   stringMasker: jest.fn(),
 }));
