@@ -112,7 +112,7 @@ export const parseInputs = async (
 };
 
 const iteratorQuestion = (input: $TSAny, question: $TSAny, context: $TSContext) => {
-  if (context.updatingAuth[input.iterator as keyof CognitoConfiguration]) {
+  if (context.updatingAuth?.[input.iterator as keyof CognitoConfiguration]) {
     question = {
       choices: context.updatingAuth[input.iterator as keyof CognitoConfiguration].map((i: $TSAny) => ({
         name: i,
@@ -200,11 +200,11 @@ const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, conte
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const newChoices = JSON.parse(JSON.stringify(choices));
     choices.forEach((c: { conditionKey: string; value: $TSAny; conditionMsg: string; name: string }) => {
-      if (c.conditionKey === 'useDefault' && context.updatingAuth[c.conditionKey] === c.value && !c.conditionMsg) {
+      if (c.conditionKey === 'useDefault' && context.updatingAuth?.[c.conditionKey] === c.value && !c.conditionMsg) {
         const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
         newChoices.splice(index, 1);
-      } else if (c.conditionMsg && !context.updatingAuth[c.conditionKey as keyof CognitoConfiguration]) {
-        if (context.updatingAuth.useDefault === 'defaultSocial') {
+      } else if (c.conditionMsg && !context.updatingAuth?.[c.conditionKey as keyof CognitoConfiguration]) {
+        if (context.updatingAuth?.useDefault === 'defaultSocial') {
           const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
           newChoices[index].disabled = `Disabled: ${c.conditionMsg}`;
         } else {
@@ -220,7 +220,7 @@ const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, conte
 
 const triggerDefaults = (context: $TSContext, input: { key: string | number }, availableOptions: $TSAny[]) => {
   const capabilityDefaults: $TSAny[] = [];
-  if (context.updatingAuth.triggers) {
+  if (context.updatingAuth?.triggers) {
     const current =
       typeof context.updatingAuth[input.key as keyof CognitoConfiguration] === 'string'
         ? JSON.parse(context.updatingAuth[input.key as keyof CognitoConfiguration])

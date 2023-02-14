@@ -106,7 +106,7 @@ export const serviceWalkthrough = async (
       answer[questionObj.key] &&
       answer[questionObj.key].length > 0
     ) {
-      const replacementArray = context.updatingAuth[questionObj.iterator as keyof $TSContext['updatingAuth']] as unknown[];
+      const replacementArray = context.updatingAuth?.[questionObj.iterator as keyof $TSContext['updatingAuth']] ?? ([] as unknown[]);
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
         questionObj.validation = questionObj.iteratorValidation;
         const newValue = await inquirer.prompt({

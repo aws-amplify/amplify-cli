@@ -91,7 +91,11 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
  */
 export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
-  const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
+  const requestWithDefaults = await getUpdateAuthDefaultsApplier(
+    context,
+    defaultValuesFilename,
+    context.updatingAuth as CognitoConfiguration,
+  )(request);
   const resources = stateManager.getMeta();
   if (resources.auth.userPoolGroups) {
     await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);

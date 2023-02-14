@@ -32,7 +32,7 @@ export type $TSContext = {
   newUserInfo?: string;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  updatingAuth: CognitoConfiguration; // this seems to actually implement CognitoStackOptions
+  updatingAuth?: CognitoConfiguration; // this seems to actually implement CognitoStackOptions
 };
 export type CognitoConfiguration = ServiceQuestionsBaseResult &
   OAuthResult &
