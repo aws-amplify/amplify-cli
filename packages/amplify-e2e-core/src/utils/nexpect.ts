@@ -167,6 +167,7 @@ function chain(context: Context): ExecutionContext {
       const _wait: ExecutionStep = {
         fn: data => {
           const val = testExpectation(data, expectation, context);
+          console.log('Waiting for ' + expectation + ' ' + val);
           if (val === true && typeof callback === 'function') {
             callback(data);
           }
@@ -198,6 +199,7 @@ function chain(context: Context): ExecutionContext {
     sendCarriageReturn(): ExecutionContext {
       const _sendline: ExecutionStep = {
         fn: () => {
+          console.log('Sending sendCarriageReturn');
           context.process.write(RETURN);
           return true;
         },
@@ -212,6 +214,7 @@ function chain(context: Context): ExecutionContext {
     send(line: string): ExecutionContext {
       const _send: ExecutionStep = {
         fn: () => {
+          console.log('Sending #' + line + '#');
           context.process.write(line);
           return true;
         },
@@ -228,6 +231,7 @@ function chain(context: Context): ExecutionContext {
       const _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
+            console.log('Sending sendKeyDown');
             context.process.write(KEY_DOWN_ARROW);
           }
           return true;
@@ -572,6 +576,8 @@ function chain(context: Context): ExecutionContext {
       }
 
       const lines = data.split(EOL).filter(line => line.length > 0 && line !== '\r');
+      console.log('Lines')
+      console.log(lines);
       stdout = stdout.concat(lines);
 
       while (lines.length > 0) {

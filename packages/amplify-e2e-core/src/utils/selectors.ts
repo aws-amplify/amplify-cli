@@ -31,6 +31,9 @@ export const multiSelect = <T>(chain: ExecutionContext, items: T[] = [], allChoi
     // represents the numbers of moves down we need to make to selection
     .reduce((diffs, move) => (diffs.length > 0 ? [...diffs, move - diffs[diffs.length - 1]] : [move]), [] as number[])
     .reduce((chain, move) => moveDown(chain, move).send(' '), chain);
+
+  // This seems to be a key, we have to wait until enquirer flushes stdout before sending carriage return.
+  chain.wait('❯● storage');
   chain.sendCarriageReturn();
   return chain;
 };

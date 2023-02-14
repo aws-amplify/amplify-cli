@@ -21,7 +21,7 @@ import _ from 'lodash';
 
 describe('nodejs', () => {
   describe('amplify add function with additional permissions', () => {
-    let projRoot: string = '/Users/lazpavel/Development/playground/amplify-projects/amplify-playground';
+    let projRoot: string = '/Users/sobkamil/playground/testapp25';
     beforeEach(async () => {
       // projRoot = await createNewProjectDir('fn-with-perm');
     });
