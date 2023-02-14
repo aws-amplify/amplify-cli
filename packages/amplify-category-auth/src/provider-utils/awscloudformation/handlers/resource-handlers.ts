@@ -1,13 +1,11 @@
-import {
-  $TSAny, $TSContext, $TSObject, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, stateManager, CognitoConfiguration } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
 import { authProviders } from '../assets/string-maps';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
-import { CognitoCLIInputs, CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../utils/auth-defaults-appliers';
@@ -27,9 +25,7 @@ import {
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (
-  context: $TSContext,
-) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -41,7 +37,7 @@ export const getAddAuthHandler = (
 
   // replace secret keys from cli inputs to be stored in deployment secrets
 
-  let sharedParams = ({ ...requestWithDefaults }) as $TSAny;
+  let sharedParams = { ...requestWithDefaults } as $TSAny;
   privateKeys.forEach(p => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
@@ -81,7 +77,7 @@ export const getAddAuthHandler = (
     if (doesConfigurationIncludeSMS(request)) {
       await printSMSSandboxWarning();
     }
-  } catch (err: $TSAny) {
+  } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
     context.usageData.emitError(err);
@@ -103,8 +99,8 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     await createUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
   }
   if (
-    (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth)
-    || (requestWithDefaults.updateFlow === 'manual' && !requestWithDefaults.thirdPartyAuth)
+    (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth) ||
+    (requestWithDefaults.updateFlow === 'manual' && !requestWithDefaults.thirdPartyAuth)
   ) {
     delete requestWithDefaults.selectedParties;
     requestWithDefaults.authProviders = [];
@@ -128,7 +124,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     delete requestWithDefaults.authProvidersUserPool;
   }
 
-  let sharedParams = ({ ...requestWithDefaults }) as $TSAny;
+  let sharedParams = { ...requestWithDefaults } as $TSAny;
   privateKeys.forEach(p => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
@@ -174,7 +170,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning();
     }
-  } catch (err: $TSAny) {
+  } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error updating the auth resource');
     context.usageData.emitError(err);
