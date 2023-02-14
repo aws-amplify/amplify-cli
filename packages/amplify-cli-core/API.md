@@ -15,35 +15,6 @@ import { Ora } from 'ora';
 import { Template as Template_2 } from 'cloudform-types';
 
 // @public (undocumented)
-export type $CommandLineInput = {
-    argv: Array<string>;
-    plugin?: string;
-    command: string;
-    subCommands?: string[];
-    options?: {
-        restore?: boolean;
-        json?: boolean;
-        name?: string;
-        awsInfo?: string;
-        config?: string;
-        'iterative-rollback'?: boolean;
-        force?: boolean;
-        env?: string;
-        rootStackName?: string;
-        frontend?: string;
-        quickstart?: boolean;
-        app?: string | boolean;
-        timeout?: string;
-        event?: string;
-        minify?: boolean;
-        help?: boolean;
-        localEnvFilePath?: string;
-        yes?: boolean;
-        appId?: string;
-    } & Record<string, string | boolean>;
-};
-
-// @public (undocumented)
 export type $IPluginManifest = {
     name: string;
     type: string;
@@ -65,7 +36,7 @@ export type $TSContext = {
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
     exeInfo: $TSAny;
-    input: $CommandLineInput;
+    input: CommandLineInput;
     parameters: ContextParameters;
     usageData: IUsageData;
     runtime: Runtime;
@@ -545,21 +516,33 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
-export class CommandLineInput implements $CommandLineInput {
-    constructor(argv: Array<string>);
-    // (undocumented)
+export type CommandLineInput = {
     argv: Array<string>;
-    // (undocumented)
-    command: string;
-    // (undocumented)
-    options?: {
-        [key: string]: string | boolean;
-    };
-    // (undocumented)
     plugin?: string;
-    // (undocumented)
+    command: string;
     subCommands?: string[];
-}
+    options?: {
+        restore?: boolean;
+        json?: boolean;
+        name?: string;
+        awsInfo?: string;
+        config?: string;
+        'iterative-rollback'?: boolean;
+        force?: boolean;
+        env?: string;
+        rootStackName?: string;
+        frontend?: string;
+        quickstart?: boolean;
+        app?: string | boolean;
+        timeout?: string;
+        event?: string;
+        minify?: boolean;
+        help?: boolean;
+        localEnvFilePath?: string;
+        yes?: boolean;
+        appId?: string;
+    } & Record<string, string | boolean>;
+};
 
 // @public (undocumented)
 export const commandsInfo: Array<CommandInfo>;
@@ -597,13 +580,13 @@ export const constants: {
 };
 
 // @public (undocumented)
-export interface ContextParameters extends Pick<$CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
+export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
     // (undocumented)
-    array: $CommandLineInput['subCommands'];
+    array: CommandLineInput['subCommands'];
     // (undocumented)
     first?: string;
     // (undocumented)
-    raw: $CommandLineInput['argv'];
+    raw: CommandLineInput['argv'];
     // (undocumented)
     second?: string;
     // (undocumented)
@@ -855,7 +838,7 @@ export interface FlowRecorder {
     // (undocumented)
     getFlowReport: () => IFlowReport | Record<string, never>;
     // (undocumented)
-    pushHeadlessFlow: (headlessFlowDataString: string, input: $CommandLineInput) => void;
+    pushHeadlessFlow: (headlessFlowDataString: string, input: CommandLineInput) => void;
     // (undocumented)
     pushInteractiveFlow: (prompt: string, input: unknown) => void;
     // (undocumented)
@@ -1111,7 +1094,7 @@ export interface IFlowReport {
     // (undocumented)
     executable: string;
     // (undocumented)
-    input: $CommandLineInput;
+    input: CommandLineInput;
     // (undocumented)
     isHeadless: boolean;
     // (undocumented)
@@ -1260,9 +1243,9 @@ export interface IUsageDataPayload {
     // (undocumented)
     flowReport: IFlowReport;
     // (undocumented)
-    input: $CommandLineInput | null;
+    input: CommandLineInput | null;
     // (undocumented)
-    inputOptions: Pick<$CommandLineInput, 'options'>;
+    inputOptions: Pick<CommandLineInput, 'options'>;
     // (undocumented)
     installationUuid: string;
     // (undocumented)
@@ -1305,7 +1288,7 @@ export interface IUsageMetricsData {
     // (undocumented)
     getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload;
     // (undocumented)
-    init: (installationUuid: string, version: string, input: $CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number) => void;
+    init: (installationUuid: string, version: string, input: CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number) => void;
     // (undocumented)
     startCodePathTimer: (codePath: StartableTimedCodePath) => void;
     // (undocumented)
