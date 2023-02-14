@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4-rc.e0c735015.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.3.4-rc.e0c735015.0) (2023-02-14)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+* yarn test spin lock ([#11917](https://github.com/aws-amplify/amplify-cli/issues/11917)) ([2d7dd99](https://github.com/aws-amplify/amplify-cli/commit/2d7dd99c6d8f2e7b8af39a3f4bf3b9cde4d6c622))
+
+
+
+
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.2...@aws-amplify/amplify-environment-parameters@1.3.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
