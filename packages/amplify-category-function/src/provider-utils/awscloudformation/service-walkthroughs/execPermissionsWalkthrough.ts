@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
-import { printer } from 'amplify-prompts';
+import { byValues, printer, prompter } from 'amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
@@ -50,9 +50,17 @@ export const askExecRolePermissionsQuestions = async (
     categories.push('storage');
   }
 
-  const categoryPermissionQuestion = selectCategories(categories, currentPermissionMap);
-  const categoryPermissionAnswer = await inquirer.prompt(categoryPermissionQuestion);
-  const selectedCategories = categoryPermissionAnswer.categories as string[];
+  // const categoryPermissionQuestion = selectCategories(categories, currentPermissionMap);
+  const defaultPermission = fetchPermissionCategories(currentPermissionMap);
+  const selectedCategories = await prompter.pick<'many', string>(
+    'Select the categories you want this function to have access to.',
+    categories,
+    {
+      returnSize: 'many',
+      initial: byValues(defaultPermission),
+      pickAtLeast: 1,
+    },
+  );
 
   const crudOptions = _.values(CRUDOperation);
   const graphqlOperations = _.values(GraphQLOperation);
@@ -131,9 +139,7 @@ export const askExecRolePermissionsQuestions = async (
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
-          printer.warn(
-            `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
-          );
+          printer.warn(`Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
         } else {
           const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName);
@@ -159,10 +165,14 @@ export const askExecRolePermissionsQuestions = async (
       if (e.name === 'PluginMethodNotFoundError') {
         printer.warn(`${selectedCategory} category does not support resource policies yet.`);
       } else {
-        throw new AmplifyError('PluginPolicyAddError', {
-          message: `Policies cannot be added for ${selectedCategory}`,
-          details: e.message,
-        }, e);
+        throw new AmplifyError(
+          'PluginPolicyAddError',
+          {
+            message: `Policies cannot be added for ${selectedCategory}`,
+            details: e.message,
+          },
+          e,
+        );
       }
     }
   }
@@ -313,7 +323,9 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
     });
   }
 
-  const envVarStringList = Array.from(envVars).sort().join('\n\t');
+  const envVarStringList = Array.from(envVars)
+    .sort()
+    .join('\n\t');
 
   if (envVarStringList) {
     printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);

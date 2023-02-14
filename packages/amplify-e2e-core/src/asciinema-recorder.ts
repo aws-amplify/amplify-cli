@@ -69,6 +69,12 @@ export class Recorder {
   }
 
   write(data: string): void {
+    if (data) {
+      console.error('test framework emitting:' + data.charCodeAt(0));
+    } else {
+      console.error('test framework emitting: <undefined>');
+    }
+
     if (this.childProcess && this.exitCode === undefined) {
       this.childProcess.write(data);
       return;

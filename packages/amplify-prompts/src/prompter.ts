@@ -272,6 +272,7 @@ class AmplifyPrompter implements Prompter {
           return choice.enabled ? chalk.cyan('●') : '○';
         },
         validate() {
+          console.log('validating');
           if (opts && ('pickAtLeast' in opts || 'pickAtMost' in opts)) {
             // this.selected is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
