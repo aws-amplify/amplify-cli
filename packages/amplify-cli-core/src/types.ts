@@ -396,9 +396,14 @@ export type IPluginManifest = {
   type: string;
   commands?: string[];
   services?: string[];
-  functionRuntime?: {
-    pluginId: string;
-  };
+  functionRuntime?: FunctionBreadcrumb;
+};
+
+export type FunctionBreadcrumb = {
+  pluginId: string;
+  functionRuntime: string;
+  defaultEditorFile: string;
+  useLegacyBuild: true;
 };
 
 /**

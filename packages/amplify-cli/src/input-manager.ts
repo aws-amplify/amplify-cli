@@ -7,7 +7,6 @@ import { CLIInput } from './domain/command-input';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): CLIInput {
   const result = new CLIInput(process.argv);
-  /* tslint:disable */
   if (result.argv && result.argv.length > 2) {
     let index = 2;
     aliasArgs(result.argv);
@@ -56,7 +55,6 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): CLIInput {
       }
     }
   }
-  /* tslint:enable */
 
   return result;
 }
