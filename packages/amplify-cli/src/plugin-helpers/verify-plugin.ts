@@ -1,9 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { constants } from '../domain/constants';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { PluginManifest, constants, JSONUtilities, $TSAny, PluginVerificationResult, PluginVerificationError } from 'amplify-cli-core';
 
 type VerificationContext = {
   pluginDirPath: string;
@@ -79,7 +76,7 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
 
       let result = verifyCommands(context);
 
-      result = result.verified ? verifyEventHandlers(context) : result;
+      result = result.verified ? await verifyEventHandlers(context) : result;
       result.manifest = manifest;
 
       return result;
@@ -94,8 +91,8 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
 function verifyCommands(context: VerificationContext): PluginVerificationResult {
   //   let isVerified = true;
   //   if (manifest.commands && manifest.commands.length > 0) {
-  //     isVerified = pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
-  //         typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function';
+  //     isVerified = pluginModule.hasOwnProperty(constants.EXECUTE_AMPLIFY_COMMAND) &&
+  //         typeof pluginModule[constants.EXECUTE_AMPLIFY_COMMAND] === 'function';
   //   }
 
   //   if (isVerified) {
@@ -110,17 +107,17 @@ function verifyCommands(context: VerificationContext): PluginVerificationResult 
   return new PluginVerificationResult(true);
 }
 
-function verifyEventHandlers(context: VerificationContext): PluginVerificationResult {
+async function verifyEventHandlers(context: VerificationContext): Promise<PluginVerificationResult> {
   let isVerified = true;
   if (context.manifest!.eventHandlers && context.manifest!.eventHandlers.length > 0) {
     // Lazy load the plugin if not yet loaded
     if (!context.pluginModule) {
-      context.pluginModule = require(context.pluginDirPath);
+      context.pluginModule = await import(context.pluginDirPath);
     }
 
     isVerified =
-      context.pluginModule.hasOwnProperty(constants.HandleAmplifyEvent) &&
-      typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
+      Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HANDLE_AMPLIFY_EVENT) &&
+      typeof context.pluginModule[constants.HANDLE_AMPLIFY_EVENT] === 'function';
   }
 
   if (isVerified) {

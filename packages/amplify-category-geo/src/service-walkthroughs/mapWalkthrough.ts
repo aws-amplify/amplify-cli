@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
@@ -86,11 +86,14 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
         { name: 'Berlin (data provided by HERE)', value: MapStyle.VectorHereBerlin },
         { name: 'Explore (data provided by HERE)', value: MapStyle.VectorHereExplore },
         { name: 'ExploreTruck (data provided by HERE)', value: MapStyle.VectorHereExploreTruck },
+        { name: 'RasterSatellite (data provided by HERE)', value: MapStyle.RasterHereExploreSatellite },
+        { name: 'HybridSatellite (data provided by HERE)', value: MapStyle.HybridHereExploreSatellite },
         { name: 'Topographic (data provided by Esri)', value: MapStyle.VectorEsriTopographic },
         { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },
         { name: 'DarkGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriDarkGrayCanvas },
-        { name: 'Imagery (data provided by Esri)', value: MapStyle.RasterEsriImagery }
+        { name: 'Imagery (data provided by Esri)', value: MapStyle.RasterEsriImagery },
+        { name: 'StandardLight (data provided by OpenStreetMap)', value: MapStyle.VectorOpenDataStandardLight }
     ];
     const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ?
         getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorEsriStreets';
@@ -161,7 +164,7 @@ export const updateMapWalkthrough = async (
  * @param context The Amplify Context object
  * @param currentDefault The current default map name
  * @param availableMaps The names of available maps
- * @returns name of the new default map choosen
+ * @returns name of the new default map chosen
  */
 export const updateDefaultMapWalkthrough = async (
     context: $TSContext,

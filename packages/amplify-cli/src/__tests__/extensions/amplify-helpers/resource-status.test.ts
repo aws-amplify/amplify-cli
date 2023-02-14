@@ -1,9 +1,8 @@
-import { hashLayerResource } from 'amplify-category-function';
-import { stateManager } from 'amplify-cli-core';
+import { hashLayerResource } from '@aws-amplify/amplify-category-function';
+import { AmplifyException, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
-import { AmplifyError } from '../../../../../amplify-cli-core/lib';
-import {
+import { 
   CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
@@ -45,7 +44,7 @@ jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
 }));
 
 jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
-  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as {}),
+  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
   getCloudInitStatus: jest.fn(),
 }));
 
@@ -58,13 +57,14 @@ const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
 
 jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+  ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),
     getProjectTags: jest.fn(),
     getCurrentProjectTags: jest.fn(),
     getBackendConfig: jest.fn(),
+    getCurrentBackendConfig: jest.fn(),
     getProjectConfig: jest.fn(),
   },
   pathManager: {
@@ -77,8 +77,8 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-jest.mock('amplify-category-function', () => ({
-  ...(jest.requireActual('amplify-category-function') as {}),
+jest.mock('@aws-amplify/amplify-category-function', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-category-function') as Record<string, never>),
   hashLayerResource: jest.fn(),
 }));
 
@@ -110,6 +110,7 @@ describe('resource-status', () => {
     stateManagerMock.getProjectTags.mockReturnValue([]);
     stateManagerMock.getCurrentProjectTags.mockReturnValue([]);
     stateManagerMock.getBackendConfig.mockReturnValue({});
+    stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
     (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });
@@ -737,7 +738,7 @@ describe('resource-status', () => {
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
       // eslint-disable-next-line jest/valid-expect
-      expect(getResourceStatus()).rejects.toThrowError(AmplifyError);
+      await expect(getResourceStatus()).rejects.toThrow('No Amplify backend project files detected within this folder.');
     });
   });
 

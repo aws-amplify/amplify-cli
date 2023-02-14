@@ -3,6 +3,7 @@ import {
   addAuthWithCustomTrigger,
   addAuthWithDefault,
   amplifyPushAuth,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -15,23 +16,21 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth migration');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth migration');
-    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'authMigration' });
   });
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
@@ -44,7 +43,7 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
     await addAuthWithCustomTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
@@ -83,7 +82,7 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // add and push auth with installed cli
     await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
     const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase

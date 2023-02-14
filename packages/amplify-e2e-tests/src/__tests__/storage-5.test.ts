@@ -47,16 +47,29 @@ describe('s3 override tests', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3WithGuestAccess(projRoot, {});
-    await overrideS3(projRoot, {});
+    await overrideS3(projRoot);
 
     const resourcePath = path.join(projRoot, 'amplify', 'backend', 'storage');
     const resourceName = fs.readdirSync(resourcePath)[0];
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
+
+    // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
 
+    // test override file in compilation error state
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
     const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await buildOverrideStorage(projRoot, {});
+    await buildOverrideStorage(projRoot);
     let s3CFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
     expect(s3CFNFileJSON?.Resources?.S3Bucket?.Properties?.VersioningConfiguration?.Status).toEqual('Enabled');
@@ -162,10 +175,25 @@ describe('ddb override tests', () => {
     const resourceName = `dynamo${uuid.v4().split('-')[0]}`;
     await initJSProjectWithProfile(projRoot, {});
     await addSimpleDDB(projRoot, { name: resourceName });
-    await overrideDDB(projRoot, {});
+    await overrideDDB(projRoot);
 
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
+    // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
+
+    // build overrides should throw an error if there are compilation errors in override file
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // build overrides should throw an error if there are runtime errors in override file
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
     const cfnFilePath = path.join(
       projRoot,
       'amplify',
@@ -177,7 +205,7 @@ describe('ddb override tests', () => {
     );
 
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await buildOverrideStorage(projRoot, {});
+    await buildOverrideStorage(projRoot);
     let ddbCFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
     expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');

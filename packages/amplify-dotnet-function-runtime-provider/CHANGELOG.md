@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.0...amplify-dotnet-function-runtime-provider@1.7.1) (2023-02-02)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.10...amplify-dotnet-function-runtime-provider@1.7.0) (2023-01-03)
+
+
+### Features
+
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
 ## [1.6.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.9...amplify-dotnet-function-runtime-provider@1.6.10) (2022-08-02)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

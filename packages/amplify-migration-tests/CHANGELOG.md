@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.2...@aws-amplify/amplify-migration-tests@5.3.3) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [5.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.1...@aws-amplify/amplify-migration-tests@5.3.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.0...@aws-amplify/amplify-migration-tests@5.3.1) (2023-01-17)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+* add to migration test list ([0521e96](https://github.com/aws-amplify/amplify-cli/commit/0521e960f995800a6be71457c21cf58525b2ea93))
+* address comments ([ab11b08](https://github.com/aws-amplify/amplify-cli/commit/ab11b08b105207786a49ea13a83f8226a8fb722f))
+
+
+
+
+
+# [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.1...@aws-amplify/amplify-migration-tests@5.3.0) (2023-01-03)
+
+
+### Bug Fixes
+
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+
+
+
+## [5.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0...@aws-amplify/amplify-migration-tests@5.2.1) (2022-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+# [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.1.3...@aws-amplify/amplify-migration-tests@5.2.0) (2022-10-27)
+
+
+### Features
+
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+* migrates notifications category to support in app messaging channel notifications ([#11170](https://github.com/aws-amplify/amplify-cli/issues/11170)) ([52f5787](https://github.com/aws-amplify/amplify-cli/commit/52f57870bf4b1e67a5aa879d6bcec403b049d6b8))
+
+
+
+
+
+## [5.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.1.2...@aws-amplify/amplify-migration-tests@5.1.3) (2022-10-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [5.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.1.1...@aws-amplify/amplify-migration-tests@5.1.2) (2022-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [5.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.0.2...@aws-amplify/amplify-migration-tests@5.1.1) (2022-09-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
 ## [5.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.0.2-rc.224a2e0e4.0...@aws-amplify/amplify-migration-tests@5.0.2) (2022-09-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
-import { LocalLogDirectory } from 'amplify-cli-logger';
+import { LocalLogDirectory } from '@aws-amplify/amplify-cli-logger';
 
 const amplifyMark = '#amplify-do-not-edit-begin';
 const amplifyEndMark = '#amplify-do-not-edit-end';
@@ -52,6 +52,7 @@ function getGitIgnoreAppendString() {
     'amplify/.config/local-*',
     `amplify/${LocalLogDirectory}`,
     'amplify/mock-data',
+    'amplify/mock-api-resources',
     'amplify/backend/amplify-meta.json',
     'amplify/backend/.temp',
     'build/',

@@ -1,20 +1,12 @@
-import {
-  $TSAny,
-  $TSContext,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
-  spinner,
-  stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, spinner, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,
   notifySecurityEnhancement,
 } from '../extensions/amplify-helpers/auth-notifications';
-import {
-  getProviderPlugins,
-} from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 
 /**
  * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
@@ -28,11 +20,10 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     const providerPlugins = getProviderPlugins(context);
     const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
-    context.exeInfo.projectConfig.providers.forEach(provider => {
-      // eslint-disable-next-line
-      const providerModule = require(providerPlugins[provider]);
+    for (const provider of context.exeInfo.projectConfig.providers) {
+      const providerModule = await import(providerPlugins[provider]);
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-    });
+    }
 
     await notifySecurityEnhancement(context);
 
@@ -48,8 +39,15 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
   } catch (e) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
-    throw amplifyFaultWithTroubleshootingLink('BackendPullFault', { message: e.message });
+    throw new AmplifyFault('BackendPullFault', { message: e.message }, e);
   }
+};
+
+/**
+ * Updates tracked files for auto updates in the build directory that will not be detected for 'amplify push'
+ */
+const updateTrackedFiles = async (): Promise<void> => {
+  await updateCognitoTrackedFiles();
 };
 
 /**
@@ -58,11 +56,12 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
 export const run = async (context: $TSContext): Promise<$TSAny> => {
   context.amplify.constructExeInfo(context);
   if (context.exeInfo.localEnvInfo.noUpdateBackend) {
-    throw amplifyErrorWithTroubleshootingLink('NoUpdateBackendError', { message: 'The local environment configuration does not allow backend updates.' });
+    throw new AmplifyError('NoUpdateBackendError', { message: 'The local environment configuration does not allow backend updates.' });
   }
   if (context.parameters.options.force) {
     context.exeInfo.forcePush = true;
   }
   await syncCurrentCloudBackend(context);
+  await updateTrackedFiles();
   return context.amplify.pushResources(context);
 };

@@ -1,4 +1,4 @@
-const { ApiCategoryFacade, amplifyFaultWithTroubleshootingLink } = require('amplify-cli-core');
+const { ApiCategoryFacade, AmplifyFault } = require('amplify-cli-core');
 const awsRegions = require('./aws-regions');
 const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
@@ -17,6 +17,7 @@ const { fileLogger } = require('./utils/aws-logger');
 
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
+const { getAwsConfig } = require('./configuration-manager');
 
 module.exports = {
   /**
@@ -85,9 +86,7 @@ module.exports = {
    *
    */
   newSecret: async (context, options) => {
-    const {
-      description, secret, name, version,
-    } = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .createSecret({
@@ -104,9 +103,7 @@ module.exports = {
    *
    */
   updateSecret: async (context, options) => {
-    const {
-      description, secret, name, version,
-    } = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .updateSecret({
@@ -135,10 +132,13 @@ module.exports = {
       const { code } = error;
 
       if (code !== 'ResourceNotFoundException') {
-        throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
-          message: error.message,
-          stack: error.stack,
-        });
+        throw new AmplifyFault(
+          'ResourceNotFoundFault',
+          {
+            message: error.message,
+          },
+          error,
+        );
       }
     }
 
@@ -184,7 +184,7 @@ module.exports = {
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw new AmplifyFault('ResourceNotFoundFault', {
         message: 'Missing resource directory.',
       });
     }
@@ -212,7 +212,7 @@ module.exports = {
   getLambdaFunctions: async context => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
-    const lambdafunctions = [];
+    const lambdaFunctions = [];
 
     do {
       logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
@@ -226,18 +226,18 @@ module.exports = {
         })
         .promise();
       if (paginatedFunctions && paginatedFunctions.Functions) {
-        lambdafunctions.push(...paginatedFunctions.Functions);
+        lambdaFunctions.push(...paginatedFunctions.Functions);
       }
       nextMarker = paginatedFunctions.NextMarker;
     } while (nextMarker);
-    return lambdafunctions;
+    return lambdaFunctions;
   },
   /**
    *
    */
   getPollyVoices: async context => {
     const pollyModel = await new Polly(context);
-    logger('getPollyVoices.polluModel.polly.describeVoices', [])();
+    logger('getPollyVoices.pollyModel.polly.describeVoices', [])();
     return pollyModel.polly.describeVoices().promise();
   },
   /**
@@ -345,11 +345,10 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions)
-      .then(result => {
-        const appSyncModel = result;
-        return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
-      });
+    return new AppSync(context, awsOptions).then(result => {
+      const appSyncModel = result;
+      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+    });
   },
   /**
    *
@@ -363,11 +362,10 @@ module.exports = {
       params.nextToken = options;
     }
     logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params])();
-    return new Lex(context)
-      .then(result => {
-        log();
-        return result.lex.getBuiltinSlotTypes(params).promise();
-      });
+    return new Lex(context).then(result => {
+      logger();
+      return result.lex.getBuiltinSlotTypes(params).promise();
+    });
   },
   /**
    *
@@ -377,8 +375,7 @@ module.exports = {
       maxResults: 50,
     };
     logger('getSlotTypes.lex.getSlotTypes', [params])();
-    return new Lex(context)
-      .then(result => result.lex.getSlotTypes(params).promise());
+    return new Lex(context).then(result => result.lex.getSlotTypes(params).promise());
   },
   /**
    * @deprecated Use getGraphQLApiKeys instead
@@ -397,8 +394,7 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions)
-      .then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
+    return new AppSync(context, awsOptions).then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
   },
   /**
    *
@@ -423,4 +419,8 @@ module.exports = {
 
     return results;
   },
+  /**
+   * Provides the same AWS config used to push the amplify project
+   */
+  retrieveAwsConfig: async context => getAwsConfig(context),
 };

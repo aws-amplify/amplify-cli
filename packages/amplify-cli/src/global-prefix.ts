@@ -58,6 +58,7 @@ function getNpmPrefix() {
   if (prefix) {
     return expand(prefix);
   }
+  return undefined;
 }
 
 function fallback() {

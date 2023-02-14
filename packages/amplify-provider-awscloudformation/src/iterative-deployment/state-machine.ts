@@ -56,49 +56,49 @@ export type StateMachineError = {
 };
 export interface DeployMachineSchema {
   states: {
-    idle: {};
+    idle: any;
     deploy: {
       states: {
-        triggerDeploy: {};
-        deploying: {};
-        waitingForDeployment: {};
-        waitForTablesToBeReady: {};
+        triggerDeploy: any;
+        deploying: any;
+        waitingForDeployment: any;
+        waitForTablesToBeReady: any;
       };
     };
     rollback: {
       states: {
-        triggerRollback: {};
-        rollingBack: {};
-        waitingForRollback: {};
-        waitForTablesToBeReady: {};
+        triggerRollback: any;
+        rollingBack: any;
+        waitingForRollback: any;
+        waitForTablesToBeReady: any;
       };
     };
-    deployed: {};
-    rolledBack: {};
-    failed: {};
+    deployed: any;
+    rolledBack: any;
+    failed: any;
   };
 }
 
 export interface DeploymentRollbackSchema {
   states: {
-    idle: {};
+    idle: any;
     preRollback: {
       states: {
-        previousDeploymentReadyCheck: {};
-        previousTableReadyCheck: {};
+        previousDeploymentReadyCheck: any;
+        previousTableReadyCheck: any;
       };
     };
     rollback: {
       states: {
-        enterRollback: {};
-        triggerRollback: {};
-        rollingBack: {};
-        waitingForRollback: {};
-        waitForTablesToBeReady: {};
+        enterRollback: any;
+        triggerRollback: any;
+        rollingBack: any;
+        waitingForRollback: any;
+        waitForTablesToBeReady: any;
       };
     };
-    rolledBack: {};
-    failed: {};
+    rolledBack: any;
+    failed: any;
   };
 }
 

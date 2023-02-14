@@ -10,10 +10,10 @@ export async function showHelpfulProviderLinks(context: $TSContext) {
 
   const { allResources } = await getResourceStatus();
 
-  providers.forEach(providerName => {
-    const pluginModule = require(providerPlugins[providerName]);
+  for (const providerName of providers) {
+    const pluginModule = await import(providerPlugins[providerName]);
     providerPromises.push(pluginModule.showHelpfulLinks(context, allResources));
-  });
+  }
 
   return Promise.all(providerPromises);
 }

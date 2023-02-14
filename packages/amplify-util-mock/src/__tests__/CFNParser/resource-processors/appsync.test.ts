@@ -2,6 +2,7 @@ import { $TSAny } from 'amplify-cli-core';
 import { appSyncFunctionHandler, dynamoDBResourceHandler } from '../../../CFNParser/resource-processors/appsync';
 import { CloudFormationResource } from '../../../CFNParser/stack/types';
 import { CloudFormationParseContext } from '../../../CFNParser/types';
+import { configureSearchEnabledTables } from '../../../CFNParser/appsync-resource-processor';
 
 describe('appSyncFunctionHandler', () => {
   it('maps exposed attributes to properties that exist', () => {
@@ -60,5 +61,57 @@ describe('dynamoDBResourceHandler', () => {
       StreamEnabled: true,
       StreamViewType: 'NEW_AND_OLD_IMAGES'
     });
+  });
+});
+
+describe('process searchable resources', () => {
+  const mockTableName = 'Todo';
+  const mockTableResource: $TSAny = {
+    Type: 'AWS::DynamoDB::Table',
+    Properties: {
+      TableName: mockTableName + 'Table',
+      KeySchema: [
+        {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+        }
+      ],
+      AttributeDefinitions: [
+        {
+            "AttributeName": "id",
+            "AttributeType": "S"
+        }
+      ]
+    },
+  };
+
+  it('sets searchable flag on tables for searchable models', () => {
+    const searchableLambdaMapping = {};
+    searchableLambdaMapping[`Searchable${mockTableName}LambdaMappingPlusRandomString123`] = {};
+
+    const mockSearchableStack: $TSAny = { 
+      Resources: { ...searchableLambdaMapping }
+    };
+
+    const mockTransformResult = { stacks: { SearchableStack: mockSearchableStack } };
+    const mockProcessedResources = { tables: [mockTableResource] } as $TSAny;
+
+    configureSearchEnabledTables(mockTransformResult, mockProcessedResources);
+    expect(mockProcessedResources?.tables[0]?.isSearchable).toEqual(true);
+  });
+
+  it('does not set searchable flag on tables for non-searchable models', () => {
+    const searchableLambdaMapping = {};
+    searchableLambdaMapping[`Searchable${mockTableName}PlusRandomString123`] = {};
+
+    const mockSearchableStack: $TSAny = { 
+      Resources: { ...searchableLambdaMapping }
+    };
+
+    const mockTransformResult = { stacks: { SearchableStack: mockSearchableStack } };
+    const mockProcessedResources = { tables: [mockTableResource] } as $TSAny;
+
+    configureSearchEnabledTables(mockTransformResult, mockProcessedResources);
+    expect(mockProcessedResources?.tables[0]?.isSearchable).toEqual(false);
   });
 });

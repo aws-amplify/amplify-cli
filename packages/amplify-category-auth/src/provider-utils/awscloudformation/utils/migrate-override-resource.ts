@@ -1,5 +1,5 @@
 import {
-  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, amplifyErrorWithTroubleshootingLink, JSONUtilities, pathManager,
+  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
@@ -56,11 +56,10 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
   } catch (e) {
     rollback(authResourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    throw amplifyErrorWithTroubleshootingLink('MigrationError', {
+    throw new AmplifyError('MigrationError', {
       message: `There was an error migrating your project: ${e.message}`,
       details: `Migration operations are rolled back.`,
-      stack: e.stack,
-    });
+    }, e);
   } finally {
     cleanUp(backupAuthResourceFolder);
     cleanUp(backupUserPoolGroupResourceFolder);

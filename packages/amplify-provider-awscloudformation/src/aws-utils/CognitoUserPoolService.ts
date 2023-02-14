@@ -14,7 +14,7 @@ import {
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { ICognitoUserPoolService } from 'amplify-util-import';
+import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';

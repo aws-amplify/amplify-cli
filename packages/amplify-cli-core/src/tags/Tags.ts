@@ -17,7 +17,7 @@ export function ReadTags(tagsFilePath: string): Tag[] {
   return tags;
 }
 
-export function validate(tags: Tag[], skipProjectEnv: boolean = false): void {
+export function validate(tags: Tag[], skipProjectEnv = false): void {
   const allowedKeySet = new Set(['Key', 'Value']);
 
   //check if Tags have the right format
@@ -57,21 +57,21 @@ export function validate(tags: Tag[], skipProjectEnv: boolean = false): void {
   });
 }
 
-export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv: boolean = false): Tag[] {
+export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv = false): Tag[] {
   const { envName, projectName } = tagVariables;
   const replace: any = {
     '{project-name}': projectName,
     '{project-env}': envName,
   };
   const regexMatcher = skipProjectEnv ? /{project-name}/g : /{project-name}|{project-env}/g;
-  const hydrdatedTags = tags.map(tag => {
+  const hydratedTags = tags.map(tag => {
     return {
       ...tag,
       Value: tag.Value.replace(regexMatcher, (matched: string) => replace[matched]),
     };
   });
-  validate(hydrdatedTags, skipProjectEnv);
-  return hydrdatedTags;
+  validate(hydratedTags, skipProjectEnv);
+  return hydratedTags;
 }
 
 type TagVariables = {

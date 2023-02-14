@@ -5,6 +5,7 @@ import {
   addS3StorageWithAuthOnly,
   addSimpleDDB,
   amplifyPushAuth,
+  amplifyPushAuthV5V6,
   checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
@@ -14,21 +15,19 @@ import {
   updateDDBWithTriggerMigration,
   updateS3AddTriggerWithAuthOnlyReqMigration,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-add-update migration');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('ddb-add-update migration');
   });
 
   afterEach(async () => {
@@ -38,22 +37,19 @@ describe('amplify add/update storage(DDB)', () => {
 
   it('init a project and add/update ddb table with & without trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addSimpleDDB(projRoot, {});
     await addDDBWithTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     // update and push with codebase
     await updateDDBWithTriggerMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
-    const {
-      Name: table1Name,
-      Arn: table1Arn,
-      Region: table1Region,
-      StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
+      key => meta.storage[key],
+    )[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();
@@ -63,12 +59,9 @@ describe('amplify add/update storage(DDB)', () => {
 
     expect(table1Configs.Table.TableArn).toEqual(table1Arn);
 
-    const {
-      Name: table2Name,
-      Arn: table2Arn,
-      Region: table2Region,
-      StreamArn: table2StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[1].output;
+    const { Name: table2Name, Arn: table2Arn, Region: table2Region, StreamArn: table2StreamArn } = Object.keys(meta.storage).map(
+      key => meta.storage[key],
+    )[1].output;
 
     expect(table2Name).toBeDefined();
     expect(table2Arn).toBeDefined();
@@ -110,10 +103,10 @@ describe('amplify add/update storage(S3)', () => {
 
   it('init a project and add s3 bucket & update with new trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3StorageWithAuthOnly(projRoot);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     // update and push with new codebase
     await updateS3AddTriggerWithAuthOnlyReqMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true /*latest codebase*/);

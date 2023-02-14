@@ -183,7 +183,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
-      .wait('Do you want to keep existing global seconday indexes created on your table?')
+      .wait('Do you want to keep existing global secondary indexes created on your table?')
       .sendLine('y')
       .wait('Do you want to add global secondary indexes to your table?')
       .sendLine('y')
@@ -260,7 +260,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function overrideDDB(cwd: string, settings: {}) {
+export function overrideDDB(cwd: string) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'storage'];
 
@@ -278,7 +278,7 @@ export function overrideDDB(cwd: string, settings: {}) {
   });
 }
 
-export function buildOverrideStorage(cwd: string, settings: {}) {
+export function buildOverrideStorage(cwd: string) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
     const args = ['build'];
@@ -295,7 +295,7 @@ export function buildOverrideStorage(cwd: string, settings: {}) {
 
 export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
     singleSelect(chain.wait('Select from one of the below mentioned services:'), 'NoSQL Database', [
       'Content (Images, audio, video, etc.)',
@@ -618,7 +618,7 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
 
 export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); //select - Content (Images, audio, video, etc.)
 
@@ -655,7 +655,7 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
 
 export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
       .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
@@ -687,7 +687,7 @@ export function addS3Storage(projectDir: string): Promise<void> {
 
 export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
       .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
@@ -712,7 +712,7 @@ export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
   });
 }
 
-export function overrideS3(cwd: string, settings: {}) {
+export function overrideS3(cwd: string) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'storage'];
     spawn(getCLIPath(), args, { cwd, stripColors: true })
@@ -731,7 +731,7 @@ export function overrideS3(cwd: string, settings: {}) {
 
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
     chain
       .wait('Select from one of the below mentioned services:')

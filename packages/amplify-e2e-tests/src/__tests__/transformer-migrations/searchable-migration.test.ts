@@ -13,6 +13,8 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 (global as any).fetch = require('node-fetch');
 
+jest.setTimeout(120 * 60 * 1000); // Set timeout to 2 hour because of creating/deleting searchable instance
+
 describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
@@ -28,8 +30,13 @@ describe('transformer model searchable migration test', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    if (process.env.CIRCLECI) {
+      console.log('Skipping cloud deletion since we are in CI, and cleanup script will delete this stack in cleanup step.');
+      deleteProjectDir(projRoot);
+    } else {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    }
   });
 
   it('migration of searchable directive - search should return expected results', async () => {

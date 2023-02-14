@@ -25,12 +25,11 @@ export const postInstallInitialization = async () => {
         return;
       }
       await Promise.all(
-        pluginArtifactPaths.map(assetPath =>
-          fs.copy(
-            path.join(resolvePackageRoot(packageName), assetPath),
-            path.join(pathManager.getAmplifyPackageLibDirPath(packageName), assetPath),
-          ),
-        ),
+        pluginArtifactPaths.map(assetPath => {
+          const resolvedPackageRoot = resolvePackageRoot(packageName);
+          const targetLibFolder = pathManager.getAmplifyPackageLibDirPath(packageName);
+          return fs.copy(path.join(resolvedPackageRoot, assetPath), path.join(targetLibFolder, assetPath));
+        }),
       );
     }),
   );
@@ -40,14 +39,16 @@ export const postInstallInitialization = async () => {
 const resolvePackageRoot = (packageName: string) => {
   const resolveDir = path.parse(require.resolve(packageName)).dir;
   const pathParts = resolveDir.split(path.sep);
-  return pathParts.slice(0, pathParts.indexOf(packageName) + 1).join(path.sep);
+  return pathParts.slice(0, pathParts.indexOf(packageName.replace(/^@.+\//, '')) + 1).join(path.sep);
 };
 
 // Registry of packages that have files that need to be copied to the .amplify folder on CLI installation
 const copyPkgAssetRegistry = [
   'amplify-dynamodb-simulator',
-  'amplify-frontend-ios',
-  'amplify-go-function-runtime-provider',
   'amplify-java-function-runtime-provider',
+  '@aws-amplify/amplify-frontend-ios',
+  'amplify-go-function-runtime-provider',
+
+  '@aws-amplify/amplify-opensearch-simulator',
   'amplify-python-function-runtime-provider',
 ];

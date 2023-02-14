@@ -1,17 +1,21 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { PluginCollection } from '../domain/plugin-collection';
-import { PluginPlatform } from '../domain/plugin-platform';
-import { constants } from '../domain/constants';
 import { getGlobalNodeModuleDirPath } from '../utils/global-prefix';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginInfo } from '../domain/plugin-info';
 import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
 import isChildPath from '../utils/is-child-path';
-import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
+import {
+  JSONUtilities,
+  $TSAny,
+  isPackaged,
+  PluginCollection,
+  PluginPlatform,
+  constants,
+  PluginManifest,
+  PluginInfo,
+} from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
@@ -28,14 +32,14 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
       return result;
     });
 
-    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(
-      pluginDirPath => async () => await verifyAndAdd(pluginPlatform!, pluginDirPath),
+    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
+      await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
 
   if (isPackaged) {
-    pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
+    pluginPlatform!.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
   }
 
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
@@ -46,7 +50,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
         //adding subDir based on amplify-
         const subDirNames = await fs.readdir(directory);
         await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform!);
-        //ading plugin based on @aws-amplify/amplify-
+        //adding plugin based on @aws-amplify/amplify-
         if (subDirNames.includes('@aws-amplify')) {
           const nameSpacedDir = path.join(directory, '@aws-amplify');
           const nameSpacedPackages = await fs.readdir(nameSpacedDir);
@@ -92,13 +96,13 @@ async function addCore(pluginPlatform: PluginPlatform) {
 
 export function normalizePluginDirectory(directory: string): string {
   switch (directory) {
-    case constants.PackagedNodeModules:
+    case constants.PACKAGED_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../../..'));
-    case constants.LocalNodeModules:
+    case constants.LOCAL_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../node_modules'));
-    case constants.ParentDirectory:
+    case constants.PARENT_DIRECTORY:
       return path.normalize(path.join(__dirname, '../../../'));
-    case constants.GlobalNodeModules:
+    case constants.GLOBAL_NODE_MODULES:
       return getGlobalNodeModuleDirPath();
     default:
       return directory;
@@ -152,6 +156,7 @@ export function isUnderScanCoverageSync(pluginPlatform: PluginPlatform, pluginDi
       if (fs.existsSync(directory) && isChildPath(pluginDirPath, directory)) {
         return true;
       }
+      return undefined;
     });
   }
 

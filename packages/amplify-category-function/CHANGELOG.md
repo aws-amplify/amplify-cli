@@ -3,6 +3,107 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.3.0...amplify-category-function@4.3.1) (2023-02-06)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.3...amplify-category-function@4.3.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.2...amplify-category-function@4.2.3) (2023-01-17)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.2) (2023-01-03)
+
+
+### Bug Fixes
+
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0...amplify-category-function@4.2.1) (2022-11-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.3...amplify-category-function@4.2.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.2...amplify-category-function@4.1.3) (2022-10-13)
+
+
+### Bug Fixes
+
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.1...amplify-category-function@4.1.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.12...amplify-category-function@4.1.1) (2022-09-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [4.0.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.12-rc.224a2e0e4.0...amplify-category-function@4.0.12) (2022-09-06)
 
 **Note:** Version bump only for package amplify-category-function

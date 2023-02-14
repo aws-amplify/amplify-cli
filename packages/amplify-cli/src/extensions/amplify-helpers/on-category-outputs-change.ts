@@ -21,53 +21,50 @@ export const onCategoryOutputsChange = async (context, cloudAmplifyMeta?, localM
   if (projectConfig.frontend) {
     ensureAmplifyMetaFrontendConfig(localMeta);
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    // eslint-disable-next-line import/no-dynamic-require, @typescript-eslint/no-var-requires, global-require
-    const frontendHandlerModule = require(frontendPlugins[projectConfig.frontend]);
+    const frontendHandlerModule = await import(frontendPlugins[projectConfig.frontend]);
     await frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs(localMeta), getResourceOutputs(cloudAmplifyMeta));
   }
 
   const outputChangedEventTasks: (() => Promise<$TSAny>)[] = [];
   const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
-  Object.keys(categoryPluginInfoList).forEach(category => {
-    categoryPluginInfoList[category].forEach(pluginInfo => {
+  for (const category of Object.keys(categoryPluginInfoList)) {
+    for (const pluginInfo of categoryPluginInfoList[category]) {
       const { packageLocation } = pluginInfo;
-      // eslint-disable-next-line import/no-dynamic-require, @typescript-eslint/no-var-requires, global-require
-      const pluginModule = require(packageLocation);
+      const pluginModule = await import(packageLocation);
       if (pluginModule && typeof pluginModule.onAmplifyCategoryOutputChange === 'function') {
         outputChangedEventTasks.push(async () => {
           try {
-            attachContextExtensions(context, packageLocation);
+            await attachContextExtensions(context, packageLocation);
             await pluginModule.onAmplifyCategoryOutputChange(context, cloudAmplifyMeta);
           } catch (e) {
             // do nothing
           }
         });
       }
-    });
-  });
+    }
+  }
 
   if (outputChangedEventTasks.length > 0) {
     await sequential(outputChangedEventTasks);
   }
 };
 
-const attachContextExtensions = (context, packageLocation): void => {
+const attachContextExtensions = async (context, packageLocation): Promise<void> => {
   const extensionsDirPath = path.normalize(path.join(packageLocation, 'extensions'));
   if (fs.existsSync(extensionsDirPath)) {
     const stats = fs.statSync(extensionsDirPath);
     if (stats.isDirectory()) {
       const itemNames = fs.readdirSync(extensionsDirPath);
-      itemNames.forEach(itemName => {
+      for (const itemName of itemNames) {
         const itemPath = path.join(extensionsDirPath, itemName);
         let itemModule;
         try {
-          // eslint-disable-next-line import/no-dynamic-require, global-require
-          itemModule = require(itemPath);
+          itemModule = await import(itemPath);
           itemModule(context);
         } catch (e) {
           // do nothing
         }
-      });
+      }
     }
   }
 };

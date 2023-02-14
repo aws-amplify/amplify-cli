@@ -20,7 +20,7 @@ describe('Get current aws-exports', () => {
 
 const awsmobile = ${JSON.stringify(awsmobile, null, 2)};
 
-module.exports = awsmobile;    
+module.exports = awsmobile;
 `;
   const awsExports = generateAwsExportsFileContents(awsmobile);
   const projectPath = path.resolve('./');
@@ -62,26 +62,30 @@ module.exports = awsmobile;
     // expect(configCreator.getCurrentAWSExports(context)).toThrowError('Unable to parse aws-exports.js. Has this file been modified?');
   });
 
+  it('should load with babel.config.json present', async () => {
+    const babelConfigPath = path.join(projectPath, 'babel.config.json');
+    const babelConfigContent = JSON.stringify({ presets: ['es2015'] });
+    try {
+      fs.writeFileSync(babelConfigPath, babelConfigContent);
+      const result = await configCreator.getCurrentAWSExports(context);
+      expect(result).toEqual(awsmobile);
+    } finally {
+      fs.unlinkSync(babelConfigPath);
+    }
+  });
+
   it('should throw error if file does not have exports', async () => {
     expect.assertions(1);
     fs.writeFileSync(awsExportsPath, generateAwsExportsFileContents(null));
     const ERROR_MESSAGE = 'Unable to find aws-exports.js. Has this file been modified?';
-    try {
-      await configCreator.getCurrentAWSExports(context);
-    } catch (error) {
-      expect(error.message).toEqual(ERROR_MESSAGE);
-    }
+    await expect(configCreator.getCurrentAWSExports(context)).rejects.toThrow(ERROR_MESSAGE);
   });
 
   it('should throw error if file contains a syntax error', async () => {
     expect.assertions(1);
     fs.writeFileSync(awsExportsPath, 'awsmobile = {');
     const ERROR_MESSAGE = 'Unable to parse aws-exports.js. Has this file been modified?';
-    try {
-      await configCreator.getCurrentAWSExports(context);
-    } catch (error) {
-      expect(error.message).toEqual(ERROR_MESSAGE);
-    }
+    await expect(configCreator.getCurrentAWSExports(context)).rejects.toThrow(ERROR_MESSAGE);
   });
 });
 
@@ -186,5 +190,67 @@ describe('generate maps and search configuration', () => {
     const generatedConfig = configCreator.getAWSExportsObject(mockGeoResources);
     expect(generatedConfig.geo.amazon_location_service.region).toEqual(resourceRegion);
     expect(generatedConfig).toMatchSnapshot();
+  });
+});
+
+describe('generates pinpoint configuration', () => {
+  it('generates correct configuration for analytics and notifications channels', () => {
+    const mockPinpointResources = {
+      metadata: {
+        Region: 'us-east-1',
+      },
+      serviceResourceMapping: {
+        Pinpoint: [
+          {
+            output: {
+              Region: 'us-east-1',
+              Id: 'fake',
+            },
+          },
+          {
+            Id: 'fake',
+            Region: 'us-east-1',
+            output: {
+              Region: 'us-east-1',
+              InAppMessaging: {
+                Enabled: true,
+                ApplicationId: 'fake'
+              },
+              SMS: {
+                ApplicationId: 'fake',
+                Enabled: true,
+              }
+            }
+          }
+        ],
+      },
+    };
+    const expectedGeneratedConfig = {
+      aws_project_region: 'us-east-1',
+      aws_mobile_analytics_app_id: 'fake',
+      aws_mobile_analytics_app_region: 'us-east-1',
+      Analytics: {
+        AWSPinpoint: {
+          appId: 'fake',
+          region: 'us-east-1'
+        }
+      },
+      Notifications: {
+        InAppMessaging: {
+          AWSPinpoint: {
+            appId: 'fake',
+            region: 'us-east-1'
+          }
+        },
+        SMS: {
+          AWSPinpoint: {
+            appId: 'fake',
+            region: 'us-east-1'
+          }
+        }
+      }
+    };
+    const generatedConfig = configCreator.getAWSExportsObject(mockPinpointResources);
+    expect(generatedConfig).toMatchObject(expectedGeneratedConfig);
   });
 });

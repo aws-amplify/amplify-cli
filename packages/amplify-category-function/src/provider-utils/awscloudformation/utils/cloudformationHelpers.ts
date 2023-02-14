@@ -228,7 +228,7 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
       ],
     },
   };
-  // append permissions to invoke lambda via cloiudwatch to CFN file
+  // append permissions to invoke lambda via CloudWatch to CFN file
   cfnContent.Resources.PermissionForEventsToInvokeLambda = {
     Type: 'AWS::Lambda::Permission',
     Properties: {

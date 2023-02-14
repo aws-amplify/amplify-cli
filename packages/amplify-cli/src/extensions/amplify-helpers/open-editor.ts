@@ -23,9 +23,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
   if (editorSelected !== 'none') {
     const editorArguments: string[] = [];
 
-    let editor: envEditor.Editor;
-
-    editor = envEditor.getEditor(editorSelected);
+    const editor: envEditor.Editor = envEditor.getEditor(editorSelected);
 
     if (!editor) {
       context.print.error(
@@ -48,7 +46,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
 
     // In case if the selected editor was found.
     if (!editorPath) {
-      context.print.warning(`Couldn’t find selected code editor (${editorSelected}) on your machine.`);
+      context.print.warning(`Could not find selected code editor (${editorSelected}) on your machine.`);
 
       const openFile = await context.amplify.confirmPrompt('Try opening with system-default editor instead?', true);
 
@@ -73,7 +71,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
             stdio: 'ignore',
           });
 
-          subProcess.on('error', err => {
+          void subProcess.on('error', err => {
             context.print.error(
               `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
             );

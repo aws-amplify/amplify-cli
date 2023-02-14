@@ -27,7 +27,7 @@ export async function copyBatch(context: $TSContext, jobs: $TSCopyJob, props: ob
     // generate the React component
     // TODO: Error handling in event of single file write failure
     if (await shouldGenerate(job.target, force)) {
-      template.generate({
+      await template.generate({
         directory: job.dir,
         template: job.template,
         target: job.target,

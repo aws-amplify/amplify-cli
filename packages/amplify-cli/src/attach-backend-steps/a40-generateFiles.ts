@@ -27,19 +27,17 @@ export const generateFiles = async (context: $TSContext): Promise<$TSContext> =>
   const providerOnSuccessTasks: (() => Promise<$TSAny>)[] = [];
 
   const frontendPlugins = getFrontendPlugins(context);
-  // eslint-disable-next-line
-  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+  const frontendModule = await import(frontendPlugins[context.exeInfo.projectConfig.frontend]);
 
   await frontendModule.onInitSuccessful(context);
 
   generateLocalRuntimeFiles(context);
   generateNonRuntimeFiles(context);
 
-  context.exeInfo.projectConfig.providers.forEach(provider => {
-    // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
+  for (const provider of context.exeInfo.projectConfig.providers) {
+    const providerModule = await import(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
-  });
+  }
 
   await sequential(providerOnSuccessTasks);
 
@@ -84,8 +82,25 @@ const generateProjectConfigFile = (context: $TSContext): void => {
  * @deprecated Still creating the TPI file for now, but this will go away in the future
  */
 const generateTeamProviderInfoFile = (context: $TSContext): $TSAny => {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-  const { teamProviderInfo } = context.exeInfo;
+  const { projectPath, envName } = context.exeInfo.localEnvInfo;
+  const { existingTeamProviderInfo, teamProviderInfo } = context.exeInfo;
+
+  if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
+    return stateManager.setTeamProviderInfo(projectPath, existingTeamProviderInfo);
+  }
+
+  if (existingTeamProviderInfo) {
+    if (existingTeamProviderInfo[envName]) {
+      if (existingTeamProviderInfo[envName].categories) {
+        teamProviderInfo[envName] = teamProviderInfo[envName] || {};
+        teamProviderInfo[envName].categories = existingTeamProviderInfo[envName].categories;
+      }
+
+      delete existingTeamProviderInfo[envName];
+    }
+
+    Object.assign(teamProviderInfo, existingTeamProviderInfo);
+  }
 
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
   return undefined;

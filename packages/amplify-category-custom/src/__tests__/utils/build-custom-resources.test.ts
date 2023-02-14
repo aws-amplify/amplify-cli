@@ -13,17 +13,17 @@ jest.mock('fs-extra', () => ({
   readFileSync: jest.fn().mockReturnValue('mockCode'),
   existsSync: jest.fn().mockReturnValue(true),
   ensureDirSync: jest.fn().mockReturnValue(true),
+  ensureDir: jest.fn(),
   writeFileSync: jest.fn().mockReturnValue(true),
+  writeFile: jest.fn(),
 }));
 
-jest.mock('ora', () => {
-  return () => ({
-    start: jest.fn(),
-    fail: jest.fn(),
-    succeed: jest.fn(),
-    stop: jest.fn(),
-  });
-});
+jest.mock('ora', () => () => ({
+  start: jest.fn(),
+  fail: jest.fn(),
+  succeed: jest.fn(),
+  stop: jest.fn(),
+}));
 
 jest.mock('../../utils/dependency-management-utils', () => ({
   getAllResources: jest.fn().mockResolvedValue({ mockedvalue: 'mockedkey' }),
@@ -41,6 +41,7 @@ jest.mock('amplify-cli-core', () => ({
   JSONUtilities: {
     writeJson: jest.fn(),
     readJson: jest.fn(),
+    stringify: jest.fn(),
   },
 }));
 

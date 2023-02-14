@@ -7,15 +7,16 @@
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "references": [
     {
       "path": "../amplify-category-function"
     },
     {
       "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-cli-logger"
     },
     {
       "path": "../amplify-prompts"

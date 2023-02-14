@@ -1,5 +1,9 @@
 **/.DS_Store
 .circleci/generated_config.yml
+scripts/cci-job.data.json
+scripts/cci-test.data.json
+artifacts/cci-workflow-results.json
+artifacts/cci-workflow-results.html
 build
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/
 !packages/amplify-graphql-function-transformer/src/__tests__/overrides/build/
@@ -22,9 +26,13 @@ packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
+packages/amplify-opensearch-simulator/emulator
 .vscode/*
+.history/*
+!.vscode/amplify-cli.code-workspace
 !.vscode/settings.json
 !.vscode/extensions.json
+.idea
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
@@ -55,6 +63,7 @@ packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib
 packages/amplify-cli-shared-interfaces/lib
+packages/amplify-opensearch-simulator/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env
@@ -82,6 +91,7 @@ packages/amplify-console-hosting/lib/
 packages/amplify-container-hosting/lib/
 packages/amplify-category-predictions/lib
 packages/amplify-category-analytics/lib
+packages/amplify-category-notifications/lib
 packages/amplify-category-interactions/lib/
 packages/amplify-environment-parameters/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js

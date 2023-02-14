@@ -9,8 +9,8 @@ const { addAmplifyFiles } = require('./xcodeHelpers');
 const ini = require('ini');
 const semver = require('semver');
 const { engines } = require('../package.json');
-const { initializeAwsExports } = require('amplify-frontend-javascript');
-const { initializeAmplifyConfiguration } = require('amplify-frontend-flutter');
+const { initializeAwsExports } = require('@aws-amplify/amplify-frontend-javascript');
+const { initializeAmplifyConfiguration } = require('@aws-amplify/amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
 const Ora = require('ora');
 const isWin = process.platform.startsWith('win');
@@ -55,7 +55,7 @@ const run = async opts => {
     updateFrameworkInProjectConfig(platform.framework);
     await createAmplifyHelperFiles(platform.frontend);
     console.log(`${emoji.get('white_check_mark')} Amplify setup completed successfully.`);
-    showHelpText(platform.frontend);
+    await showHelpText(platform.frontend);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
@@ -175,10 +175,10 @@ const updateFrameworkInProjectConfig = framework => {
  */
 const guessPlatform = async (providedPlatform, providedJSFramework) => {
   const frontendPlugins = {
-    javascript: 'amplify-frontend-javascript',
-    android: 'amplify-frontend-android',
-    ios: 'amplify-frontend-ios',
-    flutter: 'amplify-frontend-flutter',
+    javascript: '@aws-amplify/amplify-frontend-javascript',
+    android: '@aws-amplify/amplify-frontend-android',
+    ios: '@aws-amplify/amplify-frontend-ios',
+    flutter: '@aws-amplify/amplify-frontend-flutter',
   };
 
   let suitableFrontend;
@@ -223,26 +223,26 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
       resolvedJSFramework = guessFramework(process.cwd());
 
       if (resolvedJSFramework === 'none') {
-        const platformComfirmation = {
+        const platformConfirmation = {
           type: 'list',
           name: 'platform',
           message: 'What type of app are you building',
           choices: validFrontends,
         };
 
-        const { platform } = await inquirer.prompt(platformComfirmation);
+        const { platform } = await inquirer.prompt(platformConfirmation);
         suitableFrontend = platform;
         isInferredPlatform = false;
 
         if (suitableFrontend === 'javascript') {
-          const frameworkComfirmation = {
+          const frameworkConfirmation = {
             type: 'list',
             name: 'framework',
             message: 'What javascript framework are you using',
             choices: validJSFrameworks,
           };
 
-          const { framework } = await inquirer.prompt(frameworkComfirmation);
+          const { framework } = await inquirer.prompt(frameworkConfirmation);
           resolvedJSFramework = framework;
           isInferredFramework = false;
         }
@@ -441,7 +441,7 @@ async function createAmplifyHelperFiles(frontend) {
   }
 
   if (frontend === 'flutter') {
-    initializeAmplifyConfiguration(path.resolve('lib'));
+    await initializeAmplifyConfiguration(path.resolve('lib'));
   }
 
   return frontend;

@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.8...amplify-app@4.3.9) (2023-02-06)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.7...amplify-app@4.3.8) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.6...amplify-app@4.3.7) (2023-01-17)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.5...amplify-app@4.3.6) (2023-01-03)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.4...amplify-app@4.3.5) (2022-11-17)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.3...amplify-app@4.3.4) (2022-10-27)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.2...amplify-app@4.3.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.1...amplify-app@4.3.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.39...amplify-app@4.3.1) (2022-09-21)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [4.2.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.39-rc.224a2e0e4.0...amplify-app@4.2.39) (2022-09-06)
 
 **Note:** Version bump only for package amplify-app

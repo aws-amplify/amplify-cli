@@ -1,7 +1,5 @@
 import * as path from 'path';
-import {
-  ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade,
-} from 'amplify-cli-core';
+import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { readProjectSchema } from 'graphql-transformer-core';
 
@@ -32,13 +30,9 @@ export const run = async (context: $TSContext): Promise<void> => {
       printer.error(err?.message);
     }
   } else {
-    try {
-      await context.amplify.showStatusTable(view);
-      await context.amplify.showHelpfulProviderLinks(context);
-      await showAmplifyConsoleHostingStatus(context);
-    } catch (e) {
-      view.logErrorException(e, context);
-    }
+    await context.amplify.showStatusTable(view);
+    await context.amplify.showHelpfulProviderLinks(context);
+    await showAmplifyConsoleHostingStatus(context);
   }
 };
 

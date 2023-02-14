@@ -1,5 +1,5 @@
 import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
-import { Input } from '../input';
+import { CommandLineInput } from 'amplify-cli-core';
 import { SerializableError } from './SerializableError';
 
 /**
@@ -12,15 +12,16 @@ interface IUsageMetricsData {
   init: (
     installationUuid: string,
     version: string,
-    input: Input,
+    input: CommandLineInput,
     accountId: string,
     projectSettings: ProjectSettings,
-    processStartTimeStamp: number
+    processStartTimeStamp: number,
   ) => void;
-  getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload
+  getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload;
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
-  calculatePushNormalizationFactor: (events: { StackId: string, PhysicalResourceId: string } [], StackId: string) => void;
+  calculatePushNormalizationFactor: (events: { StackId: string; PhysicalResourceId: string }[], StackId: string) => void;
+  getSessionUuid: () => string;
 }
 
 /**
@@ -30,10 +31,11 @@ export interface IUsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
   amplifyCliVersion: string;
-  input: Input | null;
+  input: CommandLineInput | null;
   inputOptions: InputOptions;
   timestamp: string;
   error: SerializableError;
+  downstreamException: SerializableError;
   payloadVersion: string;
   osPlatform: string;
   osRelease: string;
@@ -55,8 +57,7 @@ export type InputOptions = Record<string, string | boolean>;
 /**
  * Interface for UsageData
  */
-export interface IUsageData extends IUsageMetricsData, IFlowData {
-}
+export interface IUsageData extends IUsageMetricsData, IFlowData {}
 
 /**
  * Code path timers that should start immediately when the CLI process starts
@@ -70,7 +71,7 @@ export enum FromStartupTimedCodePaths {
  * Code path timers that should not end until the process exits
  */
 export enum UntilExitTimedCodePath {
-  POST_PROCESS = 'postProcess' // time from plugin exit to process exit. This timer is automatically stopped at the end of the process
+  POST_PROCESS = 'postProcess', // time from plugin exit to process exit. This timer is automatically stopped at the end of the process
 }
 
 /**
@@ -88,7 +89,7 @@ export enum ManuallyTimedCodePath {
   INIT_ENV_PLATFORM = 'initEnvPlatform', // time to call awscloudformation provider initEnv. This includes downloading deployment bucket and updating local files
   INIT_ENV_CATEGORIES = 'initEnvCategories', // time to call all of the category's initEnv methods
 
-  PROMPT_TIME = 'promptTime'// total time to takes to answer a prompt
+  PROMPT_TIME = 'promptTime', // total time to takes to answer a prompt
 }
 
 /**

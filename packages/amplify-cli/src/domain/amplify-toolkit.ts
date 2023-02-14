@@ -78,7 +78,7 @@ export class AmplifyToolkit {
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
   private _getImportedAuthProperties: any;
-  private _cleanUpTasks: Array<Function>;
+  private _cleanUpTasks: Array<(...args) => any>;
   private _invokePluginMethod?: <T>(
     context: $TSContext,
     category: string,
@@ -462,7 +462,7 @@ export class AmplifyToolkit {
   }
 
   constructor() {
-    this._cleanUpTasks = new Array();
+    this._cleanUpTasks = [];
   }
 
   addCleanUpTask = (task: (context: Context) => void) => {

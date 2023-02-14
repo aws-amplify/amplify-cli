@@ -10,6 +10,7 @@ const graphQLConfig = require('graphql-config');
 const babel = require('@babel/core');
 const babelTransformEsmToCjs = require('@babel/plugin-transform-modules-commonjs').default;
 const constants = require('./constants');
+const _ = require('lodash');
 
 const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
@@ -50,6 +51,7 @@ const AMPLIFY_RESERVED_EXPORT_KEYS = [
   // Pinpoint
   'aws_mobile_analytics_app_id',
   'aws_mobile_analytics_app_region',
+  'Notifications',
 
   // DynamoDB
   'aws_dynamodb_all_tables_region',
@@ -154,7 +156,6 @@ async function getAWSExports(context, amplifyResources, cloudAmplifyResources) {
   const newAWSExports = getAWSExportsObject(amplifyResources);
   const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
   const currentAWSExports = await getCurrentAWSExports(context);
-
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
 
   Object.assign(newAWSExports, customConfigs);
@@ -291,6 +292,8 @@ async function getCurrentAWSExports(context) {
       // transpile the file contents to CommonJS
       const { code } = babel.transformSync(fileContents, {
         plugins: [babelTransformEsmToCjs],
+        configFile: false,
+        babelrc: false,
       });
       const mod = new Module();
       mod._compile(code, 'aws-exports.js');
@@ -581,14 +584,46 @@ function getInferConfig(inferResources) {
 }
 
 function getPinpointConfig(pinpointResources) {
-  // There can only be one analytics resource
-
-  const pinpointResource = pinpointResources[0];
-
-  return {
-    aws_mobile_analytics_app_id: pinpointResource.output.Id,
-    aws_mobile_analytics_app_region: pinpointResource.output.Region,
+  const channelMapping = {
+    APNS: 'Push',
+    FCM: 'Push',
+    InAppMessaging: 'InAppMessaging',
+    Email: 'Email',
+    SMS: 'SMS',
   };
+
+  const pinpointConfig = {};
+
+  const pinpointAnalytics = pinpointResources.filter(it => (_.intersection(Object.keys(it.output), Object.keys(channelMapping))).length === 0)
+  const pinpointNotifications = pinpointResources.filter(it => (_.intersection(Object.keys(it.output), Object.keys(channelMapping))).length !== 0)
+
+  if (pinpointAnalytics.length !== 0) {
+    // legacy
+    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointAnalytics[0].output.Id;
+    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointAnalytics[0].output.Region;
+
+    pinpointConfig.Analytics = {
+      AWSPinpoint: {
+        appId: pinpointConfig.aws_mobile_analytics_app_id,
+        region: pinpointConfig.aws_mobile_analytics_app_region,
+      }
+    }
+  }
+
+  for (const [channel, plugin] of Object.entries(channelMapping)) {
+    const notificationPinpoint = pinpointNotifications.find(it => it.output?.[channel]?.Enabled);
+    if (notificationPinpoint) {
+      pinpointConfig.Notifications = pinpointConfig.Notifications ?? {};
+      pinpointConfig.Notifications[plugin] = {
+        AWSPinpoint: {
+          appId: notificationPinpoint.output[channel].ApplicationId,
+          region: notificationPinpoint.output.Region,
+        }
+      };
+    }
+  }
+
+  return pinpointConfig;
 }
 
 function getDynamoDBConfig(dynamoDBResources, projectRegion) {
@@ -700,5 +735,11 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
 }
 
 module.exports = {
-  createAWSExports, getAWSExports, getCurrentAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,
+  createAWSExports,
+  getAWSExports,
+  getCurrentAWSExports,
+  createAmplifyConfig,
+  deleteAmplifyConfig,
+  generateAwsExportsAtPath,
+  getAWSExportsObject,
 };

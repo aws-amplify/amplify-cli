@@ -84,14 +84,29 @@ describe('zero config auth', () => {
     expect(userPool.UserPool).toBeDefined();
 
     // override new env
-    await amplifyOverrideAuth(projRoot, {});
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
+    await amplifyOverrideAuth(projRoot);
+
+    // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'auth', `${authResourceName}`, 'override.ts');
+
+    // test override file in compilation error state
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
-    // check overidden config
-    const overridenUserPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    expect(overridenUserPool.UserPool).toBeDefined();
-    expect(overridenUserPool.UserPool.DeviceConfiguration.ChallengeRequiredOnNewDevice).toBe(true);
+
+    // check overwritten config
+    const overwrittenUserPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    expect(overwrittenUserPool.UserPool).toBeDefined();
+    expect(overwrittenUserPool.UserPool.DeviceConfiguration.ChallengeRequiredOnNewDevice).toBe(true);
   });
 });

@@ -1,6 +1,5 @@
-import {
-  $TSContext, JSONUtilities, stateManager, UnknownArgumentError, exitOnNextTick,
-} from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, stateManager, AmplifyError } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 /**
  * Entry point for import command
@@ -8,10 +7,10 @@ import {
 export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
   if (!envName) {
-    const errMessage = 'You must pass in the name of the environment using the --name flag';
-    context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
-    exitOnNextTick(1);
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name was not specified.',
+      resolution: 'Pass in the name of the environment using the --name flag.',
+    });
   }
 
   let config;
@@ -25,34 +24,44 @@ export const run = async (context: $TSContext): Promise<void> => {
       !(
         // eslint-disable-next-line spellcheck/spell-checker
         /* eslint-disable no-prototype-builtins */
-        config.hasOwnProperty('awscloudformation')
-        && awsCF.hasOwnProperty('Region')
-        && awsCF.Region
-        && awsCF.hasOwnProperty('DeploymentBucketName')
-        && awsCF.DeploymentBucketName
-        && awsCF.hasOwnProperty('UnauthRoleName')
-        && awsCF.UnauthRoleName
-        && awsCF.hasOwnProperty('StackName')
-        && awsCF.StackName
-        && awsCF.hasOwnProperty('StackId')
-        && awsCF.StackId
-        && awsCF.hasOwnProperty('AuthRoleName')
-        && awsCF.AuthRoleName
-        && awsCF.hasOwnProperty('UnauthRoleArn')
-        && awsCF.UnauthRoleArn
-        && awsCF.hasOwnProperty('AuthRoleArn')
-        && awsCF.AuthRoleArn
-      // eslint-disable-next-line spellcheck/spell-checker
-      /* eslint-enable no-prototype-builtins */
+        (
+          config.hasOwnProperty('awscloudformation') &&
+          awsCF.hasOwnProperty('Region') &&
+          awsCF.Region &&
+          awsCF.hasOwnProperty('DeploymentBucketName') &&
+          awsCF.DeploymentBucketName &&
+          awsCF.hasOwnProperty('UnauthRoleName') &&
+          awsCF.UnauthRoleName &&
+          awsCF.hasOwnProperty('StackName') &&
+          awsCF.StackName &&
+          awsCF.hasOwnProperty('StackId') &&
+          awsCF.StackId &&
+          awsCF.hasOwnProperty('AuthRoleName') &&
+          awsCF.AuthRoleName &&
+          awsCF.hasOwnProperty('UnauthRoleArn') &&
+          awsCF.UnauthRoleArn &&
+          awsCF.hasOwnProperty('AuthRoleArn') &&
+          awsCF.AuthRoleArn
+        )
+        // eslint-disable-next-line spellcheck/spell-checker
+        /* eslint-enable no-prototype-builtins */
       )
     ) {
-      throw new Error('The provided config was invalid or incomplete');
+      throw new AmplifyError('EnvironmentConfigurationError', {
+        message: 'The environment configuration provided is missing required properties.',
+        resolution: 'Add the required properties and try again.',
+        link: 'https://docs.amplify.aws/cli/teams/commands/#import-an-environment',
+      });
     }
   } catch (e) {
-    const errMessage = 'You must pass in the configs of the environment in an object format using the --config flag';
-    context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
-    exitOnNextTick(1);
+    throw new AmplifyError(
+      'EnvironmentConfigurationError',
+      {
+        message: 'Environment configuration was not specified or was formatted incorrectly.',
+        resolution: 'You must pass in the configuration of the environment in an object format using the --config flag.',
+      },
+      e,
+    );
   }
 
   let awsInfo;
@@ -61,10 +70,15 @@ export const run = async (context: $TSContext): Promise<void> => {
     try {
       awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
     } catch (e) {
-      const errMessage = 'You must pass in the AWS credential info in an object format for initializing your environment using the --awsInfo flag';
-      context.print.error(errMessage);
-      context.usageData.emitError(new UnknownArgumentError(errMessage));
-      exitOnNextTick(1);
+      throw new AmplifyError(
+        'EnvironmentConfigurationError',
+        {
+          message: 'The AWS credential info was not specified or was incorrectly formatted.',
+          resolution: 'Pass in the AWS credential info in an object format using the --awsInfo flag.',
+          link: 'https://docs.amplify.aws/cli/teams/commands/#import-an-environment',
+        },
+        e,
+      );
     }
   }
 
@@ -83,7 +97,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
     stateManager.setLocalAWSInfo(undefined, envAwsInfo);
 
-    context.print.success('Successfully added environment from your project');
+    printer.success('Successfully added environment from your project');
   };
 
   // eslint-disable-next-line spellcheck/spell-checker

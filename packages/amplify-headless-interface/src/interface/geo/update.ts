@@ -1,4 +1,4 @@
-import { AccessType } from "./add";
+import { AccessType } from './add';
 /**
  * Defines the json object expected by `amplify update geo --headless`
  */
@@ -46,5 +46,5 @@ export interface MapModification {
   /**
    * The service name of the resource provider.
    */
-  serviceName: "Map";
+  serviceName: 'Map';
 }

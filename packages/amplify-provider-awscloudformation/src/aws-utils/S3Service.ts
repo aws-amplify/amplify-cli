@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
-import { IS3Service } from 'amplify-util-import';
+import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { IS3Service } from '@aws-amplify/amplify-util-import';
 import S3, { Bucket } from 'aws-sdk/clients/s3';
 import { loadConfiguration } from '../configuration-manager';
 
@@ -47,10 +47,13 @@ export class S3Service implements IS3Service {
       if (error.code === 'NotFound') {
         return false;
       }
-      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
-        stack: error.stack,
-        message: error.message,
-      });
+      throw new AmplifyFault(
+        'UnknownFault',
+        {
+          message: error.message,
+        },
+        error,
+      );
     }
   }
 

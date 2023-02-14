@@ -1,12 +1,12 @@
 import Ajv from 'ajv';
-import GeoJSONSchema from 'amplify-category-geo/schema/GeoJSONSchema.json';
+import GeoJSONSchema from '@aws-amplify/amplify-category-geo/schema/GeoJSONSchema.json';
 import { v4 as uuid } from 'uuid';
 import { printer } from 'amplify-prompts';
 import { FeatureCollection, IdentifierOption } from './importParams';
 
 const MAX_VERTICES_NUM_PER_POLYGON = 1000;
 
-export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier: string = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
+export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
   // Validate against pre-defined schema
   const ajv = new Ajv();
   const validator = ajv.compile(GeoJSONSchema);
@@ -54,7 +54,7 @@ export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier: st
 };
 
 /**
- * Validate linear ring for those not captured by JSON Schema, incluidng first and last identical position, winding direction
+ * Validate linear ring for those not captured by JSON Schema, including first and last identical position, winding direction
  * @param linearRing Array of coordinates
  * @param isFirstRing Whether it is first(exterior) ring
  */

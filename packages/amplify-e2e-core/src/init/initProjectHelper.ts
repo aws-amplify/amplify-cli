@@ -100,18 +100,24 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
+
+  let env;
+
+  if (s.disableAmplifyAppCreation) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -156,13 +162,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
 
   addCircleCITags(cwd);
 
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -335,6 +347,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
@@ -422,22 +435,6 @@ export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown
           reject(err);
         }
       });
-  });
-}
-
-export function amplifyInitYes(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--yes'], {
-      cwd,
-      stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
-    }).run((err: Error) => (err
-      ? reject(err)
-      : (() => {
-        resolve();
-      })()));
   });
 }
 

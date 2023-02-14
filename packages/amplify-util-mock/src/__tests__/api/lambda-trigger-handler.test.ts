@@ -1,39 +1,39 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { invokeLambda } from '../../api/lambda-invoke';
-import { isMockable } from 'amplify-category-function';
+import { invokeTrigger } from '../../api/lambda-invoke';
+import { isMockable } from '@aws-amplify/amplify-category-function';
 import * as lambdaTriggerHandlers from '../../api/lambda-trigger-handler';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
 
 jest.mock('../../api/lambda-invoke', () => ({
-    invokeLambda: jest.fn()
+    invokeTrigger: jest.fn()
 }));
-const invokeLambdaMock = invokeLambda as jest.MockedFunction<typeof invokeLambda>;
+const invokeLambdaMock = invokeTrigger as jest.MockedFunction<typeof invokeTrigger>;
 
-jest.mock('amplify-category-function', () => ({
+jest.mock('@aws-amplify/amplify-category-function', () => ({
     isMockable: jest.fn().mockReturnValue({ isMockable: true })
 }));
 const isMockableMock = isMockable as jest.MockedFunction<typeof isMockable>;
 
 const mockContext = {} as $TSContext;
 const mockStreamArn = 'mock-arn';
-const mockTriggerName = 'mock-trigger';
+const mockTrigger = { name: 'mock-trigger' };
 const mockDDBEndpoint = new Endpoint('mock');
 
 describe('Lambda Trigger Handler', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('throws error if lambda trigger name is not specified', async () => {
+  it('throws error if lambda trigger name and config both are not specified', async () => {
     try {
         await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             mockStreamArn,
-            null,
+            {},
             mockDDBEndpoint
         );
         expect(true).toEqual(false);
     }
     catch (err) {
-        expect(err.message).toBe('Name of the lambda trigger function must be specified');
+        expect(err.message).toBe('Lambda trigger must be specified');
     }
   });
 
@@ -42,7 +42,7 @@ describe('Lambda Trigger Handler', () => {
         await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             null,
-            mockTriggerName,
+            mockTrigger,
             mockDDBEndpoint
         );
         expect(true).toEqual(false);
@@ -57,7 +57,7 @@ describe('Lambda Trigger Handler', () => {
         await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             mockStreamArn,
-            mockTriggerName,
+            mockTrigger,
             null
         );
         expect(true).toEqual(false);
@@ -76,22 +76,22 @@ describe('Lambda Trigger Handler', () => {
         await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             mockStreamArn,
-            mockTriggerName,
+            mockTrigger,
             mockDDBEndpoint
         );
         expect(true).toEqual(false);
     }
     catch (err) {
-        expect(err.message).toBe(`Unable to mock ${mockTriggerName}. Mocking a function with layers is not supported.`);
+        expect(err.message).toBe(`Unable to mock ${mockTrigger.name}. Mocking a function with layers is not supported.`);
     }
   });
 
   it('Polls for records from given DDB stream', async () => {
-    const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollDDBStreamAndInvokeLamba').mockResolvedValueOnce();
+    const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollDDBStreamAndInvokeLambda').mockResolvedValueOnce();
     await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
         mockContext,
         mockStreamArn,
-        mockTriggerName,
+        mockTrigger,
         mockDDBEndpoint
     );
     expect(pollForRecordsMock).toBeCalledTimes(1);
@@ -99,7 +99,7 @@ describe('Lambda Trigger Handler', () => {
         mockContext, 
         mockStreamArn, 
         expect.any(DynamoDBStreams), 
-        mockTriggerName
+        mockTrigger
     );
   });
 
@@ -115,12 +115,12 @@ describe('Lambda Trigger Handler', () => {
     await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
         mockContext,
         mockStreamArn,
-        mockTriggerName,
+        mockTrigger,
         mockDDBEndpoint
     );
     expect(getLatestShardIteratorMock).toBeCalledTimes(1);
     expect(getStreamRecordsMock).toBeCalledTimes(1);
     expect(invokeLambdaMock).toBeCalledTimes(1);
-    expect(invokeLambdaMock).toBeCalledWith(mockContext, mockTriggerName, mockData);
+    expect(invokeLambdaMock).toBeCalledWith(mockContext, mockTrigger, mockData);
   });
 });

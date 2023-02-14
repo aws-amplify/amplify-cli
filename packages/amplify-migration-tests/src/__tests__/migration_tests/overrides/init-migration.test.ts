@@ -9,12 +9,13 @@ import {
   amplifyPushOverride,
 } from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('amplify init', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('init');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
@@ -23,17 +24,13 @@ describe('amplify init', () => {
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
   });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('init');
-  });
-
   afterEach(async () => {
     await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
   it('should init the project and override root and push', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     // turn ON feature flag

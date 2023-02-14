@@ -603,7 +603,7 @@ const capabilities = [
   },
 ];
 
-const additonalConfigMap = [
+const additionalConfigMap = [
   {
     name: 'No, I am done.',
     value: [],
@@ -642,7 +642,7 @@ const getAllMaps = edit => {
     attributeProviderMap,
     updateFlowMap,
     capabilities,
-    additonalConfigMap,
+    additionalConfigMap,
   };
 };
 
@@ -668,5 +668,5 @@ module.exports = {
   attributeProviderMap,
   updateFlowMap,
   capabilities,
-  additonalConfigMap,
+  additionalConfigMap,
 };

@@ -28,7 +28,7 @@ let executablePath: string | null;
 export const executeCommand = (
   args: string[],
   streamStdio: boolean,
-  env: {} = {},
+  env: Record<string, string> = {},
   cwd: string | undefined = undefined,
   stdioInput: string | undefined = undefined,
 ): string => {
@@ -172,8 +172,8 @@ const winZip = async (src: string, dest: string, print: any) => {
   // get lambda zip tool with the fix of https://go.dev/doc/go-get-install-deprecation
   const version = getGoVersion();
   try {
-    if (gte(version, '1.17')) {
-      await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+    if (gte(version, <SemVer>coerce('1.17'))) {
+      await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip@latest']);
     } else {
       await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
     }
@@ -222,6 +222,6 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
       ignore: [mainFile],
     });
 
-    zip.finalize();
+    void zip.finalize();
   });
 };

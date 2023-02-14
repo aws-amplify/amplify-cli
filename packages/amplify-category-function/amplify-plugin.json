@@ -1,9 +1,23 @@
 {
   "name": "function",
   "type": "category",
-  "commands": ["add", "build", "console", "invoke", "push", "remove", "update", "help"],
+  "commands": [
+    "add",
+    "build",
+    "console",
+    "invoke",
+    "push",
+    "remove",
+    "update",
+    "help"
+  ],
   "commandAliases": {
     "configure": "update"
   },
-  "eventHandlers": ["PrePush", "PostPush", "InternalOnlyPostEnvRemove"]
+  "eventHandlers": [
+    "PrePush",
+    "PostPush",
+    "InternalOnlyPostEnvRemove",
+    "PreExport"
+  ]
 }

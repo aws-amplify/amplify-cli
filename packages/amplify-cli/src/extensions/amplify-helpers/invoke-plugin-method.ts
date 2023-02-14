@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink,
+  $TSAny, $TSContext, AmplifyError,
 } from 'amplify-cli-core';
 
 /**
@@ -25,7 +25,7 @@ export const invokePluginMethod = async <T>(
   const pluginMethod = plugin[method];
 
   if (!pluginMethod || typeof pluginMethod !== 'function') {
-    throw amplifyErrorWithTroubleshootingLink('PluginMethodNotFoundError', {
+    throw new AmplifyError('PluginMethodNotFoundError', {
       message: `Method ${method} does not exist or is not a function in category plugin: ${category}.`,
     });
   }

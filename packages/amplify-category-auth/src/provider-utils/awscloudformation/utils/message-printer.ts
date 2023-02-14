@@ -6,7 +6,7 @@ import { printer } from 'amplify-prompts';
  * A factory function that returns a function that prints the "success message" after adding auth
  * @param print The amplify print object
  */
-export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps: boolean = false) => {
+export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps = false) => {
   printer.success(`Successfully added auth resource ${resourceName} locally`);
 
   if (!skipNextSteps) {

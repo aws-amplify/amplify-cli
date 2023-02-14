@@ -18,7 +18,7 @@ export async function analyzeProject(context) {
   const projectPath = process.cwd();
   Object.assign(context.exeInfo.localEnvInfo, { projectPath });
 
-  let { projectName } = context.exeInfo.projectConfig;
+  const { projectName } = context.exeInfo.projectConfig;
   const { defaultEditor, envName } = context.exeInfo.localEnvInfo;
 
   context.print.info('');
@@ -29,7 +29,7 @@ export async function analyzeProject(context) {
   if (!frontend) {
     frontend = 'javascript';
   }
-  const frontendModule = require(frontendPlugins[frontend]);
+  const frontendModule = await import(frontendPlugins[frontend]);
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 

@@ -37,8 +37,6 @@ export async function runTest(projectDir: string, testModule: any) {
     const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
 
     await testQueries(testModule, appSyncClient);
-  } catch (e) {
-    throw e;
   } finally {
     await deleteFunctionProject(functionProjectDirPath);
   }

@@ -3,6 +3,173 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.1...@aws-amplify/cli@10.7.2) (2023-02-13)
+
+
+### Bug Fixes
+
+* bump API plugin version to update legacy rds transformers ([705d65c](https://github.com/aws-amplify/amplify-cli/commit/705d65cb3385543a37e276ae1e05a707d98cdd5c))
+
+
+
+
+
+## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.0...@aws-amplify/cli@10.7.1) (2023-02-06)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.6.2...@aws-amplify/cli@10.7.0) (2023-02-02)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+
+
+### Features
+
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+
+
+## [10.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.6.1...@aws-amplify/cli@10.6.2) (2023-01-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [10.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.6.0...@aws-amplify/cli@10.6.1) (2023-01-06)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.5.2...@aws-amplify/cli@10.6.0) (2023-01-03)
+
+
+### Features
+
+* force minor version bump in cli-npm package ([#11545](https://github.com/aws-amplify/amplify-cli/issues/11545)) ([6f14792](https://github.com/aws-amplify/amplify-cli/commit/6f14792d1db424aa428ec4836fed7d6dd5cccfd0))
+
+
+
+
+
+## [10.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.5.1...@aws-amplify/cli@10.5.2) (2022-12-09)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [10.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.5.0...@aws-amplify/cli@10.5.1) (2022-11-21)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.4.1...@aws-amplify/cli@10.5.0) (2022-11-17)
+
+
+### Features
+
+* no op version bump ([#11325](https://github.com/aws-amplify/amplify-cli/issues/11325)) ([ffe42c5](https://github.com/aws-amplify/amplify-cli/commit/ffe42c5425aa331ba9c6caf0976011b7aa4b95ca))
+
+
+
+
+
+## [10.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.4.0...@aws-amplify/cli@10.4.1) (2022-11-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.3.1...@aws-amplify/cli@10.4.0) (2022-10-27)
+
+
+### Features
+
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+
+
+
+
+
+## [10.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.3.0...@aws-amplify/cli@10.3.1) (2022-10-21)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.2.3...@aws-amplify/cli@10.3.0) (2022-10-13)
+
+
+### Features
+
+* no-op feat commit to force version bump ([#11132](https://github.com/aws-amplify/amplify-cli/issues/11132)) ([9f3bba7](https://github.com/aws-amplify/amplify-cli/commit/9f3bba77a3dc24318df3523c2ceb7029f5fcb56c))
+
+
+
+
+
+## [10.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.2.2...@aws-amplify/cli@10.2.3) (2022-10-10)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [10.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.2.1...@aws-amplify/cli@10.2.2) (2022-10-05)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [10.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.2.0...@aws-amplify/cli@10.2.1) (2022-10-03)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.0.0...@aws-amplify/cli@10.2.0) (2022-09-21)
+
+
+### Features
+
+* force minor version bump ([#10994](https://github.com/aws-amplify/amplify-cli/issues/10994)) ([3c39eba](https://github.com/aws-amplify/amplify-cli/commit/3c39ebab9c78702418df11303164a41efd3bc0d6))
+
+
+
+
+
 # [10.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.0.0-rc.224a2e0e4.0...@aws-amplify/cli@10.0.0) (2022-09-06)
 
 **Note:** Version bump only for package @aws-amplify/cli
