@@ -77,7 +77,7 @@ describe('Invoke local lambda function', () => {
     const echoInput = { key: 'value' };
     timeConstrainedInvokerMock.mockResolvedValue(echoInput);
     const mockTriggerConfig = {
-      runtimePluginId: '@aws-amplify/amplify-python-function-runtime-provider',
+      runtimePluginId: 'amplify-python-function-runtime-provider',
       handler: 'index.handler',
       runtime: 'python',
       directory: 'mock-lambda-trigger',

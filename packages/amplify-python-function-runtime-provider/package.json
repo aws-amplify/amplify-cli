@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-python-function-runtime-provider",
+  "name": "amplify-python-function-runtime-provider",
   "version": "2.4.9",
   "description": "Provides functionality related to functions in Python on AWS",
   "repository": {

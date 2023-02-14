@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-nodejs-function-runtime-provider",
+  "name": "amplify-nodejs-function-runtime-provider",
   "version": "2.3.9",
   "description": "Provides functionality related to functions in NodeJS on AWS",
   "repository": {
