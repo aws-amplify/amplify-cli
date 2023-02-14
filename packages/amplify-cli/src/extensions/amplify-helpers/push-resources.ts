@@ -106,10 +106,27 @@ export const pushResources = async (
     resourceParamManager.setParam(parameterName, value);
   };
 
+  const parametersToCheck = resourcesToBuild
+    .filter(({ category: c, resourceName: r }) => {
+      // Filter based on optional parameters
+      if (category) {
+        if (c !== category) {
+          return false;
+        }
+      }
+      if (resourceName) {
+        if (r !== resourceName) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+
   if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
-    await envParamManager.verifyExpectedEnvParameters();
+    await envParamManager.verifyExpectedEnvParameters(parametersToCheck);
   } else {
-    const missingParameters = await envParamManager.getMissingParameters();
+    const missingParameters = await envParamManager.getMissingParameters(parametersToCheck);
     if (missingParameters.length > 0) {
       for (const { categoryName, resourceName, parameterName } of missingParameters) {
         await promptMissingParameter(categoryName, resourceName, parameterName , envParamManager);

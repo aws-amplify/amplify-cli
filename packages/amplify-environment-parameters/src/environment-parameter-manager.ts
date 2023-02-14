@@ -1,4 +1,4 @@
-import { AmplifyError, AmplifyFault, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -147,7 +147,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     });
   }
 
-  async getMissingParameters(): Promise<ResourceParameter[]> {
+  async getMissingParameters(resourceFilterList?: IAmplifyResource[]): Promise<ResourceParameter[]> {
     const expectedParameters = this.parameterMapController.getParameters();
     const allEnvParams = new Set();
     const missingResourceParameters: ResourceParameter[] = [];
@@ -161,11 +161,15 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
     Object.keys(expectedParameters).forEach(expectedParameter => {
       const [categoryName, resourceName, parameterName] = getNamesFromParameterStoreKey(expectedParameter);
+      if (resourceFilterList && !resourceFilterList.some(
+        ({ category, resourceName: resource }) => categoryName === category && resource === resourceName
+      )) {
+        return;
+      }
       if (!allEnvParams.has(`${categoryName}_${resourceName}_${parameterName}`)) {
         missingResourceParameters.push({ categoryName, resourceName, parameterName });
       }
     });
-
 
     return missingResourceParameters;
   }
@@ -173,8 +177,8 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
   /**
    * Throw an error if expected parameters are missing
    */
-  async verifyExpectedEnvParameters(): Promise<void> {
-    const missingParameterNames = await this.getMissingParameters();
+  async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[]): Promise<void> {
+    const missingParameterNames = await this.getMissingParameters(resourceFilterList);
 
     if (missingParameterNames.length > 0) {
       throw new AmplifyError('MissingExpectedParameterError', {
@@ -205,13 +209,14 @@ const splitResourceKey = (key: string): readonly [string, string] => {
 export type IEnvironmentParameterManager = {
   cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
-  getMissingParameters: () => Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
+  getMissingParameters: (resourceFilterList?: IAmplifyResource[]) =>
+    Promise<{ categoryName: string; resourceName: string; parameterName: string }[]>;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   init: () => Promise<void>;
   removeResourceParamManager: (category: string, resource: string) => void;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-  verifyExpectedEnvParameters: () => Promise<void>;
+  verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<void>;
 }
 
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;

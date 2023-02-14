@@ -124,6 +124,23 @@ describe('verifyExpectedEnvParameters', () => {
     }
     expect(error).toBeDefined();
   });
+
+  it('does not throw when a parameter is missing on an ignored resource', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
+
+    funcParamManager.setParam('missingParam', 'missingValue');
+    envParamManager.save();
+    funcParamManager.deleteParam('missingParam');
+
+    let error = undefined;
+    try {
+      await envParamManager.verifyExpectedEnvParameters([{ category: 'auth', resourceName: 'mockAuth', service: 'Cognito' }]);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).not.toBeDefined();
+  });
 });
 
 describe('getMissingParameters', () => {
@@ -143,5 +160,19 @@ describe('getMissingParameters', () => {
 
     expect(await envParamManager.getMissingParameters())
       .toEqual([{ categoryName: 'function', resourceName: 'funcName', parameterName: 'missingParam' }]);
+  });
+
+  it('returns an empty array when a parameter is missing on an ignored resource', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
+
+    funcParamManager.setParam('missingParam', 'missingValue');
+    envParamManager.save();
+    funcParamManager.deleteParam('missingParam');
+
+    expect(
+      await envParamManager.getMissingParameters([{ category: 'auth', resourceName: 'mockAuth', service: 'Cognito' }])
+    ).toEqual([]);
+
   });
 });

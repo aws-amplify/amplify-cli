@@ -4,6 +4,8 @@
 
 ```ts
 
+import { IAmplifyResource } from 'amplify-cli-core';
+
 // @public (undocumented)
 export const cloneEnvParamManager: (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string) => Promise<void>;
 
@@ -19,7 +21,7 @@ export const getEnvParamManager: (envName?: string) => IEnvironmentParameterMana
 export type IEnvironmentParameterManager = {
     cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
     downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
-    getMissingParameters: () => Promise<{
+    getMissingParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<{
         categoryName: string;
         resourceName: string;
         parameterName: string;
@@ -29,7 +31,7 @@ export type IEnvironmentParameterManager = {
     init: () => Promise<void>;
     removeResourceParamManager: (category: string, resource: string) => void;
     save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-    verifyExpectedEnvParameters: () => Promise<void>;
+    verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<void>;
 };
 
 // @public (undocumented)
