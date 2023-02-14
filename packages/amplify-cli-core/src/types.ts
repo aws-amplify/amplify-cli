@@ -345,7 +345,7 @@ export type IPluginInfo = {
   packageName: string;
   packageVersion: string;
   packageLocation: string;
-  manifest: $IPluginManifest;
+  manifest: IPluginManifest;
 };
 
 /**
@@ -391,7 +391,7 @@ export type GetPackageAssetPaths = () => Promise<string[]>;
 /**
  * Placeholder type
  */
-export type $IPluginManifest = {
+export type IPluginManifest = {
   name: string;
   type: string;
   commands?: string[];

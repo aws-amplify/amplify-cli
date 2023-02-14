@@ -1,8 +1,7 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable spellcheck/spell-checker */
-import { IUsageData, PluginPlatform } from 'amplify-cli-core';
-import { CLIInput } from './command-input';
+import { CommandLineInput, IPluginPlatform, IUsageData } from 'amplify-cli-core';
 import { AmplifyToolkit } from './amplify-toolkit';
 
 /**
@@ -11,7 +10,7 @@ import { AmplifyToolkit } from './amplify-toolkit';
 export class Context {
   amplify: AmplifyToolkit;
   usageData!: IUsageData;
-  constructor(public pluginPlatform: PluginPlatform, public input: CLIInput) {
+  constructor(public pluginPlatform: IPluginPlatform, public input: CommandLineInput) {
     this.amplify = new AmplifyToolkit();
   }
 
