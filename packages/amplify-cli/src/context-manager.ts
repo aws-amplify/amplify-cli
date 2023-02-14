@@ -1,5 +1,4 @@
 import { $TSAny, $TSContext, stateManager, IPluginPlatform, CommandLineInput } from 'amplify-cli-core';
-import { CLIInput } from './domain/command-input';
 import * as _ from 'lodash';
 import { init } from './app-config';
 import { attachExtensions, ProjectSettings } from 'amplify-cli-core';

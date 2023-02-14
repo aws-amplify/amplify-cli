@@ -27,8 +27,11 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
  *
  * @throws error if url is not a valid remote github url
  */
-function validateGithubRepo(repoUrl: any): asserts repoUrl is string {
+function validateGithubRepo(repoUrl: string | boolean): asserts repoUrl is string {
   try {
+    if (typeof repoUrl !== 'string') {
+      throw new TypeError('repoUrl must be a string');
+    }
     url.parse(repoUrl);
 
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
