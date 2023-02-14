@@ -920,6 +920,7 @@ export type HookEvent = {
 // @public (undocumented)
 export type HookExtensions = Record<string, {
     runtime: string;
+    runtime_options?: string[];
     runtime_windows?: string;
 }>;
 
