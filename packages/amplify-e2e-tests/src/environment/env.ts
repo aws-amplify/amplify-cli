@@ -8,14 +8,7 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendCarriageReturn()
-      .wait(/Do you want to clone parameters from the*/);
-
-    if (settings.cloneParams!) {
-      chain.sendYes();
-    } else {
-      chain.sendNo();
-    }
+      .sendCarriageReturn();
 
     chain.wait('Initialized your environment successfully.').run((err: Error) => {
       if (!err) {
