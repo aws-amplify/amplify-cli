@@ -209,7 +209,7 @@ describe('When generating auth questions...', () => {
       currentAnswers.mappedOptions2 = 'value2';
       input.type = 'list';
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const requiredPresent = res.choices.filter((a: { name: string; }) => a.name === 'name2').length > 0;
+      const requiredPresent = res.choices.filter((a: { name: string }) => a.name === 'name2').length > 0;
       expect(requiredPresent).toBe(false);
     });
 
@@ -220,7 +220,7 @@ describe('When generating auth questions...', () => {
       Object.assign(mockContext, { updatingAuth: { mappedOptions2: 'value2' } });
       input.type = 'list';
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const requiredPresent = res.choices.filter((a: { name: string; }) => a.name === 'name2').length > 0;
+      const requiredPresent = res.choices.filter((a: { name: string }) => a.name === 'name2').length > 0;
       expect(requiredPresent).toBe(false);
     });
 
@@ -241,7 +241,8 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const correctChoices = res.choices && res.choices.length === 4 && res.choices.filter((i: { disabled: any; }) => i.disabled).length === 2;
+      const correctChoices =
+        res.choices && res.choices.length === 4 && res.choices.filter((i: { disabled: any }) => i.disabled).length === 2;
       expect(correctChoices).toBe(true);
     });
 
@@ -252,10 +253,10 @@ describe('When generating auth questions...', () => {
       input.filter = 'attributes';
       input.map = 'coreAttributes';
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const emailChoice = res.choices.find((i: { value: string; }) => i.value === 'email');
-      const addressChoice = res.choices.find((i: { value: string; }) => i.value === 'address');
-      const localeChoice = res.choices.find((i: { value: string; }) => i.value === 'locale');
-      const nameChoice = res.choices.find((i: { value: string; }) => i.value === 'name');
+      const emailChoice = res.choices.find((i: { value: string }) => i.value === 'email');
+      const addressChoice = res.choices.find((i: { value: string }) => i.value === 'address');
+      const localeChoice = res.choices.find((i: { value: string }) => i.value === 'locale');
+      const nameChoice = res.choices.find((i: { value: string }) => i.value === 'name');
       expect(emailChoice.name).toEqual('Email');
       expect(addressChoice.name).toEqual('Address (This attribute is not supported by Prov2, Sign in with Apple.)');
       expect(localeChoice.name).toEqual('Locale (This attribute is not supported by Prov1, Login With Amazon, Sign in with Apple.)');

@@ -18,7 +18,7 @@ describe('analyzeProject', () => {
       '-y',
     ];
     const mockInput = new CommandLineInput(mockProcessArgv);
-    mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
+    mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
     const frontendPlugins = [
       {
         name: '@aws-amplify/amplify-frontend-javascript',
