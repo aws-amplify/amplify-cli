@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0-cdkv2.6...amplify-e2e-tests@4.0.0-cdkv2.7) (2023-02-15)
+
+
+### Bug Fixes
+
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([fe79f29](https://github.com/aws-amplify/amplify-cli/commit/fe79f294a09ca2f9b6ee06e833b1f8426fd2543e))
+
+
+
+
+
 # [4.0.0-cdkv2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.1...amplify-e2e-tests@4.0.0-cdkv2.6) (2023-02-07)
 
 

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.6...amplify-provider-awscloudformation@7.0.0-cdkv2.7) (2023-02-15)
+
+
+### Bug Fixes
+
+* block init if amplify app creation fails ([#10839](https://github.com/aws-amplify/amplify-cli/issues/10839)) ([86550c3](https://github.com/aws-amplify/amplify-cli/commit/86550c38f88cc9fcb6398348090db0608bbdd255))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
 # [7.0.0-cdkv2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.3...amplify-provider-awscloudformation@7.0.0-cdkv2.6) (2023-02-07)
 
 

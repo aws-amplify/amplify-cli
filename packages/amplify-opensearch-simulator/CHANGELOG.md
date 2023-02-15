@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.2.2-cdkv2.0...@aws-amplify/amplify-opensearch-simulator@1.2.2-cdkv2.1) (2023-02-15)
+
+
+### Bug Fixes
+
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+
+
+
+
+
 ## [1.2.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.1.4...@aws-amplify/amplify-opensearch-simulator@1.2.2-cdkv2.0) (2023-02-07)
 
 

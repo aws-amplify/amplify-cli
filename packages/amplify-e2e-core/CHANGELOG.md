@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.0...@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.1) (2023-02-15)
+
+
+### Bug Fixes
+
+* iterative rollback e2e tests ([#11991](https://github.com/aws-amplify/amplify-cli/issues/11991)) ([448fcb3](https://github.com/aws-amplify/amplify-cli/commit/448fcb3720f42852634bf0e1bc54f56dd8df9779))
+* migration tests ([6f03b0a](https://github.com/aws-amplify/amplify-cli/commit/6f03b0af1cfd12e9f0e3bd96b2f660d6b1a4e03f))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([fe79f29](https://github.com/aws-amplify/amplify-cli/commit/fe79f294a09ca2f9b6ee06e833b1f8426fd2543e))
+
+
+
+
+
 # [4.7.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.3...@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.0) (2023-02-07)
 
 

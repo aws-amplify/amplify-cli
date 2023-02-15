@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.4.0-cdkv2.0...@aws-amplify/amplify-migration-tests@5.4.0-cdkv2.1) (2023-02-15)
+
+
+### Bug Fixes
+
+* migration tests ([6f03b0a](https://github.com/aws-amplify/amplify-cli/commit/6f03b0af1cfd12e9f0e3bd96b2f660d6b1a4e03f))
+
+
+
+
+
 # [5.4.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.3...@aws-amplify/amplify-migration-tests@5.4.0-cdkv2.0) (2023-02-07)
 
 

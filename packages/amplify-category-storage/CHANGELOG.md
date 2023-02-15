@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.0-cdkv2.6...@aws-amplify/amplify-category-storage@4.0.0-cdkv2.7) (2023-02-15)
+
+
+### Bug Fixes
+
+* yarn test spin lock ([#11917](https://github.com/aws-amplify/amplify-cli/issues/11917)) ([2d7dd99](https://github.com/aws-amplify/amplify-cli/commit/2d7dd99c6d8f2e7b8af39a3f4bf3b9cde4d6c622))
+
+
+
+
+
 # [4.0.0-cdkv2.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.1...@aws-amplify/amplify-category-storage@4.0.0-cdkv2.6) (2023-02-07)
 
 

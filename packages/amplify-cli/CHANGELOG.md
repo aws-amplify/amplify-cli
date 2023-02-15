@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0-cdkv2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-cdkv2.7...@aws-amplify/cli-internal@11.0.0-cdkv2.8) (2023-02-15)
+
+
+### Bug Fixes
+
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+* use singleton ora spinner from cli-core for env initializing ([#11905](https://github.com/aws-amplify/amplify-cli/issues/11905)) ([df48446](https://github.com/aws-amplify/amplify-cli/commit/df4844698a22488a88aaf2102bb06603ceb6e9b5))
+
+
+### Features
+
+* force version bump ([#11913](https://github.com/aws-amplify/amplify-cli/issues/11913)) ([330b053](https://github.com/aws-amplify/amplify-cli/commit/330b05304467916bdaad955836a3c47930efa0d4))
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+* removes xr plugin ([#11901](https://github.com/aws-amplify/amplify-cli/issues/11901)) ([7f268f7](https://github.com/aws-amplify/amplify-cli/commit/7f268f7ee974ca776cf72a540dcf5cb5f615f04e))
+
+
+
+
+
 # [11.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.1...@aws-amplify/cli-internal@11.0.0-cdkv2.7) (2023-02-07)
 
 

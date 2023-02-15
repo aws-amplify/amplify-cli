@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.2-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.2-cdkv2.0...amplify-category-notifications@2.23.2-cdkv2.1) (2023-02-15)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
 ## [2.23.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.1...amplify-category-notifications@2.23.2-cdkv2.0) (2023-02-07)
 
 
