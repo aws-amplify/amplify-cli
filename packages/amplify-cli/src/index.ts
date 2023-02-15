@@ -10,19 +10,19 @@ import {
   stateManager,
   HooksMeta,
   AmplifyError,
+  constants,
+  CommandLineInput,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
-import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
+import { saveAll as saveAllEnvParams, ServiceUploadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
-import { constants } from './domain/constants';
 import { Context } from './domain/context';
-import { Input } from './domain/input';
 import { executeCommand } from './execution-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { getPluginPlatform, scan } from './plugin-manager';
@@ -151,18 +151,35 @@ export const run = async (startTime: number): Promise<void> => {
   await displayBannerMessages(input);
   await executeCommand(context);
 
-  const exitCode = process.exitCode || 0;
-  if (exitCode === 0) {
-    await context.usageData.emitSuccess();
-  }
-
   // no command supplied defaults to help, give update notification at end of execution
   if (input.command === 'help') {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: true, isGlobal: true });
   }
 
-  await saveAllEnvParams();
+  if (context.input.command === 'push') {
+    const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
+    const CloudFormationProviderName = 'awscloudformation';
+    let uploadHandler: ServiceUploadHandler | undefined;
+    if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
+      uploadHandler = await context.amplify.invokePluginMethod(
+        context,
+        CloudFormationProviderName,
+        undefined,
+        'getEnvParametersUploadHandler',
+        [context],
+      );
+    }
+    await saveAllEnvParams(uploadHandler);
+  }
+  else {
+    await saveAllEnvParams();
+  }
+
+  const exitCode = process.exitCode || 0;
+  if (exitCode === 0) {
+    await context.usageData.emitSuccess();
+  }
 };
 
 const ensureFilePermissions = (filePath: string): void => {
@@ -190,7 +207,7 @@ async function sigIntHandler(context: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: Input): Promise<void> => {
+export const execute = async (input: CommandLineInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 
@@ -239,4 +256,4 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
   }
 };
 
-// force major version bump for cdk v2
+// bump version to 10.8

@@ -24,7 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "4.0.0-cdkv2.6",
     "amplify-function-plugin-interface": "1.9.6-cdkv2.2",
-    "graphql-transformer-core": "8.0.0-beta.4",
+    "graphql-transformer-core": "8.0.0-beta.5",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

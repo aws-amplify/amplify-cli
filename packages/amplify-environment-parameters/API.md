@@ -4,6 +4,11 @@
 
 ```ts
 
+import { IAmplifyResource } from 'amplify-cli-core';
+
+// @public (undocumented)
+export const cloneEnvParamManager: (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string) => Promise<void>;
+
 // @public (undocumented)
 export const ensureEnvParamManager: (envName?: string) => Promise<{
     instance: IEnvironmentParameterManager;
@@ -14,11 +19,19 @@ export const getEnvParamManager: (envName?: string) => IEnvironmentParameterMana
 
 // @public (undocumented)
 export type IEnvironmentParameterManager = {
+    cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
+    downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
+    getMissingParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<{
+        categoryName: string;
+        resourceName: string;
+        parameterName: string;
+    }[]>;
+    getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
+    hasResourceParamManager: (category: string, resource: string) => boolean;
     init: () => Promise<void>;
     removeResourceParamManager: (category: string, resource: string) => void;
-    hasResourceParamManager: (category: string, resource: string) => boolean;
-    getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-    save: () => Promise<void>;
+    save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+    verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<void>;
 };
 
 // @public (undocumented)
@@ -42,7 +55,13 @@ export class ResourceParameterManager {
 }
 
 // @public (undocumented)
-export const saveAll: () => Promise<void>;
+export const saveAll: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
+
+// @public (undocumented)
+export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
+
+// @public (undocumented)
+export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 

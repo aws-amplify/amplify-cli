@@ -1,13 +1,13 @@
 import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from 'amplify-function-plugin-interface';
-import { getInvoker, getBuilder } from 'amplify-category-function';
+import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { timeConstrainedInvoker } from '../func';
 import { printer } from 'amplify-prompts';
 import { LambdaTrigger, LambdaTriggerConfig } from '../utils/lambda/find-lambda-triggers';
 
 /**
- * Utility method to invoke the lambda function locally. 
+ * Utility method to invoke the lambda function locally.
  * Ensures latest function changes are built before invoking it.
  * @param context The CLI context
  * @param trigger Lambda trigger to invoke locally
@@ -31,8 +31,8 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
   }
   else {
     const envVars = trigger?.config?.envVars || {};
-    if (!trigger?.config?.runtimePluginId || 
-      !trigger?.config?.handler || 
+    if (!trigger?.config?.runtimePluginId ||
+      !trigger?.config?.handler ||
       !trigger?.config?.runtime ||
       !trigger?.config?.directory) {
         throw new AmplifyFault('MockProcessFault', {
@@ -55,7 +55,7 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
       envVars
     });
   }
-  
+
   printer.info('Starting execution...');
   try {
     const result = await timeConstrainedInvoker(invoker({ event: data }), context?.input?.options);
@@ -75,7 +75,7 @@ const stringifyResult = (result: $TSAny) => {
 }
 
 export const buildLambdaTrigger = async (
-  runtimeManager: FunctionRuntimeLifecycleManager, 
+  runtimeManager: FunctionRuntimeLifecycleManager,
   triggerConfig: Pick<LambdaTriggerConfig, 'runtime' | 'directory' | 'runtimePluginId'>
 ) => {
   const runtimeRequirementsCheck = await runtimeManager.checkDependencies(triggerConfig?.runtime);

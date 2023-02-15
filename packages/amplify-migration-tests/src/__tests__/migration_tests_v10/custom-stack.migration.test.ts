@@ -4,6 +4,7 @@ import {
   addCFNCustomResource,
   amplifyPull,
   amplifyPushAuth,
+  amplifyPushAuthV10,
   buildCustomResources,
   createNewProjectDir,
   deleteProject,
@@ -51,8 +52,8 @@ describe('adding custom resources migration test', () => {
     );
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-v10.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
-    await buildCustomResources(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await buildCustomResources(projRoot);
+    await amplifyPushAuthV10(projRoot);
 
     // check if cfn file is generated in the build dir
     expect(fs.existsSync(cfnFilePath)).toEqual(true);
@@ -78,7 +79,7 @@ describe('adding custom resources migration test', () => {
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
 
       // building custom resources succeeds against a v10 cdk stack, even when using vLatest to build
-      await expect(buildCustomResources(projRoot2, {}, usingLatestCode)).resolves.not.toThrow();
+      await expect(buildCustomResources(projRoot2, usingLatestCode)).resolves.not.toThrow();
 
       // migrate overrides to use vLatest
       const srcVLatestCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-vLatest.ts');
@@ -86,7 +87,7 @@ describe('adding custom resources migration test', () => {
       fs.copyFileSync(srcVLatestCustomResourceFilePath, destVLatestCustomResourceFilePath);
 
       // this should fail because customer also needs to update package.json dependencies for cdkV2
-      await expect(buildCustomResources(projRoot2, {}, usingLatestCode)).rejects.toThrow();
+      await expect(buildCustomResources(projRoot2, usingLatestCode)).rejects.toThrow();
 
       // emulate updating the package.json dependencies
       const srcVLatestCustomPackageJSONFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-vLatest.package.json');
@@ -94,7 +95,7 @@ describe('adding custom resources migration test', () => {
       fs.copyFileSync(srcVLatestCustomPackageJSONFilePath, destVLatestCustomPackageJSONFilePath);
 
       // this should pass now
-      await buildCustomResources(projRoot2, {}, usingLatestCode);
+      await buildCustomResources(projRoot2, usingLatestCode);
       await amplifyPushAuth(projRoot2, usingLatestCode);
 
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN

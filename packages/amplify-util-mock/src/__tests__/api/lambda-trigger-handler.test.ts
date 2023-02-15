@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { invokeTrigger } from '../../api/lambda-invoke';
-import { isMockable } from 'amplify-category-function';
+import { isMockable } from '@aws-amplify/amplify-category-function';
 import * as lambdaTriggerHandlers from '../../api/lambda-trigger-handler';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
 
@@ -9,7 +9,7 @@ jest.mock('../../api/lambda-invoke', () => ({
 }));
 const invokeLambdaMock = invokeTrigger as jest.MockedFunction<typeof invokeTrigger>;
 
-jest.mock('amplify-category-function', () => ({
+jest.mock('@aws-amplify/amplify-category-function', () => ({
     isMockable: jest.fn().mockReturnValue({ isMockable: true })
 }));
 const isMockableMock = isMockable as jest.MockedFunction<typeof isMockable>;

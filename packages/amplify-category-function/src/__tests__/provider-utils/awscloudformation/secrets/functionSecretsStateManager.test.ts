@@ -27,10 +27,10 @@ pathManagerMock.getBackendDirPath.mockReturnValue(path.join('test', 'path'));
 
 getAppIdMock.mockReturnValue('testAppId');
 
-SSMClientWrapperMock.getInstance.mockResolvedValue(({
+SSMClientWrapperMock.getInstance.mockResolvedValue({
   deleteSecret: jest.fn(),
   setSecret: jest.fn(),
-} as unknown) as SSMClientWrapper);
+} as unknown as SSMClientWrapper);
 
 describe('syncSecretDeltas', () => {
   const contextStub = ({

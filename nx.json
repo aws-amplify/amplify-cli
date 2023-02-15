@@ -20,11 +20,15 @@
   "namedInputs": {
     "default": [
       "{projectRoot}/**/*",
-      "!{projectRoot}/**/*.md"
+      "!{projectRoot}/**/*.md",
+      "!{projectRoot}/coverage/**",
+      "!{projectRoot}/reports/**",
+      "!{projectRoot}/src/schemas/BackendParameters.schema.json"
     ],
     "production": [
       "default",
-      "!{projectRoot}/coverage/**",
+      "!{projectRoot}/src/__tests__/**",
+      "!{projectRoot}/tests/**",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.tsbuildinfo"
     ]

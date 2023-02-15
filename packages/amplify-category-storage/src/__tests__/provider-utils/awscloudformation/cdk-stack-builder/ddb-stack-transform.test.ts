@@ -26,8 +26,8 @@ jest.mock('fs-extra', () => ({
 }));
 
 jest.mock('path', () => ({
-  join: jest.fn().mockReturnValue('mockjoinedpath'),
-  resolve: jest.fn().mockReturnValue('mockjoinedpath'),
+  join: jest.fn().mockReturnValue('src/__tests__/mockjoinedpath'),
+  resolve: jest.fn().mockReturnValue('src/__tests__/mockjoinedpath'),
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');

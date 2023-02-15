@@ -113,7 +113,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     notifyMissingPackages(context);
 
-    deleteDetachedForms(detachedForms, studioClient);
+    await deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {
     printer.debug(e);
     spinner.fail('Failed to sync UI components');

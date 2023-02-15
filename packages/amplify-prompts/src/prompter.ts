@@ -264,6 +264,7 @@ class AmplifyPrompter implements Prompter {
         choices: enquirerChoices,
         pointer(_: unknown, i: number) {
           // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           return this.state.index === i ? chalk.cyan('❯') : ' ';
         },

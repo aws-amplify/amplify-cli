@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import { init } from '../app-config';
 import { Context } from '../domain/context';
-import { Input } from '../domain/input';
+import { CommandLineInput } from 'amplify-cli-core';
 
 describe('test usageData', () => {
   afterEach(() => {
@@ -9,7 +9,7 @@ describe('test usageData', () => {
   });
 
   const mockContext: Context = jest.genMockFromModule('../domain/context');
-  mockContext.input = new Input([
+  mockContext.input = new CommandLineInput([
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
     'status',

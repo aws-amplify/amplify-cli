@@ -1,5 +1,5 @@
 {
-  "name": "amplify-category-hosting",
+  "name": "@aws-amplify/amplify-category-hosting",
   "version": "3.4.10-cdkv2.0",
   "description": "amplify-cli hosting plugin",
   "repository": {
@@ -14,6 +14,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "jest --logHeapUsage --coverage"
   },

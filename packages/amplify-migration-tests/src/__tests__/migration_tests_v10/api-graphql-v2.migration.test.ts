@@ -1,18 +1,18 @@
-import { addApiWithoutSchema, 
-    amplifyOverrideApi, 
-    amplifyPull, 
-    amplifyPush, 
-    amplifyPushAuth, 
-    amplifyPushOverride, 
-    createNewProjectDir, 
-    deleteProject, 
-    deleteProjectDir, 
-    getAppId, 
-    getAppSyncApi, 
-    getProjectMeta, 
+import { addApiWithoutSchema,
+    amplifyOverrideApi,
+    amplifyPull,
+    amplifyPushLegacy,
+    amplifyPushAuth,
+    amplifyPushOverride,
+    createNewProjectDir,
+    deleteProject,
+    deleteProjectDir,
+    getAppId,
+    getAppSyncApi,
+    getProjectMeta,
     updateApiSchema } from "@aws-amplify/amplify-e2e-core";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
-import { assertNoParameterChangesBetweenProjects, 
+import { assertNoParameterChangesBetweenProjects,
     collectCloudformationDiffBetweenProjects } from "../../migration-helpers/utils";
 import * as fs from 'fs-extra';
 import path from 'path';
@@ -30,11 +30,11 @@ describe('api graphql v2 migration tests', () => {
     it('...adds graphql with v2 transformer, adds overrides, and pulls in latest version', async () => {
         const projectName = 'gqmigration';
         projRoot = await createNewProjectDir(projectName);
-        
+
         await initJSProjectWithProfileV10(projRoot, { name: projectName, disableAmplifyAppCreation: false });
         await addApiWithoutSchema(projRoot);
         await updateApiSchema(projRoot, projectName, 'simple_model.graphql');
-        await amplifyPush(projRoot);
+        await amplifyPushLegacy(projRoot);
 
         const meta = getProjectMeta(projRoot);
         const region = meta.providers.awscloudformation.Region;
@@ -48,7 +48,7 @@ describe('api graphql v2 migration tests', () => {
         const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projectName}`, 'override.ts');
         fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
         await amplifyPushOverride(projRoot);
-        
+
         // pull down with vlatest
         const appId = getAppId(projRoot);
         expect(appId).toBeDefined();

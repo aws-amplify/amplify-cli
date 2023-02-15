@@ -38,7 +38,7 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
     }
   }
 
-  protected synthesizeTemplate(session: ISynthesisSession, __?: string): FileAssetSource {
+  protected synthesizeTemplate(session: ISynthesisSession): FileAssetSource {
     const stack = this.boundStack;
     if (
       stack instanceof AmplifyAuthCognitoStack

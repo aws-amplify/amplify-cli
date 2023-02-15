@@ -1,6 +1,5 @@
 import * as inquirer from 'inquirer';
-import { PluginPlatform } from './domain/plugin-platform';
-import { PluginInfo } from './domain/plugin-info';
+import { PluginPlatform, PluginInfo, AmplifyEvent, constants, print } from 'amplify-cli-core';
 import { readPluginsJsonFile, writePluginsJsonFile } from './plugin-helpers/access-plugins-file';
 import {
   scanPluginPlatform,
@@ -12,9 +11,6 @@ import { verifyPlugin } from './plugin-helpers/verify-plugin';
 import createNewPlugin from './plugin-helpers/create-new-plugin';
 import { AddPluginResult, AddPluginError } from './domain/add-plugin-result';
 import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
-import { AmplifyEvent } from './domain/amplify-event';
-import { constants } from './domain/constants';
-import { print } from './context-extensions';
 import { postInstallInitialization } from './utils/post-install-initialization';
 
 export async function getPluginPlatform(): Promise<PluginPlatform> {

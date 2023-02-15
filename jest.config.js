@@ -34,7 +34,6 @@ module.exports = {
     '<rootDir>/packages/amplify-category-notifications',
     '<rootDir>/packages/amplify-category-predictions',
     '<rootDir>/packages/amplify-category-storage',
-    '<rootDir>/packages/amplify-category-xr',
     '<rootDir>/packages/amplify-cli',
     '<rootDir>/packages/amplify-cli-core',
     '<rootDir>/packages/amplify-cli-logger',

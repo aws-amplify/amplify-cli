@@ -25,7 +25,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.0.0-cdkv2.6",
     "@aws-amplify/amplify-e2e-core": "4.7.0-cdkv2.0",
-    "@aws-amplify/graphql-transformer-core": "1.1.0-beta.4",
+    "@aws-amplify/graphql-transformer-core": "1.1.0-beta.5",
     "amplify-cli-core": "4.0.0-cdkv2.6",
     "amplify-dynamodb-simulator": "2.5.6-cdkv2.0",
     "amplify-headless-interface": "1.17.1-cdkv2.0",
@@ -42,7 +42,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^8.0.3",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "8.0.0-beta.4",
+    "graphql-transformer-core": "8.0.0-beta.5",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "rimraf": "^3.0.0",

@@ -1,7 +1,7 @@
-import { addRestApi, addSimpleDDB, amplifyPull, amplifyPushAuth, amplifyPushUpdate, amplifyPushWithoutCodegen, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
+import { addRestApi, amplifyPull, amplifyPushAuth, amplifyPushUpdateLegacy, createNewProjectDir, deleteProject, deleteProjectDir, getAppId, getProjectMeta, validateRestApiMeta } from "@aws-amplify/amplify-e2e-core";
 import { cfnDiffExclusions } from "../../migration-helpers-v10/cfn-diff-exclusions";
 import { initJSProjectWithProfileV10 } from "../../migration-helpers-v10/init";
-import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects, pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from "../../migration-helpers/utils";
+import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from "../../migration-helpers/utils";
 
 describe('api serverless migration tests', () => {
     let projRoot: string;
@@ -18,7 +18,7 @@ describe('api serverless migration tests', () => {
 
         await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
         await addRestApi(projRoot, { isCrud: false });
-        await amplifyPushUpdate(projRoot);
+        await amplifyPushUpdateLegacy(projRoot);
 
         const meta = getProjectMeta(projRoot);
         validateRestApiMeta(projRoot, meta);

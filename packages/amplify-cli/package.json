@@ -34,23 +34,22 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "5.1.0-beta.4",
+    "@aws-amplify/amplify-category-api": "5.1.0-beta.5",
+    "@aws-amplify/graphql-auth-transformer": "2.1.0-beta.5",
     "@aws-amplify/amplify-category-auth": "3.0.0-cdkv2.6",
     "@aws-amplify/amplify-category-custom": "3.0.0-cdkv2.6",
     "@aws-amplify/amplify-category-storage": "4.0.0-cdkv2.6",
     "@aws-amplify/amplify-environment-parameters": "1.3.4-cdkv2.0",
     "@aws-amplify/amplify-util-uibuilder": "1.6.8-cdkv2.0",
-    "@aws-amplify/graphql-auth-transformer": "2.1.0-beta.4",
     "@aws-cdk/cloudformation-diff": "~2.53.0",
     "amplify-app": "4.3.10-cdkv2.0",
-    "amplify-category-analytics": "4.4.2-cdkv2.0",
-    "amplify-category-function": "4.3.2-cdkv2.0",
-    "amplify-category-geo": "3.0.0-cdkv2.7",
-    "amplify-category-hosting": "3.4.10-cdkv2.0",
-    "amplify-category-interactions": "4.3.2-cdkv2.0",
+    "@aws-amplify/amplify-category-hosting": "3.4.10-cdkv2.0",
+    "@aws-amplify/amplify-category-analytics": "4.4.2-cdkv2.0",
+    "@aws-amplify/amplify-category-geo": "3.0.0-cdkv2.7",
+    "@aws-amplify/amplify-category-function": "4.3.2-cdkv2.0",
+    "@aws-amplify/amplify-category-interactions": "4.3.2-cdkv2.0",
     "amplify-category-notifications": "2.23.2-cdkv2.0",
     "amplify-category-predictions": "4.3.2-cdkv2.0",
-    "amplify-category-xr": "3.4.2-cdkv2.0",
     "amplify-cli-core": "4.0.0-cdkv2.6",
     "amplify-cli-logger": "1.2.4-cdkv2.0",
     "amplify-cli-shared-interfaces": "1.1.1-cdkv2.2",
@@ -89,7 +88,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-core": "8.0.0-beta.4",
+    "graphql-transformer-core": "8.0.0-beta.5",
     "gunzip-maybe": "^1.4.2",
     "hidefile": "^3.0.0",
     "ini": "^1.3.5",
@@ -166,7 +165,7 @@
       "analytics": {
         "name": "analytics",
         "type": "category",
-        "packageName": "amplify-category-analytics"
+        "packageName": "@aws-amplify/amplify-category-analytics"
       },
       "api": {
         "name": "api",
@@ -188,18 +187,18 @@
       "function": {
         "name": "function",
         "type": "category",
-        "packageName": "amplify-category-function"
+        "packageName": "@aws-amplify/amplify-category-function"
       },
       "geo": {
         "name": "geo",
         "type": "category",
-        "packageName": "amplify-category-geo"
+        "packageName": "@aws-amplify/amplify-category-geo"
       },
       "hosting": [
         {
           "name": "hosting",
           "type": "category",
-          "packageName": "amplify-category-hosting"
+          "packageName": "@aws-amplify/amplify-category-hosting"
         },
         {
           "name": "hosting",
@@ -215,7 +214,7 @@
       "interactions": {
         "name": "interactions",
         "type": "category",
-        "packageName": "amplify-category-interactions"
+        "packageName": "@aws-amplify/amplify-category-interactions"
       },
       "notifications": {
         "name": "notifications",
@@ -231,11 +230,6 @@
         "name": "storage",
         "type": "category",
         "packageName": "@aws-amplify/amplify-category-storage"
-      },
-      "xr": {
-        "name": "xr",
-        "type": "category",
-        "packageName": "amplify-category-xr"
       },
       "codegen": {
         "name": "codegen",
