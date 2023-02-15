@@ -43,7 +43,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
         }
       }
 
-      // delete env paramaters from service for each env
+      // delete env parameters from service for each env
       await Promise.all(envNames.map(envName => invokeDeleteEnvParamsFromService(context, envName)));
 
       spinner.succeed('Project deleted in the cloud.');

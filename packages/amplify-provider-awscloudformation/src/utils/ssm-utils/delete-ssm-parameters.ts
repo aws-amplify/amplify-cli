@@ -3,7 +3,7 @@ import { printer } from 'amplify-prompts';
 import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../aws-utils/aws-ssm';
 import { resolveAppId } from '../resolve-appId';
-import { executeSdkPromisesWithExponentialBackoff } from './exp-backoff-executor';
+import { executeSdkPromisesWithExponentialBackOff } from './exp-backoff-executor';
 import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from './get-ssm-sdk-parameters';
 
 /**
@@ -33,7 +33,7 @@ const deleteParametersFromParameterStore = async (appId: string, envName: string
       return () => ssmClient.deleteParameters(ssmArgument).promise();
     });
 
-    await executeSdkPromisesWithExponentialBackoff<SSMType.DeleteParametersResult>(deleteKeysFromPSPromises);
+    await executeSdkPromisesWithExponentialBackOff<SSMType.DeleteParametersResult>(deleteKeysFromPSPromises);
 
   } catch (e) {
     throw new AmplifyFault(
@@ -50,7 +50,7 @@ function isAmplifyParameter(parameter: string) {
   const keyPrefix = 'AMPLIFY_';
   const splitParam = parameter.split('/');
   const lastPartOfPath = splitParam.slice(-1).pop();
-  return lastPartOfPath!.startsWith(keyPrefix);
+  return lastPartOfPath.startsWith(keyPrefix);
 }
 
 const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
@@ -58,7 +58,7 @@ const getAllEnvParametersFromParameterStore = async (appId: string, envName: str
   let receivedNextToken = '';
   do {
     const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, receivedNextToken);
-    const [data] = await executeSdkPromisesWithExponentialBackoff([
+    const [data] = await executeSdkPromisesWithExponentialBackOff([
       () => ssmClient.getParametersByPath(ssmArgument).promise(),
     ]);
     parametersUnderPath.push(...data.Parameters.map(returnedParameter => returnedParameter.Name).filter(name => isAmplifyParameter(name)));
