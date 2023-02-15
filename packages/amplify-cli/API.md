@@ -50,7 +50,6 @@ export class UsageData implements IUsageData {
     }[], StackId: string): void;
     // (undocumented)
     codePathDurations: Map<TimedCodePath, number>;
-    // Warning: (ae-forgotten-export) The symbol "TimedCodePath" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "Timer" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -69,24 +68,18 @@ export class UsageData implements IUsageData {
     getFlowReport(): IFlowReport;
     // (undocumented)
     getSessionUuid(): string;
-    // Warning: (ae-forgotten-export) The symbol "UsageDataPayload" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    getUsageDataPayload(error: Error | null, state: string): UsageDataPayload;
+    getUsageDataPayload(error: Error | null, state: string): IUsageDataPayload;
     // (undocumented)
-    init(installationUuid: string, version: string, input: CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
+    init(installationUuid: string, version: string, input: CLIInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number): void;
     // (undocumented)
-    input: CommandLineInput;
-    // Warning: (ae-forgotten-export) The symbol "InputOptions" needs to be exported by the entry point index.d.ts
-    //
+    input: CLIInput;
     // (undocumented)
     inputOptions: InputOptions;
     // (undocumented)
     installationUuid: string;
     // (undocumented)
     static get Instance(): IUsageData;
-    // Warning: (ae-forgotten-export) The symbol "ProjectSettings" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     projectSettings: ProjectSettings;
     // (undocumented)
@@ -101,12 +94,8 @@ export class UsageData implements IUsageData {
     sessionUuid: string;
     // (undocumented)
     setIsHeadless(isHeadless: boolean): void;
-    // Warning: (ae-forgotten-export) The symbol "StartableTimedCodePath" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     startCodePathTimer(codePath: StartableTimedCodePath): void;
-    // Warning: (ae-forgotten-export) The symbol "StoppableTimedCodePath" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     stopCodePathTimer(codePath: StoppableTimedCodePath): void;
     // (undocumented)
