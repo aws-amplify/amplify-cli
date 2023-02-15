@@ -10,14 +10,9 @@ import { $TSContext } from 'amplify-cli-core';
 export const executeAmplifyCommand: (context: $TSContext, cmd: string) => Promise<void>;
 
 // @public (undocumented)
-export const handleAmplifyEvent: (
-context: $TSContext,
-    {
-    event,
-}: {
+export const handleAmplifyEvent: (context: $TSContext, { event }: {
     event: string;
-},
-) => Promise<void>;
+}) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 

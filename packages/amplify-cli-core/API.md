@@ -21,19 +21,19 @@ export type $TSAny = any;
 export type $TSContext = {
     amplify: AmplifyToolkit;
     print: IContextPrint;
-    migrationInfo: MigrationInfo;
+    migrationInfo: $TSAny;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
     exeInfo: $TSAny;
-    input: CommandLineInput;
-    parameters: ContextParameters;
-    usageData: IUsageData;
-    runtime: Runtime;
+    input: $TSAny;
+    parameters: $TSAny;
+    usageData: $TSAny;
+    runtime: $TSAny;
     pluginPlatform: IPluginPlatform;
-    newUserInfo?: string;
+    newUserInfo?: $TSAny;
     filesystem: IContextFilesystem;
     template: IContextTemplate;
-    updatingAuth?: CognitoConfiguration;
+    updatingAuth: $TSAny;
 };
 
 // @public (undocumented)
@@ -47,17 +47,6 @@ export type $TSObject = Record<string, $TSAny>;
 
 // @public (undocumented)
 export type $TSTeamProviderInfo = $TSAny;
-
-// @public (undocumented)
-export interface AdminQueriesResult {
-    // (undocumented)
-    adminQueries?: boolean;
-    // (undocumented)
-    adminQueryGroup?: string;
-}
-
-// @public (undocumented)
-export type AliasAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.PREFERRED_USERNAME;
 
 // @public (undocumented)
 export const AMPLIFY_DOCS_URL = "https://docs.amplify.aws";
@@ -312,189 +301,6 @@ export const AmplifySupportedService: {
 };
 
 // @public (undocumented)
-export interface AmplifyToolkit {
-    // (undocumented)
-    addTrigger: () => $TSAny;
-    // (undocumented)
-    confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
-    // (undocumented)
-    constants: $TSAny;
-    // (undocumented)
-    constructExeInfo: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: $TSObject, force?: boolean, writeParams?: boolean | $TSObject) => $TSAny;
-    // (undocumented)
-    crudFlow: (role: string, permissionMap?: $TSObject, defaults?: string[]) => Promise<string[]>;
-    // (undocumented)
-    deleteAllTriggers: (previouslySaved: $TSAny, resourceName: string, targetDir: string, context: $TSContext) => Promise<void>;
-    // (undocumented)
-    deleteDeselectedTriggers: () => $TSAny;
-    // (undocumented)
-    deleteProject: (context: $TSContext) => Promise<void>;
-    // (undocumented)
-    deleteTrigger: (context: $TSContext, name: string, dir: string) => Promise<void>;
-    // (undocumented)
-    dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
-    // (undocumented)
-    executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options?: $TSAny) => Promise<$TSAny>;
-    // (undocumented)
-    forceRemoveResource: (context: $TSContext, categoryName: string, name: string, dir: string) => $TSAny;
-    // (undocumented)
-    getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    getAllEnvs: () => string[];
-    // (undocumented)
-    getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
-    // (undocumented)
-    getEnvDetails: () => $TSAny;
-    // (undocumented)
-    getEnvInfo: () => $TSAny;
-    // (undocumented)
-    getFrontendPlugins: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    getImportedAuthProperties: (context: $TSContext) => {
-        imported: boolean;
-        userPoolId?: string;
-        authRoleArn?: string;
-        authRoleName?: string;
-        unauthRoleArn?: string;
-        unauthRoleName?: string;
-    };
-    // (undocumented)
-    getPlugin: () => $TSAny;
-    // (undocumented)
-    getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
-    // (undocumented)
-    getProjectConfig: () => $TSAny;
-    // (undocumented)
-    getProjectDetails: () => $TSAny;
-    // (undocumented)
-    getProjectMeta: () => $TSMeta;
-    // (undocumented)
-    getProviderPlugins: (context: $TSContext) => Record<string, string>;
-    // (undocumented)
-    getResourceOutputs: () => $TSAny;
-    // (undocumented)
-    getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
-    // (undocumented)
-    getTags: (context: $TSContext) => Tag[];
-    // (undocumented)
-    getTriggerEnvInputs: () => $TSAny;
-    // (undocumented)
-    getTriggerEnvVariables: () => $TSAny;
-    // (undocumented)
-    getTriggerMetadata: () => $TSAny;
-    // (undocumented)
-    getTriggerPermissions: (context: $TSContext, triggers: $TSAny, category: string, resourceName: string) => $TSAny;
-    // (undocumented)
-    getUserPoolGroupList: (context?: $TSContext) => $TSAny[];
-    // (undocumented)
-    getWhen: () => $TSAny;
-    // (undocumented)
-    hashDir: (dir: string, exclude: string[]) => Promise<string>;
-    // (undocumented)
-    inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
-    // (undocumented)
-    invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
-    // (undocumented)
-    leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
-    // (undocumented)
-    listCategories: () => $TSAny;
-    // (undocumented)
-    loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-    // (undocumented)
-    loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-    // (undocumented)
-    makeId: (n?: number) => string;
-    // (undocumented)
-    onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
-    // (undocumented)
-    openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
-    // (undocumented)
-    pathManager: $TSAny;
-    // (undocumented)
-    pressEnterToContinue: () => $TSAny;
-    // (undocumented)
-    pushResources: (context: $TSContext, category?: string, resourceName?: string, filteredResources?: {
-        category: string;
-        resourceName: string;
-    }[], rebuild?: boolean) => $TSAny;
-    // (undocumented)
-    readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
-    // (undocumented)
-    readJsonFile: (fileName: string) => $TSAny;
-    // (undocumented)
-    removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-    // (undocumented)
-    removeResource: (context: $TSContext, category: string, resource?: string, questionOptions?: {
-        headless?: boolean;
-        serviceSuffix?: {
-            [serviceName: string]: string;
-        };
-        serviceDeletionInfo?: {
-            [serviceName: string]: string;
-        };
-    }, resourceNameCallback?: (resourceName: string) => Promise<void>) => Promise<{
-        service: string;
-        resourceName: string;
-    } | undefined>;
-    // (undocumented)
-    removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
-    // (undocumented)
-    saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
-    // (undocumented)
-    serviceSelectionPrompt: (context: $TSContext, category: string, servicesMetadata: $TSAny, customQuestion?: $TSAny, optionNameOverrides?: Record<string, string>) => Promise<ServiceSelection>;
-    // (undocumented)
-    sharedQuestions: () => $TSAny;
-    // (undocumented)
-    showAllHelp: () => $TSAny;
-    // (undocumented)
-    showHelp: (header: string, commands: {
-        name: string;
-        description: string;
-    }[]) => $TSAny;
-    // (undocumented)
-    showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    showResourceTable: (category?: $TSAny, resourceName?: $TSAny, filteredResources?: $TSAny) => Promise<$TSAny>;
-    // (undocumented)
-    showStatusTable: (resourceTableParams: ViewResourceTableParams) => Promise<$TSAny>;
-    // (undocumented)
-    storeCurrentCloudBackend: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    triggerFlow: (...args: unknown[]) => $TSAny;
-    // (undocumented)
-    updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
-    // (undocumented)
-    updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: {
-        resourceKey: string;
-        hashValue: string;
-    }) => void;
-    // (undocumented)
-    updateamplifyMetaAfterPush: (resources: $TSObject[]) => Promise<void>;
-    // (undocumented)
-    updateamplifyMetaAfterResourceAdd: (category: string, resourceName: string, metaResourceData: $TSAny, backendResourceData?: $TSAny, overwriteObjectIfExists?: boolean) => void;
-    // (undocumented)
-    updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
-    // (undocumented)
-    updateamplifyMetaAfterResourceUpdate: (category: string, resourceName: string, metaResourceKey: string, metaResourceData?: $TSAny) => $TSMeta;
-    // (undocumented)
-    updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSObject) => void;
-    // (undocumented)
-    updateBackendConfigAfterResourceRemove: (category: string, resourceName: string) => void;
-    // (undocumented)
-    updateBackendConfigAfterResourceUpdate: (category: string, resourceName: string, attribute: string, value: $TSAny) => void;
-    // (undocumented)
-    updateProjectConfig: () => $TSAny;
-    // (undocumented)
-    updateProviderAmplifyMeta: (providerName: string, options: $TSObject) => void;
-    // (undocumented)
-    updateTrigger: () => $TSAny;
-    // (undocumented)
-    writeObjectAsJson: () => $TSAny;
-}
-
-// @public (undocumented)
 export class AngularConfigNotFoundError extends Error {
 }
 
@@ -513,18 +319,6 @@ export function attachExtensions(context: $TSContext): void;
 
 // @public (undocumented)
 export function attachPrint(context: $TSContext): void;
-
-// @public (undocumented)
-export enum AttributeType {
-    // (undocumented)
-    EMAIL = "email",
-    // (undocumented)
-    EMAIL_AND_PHONE_NUMBER = "email, phone_number",
-    // (undocumented)
-    PHONE_NUMBER = "phone_number",
-    // (undocumented)
-    PREFERRED_USERNAME = "preferred_username"
-}
 
 // @public (undocumented)
 export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
@@ -714,33 +508,21 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
-export type CommandLineInput = {
+export class CommandLineInput {
+    constructor(argv: Array<string>);
+    // (undocumented)
     argv: Array<string>;
-    plugin?: string;
-    command: string;
-    subCommands?: string[];
+    // (undocumented)
+    command?: string;
+    // (undocumented)
     options?: {
-        restore?: boolean;
-        json?: boolean;
-        name?: string;
-        awsInfo?: string;
-        config?: string;
-        'iterative-rollback'?: boolean;
-        force?: boolean;
-        env?: string;
-        rootStackName?: string;
-        frontend?: string;
-        quickstart?: boolean;
-        app?: string | boolean;
-        timeout?: string;
-        event?: string;
-        minify?: boolean;
-        help?: boolean;
-        localEnvFilePath?: string;
-        yes?: boolean;
-        appId?: string;
-    } & Record<string, string | boolean>;
-};
+        [key: string]: string | boolean;
+    };
+    // (undocumented)
+    plugin?: string;
+    // (undocumented)
+    subCommands?: string[];
+}
 
 // @public (undocumented)
 export const commandsInfo: Array<CommandInfo>;
@@ -1156,7 +938,15 @@ export class HooksMeta {
     // (undocumented)
     getHookEvent(): HookEvent;
     // (undocumented)
-    static getInstance: (input?: CommandLineInput, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter) => HooksMeta;
+    static getInstance: (input?: {
+        command?: string;
+        plugin?: string;
+        subCommands?: string[];
+        options?: {
+            forcePush?: boolean;
+        };
+        argv?: string[];
+    }, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter) => HooksMeta;
     // (undocumented)
     mergeDataParameter(newDataParameter: DataParameter): void;
     // (undocumented)
@@ -1172,7 +962,15 @@ export class HooksMeta {
     // (undocumented)
     setEventSubCommand(subCommand?: string): void;
     // (undocumented)
-    setHookEventFromInput(input?: CommandLineInput): void;
+    setHookEventFromInput(input?: {
+        command?: string;
+        plugin?: string;
+        subCommands?: string[];
+        argv?: string[];
+        options?: {
+            forcePush?: boolean;
+        };
+    }): void;
 }
 
 // @public (undocumented)
@@ -1305,34 +1103,6 @@ export interface IDeploymentStateManager {
 }
 
 // @public (undocumented)
-export interface IFlowReport {
-    // (undocumented)
-    category: string;
-    // (undocumented)
-    cmd: string;
-    // (undocumented)
-    executable: string;
-    // (undocumented)
-    input: CommandLineInput;
-    // (undocumented)
-    isHeadless: boolean;
-    // (undocumented)
-    optionFlowData: Array<TypeOptionFlowData>;
-    // (undocumented)
-    projectEnvIdentifier?: string;
-    // (undocumented)
-    projectIdentifier?: string;
-    // (undocumented)
-    runtime: string;
-    // (undocumented)
-    subCmd: string | undefined;
-    // (undocumented)
-    timestamp: string;
-    // (undocumented)
-    version: string;
-}
-
-// @public (undocumented)
 export function info(message: string): void;
 
 // @public (undocumented)
@@ -1361,28 +1131,7 @@ export interface INotificationsResourceMeta {
 }
 
 // @public (undocumented)
-export type InputOptions = Record<string, string | boolean>;
-
-// @public (undocumented)
 export class InvalidSubCommandError extends Error {
-}
-
-// @public (undocumented)
-export interface IOptionFlowCLIData {
-    // (undocumented)
-    input: unknown;
-    // (undocumented)
-    prompt: string;
-    // (undocumented)
-    timestamp: number;
-}
-
-// @public (undocumented)
-export interface IOptionFlowHeadlessData {
-    // (undocumented)
-    input: string;
-    // (undocumented)
-    timestamp: number;
 }
 
 // @public (undocumented)
@@ -1417,16 +1166,7 @@ export type IPluginInfo = {
     packageName: string;
     packageVersion: string;
     packageLocation: string;
-    manifest: IPluginManifest;
-};
-
-// @public (undocumented)
-export type IPluginManifest = {
-    name: string;
-    type: string;
-    commands?: string[];
-    services?: string[];
-    functionRuntime?: FunctionBreadcrumb;
+    manifest: $IPluginManifest;
 };
 
 // @public (undocumented)
@@ -1453,7 +1193,28 @@ export const isResourceNameUnique: (category: string, resourceName: string, thro
 export const isWindowsPlatform: () => boolean;
 
 // @public (undocumented)
-export interface IUsageData extends IUsageMetricsData, FlowRecorder {
+export class JSONUtilities {
+    // (undocumented)
+    static parse: <T>(jsonString: string, options?: {
+        preserveComments?: boolean;
+    }) => T;
+    // (undocumented)
+    static readJson: <T>(fileName: string, options?: {
+        throwIfNotExist?: boolean;
+        preserveComments?: boolean;
+    }) => T | undefined;
+    // (undocumented)
+    static stringify: (data: unknown, options?: {
+        minify?: boolean;
+        orderedKeys?: boolean;
+    }) => string | undefined;
+    // (undocumented)
+    static writeJson: (fileName: string, data: unknown, options?: {
+        mode?: number;
+        minify?: boolean;
+        secureFile?: boolean;
+        orderedKeys?: boolean;
+    }) => void;
 }
 
 // @public (undocumented)
@@ -1594,40 +1355,6 @@ export type Message = {
         endTime?: string;
     };
 };
-
-// @public (undocumented)
-export interface MfaResult {
-    // (undocumented)
-    mfaConfiguration?: 'OPTIONAL' | 'ON' | 'OFF';
-    // (undocumented)
-    mfaTypes?: ('SMS Text Message' | 'TOTP')[];
-    // (undocumented)
-    smsAuthenticationMessage?: string;
-}
-
-// @public (undocumented)
-export interface MigrationInfo {
-    // (undocumented)
-    amplifyMeta: $TSMeta;
-    // (undocumented)
-    backendConfig: Record<string, unknown>;
-    // (undocumented)
-    currentAmplifyMeta: $TSMeta;
-    // (undocumented)
-    initVersion: string;
-    // (undocumented)
-    localAwsInfo: LocalAwsInfo;
-    // (undocumented)
-    localEnvInfo: LocalEnvInfo;
-    // (undocumented)
-    newVersion: string;
-    // (undocumented)
-    projectConfig: ProjectConfig;
-    // (undocumented)
-    projectPath: string;
-    // (undocumented)
-    teamProviderInfo: TeamProviderInfo;
-}
 
 // @public (undocumented)
 export class MissingParametersError extends Error {
@@ -1923,7 +1650,7 @@ export class PluginInfo implements IPluginInfo {
 }
 
 // @public (undocumented)
-export class PluginManifest implements IPluginManifest {
+export class PluginManifest {
     constructor(name: string, type: string, displayName?: string | undefined, aliases?: string[] | undefined, commands?: string[] | undefined, commandAliases?: {
         [key: string]: string;
     } | undefined, services?: string[] | undefined, eventHandlers?: AmplifyEvent[] | undefined);
@@ -2012,9 +1739,6 @@ const print_2: {
     blue: typeof blue;
 };
 export { print_2 as print }
-
-// @public (undocumented)
-export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
 
 // @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
@@ -2191,32 +1915,6 @@ export function skipHooks(): boolean;
 
 // @public (undocumented)
 export const skipHooksFilePath = "/opt/amazon";
-
-// @public (undocumented)
-export interface SocialProviderResult {
-    // (undocumented)
-    authProvidersUserPool?: string[];
-    // (undocumented)
-    facebookAppIdUserPool?: string;
-    // (undocumented)
-    facebookAppSecretUserPool?: string;
-    // (undocumented)
-    googleAppIdUserPool?: string;
-    // (undocumented)
-    googleAppSecretUserPool?: string;
-    // (undocumented)
-    loginwithamazonAppIdUserPool?: string;
-    // (undocumented)
-    loginwithamazonAppSecretUserPool?: string;
-    // (undocumented)
-    signinwithappleClientIdUserPool?: string;
-    // (undocumented)
-    signinwithappleKeyIdUserPool?: string;
-    // (undocumented)
-    signinwithapplePrivateKeyUserPool?: string;
-    // (undocumented)
-    signinwithappleTeamIdUserPool?: string;
-}
 
 // @public (undocumented)
 export const spinner: Ora;
@@ -2412,22 +2110,10 @@ export interface Template {
 }
 
 // @public (undocumented)
-export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
-
-// @public (undocumented)
-export interface Triggers {
-    // (undocumented)
-    triggers?: string | Record<string, unknown>;
-}
-
-// @public (undocumented)
 export type TypeDef = {
     typeName: string;
     service: string;
 };
-
-// @public (undocumented)
-export type TypeOptionFlowData = IOptionFlowHeadlessData | IOptionFlowCLIData;
 
 // @public (undocumented)
 export class UnknownArgumentError extends Error {
@@ -2444,15 +2130,6 @@ export class UnrecognizedFrameworkError extends Error {
 // @public (undocumented)
 export class UnrecognizedFrontendError extends Error {
 }
-
-// @public (undocumented)
-export enum UntilExitTimedCodePath {
-    // (undocumented)
-    POST_PROCESS = "postProcess"
-}
-
-// @public (undocumented)
-export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.EMAIL_AND_PHONE_NUMBER;
 
 // @public (undocumented)
 export function validate(tags: Tag[], skipProjectEnv?: boolean): void;
