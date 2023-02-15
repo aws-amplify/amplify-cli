@@ -30,7 +30,7 @@ import { printer } from 'amplify-prompts';
         printer.info(
           `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`,
         );
-        context.usageData.emitSuccess();
+        void context.usageData.emitSuccess();
         exitOnNextTick(0);
       }
     }

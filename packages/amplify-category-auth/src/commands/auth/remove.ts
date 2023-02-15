@@ -38,7 +38,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error removing the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
 };

@@ -80,7 +80,7 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
   } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
   return cognitoCLIInputs.cognitoConfig.resourceName;
@@ -177,7 +177,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error updating the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
   return cognitoCLIInputs.cognitoConfig.resourceName;

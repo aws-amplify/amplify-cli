@@ -88,7 +88,7 @@ export const run = async (context: $TSContext): Promise<string | $TSContext | un
   } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
     return undefined;
   }

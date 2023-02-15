@@ -32,7 +32,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     }
   } catch (e) {
     printer.error(e.message);
-    context.usageData.emitError(e);
+    void context.usageData.emitError(e);
     process.exitCode = 1;
     return;
   }
