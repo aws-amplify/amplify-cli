@@ -1,4 +1,3 @@
-import { AmplifyError } from 'amplify-cli-core/lib/errors/amplify-error';
 import { ensureHeadlessParameters } from '../../../../provider-utils/awscloudformation/import/ensure-headless-parameters';
 import { ResourceParameters } from '../../../../provider-utils/awscloudformation/import/types';
 
