@@ -155,6 +155,18 @@ jobs:
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
 
+  validate_cdk_version:
+    <<: *linux-e2e-executor-medium
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Validate cdk version
+          command: |
+            yarn ts-node .circleci/validate_cdk_version.ts
+
   lint:
     <<: *linux-e2e-executor-large
     steps:
@@ -162,7 +174,7 @@ jobs:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
+      - run: yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 1250
 
   verify-api-extract:
     <<: *linux-e2e-executor-xlarge
@@ -175,6 +187,18 @@ jobs:
           name: extract api
           command: |
             yarn verify-api-extract
+
+  verify-yarn-lock:
+    <<: *linux-e2e-executor-medium
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: verify yarn lock
+          command: |
+            yarn verify-yarn-lock
 
   verify-versions-match:
     <<: *linux-e2e-executor-medium
@@ -210,6 +234,7 @@ jobs:
           no_output_timeout: 90m
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+            NODE_OPTIONS: --max-old-space-size=4096
       - store_test_results:
           path: ~/repo/packages/amplify-util-mock/
 
@@ -472,7 +497,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v5.2.0 --no-cache  --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -502,7 +527,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -534,7 +559,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -564,7 +589,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -594,7 +619,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -904,6 +929,7 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+                - /run-e2e\/.*/
       - verify-api-extract:
           requires:
             - build
@@ -914,6 +940,9 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - verify-yarn-lock:
+          requires:
+            - build
       - verify-versions-match:
           requires:
             - publish_to_local_registry
@@ -927,6 +956,9 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - validate_cdk_version:
+          requires:
+            - build
       - mock_e2e_tests:
           requires:
             - build
@@ -1269,7 +1301,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE
+                  retry yarn run e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
                 no_output_timeout: 65m
       - when:
           condition:

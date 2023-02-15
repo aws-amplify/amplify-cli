@@ -1,8 +1,6 @@
 import * as path from 'path';
 import * as os from 'os';
-import { PluginPlatform } from '../domain/plugin-platform';
-import { constants } from '../domain/constants';
-import { JSONUtilities } from 'amplify-cli-core';
+import { PluginPlatform, constants, JSONUtilities } from 'amplify-cli-core';
 
 export function readPluginsJsonFile(): PluginPlatform | undefined {
   const pluginsFilePath = getPluginsJsonFilePath();
@@ -24,7 +22,7 @@ function getPluginsJsonFilePath(): string {
 }
 
 function getSystemDotAmplifyDirPath(): string {
-  return path.join(os.homedir(), constants.DotAmplifyDirName);
+  return path.join(os.homedir(), constants.DOT_AMPLIFY_DIR_NAME);
 }
 
 function getPluginsJsonFileName(): string {

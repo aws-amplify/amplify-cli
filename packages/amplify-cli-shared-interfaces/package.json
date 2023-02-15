@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-shared-interfaces",
-  "version": "1.1.1",
+  "version": "1.1.1-beta.3",
   "description": "API interfaces to be shared across different amplfy-cli packages",
   "main": "lib/index.js",
   "scripts": {

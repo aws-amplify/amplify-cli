@@ -1,6 +1,7 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-new */
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import {
   $TSAny,
   $TSContext,
@@ -11,6 +12,7 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ProviderName } from '../constants';
@@ -63,8 +65,11 @@ const S3_UPLOAD_PATH = `${AmplifyCategories.API}/${APIGW_AUTH_STACK_LOGICAL_ID}.
 const AUTH_ROLE_NAME = 'authRoleName';
 const UNAUTH_ROLE_NAME = 'unauthRoleName';
 
+/**
+ * API Gateway Stack class
+ */
 export class ApiGatewayAuthStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: ApiGatewayAuthStackProps) {
+  constructor(scope: Construct, id: string, props: ApiGatewayAuthStackProps) {
     super(scope, id, props);
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
 
@@ -137,8 +142,10 @@ export class ApiGatewayAuthStack extends cdk.Stack {
     });
   }
 
-  toCloudFormation() {
-    prepareApp(this);
+  /**
+   * generates cfn from stack
+   */
+  toCloudFormation(): $TSAny {
     return this._toCloudFormation();
   }
 
@@ -167,15 +174,14 @@ export class ApiGatewayAuthStack extends cdk.Stack {
   }
 }
 
-function createManagedPolicy(stack: cdk.Stack, policyName: string, roleName: string): iam.CfnManagedPolicy {
-  return new iam.CfnManagedPolicy(stack, policyName, {
-    roles: [roleName],
-    policyDocument: {
-      Version: '2012-10-17',
-      Statement: [{ Effect: 'Allow', Action: ['execute-api:Invoke'], Resource: [] }],
-    },
-  });
-}
+const createManagedPolicy = (stack: cdk.Stack,
+  policyName: string, roleName: string): iam.CfnManagedPolicy => new iam.CfnManagedPolicy(stack, policyName, {
+  roles: [roleName],
+  policyDocument: {
+    Version: '2012-10-17',
+    Statement: [{ Effect: 'Allow', Action: ['execute-api:Invoke'], Resource: [] }],
+  },
+});
 
 function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: string, apiPath: string) {
   return cdk.Fn.join('', [
@@ -189,24 +195,21 @@ function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: st
     (cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown) as string,
     method,
     apiPath,
-  ]);
-}
-
-function computePolicySizeIncrease(stageLength: number, methodLength: number, pathLength: number): number {
-  // example:
-  //          1         2         3         4         5         6         7         8
-  // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-  // eslint-disable-next-line spellcheck/spell-checker
-  // "arn:aws:execute-api:us-west-1:032500605820:hjrmfzed5l/dev/PATCH/bbb-p03/*",
-  //
-  // Each path + HTTP method increases the policy size by roughly:
-  // - 2 * 64 chars for arn, wildcard, path separators, quotes and comma (region is calculated with 16 max length
-  // - 2 * the length of the stage length (amplify env name)
-  // - 2 * the length of the method length
-  // - 2 * the length of the path length
-
-  return 2 * (64 + stageLength + methodLength + pathLength);
-}
+])};
+// example:
+//          1         2         3         4         5         6         7         8
+// 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+// eslint-disable-next-line spellcheck/spell-checker
+// "arn:aws:execute-api:us-west-1:032500605820:hjrmfzed5l/dev/PATCH/bbb-p03/*",
+//
+// Each path + HTTP method increases the policy size by roughly:
+// eslint-disable-next-line spellcheck/spell-checker
+// - 2 * 64 chars for arn, wildcards, path separators, quotes and comma (region is calculated with 16 max length)
+// - 2 * the length of the stage length (amplify env name)
+// - 2 * the length of the method length
+// - 2 * the length of the path length
+const computePolicySizeIncrease = (stageLength: number,
+  methodLength: number, pathLength: number): number => 2 * (64 + stageLength + methodLength + pathLength);
 
 export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   const apiGateways = [];
@@ -235,8 +238,11 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
   }
 
   return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways, envInfo.envName) };
-}
+};
 
+/**
+ * CRUD operation type
+ */
 export enum CrudOperation {
   CREATE = 'create',
   READ = 'read',
@@ -244,7 +250,7 @@ export enum CrudOperation {
   DELETE = 'delete',
 }
 
-function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
+const convertCrudOperationsToPermissions = (crudOps: CrudOperation[]): string[] => {
   const opMap: Record<CrudOperation, string[]> = {
     [CrudOperation.CREATE]: ['/POST'],
     [CrudOperation.READ]: ['/GET'],
@@ -254,9 +260,9 @@ function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
   const possibleMethods = Object.values(opMap).flat();
   const methods = crudOps.flatMap(op => opMap[op]);
   return possibleMethods.every(m => methods.includes(m)) ? ['/*'] : methods;
-}
+};
 
-function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, envName: string): string | undefined {
+const createApiGatewayAuthResources = (stackName: string, apiGateways: $TSAny, envName: string): string | undefined => {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
@@ -273,10 +279,14 @@ function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, e
 
   JSONUtilities.writeJson(cfnPath, cfn);
 
+  // eslint-disable-next-line consistent-return
   return `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`;
-}
+};
 
-export async function loadApiCliInputs(context: $TSContext, resourceName: string, resource: $TSObject): Promise<$TSObject | undefined> {
+/**
+ * load api cli inputs
+ */
+export const loadApiCliInputs = async (context: $TSContext, resourceName: string, resource: $TSObject): Promise<$TSObject | undefined> => {
   if (resource.providerPlugin !== ProviderName || resource.service !== AmplifySupportedService.APIGW || resourceName === 'AdminQueries') {
     return undefined;
   }
@@ -307,8 +317,7 @@ export async function loadApiCliInputs(context: $TSContext, resourceName: string
   }
 
   return stateManager.getResourceInputsJson(projectRoot, AmplifyCategories.API, resourceName, { throwIfNotExist: false });
-}
-
-const appendToUrlPath = (path: string, postfix: string) => {
-  return path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-shadow
+const appendToUrlPath = (path: string, postfix: string): string => (path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`);

@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify migration test auth ...should add auth with max options and work on the latest version 1`] = `
+"Resources
+[~] AWS::Lambda::Function RoleMapFunction 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+
+Parameters
+[-] Parameter facebookAppId: {\\"Type\\":\\"String\\"}
+[-] Parameter googleClientId: {\\"Type\\":\\"String\\"}
+[-] Parameter amazonAppId: {\\"Type\\":\\"String\\"}
+[-] Parameter appleAppId: {\\"Type\\":\\"String\\"}
+[~] Parameter hostedUIProviderCreds: {\\"Type\\":\\"String\\"} to {\\"Type\\":\\"String\\",\\"NoEcho\\":true}
+
+Resources
+[~] AWS::Lambda::Function UserPoolClientLambda 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+[~] AWS::Lambda::Function HostedUICustomResource 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+[~] AWS::Lambda::Function HostedUIProvidersCustomResource 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+[~] AWS::Lambda::Function OAuthCustomResource 
+ └─ [~] Runtime
+     ├─ [-] nodejs14.x
+     └─ [+] nodejs16.x
+
+Outputs
+[-] Output GoogleWebClient: {\\"Value\\":{\\"Ref\\":\\"googleClientId\\"}}
+[-] Output FacebookWebClient: {\\"Value\\":{\\"Ref\\":\\"facebookAppId\\"}}
+[-] Output AmazonWebClient: {\\"Value\\":{\\"Ref\\":\\"amazonAppId\\"}}
+[-] Output AppleWebClient: {\\"Value\\":{\\"Ref\\":\\"appleAppId\\"}}
+
+"
+`;

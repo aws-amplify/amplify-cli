@@ -1,5 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
-import { constants } from '../../domain/constants';
+import { $TSContext, constants } from 'amplify-cli-core';
 
 export const invokeDeleteEnvParamsFromService = async (context: $TSContext, envName: string): Promise<void> => {
   const CloudFormationProviderName = constants.DEFAULT_PROVIDER;

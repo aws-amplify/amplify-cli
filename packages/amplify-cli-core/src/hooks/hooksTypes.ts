@@ -64,6 +64,5 @@ export type HooksNoun =
   | 'interactions'
   | 'predictions'
   | 'storage'
-  | 'xr'
   | 'codegen'
   | 'env';

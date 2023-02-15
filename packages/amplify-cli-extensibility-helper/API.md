@@ -7,26 +7,26 @@
 import { $TSAny } from 'amplify-cli-core';
 import { addCDKResourceDependency as addResourceDependency } from '@aws-amplify/amplify-category-custom';
 import { AmplifyResourceProps } from '@aws-amplify/amplify-category-custom';
-import * as apigwCdk from '@aws-cdk/aws-apigateway';
-import * as cdk from '@aws-cdk/core';
-import { CfnApiKey } from '@aws-cdk/aws-appsync';
-import { CfnDataSource } from '@aws-cdk/aws-appsync';
-import { CfnDomain } from '@aws-cdk/aws-elasticsearch';
-import { CfnEventSourceMapping } from '@aws-cdk/aws-lambda';
-import { CfnFunction } from '@aws-cdk/aws-lambda';
-import { CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
-import { CfnGraphQLApi } from '@aws-cdk/aws-appsync';
-import { CfnGraphQLSchema } from '@aws-cdk/aws-appsync';
-import { CfnPolicy } from '@aws-cdk/aws-iam';
-import { CfnResolver } from '@aws-cdk/aws-appsync';
-import { CfnRole } from '@aws-cdk/aws-iam';
-import { CfnStack } from '@aws-cdk/core';
-import { CfnTable } from '@aws-cdk/aws-dynamodb';
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as ddb from '@aws-cdk/aws-dynamodb';
-import * as iamCdk from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
+import * as apigwCdk from 'aws-cdk-lib/aws-apigateway';
+import * as cdk from 'aws-cdk-lib';
+import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
+import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { CfnPolicy } from 'aws-cdk-lib/aws-iam';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { CfnStack } from 'aws-cdk-lib';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as ddb from 'aws-cdk-lib/aws-dynamodb';
+import * as iamCdk from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 
 export { addResourceDependency }
 

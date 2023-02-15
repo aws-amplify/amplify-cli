@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.3...amplify-cli-logger@1.2.4-beta.0) (2023-02-07)
+
+**Note:** Version bump only for package amplify-cli-logger
+
+
+
+
+
 ## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.2...amplify-cli-logger@1.2.3) (2023-02-02)
 
 
@@ -25,6 +33,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+
+
+
+
+
+## [1.2.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.1...amplify-cli-logger@1.2.2-beta.0) (2022-12-01)
+
+**Note:** Version bump only for package amplify-cli-logger
 
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.3.7...amplify-graphql-migration-tests@2.4.0-beta.5) (2023-02-07)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+
+
+
 ## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.3.6...amplify-graphql-migration-tests@2.3.7) (2023-02-02)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
@@ -19,9 +30,48 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.3.3...amplify-graphql-migration-tests@2.4.0-beta.0) (2022-11-17)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+
+
+
+# [2.4.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.0-cdkv2.0...amplify-graphql-migration-tests@2.4.0-cdkv2.3) (2022-11-10)
 ## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.3.4...amplify-graphql-migration-tests@2.3.5) (2023-01-03)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+# [2.4.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.0-cdkv2.0...amplify-graphql-migration-tests@2.4.0-cdkv2.2) (2022-11-10)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+# [2.4.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.0-cdkv2.0...amplify-graphql-migration-tests@2.4.0-cdkv2.1) (2022-11-04)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+# [2.4.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.3.2...amplify-graphql-migration-tests@2.4.0-cdkv2.0) (2022-11-01)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
 
 
 

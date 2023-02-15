@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "2.4.9",
+  "version": "3.0.0-beta.5",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -28,17 +28,9 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.6.3",
-    "@aws-cdk/aws-apigateway": "~1.172.0",
-    "@aws-cdk/aws-appsync": "~1.172.0",
-    "@aws-cdk/aws-cognito": "~1.172.0",
-    "@aws-cdk/aws-dynamodb": "~1.172.0",
-    "@aws-cdk/aws-elasticsearch": "~1.172.0",
-    "@aws-cdk/aws-iam": "~1.172.0",
-    "@aws-cdk/aws-lambda": "~1.172.0",
-    "@aws-cdk/aws-s3": "~1.172.0",
-    "@aws-cdk/core": "~1.172.0",
-    "amplify-cli-core": "3.6.1"
+    "@aws-amplify/amplify-category-custom": "3.0.0-beta.5",
+    "amplify-cli-core": "4.0.0-beta.5",
+    "aws-cdk-lib": "~2.53.0"
   },
   "jest": {
     "transform": {

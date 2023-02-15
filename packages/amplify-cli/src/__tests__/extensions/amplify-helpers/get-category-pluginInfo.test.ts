@@ -1,4 +1,4 @@
-import { Input } from '../../../domain/input';
+import { CommandLineInput } from 'amplify-cli-core';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 import { constructContext } from '../../../context-manager';
 import { getCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-category-pluginInfo';
@@ -13,8 +13,8 @@ test('getCategoryPluginInfo returns the first pluginInfo to match category', () 
     'add',
   ];
 
-  const mockInput = new Input(mockProcessArgv);
-  const mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
+  const mockInput = new CommandLineInput(mockProcessArgv);
+  const mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
   const hostingPluginInfo = getCategoryPluginInfo(mockContext, 'hosting');
   expect(hostingPluginInfo).toBeDefined();
 });
@@ -28,8 +28,8 @@ test('getCategoryPluginInfo returns pluginInfo when plugin matches category and 
     'add',
   ];
 
-  const mockInput = new Input(mockProcessArgv);
-  const mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
+  const mockInput = new CommandLineInput(mockProcessArgv);
+  const mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
   const hostingAmplifyhostingPluginInfo = getCategoryPluginInfo(mockContext, 'hosting', 'amplifyhosting');
   expect(hostingAmplifyhostingPluginInfo).toBeDefined();
 });
@@ -43,8 +43,8 @@ test('getCategoryPluginInfo returns the first pluginInfo to match only category 
     'add',
   ];
 
-  const mockInput = new Input(mockProcessArgv);
-  const mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
+  const mockInput = new CommandLineInput(mockProcessArgv);
+  const mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
   const hostingPluginInfo = getCategoryPluginInfo(mockContext, 'hosting', 'S3');
   expect(hostingPluginInfo).toBeDefined();
 });

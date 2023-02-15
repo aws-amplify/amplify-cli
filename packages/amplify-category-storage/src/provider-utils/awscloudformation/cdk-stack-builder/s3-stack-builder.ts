@@ -1,9 +1,10 @@
 import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as iamCdk from '@aws-cdk/aws-iam';
-import * as lambdaCdk from '@aws-cdk/aws-lambda';
-import * as s3Cdk from '@aws-cdk/aws-s3';
-import { HttpMethods } from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as iamCdk from 'aws-cdk-lib/aws-iam';
+import * as lambdaCdk from 'aws-cdk-lib/aws-lambda';
+import * as s3Cdk from 'aws-cdk-lib/aws-s3';
+import { HttpMethods } from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import {
   $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager,
 } from 'amplify-cli-core';
@@ -29,7 +30,7 @@ import {
  */
 export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implements AmplifyS3ResourceTemplate {
   id: string;
-  scope: cdk.Construct;
+  scope: Construct;
   s3Bucket!: s3Cdk.CfnBucket;
   s3BucketName: string;
   notificationConfiguration: s3Cdk.CfnBucket.NotificationConfigurationProperty = {
@@ -58,7 +59,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
   _props: S3UserInputs = defaultS3UserInputs();
   _cfnInputParams: AmplifyS3ResourceInputParameters = {};
-  constructor(scope: cdk.Construct, s3ResourceName: string, props: S3UserInputs, cfnInputParams: AmplifyS3ResourceInputParameters) {
+  constructor(scope: Construct, s3ResourceName: string, props: S3UserInputs, cfnInputParams: AmplifyS3ResourceInputParameters) {
     super(scope, s3ResourceName);
     this.scope = scope;
     this.id = s3ResourceName;
@@ -1224,3 +1225,5 @@ interface IAmplifyPolicyDefinition {
 type AmplifyS3Conditions = Record<string, cdk.CfnCondition>;
 
 type AmplifyS3CfnParameters = Record<string, cdk.CfnParameter>;
+
+// force major version bump for cdk v2

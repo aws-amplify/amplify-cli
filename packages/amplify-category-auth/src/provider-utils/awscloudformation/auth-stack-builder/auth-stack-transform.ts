@@ -1,5 +1,3 @@
-/* eslint-disable max-lines-per-function */
-import * as cdk from '@aws-cdk/core';
 import {
   $TSAny,
   $TSContext,
@@ -17,7 +15,10 @@ import {
   Template,
   writeCFNTemplate,
 } from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
+import {
+  formatter,
+} from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -28,7 +29,8 @@ import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } fr
 import { configureSmsOption } from '../utils/configure-sms';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
+import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
+import { AuthStackSynthesizer } from './stack-synthesizer';
 
 /**
  *  Class to handle Auth cdk generation / override functionality

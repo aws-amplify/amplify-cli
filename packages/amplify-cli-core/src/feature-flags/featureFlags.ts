@@ -5,6 +5,7 @@ import { JSONSchema7, JSONSchema7Definition } from 'json-schema'; // eslint-disa
 import _ from 'lodash';
 import * as path from 'path';
 import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
+// eslint-disable-next-line import/no-cycle
 import { AmplifyError } from '../errors/amplify-error';
 import { AmplifyFault } from '../errors/amplify-fault';
 import { JSONUtilities } from '../jsonUtilities';

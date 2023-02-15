@@ -1,4 +1,4 @@
-import { Input } from './domain/input';
+import { CommandLineInput } from 'amplify-cli-core';
 
 const rewiredCommands: { [key: string]: { warningMsg: string; plugin: string; command: string } } = {
   'function.invoke': {
@@ -10,7 +10,7 @@ const rewiredCommands: { [key: string]: { warningMsg: string; plugin: string; co
 };
 
 // updates input if there is a matching entry in rewiredCommands
-export function rewireDeprecatedCommands(input: Input): void {
+export function rewireDeprecatedCommands(input: CommandLineInput): void {
   const newCommand = rewiredCommands[input.plugin + '.' + input.command];
   if (newCommand) {
     input.plugin = newCommand.plugin;

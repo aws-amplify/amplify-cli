@@ -59,7 +59,7 @@ function getGlobalNpmPrefix() {
     if (process.platform === 'win32' || OSTYPE === 'msys' || OSTYPE === 'cygwin') {
       return APPDATA ? path.join(APPDATA, 'npm') : path.dirname(nodePath);
     }
-  
+
     // UNIX
     // /usr/local/bin/node --> prefix=/usr/local
     const prefix = path.dirname(path.dirname(nodePath));
@@ -73,14 +73,18 @@ function getGlobalNpmPrefix() {
   return '';
 }
 
-function tryWhich(exec) {
+function tryWhich(exec): string | undefined {
   try {
     return fs.realpathSync(which.sync(exec));
-  } catch (err) { /* do nothing */ }
+  } catch (err) {
+    return undefined;
+  }
 }
 
-function tryConfigPath(configPath) {
+function tryConfigPath(configPath): string | undefined {
   try {
     return ini.parse(fs.readFileSync(configPath, 'utf-8')).prefix;
-  } catch (err) { /* do nothing */ }
+  } catch (err) {
+    return undefined;
+  }
 }

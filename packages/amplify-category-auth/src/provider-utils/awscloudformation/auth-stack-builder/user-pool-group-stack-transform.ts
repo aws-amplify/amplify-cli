@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import {
   $TSAny, $TSContext,
   AmplifyCategories, AmplifyCategoryTransform, AmplifyError, AmplifyStackTemplate, AmplifySupportedService,
@@ -8,6 +7,7 @@ import {
   pathManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';

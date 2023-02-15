@@ -21,8 +21,11 @@ export interface FunctionWalkthroughProvider {
     resourceToUpdate?: string,
     params?: Partial<FunctionParameters>,
   ) => Promise<Partial<FunctionParameters>>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   migrate?: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   getIAMPolicies?: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   askExecRolePermissionsQuestions?: Function;
 }
 

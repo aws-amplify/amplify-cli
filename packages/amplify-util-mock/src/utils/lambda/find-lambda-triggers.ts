@@ -1,7 +1,7 @@
 import { $TSContext, pathManager, stateManager, JSONUtilities, $TSObject } from 'amplify-cli-core';
 import * as path from 'path';
 import _ = require('lodash');
-import { ServiceName } from 'amplify-category-function';
+import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { getMockSearchableTriggerDirectory } from '../mock-directory';
 
 type LambdaTriggersMap = { [index: string] : LambdaTrigger[]};
@@ -21,7 +21,7 @@ export type LambdaTriggerConfig = {
 }
 
 /**
- * Checks the function CFN templates for event source mappings that 
+ * Checks the function CFN templates for event source mappings that
  * correspond to the DDB stream of any of the tables
  * @param context The CLI context
  * @param tables List of known tables that each correspond to a '@model' type
@@ -33,17 +33,17 @@ export const findModelLambdaTriggers = async (context: $TSContext , tables: stri
       return lambdaTriggersMap;
     }
     const lambdaNames = getLambdaFunctionNames();
-    
+
     lambdaNames.forEach( (resourceName) => {
       const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
       const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
         path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
       );
-  
+
       const tablesAttached = tables.filter((tableName: string) => {
         return isDDBStreamAttached(tableName, cfnResources);
       });
-      
+
       tablesAttached.forEach( (attachedTable: string) => {
         if (lambdaTriggersMap[attachedTable]) {
           lambdaTriggersMap[attachedTable].push({ name: resourceName });
@@ -57,8 +57,8 @@ export const findModelLambdaTriggers = async (context: $TSContext , tables: stri
 }
 
 export const findSearchableLambdaTriggers = async (
-  context: $TSContext, 
-  tables: string[], 
+  context: $TSContext,
+  tables: string[],
   opensearchEndpoint?: URL
 ): Promise<{ [index: string] : LambdaTrigger }> => {
   const lambdaTriggersMap: { [index: string] : LambdaTrigger } = {};
@@ -104,4 +104,3 @@ const getLambdaFunctionNames = () => {
       .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
       .map(([key]) => key);
 }
-  

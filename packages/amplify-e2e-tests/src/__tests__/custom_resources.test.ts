@@ -58,7 +58,7 @@ describe('adding custom resources test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
-    await buildCustomResources(projRoot, {});
+    await buildCustomResources(projRoot);
 
     await amplifyPushAuth(projRoot);
 
@@ -81,8 +81,7 @@ describe('adding custom resources test', () => {
     expect(customResourceSNSArn).toBeDefined();
 
     // Add custom CFN and add dependency of custom CDK resource on the custom CFN
-
-    await addCFNCustomResource(projRoot, { name: cfnResourceName });
+    await addCFNCustomResource(projRoot, { name: cfnResourceName, promptForCategorySelection: false });
 
     const customCFNFilePath = path.join(
       projRoot,

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.3.1...amplify-category-function@4.3.2-beta.0) (2023-02-07)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.3.0...amplify-category-function@4.3.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-category-function
@@ -57,6 +65,62 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [4.2.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+
+
+
+
+
+# [4.2.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+
+
+
+
+
+# [4.2.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0-beta.0...amplify-category-function@4.2.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.2.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0-cdkv2.0...amplify-category-function@4.2.0-beta.0) (2022-11-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.2.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0-cdkv2.0...amplify-category-function@4.2.0-cdkv2.2) (2022-11-10)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.2.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0-cdkv2.0...amplify-category-function@4.2.0-cdkv2.1) (2022-11-10)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [4.2.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.1.3...amplify-category-function@4.2.0-cdkv2.0) (2022-11-01)
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0...amplify-category-function@4.2.1) (2022-11-17)
 
 **Note:** Version bump only for package amplify-category-function

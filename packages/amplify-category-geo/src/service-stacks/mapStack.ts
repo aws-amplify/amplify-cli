@@ -1,9 +1,10 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
-import { Effect } from '@aws-cdk/aws-iam';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
+import { Effect } from 'aws-cdk-lib/aws-iam';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { MapParameters } from '../service-utils/mapParams';
 import { AccessType } from '../service-utils/resourceParams';
@@ -24,7 +25,7 @@ export class MapStack extends BaseStack {
   protected readonly mapName: string;
   protected readonly authResourceName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: MapStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: MapStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
@@ -96,7 +97,7 @@ export class MapStack extends BaseStack {
     const customMapLambda = new lambda.Function(this, 'CustomMapLambda', {
       code: lambda.Code.fromInline(customMapLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       timeout: Duration.seconds(300),
     });
     customMapLambda.addToRolePolicy(geoCreateMapStatement);
