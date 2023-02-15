@@ -4,7 +4,8 @@ import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-i
 /**
  * checks whether sms options in enabled in cognito
  */
-export const configureSmsOption = (props: CognitoConfiguration | CognitoStackOptions): boolean | undefined => props.autoVerifiedAttributes?.includes('phone_number')
-    || (props.mfaConfiguration !== 'OFF' && props.mfaTypes?.includes('SMS Text Message'))
-    || props.requiredAttributes?.includes('phone_number')
-    || props.usernameAttributes?.includes(AttributeType.PHONE_NUMBER);
+export const configureSmsOption = (props: CognitoConfiguration | CognitoStackOptions): boolean | undefined =>
+  props.autoVerifiedAttributes?.includes('phone_number') ||
+  (props.mfaConfiguration !== 'OFF' && props.mfaTypes?.includes('SMS Text Message')) ||
+  props.requiredAttributes?.includes('phone_number') ||
+  props.usernameAttributes?.includes(AttributeType.PHONE_NUMBER);

@@ -145,7 +145,7 @@ export const run = async (startTime: number): Promise<void> => {
   }
 
   // For mobile hub migrated project validate project and command to be executed
-  ensureMobileHubCommandCompatibility((context as unknown) as $TSContext);
+  ensureMobileHubCommandCompatibility(context as unknown as $TSContext);
 
   // Display messages meant for most executions
   await displayBannerMessages(input);

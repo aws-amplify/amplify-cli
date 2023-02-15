@@ -38,7 +38,7 @@ stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { ru
 jest.mock('execa');
 jest.mock('../../state-manager');
 jest.mock('which', () => ({
-  sync: jest.fn().mockImplementation(runtimeName => {
+  sync: jest.fn().mockImplementation((runtimeName) => {
     if (runtimeName === 'python3') return pathToPython3Runtime;
     if (runtimeName === 'python') return pathToPythonRuntime;
     if (runtimeName === 'node') return pathToNodeRuntime;
@@ -47,20 +47,20 @@ jest.mock('which', () => ({
 jest.mock('fs-extra', () => {
   const actualFs = jest.requireActual('fs-extra');
   return {
-    ...({ ...actualFs }),
+    ...{ ...actualFs },
     readdirSync: jest.fn().mockImplementation((path, options) => {
       if (path === testProjectHooksDirPath) {
         return testProjectHooksFiles;
       }
       return actualFs.readdirSync(path, options);
     }),
-    lstatSync: jest.fn().mockImplementation(pathStr => {
+    lstatSync: jest.fn().mockImplementation((pathStr) => {
       if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr))) {
         return { isFile: jest.fn().mockReturnValue(true) };
       }
       return actualFs.lstatSync(pathStr);
     }),
-    existsSync: jest.fn().mockImplementation(path => {
+    existsSync: jest.fn().mockImplementation((path) => {
       if (path === testProjectHooksDirPath) return true;
       return actualFs.existsSync(path);
     }),
@@ -68,7 +68,7 @@ jest.mock('fs-extra', () => {
 });
 jest.mock('../../hooks/hooksConstants', () => {
   const orgConstants = jest.requireActual('../../hooks/hooksConstants');
-  return { ...({ ...orgConstants }), skipHooksFilePath: path.join(__dirname, '..', 'testFiles', 'skiphooktestfile') };
+  return { ...{ ...orgConstants }, skipHooksFilePath: path.join(__dirname, '..', 'testFiles', 'skiphooktestfile') };
 });
 
 let mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
@@ -144,14 +144,16 @@ describe('hooksExecutioner tests', () => {
   });
 
   test('should determine runtime options from hooks-config', async () => {
-    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' , runtime_options: ['mock1', 'mock2'] } } });
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({
+      extensions: { py: { runtime: 'python3', runtime_options: ['mock1', 'mock2'] } },
+    });
     await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
-    expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, ['mock1','mock2', 'testProjectHooksDirPath/pre-pull.py'], expect.anything());
+    expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, ['mock1', 'mock2', 'testProjectHooksDirPath/pre-pull.py'], expect.anything());
   });
 
   test('should determine empty array runtime options from hooks-config', async () => {
     stateManagerMock.getHooksConfigJson.mockClear();
-    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' , runtime_options: [] } } });
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3', runtime_options: [] } } });
     await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, ['testProjectHooksDirPath/pre-pull.py'], expect.anything());
   });

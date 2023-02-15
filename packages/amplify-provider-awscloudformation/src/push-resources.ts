@@ -187,7 +187,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
      * calling transform schema here to support old project with out overrides
      */
     await ApiCategoryFacade.transformGraphQLSchema(context, {
-      handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+      handleMigration: (opts) => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options.minify || context.input.options?.minify,
       promptApiKeyCreation: true,
     });
@@ -221,7 +221,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
       const getGqlUpdatedResource = (resourcesToCheck: any[]) =>
         resourcesToCheck.find(
-          resourceToCheck =>
+          (resourceToCheck) =>
             resourceToCheck?.service === 'AppSync' &&
             resourceToCheck?.providerMetadata?.logicalId &&
             resourceToCheck?.providerPlugin === 'awscloudformation',
@@ -233,7 +233,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         deploymentSteps = await gqlManager.run();
 
         // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependency on the tables
-        const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map(meta => meta.stackName); // stackName is the same as the model name
+        const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map((meta) => meta.stackName); // stackName is the same as the model name
         deploymentSteps = await prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables(
           context,
           modelsBeingReplaced,
@@ -287,7 +287,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
         });
 
-        deploymentSteps.forEach(step => deploymentManager.addStep(step));
+        deploymentSteps.forEach((step) => deploymentManager.addStep(step));
 
         // generate nested stack
         const backEndDir = pathManager.getBackendDirPath();
@@ -546,7 +546,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
 const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   // Only build and package resources which are required
-  await Promise.all(resources.filter(resource => resource.build).map(resource => prepareResource(context, resource)));
+  await Promise.all(resources.filter((resource) => resource.build).map((resource) => prepareResource(context, resource)));
 };
 
 const prepareResource = async (context: $TSContext, resource: $TSAny) => {
@@ -662,7 +662,7 @@ const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpda
   let userAgentAction = '';
 
   if (uniqueCategoriesAdded.length > 0) {
-    uniqueCategoriesAdded.forEach(category => {
+    uniqueCategoriesAdded.forEach((category) => {
       if (category.length >= 2) {
         category = category.substring(0, 2);
       }
@@ -672,7 +672,7 @@ const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpda
   }
 
   if (uniqueCategoriesUpdated.length > 0) {
-    uniqueCategoriesUpdated.forEach(category => {
+    uniqueCategoriesUpdated.forEach((category) => {
       if (category.length >= 2) {
         category = category.substring(0, 2);
       }
@@ -686,7 +686,7 @@ const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpda
 const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
   const categories = new Set();
 
-  resources.forEach(resource => categories.add(resource.category));
+  resources.forEach((resource) => categories.add(resource.category));
 
   return [...categories];
 };
@@ -834,11 +834,11 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
   eventMap.categories = [];
 
   // Type script throws an error unless I explicitly convert to string
-  const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map(item => `${item}`);
+  const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map((item) => `${item}`);
 
-  Object.keys(meta).forEach(category => {
+  Object.keys(meta).forEach((category) => {
     if (category !== 'providers') {
-      Object.keys(meta[category]).forEach(resource => {
+      Object.keys(meta[category]).forEach((resource) => {
         eventMap.rootResources.push(createResourceObject(resource, category));
         handleCfnFiles(eventMap, category, resource, resources);
       });
@@ -851,10 +851,10 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
 const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, updatedResources: string[]) => {
   // Getting corresponding cfn template files
   const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
-  cfnFiles.forEach(file => {
+  cfnFiles.forEach((file) => {
     const categoryResources = getCategoryResources(file, resourceDir);
     // Mapping Resource events to categories.
-    categoryResources.forEach(res => {
+    categoryResources.forEach((res) => {
       eventMap.eventToCategories.set(res, `${category}-${resource}`);
     });
     if (updatedResources.includes(category)) {
@@ -1024,10 +1024,10 @@ export const formNestedStack = async (
 
   let categories = Object.keys(amplifyMeta);
 
-  categories = categories.filter(category => category !== 'providers');
-  categories.forEach(category => {
+  categories = categories.filter((category) => category !== 'providers');
+  categories.forEach((category) => {
     const resources = Object.keys(amplifyMeta[category]);
-    resources.forEach(resource => {
+    resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
 
       if (category === 'auth' && resource !== 'userPoolGroups') {
@@ -1084,7 +1084,7 @@ export const formNestedStack = async (
 
             if (dependsOn[i].exports) {
               Object.keys(dependsOn[i].exports)
-                .map(key => ({ key, value: dependsOn[i].exports[key] }))
+                .map((key) => ({ key, value: dependsOn[i].exports[key] }))
                 .forEach(({ key, value }) => {
                   parameters[key] = { 'Fn::ImportValue': value };
                 });
@@ -1216,7 +1216,7 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
     const currentMeta = stateManager.getCurrentMeta(projectRoot);
     const meta = stateManager.getMeta(projectRoot);
 
-    layerResources.forEach(r => {
+    layerResources.forEach((r) => {
       const layerMetaPath = [AmplifyCategories.FUNCTION, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
       _.set(meta, layerMetaPath, previousHash);

@@ -47,7 +47,7 @@ export const pushResources = async (
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
 
-    if (allEnvs.findIndex(env => env === envName) !== -1) {
+    if (allEnvs.findIndex((env) => env === envName) !== -1) {
       context.exeInfo = {};
       context.exeInfo.forcePush = false;
 

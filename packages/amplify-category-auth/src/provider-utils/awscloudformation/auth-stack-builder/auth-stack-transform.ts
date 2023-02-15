@@ -182,14 +182,14 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
 
       // handle dependsOn data
       const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(
-        i => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
+        (i) => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
       );
       const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
       // generate trigger config
       const keys = Object.keys(this._cliInputs.cognitoConfig.triggers);
       // Auth lambda config for Triggers
       const authTriggerConnections: AuthTriggerConnection[] = [];
-      keys.forEach(key => {
+      keys.forEach((key) => {
         const config: AuthTriggerConnection = {
           triggerType: key === 'PreSignup' ? 'PreSignUp' : key,
           lambdaFunctionName: `${this.resourceName}${key}`,
@@ -261,11 +261,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {
       this._cognitoStackProps.triggers = JSON.stringify(this._cognitoStackProps.triggers);
       // convert permissions
-      const triggerPermissions = this._cognitoStackProps.permissions!.map(i => JSON.stringify(i));
+      const triggerPermissions = this._cognitoStackProps.permissions!.map((i) => JSON.stringify(i));
       // convert dependsOn
       const { dependsOn } = this._cognitoStackProps;
       // convert auth trigger connections
-      const authTriggerConnections = this._cognitoStackProps.authTriggerConnections!.map(obj => {
+      const authTriggerConnections = this._cognitoStackProps.authTriggerConnections!.map((obj) => {
         const modifiedObj = _.omit(obj, ['lambdaFunctionArn']);
         return JSON.stringify(modifiedObj);
       });
@@ -297,7 +297,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     const cliInputsFilePath = path.join(pathManager.getBackendDirPath(), this._category, this.resourceName, 'cli-inputs.json');
-    const containsAll = (arr1: string[], arr2: string[]): boolean => arr2.every(arr2Item => arr1.includes(arr2Item));
+    const containsAll = (arr1: string[], arr2: string[]): boolean => arr2.every((arr2Item) => arr1.includes(arr2Item));
     const sameMembers = (arr1: string[], arr2: string[]): boolean => arr1.length === arr2.length && containsAll(arr2, arr1);
     if (!sameMembers(oldParameters.requiredAttributes ?? [], parametersJson.requiredAttributes ?? [])) {
       context.print.error(
@@ -484,7 +484,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
 
     if (!_.isEmpty(props.dependsOn)) {
       const { dependsOn } = props;
-      dependsOn?.forEach(param => {
+      dependsOn?.forEach((param) => {
         param.attributes.forEach((attribute: $TSAny) => {
           this._authTemplateObj.addCfnParameter(
             {
