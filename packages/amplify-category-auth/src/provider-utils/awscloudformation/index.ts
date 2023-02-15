@@ -3,7 +3,7 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import {
-  stateManager, open, $TSContext, $TSObject,
+  stateManager, open, $TSContext, $TSObject, AmplifyError,
 } from 'amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
@@ -155,7 +155,10 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       });
 
       if (missingParams.length) {
-        throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new AmplifyError( 'InputValidationError', {
+          message: `auth headless is missing the following inputParameters ${missingParams.join(', ')}`,
+          link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
+        });     
       }
     }
     if (hostedUIProviderMeta) {
