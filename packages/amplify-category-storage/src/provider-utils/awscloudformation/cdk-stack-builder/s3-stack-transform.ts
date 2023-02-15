@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyS3ResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import {
   $TSAny,
   $TSContext,
@@ -223,7 +223,9 @@ export class AmplifyS3ResourceStackTransform {
           },
         });
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
+          const projectInfo = getProjectInfo();
+          await sandboxNode.run(overrideCode, overrideJSFilePath)
+            .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate, projectInfo);
         } catch (err: $TSAny) {
           throw new AmplifyError(
             'InvalidOverrideError',
