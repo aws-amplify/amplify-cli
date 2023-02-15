@@ -57,7 +57,7 @@ const showApiAuthAcm = async (context): Promise<void> => {
   }
 
   const apiNames = Object.entries(stateManager.getMeta()?.api || {})
-    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name);
 
   if (apiNames.length === 0) {

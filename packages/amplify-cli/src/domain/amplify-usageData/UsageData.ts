@@ -252,7 +252,7 @@ export class UsageData implements IUsageData {
     return new Promise<void>(resolve => {
       const data: string = JSONUtilities.stringify(payload, {
         minify: true,
-      })!;
+      }) as string;
       const req = https.request({
         hostname: this.url.hostname,
         port: this.url.port,

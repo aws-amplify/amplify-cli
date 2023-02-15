@@ -5,11 +5,6 @@ import { run as runHelp } from './auth/help';
 
 export const name = 'auth';
 
-type AuthCommandType = {
-  name: string;
-  description: string;
-};
-
 /**
  * Execute all auth cli commands
  * @param context amplify cli context

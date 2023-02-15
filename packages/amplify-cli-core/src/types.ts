@@ -78,7 +78,7 @@ export interface OAuthResult {
   AllowedOAuthScopes?: string[];
   newCallbackURLs?: string[];
   newLogoutURLs?: string[];
-  oAuthMetadata?: any;
+  oAuthMetadata?: unknown;
 }
 
 export interface SocialProviderResult {
@@ -147,7 +147,7 @@ export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBE
 export type AliasAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.PREFERRED_USERNAME;
 
 export interface Triggers {
-  triggers?: any; // TODO create a type for this
+  triggers?: string | Record<string, unknown>;
 }
 
 export interface MigrationInfo {

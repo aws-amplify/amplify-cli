@@ -68,7 +68,7 @@ export const serviceWalkthrough = async (
     }
 
     if (answer.triggers && answer.triggers !== '{}') {
-      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
+      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers as string) : {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
