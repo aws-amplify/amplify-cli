@@ -24,17 +24,17 @@ stateManagerMock.getTeamProviderInfo.mockReturnValue({
     categories: {
       function: {
         testFunc: {
-          envVarOne: 'testVal1'
-        }
-      }
-    }
-  }
+          envVarOne: 'testVal1',
+        },
+      },
+    },
+  },
 });
 
 stateManagerMock.getBackendConfig.mockReturnValue({
   function: {
-    testFunc: {}
-  }
+    testFunc: {},
+  },
 });
 
 let ensureEnvParamManager;
@@ -67,30 +67,35 @@ describe('ensureEnvironmentVariableValues', () => {
       environmentVariableList: [
         {
           cloudFormationParameterName: 'envVarOne',
-          environmentVariableName: 'envVarOne'
+          environmentVariableName: 'envVarOne',
         },
         {
           cloudFormationParameterName: 'envVarTwo',
-          environmentVariableName: 'envVarTwo'
+          environmentVariableName: 'envVarTwo',
         },
         {
           cloudFormationParameterName: 'envVarThree',
-          environmentVariableName: 'envVarThree'
-        }
-      ]
+          environmentVariableName: 'envVarThree',
+        },
+      ],
     });
 
     prompterMock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
 
+<<<<<<< HEAD
     await envVarHelper.ensureEnvironmentVariableValues(({ usageData: { emitError: jest.fn() } } as unknown) as $TSContext);
     expect(
       getEnvParamManager()
         .getResourceParamManager('function', 'testFunc')
-        .getAllParams()
+        .getAllParams(),
     ).toEqual({
+=======
+    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as $TSContext);
+    expect(getEnvParamManager().getResourceParamManager('function', 'testFunc').getAllParams()).toEqual({
+>>>>>>> dev
       envVarOne: 'testVal1',
       envVarTwo: 'testVal2',
-      envVarThree: 'testVal3'
+      envVarThree: 'testVal3',
     });
   });
 });
@@ -106,31 +111,31 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
   const howToProceedChoices = [
     {
       value: 'carry',
-      name: 'Carry over existing environment variables to this new environment'
+      name: 'Carry over existing environment variables to this new environment',
     },
     {
       value: 'update',
-      name: 'Update environment variables now'
-    }
+      name: 'Update environment variables now',
+    },
   ];
   const functionNames = ['testFunc'];
   const selectFunctionChoices = functionNames
-    .map(name => ({
+    .map((name) => ({
       name,
-      value: name
+      value: name,
     }))
     .concat({
       name: "I'm done",
-      value: abortKey
+      value: abortKey,
     });
   const selectVariablesChoices = ['testEnv']
-    .map(name => ({
+    .map((name) => ({
       name,
-      value: name
+      value: name,
     }))
     .concat({
       name: "I'm done",
-      value: abortKey
+      value: abortKey,
     });
 
   beforeAll(() => {
@@ -154,7 +159,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
 
   it('does not prompt when no functions exist', async () => {
     stateManagerMock.getBackendConfig.mockReturnValueOnce({
-      function: {}
+      function: {},
     });
 
     await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
@@ -167,26 +172,26 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       fromEnvName: envName,
       yesFlagSet: true,
       numCalls: 0,
-      storedEnvVar: testFuncRecord
+      storedEnvVar: testFuncRecord,
     },
     {
       fromEnvName: envName,
       yesFlagSet: false,
       numCalls: 0,
-      storedEnvVar: emptyRecord
+      storedEnvVar: emptyRecord,
     },
     {
       fromEnvName: envName,
       yesFlagSet: true,
       numCalls: 0,
-      storedEnvVar: emptyRecord
+      storedEnvVar: emptyRecord,
     },
     {
       fromEnvName: envName,
       yesFlagSet: false,
       numCalls: 1,
-      storedEnvVar: testFuncRecord
-    }
+      storedEnvVar: testFuncRecord,
+    },
   ])(
     'calls prompt $numCalls times when yesFlagSet is $yesFlagSet and environment variables is $storedEnvVar',
     async ({ fromEnvName, yesFlagSet, numCalls, storedEnvVar }) => {
@@ -196,7 +201,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, fromEnvName, yesFlagSet);
 
       expect(prompterMock.pick).toBeCalledTimes(numCalls);
-    }
+    },
   );
 
   it('prompts the user with a specific question when the environment has lambda functions and the yes flag is not set', async () => {
@@ -207,13 +212,13 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
     expect(prompterMock.pick).toBeCalledWith(
       'You have configured environment variables for functions. How do you want to proceed?',
       howToProceedChoices,
-      expect.anything()
+      expect.anything(),
     );
   });
 
   it.each([
     { numCarryUpdateCalls: 1, answer: 'carry', numSelectFunctionCalls: 0 },
-    { numCarryUpdateCalls: 1, answer: 'update', numSelectFunctionCalls: 1 }
+    { numCarryUpdateCalls: 1, answer: 'update', numSelectFunctionCalls: 1 },
   ])(
     'prompts the user $numSelectFunctionCalls times when the first question is answered with $answer',
     async ({ numCarryUpdateCalls, answer, numSelectFunctionCalls: numSelectFunctionCalls }) => {
@@ -223,7 +228,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       await envVarHelper.askEnvironmentVariableCarryOrUpdateQuestions(context, envName, false);
 
       expect(prompterMock.pick).toBeCalledTimes(numCarryUpdateCalls + numSelectFunctionCalls);
-    }
+    },
   );
 
   it('prompts the user with a specific question and choices when update is selected', async () => {
@@ -237,7 +242,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       1,
       'You have configured environment variables for functions. How do you want to proceed?',
       howToProceedChoices,
-      expect.anything()
+      expect.anything(),
     );
     expect(prompterMock.pick).toHaveBeenNthCalledWith(2, 'Select the Lambda function you want to update values', selectFunctionChoices);
   });
@@ -255,13 +260,13 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       1,
       'You have configured environment variables for functions. How do you want to proceed?',
       howToProceedChoices,
-      expect.anything()
+      expect.anything(),
     );
     expect(prompterMock.pick).toHaveBeenNthCalledWith(2, 'Select the Lambda function you want to update values', selectFunctionChoices);
     expect(prompterMock.pick).toHaveBeenNthCalledWith(
       3,
       "Which function's environment variables do you want to edit?",
-      selectVariablesChoices
+      selectVariablesChoices,
     );
   });
 

@@ -50,9 +50,15 @@ const AuthInputStateMock = AuthInputState as jest.MockedClass<typeof AuthInputSt
 const saveCLIInputPayloadMock = jest.fn();
 AuthInputStateMock.mockImplementation(
   () =>
+<<<<<<< HEAD
+    (({
+      saveCLIInputPayload: saveCLIInputPayloadMock,
+    } as unknown) as AuthInputState),
+=======
     ({
       saveCLIInputPayload: saveCLIInputPayloadMock,
     } as unknown as AuthInputState),
+>>>>>>> dev
 );
 
 describe('getUpdateAuthHandler', () => {
