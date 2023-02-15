@@ -70,7 +70,7 @@ describe('test SIGINT with execute', () => {
     });
 
     const mockContext: Context = jest.createMockFromModule('../domain/context');
-    mockContext.input = (input as unknown) as CommandLineInput;
+    mockContext.input = input as unknown as CommandLineInput;
     mockContext.print = {
       warning: jest.fn(),
     };

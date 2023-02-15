@@ -16,7 +16,7 @@ jest.mock('../extensions/amplify-helpers/resource-status', () => ({
   showResourceTable: jest.fn().mockReturnValue(Promise.resolve(false)),
 }));
 
-const mockContext = ({
+const mockContext = {
   exeInfo: {
     forcePush: false,
   },
@@ -34,7 +34,7 @@ const mockContext = ({
   parameters: {
     options: {},
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 describe('push resources', () => {
   afterEach(() => {

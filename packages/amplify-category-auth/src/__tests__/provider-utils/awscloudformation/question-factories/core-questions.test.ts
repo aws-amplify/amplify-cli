@@ -152,14 +152,14 @@ describe('When generating auth questions...', () => {
     });
 
     it('should not getAllDefaults if updatingAuth is present in the context.', async () => {
-      mockContext.updatingAuth = ({ Q1: 'my old answer' } as unknown) as CognitoConfiguration;
+      mockContext.updatingAuth = { Q1: 'my old answer' } as unknown as CognitoConfiguration;
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       res.default();
       expect(defaults.getAllDefaults).not.toHaveBeenCalled();
     });
 
     it('should return the answer from context.updatingAuth if updatingAuth is present.', async () => {
-      mockContext.updatingAuth = ({ Q1: 'my old answer' } as unknown) as CognitoConfiguration;
+      mockContext.updatingAuth = { Q1: 'my old answer' } as unknown as CognitoConfiguration;
       const res = await parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const def = res.default();
       expect(def).toEqual('my old answer');

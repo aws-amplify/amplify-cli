@@ -58,14 +58,14 @@ AuthInputStateMock.mockImplementation(
 describe('getUpdateAuthHandler', () => {
   it('filters cliInputs on env specific params', async () => {
     const saveParamsFn = jest.fn();
-    const contextStub = ({
+    const contextStub = {
       amplify: {
         saveEnvResourceParameters: saveParamsFn,
       },
-    } as unknown) as $TSContext;
-    const cognitoConfig: CognitoConfiguration = ({
+    } as unknown as $TSContext;
+    const cognitoConfig: CognitoConfiguration = {
       serviceName: 'test',
-    } as unknown) as CognitoConfiguration;
+    } as unknown as CognitoConfiguration;
 
     await getUpdateAuthHandler(contextStub)(cognitoConfig);
     const { cognitoConfig: actualCliInputsFileContent } = saveCLIInputPayloadMock.mock.calls[0][0];

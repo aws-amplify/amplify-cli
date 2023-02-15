@@ -86,14 +86,14 @@ describe('HooksMeta tests', () => {
     HooksMeta.releaseInstance();
 
     hooksMeta = HooksMeta.getInstance(
-      ({
+      {
         command: 'pull',
         plugin: 'core',
         subCommands: undefined,
         options: {
           forcePush: true,
         },
-      } as unknown) as CommandLineInput,
+      } as unknown as CommandLineInput,
       'pre',
     );
     expect(hooksMeta).toBeDefined();
