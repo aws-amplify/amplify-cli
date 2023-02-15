@@ -96,6 +96,7 @@ describe('deleteProject', () => {
     amplify: {
       getEnvDetails: () => [],
       getProjectConfig: () => ({ frontend: 'test' }),
+      invokePluginMethod: async () => {},
     },
     filesystem: {
       remove: jest.fn(),

@@ -1,8 +1,4 @@
-import {
-  ResourceTuple,
-  stateManager,
-  AmplifyError,
-} from 'amplify-cli-core';
+import { ResourceTuple, stateManager, AmplifyError } from 'amplify-cli-core';
 import Ajv from 'ajv';
 import { BackendParameters } from './backend-parameters';
 import parameterMapSchema from './schemas/BackendParameters.schema.json';
@@ -11,13 +7,13 @@ import parameterMapSchema from './schemas/BackendParameters.schema.json';
  * Interface for controller that maps parameters to resources that depend on those parameters
  */
 export type IBackendParametersController = {
-  save: () => Promise<void>,
-  addParameter: (name: string, usedBy: ResourceTuple[]) => IBackendParametersController,
-  addAllParameters: (parameterMap: BackendParameters) => IBackendParametersController,
-  removeParameter: (name: string) => IBackendParametersController,
-  removeAllParameters: () => IBackendParametersController,
-  getParameters: () => Readonly<BackendParameters>,
-}
+  save: () => Promise<void>;
+  addParameter: (name: string, usedBy: ResourceTuple[]) => IBackendParametersController;
+  addAllParameters: (parameterMap: BackendParameters) => IBackendParametersController;
+  removeParameter: (name: string) => IBackendParametersController;
+  removeAllParameters: () => IBackendParametersController;
+  getParameters: () => Readonly<BackendParameters>;
+};
 
 let localBackendParametersController: IBackendParametersController;
 

@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import sequential from 'promise-sequential';
 import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
@@ -335,7 +334,9 @@ export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args:
         };
         return eventHandler;
       });
-    await sequential(eventHandlers);
+    for (const eventHandler of eventHandlers) {
+      await eventHandler();
+    }
   }
 };
 

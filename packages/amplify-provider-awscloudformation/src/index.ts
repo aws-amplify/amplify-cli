@@ -50,6 +50,11 @@ import { LocationService } from './aws-utils/aws-location-service';
 import { hashDirectory } from './upload-appsync-files';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { getApiKeyConfig } from './utils/api-key-helpers';
+import { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
+export { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
+
+import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
+export { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
 
 function init(context) {
   return initializer.run(context);
@@ -198,4 +203,7 @@ module.exports = {
   hashDirectory,
   prePushCfnTemplateModifier,
   getApiKeyConfig,
+  getEnvParametersDownloadHandler,
+  getEnvParametersUploadHandler,
+  deleteEnvironmentParametersFromService,
 };
