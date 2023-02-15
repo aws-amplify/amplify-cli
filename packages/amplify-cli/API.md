@@ -8,14 +8,15 @@
 
 import { $TSAny } from 'amplify-cli-core';
 import { CommandLineInput } from 'amplify-cli-core/src/types';
+import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { ICommandInput } from 'amplify-cli-shared-interfaces';
 import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
 import { InputOptions } from 'amplify-cli-core';
+import { IPluginPlatform } from 'amplify-cli-core';
 import { IUsageData } from 'amplify-cli-core';
 import { IUsageDataPayload } from 'amplify-cli-core';
-import { PluginPlatform } from 'amplify-cli-core';
 import { ProjectSettings } from 'amplify-cli-core';
 import { StartableTimedCodePath } from 'amplify-cli-core';
 import { StoppableTimedCodePath } from 'amplify-cli-core';

@@ -192,7 +192,7 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext): Promise<$
 
     // Populate the outputs for the notifications plugin.
     // Get analytics resource on which notifications are enabled
-    const analyticsResource = analyticsResourceList.find(p => p.resourceName === notificationsResourceName);
+    const analyticsResource = analyticsResourceList.find((p) => p.resourceName === notificationsResourceName);
     // Check if the resource is deployed to the cloud.
     if (analyticsResource?.output?.Id) {
       pinpointNotificationsMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS][analyticsResource.resourceName];
@@ -260,8 +260,8 @@ const writeNotificationsTeamProviderInfo = async (pinpointMeta: $TSAny): Promise
   };
   // set params in the notifications and analytics resource param manager
   [AmplifyCategories.NOTIFICATIONS, AmplifyCategories.ANALYTICS]
-    .map(category => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
-    .forEach(resourceParamManager => {
+    .map((category) => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
+    .forEach((resourceParamManager) => {
       resourceParamManager.setAllParams(params);
     });
 };

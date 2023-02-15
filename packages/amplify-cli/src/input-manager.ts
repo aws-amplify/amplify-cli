@@ -253,7 +253,7 @@ const normalizeStatusCommandOptions = (input: CLIInput): CLIInput => {
   const options = input.options ? input.options : {};
   const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
   // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
-  allowedVerboseIndicators.forEach(verboseFlag => {
+  allowedVerboseIndicators.forEach((verboseFlag) => {
     if (options[verboseFlag] !== undefined) {
       if (typeof options[verboseFlag] === 'string') {
         const pluginName = (options[verboseFlag] as string).toLowerCase();
@@ -273,7 +273,7 @@ const normalizeStatusCommandOptions = (input: CLIInput): CLIInput => {
   if (returnInput.subCommands) {
     const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
     const inputSubCommands: string[] = [];
-    returnInput.subCommands.forEach(subCommand => {
+    returnInput.subCommands.forEach((subCommand) => {
       // plugins are inferred as sub-commands when positionally supplied
       if (!allowedSubCommands.includes(subCommand)) {
         options[subCommand.toLowerCase()] = true;

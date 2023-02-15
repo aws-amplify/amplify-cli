@@ -188,7 +188,7 @@ const mapParametersJsonToCliInputs = (parameters: $TSObject): CognitoCLIInputs =
   }
 
   // removing undefined values
-  const filteredCliInputs = _.pickBy(cliInputs, v => v !== undefined) as CognitoConfiguration;
+  const filteredCliInputs = _.pickBy(cliInputs, (v) => v !== undefined) as CognitoConfiguration;
 
   return {
     version: '1',

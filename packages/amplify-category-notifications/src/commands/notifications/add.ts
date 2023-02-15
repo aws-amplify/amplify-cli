@@ -33,8 +33,8 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
   selectedChannel: string | undefined,
 ): Promise<string | undefined> => {
   let channelViewName = selectedChannel ? getChannelViewName(selectedChannel) : undefined;
-  const availableChannelViewNames = availableChannels.map(channelName => getChannelViewName(channelName));
-  const disabledChannelViewNames = disabledChannels.map(channelName => getChannelViewName(channelName));
+  const availableChannelViewNames = availableChannels.map((channelName) => getChannelViewName(channelName));
+  const disabledChannelViewNames = disabledChannels.map((channelName) => getChannelViewName(channelName));
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     channelViewName = await prompter.pick('Choose the notification channel to enable', disabledChannelViewNames);

@@ -115,7 +115,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
   ];
   const functionNames = ['testFunc'];
   const selectFunctionChoices = functionNames
-    .map(name => ({
+    .map((name) => ({
       name,
       value: name,
     }))
@@ -124,7 +124,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       value: abortKey,
     });
   const selectVariablesChoices = ['testEnv']
-    .map(name => ({
+    .map((name) => ({
       name,
       value: name,
     }))

@@ -1,4 +1,4 @@
-import { NoUsageData } from './NoUsageData';
-import { UsageData } from './UsageData';
+import {NoUsageData} from './NoUsageData';
+import {UsageData} from './UsageData';
 
-export { NoUsageData, UsageData };
+export {NoUsageData, UsageData};

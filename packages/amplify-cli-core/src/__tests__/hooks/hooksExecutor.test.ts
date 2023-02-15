@@ -39,7 +39,7 @@ stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { ru
 jest.mock('execa');
 jest.mock('../../state-manager');
 jest.mock('which', () => ({
-  sync: jest.fn().mockImplementation(runtimeName => {
+  sync: jest.fn().mockImplementation((runtimeName) => {
     if (runtimeName === 'python3') return pathToPython3Runtime;
     if (runtimeName === 'python') return pathToPythonRuntime;
     if (runtimeName === 'node') return pathToNodeRuntime;
@@ -55,13 +55,13 @@ jest.mock('fs-extra', () => {
       }
       return actualFs.readdirSync(path, options);
     }),
-    lstatSync: jest.fn().mockImplementation(pathStr => {
+    lstatSync: jest.fn().mockImplementation((pathStr) => {
       if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr))) {
         return { isFile: jest.fn().mockReturnValue(true) };
       }
       return actualFs.lstatSync(pathStr);
     }),
-    existsSync: jest.fn().mockImplementation(path => {
+    existsSync: jest.fn().mockImplementation((path) => {
       if (path === testProjectHooksDirPath) return true;
       return actualFs.existsSync(path);
     }),

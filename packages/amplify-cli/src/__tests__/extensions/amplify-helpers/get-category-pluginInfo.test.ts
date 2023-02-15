@@ -14,7 +14,7 @@ test('getCategoryPluginInfo returns the first pluginInfo to match category', () 
   ];
 
   const mockInput = new CommandLineInput(mockProcessArgv);
-  const mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
+  const mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
   const hostingPluginInfo = getCategoryPluginInfo(mockContext, 'hosting');
   expect(hostingPluginInfo).toBeDefined();
 });
@@ -29,7 +29,7 @@ test('getCategoryPluginInfo returns pluginInfo when plugin matches category and 
   ];
 
   const mockInput = new CommandLineInput(mockProcessArgv);
-  const mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
+  const mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
   const hostingAmplifyhostingPluginInfo = getCategoryPluginInfo(mockContext, 'hosting', 'amplifyhosting');
   expect(hostingAmplifyhostingPluginInfo).toBeDefined();
 });
@@ -44,7 +44,7 @@ test('getCategoryPluginInfo returns the first pluginInfo to match only category 
   ];
 
   const mockInput = new CommandLineInput(mockProcessArgv);
-  const mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
+  const mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
   const hostingPluginInfo = getCategoryPluginInfo(mockContext, 'hosting', 'S3');
   expect(hostingPluginInfo).toBeDefined();
 });

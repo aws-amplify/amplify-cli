@@ -179,8 +179,8 @@ export class UsageData implements IUsageData {
     while (cfnStackStack.length !== 0) {
       const head = cfnStackStack.pop();
       const children = events
-        .filter(r => r.StackId === head && r.PhysicalResourceId !== head)
-        .map(r => r.PhysicalResourceId)
+        .filter((r) => r.StackId === head && r.PhysicalResourceId !== head)
+        .map((r) => r.PhysicalResourceId)
         .reduce((set, val) => set.add(val), new Set<string>());
       if (children.size > 0) {
         cfnStackStack.push(...children.values());
@@ -249,7 +249,7 @@ export class UsageData implements IUsageData {
   }
 
   private async send(payload: UsageDataPayload): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       const data: string = JSONUtilities.stringify(payload, {
         minify: true,
       }) as string;

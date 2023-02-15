@@ -44,7 +44,7 @@ const getPostUpdateAuthMessagePrinterMock = getPostUpdateAuthMessagePrinter as j
 getPostUpdateAuthMessagePrinterMock.mockReturnValue(jest.fn());
 
 const removeDeprecatedPropsMock = removeDeprecatedProps as jest.MockedFunction<typeof removeDeprecatedProps>;
-removeDeprecatedPropsMock.mockImplementation(input => input);
+removeDeprecatedPropsMock.mockImplementation((input) => input);
 
 const AuthInputStateMock = AuthInputState as jest.MockedClass<typeof AuthInputState>;
 const saveCLIInputPayloadMock = jest.fn();
@@ -69,7 +69,7 @@ describe('getUpdateAuthHandler', () => {
 
     await getUpdateAuthHandler(contextStub)(cognitoConfig);
     const { cognitoConfig: actualCliInputsFileContent } = saveCLIInputPayloadMock.mock.calls[0][0];
-    expect(Object.keys(actualCliInputsFileContent).some(key => ENV_SPECIFIC_PARAMS.includes(key))).toBe(false);
+    expect(Object.keys(actualCliInputsFileContent).some((key) => ENV_SPECIFIC_PARAMS.includes(key))).toBe(false);
     expect(actualCliInputsFileContent.nonEnvSpecificParam).toBe('something');
   });
 });

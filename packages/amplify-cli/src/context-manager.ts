@@ -10,7 +10,7 @@ import { Context } from './domain/context';
  */
 export const constructContext = (pluginPlatform: IPluginPlatform, input: CommandLineInput): Context => {
   const context = new Context(pluginPlatform, input);
-  attachExtensions((context as unknown) as $TSContext);
+  attachExtensions(context as unknown as $TSContext);
   return context;
 };
 

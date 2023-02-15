@@ -53,7 +53,7 @@ describe('amplify init:', () => {
     getLocalAWSInfo: mockGetLocalAWSInfo,
   };
 
-  const mockContext = ({
+  const mockContext = {
     amplify: {
       AmplifyToolkit: jest.fn(),
       pathManager: mockPathManager,
@@ -85,7 +85,7 @@ describe('amplify init:', () => {
     input: {},
     runtime: {},
     pluginPlatform: {},
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 
   jest.mock('amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),

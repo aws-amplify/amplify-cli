@@ -52,13 +52,13 @@ export const getUpdateAuthDefaultsApplier = (
 
   // ensure immutable attributes are removed from result
   immutableAttributes
-    .filter(pv => pv in previousResult)
-    .forEach(pv => {
+    .filter((pv) => pv in previousResult)
+    .forEach((pv) => {
       delete (result as CognitoConfiguration)[pv];
     });
 
   if (['default', 'defaultSocial'].includes(result.useDefault)) {
-    safeDefaults.forEach(sd => delete previousResult[sd]);
+    safeDefaults.forEach((sd) => delete previousResult[sd]);
   }
 
   await verificationBucketName(result, previousResult);

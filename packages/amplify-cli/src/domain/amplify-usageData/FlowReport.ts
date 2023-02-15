@@ -73,7 +73,7 @@ export class CLIFlowReport implements IFlowData {
     this.optionFlowData = []; // key-value store with ordering maintained
     // Parse options
     if (input.options?.prompt) {
-      const prompt: string = (input.options.prompt as unknown) as string;
+      const prompt: string = input.options.prompt as unknown as string;
       this.pushInteractiveFlow(prompt, input.options.input);
     }
   }

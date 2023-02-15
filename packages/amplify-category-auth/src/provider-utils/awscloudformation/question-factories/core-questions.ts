@@ -227,9 +227,9 @@ const triggerDefaults = (context: $TSContext, input: { key: string | number }, a
         : context.updatingAuth[input.key as keyof CognitoConfiguration];
     try {
       if (current) {
-        availableOptions.forEach(a => {
+        availableOptions.forEach((a) => {
           let match = true;
-          Object.keys(a.triggers).forEach(t => {
+          Object.keys(a.triggers).forEach((t) => {
             if (current[t]) {
               const test = a.triggers[t].every((c: $TSAny) => current[t].includes(c));
               if (!test) {

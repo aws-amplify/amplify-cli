@@ -51,9 +51,9 @@ export const getResourceUpdater = async (context: $TSContext, request: Readonly<
   const resources = context.amplify.getProjectMeta();
 
   const adminQueriesFunctionName = get<{ category: string; resourceName: string }[]>(resources, ['api', 'AdminQueries', 'dependsOn'], [])
-    .filter(resource => resource.category === AmplifyCategories.FUNCTION)
-    .map(resource => resource.resourceName)
-    .find(resourceName => resourceName.includes('AdminQueries'));
+    .filter((resource) => resource.category === AmplifyCategories.FUNCTION)
+    .map((resource) => resource.resourceName)
+    .find((resourceName) => resourceName.includes('AdminQueries'));
   if (adminQueriesFunctionName) {
     await addAdminAuth(context, request.resourceName!, 'update', request.adminQueryGroup, adminQueriesFunctionName);
   } else {
@@ -86,7 +86,7 @@ export const copyCfnTemplate = async (context: $TSContext, category: string, opt
   ];
 
   const privateParams = { ...options };
-  privateKeys.forEach(p => delete privateParams[p]);
+  privateKeys.forEach((p) => delete privateParams[p]);
 
   return context.amplify.copyBatch(context, copyJobs, privateParams, true);
 };
@@ -104,7 +104,7 @@ export const saveResourceParameters = (
 ): void => {
   const provider = context.amplify.getPluginInstance(context, providerName);
   let privateParams = { ...params };
-  privateKeys.forEach(p => delete privateParams[p]);
+  privateKeys.forEach((p) => delete privateParams[p]);
   privateParams = removeDeprecatedProps(privateParams);
   provider.saveResourceParameters(context, category, resource, privateParams, envSpecificParams);
 };
@@ -138,7 +138,7 @@ export const removeDeprecatedProps = (props: $TSObject): $TSObject => {
     'PreSignup',
     'VerifyAuthChallengeResponse',
     // eslint-disable-next-line no-param-reassign
-  ].forEach(deprecatedField => delete props[deprecatedField]);
+  ].forEach((deprecatedField) => delete props[deprecatedField]);
   return props;
 };
 
@@ -180,7 +180,7 @@ const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previ
     );
   } else if (previouslySaved) {
     const targetDir = pathManager.getBackendDirPath();
-    Object.keys(previouslySaved).forEach(p => {
+    Object.keys(previouslySaved).forEach((p) => {
       // eslint-disable-next-line no-param-reassign
       delete coreAnswers[p];
     });
@@ -193,7 +193,7 @@ const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previ
   }
 
   // handle dependsOn data
-  const dependsOnKeys = Object.keys(triggerKeyValues).map(i => `${coreAnswers.resourceName}${i}`);
+  const dependsOnKeys = Object.keys(triggerKeyValues).map((i) => `${coreAnswers.resourceName}${i}`);
   // eslint-disable-next-line no-param-reassign
   coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 };
@@ -274,9 +274,9 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
     // underlying logic takes previous user-pool precedece files object (amplifygenerated/ Cx overided)
     // and updates with new settings keeping custom policies intact
     const updatedUserPoolGroupList: UserPoolGroupMetadata[] = [];
-    currentUserPoolGroupPrecedenceList.forEach(group1 => {
+    currentUserPoolGroupPrecedenceList.forEach((group1) => {
       let newGroup = group1;
-      prevUserPoolGroupPrecedenceList.forEach(group2 => {
+      prevUserPoolGroupPrecedenceList.forEach((group2) => {
         const oldGroup = group2;
         if (newGroup.groupName === oldGroup.groupName) {
           newGroup = { ...oldGroup, ...newGroup };
