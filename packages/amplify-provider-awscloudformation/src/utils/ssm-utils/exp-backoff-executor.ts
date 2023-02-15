@@ -16,7 +16,7 @@ export const executeSdkPromisesWithExponentialBackoff = async <T>(
       backoffSleepTimeInMs = 200;
       consecutiveRetries = 0;
     } catch (e) {
-      if (e?.code === 'Throttling') {
+      if (e?.code === 'ThrottlingException' || e?.code === 'Throttling') {
         if (consecutiveRetries < MAX_RETRIES) {
           ++consecutiveRetries;
           await new Promise(resolve => setTimeout(resolve, backoffSleepTimeInMs));

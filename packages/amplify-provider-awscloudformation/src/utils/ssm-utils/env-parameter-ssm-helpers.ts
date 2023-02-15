@@ -40,7 +40,7 @@ const uploadParameterToParameterStore = (
         Type: 'String',
         Value: stringValue,
       };
-      await ssmClient.putParameter(sdkParameters).promise();
+      await executeSdkPromisesWithExponentialBackoff([() => ssmClient.putParameter(sdkParameters).promise()]);
     } catch (e) {
       throw new AmplifyFault(
         'ParameterUploadFault',
