@@ -29,6 +29,7 @@ import { configureSmsOption } from '../utils/configure-sms';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -123,10 +124,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           external: true,
         },
       });
+      const projectInfo = getProjectInfo();
       try {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
+          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

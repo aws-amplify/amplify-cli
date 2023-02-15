@@ -1,4 +1,4 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyDDBResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
@@ -215,8 +215,10 @@ export class DDBStackTransform {
             external: true,
           },
         });
+        const projectInfo = getProjectInfo();
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+          await sandboxNode.run(overrideCode, overrideJSFilePath)
+            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
         } catch (err) {
           throw new AmplifyError(
             'InvalidOverrideError',

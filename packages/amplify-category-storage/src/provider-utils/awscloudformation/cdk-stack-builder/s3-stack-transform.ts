@@ -1,4 +1,4 @@
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyS3ResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import {
@@ -221,10 +221,11 @@ export class AmplifyS3ResourceStackTransform {
              external: true,
            },
          });
+         const projectInfo = getProjectInfo();
          try {
            await sandboxNode
              .run(overrideCode, overrideJSFilePath)
-             .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
+             .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate, projectInfo);
          } catch (err: $TSAny) {
            throw new AmplifyError('InvalidOverrideError', {
              message: `Executing overrides failed.`,

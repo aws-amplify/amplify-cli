@@ -1,4 +1,4 @@
-import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyRootStackTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import {
   $TSContext, AmplifyError, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
@@ -71,8 +71,9 @@ export class AmplifyRootStackTransform {
           external: true,
         },
       });
+      const projectInfo = getProjectInfo();
       try {
-        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate, projectInfo);
       } catch (err) {
         throw new AmplifyError('InvalidOverrideError', {
           message: `Executing overrides failed.`,
