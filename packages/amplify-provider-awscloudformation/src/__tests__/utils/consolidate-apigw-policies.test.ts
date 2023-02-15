@@ -1,27 +1,25 @@
-import { Capture, Template, Match } from '@aws-cdk/assertions';
-import * as cdk from '@aws-cdk/core';
+import { $TSAny } from 'amplify-cli-core';
+import { Capture, Template, Match } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib';
 import { cloneDeep } from 'lodash';
-
 import { ApiGatewayAuthStack, CrudOperation } from '../../utils/consolidate-apigw-policies';
 
-const generatePolicyDoc = (roleName: string, policy: any, assertionType: 'Presence' | 'Absence' = 'Presence') => {
-  return {
-    Roles: [
-      {
-        Ref: roleName,
-      },
-    ],
-    PolicyDocument: Match.objectLike({
-      Statement: Match.arrayWith([
-        Match.objectLike({
-          Effect: 'Allow',
-          Action: ['execute-api:Invoke'],
-          Resource: (assertionType === 'Presence' ? Match.arrayWith : Match.not)([policy]),
-        }),
-      ]),
-    }),
-  };
-};
+const generatePolicyDoc = (roleName: string, policy: any, assertionType: 'Presence' | 'Absence' = 'Presence'): $TSAny => ({
+  Roles: [
+    {
+      Ref: roleName,
+    },
+  ],
+  PolicyDocument: Match.objectLike({
+    Statement: Match.arrayWith([
+      Match.objectLike({
+        Effect: 'Allow',
+        Action: ['execute-api:Invoke'],
+        Resource: (assertionType === 'Presence' ? Match.arrayWith : Match.not)([policy]),
+      }),
+    ]),
+  }),
+});
 
 describe('ApiGatewayAuthStack', () => {
   let policyDocTemplate;
@@ -226,20 +224,18 @@ describe('ApiGatewayAuthStack', () => {
   // The test needs CDK to be updated to 1.140.0 so it can use capture.next. Skipping it for now
   it('should slice managed role when the size of the policy document exceeds 6K', () => {
     // create 100 paths
-    const paths = new Array(100).fill(1).reduce((acc, _, idx) => {
-      return {
-        ...acc,
-        [`/items${idx}`]: {
-          lambdaFunction: 'myFn1',
-          name: `/items${idx}`,
-          permissions: {
-            settings: 'protected',
-            auth: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.DELETE, CrudOperation.READ],
-            guest: [CrudOperation.READ],
-          },
+    const paths = new Array(100).fill(1).reduce((acc, __, idx) => ({
+      ...acc,
+      [`/items${idx}`]: {
+        lambdaFunction: 'myFn1',
+        name: `/items${idx}`,
+        permissions: {
+          settings: 'protected',
+          auth: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.DELETE, CrudOperation.READ],
+          guest: [CrudOperation.READ],
         },
-      };
-    }, {});
+      },
+    }), {});
 
     const app = new cdk.App();
 

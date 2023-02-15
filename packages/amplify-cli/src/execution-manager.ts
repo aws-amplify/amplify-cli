@@ -1,32 +1,12 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  stateManager, executeHooks, HooksMeta,
-} from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
-import { constants } from './domain/constants';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import { PluginInfo } from './domain/plugin-info';
-import {
-  AmplifyEvent,
-  AmplifyEventArgs,
-  AmplifyPreInitEventData,
-  AmplifyPostInitEventData,
-  AmplifyPrePushEventData,
-  AmplifyPostPushEventData,
-  AmplifyPrePullEventData,
-  AmplifyPostPullEventData,
-  AmplifyPreCodegenModelsEventData,
-  AmplifyPostCodegenModelsEventData,
-  AmplifyInternalOnlyPostEnvRemoveEventData,
-  AmplifyPostEnvAddEventData,
-} from './domain/amplify-event';
+import { AmplifyEvent, AmplifyEventArgs, stateManager, executeHooks, HooksMeta, PluginInfo, constants } from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import {
-  FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath,
-} from './domain/amplify-usageData/UsageDataTypes';
+import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command
@@ -69,7 +49,7 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
   if (promptForSelection) {
     // only use the manifest's displayName if there are no duplicates
     const displayNames = pluginCandidates.map(candidate => candidate?.manifest?.displayName);
-    const noDuplicateDisplayNames = (new Set(displayNames)).size === displayNames.length;
+    const noDuplicateDisplayNames = new Set(displayNames).size === displayNames.length;
 
     // special handling for hosting plugins
     const consoleHostingPlugins = pluginCandidates.filter(pluginInfo => pluginInfo.packageName === 'amplify-console-hosting');
@@ -89,15 +69,19 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
-    result = await prompter.pick('Select the plugin module to execute', pluginCandidates.map(plugin => {
-      const displayName = plugin.manifest.displayName && noDuplicateDisplayNames
-        ? plugin.manifest.displayName
-        : `${plugin.packageName}@${plugin.packageVersion}`;
-      return {
-        name: displayName,
-        value: plugin,
-      };
-    }));
+    result = await prompter.pick(
+      'Select the plugin module to execute',
+      pluginCandidates.map(plugin => {
+        const displayName =
+          plugin.manifest.displayName && noDuplicateDisplayNames
+            ? plugin.manifest.displayName
+            : `${plugin.packageName}@${plugin.packageVersion}`;
+        return {
+          name: displayName,
+          value: plugin,
+        };
+      }),
+    );
   }
 
   return result;
@@ -172,16 +156,16 @@ const executePluginModuleCommand = async (context: Context, plugin: PluginInfo):
 
 const getHandler = async (pluginInfo: PluginInfo, context: Context): Promise<() => Promise<void>> => {
   const pluginModule = await import(pluginInfo.packageLocation);
-  let commandName = constants.ExecuteAmplifyCommand;
+  let commandName = constants.EXECUTE_AMPLIFY_COMMAND;
   let fallbackFn = (): Promise<void> => legacyCommandExecutor(context, pluginInfo);
 
   if (isHeadlessCommand(context)) {
-    commandName = constants.ExecuteAmplifyHeadlessCommand;
+    commandName = constants.EXECUTE_AMPLIFY_HEADLESS_COMMAND;
     fallbackFn = () => context.print.error(`Headless mode is not implemented for ${pluginInfo.packageName}`);
   }
 
   if (typeof pluginModule?.[commandName] === 'function') {
-    if (commandName === constants.ExecuteAmplifyHeadlessCommand) {
+    if (commandName === constants.EXECUTE_AMPLIFY_HEADLESS_COMMAND) {
       return async () => pluginModule[commandName](context, await readHeadlessPayload());
     }
     return () => pluginModule[commandName](context);
@@ -248,28 +232,28 @@ const raisePreEvent = async (context: Context): Promise<void> => {
       await raisePreExportEvent(context);
       break;
     default:
-      // fall through
+    // fall through
   }
 };
 
 const raisePreInitEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreInit, new AmplifyPreInitEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PreInit, data: {} });
 };
 
 const raisePrePushEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePush, new AmplifyPrePushEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PrePush, data: {} });
 };
 
 const raisePrePullEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PrePull, data: {} });
 };
 
 const raisePreExportEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreExport));
+  await raiseEvent(context, { event: AmplifyEvent.PreExport, data: {} });
 };
 
 const raisePreCodegenModelsEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreCodegenModels, new AmplifyPreCodegenModelsEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PreCodegenModels, data: {} });
 };
 
 const raisePostEvent = async (context: Context): Promise<void> => {
@@ -292,48 +276,45 @@ const raisePostEvent = async (context: Context): Promise<void> => {
       await raisePostCodegenModelsEvent(context);
       break;
     default:
-      // fall through
+    // fall through
   }
   await executeHooks(HooksMeta.getInstance(context.input, 'post'));
 };
 
 const raisePostInitEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostInitEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostInit, data: {} });
 };
 
 const raisePostPushEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostPushEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostPush, data: {} });
 };
 
 const raisePostPullEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPull, new AmplifyPostPullEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostPull, data: {} });
 };
 
 const raisePostCodegenModelsEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostCodegenModels, new AmplifyPostCodegenModelsEventData()));
+  await raiseEvent(context, { event: AmplifyEvent.PostCodegenModels, data: {} });
 };
 
 /**
  * Should only be used internally by the platform (ie not part of our exposed event API)
  */
 export const raiseInternalOnlyPostEnvRemoveEvent = async (context: Context, envName: string): Promise<void> => {
-  await raiseEvent(
-    context,
-    new AmplifyEventArgs(AmplifyEvent.InternalOnlyPostEnvRemove, new AmplifyInternalOnlyPostEnvRemoveEventData(envName)),
-  );
+  await raiseEvent(context, { event: AmplifyEvent.InternalOnlyPostEnvRemove, data: { envName } });
 };
 
 /**
  * Raises the postEnvAdd event
  */
 export const raisePostEnvAddEvent = async (context: Context, prevEnvName: string, newEnvName: string): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostEnvAdd, new AmplifyPostEnvAddEventData(prevEnvName, newEnvName)));
+  await raiseEvent(context, { event: AmplifyEvent.PostEnvAdd, data: { prevEnvName, newEnvName } });
 };
 
 /**
  * Raise a lifecycle hook event
  */
-export const raiseEvent = async (context: Context, args: AmplifyEventArgs): Promise<void> => {
+export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args: AmplifyEventArgs<T>): Promise<void> => {
   const plugins = getPluginsWithEventHandler(context.pluginPlatform, args.event);
   if (plugins.length > 0) {
     const eventHandlers = plugins

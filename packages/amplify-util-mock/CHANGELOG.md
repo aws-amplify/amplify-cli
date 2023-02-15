@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.1...amplify-util-mock@4.8.2-beta.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* **mock:** topo sort for resource in mock ([#11642](https://github.com/aws-amplify/amplify-cli/issues/11642)) ([8247f11](https://github.com/aws-amplify/amplify-cli/commit/8247f11ec1bcebaa43201b9842e57238e5512fab))
+
+
+
+
+
 ## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0...amplify-util-mock@4.8.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-util-mock
@@ -54,6 +65,109 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [4.6.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.6.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* check java_home variable before starting opensearch emulator ([#11528](https://github.com/aws-amplify/amplify-cli/issues/11528)) ([a150ca2](https://github.com/aws-amplify/amplify-cli/commit/a150ca2f017c7edaf3901a554b4771a02aad21da))
+* searchable mock packaging ([#11472](https://github.com/aws-amplify/amplify-cli/issues/11472)) ([7e3e399](https://github.com/aws-amplify/amplify-cli/commit/7e3e3998caf0fd3cfa9e995b1ddd7dd2410a33e8))
+
+
+
+
+
+# [4.6.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.6.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* searchable mock packaging ([#11472](https://github.com/aws-amplify/amplify-cli/issues/11472)) ([7e3e399](https://github.com/aws-amplify/amplify-cli/commit/7e3e3998caf0fd3cfa9e995b1ddd7dd2410a33e8))
+
+
+
+
+
+# [4.6.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-beta.0...amplify-util-mock@4.6.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.1...amplify-util-mock@4.6.0-beta.0) (2022-11-17)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [4.6.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-cdkv2.0...amplify-util-mock@4.6.0-cdkv2.3) (2022-11-10)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+
+
+# [4.6.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-cdkv2.0...amplify-util-mock@4.6.0-cdkv2.2) (2022-11-10)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+
+
+# [4.6.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-cdkv2.0...amplify-util-mock@4.6.0-cdkv2.1) (2022-11-04)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [4.6.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.4...amplify-util-mock@4.6.0-cdkv2.0) (2022-11-01)
 # [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.1...amplify-util-mock@4.7.0) (2022-11-17)
 
 

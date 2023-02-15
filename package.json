@@ -51,8 +51,9 @@
     "finish-release": "./scripts/finish-release.sh",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
     "extract-api": "nx run-many --target=extract-api --all",
-    "verify-api-extract": "yarn extract-api && ./scripts/verify_extract_api.sh",
-    "verify-api-extract:clean": "yarn clean && yarn dev-build && yarn verify-api-extract"
+    "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
+    "verify-api-extract:clean": "yarn clean && yarn dev-build && yarn verify-api-extract",
+    "verify-yarn-lock": "./scripts/verify-yarn-lock.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"

@@ -6,6 +6,5 @@
   },
   "references": [
     {"path": "../amplify-function-plugin-interface"},
-    {"path": "../graphql-transformer-core"},
   ]
 }

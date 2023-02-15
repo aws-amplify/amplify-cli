@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.3...@aws-amplify/amplify-e2e-core@4.7.0-beta.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+
+
+
+
+
 ## [4.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.2...@aws-amplify/amplify-e2e-core@4.6.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core
@@ -50,6 +67,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * add fallpack for undefined env var ([#11505](https://github.com/aws-amplify/amplify-cli/issues/11505)) ([68505f1](https://github.com/aws-amplify/amplify-cli/commit/68505f10c5a247aea416d587569e3045a4580c48))
 * add human readable names to artifact files ([#11420](https://github.com/aws-amplify/amplify-cli/issues/11420)) ([5c41046](https://github.com/aws-amplify/amplify-cli/commit/5c4104686a1e2ac96a25c02ffec40f34cea70769))
 * cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
 * dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
 * pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
 
@@ -63,6 +81,108 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [4.4.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.5.0...@aws-amplify/amplify-e2e-core@4.4.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* add fallpack for undefined env var ([#11505](https://github.com/aws-amplify/amplify-cli/issues/11505)) ([68505f1](https://github.com/aws-amplify/amplify-cli/commit/68505f10c5a247aea416d587569e3045a4580c48))
+* add human readable names to artifact files ([#11420](https://github.com/aws-amplify/amplify-cli/issues/11420)) ([5c41046](https://github.com/aws-amplify/amplify-cli/commit/5c4104686a1e2ac96a25c02ffec40f34cea70769))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.5.0...@aws-amplify/amplify-e2e-core@4.4.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* add human readable names to artifact files ([#11420](https://github.com/aws-amplify/amplify-cli/issues/11420)) ([5c41046](https://github.com/aws-amplify/amplify-cli/commit/5c4104686a1e2ac96a25c02ffec40f34cea70769))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-beta.0...@aws-amplify/amplify-e2e-core@4.4.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.0...@aws-amplify/amplify-e2e-core@4.4.0-beta.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* parse true and false strings from env vars ([#11386](https://github.com/aws-amplify/amplify-cli/issues/11386)) ([5ed67f5](https://github.com/aws-amplify/amplify-cli/commit/5ed67f52001429b05fb902d9ec2e06960cf2a3ad))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+### Features
+
+* Nodejs graphql IAM template ([#10997](https://github.com/aws-amplify/amplify-cli/issues/10997)) ([880f7eb](https://github.com/aws-amplify/amplify-cli/commit/880f7eb3996133b31c0f498136a66488d1c8ceeb))
+
+
+
+
+
+# [4.4.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.0...@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+### Features
+
+* Nodejs graphql IAM template ([#10997](https://github.com/aws-amplify/amplify-cli/issues/10997)) ([880f7eb](https://github.com/aws-amplify/amplify-cli/commit/880f7eb3996133b31c0f498136a66488d1c8ceeb))
+
+
+
+
+
+# [4.4.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.0...@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.1) (2022-11-10)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+### Features
+
+* Nodejs graphql IAM template ([#10997](https://github.com/aws-amplify/amplify-cli/issues/10997)) ([880f7eb](https://github.com/aws-amplify/amplify-cli/commit/880f7eb3996133b31c0f498136a66488d1c8ceeb))
+
+
+
+
+
+# [4.4.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.3.0...@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.0) (2022-11-01)
+
+
+### Bug Fixes
+
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0...@aws-amplify/amplify-e2e-core@4.5.0) (2022-11-17)
 
 

@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.1...amplify-util-import@2.3.2-beta.1) (2023-02-07)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+# [2.3.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-beta.0...amplify-util-import@2.3.0-beta.3) (2022-12-28)
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0...amplify-util-import@2.3.1) (2023-01-03)
 
 **Note:** Version bump only for package amplify-util-import
@@ -11,6 +20,47 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.3.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-beta.0...amplify-util-import@2.3.0-beta.2) (2022-12-13)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+# [2.3.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-beta.0...amplify-util-import@2.3.0-beta.1) (2022-12-01)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+# [2.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-cdkv2.0...amplify-util-import@2.3.0-beta.0) (2022-11-17)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+# [2.3.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-cdkv2.0...amplify-util-import@2.3.0-cdkv2.2) (2022-11-10)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+# [2.3.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0-cdkv2.0...amplify-util-import@2.3.0-cdkv2.1) (2022-11-10)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+# [2.3.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.2.36...amplify-util-import@2.3.0-cdkv2.0) (2022-11-01)
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.2.36...amplify-util-import@2.3.0) (2022-10-27)
 
 

@@ -56,7 +56,7 @@ export class SSMClientWrapper {
         .promise();
 
       if (Array.isArray(result?.Parameters)) {
-        accumulator.push(...result.Parameters.filter(param => param?.Name !== undefined).map(param => param.Name!));
+        accumulator.push(...result.Parameters.filter(param => param?.Name !== undefined).map(param => param.Name));
       }
 
       NextToken = result.NextToken;

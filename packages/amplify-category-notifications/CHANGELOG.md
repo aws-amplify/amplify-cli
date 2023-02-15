@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.1...amplify-category-notifications@2.23.2-beta.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* adding new environment when having a project with notifications ([614a273](https://github.com/aws-amplify/amplify-cli/commit/614a273ec95ecfa43dff40b9793f286805396109))
+* notification channel enabled check ([#11879](https://github.com/aws-amplify/amplify-cli/issues/11879)) ([d7c51f2](https://github.com/aws-amplify/amplify-cli/commit/d7c51f21f840b922587e4f1946756682b44dcf62))
+* store email channel role arn to amplify meta output ([#11883](https://github.com/aws-amplify/amplify-cli/issues/11883)) ([1b39f77](https://github.com/aws-amplify/amplify-cli/commit/1b39f7780f312284f808bd0ff9e8d5e8dce453d2))
+
+
+
+
+
 ## [2.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.0...amplify-category-notifications@2.23.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-category-notifications
@@ -40,11 +53,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-beta.0) (2022-11-17)
 # [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.22.0) (2023-01-03)
 
 
 ### Bug Fixes
 
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
 * pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
 
 
@@ -56,6 +71,29 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.21.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-cdkv2.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+
+
+
+
+
+# [2.21.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-cdkv2.0...amplify-category-notifications@2.21.0-cdkv2.1) (2022-11-10)
+
+
+### Bug Fixes
+
+* trigger analytics migration on update/configure notifications ([#11285](https://github.com/aws-amplify/amplify-cli/issues/11285)) ([0972ef9](https://github.com/aws-amplify/amplify-cli/commit/0972ef9d10e86871d9fa6ca737c20399adf9b6f3))
+
+
+
+
+
+# [2.21.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.3...amplify-category-notifications@2.21.0-cdkv2.0) (2022-11-01)
 ## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0...amplify-category-notifications@2.21.1) (2022-11-17)
 
 

@@ -74,6 +74,7 @@ const invokeFunction = async (options: InvokeOptions) => {
 };
 
 // handler is a string like 'path/to/handler.func'
+// eslint-disable-next-line @typescript-eslint/ban-types
 const loadHandler = async (root: string, handler: string): Promise<Function> => {
   const handlerParts = path.parse(handler);
   try {

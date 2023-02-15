@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { ICommandInput, IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
-import { Input } from '../input';
+import { CommandLineInput } from 'amplify-cli-core';
 import { IUsageData } from './UsageDataTypes';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
@@ -24,7 +24,7 @@ export class NoUsageData implements IUsageData, IFlowData {
       '',
       '',
       '',
-      new Input([]),
+      new CommandLineInput([]),
       error,
       state,
       '',
@@ -49,7 +49,7 @@ export class NoUsageData implements IUsageData, IFlowData {
   /**
    *  Noop implementation of calculatePushNormalizationFactor
    */
-  calculatePushNormalizationFactor(__events: { StackId: string; PhysicalResourceId: string; }[], __stackId: string): void {
+  calculatePushNormalizationFactor(__events: { StackId: string; PhysicalResourceId: string }[], __stackId: string): void {
     /* noop */
   }
 
@@ -84,31 +84,37 @@ export class NoUsageData implements IUsageData, IFlowData {
   /**
    * Noop implementation of init
    */
-  init(): void { /* noop */ }
+  init(): void {
+    /* noop */
+  }
 
   /**
    *  Noop implementation of startCodePathTimer
    */
-  startCodePathTimer(): void { /* noop */ }
+  startCodePathTimer(): void {
+    /* noop */
+  }
 
   /**
    *  Noop implementation of stopCodePathTimer
    */
-  stopCodePathTimer(): void { /* noop */ }
+  stopCodePathTimer(): void {
+    /* noop */
+  }
 
   /**
    * Noop function
    */
   pushInteractiveFlow = (__prompt: string, __input: unknown): void => {
     /* noop */
-  }
+  };
 
   /**
    * Noop function
    */
   pushHeadlessFlow = (__headlessFlowDataString: string, __input: ICommandInput): void => {
     /* noop */
-  }
+  };
 
   /**
    * Noop function to set isHeadless flag in flowLogger
@@ -116,7 +122,7 @@ export class NoUsageData implements IUsageData, IFlowData {
    */
   setIsHeadless = (__headless: boolean): void => {
     /* noop */
-  }
+  };
 
   /**
    * Empty function is for flow report.

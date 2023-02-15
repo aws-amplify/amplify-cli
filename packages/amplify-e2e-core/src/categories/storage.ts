@@ -260,7 +260,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function overrideDDB(cwd: string, settings: {}) {
+export function overrideDDB(cwd: string) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'storage'];
 
@@ -278,7 +278,7 @@ export function overrideDDB(cwd: string, settings: {}) {
   });
 }
 
-export function buildOverrideStorage(cwd: string, settings: {}) {
+export function buildOverrideStorage(cwd: string) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
     const args = ['build'];
@@ -712,7 +712,7 @@ export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
   });
 }
 
-export function overrideS3(cwd: string, settings: {}) {
+export function overrideS3(cwd: string) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'storage'];
     spawn(getCLIPath(), args, { cwd, stripColors: true })

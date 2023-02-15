@@ -3,6 +3,123 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.1...@aws-amplify/amplify-category-storage@5.0.0-beta.3) (2023-02-07)
+
+
+### Bug Fixes
+
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [5.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.1...@aws-amplify/amplify-category-storage@5.0.0-beta.2) (2022-12-28)
+
+
+### Bug Fixes
+
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.1...@aws-amplify/amplify-category-storage@5.0.0-beta.1) (2022-12-13)
+
+
+### Bug Fixes
+
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.1...@aws-amplify/amplify-category-storage@5.0.0-beta.0) (2022-12-01)
+
+
+### Bug Fixes
+
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+## [4.0.1-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.1-beta.1...@aws-amplify/amplify-category-storage@4.0.1-beta.2) (2022-11-19)
 ## [3.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.0...@aws-amplify/amplify-category-storage@3.7.1) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
@@ -43,6 +160,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [4.0.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.0-cdkv2.0...@aws-amplify/amplify-category-storage@4.0.1-beta.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+
+
+
+# [4.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.0-cdkv2.0...@aws-amplify/amplify-category-storage@4.0.0-cdkv2.2) (2022-11-10)
 ## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.1...@aws-amplify/amplify-category-storage@3.6.2) (2023-01-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
@@ -51,6 +180,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [4.0.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@4.0.0-cdkv2.0...@aws-amplify/amplify-category-storage@4.0.0-cdkv2.1) (2022-11-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
+# [4.0.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.5.3...@aws-amplify/amplify-category-storage@4.0.0-cdkv2.0) (2022-11-01)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
 ## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.6.0...@aws-amplify/amplify-category-storage@3.6.1) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
@@ -65,6 +206,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 * **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 

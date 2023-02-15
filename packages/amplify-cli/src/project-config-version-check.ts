@@ -11,7 +11,7 @@ import Resource from 'cloudform-types/types/resource';
 import Lambda from 'cloudform-types/types/lambda';
 
 const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
-const lambdaRuntimeVersion = 'nodejs14.x';
+const lambdaRuntimeVersion = 'nodejs16.x';
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
   const { constants } = context.amplify;

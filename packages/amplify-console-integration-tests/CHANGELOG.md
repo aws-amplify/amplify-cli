@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.5-beta.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.4...@aws-amplify/amplify-console-integration-tests@2.6.5-beta.0) (2023-02-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 ## [2.6.4](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.3...@aws-amplify/amplify-console-integration-tests@2.6.4) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
@@ -35,6 +43,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.5.0-beta.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.0...@aws-amplify/amplify-console-integration-tests@2.5.0-beta.3) (2022-12-13)
 ## [2.6.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.0...@aws-amplify/amplify-console-integration-tests@2.6.1) (2023-01-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
@@ -43,6 +52,74 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [2.5.0-beta.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.0...@aws-amplify/amplify-console-integration-tests@2.5.0-beta.2) (2022-12-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+# [2.5.0-beta.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0-beta.0...@aws-amplify/amplify-console-integration-tests@2.5.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+# [2.5.0-beta.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0-cdkv2.0...@aws-amplify/amplify-console-integration-tests@2.5.0-beta.0) (2022-11-17)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-console-integration-tests/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-console-integration-tests/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089) [#11324](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11324)
+
+
+
+
+
+# [2.5.0-cdkv2.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0-cdkv2.0...@aws-amplify/amplify-console-integration-tests@2.5.0-cdkv2.2) (2022-11-10)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-console-integration-tests/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-console-integration-tests/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089) [#11324](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11324)
+
+
+
+
+
+# [2.5.0-cdkv2.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0-cdkv2.0...@aws-amplify/amplify-console-integration-tests@2.5.0-cdkv2.1) (2022-11-10)
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-console-integration-tests/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-console-integration-tests/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089) [#11324](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11324)
+
+
+
+
+
+# [2.5.0-cdkv2.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.3...@aws-amplify/amplify-console-integration-tests@2.5.0-cdkv2.0) (2022-11-01)
 # [2.6.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0...@aws-amplify/amplify-console-integration-tests@2.6.0) (2022-11-17)
 
 

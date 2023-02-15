@@ -3,6 +3,142 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.1...@aws-amplify/cli-internal@11.0.0-beta.5) (2023-02-07)
+
+
+### Bug Fixes
+
+* get credentials from credential_process in aws profile config ([#11821](https://github.com/aws-amplify/amplify-cli/issues/11821)) ([0aacbb3](https://github.com/aws-amplify/amplify-cli/commit/0aacbb3b4e029e8006d37e227379734d8a5dacfa))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [11.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.2...@aws-amplify/cli-internal@11.0.0-beta.4) (2022-12-28)
+
+
+### Bug Fixes
+
+* async persist env params on success ([#11367](https://github.com/aws-amplify/amplify-cli/issues/11367)) ([0433431](https://github.com/aws-amplify/amplify-cli/commit/043343159020b4f7b566e4d3d356aebe68df9b6a))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* fallback to tpi when no backend dir ([#11419](https://github.com/aws-amplify/amplify-cli/issues/11419)) ([e9fb32f](https://github.com/aws-amplify/amplify-cli/commit/e9fb32fa78c3bdbbc5ef2539a1fe6a93109327ae))
+* floating promise on store cloud back-end file ([#11604](https://github.com/aws-amplify/amplify-cli/issues/11604)) ([c8be1c6](https://github.com/aws-amplify/amplify-cli/commit/c8be1c6fd686c9dff151dc1a462150060ee37ded))
+* improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+* print table summary on verbose status ([#11438](https://github.com/aws-amplify/amplify-cli/issues/11438)) ([2ac7164](https://github.com/aws-amplify/amplify-cli/commit/2ac7164931aba7fc70900d6f2680e030e9d12123))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+* suppress CDK deprecation warning in CLI base level ([#11525](https://github.com/aws-amplify/amplify-cli/issues/11525)) ([bfadb37](https://github.com/aws-amplify/amplify-cli/commit/bfadb37efcd29ec011861fab87141d0ba8369b2d))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [11.0.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.2...@aws-amplify/cli-internal@11.0.0-beta.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* async persist env params on success ([#11367](https://github.com/aws-amplify/amplify-cli/issues/11367)) ([0433431](https://github.com/aws-amplify/amplify-cli/commit/043343159020b4f7b566e4d3d356aebe68df9b6a))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* fallback to tpi when no backend dir ([#11419](https://github.com/aws-amplify/amplify-cli/issues/11419)) ([e9fb32f](https://github.com/aws-amplify/amplify-cli/commit/e9fb32fa78c3bdbbc5ef2539a1fe6a93109327ae))
+* improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+* print table summary on verbose status ([#11438](https://github.com/aws-amplify/amplify-cli/issues/11438)) ([2ac7164](https://github.com/aws-amplify/amplify-cli/commit/2ac7164931aba7fc70900d6f2680e030e9d12123))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+* suppress CDK deprecation warning in CLI base level ([#11525](https://github.com/aws-amplify/amplify-cli/issues/11525)) ([bfadb37](https://github.com/aws-amplify/amplify-cli/commit/bfadb37efcd29ec011861fab87141d0ba8369b2d))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [11.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.5.1...@aws-amplify/cli-internal@11.0.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* async persist env params on success ([#11367](https://github.com/aws-amplify/amplify-cli/issues/11367)) ([0433431](https://github.com/aws-amplify/amplify-cli/commit/043343159020b4f7b566e4d3d356aebe68df9b6a))
+* fallback to tpi when no backend dir ([#11419](https://github.com/aws-amplify/amplify-cli/issues/11419)) ([e9fb32f](https://github.com/aws-amplify/amplify-cli/commit/e9fb32fa78c3bdbbc5ef2539a1fe6a93109327ae))
+* print table summary on verbose status ([#11438](https://github.com/aws-amplify/amplify-cli/issues/11438)) ([2ac7164](https://github.com/aws-amplify/amplify-cli/commit/2ac7164931aba7fc70900d6f2680e030e9d12123))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [11.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-beta.0...@aws-amplify/cli-internal@11.0.0-beta.1) (2022-11-19)
 ## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.0...@aws-amplify/cli-internal@10.7.1) (2023-02-06)
 
 
@@ -52,6 +188,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [11.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.4.1...@aws-amplify/cli-internal@11.0.0-beta.0) (2022-11-17)
 ## [10.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.6.0...@aws-amplify/cli-internal@10.6.1) (2023-01-06)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
@@ -66,6 +203,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * async persist env params on success ([#11367](https://github.com/aws-amplify/amplify-cli/issues/11367)) ([0433431](https://github.com/aws-amplify/amplify-cli/commit/043343159020b4f7b566e4d3d356aebe68df9b6a))
+* stop timer on early push resources exit ([#11287](https://github.com/aws-amplify/amplify-cli/issues/11287)) ([ac06cb2](https://github.com/aws-amplify/amplify-cli/commit/ac06cb27b1d9e83a09b2f7ac99571f0d8825a64e))
+* updates to error handler print format ([#11311](https://github.com/aws-amplify/amplify-cli/issues/11311)) ([0ac69bb](https://github.com/aws-amplify/amplify-cli/commit/0ac69bb5edbbeef13602d97650f55333f9e5c547))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
 * cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
 * fallback to tpi when no backend dir ([#11419](https://github.com/aws-amplify/amplify-cli/issues/11419)) ([e9fb32f](https://github.com/aws-amplify/amplify-cli/commit/e9fb32fa78c3bdbbc5ef2539a1fe6a93109327ae))
 * improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
@@ -76,6 +218,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
 * add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
 * use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
 
@@ -88,6 +233,110 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Reverts
 
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+### Bug Fixes
+
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
+
+
+
+
+
+# [11.0.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-cdkv2.0...@aws-amplify/cli-internal@11.0.0-cdkv2.3) (2022-11-10)
+
+
+### Bug Fixes
+
+* stop timer on early push resources exit ([#11287](https://github.com/aws-amplify/amplify-cli/issues/11287)) ([ac06cb2](https://github.com/aws-amplify/amplify-cli/commit/ac06cb27b1d9e83a09b2f7ac99571f0d8825a64e))
+* updates to error handler print format ([#11311](https://github.com/aws-amplify/amplify-cli/issues/11311)) ([0ac69bb](https://github.com/aws-amplify/amplify-cli/commit/0ac69bb5edbbeef13602d97650f55333f9e5c547))
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [11.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-cdkv2.0...@aws-amplify/cli-internal@11.0.0-cdkv2.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* stop timer on early push resources exit ([#11287](https://github.com/aws-amplify/amplify-cli/issues/11287)) ([ac06cb2](https://github.com/aws-amplify/amplify-cli/commit/ac06cb27b1d9e83a09b2f7ac99571f0d8825a64e))
+* updates to error handler print format ([#11311](https://github.com/aws-amplify/amplify-cli/issues/11311)) ([0ac69bb](https://github.com/aws-amplify/amplify-cli/commit/0ac69bb5edbbeef13602d97650f55333f9e5c547))
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-cli/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-cli/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-cli/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-cli/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-cli/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-cli/issues/11089) [#11324](https://github.com/aws-amplify/amplify-cli/issues/11324)
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [11.0.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-cdkv2.0...@aws-amplify/cli-internal@11.0.0-cdkv2.1) (2022-11-04)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [11.0.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.1...@aws-amplify/cli-internal@11.0.0-cdkv2.0) (2022-11-01)
+
+
+### Bug Fixes
+
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
 * Revert "chore: update snapshots and api category version (#11466)" (#11542) ([4aa536d](https://github.com/aws-amplify/amplify-cli/commit/4aa536d9772a28926b1279eb19fbe276ae5e5e0e)), closes [#11466](https://github.com/aws-amplify/amplify-cli/issues/11466) [#11542](https://github.com/aws-amplify/amplify-cli/issues/11542)
 
 
@@ -149,6 +398,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
 * in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 

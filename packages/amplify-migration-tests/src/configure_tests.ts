@@ -16,7 +16,6 @@ import semver from 'semver';
 async function setupAmplify(version = 'latest') {
   // install CLI to be used for migration test initial project
   await installAmplifyCLI(version);
-
   console.log('INSTALLED CLI:', version);
 
   if (isCI()) {

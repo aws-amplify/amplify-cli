@@ -3,7 +3,7 @@ import { printer } from 'amplify-prompts';
 import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../aws-utils/aws-ssm';
 import { resolveAppId } from '../resolve-appId';
-import { executeSdkPromisesWithExponentialBackoff } from './exp-backoff-executor';
+import { executeSdkPromisesWithExponentialBackOff } from './exp-backoff-executor';
 
 /**
  * Higher order function for uploading CloudFormation parameters to the service
@@ -16,6 +16,7 @@ export const getEnvParametersUploadHandler = async (
     appId = resolveAppId(context);
   } catch {
     printer.warn('Failed to resolve AppId, skipping parameter download.');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return (__: string, ___: string | boolean | number) => new Promise(resolve => {
       resolve();
     });
@@ -40,7 +41,7 @@ const uploadParameterToParameterStore = (
         Type: 'String',
         Value: stringValue,
       };
-      await executeSdkPromisesWithExponentialBackoff([() => ssmClient.putParameter(sdkParameters).promise()]);
+      await executeSdkPromisesWithExponentialBackOff([() => ssmClient.putParameter(sdkParameters).promise()]);
     } catch (e) {
       throw new AmplifyFault(
         'ParameterUploadFault',
@@ -54,7 +55,7 @@ const uploadParameterToParameterStore = (
 };
 
 /**
- * Higher order function for uploading CloudFormation parameters to the service
+ * Higher order function for downloading CloudFormation parameters from the service
  */
 export const getEnvParametersDownloadHandler = async (
   context: $TSContext,
@@ -64,6 +65,7 @@ export const getEnvParametersDownloadHandler = async (
     appId = resolveAppId(context);
   } catch {
     printer.warn('Failed to resolve AppId, skipping parameter download.');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return (__: string[]) => new Promise(resolve => {
       resolve({});
     });
@@ -85,7 +87,7 @@ const downloadParametersFromParameterStore = (
     try {
       const keyPaths = keys.map(key => `/amplify/${appId}/${envName}/${key}`);
       const sdkPromises = convertKeyPathsToSdkPromises(ssmClient, keyPaths);
-      const results = await executeSdkPromisesWithExponentialBackoff<SSMType.GetParametersResult>(sdkPromises);
+      const results = await executeSdkPromisesWithExponentialBackOff<SSMType.GetParametersResult>(sdkPromises);
       return results.reduce((acc, { Parameters }) => {
         Parameters.forEach((param) => {
           const [/* leading slash */, /* amplify */, /* appId */, /* envName */, key] = param.Name.split('/');

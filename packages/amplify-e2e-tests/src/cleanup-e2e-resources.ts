@@ -961,4 +961,4 @@ const cleanup = async (): Promise<void> => {
   console.log('Done cleaning all accounts!');
 };
 
-cleanup();
+void cleanup();

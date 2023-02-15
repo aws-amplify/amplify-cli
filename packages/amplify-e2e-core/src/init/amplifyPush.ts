@@ -114,7 +114,7 @@ export function cancelIterativeAmplifyPush(
     .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
     .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
     .sendCtrlC()
-    .runAsync((err: Error) => err.message === 'Process exited with non-zero code 130');
+    .runAsync((err: Error) => err.message === 'Process exited with non zero exit code 130');
 }
 
 /**
@@ -200,6 +200,16 @@ export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false):
   spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
+    .wait(/.*/)
+    .runAsync();
+
+/**
+ * Function to test amplify push
+ */
+export const amplifyPushAuthV10 = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
     .wait(/.*/)
     .runAsync();
 

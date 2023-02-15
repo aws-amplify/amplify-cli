@@ -1,10 +1,11 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
-import { Effect } from '@aws-cdk/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
+import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import { PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
@@ -24,7 +25,7 @@ export class PlaceIndexStack extends BaseStack {
   protected readonly placeIndexName: string;
   protected readonly authResourceName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: PlaceIndexStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: PlaceIndexStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
@@ -96,7 +97,7 @@ export class PlaceIndexStack extends BaseStack {
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       timeout: Duration.seconds(300),
     });
     customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);

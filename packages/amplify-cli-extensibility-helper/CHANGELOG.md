@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.9...@aws-amplify/cli-extensibility-helper@3.0.0-beta.5) (2023-02-07)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [3.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.5...@aws-amplify/cli-extensibility-helper@3.0.0-beta.4) (2022-12-28)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [3.0.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.5...@aws-amplify/cli-extensibility-helper@3.0.0-beta.3) (2022-12-13)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [3.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.5...@aws-amplify/cli-extensibility-helper@3.0.0-beta.2) (2022-12-01)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-beta.0...@aws-amplify/cli-extensibility-helper@3.0.0-beta.1) (2022-11-19)
 ## [2.4.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.8...@aws-amplify/cli-extensibility-helper@2.4.9) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
@@ -35,6 +132,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [3.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.0...@aws-amplify/cli-extensibility-helper@3.0.0-beta.0) (2022-11-17)
 ## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.4...@aws-amplify/cli-extensibility-helper@2.4.5) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
@@ -46,6 +144,46 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.3...@aws-amplify/cli-extensibility-helper@2.4.4) (2022-10-27)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+# [3.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.0...@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.2) (2022-11-10)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+# [3.0.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.0...@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.1) (2022-11-10)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+# [3.0.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.3...@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.0) (2022-11-01)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 

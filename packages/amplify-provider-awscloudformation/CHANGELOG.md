@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.3...amplify-provider-awscloudformation@7.0.0-beta.5) (2023-02-07)
+
+
+### Bug Fixes
+
+* get credentials from credential_process in aws profile config ([#11821](https://github.com/aws-amplify/amplify-cli/issues/11821)) ([0aacbb3](https://github.com/aws-amplify/amplify-cli/commit/0aacbb3b4e029e8006d37e227379734d8a5dacfa))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* added Node package dependency detector ([#11629](https://github.com/aws-amplify/amplify-cli/issues/11629)) ([bc1bca9](https://github.com/aws-amplify/amplify-cli/commit/bc1bca947af243cab70cea484b4325da3f817198))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [7.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-beta.4) (2022-12-28)
 ## [6.10.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.2...amplify-provider-awscloudformation@6.10.3) (2023-02-06)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
@@ -35,12 +67,40 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
+* add check for api repo overrides errors ([#11394](https://github.com/aws-amplify/amplify-cli/issues/11394)) ([d57ffe4](https://github.com/aws-amplify/amplify-cli/commit/d57ffe4660cfe13187cb20a120a05f426aecaf89))
+* back off on cfn event pull ([#11624](https://github.com/aws-amplify/amplify-cli/issues/11624)) ([1e53965](https://github.com/aws-amplify/amplify-cli/commit/1e53965c4ba3ccc5aad72b37791bbef807ec5fc3))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
+* iterative gsi deployment - incorrect AttributeDefinitions ([#11532](https://github.com/aws-amplify/amplify-cli/issues/11532)) ([8308751](https://github.com/aws-amplify/amplify-cli/commit/8308751cfc51c5270cc10138330b9bbe65f5673f))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+* suppress errors when browser launch fails ([#11406](https://github.com/aws-amplify/amplify-cli/issues/11406)) ([e01894e](https://github.com/aws-amplify/amplify-cli/commit/e01894e5b3ed71163e647ada63515d8de8aa3d92))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 *  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
 
 
 
 
 
+# [7.0.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-beta.3) (2022-12-13)
 # [6.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@6.10.0) (2023-01-03)
 
 
@@ -52,11 +112,140 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * iterative gsi deployment - incorrect AttributeDefinitions ([#11532](https://github.com/aws-amplify/amplify-cli/issues/11532)) ([8308751](https://github.com/aws-amplify/amplify-cli/commit/8308751cfc51c5270cc10138330b9bbe65f5673f))
 * should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
 * suppress errors when browser launch fails ([#11406](https://github.com/aws-amplify/amplify-cli/issues/11406)) ([e01894e](https://github.com/aws-amplify/amplify-cli/commit/e01894e5b3ed71163e647ada63515d8de8aa3d92))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
 
 
 ### Features
 
 * add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [7.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* add check for api repo overrides errors ([#11394](https://github.com/aws-amplify/amplify-cli/issues/11394)) ([d57ffe4](https://github.com/aws-amplify/amplify-cli/commit/d57ffe4660cfe13187cb20a120a05f426aecaf89))
+* should not print auth warn when adding auth to new project ([#11374](https://github.com/aws-amplify/amplify-cli/issues/11374)) ([b5a8783](https://github.com/aws-amplify/amplify-cli/commit/b5a8783c5199e2465533a17771d2b521ce3d68fb))
+* suppress errors when browser launch fails ([#11406](https://github.com/aws-amplify/amplify-cli/issues/11406)) ([e01894e](https://github.com/aws-amplify/amplify-cli/commit/e01894e5b3ed71163e647ada63515d8de8aa3d92))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
+# [7.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-beta.0...amplify-provider-awscloudformation@7.0.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [7.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.0...amplify-provider-awscloudformation@7.0.0-beta.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* add check for api repo overrides errors ([#11394](https://github.com/aws-amplify/amplify-cli/issues/11394)) ([d57ffe4](https://github.com/aws-amplify/amplify-cli/commit/d57ffe4660cfe13187cb20a120a05f426aecaf89))
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [7.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.0...amplify-provider-awscloudformation@7.0.0-cdkv2.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [7.0.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@7.0.0-cdkv2.0...amplify-provider-awscloudformation@7.0.0-cdkv2.1) (2022-11-10)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+# 10.4.0 (2022-10-25)
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
+# [7.0.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.8.1...amplify-provider-awscloudformation@7.0.0-cdkv2.0) (2022-11-01)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
 
 
 
@@ -86,7 +275,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
 * in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
 * migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 

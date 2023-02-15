@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { getInvoker } from 'amplify-category-function';
+import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
 

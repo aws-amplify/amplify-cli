@@ -16,7 +16,7 @@ describe('amplify migration test scaffold v10', () => {
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     console.log(`Test migration from: ${migrateFromVersion} to ${migrateToVersion}`);
-    // expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v); // uncomment this once we are in v11 for local codebase
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v); // uncomment this once we are in v11 for local codebase
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
   });
 
