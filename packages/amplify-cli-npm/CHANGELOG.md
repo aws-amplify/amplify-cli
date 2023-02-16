@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.8.0-amplify-app-tests.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.2...@aws-amplify/cli@10.8.0-amplify-app-tests.0) (2023-02-16)
+
+
+### Features
+
+* version bump to 10.8 for cli-npm ([bb4859e](https://github.com/aws-amplify/amplify-cli/commit/bb4859ef2a1b6bf73dc668c82b4bf71d0655a3bd))
+
+
+
+
+
 ## [10.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.1...@aws-amplify/cli@10.7.2) (2023-02-13)
 
 

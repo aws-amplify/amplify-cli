@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4-amplify-app-tests.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.3...@aws-amplify/amplify-category-custom@2.6.4-amplify-app-tests.0) (2023-02-16)
+
+
+### Bug Fixes
+
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+
+
+
+
+
 ## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.2...@aws-amplify/amplify-category-custom@2.6.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

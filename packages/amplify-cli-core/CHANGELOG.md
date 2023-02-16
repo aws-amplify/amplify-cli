@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-amplify-app-tests.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.1...amplify-cli-core@3.7.0-amplify-app-tests.0) (2023-02-16)
+
+
+### Bug Fixes
+
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+* get credentials from credential_process in aws profile config ([#11821](https://github.com/aws-amplify/amplify-cli/issues/11821)) ([0aacbb3](https://github.com/aws-amplify/amplify-cli/commit/0aacbb3b4e029e8006d37e227379734d8a5dacfa))
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+
+
+### Features
+
+* adding cli options commands hooks  ([#11898](https://github.com/aws-amplify/amplify-cli/issues/11898)) ([6090fbe](https://github.com/aws-amplify/amplify-cli/commit/6090fbe3cb31e99fd241974b7c90e27bddeb1db1))
+
+
+
+
+
 ## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.0...amplify-cli-core@3.6.1) (2023-02-06)
 
 
