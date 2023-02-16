@@ -19,13 +19,14 @@ import {
   removeDeprecatedProps,
   updateUserPoolGroups,
 } from '../utils/synthesize-resources';
+import { AuthContext } from '../../../context';
 
 /**
  * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: AuthContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -89,7 +90,7 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
 /**
  * Factory function that returns a CognitoConfiguration consumer and handles updates to the auth resource
  */
-export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getUpdateAuthHandler = (context: AuthContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
   const requestWithDefaults = await getUpdateAuthDefaultsApplier(
     context,

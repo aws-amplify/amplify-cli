@@ -1,15 +1,9 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSContext,
-  AmplifyCategories,
-  AmplifySupportedService,
-  BannerMessage,
-  FeatureFlags,
-  stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, BannerMessage, FeatureFlags, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { category } from '../..';
+import { AuthContext } from '../../context';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
@@ -22,7 +16,7 @@ export const alias = ['update'];
 /**
  * entry point to update auth resource
  */
-export const run = async (context: $TSContext): Promise<string | $TSContext | undefined> => {
+export const run = async (context: AuthContext): Promise<string | $TSContext | undefined> => {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
   const meta = stateManager.getMeta();
@@ -54,7 +48,9 @@ export const run = async (context: $TSContext): Promise<string | $TSContext | un
   }
 
   printer.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');
-  const dependentResources = Object.keys(meta).some(e => ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0);
+  const dependentResources = Object.keys(meta).some(
+    (e) => ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0,
+  );
   if (dependentResources) {
     printer.info(messages.dependenciesExists);
   }

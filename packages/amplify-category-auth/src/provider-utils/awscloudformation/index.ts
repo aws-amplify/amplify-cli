@@ -2,40 +2,39 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import {
-  stateManager, open, $TSContext, $TSObject,
-} from 'amplify-cli-core';
+import { stateManager, open, $TSContext, $TSObject } from 'amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
-import {
-  ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys,
-} from './constants';
+import { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } from './constants';
 import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-handlers';
 import { getSupportedServices } from '../supported-services';
 import { importResource, importedAuthEnvInit } from './import';
+import { AuthContext } from '../../context';
 
 export { importResource } from './import';
 
-const serviceQuestions = async (context:any,
-  defaultValuesFilename:any,
+const serviceQuestions = async (
+  context: any,
+  defaultValuesFilename: any,
   stringMapsFilename: any,
   serviceWalkthroughFilename: any,
-  serviceMetadata: any): Promise<any> => {
+  serviceMetadata: any,
+): Promise<any> => {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = await import(serviceWalkthroughSrc);
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 };
 
-export const addResource = async (context: $TSContext, service: string): Promise<string> => {
+export const addResource = async (context: AuthContext, service: string): Promise<string> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
-  return getAddAuthHandler(
-    context,
-  )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
+  return getAddAuthHandler(context)(
+    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
+  );
 };
 
-export const updateResource = async (context: $TSContext, { service }: {service:any}): Promise<any> => {
+export const updateResource = async (context: AuthContext, { service }: { service: any }): Promise<any> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
@@ -45,9 +44,7 @@ export const updateResource = async (context: $TSContext, { service }: {service:
 
 export const updateConfigOnEnvInit = async (context: $TSContext, category: any, service: string): Promise<any> => {
   const serviceMetadata = getSupportedServices().Cognito;
-  const {
-    defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider,
-  } = serviceMetadata;
+  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   await ensureEnvParamManager();
@@ -164,12 +161,13 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
     return envParams;
   }
 
-  const isPullingOrEnv = context.input.command === 'pull'
-    || (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
+  const isPullingOrEnv =
+    context.input.command === 'pull' ||
+    (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
   // don't ask for env_specific params when checking out env or pulling
   serviceMetadata.inputs = serviceMetadata.inputs.filter(
-    (input: any) => ENV_SPECIFIC_PARAMS.includes(input.key)
-      && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
+    (input: any) =>
+      ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
   );
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -177,13 +175,13 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 
   // interactive mode
   const result = await serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata, resourceParams);
-  let envParams: {[key: string]: any} = {};
+  let envParams: { [key: string]: any } = {};
 
   if (resourceParams.hostedUIProviderMeta) {
     envParams = formatCredentialsForEnvParams(currentEnvSpecificValues, result, resourceParams);
   }
 
-  ENV_SPECIFIC_PARAMS.forEach(paramName => {
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
     if (paramName in result && paramName !== 'hostedUIProviderCreds' && privateKeys.indexOf(paramName) === -1) {
       envParams[paramName] = result[paramName];
     }
@@ -208,7 +206,7 @@ export const migrate = async (context: $TSContext): Promise<void> => {
   const resourceName = await getAuthResourceName(context);
   const props = providerInstance.loadResourceParameters(context, 'auth', resourceName);
   // Roles have changed to ref. Removing old hard-coded role ref
-  Object.keys(roles).forEach(key => {
+  Object.keys(roles).forEach((key) => {
     delete props[key];
   });
   await copyCfnTemplate(context, category, props, cfnFilename);
@@ -251,7 +249,7 @@ const getOAuthProviderKeys = (currentEnvSpecificValues: any, resourceParams: any
 /* eslint-enable no-param-reassign */
 
 const formatCredentialsForEnvParams = (currentEnvSpecificValues: any, result: any, resourceParams: any): any => {
-  const partialParams: {[key: string]: any} = {};
+  const partialParams: { [key: string]: any } = {};
   if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
     partialParams.hostedUIProviderCreds = [];
     const inputResult = JSON.parse(result.hostedUIProviderCreds);

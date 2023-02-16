@@ -33,7 +33,6 @@ export type $TSContext = {
     newUserInfo?: string;
     filesystem: IContextFilesystem;
     template: IContextTemplate;
-    updatingAuth?: CognitoConfiguration;
 };
 
 // @public (undocumented)
@@ -47,17 +46,6 @@ export type $TSObject = Record<string, $TSAny>;
 
 // @public (undocumented)
 export type $TSTeamProviderInfo = $TSAny;
-
-// @public (undocumented)
-export interface AdminQueriesResult {
-    // (undocumented)
-    adminQueries?: boolean;
-    // (undocumented)
-    adminQueryGroup?: string;
-}
-
-// @public (undocumented)
-export type AliasAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.PREFERRED_USERNAME;
 
 // @public (undocumented)
 export const AMPLIFY_DOCS_URL = "https://docs.amplify.aws";
@@ -312,189 +300,6 @@ export const AmplifySupportedService: {
 };
 
 // @public (undocumented)
-export interface AmplifyToolkit {
-    // (undocumented)
-    addTrigger: () => $TSAny;
-    // (undocumented)
-    confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
-    // (undocumented)
-    constants: $TSAny;
-    // (undocumented)
-    constructExeInfo: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: $TSObject, force?: boolean, writeParams?: boolean | $TSObject) => $TSAny;
-    // (undocumented)
-    crudFlow: (role: string, permissionMap?: $TSObject, defaults?: string[]) => Promise<string[]>;
-    // (undocumented)
-    deleteAllTriggers: (previouslySaved: $TSAny, resourceName: string, targetDir: string, context: $TSContext) => Promise<void>;
-    // (undocumented)
-    deleteDeselectedTriggers: () => $TSAny;
-    // (undocumented)
-    deleteProject: (context: $TSContext) => Promise<void>;
-    // (undocumented)
-    deleteTrigger: (context: $TSContext, name: string, dir: string) => Promise<void>;
-    // (undocumented)
-    dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
-    // (undocumented)
-    executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options?: $TSAny) => Promise<$TSAny>;
-    // (undocumented)
-    forceRemoveResource: (context: $TSContext, categoryName: string, name: string, dir: string) => $TSAny;
-    // (undocumented)
-    getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    getAllEnvs: () => string[];
-    // (undocumented)
-    getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
-    // (undocumented)
-    getEnvDetails: () => $TSAny;
-    // (undocumented)
-    getEnvInfo: () => $TSAny;
-    // (undocumented)
-    getFrontendPlugins: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    getImportedAuthProperties: (context: $TSContext) => {
-        imported: boolean;
-        userPoolId?: string;
-        authRoleArn?: string;
-        authRoleName?: string;
-        unauthRoleArn?: string;
-        unauthRoleName?: string;
-    };
-    // (undocumented)
-    getPlugin: () => $TSAny;
-    // (undocumented)
-    getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
-    // (undocumented)
-    getProjectConfig: () => $TSAny;
-    // (undocumented)
-    getProjectDetails: () => $TSAny;
-    // (undocumented)
-    getProjectMeta: () => $TSMeta;
-    // (undocumented)
-    getProviderPlugins: (context: $TSContext) => Record<string, string>;
-    // (undocumented)
-    getResourceOutputs: () => $TSAny;
-    // (undocumented)
-    getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
-    // (undocumented)
-    getTags: (context: $TSContext) => Tag[];
-    // (undocumented)
-    getTriggerEnvInputs: () => $TSAny;
-    // (undocumented)
-    getTriggerEnvVariables: () => $TSAny;
-    // (undocumented)
-    getTriggerMetadata: () => $TSAny;
-    // (undocumented)
-    getTriggerPermissions: (context: $TSContext, triggers: $TSAny, category: string, resourceName: string) => $TSAny;
-    // (undocumented)
-    getUserPoolGroupList: (context?: $TSContext) => $TSAny[];
-    // (undocumented)
-    getWhen: () => $TSAny;
-    // (undocumented)
-    hashDir: (dir: string, exclude: string[]) => Promise<string>;
-    // (undocumented)
-    inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
-    // (undocumented)
-    invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
-    // (undocumented)
-    leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
-    // (undocumented)
-    listCategories: () => $TSAny;
-    // (undocumented)
-    loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-    // (undocumented)
-    loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-    // (undocumented)
-    makeId: (n?: number) => string;
-    // (undocumented)
-    onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
-    // (undocumented)
-    openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
-    // (undocumented)
-    pathManager: $TSAny;
-    // (undocumented)
-    pressEnterToContinue: () => $TSAny;
-    // (undocumented)
-    pushResources: (context: $TSContext, category?: string, resourceName?: string, filteredResources?: {
-        category: string;
-        resourceName: string;
-    }[], rebuild?: boolean) => $TSAny;
-    // (undocumented)
-    readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
-    // (undocumented)
-    readJsonFile: (fileName: string) => $TSAny;
-    // (undocumented)
-    removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-    // (undocumented)
-    removeResource: (context: $TSContext, category: string, resource?: string, questionOptions?: {
-        headless?: boolean;
-        serviceSuffix?: {
-            [serviceName: string]: string;
-        };
-        serviceDeletionInfo?: {
-            [serviceName: string]: string;
-        };
-    }, resourceNameCallback?: (resourceName: string) => Promise<void>) => Promise<{
-        service: string;
-        resourceName: string;
-    } | undefined>;
-    // (undocumented)
-    removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
-    // (undocumented)
-    saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
-    // (undocumented)
-    serviceSelectionPrompt: (context: $TSContext, category: string, servicesMetadata: $TSAny, customQuestion?: $TSAny, optionNameOverrides?: Record<string, string>) => Promise<ServiceSelection>;
-    // (undocumented)
-    sharedQuestions: () => $TSAny;
-    // (undocumented)
-    showAllHelp: () => $TSAny;
-    // (undocumented)
-    showHelp: (header: string, commands: {
-        name: string;
-        description: string;
-    }[]) => $TSAny;
-    // (undocumented)
-    showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    showResourceTable: (category?: $TSAny, resourceName?: $TSAny, filteredResources?: $TSAny) => Promise<$TSAny>;
-    // (undocumented)
-    showStatusTable: (resourceTableParams: ViewResourceTableParams) => Promise<$TSAny>;
-    // (undocumented)
-    storeCurrentCloudBackend: (context: $TSContext) => $TSAny;
-    // (undocumented)
-    triggerFlow: (...args: unknown[]) => $TSAny;
-    // (undocumented)
-    updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
-    // (undocumented)
-    updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: {
-        resourceKey: string;
-        hashValue: string;
-    }) => void;
-    // (undocumented)
-    updateamplifyMetaAfterPush: (resources: $TSObject[]) => Promise<void>;
-    // (undocumented)
-    updateamplifyMetaAfterResourceAdd: (category: string, resourceName: string, metaResourceData: $TSAny, backendResourceData?: $TSAny, overwriteObjectIfExists?: boolean) => void;
-    // (undocumented)
-    updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
-    // (undocumented)
-    updateamplifyMetaAfterResourceUpdate: (category: string, resourceName: string, metaResourceKey: string, metaResourceData?: $TSAny) => $TSMeta;
-    // (undocumented)
-    updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSObject) => void;
-    // (undocumented)
-    updateBackendConfigAfterResourceRemove: (category: string, resourceName: string) => void;
-    // (undocumented)
-    updateBackendConfigAfterResourceUpdate: (category: string, resourceName: string, attribute: string, value: $TSAny) => void;
-    // (undocumented)
-    updateProjectConfig: () => $TSAny;
-    // (undocumented)
-    updateProviderAmplifyMeta: (providerName: string, options: $TSObject) => void;
-    // (undocumented)
-    updateTrigger: () => $TSAny;
-    // (undocumented)
-    writeObjectAsJson: () => $TSAny;
-}
-
-// @public (undocumented)
 export class AngularConfigNotFoundError extends Error {
 }
 
@@ -513,18 +318,6 @@ export function attachExtensions(context: $TSContext): void;
 
 // @public (undocumented)
 export function attachPrint(context: $TSContext): void;
-
-// @public (undocumented)
-export enum AttributeType {
-    // (undocumented)
-    EMAIL = "email",
-    // (undocumented)
-    EMAIL_AND_PHONE_NUMBER = "email, phone_number",
-    // (undocumented)
-    PHONE_NUMBER = "phone_number",
-    // (undocumented)
-    PREFERRED_USERNAME = "preferred_username"
-}
 
 // @public (undocumented)
 export const AWS_AMPLIFY_DEFAULT_BANNER_URL = "https://aws-amplify.github.io/amplify-cli/banner-message.json";
@@ -693,9 +486,6 @@ export class CloudformationProviderFacade {
     // (undocumented)
     static prePushCfnTemplateModifier(context: $TSContext, template: Template_2): Promise<(template: Template_2) => Promise<void>>;
 }
-
-// @public (undocumented)
-export type CognitoConfiguration = ServiceQuestionsBaseResult & OAuthResult & SocialProviderResult & IdentityPoolResult & PasswordPolicyResult & PasswordRecoveryResult & MfaResult & AdminQueriesResult & Triggers;
 
 // @public (undocumented)
 export type CommandFlagInfo = {
@@ -1251,34 +1041,6 @@ export type IContextTemplate = {
 };
 
 // @public (undocumented)
-export interface IdentityPoolResult {
-    // (undocumented)
-    allowUnauthenticatedIdentities?: boolean;
-    // (undocumented)
-    amazonAppId?: string;
-    // (undocumented)
-    appleAppId?: string;
-    // (undocumented)
-    audiences?: string[];
-    // (undocumented)
-    authProviders?: string[];
-    // (undocumented)
-    facebookAppId?: string;
-    // (undocumented)
-    googleAndroid?: string;
-    // (undocumented)
-    googleClientId?: string;
-    // (undocumented)
-    googleIos?: string;
-    // (undocumented)
-    identityPoolName?: string;
-    // (undocumented)
-    selectedParties?: string;
-    // (undocumented)
-    thirdPartyAuth?: boolean;
-}
-
-// @public (undocumented)
 export interface IDeploymentStateManager {
     // (undocumented)
     advanceStep: () => Promise<void>;
@@ -1596,16 +1358,6 @@ export type Message = {
 };
 
 // @public (undocumented)
-export interface MfaResult {
-    // (undocumented)
-    mfaConfiguration?: 'OPTIONAL' | 'ON' | 'OFF';
-    // (undocumented)
-    mfaTypes?: ('SMS Text Message' | 'TOTP')[];
-    // (undocumented)
-    smsAuthenticationMessage?: string;
-}
-
-// @public (undocumented)
 export interface MigrationInfo {
     // (undocumented)
     amplifyMeta: $TSMeta;
@@ -1665,28 +1417,6 @@ export type NumberFeatureFlag = {
 };
 
 // @public (undocumented)
-export interface OAuthResult {
-    // (undocumented)
-    AllowedOAuthFlows?: 'code' | 'implicit';
-    // (undocumented)
-    AllowedOAuthScopes?: string[];
-    // (undocumented)
-    hostedUI?: boolean;
-    // (undocumented)
-    hostedUIDomainName?: string;
-    // (undocumented)
-    hostedUIProviderCreds?: $TSAny;
-    // (undocumented)
-    hostedUIProviderMeta?: $TSAny;
-    // (undocumented)
-    newCallbackURLs?: string[];
-    // (undocumented)
-    newLogoutURLs?: string[];
-    // (undocumented)
-    oAuthMetadata?: unknown;
-}
-
-// @public (undocumented)
 const open_2: (target: string, options: opn.Options) => Promise<ChildProcess | void>;
 export { open_2 as open }
 
@@ -1713,29 +1443,6 @@ export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo
 export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
     message: string;
 };
-
-// @public (undocumented)
-export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requires Symbols' | 'Requires Uppercase';
-
-// @public (undocumented)
-export interface PasswordPolicyResult {
-    // (undocumented)
-    passwordPolicyCharacters?: PasswordPolicy[];
-    // (undocumented)
-    passwordPolicyMinLength?: number | string;
-}
-
-// @public (undocumented)
-export interface PasswordRecoveryResult {
-    // (undocumented)
-    autoVerifiedAttributes?: string[];
-    // (undocumented)
-    emailVerificationMessage?: string;
-    // (undocumented)
-    emailVerificationSubject?: string;
-    // (undocumented)
-    smsVerificationMessage?: string;
-}
 
 // @public (undocumented)
 export const PathConstants: {
@@ -2129,54 +1836,6 @@ export type SerializableError = {
 };
 
 // @public (undocumented)
-export interface ServiceQuestionsBaseResult {
-    // (undocumented)
-    aliasAttributes?: AliasAttributes[];
-    // (undocumented)
-    authSelections: 'userPoolOnly' | 'identityPoolAndUserPool' | 'identityPoolOnly';
-    // (undocumented)
-    requiredAttributes?: string[];
-    // (undocumented)
-    resourceName: string;
-    // (undocumented)
-    resourceNameTruncated?: string;
-    // (undocumented)
-    serviceName: 'Cognito';
-    // (undocumented)
-    sharedId?: string;
-    // (undocumented)
-    updateFlow?: 'default' | 'defaultSocial' | 'manual' | 'callbacks' | 'providers' | 'updateUserPoolGroups' | 'updateAdminQueries';
-    // (undocumented)
-    useDefault: 'default' | 'defaultSocial' | 'manual';
-    // (undocumented)
-    useEnabledMfas?: boolean;
-    // (undocumented)
-    usernameAttributes?: UsernameAttributes[];
-    // (undocumented)
-    usernameCaseSensitive?: boolean;
-    // (undocumented)
-    userpoolClientGenerateSecret?: boolean;
-    // (undocumented)
-    userpoolClientLambdaRole?: string;
-    // (undocumented)
-    userpoolClientReadAttributes?: string[];
-    // (undocumented)
-    userpoolClientRefreshTokenValidity?: string | number;
-    // (undocumented)
-    userpoolClientSetAttributes?: boolean;
-    // (undocumented)
-    userpoolClientWriteAttributes?: string[];
-    // (undocumented)
-    userPoolGroupList?: string[];
-    // (undocumented)
-    userPoolGroups?: boolean;
-    // (undocumented)
-    userPoolName?: string;
-    // (undocumented)
-    verificationBucketName?: string;
-}
-
-// @public (undocumented)
 export type ServiceSelection = {
     provider: string;
     service: string;
@@ -2191,32 +1850,6 @@ export function skipHooks(): boolean;
 
 // @public (undocumented)
 export const skipHooksFilePath = "/opt/amazon";
-
-// @public (undocumented)
-export interface SocialProviderResult {
-    // (undocumented)
-    authProvidersUserPool?: string[];
-    // (undocumented)
-    facebookAppIdUserPool?: string;
-    // (undocumented)
-    facebookAppSecretUserPool?: string;
-    // (undocumented)
-    googleAppIdUserPool?: string;
-    // (undocumented)
-    googleAppSecretUserPool?: string;
-    // (undocumented)
-    loginwithamazonAppIdUserPool?: string;
-    // (undocumented)
-    loginwithamazonAppSecretUserPool?: string;
-    // (undocumented)
-    signinwithappleClientIdUserPool?: string;
-    // (undocumented)
-    signinwithappleKeyIdUserPool?: string;
-    // (undocumented)
-    signinwithapplePrivateKeyUserPool?: string;
-    // (undocumented)
-    signinwithappleTeamIdUserPool?: string;
-}
 
 // @public (undocumented)
 export const spinner: Ora;
@@ -2415,12 +2048,6 @@ export interface Template {
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
 
 // @public (undocumented)
-export interface Triggers {
-    // (undocumented)
-    triggers?: string | Record<string, unknown>;
-}
-
-// @public (undocumented)
 export type TypeDef = {
     typeName: string;
     service: string;
@@ -2450,9 +2077,6 @@ export enum UntilExitTimedCodePath {
     // (undocumented)
     POST_PROCESS = "postProcess"
 }
-
-// @public (undocumented)
-export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.EMAIL_AND_PHONE_NUMBER;
 
 // @public (undocumented)
 export function validate(tags: Tag[], skipProjectEnv?: boolean): void;
@@ -2501,6 +2125,10 @@ export type WriteCFNTemplateOptions = {
 
 // @public (undocumented)
 export function yellow(message: string): void;
+
+// Warnings were encountered during analysis:
+//
+// src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

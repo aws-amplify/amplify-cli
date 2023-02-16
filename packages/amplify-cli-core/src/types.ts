@@ -22,6 +22,10 @@ export type $TSContext = {
   print: IContextPrint;
   migrationInfo: MigrationInfo;
   projectHasMobileHubResources: boolean;
+  /**
+   * Use prompter from package amplify-prompts instead
+   * @deprecated
+   */
   prompt: $TSAny;
   exeInfo: $TSAny;
   input: CommandLineInput;
@@ -32,7 +36,6 @@ export type $TSContext = {
   newUserInfo?: string;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  updatingAuth: any; // this seems to actually implement CognitoStackOptions
 };
 
 export interface MigrationInfo {

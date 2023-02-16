@@ -1,5 +1,5 @@
-import { CognitoConfiguration } from 'amplify-cli-core';
 import * as path from 'path';
+import { CognitoConfiguration } from './service-walkthrough-types/awsCognito-user-input-types';
 
 // category
 export const category = 'auth';
