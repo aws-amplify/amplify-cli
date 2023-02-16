@@ -54,9 +54,9 @@ class Emulator {
   }
 }
 
-const wait = ms => {
+const wait = (ms) => {
   let timeoutHandle;
-  const promise = new Promise(accept => {
+  const promise = new Promise((accept) => {
     timeoutHandle = setTimeout(accept, ms);
   });
 

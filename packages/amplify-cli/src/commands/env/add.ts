@@ -5,7 +5,7 @@ import { run as init } from '../init';
 /**
  * Executes the 'env add' command
  */
-export const run = async (context: $TSContext) : Promise<void> => {
+export const run = async (context: $TSContext): Promise<void> => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   if (!fs.existsSync(amplifyMetaFilePath)) {
     throw new AmplifyError('ConfigurationError', {

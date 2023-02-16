@@ -51,7 +51,7 @@ describe('amplify geo import', () => {
     await expect(importGeofencesWithDefault(projRoot, config)).resolves.not.toThrow();
     // check if geofence is provisioned in collection
     const { features } = getGeoJSONObj(geoJSONFileName);
-    const geofenceID = features.map(feature => feature.properties.name)[0];
+    const geofenceID = features.map((feature) => feature.properties.name)[0];
     expect(geofenceID).toBeDefined();
     const geofence = await getGeofence(collectionName, geofenceID, region);
     expect(geofence.GeofenceId).toEqual(geofenceID);

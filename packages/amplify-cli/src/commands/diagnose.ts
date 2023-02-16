@@ -127,7 +127,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   const backend = stateManager.getBackendConfig(rootPath);
   const resources: { category: string; resourceName: string; service: string }[] = [];
   const categoryResources = Object.keys(backend).reduce((array, key) => {
-    Object.keys(backend[key]).forEach(resourceKey => {
+    Object.keys(backend[key]).forEach((resourceKey) => {
       array.push({
         category: key,
         resourceName: resourceKey,
@@ -139,7 +139,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   }, resources);
   const filePaths = collectFiles(categoryResources, rootPath);
   const zipper = archiver.create('zip');
-  filePaths.forEach(file => {
+  filePaths.forEach((file) => {
     zipper.append(
       file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: 'utf-8' })) : fs.readFileSync(file.filePath, { encoding: 'utf-8' }),
       {
@@ -149,7 +149,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
     const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
-    const events = context.exeInfo.cloudformationEvents.map(r => ({
+    const events = context.exeInfo.cloudformationEvents.map((r) => ({
       ...r,
       LogicalResourceId: stringMasker(r.LogicalResourceId),
     }));
@@ -178,7 +178,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
 
   return new Promise((resolve, reject) => {
     output.on('close', () => resolve(fileDestination));
-    output.on('error', err => {
+    output.on('error', (err) => {
       reject(err);
     });
   });

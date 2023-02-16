@@ -28,10 +28,9 @@ export class ResourceParameterManager {
    * (see setAllParams)
    */
   setParams(params: Record<string, string>): void {
-    Object.entries(params)
-      .forEach(([key, value]) => {
-        this.setParam(key, value);
-      });
+    Object.entries(params).forEach(([key, value]) => {
+      this.setParam(key, value);
+    });
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc

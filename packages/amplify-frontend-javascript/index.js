@@ -55,7 +55,7 @@ function displayFrontendDefaults(context, projectPath) {
   return configManager.displayFrontendDefaults(context, projectPath);
 }
 
-const initializeAwsExports = destDir => {
+const initializeAwsExports = (destDir) => {
   const dest = path.resolve(destDir, 'aws-exports.js');
   if (!fs.existsSync(dest)) {
     fs.copySync(emptyAwsExportsPath, dest);

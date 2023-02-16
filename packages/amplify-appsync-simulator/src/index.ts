@@ -161,7 +161,7 @@ export class AmplifyAppSyncSimulator {
     let dataSource = dataSourceIterator.next();
     while (!dataSource.done) {
       if (dataSource.value.ddbConfig?.type === AppSyncSimulatorDataSourceType.DynamoDB) {
-        deletedTables = [...deletedTables, ...await dataSource.value.load({ operation: 'DeleteAllItems' })];
+        deletedTables = [...deletedTables, ...(await dataSource.value.load({ operation: 'DeleteAllItems' }))];
       }
       dataSource = dataSourceIterator.next();
     }

@@ -81,7 +81,7 @@ describe('createAndUpdateTable', () => {
     const mockDDBConfig: MockDynamoDBConfig = {
       tables: [{ Properties: table1Input }],
     };
-    listTablesMock.mockImplementation(cb => {
+    listTablesMock.mockImplementation((cb) => {
       cb(null, {
         TableNames: [],
       });
@@ -99,7 +99,7 @@ describe('createAndUpdateTable', () => {
       tables: [{ Properties: table1Input }, { Properties: table2Input }],
     };
 
-    listTablesMock.mockImplementation(cb => {
+    listTablesMock.mockImplementation((cb) => {
       cb(null, {
         TableNames: [table1Input.TableName, table2Input.TableName],
       });
@@ -124,7 +124,7 @@ describe('createAndUpdateTable', () => {
       },
     ];
 
-    (getUpdateTableInput as jest.Mock).mockImplementation(input => (input === table2Input ? getUpdateTableInputResult : []));
+    (getUpdateTableInput as jest.Mock).mockImplementation((input) => (input === table2Input ? getUpdateTableInputResult : []));
 
     const client = new DynamoDB();
     await createAndUpdateTable(client, mockDDBConfig);

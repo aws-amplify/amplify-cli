@@ -1,4 +1,3 @@
-
 import { addCircleCITags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { EOL } from 'os';
 
@@ -49,7 +48,10 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, {
-      cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection,
+      cwd,
+      stripColors: true,
+      env,
+      disableCIDetection: s.disableCIDetection,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -80,14 +82,16 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
         .wait('Please choose the profile you want to use')
         .sendLine(s.profileName);
     }
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
   });
 }

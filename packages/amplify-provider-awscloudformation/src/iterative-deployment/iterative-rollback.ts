@@ -77,7 +77,7 @@ export const runIterativeRollback = async (
     }
   }
   if (rollbackSteps.length > 0) {
-    rollbackSteps.forEach(step => {
+    rollbackSteps.forEach((step) => {
       deploymentManager.addRollbackStep(step);
     });
 

@@ -40,7 +40,7 @@ describe('test initEnv() behavior in function', () => {
     const meta = getProjectMeta(projRoot);
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
-    const { Arn: functionArn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(region).toBeDefined();
     expect(_.get(meta, ['function', functionName, 's3Bucket'], undefined)).toBeDefined();
@@ -62,7 +62,7 @@ describe('test initEnv() behavior in function', () => {
 
     await amplifyPushAuth(projRoot2);
     const meta2 = getProjectMeta(projRoot2);
-    const { Arn: functionArn2, Region: region2 } = Object.keys(meta2.function).map(key => meta2.function[key])[0].output;
+    const { Arn: functionArn2, Region: region2 } = Object.keys(meta2.function).map((key) => meta2.function[key])[0].output;
     expect(functionArn2).toBeDefined();
     expect(region2).toBeDefined();
     expect(_.get(meta2, ['function', functionName, 's3Bucket'], undefined)).toBeDefined();

@@ -38,7 +38,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (convertTypes.includes(amplifyMeta[category][resourceName].convertType)) {
       predictionsResources.push({
         name: resourceName,
@@ -101,7 +101,7 @@ async function configure(context, resourceObj) {
       resourceName: await prompter.input(convertNameQuestion.message, {
         validate: convertNameQuestion.validate,
         initial: convertNameQuestion.default,
-      })
+      }),
     });
     defaultValues.convertPolicyName = `${answers.convertType}${defaultValues.convertPolicyName}`;
     convertType = answers.convertType;
@@ -174,8 +174,7 @@ async function followupQuestions(context, convertType, parameters) {
       typeQuestions.questions(parameters).choices,
       {
         ...(typeQuestions.questions(parameters).default ? { initial: byValue(typeQuestions.questions(parameters).default) } : {}),
-      }
-
+      },
     ),
   };
   // ask questions based on convert type
@@ -185,8 +184,10 @@ async function followupQuestions(context, convertType, parameters) {
         typeQuestions.voiceQuestion(answers.language, parameters).message,
         typeQuestions.voiceQuestion(answers.language, parameters).choices,
         {
-          ...(typeQuestions.voiceQuestion(answers.language, parameters).default ? { initial: byValue(typeQuestions.voiceQuestion(answers.language, parameters).default) } : {}),
-        }
+          ...(typeQuestions.voiceQuestion(answers.language, parameters).default
+            ? { initial: byValue(typeQuestions.voiceQuestion(answers.language, parameters).default) }
+            : {}),
+        },
       ),
     });
   }
@@ -198,8 +199,10 @@ async function followupQuestions(context, convertType, parameters) {
         typeQuestions.targetQuestion(targetOptions, parameters).message,
         typeQuestions.targetQuestion(targetOptions, parameters).choices,
         {
-          ...(typeQuestions.targetQuestion(targetOptions, parameters).default ? { initial: byValue(typeQuestions.targetQuestion(targetOptions, parameters).default) } : {}),
-        }
+          ...(typeQuestions.targetQuestion(targetOptions, parameters).default
+            ? { initial: byValue(typeQuestions.targetQuestion(targetOptions, parameters).default) }
+            : {}),
+        },
       ),
     });
   }
@@ -209,8 +212,10 @@ async function followupQuestions(context, convertType, parameters) {
       typeQuestions.authAccess.prompt(parameters).message,
       typeQuestions.authAccess.prompt(parameters).choices,
       {
-        ...(typeQuestions.authAccess.prompt(parameters).default ? { initial: byValue(typeQuestions.authAccess.prompt(parameters).default) } : {}),
-      }
+        ...(typeQuestions.authAccess.prompt(parameters).default
+          ? { initial: byValue(typeQuestions.authAccess.prompt(parameters).default) }
+          : {}),
+      },
     ),
   });
 
@@ -220,7 +225,7 @@ async function followupQuestions(context, convertType, parameters) {
 function filterLang(srcLang) {
   let targetOptions = [...convertAssets.translateOptions];
   const denyCombos = Object.assign({}, convertAssets.deniedCombos);
-  targetOptions = targetOptions.filter(lang => {
+  targetOptions = targetOptions.filter((lang) => {
     if (denyCombos[srcLang] && denyCombos[srcLang].includes(lang.value)) {
       return false;
     }
@@ -236,7 +241,7 @@ async function getVoiceOptions(context) {
   const polly = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getPollyVoices');
   const speechLanguages = [];
   const voiceID = {};
-  polly.Voices.forEach(voice => {
+  polly.Voices.forEach((voice) => {
     speechLanguages[voice.LanguageCode] = { name: `${voice.LanguageName}`, value: `${voice.LanguageCode}` };
     (voiceID[voice.LanguageCode] = voiceID[voice.LanguageCode] || []).push({
       name: `${voice.Name} - ${voice.Gender}`,
@@ -253,7 +258,7 @@ function resourceAlreadyExists(context, convertType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].convertType === convertType) {
         type = convertType;
       }
@@ -271,7 +276,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }

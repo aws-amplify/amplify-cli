@@ -94,7 +94,6 @@ describe('override ddb command tests', () => {
   });
 });
 
-
 describe('override s3 command tests', () => {
   let mockContext: $TSContext;
   let mockAmplifyMeta: $TSObject = {};
@@ -123,7 +122,7 @@ describe('override s3 command tests', () => {
     pathManager.getResourceDirectoryPath = jest.fn().mockReturnValue(destDir);
     path.join = jest.fn().mockReturnValue(srcDir);
 
-    jest.spyOn( S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
 
     await run(mockContext);
 

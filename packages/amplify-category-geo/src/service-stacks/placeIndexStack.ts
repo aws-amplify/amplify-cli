@@ -10,8 +10,7 @@ import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
 import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
 
-type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
-  TemplateMappings & { authResourceName: string };
+type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> & TemplateMappings & { authResourceName: string };
 
 /**
  * class to generate cfn for placeIndex resource
@@ -32,9 +31,7 @@ export class PlaceIndexStack extends BaseStack {
     this.authResourceName = this.props.authResourceName;
     this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    const inputParameters: string[] = this.props.groupPermissions.map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`,
-    );
+    const inputParameters: string[] = this.props.groupPermissions.map((group: string) => `authuserPoolGroups${group}GroupRole`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -123,19 +120,14 @@ export class PlaceIndexStack extends BaseStack {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: [
-            'geo:SearchPlaceIndexForPosition',
-            'geo:SearchPlaceIndexForText',
-            'geo:SearchPlaceIndexForSuggestions',
-            'geo:GetPlace'],
+          actions: ['geo:SearchPlaceIndexForPosition', 'geo:SearchPlaceIndexForText', 'geo:SearchPlaceIndexForSuggestions', 'geo:GetPlace'],
           resources: [indexResource.getAtt('IndexArn').toString()],
         }),
       ],
     });
 
     const cognitoRoles: Array<string> = [];
-    if (this.accessType === AccessType.AuthorizedUsers
-      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
+    if (this.accessType === AccessType.AuthorizedUsers || this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }
     if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
@@ -144,11 +136,7 @@ export class PlaceIndexStack extends BaseStack {
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
         cognitoRoles.push(
-          cdk.Fn.join('-',
-            [
-            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`,
-            ]),
+          cdk.Fn.join('-', [this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString, `${group}GroupRole`]),
         );
       });
     }

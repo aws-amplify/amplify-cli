@@ -1,6 +1,17 @@
 import { CloudFront } from 'aws-sdk';
 import {
-  amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand, initJSProjectWithProfile, deleteProject, deleteS3Bucket, addPRODHosting, removePRODCloudFront, removeHosting, amplifyPushWithoutCodegen, deleteProjectDir, getProjectMeta,
+  amplifyPublishWithoutUpdate,
+  createReactTestProject,
+  resetBuildCommand,
+  initJSProjectWithProfile,
+  deleteProject,
+  deleteS3Bucket,
+  addPRODHosting,
+  removePRODCloudFront,
+  removeHosting,
+  amplifyPushWithoutCodegen,
+  deleteProjectDir,
+  getProjectMeta,
 } from '@aws-amplify/amplify-e2e-core';
 
 import * as fs from 'fs-extra';

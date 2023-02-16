@@ -38,7 +38,7 @@ describe('getTags', () => {
   it('test for values', () => {
     const readTags = getTags(mockContext);
     expect(readTags).toBeDefined();
-    expect(readTags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(mockConfig.projectConfig.projectName);
-    expect(readTags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
+    expect(readTags.filter((r) => r.Key === 'user:Application')[0].Value).toEqual(mockConfig.projectConfig.projectName);
+    expect(readTags.filter((r) => r.Key === 'user:Stack')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
   });
 });

@@ -14,11 +14,11 @@ const fs_mock = fs as jest.Mocked<typeof fs>;
 jest.mock('aws-sdk');
 const ProcessCredentialsMock = ProcessCredentials as jest.MockedClass<typeof ProcessCredentials>;
 
-const context_stub = ({
+const context_stub = {
   print: {
     info: jest.fn(),
   },
-} as unknown) as jest.Mocked<$TSContext>;
+} as unknown as jest.Mocked<$TSContext>;
 
 describe('profile tests', () => {
   afterEach(() => {

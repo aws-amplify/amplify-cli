@@ -6,7 +6,7 @@ jest.mock('../../pre-push-cfn-processor/modifiers/s3-sse-modifier');
 
 const applyS3SSEModification_mock = applyS3SSEModification as jest.MockedFunction<typeof applyS3SSEModification>;
 
-applyS3SSEModification_mock.mockImplementation(async bucket => {
+applyS3SSEModification_mock.mockImplementation(async (bucket) => {
   bucket.Properties = {};
   (bucket.Properties as any).something = 'test';
   return bucket;

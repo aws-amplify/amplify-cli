@@ -30,8 +30,7 @@ export const addFeatureFlag = (projectRoot: string, section: string, name: strin
   const nameLowerCase = name.toLowerCase();
   if (_.get(ff, ['features', section, nameLowerCase])) {
     _.set(ff, ['features', section, nameLowerCase], value);
-  }
-  else {
+  } else {
     _.set(ff, ['features', section, name], value);
   }
   saveFeatureFlagFile(projectRoot, ff);

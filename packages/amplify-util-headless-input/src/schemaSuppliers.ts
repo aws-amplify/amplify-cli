@@ -1,46 +1,46 @@
 import { VersionedSchemaSupplier } from './HeadlessInputValidator';
 
-export const addStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const addStorageRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('AddStorageRequest', 'storage', version);
 };
 
-export const updateStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const updateStorageRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('UpdateStorageRequest', 'storage', version);
 };
 
-export const importStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const importStorageRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('ImportStorageRequest', 'storage', version);
 };
 
-export const removeStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const removeStorageRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('RemoveStorageRequest', 'storage', version);
 };
 
-export const addAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const addAuthRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('AddAuthRequest', 'auth', version);
 };
 
-export const updateAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const updateAuthRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('UpdateAuthRequest', 'auth', version);
 };
 
-export const importAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const importAuthRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('ImportAuthRequest', 'auth', version);
 };
 
-export const addApiRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const addApiRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('AddApiRequest', 'api', version);
 };
 
-export const updateApiRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const updateApiRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('UpdateApiRequest', 'api', version);
 };
 
-export const addGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const addGeoRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('AddGeoRequest', 'geo', version);
 };
 
-export const updateGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+export const updateGeoRequestSchemaSupplier: VersionedSchemaSupplier = (version) => {
   return getSchema('UpdateGeoRequest', 'geo', version);
 };
 

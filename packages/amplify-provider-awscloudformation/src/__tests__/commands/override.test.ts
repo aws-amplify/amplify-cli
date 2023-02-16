@@ -30,7 +30,7 @@ describe('run override command for root stack', () => {
       },
     };
 
-    const context_stub_typed = (context_stub as unknown) as $TSContext;
+    const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     const mockSrcPath = path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource');
     const mockDestPath = path.join('mockPath', 'awscloudformation');

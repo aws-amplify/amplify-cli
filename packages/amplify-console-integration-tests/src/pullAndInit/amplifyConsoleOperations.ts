@@ -44,7 +44,7 @@ async function PaginatedDeleteProjects(amplifyClient: any, token?: any) {
     .promise();
 
   const deleteTasks = [];
-  listAppsResult.apps.forEach(app => {
+  listAppsResult.apps.forEach((app) => {
     deleteTasks.push(async () => {
       await amplifyClient.deleteApp({ appId: app.appId }).promise();
     });

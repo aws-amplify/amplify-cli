@@ -91,8 +91,8 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, buildType: 
   }
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/**`)
-    .filter(p => !p.includes('dist'))
-    .filter(p => !p.includes('node_modules'))
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .filter((p) => !p.includes('dist'))
+    .filter((p) => !p.includes('node_modules'))
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
   return !!fileUpdatedAfterLastBuild;
 };

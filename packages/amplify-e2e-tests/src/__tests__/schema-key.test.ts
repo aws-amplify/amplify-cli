@@ -1,5 +1,9 @@
 import {
-  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir, createRandomName,
+  initJSProjectWithProfile,
+  deleteProject,
+  createNewProjectDir,
+  deleteProjectDir,
+  createRandomName,
 } from '@aws-amplify/amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 

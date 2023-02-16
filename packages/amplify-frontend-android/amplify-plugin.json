@@ -1,8 +1,6 @@
 {
-    "name": "android",
-    "type": "frontend",
-    "commands": [
-        "help"
-    ],
-    "eventHandlers": []
+  "name": "android",
+  "type": "frontend",
+  "commands": ["help"],
+  "eventHandlers": []
 }

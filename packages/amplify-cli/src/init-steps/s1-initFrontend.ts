@@ -38,7 +38,7 @@ export const getSuitableFrontend = (context: $TSContext, frontendPlugins: $TSAny
   let suitableFrontend;
   let fitToHandleScore = -1;
 
-  Object.keys(frontendPlugins).forEach(key => {
+  Object.keys(frontendPlugins).forEach((key) => {
     // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
     const { scanProject } = require(frontendPlugins[key]);
     const newScore = scanProject(projectPath);

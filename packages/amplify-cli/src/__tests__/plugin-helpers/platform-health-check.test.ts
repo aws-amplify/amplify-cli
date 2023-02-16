@@ -3,7 +3,7 @@ import { PluginInfo, PluginManifest, PluginPlatform } from 'amplify-cli-core';
 import { checkPlatformHealth, getOfficialPlugins } from '../../plugin-helpers/platform-health-check';
 
 jest.mock('chalk', () => ({
-  yellow: jest.fn().mockImplementation(input => input),
+  yellow: jest.fn().mockImplementation((input) => input),
 }));
 
 const corePackageJson = {

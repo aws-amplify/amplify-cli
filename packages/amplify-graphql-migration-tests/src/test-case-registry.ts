@@ -135,7 +135,7 @@ const namedHasManyBelongsToConnection = /* GraphQL */ `
 `;
 
 const renameTimestampFields = /* GraphQL */ `
-  type Post @model(timestamps: { createdAt: "made", updatedAt: "updated"}) {
+  type Post @model(timestamps: { createdAt: "made", updatedAt: "updated" }) {
     id: ID!
     title: String!
     contents: String

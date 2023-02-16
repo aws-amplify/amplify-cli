@@ -44,7 +44,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = (context_stub as unknown) as $TSContext;
+    const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(1);
   });
@@ -87,7 +87,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = (context_stub as unknown) as $TSContext;
+    const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(3);
   });
@@ -127,7 +127,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = (context_stub as unknown) as $TSContext;
+    const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(5);
   });
@@ -145,7 +145,7 @@ describe('run build command', () => {
       },
     };
 
-    const context_stub_typed = (context_stub as unknown) as $TSContext;
+    const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(1);
   });

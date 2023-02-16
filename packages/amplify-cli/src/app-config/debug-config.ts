@@ -1,15 +1,13 @@
 import _ from 'lodash';
-import {
-  $TSAny, DebugConfigValueNotSetError, projectNotInitializedError, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, DebugConfigValueNotSetError, projectNotInitializedError, pathManager, stateManager } from 'amplify-cli-core';
 
 /**
  * Singleton class to handle debug values
  */
 export class DebugConfig {
   private static instance: DebugConfig;
-  private debug : DebugConfigType
-  private dirty: boolean
+  private debug: DebugConfigType;
+  private dirty: boolean;
   /**
    * Static instance
    */
@@ -72,7 +70,7 @@ export class DebugConfig {
   /**
    * Gets the flag, throws error if not written to file
    */
-  getCanSendReport() : boolean {
+  getCanSendReport(): boolean {
     if (this.dirty) {
       throw new DebugConfigValueNotSetError();
     }
@@ -83,7 +81,7 @@ export class DebugConfig {
   /**
    * return boolean if a prompt is required to get consent
    */
-  promptSendReport() : boolean {
+  promptSendReport(): boolean {
     if (this.dirty) {
       throw new DebugConfigValueNotSetError();
     }
@@ -99,6 +97,6 @@ export class DebugConfig {
   }
 }
 
- type DebugConfigType = {
-   shareProjectConfig: boolean | undefined
- }
+type DebugConfigType = {
+  shareProjectConfig: boolean | undefined;
+};

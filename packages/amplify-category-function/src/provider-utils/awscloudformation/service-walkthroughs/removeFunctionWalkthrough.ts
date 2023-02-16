@@ -12,7 +12,7 @@ export async function removeResource(resourceName?: string): Promise<$TSAny> {
   }
 
   if (resourceName) {
-    const resource = enabledCategoryResources.find(categoryResource => categoryResource.value.resourceName === resourceName);
+    const resource = enabledCategoryResources.find((categoryResource) => categoryResource.value.resourceName === resourceName);
     return resource.value;
   }
 
@@ -31,7 +31,7 @@ export async function removeResource(resourceName?: string): Promise<$TSAny> {
 
 function getEnabledResources(): { name: string; value: { resourceName: string; isLambdaLayer: boolean } }[] {
   const amplifyMeta = stateManager.getMeta();
-  return getAmplifyResourceByCategories(categoryName).map(resource => {
+  return getAmplifyResourceByCategories(categoryName).map((resource) => {
     const service = _.get(amplifyMeta, [categoryName, resource, 'service']);
     return {
       name: `${resource} ${service === ServiceName.LambdaLayer ? '(layer)' : '(function)'}`,

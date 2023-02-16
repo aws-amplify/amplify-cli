@@ -1,7 +1,7 @@
 import { JavaArray } from '../../../velocity/value-mapper/array';
 import { JavaString } from '../../../velocity/value-mapper/string';
 
-const identityMapper = jest.fn(v => v);
+const identityMapper = jest.fn((v) => v);
 
 describe(' Velocity ValueMapper JavaArray', () => {
   beforeEach(() => {

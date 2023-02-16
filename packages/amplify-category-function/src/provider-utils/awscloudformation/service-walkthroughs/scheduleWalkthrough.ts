@@ -152,7 +152,7 @@ function replaceAt(string, index, replace) {
 }
 
 function ValidCronExpression(validation) {
-  return input => {
+  return (input) => {
     return isValidCronExpression(input) ? true : validation.onErrorMsg;
   };
 }
