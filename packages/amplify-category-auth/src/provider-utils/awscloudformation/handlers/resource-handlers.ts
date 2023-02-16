@@ -1,11 +1,11 @@
-import { $TSAny, $TSContext, $TSObject, stateManager, CognitoConfiguration } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
 import { authProviders } from '../assets/string-maps';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoCLIInputs, CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../utils/auth-defaults-appliers';
@@ -77,7 +77,7 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
     if (doesConfigurationIncludeSMS(request)) {
       await printSMSSandboxWarning();
     }
-  } catch (err) {
+  } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
     void context.usageData.emitError(err);
@@ -174,7 +174,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning();
     }
-  } catch (err) {
+  } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error updating the auth resource');
     void context.usageData.emitError(err);

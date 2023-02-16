@@ -1,6 +1,7 @@
-import { $TSContext, FeatureFlags, CognitoConfiguration } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags } from 'amplify-cli-core';
 import _ from 'lodash';
 import { immutableAttributes, safeDefaults } from '../constants';
+import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';

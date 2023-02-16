@@ -8,7 +8,6 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
-  CognitoConfiguration,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { copySync, ensureDirSync, existsSync } from 'fs-extra';
@@ -17,6 +16,7 @@ import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { UserPoolGroupMetadata } from '../auth-stack-builder/user-pool-group-stack-transform';
 import { adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot } from '../constants';
+import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
 

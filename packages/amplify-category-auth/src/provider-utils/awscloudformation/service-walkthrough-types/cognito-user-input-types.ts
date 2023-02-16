@@ -1,7 +1,8 @@
 // Some convenience types for the existing service walkthrough logic
 
-import { $TSObject, CognitoConfiguration } from 'amplify-cli-core';
+import { $TSObject } from 'amplify-cli-core';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
+import { CognitoConfiguration } from './awsCognito-user-input-types';
 
 export type AuthTriggerPermissions = {
   policyName: string;

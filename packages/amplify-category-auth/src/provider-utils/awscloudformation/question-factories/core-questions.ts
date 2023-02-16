@@ -3,7 +3,7 @@
 import inquirer from 'inquirer';
 import { uniq, flatten } from 'lodash';
 import chalk, { Chalk } from 'chalk';
-import { $TSAny, $TSContext, CognitoConfiguration } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 /**
  * Input object for parseInputs
@@ -58,11 +58,11 @@ export const parseInputs = async (
     default: () => {
       // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
-      if (context.updatingAuth && context.updatingAuth[input.key as keyof CognitoConfiguration] !== undefined) {
+      if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
         if (input.key === 'triggers') {
           return triggerDefaults(context, input, getAllMaps(context.updatingAuth)[input.map]);
         }
-        return context.updatingAuth[input.key as keyof CognitoConfiguration];
+        return context.updatingAuth[input.key];
       }
       // if not editing or no previous value, get defaults (either w/ or w/out social provider flow)
       return getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
@@ -114,7 +114,7 @@ export const parseInputs = async (
 const iteratorQuestion = (input: $TSAny, question: $TSAny, context: $TSContext) => {
   if (context.updatingAuth?.[input.iterator as keyof CognitoConfiguration]) {
     question = {
-      choices: context.updatingAuth[input.iterator as keyof CognitoConfiguration].map((i: $TSAny) => ({
+      choices: context.updatingAuth[input.iterator].map((i: $TSAny) => ({
         name: i,
         value: i,
       })),

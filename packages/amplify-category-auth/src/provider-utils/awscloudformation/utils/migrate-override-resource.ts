@@ -1,10 +1,13 @@
-import { $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import {
+  CognitoCLIInputs,
   CognitoConfiguration,
   MfaResult,
   ServiceQuestionsBaseResult,
@@ -14,8 +17,7 @@ import {
   PasswordRecoveryResult,
   AdminQueriesResult,
   PasswordPolicyResult,
-} from 'amplify-cli-core';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+} from '../service-walkthrough-types/awsCognito-user-input-types';
 
 /**
  * migrates resources to support override feature
@@ -54,14 +56,10 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
   } catch (e) {
     rollback(authResourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    throw new AmplifyError(
-      'MigrationError',
-      {
-        message: `There was an error migrating your project: ${e.message}`,
-        details: `Migration operations are rolled back.`,
-      },
-      e,
-    );
+    throw new AmplifyError('MigrationError', {
+      message: `There was an error migrating your project: ${e.message}`,
+      details: `Migration operations are rolled back.`,
+    }, e);
   } finally {
     cleanUp(backupAuthResourceFolder);
     cleanUp(backupUserPoolGroupResourceFolder);
