@@ -1,5 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
@@ -444,7 +444,7 @@ const headlessImport = async (
   };
 };
 
-const ensureHeadlessParameters = (headlessParams: ImportS3HeadlessParameters): S3EnvSpecificResourceParameters => {
+export const ensureHeadlessParameters = (headlessParams: ImportS3HeadlessParameters): S3EnvSpecificResourceParameters => {
   // If we are doing headless mode, validate parameter presence and overwrite the input values from env specific params since they can be
   // different for the current env operation (eg region can mismatch)
 
@@ -460,7 +460,10 @@ const ensureHeadlessParameters = (headlessParams: ImportS3HeadlessParameters): S
   }
 
   if (missingParams.length > 0) {
-    throw new Error(`storage headless is missing the following inputParams ${missingParams.join(', ')}`);
+    throw new AmplifyError( 'InputValidationError', {
+      message: `storage headless is missing the following inputParams ${missingParams.join(', ')}`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
+    });
   }
 
   const envSpecificParameters: S3EnvSpecificResourceParameters = {

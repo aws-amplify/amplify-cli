@@ -1,5 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyError, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import Enquirer from 'enquirer';
@@ -455,7 +455,7 @@ const headlessImport = async (
   };
 };
 
-const ensureHeadlessParameters = (
+export const ensureHeadlessParameters = (
   resourceParameters: DynamoDBResourceParameters,
   headlessParams: ImportDynamoDBHeadlessParameters,
 ): DynamoDBEnvSpecificResourceParameters => {
@@ -474,15 +474,19 @@ const ensureHeadlessParameters = (
   }
 
   if (missingParams.length > 0) {
-    throw new Error(`storage headless is missing the following inputParams ${missingParams.join(', ')}`);
+    throw new AmplifyError( 'InputValidationError', {
+      message: `storage headless is missing the following inputParams ${missingParams.join(', ')}`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
+    }); 
   }
 
   const tableParams = Object.keys(headlessParams.tables).filter(t => t === resourceParameters.resourceName);
 
   if (tableParams?.length !== 1) {
-    throw new Error(
-      `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`,
-    );
+    throw new AmplifyError( 'InputValidationError', {
+      message: `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
+    });
   }
 
   const envSpecificParameters: DynamoDBEnvSpecificResourceParameters = {
