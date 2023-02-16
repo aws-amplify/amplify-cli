@@ -31,7 +31,7 @@ if (!fs.existsSync(path.dirname(dest))) {
 }
 
 if (process.platform === 'win32') {
-  cmdShim(src, dest, err => {
+  cmdShim(src, dest, (err) => {
     if (err) {
       console.log(err);
       process.exit(1);

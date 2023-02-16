@@ -34,7 +34,7 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
     const existingAttrDefinition = table.Properties.AttributeDefinitions;
     assertNotIntrinsicFunction(existingAttrDefinition);
 
-    const attributeDefinition = _.filter(existingAttrDefinition, defs => attributesUsedInKey.includes(defs.AttributeName));
+    const attributeDefinition = _.filter(existingAttrDefinition, (defs) => attributesUsedInKey.includes(defs.AttributeName));
 
     return { gsi: addedGSI, attributeDefinition };
   }
@@ -96,7 +96,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
     });
   }
 
-  const indexNames = gsis.map(g => g.IndexName);
+  const indexNames = gsis.map((g) => g.IndexName);
   if (!indexNames.includes(indexName)) {
     throw new AmplifyError('ConfigurationError', {
       message: `Table ${table.Properties.TableName || '{UnnamedTable}'} does not contain GSI ${indexName}`,

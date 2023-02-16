@@ -18,7 +18,7 @@ export class VersionUpgradePipelineBuilder {
   }
 
   build(): VersionUpgradePipeline {
-    return version => {
+    return (version) => {
       return this.transformationFunctions.slice(this.versionIndexMap.get(version));
     };
   }

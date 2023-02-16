@@ -3,19 +3,19 @@ import { createTables, describeTables, getUpdateTableInput, updateTables } from 
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
 
 export type MockDynamoDBConfig = {
-  tables: { Properties: CreateTableInput, isNewlyAdded: boolean }[];
+  tables: { Properties: CreateTableInput; isNewlyAdded: boolean }[];
 };
 
 export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: MockDynamoDBConfig): Promise<MockDynamoDBConfig> {
-  const tables = config.tables.map(table => table.Properties);
+  const tables = config.tables.map((table) => table.Properties);
   const existingTables = await dynamoDbClient.listTables().promise();
   const existingTablesWithDetails = await describeTables(dynamoDbClient, existingTables.TableNames);
-  const tablesToCreate = tables.filter(t => {
+  const tablesToCreate = tables.filter((t) => {
     const tableName = t.TableName;
     return !existingTables.TableNames.includes(tableName);
   });
 
-  const tablesToUpdate = tables.filter(t => {
+  const tablesToUpdate = tables.filter((t) => {
     const tableName = t.TableName;
     return existingTables.TableNames.includes(tableName);
   });
@@ -26,8 +26,8 @@ export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: Moc
   }, []);
   await updateTables(dynamoDbClient, updateTableInputs);
 
-  config?.tables?.forEach( table => {
-    table.isNewlyAdded = tablesToCreate.map(t => t?.TableName)?.includes(table?.Properties?.TableName);
+  config?.tables?.forEach((table) => {
+    table.isNewlyAdded = tablesToCreate.map((t) => t?.TableName)?.includes(table?.Properties?.TableName);
   });
   return config;
 }
@@ -35,7 +35,7 @@ export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: Moc
 export function configureDDBDataSource(config, ddbConfig) {
   return {
     ...config,
-    dataSources: config.dataSources.map(d => {
+    dataSources: config.dataSources.map((d) => {
       if (d.type !== 'AMAZON_DYNAMODB') {
         return d;
       }

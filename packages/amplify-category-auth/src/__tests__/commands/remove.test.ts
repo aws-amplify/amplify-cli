@@ -42,7 +42,7 @@ stateManagerMock.getMeta.mockReturnValue({
 });
 
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
-AmplifyErrorMock.mockImplementation(() => (new Error('test error') as unknown) as any);
+AmplifyErrorMock.mockImplementation(() => new Error('test error') as unknown as any);
 
 const removeResourceMock = jest.fn().mockResolvedValue({
   service: 'Cognito',
@@ -57,7 +57,7 @@ const mockContext = {
     first: 'mockFirst',
   },
 };
-const ContextStubTyped = (mockContext as unknown) as $TSContext;
+const ContextStubTyped = mockContext as unknown as $TSContext;
 
 beforeEach(() => jest.clearAllMocks());
 

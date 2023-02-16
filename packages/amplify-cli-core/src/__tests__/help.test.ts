@@ -207,7 +207,7 @@ describe('amplify help functions: ', () => {
 
   it('run help invalid command', () => {
     let mockContext: $TSContext;
-    mockContext = ({
+    mockContext = {
       input: {
         argv: ['node', 'amplify', 'invalid', 'command', '-h'],
         command: 'help',
@@ -215,7 +215,7 @@ describe('amplify help functions: ', () => {
         options: { help: true, yes: false },
         plugin: 'core',
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
 
     runHelp(mockContext, commandsInfo);
     expect(printer.info).toBeCalledWith('  ' + 'amplify <command> <subcommand> [flags]');
@@ -224,7 +224,7 @@ describe('amplify help functions: ', () => {
   it('run help command (mock)', () => {
     let mockContext: $TSContext;
 
-    mockContext = ({
+    mockContext = {
       print: {
         info: jest.fn(),
       },
@@ -235,7 +235,7 @@ describe('amplify help functions: ', () => {
         options: { help: true, yes: false },
         plugin: 'mock',
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
     runHelp(mockContext, commandsInfo);
     expect(printer.info).toBeCalledWith('  ' + 'amplify mock <subcommand>');
   });
@@ -243,7 +243,7 @@ describe('amplify help functions: ', () => {
   it('run help subcommand (mock function)', () => {
     let mockContext: $TSContext;
 
-    mockContext = ({
+    mockContext = {
       print: {
         info: jest.fn(),
       },
@@ -254,7 +254,7 @@ describe('amplify help functions: ', () => {
         options: { help: true, yes: false },
         plugin: 'mock',
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
     runHelp(mockContext, commandsInfo);
     expect(printer.info).toBeCalledWith('  ' + 'amplify mock function [flags]');
   });

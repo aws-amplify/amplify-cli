@@ -1,7 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-description */
-import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
   validateAddStorageRequest,
@@ -111,9 +109,9 @@ export async function migrateStorageCategory(context: any) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises: any = [];
 
-  Object.keys(amplifyMeta).forEach(categoryName => {
+  Object.keys(amplifyMeta).forEach((categoryName) => {
     if (categoryName === AmplifyCategories.STORAGE) {
-      Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+      Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
         try {
           const providerController = require(`./provider-utils/${amplifyMeta[AmplifyCategories.STORAGE][resourceName].providerPlugin}`);
 
@@ -165,12 +163,14 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
 
   for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
-      const providerPlugin = 'providerPlugin' in resourceOpsMapping[resourceName]
-        ? resourceOpsMapping[resourceName].providerPlugin
-        : amplifyMeta[storageCategory][resourceName].providerPlugin;
-      const service = 'service' in resourceOpsMapping[resourceName]
-        ? resourceOpsMapping[resourceName].service
-        : amplifyMeta[storageCategory][resourceName].service;
+      const providerPlugin =
+        'providerPlugin' in resourceOpsMapping[resourceName]
+          ? resourceOpsMapping[resourceName].providerPlugin
+          : amplifyMeta[storageCategory][resourceName].providerPlugin;
+      const service =
+        'service' in resourceOpsMapping[resourceName]
+          ? resourceOpsMapping[resourceName].service
+          : amplifyMeta[storageCategory][resourceName].service;
 
       if (providerPlugin) {
         const providerController = await import(`./provider-utils/${providerPlugin}`);
@@ -265,7 +265,7 @@ export async function initEnv(context: any) {
     tasks.push(...allResources);
   }
 
-  const storageTasks = tasks.map(storageResource => {
+  const storageTasks = tasks.map((storageResource) => {
     const { resourceName, service } = storageResource;
 
     return async () => {

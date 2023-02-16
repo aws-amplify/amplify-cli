@@ -29,7 +29,7 @@ describe('amplify add interactions', () => {
       FunctionArn: functionArn,
       BotName: botName,
       Region: region,
-    } = Object.keys(meta.interactions).map(key => meta.interactions[key])[0].output;
+    } = Object.keys(meta.interactions).map((key) => meta.interactions[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(botName).toBeDefined();
     expect(region).toBeDefined();

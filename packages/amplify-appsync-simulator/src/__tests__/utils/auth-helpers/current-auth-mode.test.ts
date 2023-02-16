@@ -1,10 +1,5 @@
 import { getAuthorizationMode } from '../../../utils/auth-helpers/current-auth-mode';
-import {
-  extractHeader,
-  getAllowedAuthTypes,
-  isValidOIDCToken,
-  extractJwtToken,
-} from '../../../utils/auth-helpers/helpers';
+import { extractHeader, getAllowedAuthTypes, isValidOIDCToken, extractJwtToken } from '../../../utils/auth-helpers/helpers';
 import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncAPIConfig } from '../../../type-definition';
 
 jest.mock('../../../utils/auth-helpers/helpers');
@@ -156,5 +151,3 @@ describe('getAuthorizationMode', () => {
     expect(() => getAuthorizationMode({}, APPSYNC_CONFIG)).toThrow('UnauthorizedException: Missing authorization');
   });
 });
-
-

@@ -93,7 +93,7 @@ export class Recorder {
   }
 
   getRecording(): string {
-    return [JSON.stringify(this.recording.header), ...this.recording.frames.map(frame => JSON.stringify(frame))].join('\n');
+    return [JSON.stringify(this.recording.header), ...this.recording.frames.map((frame) => JSON.stringify(frame))].join('\n');
   }
 
   getRecordingFrames(): Readonly<RecordingFrame[]> {

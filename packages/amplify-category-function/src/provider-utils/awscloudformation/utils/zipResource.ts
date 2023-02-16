@@ -10,11 +10,11 @@ export const zipPackage = (zipEntries: ZipEntry[], packageFileName: string): Pro
       file.on('close', () => {
         resolve('Successfully zipped');
       });
-      file.on('error', err => {
+      file.on('error', (err) => {
         reject(new Error(`Failed to zip with error: [${err}]`));
       });
       zip.pipe(file);
-      zipEntries.forEach(entry => {
+      zipEntries.forEach((entry) => {
         if (entry.sourceFolder) {
           zip.glob('**/*', {
             cwd: entry.sourceFolder,

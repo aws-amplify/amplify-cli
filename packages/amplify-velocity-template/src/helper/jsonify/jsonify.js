@@ -12,11 +12,11 @@ function getVmText(macro, vmText, third) {
   });
 }
 
-module.exports = function(Velocity, utils, BLOCK_TYPES) {
+module.exports = function (Velocity, utils, BLOCK_TYPES) {
   function getPath(ast) {
     var ret = [ast.id];
 
-    utils.forEach(ast.path, function(a) {
+    utils.forEach(ast.path, function (a) {
       var isIgnore = a.type === 'method' && a.id === 'size';
       var isGet = a.type === 'method' && a.id.indexOf('get') === 0 && a.args === false;
       if (isIgnore) {
@@ -34,7 +34,7 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
   }
 
   utils.mixin(Velocity.prototype, {
-    toBasicType: function(astType) {
+    toBasicType: function (astType) {
       if (astType.ignore) return;
 
       var ast = astType.real;
@@ -47,7 +47,7 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       this.setRef(ast, this.getLeaf(astType), isMaps);
     },
 
-    setRef: function(ast, text, isMaps) {
+    setRef: function (ast, text, isMaps) {
       var paths = getPath(ast);
       var last = paths.pop();
       var context = this.context;
@@ -58,37 +58,37 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
 
       utils.forEach(
         paths,
-        function(path) {
+        function (path) {
           if (!context[path] || typeof context[path] === 'string') {
             context[path] = {};
           }
 
           context = context[path];
         },
-        this
+        this,
       );
 
       leafs.push(text);
       context[last] = '{@' + len + '@}';
     },
 
-    toVTL: function() {
+    toVTL: function () {
       var leafs = this.leafs;
       var context = JSON.stringify(this.context, false, 2);
 
       utils.forEach(
         leafs,
-        function(leaf, i) {
+        function (leaf, i) {
           var tpl = '"{@' + i + '@}"';
           context = context.replace(tpl, leaf);
         },
-        this
+        this,
       );
 
       return context;
     },
 
-    getLeaf: function(leaf) {
+    getLeaf: function (leaf) {
       var ret = '';
       var real = leaf.real;
 
@@ -109,11 +109,11 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       return ret;
     },
 
-    getMethodInEachCall: function(leaf) {
+    getMethodInEachCall: function (leaf) {
       return '"function(){}"';
     },
 
-    getMethodCall: function(leaf) {
+    getMethodCall: function (leaf) {
       return '"function(){}"';
       /*
        *      var ast = leaf.real;
@@ -137,7 +137,7 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
 
     _callMacro: getVmText,
 
-    getEachVTL: function(leaf) {
+    getEachVTL: function (leaf) {
       var real = leaf.real;
       var paths = getPath(real.from);
       var last = paths.pop();
@@ -155,7 +155,7 @@ module.exports = function(Velocity, utils, BLOCK_TYPES) {
       return this._callMacro(macro, vmText);
     },
 
-    eval: function(str) {
+    eval: function (str) {
       if (str) {
         var asts = Parser.parse(str);
         if (this instanceof Velocity) {

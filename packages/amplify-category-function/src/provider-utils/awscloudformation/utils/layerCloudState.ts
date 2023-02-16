@@ -34,7 +34,7 @@ export class LayerCloudState {
       const stackList = await cfnClient.listStackResources();
       const layerStacks = stackList?.StackResourceSummaries?.filter(
         // do this because cdk does some rearranging of resources
-        stack => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
+        (stack) => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
       );
       let detailedLayerStack;
 
@@ -47,7 +47,7 @@ export class LayerCloudState {
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
-        detailedLayerStack.forEach(stack => {
+        detailedLayerStack.forEach((stack) => {
           if (stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
             // eslint-disable-next-line no-param-reassign
             layerVersion.LogicalName = stack.LogicalResourceId;
@@ -55,10 +55,10 @@ export class LayerCloudState {
           }
         });
 
-        detailedLayerStack.forEach(stack => {
+        detailedLayerStack.forEach((stack) => {
           if (
-            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission'
-            && stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
+            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
+            stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
           ) {
             // eslint-disable-next-line no-param-reassign
             layerVersion.permissions = layerVersion.permissions || [];

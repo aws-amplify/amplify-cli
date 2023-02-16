@@ -16,7 +16,7 @@ export function unmarshall(raw, isRaw = true) {
 
   // Unwrap lists
   if (Array.isArray(content)) {
-    return content.map(value => unmarshall(value, false));
+    return content.map((value) => unmarshall(value, false));
   }
 
   // Unwrap maps
@@ -26,7 +26,7 @@ export function unmarshall(raw, isRaw = true) {
         ...sum,
         [key]: unmarshall(value, false),
       }),
-      {}
+      {},
     );
   }
 

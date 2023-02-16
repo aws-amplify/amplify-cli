@@ -72,10 +72,12 @@ describe('can create a ui builder component', () => {
   it('does not call renderSchemaToTemplate for index file if no schema', () => {
     generateAmplifyUiBuilderIndexFile(context, []);
     expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).not.toBeCalled();
-  })
+  });
   it('calls the renderManager for utils file w/ validation, formatter, and fetchByPath helpers if there is a form', () => {
     generateAmplifyUiBuilderUtilFile(context, { hasForms: true, hasViews: false });
-    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalledWith(expect.arrayContaining(['validation', 'formatter', 'fetchByPath']));
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalledWith(
+      expect.arrayContaining(['validation', 'formatter', 'fetchByPath']),
+    );
   });
   it('calls the renderManager for utils file w/ formatter helper if there is a view', () => {
     generateAmplifyUiBuilderUtilFile(context, { hasForms: false, hasViews: true });

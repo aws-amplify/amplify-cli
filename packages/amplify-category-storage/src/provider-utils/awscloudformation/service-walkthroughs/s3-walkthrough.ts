@@ -425,7 +425,7 @@ function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TS
     return undefined;
   }
   const resources: Record<string, $TSAny> = {}; //maps cx resource to
-  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
     if (
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === AmplifySupportedService.S3 &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
@@ -663,7 +663,7 @@ export const resourceAlreadyExists = () => {
   if (amplifyMeta[AmplifyCategories.STORAGE]) {
     const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
 
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === AmplifySupportedService.S3) {
         resourceName = resource;
       }
@@ -687,7 +687,7 @@ export function checkIfAuthExists() {
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
 
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }

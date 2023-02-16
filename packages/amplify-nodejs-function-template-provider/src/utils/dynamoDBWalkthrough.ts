@@ -30,7 +30,7 @@ export async function askDynamoDBQuestions(context: $TSContext, currentProjectOn
           context.print.error('There are no DynamoDB resources configured in your project currently');
           break;
         }
-        Object.keys(storageResources).forEach(resourceName => {
+        Object.keys(storageResources).forEach((resourceName) => {
           if (storageResources[resourceName].service === 'DynamoDB') {
             dynamoDbProjectResources.push(resourceName);
           }
@@ -140,7 +140,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
   const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
   const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
   const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
-  const modelNames = Object.keys(directiveMap.types).filter(typeName => directiveMap.types[typeName].includes('model'));
+  const modelNames = Object.keys(directiveMap.types).filter((typeName) => directiveMap.types[typeName].includes('model'));
 
   let targetModelNames: string[] = [];
   if (modelNames.length === 0) {
@@ -166,7 +166,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
     }
   }
 
-  const triggerEventSourceMappings = targetModelNames.map(modelName => {
+  const triggerEventSourceMappings = targetModelNames.map((modelName) => {
     const streamArnParamRef = {
       'Fn::ImportValue': {
         'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),

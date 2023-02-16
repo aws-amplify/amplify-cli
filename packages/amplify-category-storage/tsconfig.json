@@ -5,11 +5,7 @@
     "rootDir": "src",
     "allowJs": false
   },
-  "exclude": [
-    "coverage",
-    "lib",
-    "resources"
-  ],
+  "exclude": ["coverage", "lib", "resources"],
   "references": [
     {
       "path": "../amplify-cli-core"
@@ -28,6 +24,6 @@
     },
     {
       "path": "../amplify-environment-parameters"
-    },
+    }
   ]
 }

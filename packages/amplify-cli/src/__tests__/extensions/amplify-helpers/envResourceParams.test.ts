@@ -1,7 +1,5 @@
 import * as fs from 'fs-extra';
-import {
-  pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext,
-} from 'amplify-cli-core';
+import { pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext } from 'amplify-cli-core';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import {
   saveEnvResourceParameters,
@@ -45,16 +43,10 @@ beforeEach(async () => {
 });
 
 test('saveEnvResourceParams appends to existing params', () => {
-  getEnvParamManager('testEnv')
-    .getResourceParamManager('testCategory', 'testResourceName')
-    .setParam('existingParam', 'existingParamValue');
+  getEnvParamManager('testEnv').getResourceParamManager('testCategory', 'testResourceName').setParam('existingParam', 'existingParamValue');
 
   saveEnvResourceParameters(undefined, 'testCategory', 'testResourceName', { newParam: 'newParamValue' });
-  expect(
-    getEnvParamManager('testEnv')
-      .getResourceParamManager('testCategory', 'testResourceName')
-      .getAllParams(),
-  ).toEqual({
+  expect(getEnvParamManager('testEnv').getResourceParamManager('testCategory', 'testResourceName').getAllParams()).toEqual({
     existingParam: 'existingParamValue',
     newParam: 'newParamValue',
   });
@@ -101,10 +93,8 @@ test('loadEnvResourceParameters load params from deployment secrets and env para
 });
 
 test('removeResourceParameters remove resource params from team provider info', () => {
-  getEnvParamManager('testEnv')
-    .getResourceParamManager('testCategory', 'testResourceName')
-    .setParam('existingParam', 'existingParamValue');
-  removeResourceParameters(({} as unknown) as $TSContext, 'testCategory', 'testResourceName');
+  getEnvParamManager('testEnv').getResourceParamManager('testCategory', 'testResourceName').setParam('existingParam', 'existingParamValue');
+  removeResourceParameters({} as unknown as $TSContext, 'testCategory', 'testResourceName');
   expect(getEnvParamManager('testEnv').hasResourceParamManager('testCategory', 'testResourceName')).toBe(false);
 });
 

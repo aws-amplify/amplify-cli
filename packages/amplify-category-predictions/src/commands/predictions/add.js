@@ -6,9 +6,9 @@ let options;
 
 module.exports = {
   name: subcommand,
-  run: async context =>
+  run: async (context) =>
     promptCategory()
-      .then(result => {
+      .then((result) => {
         options = {
           providerPlugin: result.provider,
         };
@@ -19,7 +19,7 @@ module.exports = {
         }
         return providerController.addResource(context, category, result.fileName, options);
       })
-      .then(resourceName => {
+      .then((resourceName) => {
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
@@ -30,7 +30,7 @@ module.exports = {
         );
         print.info('');
       })
-      .catch(err => {
+      .catch((err) => {
         context.print.info(err.stack);
         context.print.error('An error occurred when adding the predictions resource');
         context.usageData.emitError(err);

@@ -116,11 +116,15 @@ describe('auth import userpool only', () => {
   it('imported user pool only should allow iam auth in graphql api', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-    await addApi(projectRoot, {
-      'Amazon Cognito User Pool': {},
-      IAM: {},
-      transformerVersion: 2,
-    }, false);
+    await addApi(
+      projectRoot,
+      {
+        'Amazon Cognito User Pool': {},
+        IAM: {},
+        transformerVersion: 2,
+      },
+      false,
+    );
     await updateApiSchema(projectRoot, projectPrefix, 'model_with_owner_and_iam_auth.graphql');
     await amplifyPush(projectRoot);
 

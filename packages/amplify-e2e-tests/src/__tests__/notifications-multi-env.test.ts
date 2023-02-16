@@ -8,9 +8,7 @@ import {
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { addEnvironment, listEnvironment } from '../environment/env';
-import {
-  getShortId,
-} from '../import-helpers';
+import { getShortId } from '../import-helpers';
 
 describe('notification category test - SMS', () => {
   const testChannel = 'SMS';

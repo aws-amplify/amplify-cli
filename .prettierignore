@@ -1,0 +1,6 @@
+.yarn
+packages/*/lib
+coverage
+node_modules
+API.md
+CHANGELOG.md

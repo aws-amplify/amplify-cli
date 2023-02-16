@@ -60,11 +60,13 @@ describe('nodejs', () => {
       overrideFunctionCodeNode(projRoot, fnName, 'get-api-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const { Region: region, Name: functionName } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIIDOUTPUT'))[0];
+      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter((value) =>
+        value.endsWith('GRAPHQLAPIIDOUTPUT'),
+      )[0];
       const fnResponse = await invokeFunction(functionName, JSON.stringify({ idKey }), region);
 
       expect(fnResponse.StatusCode).toBe(200);

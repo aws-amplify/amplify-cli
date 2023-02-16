@@ -2,8 +2,8 @@ import { confirmPrompt } from '../../../extensions/amplify-helpers/confirm-promp
 
 jest.mock('inquirer', () => {
   return {
-    prompt: input => {
-      return new Promise(resolve => resolve({ yesno: input }));
+    prompt: (input) => {
+      return new Promise((resolve) => resolve({ yesno: input }));
     },
   };
 });

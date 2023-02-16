@@ -5,10 +5,10 @@ import { RESOLVER_KIND, AppSyncSimulatorUnitResolverConfig } from '../../type-de
 describe('Unit resolver', () => {
   const getDataLoader = jest.fn();
   const getMappingTemplate = jest.fn();
-  const simulatorContext: AmplifyAppSyncSimulator = ({
+  const simulatorContext: AmplifyAppSyncSimulator = {
     getDataLoader,
     getMappingTemplate,
-  } as any) as AmplifyAppSyncSimulator;
+  } as any as AmplifyAppSyncSimulator;
   let baseConfig;
 
   beforeEach(() => {
@@ -99,7 +99,7 @@ describe('Unit resolver', () => {
       getDataLoader.mockReturnValue({
         load: dataFetcher,
       });
-      getMappingTemplate.mockImplementation(templateName => {
+      getMappingTemplate.mockImplementation((templateName) => {
         return templates[templateName];
       });
 

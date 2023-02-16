@@ -85,10 +85,10 @@ describe('deployment state machine', () => {
     (fns.tableReadyWaitFn as jest.Mock).mockResolvedValue(undefined);
   });
 
-  it('should call deployment function multiple times when there are multiple stacks to be deployed', done => {
+  it('should call deployment function multiple times when there are multiple stacks to be deployed', (done) => {
     const machine = createDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
+      .onTransition((state) => {
         if (state.value === 'deployed') {
           expect(fns.deployFn).toHaveBeenCalledTimes(3);
           expect(fns.deploymentWaitFn).toHaveBeenCalledTimes(3);
@@ -122,9 +122,9 @@ describe('deployment state machine', () => {
       .send('DEPLOY');
   });
 
-  it('should rollback when one of the deployment fails in reverse order of deployment', done => {
+  it('should rollback when one of the deployment fails in reverse order of deployment', (done) => {
     //  mock deployment fn to fail for second deployment
-    (fns.deployFn as jest.Mock).mockImplementation(stack => {
+    (fns.deployFn as jest.Mock).mockImplementation((stack) => {
       if (stack.stackTemplateUrl === initialContext.stacks[2].deployment.stackTemplateUrl) {
         return Promise.reject();
       }
@@ -141,7 +141,7 @@ describe('deployment state machine', () => {
 
     const machine = createDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
+      .onTransition((state) => {
         if (state.value === 'rolledBack') {
           const rollbackMock = fns.rollbackFn as jest.Mock;
           const deployMock = fns.deployFn as jest.Mock;
@@ -187,9 +187,9 @@ describe('deployment state machine', () => {
       .send('DEPLOY');
   });
 
-  it('should go to failed state when rollback fails', done => {
+  it('should go to failed state when rollback fails', (done) => {
     const deployFn = fns.deployFn as jest.Mock;
-    deployFn.mockImplementation(stack => {
+    deployFn.mockImplementation((stack) => {
       if (stack.stackTemplateUrl === initialContext.stacks[2].deployment.stackTemplateUrl) {
         return Promise.reject();
       }
@@ -200,7 +200,7 @@ describe('deployment state machine', () => {
 
     const machine = createDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
+      .onTransition((state) => {
         if (state.value === 'failed') {
           expect(deployFn).toHaveBeenCalledTimes(3);
           expect(rollBackFn).toHaveBeenCalledTimes(1);
@@ -276,10 +276,10 @@ describe('rollback state machine', () => {
     (fns.tableReadyWaitFn as jest.Mock).mockResolvedValue(undefined);
   });
 
-  it('should call deployment function multiple times when there are multiple stacks to be deployed', done => {
+  it('should call deployment function multiple times when there are multiple stacks to be deployed', (done) => {
     const machine = createRollbackDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
+      .onTransition((state) => {
         if (state.value === 'rolledBack') {
           // pre deployment functions only called once
           expect(fns.preRollbackTableCheck).toHaveBeenCalledTimes(1);
@@ -315,9 +315,9 @@ describe('rollback state machine', () => {
       .send('ROLLBACK');
   });
 
-  it('should go to failed state when rollback deployment fails', done => {
+  it('should go to failed state when rollback deployment fails', (done) => {
     const rollbackFn = fns.rollbackFn as jest.Mock;
-    rollbackFn.mockImplementation(stack => {
+    rollbackFn.mockImplementation((stack) => {
       if (stack.stackTemplateUrl === initialContext.stacks[1].rollback.stackTemplateUrl) {
         return Promise.reject();
       }
@@ -326,7 +326,7 @@ describe('rollback state machine', () => {
 
     const machine = createRollbackDeploymentMachine(initialContext, fns);
     interpret(machine)
-      .onTransition(state => {
+      .onTransition((state) => {
         if (state.value === 'failed') {
           // pre deployment functions only called once
           expect(fns.preRollbackTableCheck).toHaveBeenCalledTimes(1);

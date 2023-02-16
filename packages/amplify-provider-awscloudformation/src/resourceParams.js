@@ -16,7 +16,7 @@ function saveResourceParameters(context, category, resource, parameters, envSpec
   const sharedParams = { ...parameters };
 
   // extracting env-specific params from parameters object
-  envSpecificParamsName.forEach(paramName => {
+  envSpecificParamsName.forEach((paramName) => {
     if (paramName in parameters) {
       envSpecificParams[paramName] = parameters[paramName];
       delete sharedParams[paramName];

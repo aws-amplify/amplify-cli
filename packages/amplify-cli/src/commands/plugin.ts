@@ -12,10 +12,10 @@ export const run = async (context: Context) => {
 
   const subCommandPath = path.normalize(path.join(__dirname, 'plugin', subCommand));
   import(subCommandPath)
-    .then(async subCommandModule => {
+    .then(async (subCommandModule) => {
       await subCommandModule.run(context);
     })
-    .catch(err => {
+    .catch((err) => {
       context.print.error(`Error executing command amplify plugin ${subCommand}`);
       context.print.error(err.message || err.stack || JSONUtilities.stringify(err));
       void context.usageData.emitError(err);

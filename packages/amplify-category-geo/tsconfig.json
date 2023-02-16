@@ -5,7 +5,5 @@
     "rootDir": "./src",
     "strict": true
   },
-  "references": [
-    {"path": "../amplify-cli-core"}
-  ]
+  "references": [{ "path": "../amplify-cli-core" }]
 }

@@ -135,7 +135,9 @@ function initBackendConfig(context, category, resourceName, type) {
 }
 
 async function loadConsoleConfigFromTeamProviderinfo() {
-  return (await ensureEnvParamManager()).instance.getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).getAllParams();
+  return (await ensureEnvParamManager()).instance
+    .getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME)
+    .getAllParams();
 }
 
 async function storeCurrentCloudBackend(context) {
@@ -173,7 +175,7 @@ async function uploadFile(s3, filePath, key) {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName
+    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
     await s3.putObject(s3Params).promise();
     return projectBucket;

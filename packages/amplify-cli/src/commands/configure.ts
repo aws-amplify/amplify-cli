@@ -56,5 +56,5 @@ export const run = async (context: Context) => {
 
 function constructExeInfo(context: Context) {
   context.exeInfo = context.amplify.getProjectDetails();
-  context.exeInfo.inputParams = normalizeInputParams((context as unknown) as $TSContext);
+  context.exeInfo.inputParams = normalizeInputParams(context as unknown as $TSContext);
 }

@@ -3,11 +3,11 @@ import { findModelLambdaTriggers, findSearchableLambdaTriggers } from '../../uti
 import * as path from 'path';
 
 const mockProjectRoot = 'mock-app';
-const mockContext = ({
+const mockContext = {
   amplify: {
     getEnvInfo: jest.fn().mockReturnValue({ projectPath: mockProjectRoot }),
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 describe('Find DDB Lambda Triggers for API Models', () => {
   beforeEach(() => {

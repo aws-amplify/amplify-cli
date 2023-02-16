@@ -19,7 +19,7 @@ jest.mock('amplify-cli-core', () => {
 
   return {
     JSONUtilities: {
-      readJson: jest.fn().mockImplementation(path => {
+      readJson: jest.fn().mockImplementation((path) => {
         const cfnTemplate = {
           Resources: {
             UserPool: {
@@ -31,9 +31,7 @@ jest.mock('amplify-cli-core', () => {
         if ((path === cloudBackendCfnTemplatePath && setInCloudBackendDir) || (path === backendCfnTemplatePath && setInBackendDir)) {
           cfnTemplate.Resources.UserPool.Properties = {
             UserAttributeUpdateSettings: {
-              AttributesRequireVerificationBeforeUpdate: [
-                'email',
-              ],
+              AttributesRequireVerificationBeforeUpdate: ['email'],
             },
           };
         }

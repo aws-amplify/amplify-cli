@@ -26,12 +26,9 @@ const getHashForRevision = (revision: string) => {
 const getChangedFiles = (rev1: string, rev2: string) => {
   const buffer = execSync(`git diff --name-only ${rev1} ${rev2}`);
 
-  const files = buffer
-    .toString()
-    .trim()
-    .split('\n');
+  const files = buffer.toString().trim().split('\n');
 
-  return files.filter(f => !!f.trim());
+  return files.filter((f) => !!f.trim());
 };
 
 const formatFiles = async (files: string[]): Promise<void> => {
@@ -43,8 +40,8 @@ const formatFiles = async (files: string[]): Promise<void> => {
 };
 
 const confirmBranchName = async (rl: readline.Interface, defaultBranchName: string): Promise<string> => {
-  return new Promise<string>(resolve => {
-    rl.question(`Enter a name for the new branch. Default is ${defaultBranchName}\n`, answer => {
+  return new Promise<string>((resolve) => {
+    rl.question(`Enter a name for the new branch. Default is ${defaultBranchName}\n`, (answer) => {
       if (answer.trim() === '') {
         resolve(defaultBranchName);
       } else {
@@ -55,8 +52,8 @@ const confirmBranchName = async (rl: readline.Interface, defaultBranchName: stri
 };
 
 const confirmBranchCreation = async (rl: readline.Interface, branchName: string): Promise<boolean> => {
-  return new Promise<boolean>(resolve => {
-    rl.question(`This will create a new branch called ${branchName}. Continue? (y/n) `, answer => {
+  return new Promise<boolean>((resolve) => {
+    rl.question(`This will create a new branch called ${branchName}. Continue? (y/n) `, (answer) => {
       resolve(answer.toLowerCase() === 'y');
     });
   });

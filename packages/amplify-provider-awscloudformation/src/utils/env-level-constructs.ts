@@ -39,8 +39,11 @@ export const createEnvLevelConstructs = async (context: $TSContext): Promise<voi
   }
 };
 
-const createNetworkResources = async (context: $TSContext, stackName: string, needsVpc: boolean)
-  : Promise<{ NetworkStackS3Url: string }> => {
+const createNetworkResources = async (
+  context: $TSContext,
+  stackName: string,
+  needsVpc: boolean,
+): Promise<{ NetworkStackS3Url: string }> => {
   if (!needsVpc) {
     return {
       NetworkStackS3Url: undefined,
@@ -96,7 +99,7 @@ const envHasContainers = (context: $TSContext): boolean => {
 
   if (apiObj) {
     // eslint-disable-next-line consistent-return, array-callback-return
-    const found = Object.keys(apiObj).some(key => {
+    const found = Object.keys(apiObj).some((key) => {
       const api = apiObj[key];
       if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
         return true;
@@ -110,7 +113,7 @@ const envHasContainers = (context: $TSContext): boolean => {
 
   if (hostingObj) {
     // eslint-disable-next-line consistent-return, array-callback-return
-    const found = Object.keys(hostingObj).some(key => {
+    const found = Object.keys(hostingObj).some((key) => {
       const hosting = hostingObj[key];
       if (hosting.providerPlugin === providerName && hosting.service === 'ElasticContainer') {
         return true;

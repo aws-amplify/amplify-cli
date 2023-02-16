@@ -6,7 +6,11 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -94,7 +98,8 @@ describe('transformer model searchable migration test', () => {
     }
   };
 
-  const createEntry = async (name: string, description: string, count: number) => await runMutation(getCreateTodosMutation(name, description, count));
+  const createEntry = async (name: string, description: string, count: number) =>
+    await runMutation(getCreateTodosMutation(name, description, count));
 
   function getCreateTodosMutation(name: string, description: string, count: number): string {
     return `mutation {

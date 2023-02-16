@@ -1,14 +1,7 @@
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import {
-  StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm,
-} from '@aws-amplify/codegen-ui';
-import {
-  createUiBuilderComponent,
-  createUiBuilderForm,
-  createUiBuilderTheme,
-  generateBaseForms,
-} from './codegenResources';
+import { StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm } from '@aws-amplify/codegen-ui';
+import { createUiBuilderComponent, createUiBuilderForm, createUiBuilderTheme, generateBaseForms } from './codegenResources';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 
 type CodegenResponse<T extends StudioSchema> =
@@ -34,7 +27,7 @@ export const generateUiBuilderComponents = (
   componentSchemas: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
   dataSchema?: GenericDataSchema,
 ): CodegenResponse<StudioComponent>[] => {
-  const componentResults = componentSchemas.map<CodegenResponse<StudioComponent>>(schema => {
+  const componentResults = componentSchemas.map<CodegenResponse<StudioComponent>>((schema) => {
     try {
       const component = createUiBuilderComponent(context, schema, dataSchema);
       return { resultType: 'SUCCESS', schema: component };
@@ -46,7 +39,7 @@ export const generateUiBuilderComponents = (
   });
 
   printer.debug(
-    `Generated ${componentResults.filter(result => result.resultType === 'SUCCESS').length} components in ${getUiBuilderComponentsPath(
+    `Generated ${componentResults.filter((result) => result.resultType === 'SUCCESS').length} components in ${getUiBuilderComponentsPath(
       context,
     )}`,
   );
@@ -61,7 +54,7 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
   if (themeSchemas.length === 0) {
     return [generateDefaultTheme(context)];
   }
-  const themeResults = themeSchemas.map<CodegenResponse<StudioTheme>>(schema => {
+  const themeResults = themeSchemas.map<CodegenResponse<StudioTheme>>((schema) => {
     try {
       const theme = createUiBuilderTheme(context, schema);
       return { resultType: 'SUCCESS', schema: theme };
@@ -73,7 +66,7 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
   });
 
   printer.debug(
-    `Generated ${themeResults.filter(result => result.resultType === 'SUCCESS').length} themes in ${getUiBuilderComponentsPath(context)}`,
+    `Generated ${themeResults.filter((result) => result.resultType === 'SUCCESS').length} themes in ${getUiBuilderComponentsPath(context)}`,
   );
   return themeResults;
 };
@@ -84,9 +77,7 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
 const generateDefaultTheme = (context: $TSContext): CodegenResponse<StudioTheme> => {
   try {
     const theme = createUiBuilderTheme(context, { name: 'studioTheme', values: [] }, { renderDefaultTheme: true });
-    printer.debug(
-      `Generated default theme in ${getUiBuilderComponentsPath(context)}`,
-    );
+    printer.debug(`Generated default theme in ${getUiBuilderComponentsPath(context)}`);
     return { resultType: 'SUCCESS', schema: theme };
   } catch (e) {
     printer.debug(`Failure caught rendering default theme`);
@@ -121,7 +112,10 @@ export const generateUiBuilderForms = (
       printer.debug(`Failure caught processing ${schema.name}`);
       printer.debug(e);
       return {
-        resultType: 'FAILURE', schemaName: schema.name, schema, error: e,
+        resultType: 'FAILURE',
+        schemaName: schema.name,
+        schema,
+        error: e,
       };
     }
   };
@@ -136,7 +130,7 @@ export const generateUiBuilderForms = (
   formResults.push(...generateBaseForms(modelMap).map(codegenForm));
 
   printer.debug(
-    `Generated ${formResults.filter(result => result.resultType === 'SUCCESS').length} forms in ${getUiBuilderComponentsPath(context)}`,
+    `Generated ${formResults.filter((result) => result.resultType === 'SUCCESS').length} forms in ${getUiBuilderComponentsPath(context)}`,
   );
   return formResults;
 };

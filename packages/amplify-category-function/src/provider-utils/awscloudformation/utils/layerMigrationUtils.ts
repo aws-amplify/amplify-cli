@@ -98,14 +98,14 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
   }
 
   /* eslint-disable no-param-reassign */
-  const runtimeCloudTemplateValues = legacyRuntimeArray.map(legacyRuntime => legacyRuntime.cloudTemplateValue);
+  const runtimeCloudTemplateValues = legacyRuntimeArray.map((legacyRuntime) => legacyRuntime.cloudTemplateValue);
   legacyRuntimeArray.forEach((runtime: LegacyRuntime) => {
     runtime.cloudTemplateValue = undefined;
   });
   layerConfiguration.runtimes = legacyRuntimeArray;
 
   await Promise.all(
-    layerConfiguration.runtimes.map(async runtime => {
+    layerConfiguration.runtimes.map(async (runtime) => {
       if (runtime.value === 'nodejs') {
         runtime.runtimePluginId = 'amplify-nodejs-function-runtime-provider';
       } else if (runtime.value === 'python') {
@@ -119,7 +119,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
   /* eslint-enable */
 
   const layerVersions = Object.keys(layerVersionMap)
-    .map(version => parseInt(version, 10))
+    .map((version) => parseInt(version, 10))
     .sort((a, b) => b - a);
 
   const permissions: LegacyPermission[] = layerVersionMap[`${_.first(layerVersions)}`]?.permissions;
@@ -129,7 +129,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
     layerConfiguration.permissions = [defaultLayerPermission];
   } else {
     layerConfiguration.permissions = [];
-    permissions.forEach(permission => {
+    permissions.forEach((permission) => {
       switch (permission.type) {
         case LegacyPermissionEnum.Private:
           layerConfiguration.permissions.push({ type: PermissionEnum.Private });

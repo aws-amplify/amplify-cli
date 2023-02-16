@@ -13,8 +13,8 @@ export async function getAdminApp(body: any): Promise<string> {
         path: adminUiUrl.path,
         method: 'POST',
       },
-      res => {
-        res.on('data', chunk => {
+      (res) => {
+        res.on('data', (chunk) => {
           str += chunk;
         });
         res.on('end', () => {
@@ -22,7 +22,7 @@ export async function getAdminApp(body: any): Promise<string> {
         });
       },
     );
-    req.on('error', err => {
+    req.on('error', (err) => {
       reject(err);
     });
     req.write(JSON.stringify(body));

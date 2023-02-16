@@ -8,7 +8,7 @@ import { invoke } from './utils/invoke';
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context: any) => {
   return {
     checkDependencies: detectDotNet,
-    contribute: async contributionRequest => {
+    contribute: async (contributionRequest) => {
       switch (contributionRequest.selection) {
         case dotnet6:
           return {
@@ -24,7 +24,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           throw new Error(`Unknown selection ${contributionRequest.selection}`);
       }
     },
-    package: async request => packageAssemblies(request, context),
+    package: async (request) => packageAssemblies(request, context),
     build: build,
     invoke: invoke,
   };

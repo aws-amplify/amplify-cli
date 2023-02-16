@@ -39,9 +39,7 @@ export const time = () => ({
 
     try {
       if (jsonTimezone) {
-        return moment()
-          .tz(jsonTimezone)
-          .formatWithJDF(jsonFormat);
+        return moment().tz(jsonTimezone).formatWithJDF(jsonFormat);
       }
 
       return moment().formatWithJDF(jsonFormat);
@@ -84,9 +82,7 @@ export const time = () => ({
     const jsonTimezone = toJSON(timezone);
 
     try {
-      return moment(jsonTimestamp)
-        .tz(jsonTimezone)
-        .formatWithJDF(jsonFormat);
+      return moment(jsonTimestamp).tz(jsonTimezone).formatWithJDF(jsonFormat);
     } catch (e) {
       return null;
     }

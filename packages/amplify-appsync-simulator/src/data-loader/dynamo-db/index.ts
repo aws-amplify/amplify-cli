@@ -72,7 +72,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
             TableName: this.tableName,
             Key: { id: item.id },
             ReturnValues: 'ALL_OLD',
-          }).promise();
+          })
+          .promise();
       }
     } catch (e) {
       throw new Error(`Error while deleting all items from ${this.tableName}`);
@@ -160,12 +161,14 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       ScanIndexForward: scanIndexForward,
       Select: select || 'ALL_ATTRIBUTES',
     };
-    const { Items: items, ScannedCount: scannedCount, LastEvaluatedKey: resultNextToken = null } = await this.client
-      .query(params as any)
-      .promise();
+    const {
+      Items: items,
+      ScannedCount: scannedCount,
+      LastEvaluatedKey: resultNextToken = null,
+    } = await this.client.query(params as any).promise();
 
     return {
-      items: items.map(item => unmarshall(item)),
+      items: items.map((item) => unmarshall(item)),
       scannedCount,
       nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
     };
@@ -243,7 +246,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     const { Items: items, ScannedCount: scannedCount, LastEvaluatedKey: resultNextToken = null } = await this.client.scan(params).promise();
 
     return {
-      items: items.map(item => unmarshall(item)),
+      items: items.map((item) => unmarshall(item)),
       scannedCount,
       nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
     };

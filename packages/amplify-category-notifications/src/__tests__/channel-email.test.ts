@@ -28,7 +28,7 @@ const mockPinpointClient = {
 };
 
 const mockContext = (output: $TSAny, client: $TSAny): $TSContext =>
-  (({
+  ({
     exeInfo: {
       serviceMeta: {
         output,
@@ -39,7 +39,7 @@ const mockContext = (output: $TSAny, client: $TSAny): $TSContext =>
       info: jest.fn(),
       error: jest.fn(),
     },
-  } as unknown) as $TSContext);
+  } as unknown as $TSContext);
 
 describe('channel-FCM', () => {
   test('enable should store role arn', async () => {

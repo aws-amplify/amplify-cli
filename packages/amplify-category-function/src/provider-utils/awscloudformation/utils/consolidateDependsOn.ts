@@ -13,14 +13,14 @@ export const consolidateDependsOnForLambda = (
   if (selectedSettings.includes(resourceAccessSetting)) {
     // insert old lambdaLayer dependsOn if present
     const prevLayersDependsOn: FunctionDependency[] = prevFunctionParametersDependsOn.filter(
-      resource => projectMeta?.function?.[`${resource.resourceName}`]?.service === ServiceName.LambdaLayer,
+      (resource) => projectMeta?.function?.[`${resource.resourceName}`]?.service === ServiceName.LambdaLayer,
     );
     updatedDependsOn = currentDependsOn.concat(prevLayersDependsOn);
   }
   if (selectedSettings.includes(lambdaLayerSetting)) {
     //  insert resource dependsOn
     const prevDependsOnExcludingLayers: FunctionDependency[] = prevFunctionParametersDependsOn.filter(
-      resource => projectMeta?.function?.[`${resource.resourceName}`]?.service !== ServiceName.LambdaLayer,
+      (resource) => projectMeta?.function?.[`${resource.resourceName}`]?.service !== ServiceName.LambdaLayer,
     );
     updatedDependsOn = currentDependsOn.concat(prevDependsOnExcludingLayers);
   }

@@ -50,7 +50,7 @@ describe('amplify add auth...', () => {
     );
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+    const authKey = Object.keys(meta.auth).find((key) => meta.auth[key].service === 'Cognito');
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;

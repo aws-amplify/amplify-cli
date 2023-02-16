@@ -18,6 +18,6 @@ function isBuildStale(resourceDir: string, lastBuildTimeStamp: Date) {
   }
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/**`, { ignore: ['**/dist/**', '**/__pycache__/**'] })
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
   return !!fileUpdatedAfterLastBuild;
 }

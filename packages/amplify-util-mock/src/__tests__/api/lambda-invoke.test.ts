@@ -14,7 +14,7 @@ jest.mock('../../utils/lambda/load-lambda-config', () => ({
 const loadLambdaConfigMock = loadLambdaConfig as jest.MockedFunction<typeof loadLambdaConfig>;
 
 jest.mock('@aws-amplify/amplify-category-function', () => ({
-  getInvoker: jest.fn().mockResolvedValue(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 10))),
+  getInvoker: jest.fn().mockResolvedValue(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 10))),
   getBuilder: jest.fn().mockReturnValue(() => {}),
   isMockable: jest.fn().mockReturnValue({ isMockable: true }),
   category: 'function',
@@ -42,7 +42,7 @@ describe('Invoke local lambda function', () => {
 
   it('invoke the local lambda using name with given data', async () => {
     let isBuilt = false;
-    getInvokerMock.mockResolvedValueOnce(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 11000)));
+    getInvokerMock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 11000)));
     getBuilderMock.mockReturnValueOnce(async () => {
       isBuilt = true;
     });
@@ -70,7 +70,7 @@ describe('Invoke local lambda function', () => {
     } as $TSAny;
 
     let isBuilt = false;
-    getInvokerMock.mockResolvedValueOnce(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 11000)));
+    getInvokerMock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 11000)));
     getBuilderMock.mockReturnValueOnce(async () => {
       isBuilt = true;
     });

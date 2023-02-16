@@ -78,8 +78,8 @@ describe('zero config auth', () => {
     await amplifyPushAuth(projRoot);
     await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(meta.auth).filter(key => meta.auth[key].service === 'Cognito');
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const authResourceName = Object.keys(meta.auth).filter((key) => meta.auth[key].service === 'Cognito');
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
 

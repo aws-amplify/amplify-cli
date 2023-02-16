@@ -12,12 +12,8 @@ import archiver from 'archiver';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
-import {
-  SemVer, coerce, gte, lt,
-} from 'semver';
-import {
-  BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN,
-} from './constants';
+import { SemVer, coerce, gte, lt } from 'semver';
+import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -62,7 +58,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/${SRC}/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };
@@ -203,7 +199,7 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
       resolve();
     });
 
-    file.on('error', err => {
+    file.on('error', (err) => {
       reject(new Error(`Failed to zip with error: [${err}]`));
     });
 

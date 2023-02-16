@@ -131,7 +131,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
     } as FeatureFlagProvider,
   });
 
@@ -199,7 +199,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise(res => setTimeout(res, PROPAGATAION_DELAY));
+    await new Promise((res) => setTimeout(res, PROPAGATAION_DELAY));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -248,7 +248,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -285,7 +285,7 @@ test('Test a subscription on update', async () => {
       resolve(undefined);
     });
   });
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -334,7 +334,7 @@ test('Test a subscription on delete', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student4',
@@ -382,7 +382,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 
@@ -416,7 +416,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 
@@ -450,7 +450,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
   await deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
 
@@ -479,7 +479,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
     });
   });
 
-  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
 
   await createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
@@ -502,13 +502,10 @@ async function createStudent(client: GraphQLClient, input: CreateStudentInput) {
       }
     }
   `;
-  
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -524,12 +521,9 @@ async function createMember(client: GraphQLClient, input: MemberInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -545,12 +539,9 @@ async function updateMember(client: GraphQLClient, input: MemberInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -566,12 +557,9 @@ async function deleteMember(client: GraphQLClient, input: MemberInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -588,12 +576,9 @@ async function updateStudent(client: GraphQLClient, input: UpdateStudentInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -610,12 +595,9 @@ async function deleteStudent(client: GraphQLClient, input: DeleteTypeInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
 
@@ -630,11 +612,8 @@ async function createPost(client: GraphQLClient, input: CreatePostInput) {
     }
   `;
 
-  const result = await client.query(
-    request,
-    {
-      input: input
-    },
-  );
+  const result = await client.query(request, {
+    input: input,
+  });
   return result;
 }
