@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, CognitoConfiguration } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { getUpdateAuthHandler } from '../../../../provider-utils/awscloudformation/handlers/resource-handlers';
 import { getSupportedServices } from '../../../../provider-utils/supported-services';
 import { getUpdateAuthDefaultsApplier } from '../../../../provider-utils/awscloudformation/utils/auth-defaults-appliers';
@@ -7,6 +7,7 @@ import { getPostUpdateAuthMetaUpdater } from '../../../../provider-utils/awsclou
 import { getPostUpdateAuthMessagePrinter } from '../../../../provider-utils/awscloudformation/utils/message-printer';
 import { removeDeprecatedProps } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
 import { ENV_SPECIFIC_PARAMS } from '../../../../provider-utils/awscloudformation/constants';
+import { AuthContext, CognitoConfiguration } from '../../../../context';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/synthesize-resources');
 jest.mock('../../../../provider-utils/awscloudformation/utils/auth-defaults-appliers');
@@ -62,7 +63,7 @@ describe('getUpdateAuthHandler', () => {
       amplify: {
         saveEnvResourceParameters: saveParamsFn,
       },
-    } as unknown as $TSContext;
+    } as unknown as AuthContext;
     const cognitoConfig: CognitoConfiguration = {
       serviceName: 'test',
     } as unknown as CognitoConfiguration;

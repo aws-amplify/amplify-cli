@@ -1,13 +1,14 @@
 /* eslint-disable max-len */
 
-import { $TSContext, $TSAny, CognitoConfiguration } from 'amplify-cli-core';
+import { $TSAny } from 'amplify-cli-core';
 import { Input, parseInputs } from '../../../../provider-utils/awscloudformation/question-factories/core-questions';
 import defaults from '../../../../provider-utils/awscloudformation/assets/cognito-defaults';
 import maps from '../../../../provider-utils/awscloudformation/assets/string-maps';
+import { AuthContext, CognitoConfiguration } from '../../../../context';
 
 const defaultFileName = 'cognito-defaults';
 const stringMapsFileName = 'string-maps';
-const mockContext = {} as $TSContext;
+const mockContext = {} as AuthContext;
 let mockAmplify = {
   getWhen: jest.fn(),
   inputValidation: jest.fn(),
@@ -114,7 +115,7 @@ describe('When generating auth questions...', () => {
     delete input.filter;
   });
   afterEach(() => {
-    delete mockContext.updatingAuth;
+    delete (mockContext as Partial<AuthContext>).updatingAuth;
     currentAnswers = {};
   });
 
