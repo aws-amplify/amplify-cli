@@ -129,8 +129,10 @@ generation of all the configuration files required by the frontend framework.`);
   context.print.red(AmplifyPluginType.util);
   context.print.green(`${AmplifyPluginType.util} plugins are general purpose utility plugins, \
 they provide utility functions for other plugins.`);
-  context.print.green('For more information please read - \
-  https://docs.amplify.aws/cli/plugins/architecture#plugin-types');
+  context.print.green(
+    'For more information please read - \
+  https://docs.amplify.aws/cli/plugins/architecture#plugin-types',
+  );
 }
 
 async function promptForEventSubscription(context: Context): Promise<string[]> {
@@ -160,12 +162,18 @@ async function promptForEventSubscription(context: Context): Promise<string[]> {
 
 function displayAmplifyEventsLearnMore(context: Context) {
   const indentationStr = createIndentation(INDENTATIONSPACE);
-  context.print.green('The Amplify CLI aims to provide a flexible and loosely-coupled \
-pluggable platform for the plugins.');
-  context.print.green('To make this possible, \
-the platform broadcasts events for plugins to handle.');
-  context.print.green('If a plugin subscribes to an event, its event handler is \
-invoked by the Amplify CLI Core on such event.');
+  context.print.green(
+    'The Amplify CLI aims to provide a flexible and loosely-coupled \
+pluggable platform for the plugins.',
+  );
+  context.print.green(
+    'To make this possible, \
+the platform broadcasts events for plugins to handle.',
+  );
+  context.print.green(
+    'If a plugin subscribes to an event, its event handler is \
+invoked by the Amplify CLI Core on such event.',
+  );
   context.print.green('');
   context.print.green('The Amplify CLI currently broadcasts these events to plugins:');
   context.print.red(AmplifyEvent.PreInit);
@@ -186,8 +194,10 @@ execution of the amplify pull command.`);
   context.print.red(AmplifyEvent.PostPull);
   context.print.green(`${indentationStr}${AmplifyEvent.PostPull} handler is invoked on the \
 complete execution of the amplify pull command.`);
-  context.print.warning('This feature is currently under active development, \
-events might be added or removed in future releases.');
+  context.print.warning(
+    'This feature is currently under active development, \
+events might be added or removed in future releases.',
+  );
 }
 
 function updatePackageJson(pluginDirPath: string, pluginName: string): void {

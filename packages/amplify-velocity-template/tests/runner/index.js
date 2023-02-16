@@ -1782,7 +1782,7 @@ define('velocityjs/0.4.10/index', [], function (e, t, s) {
       (r.mixin = function (e, t) {
         return (
           r.forEach(t, function (t, s) {
-            ({}.toString.call(t));
+            ({}).toString.call(t);
             e[s] = r.isArray(t) || r.isObject(t) ? r.mixin(t, e[s] || {}) : t;
           }),
           e
