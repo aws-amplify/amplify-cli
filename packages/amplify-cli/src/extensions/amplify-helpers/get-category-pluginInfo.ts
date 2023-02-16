@@ -7,7 +7,7 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
 
   if (pluginInformationForCategory?.length > 0) {
     if (service) {
-      const pluginInformationForCategoryAndService = pluginInformationForCategory.filter(pluginInfo => {
+      const pluginInformationForCategoryAndService = pluginInformationForCategory.filter((pluginInfo) => {
         return pluginInfo.manifest.services && pluginInfo.manifest.services.includes(service);
       });
 
@@ -18,7 +18,7 @@ export function getCategoryPluginInfo(context: $TSContext, category: string, ser
       }
     } else {
       const overriddenPlugin = pluginInformationForCategory.find(
-        plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`,
+        (plugin) => plugin.packageName === `@aws-amplify/amplify-category-${category}`,
       );
       if (overriddenPlugin !== undefined) {
         return overriddenPlugin;

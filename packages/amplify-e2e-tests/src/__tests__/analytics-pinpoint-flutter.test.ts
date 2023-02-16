@@ -1,6 +1,11 @@
 import {
-  initFlutterProjectWithProfile, amplifyPushUpdate, deleteProject,
-  addPinpoint, removeAnalytics, createNewProjectDir, deleteProjectDir,
+  initFlutterProjectWithProfile,
+  amplifyPushUpdate,
+  deleteProject,
+  addPinpoint,
+  removeAnalytics,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';

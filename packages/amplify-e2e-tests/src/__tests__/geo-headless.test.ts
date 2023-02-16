@@ -1,6 +1,4 @@
-import {
-  existsSync,
-} from 'fs-extra';
+import { existsSync } from 'fs-extra';
 import path from 'path';
 import {
   addAuthWithDefault,
@@ -14,15 +12,8 @@ import {
   initJSProjectWithProfile,
   updateHeadlessGeo,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  AccessType,
-  AddGeoRequest,
-  MapStyle,
-  UpdateGeoRequest,
-} from 'amplify-headless-interface';
-import {
-  v4 as uuid,
-} from 'uuid';
+import { AccessType, AddGeoRequest, MapStyle, UpdateGeoRequest } from 'amplify-headless-interface';
+import { v4 as uuid } from 'uuid';
 
 describe('Geo headless tests', () => {
   let projRoot: string;
@@ -66,7 +57,7 @@ describe('Geo headless tests', () => {
       await amplifyPushAuth(projRoot);
 
       const meta = getProjectMeta(projRoot);
-      const { Name: name, Region: region } = Object.keys(meta.geo).map(key => meta.geo[key])[0].output;
+      const { Name: name, Region: region } = Object.keys(meta.geo).map((key) => meta.geo[key])[0].output;
       expect(name).toBeDefined();
       expect(region).toBeDefined();
       const { MapName: mapName } = await getMap(name, region);

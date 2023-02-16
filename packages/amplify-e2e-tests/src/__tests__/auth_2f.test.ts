@@ -38,7 +38,7 @@ describe('amplify add auth...', () => {
     const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
     const verifyFunctionName = `${Object.keys(meta.auth)[0]}VerifyAuthChallengeResponse-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

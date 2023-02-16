@@ -19,9 +19,7 @@ import AWS from 'aws-sdk';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',
-  Action: [
-    'ssm:GetParameter',
-  ],
+  Action: ['ssm:GetParameter'],
   Resource: [],
 };
 const customIAMPolicies: CustomIAMPolicy[] = [];
@@ -59,16 +57,20 @@ it('should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
 
   // Put SSM parameter
   const ssmClient = new AWS.SSM({ region });
-  await ssmClient.putParameter({
-    Name: '/amplify/testCustomPolicies',
-    Value: 'testCustomPoliciesValue',
-    Type: 'String',
-    Overwrite: true,
-  }).promise();
+  await ssmClient
+    .putParameter({
+      Name: '/amplify/testCustomPolicies',
+      Value: 'testCustomPoliciesValue',
+      Type: 'String',
+      Overwrite: true,
+    })
+    .promise();
 
-  const getParaResponse = await ssmClient.getParameter({
-    Name: '/amplify/testCustomPolicies',
-  }).promise();
+  const getParaResponse = await ssmClient
+    .getParameter({
+      Name: '/amplify/testCustomPolicies',
+    })
+    .promise();
   const ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
@@ -93,4 +95,4 @@ type CustomIAMPolicy = {
   Action: string[];
   Effect: string;
   Resource: string[];
-}
+};

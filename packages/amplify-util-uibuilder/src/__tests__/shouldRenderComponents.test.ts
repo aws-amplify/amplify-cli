@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {$TSContext} from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
 
@@ -14,14 +14,14 @@ jest.mock('amplify-cli-core', () => ({
       javascript: {
         framework: 'react',
       },
-    })
+    }),
   },
 }));
 
 jest.mock('../clients', () => ({
   AmplifyStudioClient: {
-    isAmplifyApp: jest.fn().mockReturnValue(true)
-  }
+    isAmplifyApp: jest.fn().mockReturnValue(true),
+  },
 }));
 
 describe('should render components', () => {
@@ -70,8 +70,8 @@ describe('should render components', () => {
           javascript: {
             framework: 'react',
           },
-        })
-      }
+        }),
+      },
     }));
     const shouldIt = await shouldRenderComponents(context);
     expect(shouldIt).toBe(false);
@@ -83,7 +83,7 @@ describe('should render components', () => {
         getProjectConfig: jest.fn().mockReturnValue({
           providers: [],
           frontend: 'ios',
-        })
+        }),
       },
     }));
     const shouldIt = await shouldRenderComponents(context);
@@ -99,7 +99,7 @@ describe('should render components', () => {
           javascript: {
             framework: 'vue',
           },
-        })
+        }),
       },
     }));
     const shouldIt = await shouldRenderComponents(context);

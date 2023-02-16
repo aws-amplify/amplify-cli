@@ -47,7 +47,7 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
   const permissionPolicies: $TSObject[] = [];
   const resourceAttributes: $TSObject[] = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     try {
       const service: ServiceName = amplifyMeta[resourceName].service as ServiceName;
 

@@ -57,7 +57,7 @@ export class StorageTest {
     const localDirS3 = this.createLocalStorage(context, `${s3UserInputs.bucketName}`);
 
     try {
-      context.amplify.addCleanUpTask(async context => {
+      context.amplify.addCleanUpTask(async (context) => {
         await this.stop();
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
@@ -101,9 +101,7 @@ export class StorageTest {
         if (prefix_arr === undefined) {
           const eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
           if (eventName === 'ObjectRemoved' || eventName === 'ObjectCreated') {
-            triggerName = String(obj.Function.Ref)
-              .split('function')[1]
-              .split('Arn')[0];
+            triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
             break;
           }
         } else {
@@ -120,15 +118,11 @@ export class StorageTest {
             }
 
             if (rules.Name === 'prefix' && keyName.startsWith(node)) {
-              triggerName = String(obj.Function.Ref)
-                .split('function')[1]
-                .split('Arn')[0];
+              triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
               break;
             }
             if (rules.Name === 'suffix' && keyName.endsWith(node)) {
-              triggerName = String(obj.Function.Ref)
-                .split('function')[1]
-                .split('Arn')[0];
+              triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
               break;
             }
           }
@@ -142,13 +136,13 @@ export class StorageTest {
         return;
       }
       loadLambdaConfig(context, triggerName)
-        .then(config => {
+        .then((config) => {
           return getInvoker(context, { handler: config.handler, resourceName: triggerName, envVars: config.environment });
         })
-        .then(invoker => {
+        .then((invoker) => {
           return invoker({ event: eventObj });
         })
-        .catch(err => {
+        .catch((err) => {
           context.print.error('Error executing lambda trigger');
           context.print.error(err);
         });

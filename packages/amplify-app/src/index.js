@@ -31,7 +31,7 @@ const amplifyCliPackageName = '@aws-amplify/cli';
  * @public
  * @returns {Promise<void>}
  */
-const run = async opts => {
+const run = async (opts) => {
   const projpath = opts.path;
   if (projpath) {
     process.chdir(projpath);
@@ -92,7 +92,7 @@ async function installAmplifyCLI() {
       stdio: 'inherit',
     });
 
-    amplifyCLIInstall.on('exit', code => {
+    amplifyCLIInstall.on('exit', (code) => {
       if (code === 0) {
         console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
         resolve();
@@ -140,7 +140,7 @@ async function amplifyCLIVersionCheck() {
  * @param {string} jsFramework
  * @returns {Promise<void>}
  */
-const createAmplifySkeletonProject = async frontend => {
+const createAmplifySkeletonProject = async (frontend) => {
   if (fs.existsSync(path.join('.', 'amplify', 'backend')) && frontend !== 'ios') {
     console.log(
       `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
@@ -157,7 +157,7 @@ const createAmplifySkeletonProject = async frontend => {
   }
 };
 
-const updateFrameworkInProjectConfig = framework => {
+const updateFrameworkInProjectConfig = (framework) => {
   const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath, 'utf8'));
 
@@ -199,7 +199,7 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
   } else {
     let fitToHandleScore = -1;
 
-    validFrontends.forEach(key => {
+    validFrontends.forEach((key) => {
       const { scanProject } = require(frontendPlugins[key]);
       const newScore = scanProject(process.cwd());
       if (newScore > fitToHandleScore) {
@@ -354,7 +354,7 @@ async function createJSHelperFiles() {
   return new Promise((resolve, reject) => {
     const npmInstall = spawn(npm, ['install', '--only=dev'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
-    npmInstall.on('exit', code => {
+    npmInstall.on('exit', (code) => {
       if (code === 0) {
         console.log(`${emoji.get('white_check_mark')} Successfully installed dev dependencies`);
         resolve();

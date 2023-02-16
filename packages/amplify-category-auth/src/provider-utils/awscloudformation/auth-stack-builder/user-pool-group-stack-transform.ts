@@ -1,11 +1,18 @@
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext,
-  AmplifyCategories, AmplifyCategoryTransform, AmplifyError, AmplifyStackTemplate, AmplifySupportedService,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
+  AmplifyError,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
   JSONUtilities,
-  pathManager, Template, writeCFNTemplate,
+  pathManager,
+  Template,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -162,7 +169,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
 
     // generate CFN outputs again to generate same Output Names as cdk doesn't allow resource with same logical names
     if (props.identityPoolName) {
-      props.groups.forEach(group => {
+      props.groups.forEach((group) => {
         this.__userPoolGroupTemplateObjOutputs.addCfnOutput(
           {
             value: cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn').toString(),
@@ -188,22 +195,24 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         sandbox: {},
       });
       try {
-        await sandboxNode
-          .run(overrideCode)
-          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
+        await sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };
 
   /**
    * Object required to generate Stack using cdk
-  */
+   */
   private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
     const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
     const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true });

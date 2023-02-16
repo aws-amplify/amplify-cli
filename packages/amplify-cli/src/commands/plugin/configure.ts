@@ -115,7 +115,7 @@ async function addPluginDirectory(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMDIRECTORY = 'Add custom directory >';
   let options = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES];
 
-  options = options.filter(item => !pluginPlatform.pluginDirectories.includes(item.toString()));
+  options = options.filter((item) => !pluginPlatform.pluginDirectories.includes(item.toString()));
 
   let addCustomDirectory = false;
   if (options.length > 0) {
@@ -158,7 +158,7 @@ async function removePluginDirectory(pluginPlatform: PluginPlatform) {
     message: 'Select the directories that Amplify CLI should NOT scan for plugins',
     choices: pluginPlatform.pluginDirectories,
   });
-  pluginPlatform.pluginDirectories = pluginPlatform.pluginDirectories.filter(dir => !answer.directoriesToRemove.includes(dir));
+  pluginPlatform.pluginDirectories = pluginPlatform.pluginDirectories.filter((dir) => !answer.directoriesToRemove.includes(dir));
 }
 
 async function configurePrefixes(context: Context, pluginPlatform: PluginPlatform) {
@@ -216,7 +216,7 @@ async function addPrefix(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMPREFIX = 'Add custom prefix >';
   let options = [constants.AMPLIFY_PREFIX];
 
-  options = options.filter(item => !pluginPlatform.pluginPrefixes.includes(item.toString()));
+  options = options.filter((item) => !pluginPlatform.pluginPrefixes.includes(item.toString()));
 
   let addCustomPrefix = false;
   if (options.length > 0) {
@@ -263,7 +263,7 @@ async function removePrefixes(pluginPlatform: PluginPlatform) {
     message: 'Select the prefixes to remove',
     choices: pluginPlatform.pluginPrefixes,
   });
-  pluginPlatform.pluginPrefixes = pluginPlatform.pluginPrefixes.filter(prefix => !answer.prefixesToRemove.includes(prefix));
+  pluginPlatform.pluginPrefixes = pluginPlatform.pluginPrefixes.filter((prefix) => !answer.prefixesToRemove.includes(prefix));
 }
 
 async function configureScanInterval(context: Context, pluginPlatform: PluginPlatform) {

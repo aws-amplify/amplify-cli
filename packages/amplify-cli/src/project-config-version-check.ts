@@ -125,7 +125,7 @@ async function updateFileContent(filePath: string): Promise<void> {
       r.Type === 'AWS::Lambda::Function' && previousLambdaRuntimeVersions.includes(_.get(r, ['Properties', 'Runtime'], undefined)),
   );
 
-  lambdaFunctions.map(f => (f.Properties.Runtime = lambdaRuntimeVersion));
+  lambdaFunctions.map((f) => (f.Properties.Runtime = lambdaRuntimeVersion));
 
   return writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
 }

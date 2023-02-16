@@ -92,10 +92,11 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const {
-      Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName,
-    } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
+      Arn: functionArn,
+      Name: functionName,
+      Region: region,
+      CloudWatchEventRule: ruleName,
+    } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
@@ -133,10 +134,11 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const {
-      Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName,
-    } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
+      Arn: functionArn,
+      Name: functionName,
+      Region: region,
+      CloudWatchEventRule: ruleName,
+    } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
@@ -175,10 +177,11 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const {
-      Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName,
-    } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
+      Arn: functionArn,
+      Name: functionName,
+      Region: region,
+      CloudWatchEventRule: ruleName,
+    } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();

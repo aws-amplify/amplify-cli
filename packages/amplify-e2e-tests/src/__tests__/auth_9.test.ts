@@ -34,7 +34,7 @@ describe('amplify auth with trigger', () => {
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const userPoolId = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const userPoolId = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     let userPool = (await getUserPool(
       userPoolId,
       meta.providers.awscloudformation.Region,

@@ -214,7 +214,7 @@ function updateEventHandlersFolder(pluginDirPath: string, eventHandlers: string[
   const dirPath = path.join(pluginDirPath, 'event-handlers');
   const fileNames = fs.readdirSync(dirPath);
 
-  fileNames.forEach(fileName => {
+  fileNames.forEach((fileName) => {
     const eventName = fileName.replace('handle-', '').split('.')[0];
     if (!eventHandlers.includes(eventName)) {
       fs.removeSync(path.join(dirPath, fileName));

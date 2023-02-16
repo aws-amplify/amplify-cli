@@ -60,7 +60,7 @@ export function authConfigPull(
   settings: Record<string, unknown> = {},
 ): Promise<void> {
   const pullCommand: string[] = ['pull'];
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);
   });
   const s = { ...defaultSettings, ...settings };

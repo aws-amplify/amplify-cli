@@ -13,10 +13,14 @@ export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       return await this._config.invoke(payload);
     } catch (e) {
       printer.info('Opensearch Data source failed with the following error:' + e?.message);
-      throw new AmplifyFault('MockProcessFault', {
-        message: 'Failed to load data from Opensearch data source',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-      }, e);
+      throw new AmplifyFault(
+        'MockProcessFault',
+        {
+          message: 'Failed to load data from Opensearch data source',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+        },
+        e,
+      );
     }
   }
 }

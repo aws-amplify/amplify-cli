@@ -1,12 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSContext,
-  AmplifyCategories,
-  AmplifySupportedService,
-  BannerMessage,
-  FeatureFlags,
-  stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, BannerMessage, FeatureFlags, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { category } from '../..';
@@ -54,7 +47,9 @@ export const run = async (context: $TSContext): Promise<string | $TSContext | un
   }
 
   printer.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');
-  const dependentResources = Object.keys(meta).some(e => ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0);
+  const dependentResources = Object.keys(meta).some(
+    (e) => ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0,
+  );
   if (dependentResources) {
     printer.info(messages.dependenciesExists);
   }

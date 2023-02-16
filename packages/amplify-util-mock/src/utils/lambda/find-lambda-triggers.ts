@@ -34,7 +34,7 @@ export const findModelLambdaTriggers = async (context: $TSContext, tables: strin
   }
   const lambdaNames = getLambdaFunctionNames();
 
-  lambdaNames.forEach(resourceName => {
+  lambdaNames.forEach((resourceName) => {
     const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
     const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
       path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
@@ -65,7 +65,7 @@ export const findSearchableLambdaTriggers = async (
     return lambdaTriggersMap;
   }
 
-  tables.forEach(table => {
+  tables.forEach((table) => {
     const lambdaTriggerConfig = getSearchableLambdaTriggerConfig(context, opensearchEndpoint, table);
     lambdaTriggersMap[table] = { config: lambdaTriggerConfig };
   });

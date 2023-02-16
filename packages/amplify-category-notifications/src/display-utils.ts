@@ -32,6 +32,6 @@ export const viewShowInlineModeInstructionsStop = async (channelName: string): P
  * @param channelName name of the channel to be enabled
  * @param err Error thrown by the pinpoint helper
  */
-export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error|string): Promise<void> => {
+export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error | string): Promise<void> => {
   printer.error(`Channel ${channelName}: Auth and Pinpoint resources deployment failed with Error ${err}`);
 };

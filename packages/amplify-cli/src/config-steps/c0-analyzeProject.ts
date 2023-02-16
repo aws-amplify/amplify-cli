@@ -108,7 +108,7 @@ async function configureProjectName(context) {
         name: 'inputProjectName',
         message: 'Enter a name for the project',
         default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: (input) => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
       const answer = await inquirer.prompt(projectNameQuestion);
       projectName = answer.inputProjectName;

@@ -5,7 +5,7 @@ import { AmplifySpinner } from 'amplify-prompts';
 jest.mock('amplify-cli-core', () => {
   return {
     open: jest.fn().mockReturnValue(Promise.reject('some spawn error')),
-  }
+  };
 });
 
 jest.mock('../utils/admin-login-server', () => {
@@ -15,8 +15,8 @@ jest.mock('../utils/admin-login-server', () => {
         callback();
       }),
       shutdown: jest.fn(),
-    })
-  }
+    }),
+  };
 });
 
 describe('adminLoginFlow', () => {
@@ -25,15 +25,15 @@ describe('adminLoginFlow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    contextStub = ({
+    contextStub = {
       amplify: {
         getEnvInfo: () => {
           return {
-            envName: 'dev'
-          }
-        }
+            envName: 'dev',
+          };
+        },
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('catches errors when fails to launch browser', async () => {
@@ -49,6 +49,6 @@ describe('adminLoginFlow', () => {
     expect(spinnerStartMock).toBeCalledWith('Manually enter your CLI login key:\n');
 
     expect(spinnerStopMock).toBeCalledTimes(1);
-    expect(spinnerStopMock).toBeCalledWith("Successfully received Amplify Studio tokens.");
+    expect(spinnerStopMock).toBeCalledWith('Successfully received Amplify Studio tokens.');
   });
 });

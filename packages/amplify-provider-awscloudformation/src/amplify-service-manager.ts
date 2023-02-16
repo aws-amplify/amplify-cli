@@ -105,8 +105,8 @@ export async function init(amplifyServiceParams) {
           apps = apps.concat(listAppsResponse.apps);
         } while (listAppsResponse.nextToken);
 
-        const verifiedAppIds = apps.map(app => app.appId);
-        appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter(appId => verifiedAppIds.includes(appId));
+        const verifiedAppIds = apps.map((app) => app.appId);
+        appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter((appId) => verifiedAppIds.includes(appId));
 
         if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
           amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
@@ -298,8 +298,8 @@ export async function postPushCheck(context) {
       }
     }
 
-    const verifiedAppIds = searchAmplifyServiceResult.apps.map(app => app.appId);
-    appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter(appId => verifiedAppIds.includes(appId));
+    const verifiedAppIds = searchAmplifyServiceResult.apps.map((app) => app.appId);
+    appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter((appId) => verifiedAppIds.includes(appId));
 
     if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
       amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
@@ -475,7 +475,7 @@ async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySe
 }
 
 export function storeArtifactsForAmplifyService(context) {
-  return S3.getInstance(context).then(async s3 => {
+  return S3.getInstance(context).then(async (s3) => {
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
     const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
     const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');

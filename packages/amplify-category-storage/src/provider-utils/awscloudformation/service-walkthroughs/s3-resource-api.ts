@@ -12,7 +12,7 @@ export function s3GetResourceName(): string | undefined {
   let resourceName = undefined;
   if (amplifyMeta[AmplifyCategories.STORAGE]) {
     const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === AmplifySupportedService.S3) {
         resourceName = resource;
       }

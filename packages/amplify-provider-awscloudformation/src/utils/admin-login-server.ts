@@ -59,7 +59,8 @@ export class AdminLoginServer {
     return this.port;
   }
 
-  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> { // eslint-disable-line
+  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
+    // eslint-disable-line
     const cognitoIdentity = new CognitoIdentity({ region });
     const login = idToken.payload.iss.replace('https://', '');
     const logins = {
@@ -80,7 +81,8 @@ export class AdminLoginServer {
   }
 
   private async setupRoute(callback): Promise<void> {
-    this.app.post('/amplifyadmin/', async (req, res) => { // eslint-disable-line
+    this.app.post('/amplifyadmin/', async (req, res) => {
+      // eslint-disable-line
       if (!req.body || req.body.error) {
         this.shutdown();
         if (req.body.error === 'CANCELLED') {
@@ -97,18 +99,24 @@ export class AdminLoginServer {
         res.sendStatus(200);
       } catch (err) {
         res.sendStatus(500);
-        throw new AmplifyError('AmplifyStudioLoginError', {
-          message: `Failed to receive expected authentication tokens. Error: [${err}]`,
-        }, err);
+        throw new AmplifyError(
+          'AmplifyStudioLoginError',
+          {
+            message: `Failed to receive expected authentication tokens. Error: [${err}]`,
+          },
+          err,
+        );
       }
       callback();
     });
-    this.app.get('/ping', async (_, res) => { // eslint-disable-line
+    this.app.get('/ping', async (_, res) => {
+      // eslint-disable-line
       res.send({ success: true });
     });
   }
 
-  private async validateTokens( // eslint-disable-line
+  private async validateTokens(
+    // eslint-disable-line
     tokens: {
       accessToken: CognitoAccessToken;
       idToken: CognitoIdToken;
@@ -136,12 +144,10 @@ export class AdminLoginServer {
    * Stores tokens received by server
    */
   public async storeTokens(payload: AdminAuthPayload, appId: string): Promise<void> {
-    const areTokensValid = await this.validateTokens(
-      {
-        idToken: payload.idToken,
-        accessToken: payload.accessToken,
-      },
-    );
+    const areTokensValid = await this.validateTokens({
+      idToken: payload.idToken,
+      accessToken: payload.accessToken,
+    });
     if (areTokensValid) {
       const IdentityId = await this.getIdentityId(payload.idToken, payload.IdentityPoolId, payload.region);
       const config = { ...payload, IdentityId };

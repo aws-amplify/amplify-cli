@@ -37,8 +37,8 @@ export class DynamoDBService implements IDynamoDBService {
         {
           Limit: 100,
         },
-        response => response?.TableNames,
-        async response => response?.LastEvaluatedTableName,
+        (response) => response?.TableNames,
+        async (response) => response?.LastEvaluatedTableName,
       );
 
       this.cachedTableList.push(...result!);

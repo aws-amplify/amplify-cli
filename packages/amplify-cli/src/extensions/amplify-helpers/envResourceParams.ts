@@ -1,7 +1,5 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import {
-  $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny,
-} from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny } from 'amplify-cli-core';
 
 import _ from 'lodash';
 import { getRootStackId } from './get-root-stack-id';
@@ -67,7 +65,7 @@ const loadEnvResourceParametersFromDeploymentSecrets = (category: string, resour
     const currentEnv = stateManager.getLocalEnvInfo().envName;
     const deploymentSecrets = stateManager.getDeploymentSecrets();
     const rootStackId = getRootStackId();
-    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
     }

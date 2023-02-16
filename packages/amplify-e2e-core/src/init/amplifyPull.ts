@@ -132,9 +132,7 @@ export const amplifyPullNonInteractive = (
     args.push('--frontend', JSON.stringify(frontend));
   }
 
-  return spawn(getCLIPath(), args, { cwd, stripColors: true })
-    .wait('Successfully pulled backend environment')
-    .runAsync();
+  return spawn(getCLIPath(), args, { cwd, stripColors: true }).wait('Successfully pulled backend environment').runAsync();
 };
 
 /**
@@ -160,7 +158,5 @@ export const amplifyStudioHeadlessPull = (
     },
   };
   const args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
-  return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true })
-    .wait('Successfully pulled backend environment')
-    .runAsync();
+  return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true }).wait('Successfully pulled backend environment').runAsync();
 };

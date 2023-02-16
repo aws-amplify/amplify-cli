@@ -14,7 +14,7 @@ function run(context) {
     const buildExecution = executeCommand(buildCommand, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
-    buildExecution.on('exit', code => {
+    buildExecution.on('exit', (code) => {
       context.print.info(`frontend build command exited with code ${code.toString()}`);
       if (code === 0) {
         resolve(context);
@@ -23,7 +23,7 @@ function run(context) {
         reject(code);
       }
     });
-    buildExecution.on('error', err => {
+    buildExecution.on('error', (err) => {
       context.print.error(chalk.red('frontend build command execution error'));
       context.print.info(err);
       if (!rejectFlag) {

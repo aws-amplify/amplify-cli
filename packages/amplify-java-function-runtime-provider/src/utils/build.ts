@@ -51,7 +51,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date) => {
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/*/!(build | dist)/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

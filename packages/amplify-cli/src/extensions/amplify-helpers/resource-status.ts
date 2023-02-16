@@ -9,14 +9,8 @@ export { getResourceStatus, getHashForResourceDir };
 
 export async function showStatusTable(tableViewFilter: ViewResourceTableParams) {
   const amplifyProjectInitStatus = getCloudInitStatus();
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeDeleted,
-    resourcesToBeSynced,
-    allResources,
-    tagsUpdated,
-  } = await getMultiCategoryStatus(tableViewFilter);
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced, allResources, tagsUpdated } =
+    await getMultiCategoryStatus(tableViewFilter);
 
   //1. Display Environment Info
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {

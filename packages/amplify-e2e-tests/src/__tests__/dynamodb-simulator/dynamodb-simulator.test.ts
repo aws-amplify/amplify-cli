@@ -61,7 +61,7 @@ describe('emulator operations', () => {
 
   afterEach(async () => {
     process.env = { ...realProcessEnv };
-    await Promise.all(emulators.map(emu => emu.terminate()));
+    await Promise.all(emulators.map((emu) => emu.terminate()));
     ensureNoDbPath();
   });
 

@@ -17,8 +17,7 @@ const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 /**
  *  runtime for hooks
  */
-type HooksRuntime = { runtimePath: string, runtimeOptions?: string[] };
-
+type HooksRuntime = { runtimePath: string; runtimeOptions?: string[] };
 
 /**
  * execute hooks present in the hooks directory
@@ -129,13 +128,13 @@ const getHookFileMetadata = (
 
   const allFiles = fs
     .readdirSync(hooksDirPath)
-    .filter(relFilePath => fs.lstatSync(path.join(hooksDirPath, relFilePath)).isFile())
-    .map(relFilePath => splitFileName(relFilePath))
-    .filter(fileMeta => fileMeta.extension && Object.prototype.hasOwnProperty.call(extensionsSupported, fileMeta.extension))
-    .map(fileMeta => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
+    .filter((relFilePath) => fs.lstatSync(path.join(hooksDirPath, relFilePath)).isFile())
+    .map((relFilePath) => splitFileName(relFilePath))
+    .filter((fileMeta) => fileMeta.extension && Object.prototype.hasOwnProperty.call(extensionsSupported, fileMeta.extension))
+    .map((fileMeta) => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
 
   const commandType = hookEvent.eventPrefix ? [hookEvent.eventPrefix, hookEvent.command].join(hookFileSeparator) : hookEvent.command;
-  const commandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === commandType);
+  const commandHooksFiles = allFiles.filter((fileMeta) => fileMeta.baseName === commandType);
   const commandHookFileMeta = throwOnDuplicateHooksFiles(commandHooksFiles);
 
   let subCommandHooksFiles;
@@ -145,7 +144,7 @@ const getHookFileMetadata = (
       ? [hookEvent.eventPrefix, hookEvent.command, hookEvent.subCommand].join(hookFileSeparator)
       : [hookEvent.command, hookEvent.subCommand].join(hookFileSeparator);
 
-    subCommandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === subCommandType);
+    subCommandHooksFiles = allFiles.filter((fileMeta) => fileMeta.baseName === subCommandType);
     subCommandHookFileMeta = throwOnDuplicateHooksFiles(subCommandHooksFiles);
   }
   return { commandHookFileMeta, subCommandHookFileMeta };
@@ -153,7 +152,7 @@ const getHookFileMetadata = (
 
 const throwOnDuplicateHooksFiles = (files: HookFileMeta[]): HookFileMeta | undefined => {
   if (files.length > 1) {
-    throw new Error(`found duplicate hook scripts: ${files.map(file => file.fileName).join(', ')}`);
+    throw new Error(`found duplicate hook scripts: ${files.map((file) => file.fileName).join(', ')}`);
   } else if (files.length === 1) {
     return files[0];
   }
@@ -192,11 +191,11 @@ const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): HooksRunt
     throw new Error(String(`hooks runtime not found: ${runtime}`));
   }
   const hooksRuntime: HooksRuntime = {
-    runtimePath : executablePath,
+    runtimePath: executablePath,
   };
   // check runtime options
   const runtimeOptions = extensionObj?.[extension]?.runtime_options;
-  if(Array.isArray(runtimeOptions) && runtimeOptions.length > 0){
+  if (Array.isArray(runtimeOptions) && runtimeOptions.length > 0) {
     hooksRuntime.runtimeOptions = extensionObj?.[extension]?.runtime_options;
   }
 

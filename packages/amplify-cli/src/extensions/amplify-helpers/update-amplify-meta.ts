@@ -168,7 +168,7 @@ export const updateProviderAmplifyMeta = (providerName: string, options: $TSObje
     amplifyMeta.providers[providerName] = {};
   }
 
-  Object.keys(options).forEach(key => {
+  Object.keys(options).forEach((key) => {
     amplifyMeta.providers[providerName][key] = options[key];
   });
 
@@ -321,14 +321,14 @@ const checkForCyclicDependencies = (
   let cyclicDependency = false;
 
   if (dependsOn) {
-    dependsOn.forEach(resource => {
+    dependsOn.forEach((resource) => {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
       if (amplifyMeta[resource.category] && amplifyMeta[resource.category][resource.resourceName]) {
         const dependsOnResourceDependency = amplifyMeta[resource.category][resource.resourceName].dependsOn;
         if (dependsOnResourceDependency) {
-          dependsOnResourceDependency.forEach(dependsOnResource => {
+          dependsOnResourceDependency.forEach((dependsOnResource) => {
             if (dependsOnResource.category === category && dependsOnResource.resourceName === resourceName) {
               cyclicDependency = true;
             }

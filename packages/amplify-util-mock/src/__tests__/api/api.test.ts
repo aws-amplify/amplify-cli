@@ -13,8 +13,8 @@ const mockProjectRoot = 'mock-app';
 const mockContext = {
   amplify: {
     getEnvInfo: jest.fn().mockReturnValue({ projectPath: mockProjectRoot }),
-    loadRuntimePlugin: jest.fn().mockReturnValue({})
-  }
+    loadRuntimePlugin: jest.fn().mockReturnValue({}),
+  },
 } as unknown as $TSContext;
 
 describe('Test Mock API methods', () => {
@@ -38,14 +38,14 @@ describe('Test Mock API methods', () => {
     expect(fs.copySync).toBeCalledWith(
       path.join(searchableLambdaResourceDir, 'Pipfile'),
       path.join(mockSearchableTriggerDirectory, 'Pipfile'),
-      { overwrite: true }
+      { overwrite: true },
     );
 
     // copies the source files artifacts from correct location
     expect(fs.copySync).toBeCalledWith(
       path.join(searchableLambdaResourceDir, 'source-files'),
       path.join(mockSearchableTriggerDirectory, 'src'),
-      { overwrite: true }
+      { overwrite: true },
     );
   });
 });

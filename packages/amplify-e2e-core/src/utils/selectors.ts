@@ -10,8 +10,8 @@ export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[
 
 export const multiSelect = <T>(chain: ExecutionContext, items: T[] = [], allChoices: T[]) => {
   items
-    .map(item => allChoices.indexOf(item))
-    .filter(idx => idx > -1)
+    .map((item) => allChoices.indexOf(item))
+    .filter((idx) => idx > -1)
     .sort()
     // calculate the diff with the latest, since items are sorted, always positive
     // represents the numbers of moves down we need to make to selection

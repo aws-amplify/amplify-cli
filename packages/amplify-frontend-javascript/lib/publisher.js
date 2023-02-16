@@ -15,10 +15,11 @@ async function run(context) {
     enabledHostingServices = Object.keys(amplifyMeta[hostingCategory]);
   }
 
-  if (!enabledHostingServices.includes('S3AndCloudFront') &&
+  if (
+    !enabledHostingServices.includes('S3AndCloudFront') &&
     !enabledHostingServices.includes('amplifyhosting') &&
-    !enabledHostingServices.includes('ElasticContainer')) {
-
+    !enabledHostingServices.includes('ElasticContainer')
+  ) {
     throw new Error('No hosting services are enabled for Javascript project.');
   }
 

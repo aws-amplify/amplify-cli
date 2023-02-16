@@ -113,7 +113,11 @@ describe('generateNestedAuthTriggerTemplate', () => {
 
     expect(cfnTemplate).toMatchSnapshot();
     expect(cfnTemplate.Resources.CustomAuthTriggerResource.DependsOn).toEqual(
-      expect.arrayContaining(['authTriggerFn7FCFA449', 'authTriggerFnServiceRoleDefaultPolicyEC9285A8', 'authTriggerFnServiceRole08093B67']),
+      expect.arrayContaining([
+        'authTriggerFn7FCFA449',
+        'authTriggerFnServiceRoleDefaultPolicyEC9285A8',
+        'authTriggerFnServiceRole08093B67',
+      ]),
     );
   });
 });

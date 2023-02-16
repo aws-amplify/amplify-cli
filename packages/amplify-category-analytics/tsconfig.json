@@ -8,17 +8,8 @@
     "inlineSources": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*",
-    "src/provider-utils/**/*.json",
-  ],
-  "exclude": [
-    "coverage",
-    "lib",
-    "resources",
-    "scripts",
-    "src/__tests__"
-  ],
+  "include": ["src/**/*", "src/provider-utils/**/*.json"],
+  "exclude": ["coverage", "lib", "resources", "scripts", "src/__tests__"],
   "references": [
     {
       "path": "../amplify-prompts"

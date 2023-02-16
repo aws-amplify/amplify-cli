@@ -30,7 +30,7 @@ export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promi
   const lambdaNames = _.entries<{ service: string }>(_.get(stateManager.getMeta(), ['function']))
     .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
     .map(([key]) => key);
-  const foundLambdaName = lambdaNames.find(name => searchString.includes(name));
+  const foundLambdaName = lambdaNames.find((name) => searchString.includes(name));
   if (!foundLambdaName) {
     throw new Error(
       `Did not find a Lambda matching ARN [${JSON.stringify(

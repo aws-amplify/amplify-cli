@@ -26,8 +26,8 @@ describe('getTags', () => {
   it('test for values', () => {
     const readTags = stateManager.getHydratedTags(undefined);
     expect(readTags).toBeDefined();
-    expect(readTags.filter(r => r.Key === 'projectName')[0].Value).toEqual(mockConfig.projectConfig.projectName);
-    expect(readTags.filter(r => r.Key === 'projectenv')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
+    expect(readTags.filter((r) => r.Key === 'projectName')[0].Value).toEqual(mockConfig.projectConfig.projectName);
+    expect(readTags.filter((r) => r.Key === 'projectenv')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
     expect(mockGetProjectTags).toBeCalled();
     expect(mockgetProjectConfig).toBeCalled();
     expect(mockgetLocalEnvInfo).toBeCalled();

@@ -15,7 +15,7 @@ export const postInstallInitialization = async () => {
   process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB = 'true';
 
   await Promise.all(
-    copyPkgAssetRegistry.map(async packageName => {
+    copyPkgAssetRegistry.map(async (packageName) => {
       const { getPackageAssetPaths } = (await import(packageName)) as { getPackageAssetPaths: GetPackageAssetPaths };
       if (typeof getPackageAssetPaths !== 'function') {
         return;
@@ -25,7 +25,7 @@ export const postInstallInitialization = async () => {
         return;
       }
       await Promise.all(
-        pluginArtifactPaths.map(assetPath => {
+        pluginArtifactPaths.map((assetPath) => {
           const resolvedPackageRoot = resolvePackageRoot(packageName);
           const targetLibFolder = pathManager.getAmplifyPackageLibDirPath(packageName);
           return fs.copy(path.join(resolvedPackageRoot, assetPath), path.join(targetLibFolder, assetPath));

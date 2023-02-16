@@ -50,7 +50,9 @@ describe('amplify auth migration c', () => {
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
     const amplifyMeta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(
+      (resourceName) => amplifyMeta.auth[resourceName].service === 'Cognito',
+    )[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,

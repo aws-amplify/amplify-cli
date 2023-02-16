@@ -59,7 +59,7 @@ const isBuildStale = (sourceFolder: string, lastBuildTimeStamp: Date) => {
 
   const fileUpdatedAfterLastBuild = glob
     .sync('**/*', { cwd: sourceFolder, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] })
-    .find(file => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

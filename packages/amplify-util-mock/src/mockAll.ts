@@ -6,10 +6,10 @@ const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunc
 export async function mockAllCategories(context: any) {
   const resources = await context.amplify.getResourceStatus();
   const mockableResources = resources.allResources.filter(
-    resource => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
+    (resource) => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
   );
   const resourceToBePushed = [...resources.resourcesToBeUpdated, ...resources.resourcesToBeCreated].filter(
-    resource => resource.service && !MOCK_SUPPORTED_CATEGORY.includes(resource.service),
+    (resource) => resource.service && !MOCK_SUPPORTED_CATEGORY.includes(resource.service),
   );
   if (mockableResources.length) {
     if (resourceToBePushed.length) {
@@ -32,10 +32,10 @@ export async function mockAllCategories(context: any) {
     }
     // Run the mock servers
     const serverPromises = [];
-    if (mockableResources.find(r => r.service === 'AppSync')) {
+    if (mockableResources.find((r) => r.service === 'AppSync')) {
       serverPromises.push(startAppSyncServer(context));
     }
-    if (mockableResources.find(r => r.service === 'S3')) {
+    if (mockableResources.find((r) => r.service === 'S3')) {
       serverPromises.push(startS3Server(context));
     }
     await Promise.all(serverPromises);

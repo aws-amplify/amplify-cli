@@ -2,7 +2,7 @@ import { editorSelection, normalizeEditor } from '../../../extensions/amplify-he
 
 jest.mock('inquirer', () => ({
   prompt: () => {
-    return new Promise(resolve => resolve({ editorSelected: 'vscode' }));
+    return new Promise((resolve) => resolve({ editorSelected: 'vscode' }));
   },
 }));
 
