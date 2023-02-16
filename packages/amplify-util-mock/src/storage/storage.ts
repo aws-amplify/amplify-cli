@@ -43,9 +43,6 @@ export class StorageTest {
     if (existingStorage === undefined || Object.keys(existingStorage).length === 0) {
       return context.print.warning('Storage has not yet been added to this project.');
     }
-    const backendPath = context.amplify.pathManager.getBackendDirPath();
-    const resourceName = Object.keys(existingStorage)[0];
-    const parametersFilePath = path.join(backendPath, 'storage', resourceName, 'parameters.json');
 
     const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
     const localEnvInfo = context.amplify.readJsonFile(localEnvFilePath);
@@ -57,7 +54,7 @@ export class StorageTest {
     const localDirS3 = this.createLocalStorage(context, `${s3UserInputs.bucketName}`);
 
     try {
-      context.amplify.addCleanUpTask(async (context) => {
+      context.amplify.addCleanUpTask(async () => {
         await this.stop();
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);

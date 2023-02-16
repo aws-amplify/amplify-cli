@@ -81,8 +81,8 @@ export class AdminLoginServer {
   }
 
   private async setupRoute(callback): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.app.post('/amplifyadmin/', async (req, res) => {
-      // eslint-disable-line
       if (!req.body || req.body.error) {
         this.shutdown();
         if (req.body.error === 'CANCELLED') {
@@ -109,8 +109,8 @@ export class AdminLoginServer {
       }
       callback();
     });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.app.get('/ping', async (_, res) => {
-      // eslint-disable-line
       res.send({ success: true });
     });
   }
