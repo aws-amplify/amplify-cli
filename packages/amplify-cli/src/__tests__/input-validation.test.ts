@@ -1,10 +1,9 @@
-import { Input } from '../domain/input';
 import { verifyInput } from '../input-manager';
-import { PluginPlatform } from '../domain/plugin-platform';
+import { PluginPlatform, CommandLineInput } from 'amplify-cli-core';
 
 describe('input validation tests', () => {
   it('status -v option should be treated as verbose', () => {
-    const input = new Input(['status', '-v']);
+    const input = new CommandLineInput(['status', '-v']);
     input.command = 'status';
     input.options = { v: true };
 

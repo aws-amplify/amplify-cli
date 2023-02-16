@@ -1,19 +1,19 @@
-// disabling lint until this file is converted to TS
-/* eslint-disable */
-const fs = require('fs-extra');
-const path = require('path');
-const inquirer = require('inquirer');
-const sequential = require('promise-sequential');
-const { S3 } = require('./aws-utils/aws-s3');
-const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
-const { ProviderName, AmplifyAppIdLabel } = require('./constants');
-const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
-const { stateManager, AmplifyFault, AmplifyError } = require('amplify-cli-core');
-const { fileLogger } = require('./utils/aws-logger');
-const { loadConfigurationForEnv } = require('./configuration-manager');
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import inquirer from 'inquirer';
+import sequential from 'promise-sequential';
+import { $TSContext } from 'amplify-cli-core';
+import { S3 } from './aws-utils/aws-s3';
+import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
+import { ProviderName, AmplifyAppIdLabel } from './constants';
+import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
+import { stateManager, AmplifyFault, AmplifyError } from 'amplify-cli-core';
+import { fileLogger } from './utils/aws-logger';
+import { loadConfigurationForEnv } from './configuration-manager';
+
 const logger = fileLogger('amplify-service-manager');
 
-async function init(amplifyServiceParams) {
+export async function init(amplifyServiceParams) {
   const { context, awsConfigInfo, projectName, envName, stackName } = amplifyServiceParams;
 
   let amplifyAppId;
@@ -56,10 +56,14 @@ async function init(amplifyServiceParams) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
-        message: `Amplify AppID ${inputAmplifyAppId} not found.`,
-        resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      }, e)
+      throw new AmplifyError(
+        'ProjectNotFoundError',
+        {
+          message: `Amplify AppID ${inputAmplifyAppId} not found.`,
+          resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
+        },
+        e,
+      );
     }
   }
 
@@ -70,7 +74,7 @@ async function init(amplifyServiceParams) {
       const envList = Object.keys(teamProviderInfo);
 
       let appIdsInTheSameLocalProjectAndRegion = [];
-      for (let env of envList) {
+      for (const env of envList) {
         if (
           env !== envName &&
           teamProviderInfo[env][ProviderName].Region === awsConfigInfo.region &&
@@ -83,7 +87,7 @@ async function init(amplifyServiceParams) {
 
       if (appIdsInTheSameLocalProjectAndRegion.length > 0) {
         let apps = [];
-        let listAppsResponse = {};
+        let listAppsResponse: { nextToken?: string; apps?: AppList } = {};
 
         do {
           logger('init.amplifyClient.listApps', [
@@ -135,9 +139,13 @@ async function init(amplifyServiceParams) {
       ) {
         // Do nothing
       } else {
-        throw new AmplifyFault('ProjectInitFault', {
-          message: e.message,
-        }, e);
+        throw new AmplifyFault(
+          'ProjectInitFault',
+          {
+            message: e.message,
+          },
+          e,
+        );
       }
     }
   }
@@ -197,7 +205,7 @@ async function init(amplifyServiceParams) {
   };
 }
 
-async function deleteEnv(context, envName, awsConfigInfo) {
+export async function deleteEnv(context: $TSContext, envName: string, awsConfigInfo?: object) {
   if (stateManager.teamProviderInfoExists()) {
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     if (
@@ -229,16 +237,20 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         if (ex.code === 'NotFoundException') {
           context.print.warning(ex.message);
         } else {
-          throw new AmplifyFault('ProjectDeleteFault', {
-            message: ex.message,
-          }, ex);
+          throw new AmplifyFault(
+            'ProjectDeleteFault',
+            {
+              message: ex.message,
+            },
+            ex,
+          );
         }
       }
     }
   }
 }
 
-async function postPushCheck(context) {
+export async function postPushCheck(context) {
   const projectConfig = stateManager.getProjectConfig();
   const { envName } = stateManager.getLocalEnvInfo();
   const amplifyMeta = stateManager.getMeta();
@@ -316,9 +328,13 @@ async function postPushCheck(context) {
         ) {
           // Do nothing
         } else {
-          throw new AmplifyFault('ProjectInitFault', {
-            message: e.message,
-          }, e);
+          throw new AmplifyFault(
+            'ProjectInitFault',
+            {
+              message: e.message,
+            },
+            e,
+          );
         }
       }
     }
@@ -343,7 +359,6 @@ async function postPushCheck(context) {
   const tpi = stateManager.getTeamProviderInfo();
   tpi[envName][ProviderName][AmplifyAppIdLabel] = amplifyAppId;
   stateManager.setTeamProviderInfo(undefined, tpi);
-
 }
 
 async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion) {
@@ -389,13 +404,25 @@ function displayAppIdSelectionLearnMore(context) {
   context.print.info('');
 }
 
-async function searchAmplifyService(amplifyClient, stackName) {
-  const result = {
+type AppList = { appId: string }[];
+
+type AmplifySearchResult = {
+  apps: AppList;
+  backendEnvExists: boolean;
+  amplifyAppId?: string;
+  environmentName?: string;
+};
+
+/**
+ * The types in this function may not be complete but they are the minimal types that I can infer from usage when converting this file from js to ts
+ */
+async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySearchResult> {
+  const result: AmplifySearchResult = {
     apps: [],
     backendEnvExists: false,
   };
 
-  let listAppsResponse = {};
+  let listAppsResponse: { nextToken?: string; apps?: AppList } = {};
   do {
     logger('searchAmplifyService.amplifyClient.listApps', [
       {
@@ -414,7 +441,7 @@ async function searchAmplifyService(amplifyClient, stackName) {
 
   if (listAppsResponse.apps.length > 0) {
     for (let i = 0; i < listAppsResponse.apps.length; i++) {
-      let listEnvResponse = {};
+      let listEnvResponse: { nextToken?: string; backendEnvironments?: { environmentName: string; stackName: string }[] } = {};
       do {
         logger('searchAmplifyService.amplifyClient.listBackendEnvironments', [
           {
@@ -447,7 +474,7 @@ async function searchAmplifyService(amplifyClient, stackName) {
   return result;
 }
 
-function storeArtifactsForAmplifyService(context) {
+export function storeArtifactsForAmplifyService(context) {
   return S3.getInstance(context).then(async s3 => {
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
     const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
@@ -473,10 +500,3 @@ async function uploadFile(s3, filePath, key) {
 }
 
 const amplifyAppCreationEnabled = () => !process.env || process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION !== '1';
-
-module.exports = {
-  init,
-  deleteEnv,
-  postPushCheck,
-  storeArtifactsForAmplifyService,
-};

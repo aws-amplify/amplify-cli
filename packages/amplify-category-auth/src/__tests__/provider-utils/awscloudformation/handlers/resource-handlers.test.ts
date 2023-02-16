@@ -7,7 +7,7 @@ import { AuthInputState } from '../../../../provider-utils/awscloudformation/aut
 import { getPostUpdateAuthMetaUpdater } from '../../../../provider-utils/awscloudformation/utils/amplify-meta-updaters';
 import { getPostUpdateAuthMessagePrinter } from '../../../../provider-utils/awscloudformation/utils/message-printer';
 import { removeDeprecatedProps } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
-import {ENV_SPECIFIC_PARAMS} from '../../../../provider-utils/awscloudformation/constants';
+import { ENV_SPECIFIC_PARAMS } from '../../../../provider-utils/awscloudformation/constants';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/synthesize-resources');
 jest.mock('../../../../provider-utils/awscloudformation/utils/auth-defaults-appliers');
@@ -27,7 +27,7 @@ getSupportedServicesMock.mockReturnValue({
   },
 });
 
-const testConfig = ENV_SPECIFIC_PARAMS.reduce((acc, it) => ({...acc, [it]: 'test'}), {} as Record<string, string>);
+const testConfig = ENV_SPECIFIC_PARAMS.reduce((acc, it) => ({ ...acc, [it]: 'test' }), {} as Record<string, string>);
 testConfig.nonEnvSpecificParam = 'something';
 
 const getUpdateAuthDefaultsApplierMock = getUpdateAuthDefaultsApplier as jest.MockedFunction<typeof getUpdateAuthDefaultsApplier>;
@@ -45,13 +45,16 @@ const getPostUpdateAuthMessagePrinterMock = getPostUpdateAuthMessagePrinter as j
 getPostUpdateAuthMessagePrinterMock.mockReturnValue(jest.fn());
 
 const removeDeprecatedPropsMock = removeDeprecatedProps as jest.MockedFunction<typeof removeDeprecatedProps>;
-removeDeprecatedPropsMock.mockImplementation(input => input);
+removeDeprecatedPropsMock.mockImplementation((input) => input);
 
 const AuthInputStateMock = AuthInputState as jest.MockedClass<typeof AuthInputState>;
 const saveCLIInputPayloadMock = jest.fn();
-AuthInputStateMock.mockImplementation(() => ({
-  saveCLIInputPayload: saveCLIInputPayloadMock,
-} as unknown as AuthInputState));
+AuthInputStateMock.mockImplementation(
+  () =>
+    ({
+      saveCLIInputPayload: saveCLIInputPayloadMock,
+    } as unknown as AuthInputState),
+);
 
 describe('getUpdateAuthHandler', () => {
   it('filters cliInputs on env specific params', async () => {
@@ -66,8 +69,8 @@ describe('getUpdateAuthHandler', () => {
     } as unknown as CognitoConfiguration;
 
     await getUpdateAuthHandler(contextStub)(cognitoConfig);
-    const {cognitoConfig: actualCliInputsFileContent} = saveCLIInputPayloadMock.mock.calls[0][0];
-    expect(Object.keys(actualCliInputsFileContent).some(key => ENV_SPECIFIC_PARAMS.includes(key))).toBe(false);
+    const { cognitoConfig: actualCliInputsFileContent } = saveCLIInputPayloadMock.mock.calls[0][0];
+    expect(Object.keys(actualCliInputsFileContent).some((key) => ENV_SPECIFIC_PARAMS.includes(key))).toBe(false);
     expect(actualCliInputsFileContent.nonEnvSpecificParam).toBe('something');
   });
 });

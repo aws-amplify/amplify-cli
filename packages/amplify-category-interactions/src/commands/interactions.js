@@ -6,7 +6,7 @@ module.exports = {
   name: featureName,
   run: async context => {
     if (context.parameters.options.help) {
-      return runHelp(context);
+      runHelp(context);
     }
   },
 };

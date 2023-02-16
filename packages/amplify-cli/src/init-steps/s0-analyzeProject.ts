@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -70,7 +68,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   } else {
     defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
   }
-  const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
+  const editorIndex = editors.findIndex((editorEntry) => editorEntry.value === defaultEditor);
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
   context.print.success('The following configuration will be applied:');
@@ -179,7 +177,7 @@ const getProjectName = async (context: $TSContext): Promise<string> => {
         name: 'inputProjectName',
         message: 'Enter a name for the project',
         default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: (input) => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
 
       const answer = await inquirer.prompt(projectNameQuestion);
@@ -256,7 +254,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
       name: 'envName',
       message: 'Enter a name for the environment',
       default: defaultEnvName,
-      validate: input => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
+      validate: (input) => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));

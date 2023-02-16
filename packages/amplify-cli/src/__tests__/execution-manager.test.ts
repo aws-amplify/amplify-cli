@@ -1,22 +1,8 @@
 import * as fs from 'fs-extra';
 import path from 'path';
-import {
-  AmplifyEvent,
-  AmplifyEventArgs,
-  AmplifyPostCodegenModelsEventData,
-  AmplifyPostInitEventData,
-  AmplifyPostPullEventData,
-  AmplifyPostPushEventData,
-  AmplifyPreCodegenModelsEventData,
-  AmplifyPreInitEventData,
-  AmplifyPrePullEventData,
-  AmplifyPrePushEventData,
-} from '../domain/amplify-event';
+import { AmplifyEvent, CommandLineInput, PluginManifest, PluginPlatform } from 'amplify-cli-core';
 import { Context } from '../domain/context';
-import { Input } from '../domain/input';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginPlatform } from '../domain/plugin-platform';
+import { PluginInfo } from 'amplify-cli-core';
 import { executeCommand } from '../execution-manager';
 
 const handleAmplifyEventMock = jest.fn();
@@ -26,10 +12,10 @@ jest.mock('../../__mocks__/faked-plugin', () => ({
 }));
 
 describe('execution manager', () => {
-  const mockFs = (fs as jest.Mocked<typeof fs>);
+  const mockFs = fs as jest.Mocked<typeof fs>;
   const mockContext = jest.createMockFromModule<Context>('../domain/context');
 
-  mockContext.input = new Input([
+  mockContext.input = new CommandLineInput([
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
     'push',
@@ -38,10 +24,12 @@ describe('execution manager', () => {
   mockContext.pluginPlatform = new PluginPlatform();
 
   mockContext.pluginPlatform.plugins.core = [
-    new PluginInfo('@aws-amplify/cli-internal',
+    new PluginInfo(
+      '@aws-amplify/cli-internal',
       'latestVersion',
       path.join(__dirname, '../../__mocks__/faked-plugin.js'),
-      new PluginManifest('core', 'core', undefined, undefined, ['init', 'push', 'pull', 'models'])),
+      new PluginManifest('core', 'core', undefined, undefined, ['init', 'push', 'pull', 'models']),
+    ),
   ];
 
   const eventPluginManifest = new PluginManifest('test-event-plugin', 'util');
@@ -56,12 +44,7 @@ describe('execution manager', () => {
     AmplifyEvent.PostCodegenModels,
   ];
   mockContext.pluginPlatform.plugins.testEvent = [
-    new PluginInfo(
-      '',
-      '1.0.0',
-      path.join(__dirname, '../../__mocks__/faked-plugin.js'),
-      eventPluginManifest,
-    ),
+    new PluginInfo('', '1.0.0', path.join(__dirname, '../../__mocks__/faked-plugin.js'), eventPluginManifest),
   ];
   mockContext.usageData = {
     init: jest.fn(),
@@ -85,28 +68,26 @@ describe('execution manager', () => {
   });
 
   it.each([
-    ['init', new AmplifyEventArgs(AmplifyEvent.PreInit, new AmplifyPreInitEventData())],
-    ['push', new AmplifyEventArgs(AmplifyEvent.PrePush, new AmplifyPrePushEventData())],
-    ['pull', new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData())],
-    ['models', new AmplifyEventArgs(AmplifyEvent.PreCodegenModels, new AmplifyPreCodegenModelsEventData())],
+    ['init', { event: AmplifyEvent.PreInit, data: {} }],
+    ['push', { event: AmplifyEvent.PrePush, data: {} }],
+    ['pull', { event: AmplifyEvent.PrePull, data: {} }],
+    ['models', { event: AmplifyEvent.PreCodegenModels, data: {} }],
   ])('executeCommand raise pre %s event', async (command, args) => {
     mockFs.existsSync.mockReturnValue(true);
     mockContext.input.command = command;
     await executeCommand(mockContext);
-    expect(handleAmplifyEventMock)
-      .toBeCalledWith(mockContext, args);
+    expect(handleAmplifyEventMock).toBeCalledWith(mockContext, args);
   });
 
   it.each([
-    ['init', new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostInitEventData())],
-    ['push', new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostPushEventData())],
-    ['pull', new AmplifyEventArgs(AmplifyEvent.PostPull, new AmplifyPostPullEventData())],
-    ['models', new AmplifyEventArgs(AmplifyEvent.PostCodegenModels, new AmplifyPostCodegenModelsEventData())],
+    ['init', { event: AmplifyEvent.PostInit, data: {} }],
+    ['push', { event: AmplifyEvent.PostPush, data: {} }],
+    ['pull', { event: AmplifyEvent.PostPull, data: {} }],
+    ['models', { event: AmplifyEvent.PostCodegenModels, data: {} }],
   ])('executeCommand raise post %s event', async (command, args) => {
     mockFs.existsSync.mockReturnValue(true);
     mockContext.input.command = command;
     await executeCommand(mockContext);
-    expect(handleAmplifyEventMock)
-      .toBeCalledWith(mockContext, args);
+    expect(handleAmplifyEventMock).toBeCalledWith(mockContext, args);
   });
 });

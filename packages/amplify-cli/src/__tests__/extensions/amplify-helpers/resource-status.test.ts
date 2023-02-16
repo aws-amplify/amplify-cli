@@ -1,8 +1,8 @@
-import { hashLayerResource } from 'amplify-category-function';
+import { hashLayerResource } from '@aws-amplify/amplify-category-function';
 import { AmplifyException, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
-import {
+import { 
   CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
@@ -77,8 +77,8 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-jest.mock('amplify-category-function', () => ({
-  ...(jest.requireActual('amplify-category-function') as Record<string, never>),
+jest.mock('@aws-amplify/amplify-category-function', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-category-function') as Record<string, never>),
   hashLayerResource: jest.fn(),
 }));
 

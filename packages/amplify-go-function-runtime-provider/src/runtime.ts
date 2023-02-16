@@ -28,7 +28,7 @@ let executablePath: string | null;
 export const executeCommand = (
   args: string[],
   streamStdio: boolean,
-  env: {} = {},
+  env: Record<string, string> = {},
   cwd: string | undefined = undefined,
   stdioInput: string | undefined = undefined,
 ): string => {
@@ -222,6 +222,6 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
       ignore: [mainFile],
     });
 
-    zip.finalize();
+    void zip.finalize();
   });
 };

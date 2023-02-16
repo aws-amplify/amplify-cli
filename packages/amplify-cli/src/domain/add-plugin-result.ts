@@ -1,4 +1,4 @@
-import { PluginVerificationResult } from './plugin-verification-result';
+import { PluginVerificationResult } from 'amplify-cli-core';
 
 export class AddPluginResult {
   constructor(public isAdded: boolean = false, public pluginVerificationResult?: PluginVerificationResult, public error?: AddPluginError) {}

@@ -1,4 +1,4 @@
-import { IPluginInfo } from 'amplify-cli-core';
+import { IPluginInfo } from '../types';
 import { PluginManifest } from './plugin-manifest';
 
 export class PluginInfo implements IPluginInfo {
