@@ -1,7 +1,7 @@
 import { ensureHeadlessParameters } from '../../../../provider-utils/awscloudformation/import/import-dynamodb';
 import { DynamoDBResourceParameters } from '../../../../provider-utils/awscloudformation/import/types';
 
-test('throws amplify error when auth headless params are missing during import auth', async () => {
+test('throws amplify error when ddb headless params are missing during import storage', async () => {
   const resourceParams: DynamoDBResourceParameters = {
     resourceName: 'mockResourceName',
     serviceType: 'imported',

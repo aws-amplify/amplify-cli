@@ -1,6 +1,6 @@
 import { ensureHeadlessParameters } from '../../../../provider-utils/awscloudformation/import/import-s3';
 
-test('throws amplify error when auth headless params are missing during import auth', async () => {
+test('throws amplify error when s3 headless params are missing during import storage', async () => {
   expect(() =>
     ensureHeadlessParameters({
       bucketName: '',
