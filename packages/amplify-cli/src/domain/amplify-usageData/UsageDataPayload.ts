@@ -12,7 +12,7 @@ export class UsageDataPayload implements IUsageDataPayload {
   installationUuid: string;
   amplifyCliVersion: string;
   input: CommandLineInput | null;
-  inputOptions: Pick<CommandLineInput, 'options'>;
+  inputOptions: CommandLineInput['options'];
   timestamp: string;
   error!: SerializableError;
   downstreamException!: SerializableError;
