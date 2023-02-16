@@ -10090,6 +10090,18 @@ amplify-codegen@^3.3.6:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-dotnet-function-runtime-provider@1.7.1:
+  version "1.7.1"
+  resolved "https://registry.npmjs.org/amplify-dotnet-function-runtime-provider/-/amplify-dotnet-function-runtime-provider-1.7.1.tgz#4f183d4cac01df101a90b274fafafcdc4f6859d4"
+  integrity sha512-EnPnGHER87CB8PfXATkJO/SZ3x9Z1cWPrE2pAqCYrkHGJ8C7u/oa7jed14vVDFf4n7Ngd2lWKI0ONJd6oyaN8Q==
+  dependencies:
+    amplify-function-plugin-interface "1.9.6"
+    amplify-prompts "2.6.3"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    which "^2.0.2"
+
 ansi-align@^3.0.0, ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"
