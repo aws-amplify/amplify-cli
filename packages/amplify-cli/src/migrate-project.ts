@@ -82,8 +82,8 @@ const migrateFrom0To1 = async (context: $TSContext, projectPath, projectConfig):
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     let apiMigrateFunction;
 
-    Object.keys(categoryPluginInfoList).forEach(category => {
-      categoryPluginInfoList[category].forEach(pluginInfo => {
+    Object.keys(categoryPluginInfoList).forEach((category) => {
+      categoryPluginInfoList[category].forEach((pluginInfo) => {
         try {
           // eslint-disable-next-line
           const { migrate } = require(pluginInfo.packageLocation);
@@ -263,11 +263,11 @@ const generateTeamProviderInfo = (amplifyMeta: $TSAny): $TSAny => ({ NONE: ampli
 const generateBackendConfig = (amplifyMeta: $TSAny): $TSAny => {
   const backendConfig = {};
 
-  Object.keys(amplifyMeta).forEach(category => {
+  Object.keys(amplifyMeta).forEach((category) => {
     if (category !== 'providers') {
       backendConfig[category] = {};
 
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         backendConfig[category][resourceName] = {};
         backendConfig[category][resourceName].service = amplifyMeta[category][resourceName].service;
         backendConfig[category][resourceName].providerPlugin = amplifyMeta[category][resourceName].providerPlugin;

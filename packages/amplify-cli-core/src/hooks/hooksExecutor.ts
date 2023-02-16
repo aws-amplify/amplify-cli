@@ -15,6 +15,12 @@ import { pathManager, stateManager } from '../state-manager';
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 /**
+ *  runtime for hooks
+ */
+type HooksRuntime = { runtimePath: string, runtimeOptions?: string[] };
+
+
+/**
  * execute hooks present in the hooks directory
  */
 export const executeHooks = async (hooksMetadata: HooksMeta): Promise<void> => {
@@ -46,16 +52,16 @@ export const executeHooks = async (hooksMetadata: HooksMeta): Promise<void> => {
     if (!execFileMeta) {
       continue;
     }
-    const runtime = getRuntime(execFileMeta, hooksConfig);
-    if (!runtime) {
+    const hooksRuntime = getRuntime(execFileMeta, hooksConfig);
+    if (!hooksRuntime?.runtimePath) {
       continue;
     }
-    await execHelper(runtime, execFileMeta, hooksMetadata.getDataParameter(), hooksMetadata.getErrorParameter());
+    await execHelper(hooksRuntime, execFileMeta, hooksMetadata.getDataParameter(), hooksMetadata.getErrorParameter());
   }
 };
 
 const execHelper = async (
-  runtime: string,
+  hooksRuntime: HooksRuntime,
   execFileMeta: HookFileMeta,
   dataParameter: DataParameter,
   errorParameter?: ErrorParameter,
@@ -74,7 +80,9 @@ const execHelper = async (
 
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
-    const childProcess = execa(runtime, [execFileMeta.filePath], {
+    // adding default if options arent defined
+    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
+    const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
       cwd: projectRoot,
       env: { PATH: process.env.PATH },
       input: JSON.stringify({
@@ -162,7 +170,7 @@ const splitFileName = (filename: string): HookFileMeta => {
   return fileMeta;
 };
 
-const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | undefined => {
+const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): HooksRuntime | undefined => {
   const { extension } = fileMeta;
   if (!extension) {
     return undefined;
@@ -183,8 +191,16 @@ const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | 
   if (!executablePath) {
     throw new Error(String(`hooks runtime not found: ${runtime}`));
   }
+  const hooksRuntime: HooksRuntime = {
+    runtimePath : executablePath,
+  };
+  // check runtime options
+  const runtimeOptions = extensionObj?.[extension]?.runtime_options;
+  if(Array.isArray(runtimeOptions) && runtimeOptions.length > 0){
+    hooksRuntime.runtimeOptions = extensionObj?.[extension]?.runtime_options;
+  }
 
-  return executablePath;
+  return hooksRuntime;
 };
 
 const getSupportedExtensions = (hooksConfig: HooksConfig): HookExtensions => ({ ...defaultSupportedExt, ...hooksConfig?.extensions });

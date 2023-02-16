@@ -12,7 +12,7 @@ export async function start(context: $TSContext) {
   const ampMeta = stateManager.getMeta();
   let resourceName = context?.input?.subCommands?.[0];
   if (!resourceName) {
-    const choices = _.keys(_.get(ampMeta, ['function'])).filter(resourceName => isMockable(context, resourceName).isMockable);
+    const choices = _.keys(_.get(ampMeta, ['function'])).filter((resourceName) => isMockable(context, resourceName).isMockable);
     if (choices.length < 1) {
       throw new Error('There are no mockable functions in the project. Use `amplify add function` to create one.');
     } else if (choices.length == 1) {

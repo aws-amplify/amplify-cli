@@ -131,7 +131,7 @@ const importServiceWalkthrough = async (
 
     printer.info(importMessages.OneBucket(answers.bucketName));
   } else {
-    const bucketNameList = bucketList.map(b => b.Name!);
+    const bucketNameList = bucketList.map((b) => b.Name!);
 
     const bucketNameQuestion = {
       type: 'autocomplete',

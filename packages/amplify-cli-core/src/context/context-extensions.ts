@@ -58,7 +58,7 @@ function attachPrompt(context: $TSContext) {
     },
     ask: async (questions: any) => {
       if (Array.isArray(questions)) {
-        questions = questions.map(q => {
+        questions = questions.map((q) => {
           // eslint-disable-next-line spellcheck/spell-checker
           if (q.type === 'rawlist' || q.type === 'list') {
             q.type = 'select';
@@ -114,9 +114,9 @@ function attachRuntime(context: $TSContext) {
   context.runtime = {
     plugins: [],
   };
-  Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
+  Object.keys(context.pluginPlatform.plugins).forEach((pluginShortName) => {
     const pluginInformation = context.pluginPlatform.plugins[pluginShortName];
-    pluginInformation.forEach(pluginEntry => {
+    pluginInformation.forEach((pluginEntry) => {
       const name = path.basename(pluginEntry.packageLocation);
       const directory = pluginEntry.packageLocation;
       const pluginName = pluginEntry.manifest.name;
@@ -257,7 +257,7 @@ export const print = {
 };
 
 function columnHeaderDivider(cliTable: CLITable.Table): string[] {
-  return findWidths(cliTable).map(w => Array(w).join('-'));
+  return findWidths(cliTable).map((w) => Array(w).join('-'));
 }
 
 function findWidths(cliTable: CLITable.Table): number[] {
