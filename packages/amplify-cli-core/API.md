@@ -429,6 +429,29 @@ export class CLIInputSchemaValidator {
 }
 
 // @public (undocumented)
+export type CLIOptionFlags = {
+    restore?: boolean;
+    json?: boolean;
+    name?: string;
+    awsInfo?: string;
+    config?: string;
+    'iterative-rollback'?: boolean;
+    force?: boolean;
+    env?: string;
+    rootStackName?: string;
+    frontend?: string;
+    quickstart?: boolean;
+    app?: string | boolean;
+    timeout?: string;
+    event?: string;
+    minify?: boolean;
+    help?: boolean;
+    localEnvFilePath?: string;
+    yes?: boolean;
+    appId?: string;
+};
+
+// @public (undocumented)
 export interface CLIParams {
     // (undocumented)
     cliCommand: string;
@@ -504,32 +527,12 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
-export type CommandLineInput = {
+export type CommandLineInput<T = CLIOptionFlags> = {
     argv: Array<string>;
     plugin?: string;
     command: string;
     subCommands?: string[];
-    options?: {
-        restore?: boolean;
-        json?: boolean;
-        name?: string;
-        awsInfo?: string;
-        config?: string;
-        'iterative-rollback'?: boolean;
-        force?: boolean;
-        env?: string;
-        rootStackName?: string;
-        frontend?: string;
-        quickstart?: boolean;
-        app?: string | boolean;
-        timeout?: string;
-        event?: string;
-        minify?: boolean;
-        help?: boolean;
-        localEnvFilePath?: string;
-        yes?: boolean;
-        appId?: string;
-    } & Record<string, string | boolean>;
+    options?: T & Record<string, string | boolean>;
 };
 
 // @public (undocumented)
@@ -1235,7 +1238,7 @@ export interface IUsageDataPayload {
     // (undocumented)
     input: CommandLineInput | null;
     // (undocumented)
-    inputOptions: Pick<CommandLineInput, 'options'>;
+    inputOptions: CommandLineInput['options'];
     // (undocumented)
     installationUuid: string;
     // (undocumented)
