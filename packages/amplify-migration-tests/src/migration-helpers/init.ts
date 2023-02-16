@@ -18,7 +18,11 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
 };
 
-export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Record<string, unknown>, testingWithLatestCodebase = false): Promise<void> {
+export function initJSProjectWithProfileV4_28_2(
+  cwd: string,
+  settings: Record<string, unknown>,
+  testingWithLatestCodebase = false,
+): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -66,7 +70,11 @@ export function initJSProjectWithProfileV4_28_2(cwd: string, settings: Record<st
   });
 }
 
-export function initJSProjectWithProfileV4_52_0(cwd: string, settings: Record<string, unknown>, testingWithLatestCodebase = false): Promise<void> {
+export function initJSProjectWithProfileV4_52_0(
+  cwd: string,
+  settings: Record<string, unknown>,
+  testingWithLatestCodebase = false,
+): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 

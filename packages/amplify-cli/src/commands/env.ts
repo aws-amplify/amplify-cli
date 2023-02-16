@@ -2,7 +2,7 @@ import * as path from 'path';
 
 const featureName = 'env';
 
-export const run = async context => {
+export const run = async (context) => {
   const { subCommands } = context.input;
   let subcommand = 'help';
   if (subCommands && subCommands.length > 0) {

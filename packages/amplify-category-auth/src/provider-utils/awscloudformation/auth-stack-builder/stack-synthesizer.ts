@@ -12,9 +12,9 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
 
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (
-      stack instanceof AmplifyAuthCognitoStack
-      || stack instanceof AmplifyUserPoolGroupStack
-      || stack instanceof AmplifyUserPoolGroupStackOutputs
+      stack instanceof AmplifyAuthCognitoStack ||
+      stack instanceof AmplifyUserPoolGroupStack ||
+      stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;

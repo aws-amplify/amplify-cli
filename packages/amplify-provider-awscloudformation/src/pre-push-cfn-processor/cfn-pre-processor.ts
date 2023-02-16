@@ -48,4 +48,4 @@ export const writeCustomPoliciesToCFNTemplate = async (
   const { templateFormat, cfnTemplate } = readCFNTemplate(cfnPath);
   const newCfnTemplate = generateCustomPoliciesInTemplate(cfnTemplate, resourceName, service, category);
   await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat, minify: options?.minify });
-}
+};

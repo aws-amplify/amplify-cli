@@ -68,7 +68,7 @@ export async function updateWalkthrough(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
   const dynamoDbResources: $TSObject = {};
 
-  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
     if (
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === AmplifySupportedService.DYNAMODB &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
@@ -244,7 +244,10 @@ async function askGSIQuestion(
 
     while (continueWithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
-        const gsiNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
+        const gsiNameValidator =
+          (message: string): Validator =>
+          (input: string) =>
+            /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
 
         const gsiName = await prompter.input('Provide the GSI name', {
           validate: gsiNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
@@ -376,7 +379,10 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
   }
 
   while (continueAttributeQuestion) {
-    const attributeNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9_-]+$/.test(input) ? true : message);
+    const attributeNameValidator =
+      (message: string): Validator =>
+      (input: string) =>
+        /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
 
     const attributeName = await prompter.input('What would you like to name this column', {
       validate: attributeNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
@@ -407,7 +413,10 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
 }
 
 async function askTableNameQuestion(defaultValues: any, resourceName: string) {
-  const tableNameValidator = (message: string): Validator => (input: string) => (/^[a-zA-Z0-9._-]+$/.test(input) ? true : message);
+  const tableNameValidator =
+    (message: string): Validator =>
+    (input: string) =>
+      /^[a-zA-Z0-9._-]+$/.test(input) ? true : message;
 
   const tableName = await prompter.input('Provide table name', {
     validate: tableNameValidator('You can use the following characters: a-z A-Z 0-9 . - _'),

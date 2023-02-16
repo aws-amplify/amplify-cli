@@ -1,7 +1,9 @@
+import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import {
-  $TSContext, FeatureFlags, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
+  notifyFieldAuthSecurityChange,
+  notifyListQuerySecurityChange,
+  notifySecurityEnhancement,
+} from '../extensions/amplify-helpers/auth-notifications';
 
 jest.mock('amplify-cli-core');
 
@@ -34,7 +36,9 @@ describe('push notifications', () => {
         },
       },
     });
-    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => { /* noop */ });
+    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {
+      /* noop */
+    });
     await notifyFieldAuthSecurityChange(contextMock);
     // eslint-disable-next-line spellcheck/spell-checker
     expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'showFieldAuthNotification');
@@ -52,7 +56,9 @@ describe('push notifications', () => {
         },
       },
     });
-    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => { /* noop */ });
+    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {
+      /* noop */
+    });
     await notifyListQuerySecurityChange(contextMock);
   });
 
@@ -69,7 +75,9 @@ describe('push notifications', () => {
         },
       },
     });
-    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => { /* noop */ });
+    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {
+      /* noop */
+    });
     await notifySecurityEnhancement(contextMock);
     // eslint-disable-next-line spellcheck/spell-checker
     expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'securityEnhancementNotification');

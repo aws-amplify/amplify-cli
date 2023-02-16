@@ -85,7 +85,7 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-const postInitQuickStart = projectPath => {
+const postInitQuickStart = (projectPath) => {
   const awsConfigFilePath = path.join(projectPath, 'awsconfiguration.json');
   const amplifyConfigFilePath = path.join(projectPath, 'amplifyconfiguration.json');
   if (!fs.existsSync(awsConfigFilePath)) {

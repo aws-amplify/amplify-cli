@@ -26,7 +26,7 @@ export const run = async (context: $TSContext) => {
   const storageResources: string[] = [];
 
   if (amplifyMeta[AmplifyCategories.STORAGE]) {
-    Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+    Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
       storageResources.push(resourceName);
     });
   }

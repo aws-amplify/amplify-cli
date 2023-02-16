@@ -309,7 +309,7 @@ const parseCredsForHeadless = (mergedValues: any, envParams: any): any => {
 /* eslint-enable no-param-reassign */
 
 const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any): any => {
-  const requiredParams = [];
+  const requiredParams: string[] = [];
 
   if (previousValues.thirdPartyAuth) {
     if (previousValues.authProviders.includes('accounts.google.com')) {

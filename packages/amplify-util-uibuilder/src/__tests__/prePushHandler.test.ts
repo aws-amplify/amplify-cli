@@ -91,7 +91,9 @@ describe('handlePrePush', () => {
     utilsMock.isFormSchemaCustomized = jest.fn().mockReturnValue(true);
     const spy = jest.spyOn(printer, 'warn');
     await prePushHandler(context);
-    expect(spy).toHaveBeenCalledWith('The following forms will no longer be available because the connected data model no longer exists: BlogCreateForm, BlogUpdateForm');
+    expect(spy).toHaveBeenCalledWith(
+      'The following forms will no longer be available because the connected data model no longer exists: BlogCreateForm, BlogUpdateForm',
+    );
   });
 
   it('runs handlePrePush without schema', async () => {

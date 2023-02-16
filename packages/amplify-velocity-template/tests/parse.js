@@ -2,16 +2,16 @@
 var parse = require('../src/velocity').parse;
 var assert = require('assert');
 
-describe('Parser', function() {
-  describe('simple references', function() {
-    it('self define block', function() {
+describe('Parser', function () {
+  describe('simple references', function () {
+    it('self define block', function () {
       var vm = '#cms(1)<div class="abs-right"> #H(1,"第一个链接") </div> #end';
       var ast = parse(vm, { cms: true });
       assert(ast.length, 1);
       assert(ast[0][0].type, 'cms');
     });
 
-    it('simple references', function() {
+    it('simple references', function () {
       var vm = 'hello world: $foo';
       var ret = parse(vm);
 
@@ -21,27 +21,27 @@ describe('Parser', function() {
       assert.equal('foo', ret[1].id);
     });
 
-    it('valid variable references', function() {
+    it('valid variable references', function () {
       var vm = '$mud-Slinger_1';
       assert.equal('mud-Slinger_1', parse(vm)[0].id);
     });
 
-    it('wraped references', function() {
+    it('wraped references', function () {
       var vm = '${mudSlinger}';
       var ast = parse(vm)[0];
       assert.equal(true, ast.isWraped);
       assert.equal('mudSlinger', ast.id);
     });
 
-    it('function call references', function() {
+    it('function call references', function () {
       var ast = parse('$foo()')[0];
       assert.equal(false, ast.args);
       assert.equal('references', ast.type);
     });
   });
 
-  describe('Properties', function() {
-    it('simple property', function() {
+  describe('Properties', function () {
+    it('simple property', function () {
       var vm = '$customer.Address';
       var asts = parse(vm);
       assert.deepEqual(asts[0], {
@@ -55,8 +55,8 @@ describe('Parser', function() {
     });
   });
 
-  describe('Methods ', function() {
-    it('with no arguments', function() {
+  describe('Methods ', function () {
+    it('with no arguments', function () {
       var vm = '$foo.bar()';
       var ast = parse(vm)[0];
 
@@ -69,7 +69,7 @@ describe('Parser', function() {
       ]);
     });
 
-    it('with arguments integer', function() {
+    it('with arguments integer', function () {
       var vm = '$foo.bar(10)';
       var ast = parse(vm)[0];
 
@@ -87,7 +87,7 @@ describe('Parser', function() {
       ]);
     });
 
-    it('with arguments references', function() {
+    it('with arguments references', function () {
       var vm = '$foo.bar($bar)';
       var ast = parse(vm)[0];
 
@@ -103,8 +103,8 @@ describe('Parser', function() {
     });
   });
 
-  describe('Index', function() {
-    it('all kind of indexs', function() {
+  describe('Index', function () {
+    it('all kind of indexs', function () {
       var vm = '$foo[0] $foo[$i] $foo["bar"]';
       var asts = parse(vm);
 
@@ -130,8 +130,8 @@ describe('Parser', function() {
     });
   });
 
-  describe('complex references', function() {
-    it('property + index + property', function() {
+  describe('complex references', function () {
+    it('property + index + property', function () {
       var vm = '$foo.bar[1].junk';
       var ast = parse(vm)[0];
 
@@ -145,7 +145,7 @@ describe('Parser', function() {
       assert.equal('property', paths[2].type);
     });
 
-    it('method + index', function() {
+    it('method + index', function () {
       var vm = '$foo.callMethod()[1]';
       var ast = parse(vm)[0];
 
@@ -159,7 +159,7 @@ describe('Parser', function() {
       assert.equal('integer', ast.path[1].id.type);
     });
 
-    it('property should not start with alphabet', function() {
+    it('property should not start with alphabet', function () {
       var asts = parse('$foo.124');
       var ast2 = parse('$foo.-24')[0];
 
@@ -170,15 +170,15 @@ describe('Parser', function() {
       assert.equal(undefined, ast2.path);
     });
 
-    it('index should end with close bracket', function() {
-      assert.throws(function() {
+    it('index should end with close bracket', function () {
+      assert.throws(function () {
         parse("$foo.bar['a'12]");
       }, /Parse error/);
     });
   });
 
-  describe('Directives', function() {
-    it('#macro', function() {
+  describe('Directives', function () {
+    it('#macro', function () {
       var vm = '#macro( d $a $b)#if($b)$a#end#end #d($foo $bar)';
       var asts = parse(vm);
 
@@ -196,11 +196,11 @@ describe('Parser', function() {
       assert.equal(ifAst.length, 2);
     });
 
-    it('#setter will work fine', function() {
+    it('#setter will work fine', function () {
       var vm = '<a href="#setter" target="_blank"></a>';
       var asts = parse(vm);
       asts
-        .every(function(ast) {
+        .every(function (ast) {
           return typeof ast === 'string';
         })
         .should.equal(true);
@@ -210,15 +210,15 @@ describe('Parser', function() {
     });
   });
 
-  describe('comment identify', function() {
-    it('one line comment', function() {
+  describe('comment identify', function () {
+    it('one line comment', function () {
       var asts = parse('#set( $monkey.Number = 123)##number literal');
 
       assert.equal(2, asts.length);
       assert.equal('comment', asts[1].type);
     });
 
-    it('all comment', function() {
+    it('all comment', function () {
       var asts = parse('##number literal');
 
       asts.length.should.equal(1);
@@ -230,8 +230,8 @@ describe('Parser', function() {
     });
   });
 
-  describe('raw identify', function() {
-    it('raw content', function() {
+  describe('raw identify', function () {
+    it('raw content', function () {
       var asts = parse('#[[\nThis content is ignored.\n]]#');
 
       assert.equal('raw', asts[0].type);

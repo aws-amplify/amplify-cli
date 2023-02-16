@@ -56,7 +56,7 @@ export class SSMClientWrapper {
           NextToken,
         })
         .promise();
-      accumulator.push(...result.Parameters.map(param => param.Name));
+      accumulator.push(...result.Parameters.map((param) => param.Name));
       NextToken = result.NextToken;
     } while (NextToken);
     return accumulator;
@@ -85,7 +85,7 @@ export class SSMClientWrapper {
         Name: secretName,
       })
       .promise()
-      .catch(err => {
+      .catch((err) => {
         if (err.code !== 'ParameterNotFound') {
           // if the value didn't exist in the first place, consider it deleted
           throw err;
@@ -113,9 +113,13 @@ const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
     spinner.start();
     spinner.text = 'Building and packaging resources';
 
-    const { client } = await context.amplify.invokePluginMethod<{ client: aws.SSM }>(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
+    const { client } = await context.amplify.invokePluginMethod<{ client: aws.SSM }>(
       context,
-    ]);
+      'awscloudformation',
+      undefined,
+      'getConfiguredSSMClient',
+      [context],
+    );
 
     return client;
   } finally {

@@ -1,18 +1,18 @@
-define('velocityjs/0.4.10/index', [], function(e, t, s) {
+define('velocityjs/0.4.10/index', [], function (e, t, s) {
   'use strict';
   s.exports = e('velocityjs/0.4.10/src/velocity');
 }),
-  define('velocityjs/0.4.10/src/velocity', [], function(e, t, s) {
+  define('velocityjs/0.4.10/src/velocity', [], function (e, t, s) {
     var i = e('velocityjs/0.4.10/src/parse/index'),
       r = e('velocityjs/0.4.10/src/utils'),
       n = e('velocityjs/0.4.10/src/compile/index'),
       a = e('velocityjs/0.4.10/src/helper/index');
     (n.Parser = i),
       (i._parse = i.parse),
-      (i.parse = function(e) {
+      (i.parse = function (e) {
         var t = i._parse(e);
         return (
-          r.forEach(t, function(e, s) {
+          r.forEach(t, function (e, s) {
             var i = /^[ \t]*\n/;
             if (e.type && 'references' !== e.type) {
               var r = t[s + 1];
@@ -23,19 +23,19 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         );
       });
     var c = { Parser: i, Compile: n, Helper: a };
-    (c.render = function(e, t, s) {
+    (c.render = function (e, t, s) {
       var r = i.parse(e),
         a = new n(r);
       return a.render(t, s);
     }),
       (s.exports = c);
   }),
-  define('velocityjs/0.4.10/src/parse/index', [], function(e, t, s) {
-    var i = (function() {
+  define('velocityjs/0.4.10/src/parse/index', [], function (e, t, s) {
+    var i = (function () {
       function e() {
         this.yy = {};
       }
-      var t = function(e, t, s, i) {
+      var t = function (e, t, s, i) {
           for (s = s || {}, i = e.length; i--; s[e[i]] = t);
           return s;
         },
@@ -102,7 +102,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         ot = [22, 49, 50, 51, 52, 56, 57, 58, 59, 60, 61],
         ht = [22, 49, 50, 56, 57, 58, 59, 60, 61],
         lt = {
-          trace: function() {},
+          trace: function () {},
           yy: {},
           symbols_: {
             error: 2,
@@ -387,7 +387,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             [9, 3],
             [9, 2],
           ],
-          performAction: function(e, t, s, i, r, n) {
+          performAction: function (e, t, s, i, r, n) {
             var a = n.length - 1;
             switch (r) {
               case 1:
@@ -1194,11 +1194,11 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             201: [2, 105],
             213: [2, 106],
           },
-          parseError: function(e, t) {
+          parseError: function (e, t) {
             if (!t.recoverable) throw new Error(e);
             this.trace(e);
           },
-          parse: function(e) {
+          parse: function (e) {
             function t() {
               var e;
               return (e = f.lex() || p), 'number' != typeof e && (e = s.symbols_[e] || e), e;
@@ -1287,14 +1287,14 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             return !0;
           },
         },
-        ut = (function() {
+        ut = (function () {
           var e = {
             EOF: 1,
-            parseError: function(e, t) {
+            parseError: function (e, t) {
               if (!this.yy.parser) throw new Error(e);
               this.yy.parser.parseError(e, t);
             },
-            setInput: function(e, t) {
+            setInput: function (e, t) {
               return (
                 (this.yy = t || this.yy || {}),
                 (this._input = e),
@@ -1308,7 +1308,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 this
               );
             },
-            input: function() {
+            input: function () {
               var e = this._input[0];
               (this.yytext += e), this.yyleng++, this.offset++, (this.match += e), (this.matched += e);
               var t = e.match(/(?:\r\n?|\n).*/g);
@@ -1319,7 +1319,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 e
               );
             },
-            unput: function(e) {
+            unput: function (e) {
               var t = e.length,
                 s = e.split(/(?:\r\n?|\n)/g);
               (this._input = e + this._input), (this.yytext = this.yytext.substr(0, this.yytext.length - t)), (this.offset -= t);
@@ -1342,10 +1342,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 this
               );
             },
-            more: function() {
+            more: function () {
               return (this._more = !0), this;
             },
-            reject: function() {
+            reject: function () {
               return this.options.backtrack_lexer
                 ? ((this._backtrack = !0), this)
                 : this.parseError(
@@ -1353,29 +1353,29 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                       (this.yylineno + 1) +
                       '. You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n' +
                       this.showPosition(),
-                    { text: '', token: null, line: this.yylineno }
+                    { text: '', token: null, line: this.yylineno },
                   );
             },
-            less: function(e) {
+            less: function (e) {
               this.unput(this.match.slice(e));
             },
-            pastInput: function() {
+            pastInput: function () {
               var e = this.matched.substr(0, this.matched.length - this.match.length);
               return (e.length > 20 ? '...' : '') + e.substr(-20).replace(/\n/g, '');
             },
-            upcomingInput: function() {
+            upcomingInput: function () {
               var e = this.match;
               return (
                 e.length < 20 && (e += this._input.substr(0, 20 - e.length)),
                 (e.substr(0, 20) + (e.length > 20 ? '...' : '')).replace(/\n/g, '')
               );
             },
-            showPosition: function() {
+            showPosition: function () {
               var e = this.pastInput(),
                 t = new Array(e.length + 1).join('-');
               return e + this.upcomingInput() + '\n' + t + '^';
             },
-            test_match: function(e, t) {
+            test_match: function (e, t) {
               var s, i, r;
               if (
                 (this.options.backtrack_lexer &&
@@ -1430,7 +1430,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               }
               return !1;
             },
-            next: function() {
+            next: function () {
               if (this.done) return this.EOF;
               this._input || (this.done = !0);
               var e, t, s, i;
@@ -1457,33 +1457,33 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                     line: this.yylineno,
                   });
             },
-            lex: function() {
+            lex: function () {
               var e = this.next();
               return e ? e : this.lex();
             },
-            begin: function(e) {
+            begin: function (e) {
               this.conditionStack.push(e);
             },
-            popState: function() {
+            popState: function () {
               var e = this.conditionStack.length - 1;
               return e > 0 ? this.conditionStack.pop() : this.conditionStack[0];
             },
-            _currentRules: function() {
+            _currentRules: function () {
               return this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]
                 ? this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules
                 : this.conditions.INITIAL.rules;
             },
-            topState: function(e) {
+            topState: function (e) {
               return (e = this.conditionStack.length - 1 - Math.abs(e || 0)), e >= 0 ? this.conditionStack[e] : 'INITIAL';
             },
-            pushState: function(e) {
+            pushState: function (e) {
               this.begin(e);
             },
-            stateStackSize: function() {
+            stateStackSize: function () {
               return this.conditionStack.length;
             },
             options: {},
-            performAction: function(e, t, s, i) {
+            performAction: function (e, t, s, i) {
               switch (s) {
                 case 0:
                   var r = /\\+$/,
@@ -1704,77 +1704,15 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               mu: { rules: [5, 27, 28, 36, 37, 38, 39, 40, 41, 43, 52, 54, 55, 56, 58], inclusive: !1 },
               c: {
                 rules: [
-                  18,
-                  19,
-                  20,
-                  21,
-                  22,
-                  23,
-                  24,
-                  25,
-                  26,
-                  27,
-                  28,
-                  29,
-                  30,
-                  31,
-                  32,
-                  33,
-                  34,
-                  35,
-                  38,
-                  39,
-                  40,
-                  41,
-                  43,
-                  44,
-                  45,
-                  46,
-                  47,
-                  48,
-                  49,
-                  50,
-                  51,
-                  52,
+                  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50,
+                  51, 52,
                 ],
                 inclusive: !1,
               },
               i: {
                 rules: [
-                  18,
-                  19,
-                  20,
-                  21,
-                  22,
-                  23,
-                  24,
-                  25,
-                  26,
-                  27,
-                  28,
-                  29,
-                  30,
-                  32,
-                  33,
-                  33,
-                  34,
-                  34,
-                  35,
-                  38,
-                  39,
-                  40,
-                  41,
-                  42,
-                  43,
-                  44,
-                  45,
-                  46,
-                  47,
-                  48,
-                  49,
-                  50,
-                  51,
-                  52,
+                  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 33, 34, 34, 35, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+                  49, 50, 51, 52,
                 ],
                 inclusive: !1,
               },
@@ -1798,17 +1736,17 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       'undefined' != typeof t &&
       ((t.parser = i),
       (t.Parser = i.Parser),
-      (t.parse = function() {
+      (t.parse = function () {
         return i.parse.apply(i, arguments);
       }),
-      (t.main = function(s) {
+      (t.main = function (s) {
         s[1] || (console.log('Usage: ' + s[0] + ' FILE'), process.exit(1));
         var i = e('fs').readFileSync(e('path').normalize(s[1]), 'utf8');
         return t.parser.parse(i);
       }),
       'undefined' != typeof s && e.main === s && t.main(process.argv.slice(1)));
   }),
-  define('velocityjs/0.4.10/src/utils', [], function(e, t, s) {
+  define('velocityjs/0.4.10/src/utils', [], function (e, t, s) {
     'use strict';
     function i(e, t) {
       var s = { if: 1, foreach: 1, macro: 1, noescape: 1, define: 1 },
@@ -1827,36 +1765,36 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       return n;
     }
     var r = {};
-    ['forEach', 'some', 'every', 'filter', 'map'].forEach(function(e) {
-      r[e] = function(t, s, i) {
+    ['forEach', 'some', 'every', 'filter', 'map'].forEach(function (e) {
+      r[e] = function (t, s, i) {
         if (!t || 'string' == typeof t) return t;
         if (((i = i || this), t[e])) return t[e](s, i);
         var r = Object.keys(t);
-        return r[e](function(e) {
+        return r[e](function (e) {
           return s.call(i, t[e], e, t);
         }, i);
       };
     });
     var n = 0;
-    (r.guid = function() {
+    (r.guid = function () {
       return n++;
     }),
-      (r.mixin = function(e, t) {
+      (r.mixin = function (e, t) {
         return (
-          r.forEach(t, function(t, s) {
-            ({}.toString.call(t));
+          r.forEach(t, function (t, s) {
+            ({}).toString.call(t);
             e[s] = r.isArray(t) || r.isObject(t) ? r.mixin(t, e[s] || {}) : t;
           }),
           e
         );
       }),
-      (r.isArray = function(e) {
+      (r.isArray = function (e) {
         return '[object Array]' === {}.toString.call(e);
       }),
-      (r.isObject = function(e) {
+      (r.isObject = function (e) {
         return '[object Object]' === {}.toString.call(e);
       }),
-      (r.indexOf = function(e, t) {
+      (r.indexOf = function (e, t) {
         return r.isArray(t) ? t.indexOf(e) : void 0;
       }),
       (r.keys = Object.keys),
@@ -1864,7 +1802,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       (r.makeLevel = i),
       (s.exports = r);
   }),
-  define('velocityjs/0.4.10/src/compile/index', [], function(e, t, s) {
+  define('velocityjs/0.4.10/src/compile/index', [], function (e, t, s) {
     function i(e, t) {
       (this.asts = e), (this.config = { escape: !0, unescape: {} }), r.mixin(this.config, t), this.init();
     }
@@ -1880,13 +1818,13 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       e('velocityjs/0.4.10/src/compile/compile')(i, r),
       (s.exports = i);
   }),
-  define('velocityjs/0.4.10/src/helper/index', [], function(e, t, s) {
+  define('velocityjs/0.4.10/src/helper/index', [], function (e, t, s) {
     var i = {},
       r = e('velocityjs/0.4.10/src/utils');
     e('velocityjs/0.4.10/src/helper/text')(i, r), (s.exports = i);
   }),
-  define('velocityjs/0.4.10/src/helper/text', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/helper/text', [], function (e, t, s) {
+    s.exports = function (e, t) {
       function s(e) {
         var r = e.leader,
           n = void 0 !== e.args;
@@ -1896,7 +1834,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           (r += n ? i(e) : e.id),
           t.forEach(
             e.path,
-            function(e) {
+            function (e) {
               if ('method' == e.type) r += '.' + i(e);
               else if ('index' == e.type) {
                 var t = '',
@@ -1909,7 +1847,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 r += '[' + t + ']';
               } else 'property' == e.type && (r += '.' + e.id);
             },
-            this
+            this,
           ),
           e.isWraped && (r += '}'),
           r
@@ -1919,7 +1857,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         var s = [],
           i = '';
         return (
-          t.forEach(e.args, function(e) {
+          t.forEach(e.args, function (e) {
             s.push(r(e));
           }),
           (i += e.id + '(' + s.join(',') + ')')
@@ -1939,7 +1877,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           case 'array':
             i = '[';
             var a = e.value.length - 1;
-            t.forEach(e.value, function(e, t) {
+            t.forEach(e.value, function (e, t) {
               (i += r(e)), t !== a && (i += ', ');
             }),
               (i += ']');
@@ -1952,10 +1890,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       e.getRefText = s;
     };
   }),
-  define('velocityjs/0.4.10/src/compile/blocks', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/compile/blocks', [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getBlock: function(e) {
+        getBlock: function (e) {
           var t = e[0],
             s = '';
           switch (t.type) {
@@ -1979,19 +1917,19 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           }
           return s || '';
         },
-        setBlockDefine: function(e) {
+        setBlockDefine: function (e) {
           var t = e[0],
             s = e.slice(1),
             i = this.defines;
           i[t.id] = s;
         },
-        setBlockMacro: function(e) {
+        setBlockMacro: function (e) {
           var t = e[0],
             s = e.slice(1),
             i = this.macros;
           i[t.id] = { asts: s, args: t.args };
         },
-        getMacro: function(s) {
+        getMacro: function (s) {
           var i = this.macros[s.id],
             r = '';
           if (i) {
@@ -2003,10 +1941,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               l = 'macro:' + s.id + ':' + h;
             t.forEach(
               a,
-              function(e, t) {
+              function (e, t) {
                 o[e.id] = c[t] ? this.getLiteral(c[t]) : void 0;
               },
-              this
+              this,
             ),
               (r = this.eval(n, o, l));
           } else {
@@ -2016,10 +1954,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             if (i && i.apply) {
               t.forEach(
                 s.args,
-                function(e) {
+                function (e) {
                   p.push(this.getLiteral(e));
                 },
-                this
+                this,
               );
               try {
                 r = i.apply(this, p);
@@ -2033,7 +1971,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           }
           return r;
         },
-        eval: function(s, i, r) {
+        eval: function (s, i, r) {
           if (!i) return t.isArray(s) ? this._render(s) : this.evalStr(s);
           var n = [],
             a = e.Parser;
@@ -2043,7 +1981,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             return (this.local[r] = {}), this.conditions.shift(), (this.condition = this.conditions[0] || ''), c;
           }
         },
-        getBlockEach: function(e) {
+        getBlockEach: function (e) {
           var s = e[0],
             i = this.getLiteral(s.from),
             r = e.slice(1),
@@ -2058,7 +1996,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             return (
               t.forEach(
                 i,
-                function(e, t) {
+                function (e, t) {
                   this.setBreak ||
                     ((a[n] = e),
                     (a.foreach.count = t + 1),
@@ -2068,7 +2006,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                     (this.local[h] = a),
                     (c += this._render(r, h)));
                 },
-                this
+                this,
               ),
               (this.setBreak = !1),
               (this.local[h] = {}),
@@ -2078,13 +2016,13 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             );
           }
         },
-        getBlockIf: function(e) {
+        getBlockIf: function (e) {
           var s = !1,
             i = [];
           return (
             t.some(
               e,
-              function(e) {
+              function (e) {
                 if (e.condition) {
                   if (s) return !0;
                   s = this.getExpression(e.condition);
@@ -2094,7 +2032,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 } else s && i.push(e);
                 return !1;
               },
-              this
+              this,
             ),
             this._render(i)
           );
@@ -2102,10 +2040,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/literal', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/compile/literal', [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getLiteral: function(e) {
+        getLiteral: function (e) {
           var s = e.type,
             i = '';
           if ('string' == s) i = this.getString(e);
@@ -2117,10 +2055,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             var r = e.value;
             t.forEach(
               r,
-              function(e, t) {
+              function (e, t) {
                 i[t] = this.getLiteral(e);
               },
-              this
+              this,
             );
           } else {
             if ('bool' != s) return this.getReferences(e);
@@ -2128,12 +2066,12 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           }
           return i;
         },
-        getString: function(e) {
+        getString: function (e) {
           var t = e.value,
             s = t;
           return !e.isEval || (-1 === t.indexOf('#') && -1 === t.indexOf('$')) || (s = this.evalStr(t)), s;
         },
-        getArray: function(e) {
+        getArray: function (e) {
           var s = [];
           if (e.isRange) {
             var i = e.value[0];
@@ -2147,22 +2085,22 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           } else
             t.forEach(
               e.value,
-              function(e) {
+              function (e) {
                 s.push(this.getLiteral(e));
               },
-              this
+              this,
             );
           return s;
         },
-        evalStr: function(t) {
+        evalStr: function (t) {
           var s = e.Parser.parse(t);
           return this._render(s);
         },
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/references', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/compile/references', [], function (e, t, s) {
+    s.exports = function (e, t) {
       'use strict';
       function s(e) {
         return t.isArray(e) ? e.length : t.isObject(e) ? t.keys(e).length : void 0;
@@ -2189,17 +2127,17 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
         return n ? r : e;
       }
       t.mixin(e.prototype, {
-        addIgnoreEscpape: function(e) {
+        addIgnoreEscpape: function (e) {
           t.isArray(e) || (e = [e]),
             t.forEach(
               e,
-              function(e) {
+              function (e) {
                 this.config.unescape[e] = !0;
               },
-              this
+              this,
             );
         },
-        getReferences: function(s, r) {
+        getReferences: function (s, r) {
           if (s.prue) {
             var n = this.defines[s.id];
             if (t.isArray(n)) return this._render(n);
@@ -2222,40 +2160,40 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                 void 0 !== l &&
                 t.some(
                   s.path,
-                  function(e) {
+                  function (e) {
                     l = this.getAttributes(e, l, s);
                   },
-                  this
+                  this,
                 ),
               r && void 0 === l && (l = c ? '' : e.Helper.getRefText(s)),
               (l = s.prue && a ? i(l) : l));
         },
-        getLocal: function(e) {
+        getLocal: function (e) {
           var s = e.id,
             i = this.local,
             r = !1,
             n = t.some(
               this.conditions,
-              function(e) {
+              function (e) {
                 var t = i[e];
                 return s in t ? ((r = t[s]), !0) : !1;
               },
-              this
+              this,
             );
           return { value: r, isLocaled: n };
         },
-        getAttributes: function(e, t, s) {
+        getAttributes: function (e, t, s) {
           var i,
             r = e.type,
             n = e.id;
           return (i = 'method' === r ? this.getPropMethod(e, t, s) : 'property' === r ? t[n] : this.getPropIndex(e, t));
         },
-        getPropIndex: function(e, t) {
+        getPropIndex: function (e, t) {
           var s,
             i = e.id;
           return (s = 'references' === i.type ? this.getReferences(i) : 'integer' === i.type ? i.value : i.value), t[s];
         },
-        getPropMethod: function(i, r, n) {
+        getPropMethod: function (i, r, n) {
           var a = i.id,
             c = '',
             o = a.slice(3);
@@ -2263,7 +2201,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           if (0 === a.indexOf('set') && !r[a])
             return (
               (r[o] = this.getLiteral(i.args[0])),
-              (r.toString = function() {
+              (r.toString = function () {
                 return '';
               }),
               r
@@ -2273,7 +2211,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           if ('entrySet' === a)
             return (
               (c = []),
-              t.forEach(r, function(e, t) {
+              t.forEach(r, function (e, t) {
                 c.push({ key: t, value: e });
               }),
               c
@@ -2284,15 +2222,15 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
           if (
             (t.forEach(
               i.args,
-              function(e) {
+              function (e) {
                 h.push(this.getLiteral(e));
               },
-              this
+              this,
             ),
             c && c.call)
           ) {
             var l = this;
-            r.eval = function() {
+            r.eval = function () {
               return l.eval.apply(l, arguments);
             };
             try {
@@ -2309,15 +2247,15 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/set', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/compile/set', [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getContext: function() {
+        getContext: function () {
           var e = this.condition,
             t = this.local;
           return e ? t[e] : this.context;
         },
-        setValue: function(e) {
+        setValue: function (e) {
           var s = e.equal[0],
             i = this.getContext();
           this.condition && 0 === this.condition.indexOf('macro:') ? (i = this.context) : null != this.context[s.id] && (i = this.context);
@@ -2327,7 +2265,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             var a = i[s.id];
             'object' != typeof a && (a = {}), (i[s.id] = a);
             var c = s.path ? s.path.length : 0;
-            t.forEach(s.path, function(e, t) {
+            t.forEach(s.path, function (e, t) {
               var s = c === t + 1,
                 i = e.id;
               'index' === e.type && (i = i.value), (a[i] = s ? r : {}), (a = a[i]);
@@ -2337,10 +2275,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/expression', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/compile/expression', [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        getExpression: function(e) {
+        getExpression: function (e) {
           var t,
             s = e.expression;
           if ('math' === e.type) {
@@ -2403,10 +2341,10 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
       });
     };
   }),
-  define('velocityjs/0.4.10/src/compile/compile', [], function(e, t, s) {
-    s.exports = function(e, t) {
+  define('velocityjs/0.4.10/src/compile/compile', [], function (e, t, s) {
+    s.exports = function (e, t) {
       t.mixin(e.prototype, {
-        init: function() {
+        init: function () {
           (this.context = {}),
             (this.macros = {}),
             (this.defines = {}),
@@ -2415,7 +2353,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             (this.silence = !1),
             (this.unescape = {});
         },
-        render: function(e, s, i) {
+        render: function (e, s, i) {
           (this.silence = !!i), (this.context = e || {}), (this.jsmacros = s || {});
           var r = t.now(),
             n = this._render(),
@@ -2423,7 +2361,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
             c = a - r;
           return (this.cost = c), n;
         },
-        _render: function(e, s) {
+        _render: function (e, s) {
           var i = '';
           return (
             (e = e || this.asts),
@@ -2432,7 +2370,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
               : (this.condition = null),
             t.forEach(
               e,
-              function(e) {
+              function (e) {
                 switch (e.type) {
                   case 'references':
                     i += this.getReferences(e, !0);
@@ -2452,7 +2390,7 @@ define('velocityjs/0.4.10/index', [], function(e, t, s) {
                     i += 'string' == typeof e ? e : this.getBlock(e);
                 }
               },
-              this
+              this,
             ),
             i
           );

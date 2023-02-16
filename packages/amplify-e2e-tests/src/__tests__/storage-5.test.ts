@@ -134,7 +134,7 @@ describe('amplify add/update storage(DDB)', () => {
       Arn: table1Arn,
       Region: table1Region,
       StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();
@@ -149,7 +149,7 @@ describe('amplify add/update storage(DDB)', () => {
       Arn: table2Arn,
       Region: table2Region,
       StreamArn: table2StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[1].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[1].output;
 
     expect(table2Name).toBeDefined();
     expect(table2Arn).toBeDefined();
@@ -222,7 +222,7 @@ describe('ddb override tests', () => {
       Arn: table1Arn,
       Region: table1Region,
       StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();

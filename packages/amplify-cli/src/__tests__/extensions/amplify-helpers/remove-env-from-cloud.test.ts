@@ -63,9 +63,7 @@ describe('remove-env-from-cloud', () => {
   it('throws error when deleteEnv promise rejected', async () => {
     deleteEnvMock.mockRejectedValue(new Error('a generic deleteEnv error'));
 
-    await expect(removeEnvFromCloud(context, envName, false))
-      .rejects
-      .toThrow(`Error occurred while deleting env: ${envName}.`);
+    await expect(removeEnvFromCloud(context, envName, false)).rejects.toThrow(`Error occurred while deleting env: ${envName}.`);
   });
 
   it('does not throw bucket not found error when deleteEnv promise rejected', async () => {

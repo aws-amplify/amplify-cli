@@ -23,13 +23,15 @@ describe('amplify codegen add', () => {
   });
 
   afterEach(async () => {
-    await Promise.all([projRoot, projRootExternalApi].map(async root => {
-      if (existsSync(path.join(root, 'amplify', '#current-cloud-backend', 'amplify-meta.json'))) {
-        await deleteProject(root);
-      }
-      deleteProjectDir(root);
-      return Promise.resolve();
-    }));
+    await Promise.all(
+      [projRoot, projRootExternalApi].map(async (root) => {
+        if (existsSync(path.join(root, 'amplify', '#current-cloud-backend', 'amplify-meta.json'))) {
+          await deleteProject(root);
+        }
+        deleteProjectDir(root);
+        return Promise.resolve();
+      }),
+    );
   });
 
   it('allows adding codegen to a project with api', async () => {

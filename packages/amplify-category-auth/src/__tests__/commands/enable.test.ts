@@ -28,7 +28,7 @@ describe('auth enable: ', () => {
       executeProviderUtils: mockExecuteProviderUtils,
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
+      readJsonFile: jest.fn((path) => JSON.parse(fs.readFileSync(path, 'utf-8'))),
     },
     usageData: {
       emitError: jest.fn(),

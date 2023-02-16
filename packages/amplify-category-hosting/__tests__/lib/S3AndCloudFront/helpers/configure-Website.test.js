@@ -17,9 +17,7 @@ describe('configure-Website', () => {
   const indexDoc = 'index.html';
   const errorDoc = 'error.html';
   beforeAll(() => {
-    prompter.input = jest.fn()
-      .mockReturnValueOnce(indexDoc)
-      .mockReturnValueOnce(errorDoc);
+    prompter.input = jest.fn().mockReturnValueOnce(indexDoc).mockReturnValueOnce(errorDoc);
   });
 
   test('configure', async () => {

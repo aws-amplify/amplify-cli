@@ -12,7 +12,6 @@ jest.mock('amplify-prompts', () => ({
   byValue: jest.fn(),
 }));
 
-
 describe('configure-Publish', () => {
   const DONE = 'exit';
   const configActions = {
@@ -29,7 +28,7 @@ describe('configure-Publish', () => {
           return path.join(__dirname, '../../../../__mocks__/');
         }),
       },
-      readJsonFile: jsonFilePath => {
+      readJsonFile: (jsonFilePath) => {
         let content = fs.readFileSync(jsonFilePath, 'utf8');
         if (content.charCodeAt(0) === 0xfeff) {
           content = content.slice(1);
@@ -67,9 +66,7 @@ describe('configure-Publish', () => {
       .mockResolvedValueOnce('mockPattern1')
       .mockResolvedValueOnce(configActions.done);
 
-    amplifyPrompts.prompter.input
-      .mockResolvedValueOnce('mockPattern1')
-      .mockResolvedValueOnce('mockPattern2');
+    amplifyPrompts.prompter.input.mockResolvedValueOnce('mockPattern1').mockResolvedValueOnce('mockPattern2');
 
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();
@@ -87,9 +84,7 @@ describe('configure-Publish', () => {
       .mockResolvedValueOnce(configActions.removeAll)
       .mockResolvedValueOnce(configActions.done);
 
-    amplifyPrompts.prompter.input
-      .mockResolvedValueOnce('mockPattern1')
-      .mockResolvedValueOnce('mockPattern2');
+    amplifyPrompts.prompter.input.mockResolvedValueOnce('mockPattern1').mockResolvedValueOnce('mockPattern2');
 
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();

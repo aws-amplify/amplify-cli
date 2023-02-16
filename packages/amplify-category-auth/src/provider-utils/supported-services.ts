@@ -1266,7 +1266,7 @@ const supportedServices = {
 };
 export const getSupportedServices = (): $TSAny => {
   const keyToRemove = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'usernameAttributes' : 'aliasAttributes';
-  const inputs = supportedServices.Cognito.inputs.filter(input => input.key !== keyToRemove);
+  const inputs = supportedServices.Cognito.inputs.filter((input) => input.key !== keyToRemove);
   return {
     Cognito: {
       ...supportedServices.Cognito,

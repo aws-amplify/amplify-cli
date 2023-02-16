@@ -25,7 +25,7 @@ export const isFormSchemaCustomized = (formSchema: StudioForm | Form): boolean =
 
   // Check style
   // If not empty, at least one style must be defined
-  return Object.values(style).some(styleConfig => styleConfig !== undefined);
+  return Object.values(style).some((styleConfig) => styleConfig !== undefined);
 };
 
 /**
@@ -36,19 +36,19 @@ export const isStudioForm = (schema: StudioSchema | undefined): schema is Studio
   return 'formActionType' in schema;
 };
 
-export const deleteDetachedForms = async (detachedForms: {id: string, name: string}[], studioClient: AmplifyStudioClient) => {
-  const deleteForm = async ({id, name}: {id: string, name: string}) => {
+export const deleteDetachedForms = async (detachedForms: { id: string; name: string }[], studioClient: AmplifyStudioClient) => {
+  const deleteForm = async ({ id, name }: { id: string; name: string }) => {
     try {
       // Try to delete the form but don't stop any other operations if it fails
       await studioClient.deleteForm(id);
-      return {status: 'SUCCESS', message: `Deleted detached form ${name}`};
+      return { status: 'SUCCESS', message: `Deleted detached form ${name}` };
     } catch (error) {
-      return {status: 'FAIL', message: `Failed to delete detached form ${name}`}
+      return { status: 'FAIL', message: `Failed to delete detached form ${name}` };
     }
   };
   for await (const status of asyncPool(5, detachedForms, deleteForm)) {
     printer.debug(status.message);
-  };
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

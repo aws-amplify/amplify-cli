@@ -11,7 +11,7 @@ export function getHashForRootStack(dirPath, files?: string[]) {
     },
   };
 
-  return hashElement(dirPath, options).then(result => result.hash);
+  return hashElement(dirPath, options).then((result) => result.hash);
 }
 
 export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {

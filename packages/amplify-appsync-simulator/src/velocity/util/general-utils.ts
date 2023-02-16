@@ -20,7 +20,7 @@ export const generalUtils = {
   },
   urlEncode(value) {
     // Stringent in adhering to RFC 3986 ( except the asterisk that appsync ignores to encode )
-    return encodeURIComponent(value).replace(/[!'()]/g, c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+    return encodeURIComponent(value).replace(/[!'()]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
   },
   urlDecode(value) {
     return decodeURIComponent(value);
@@ -85,10 +85,10 @@ export const generalUtils = {
       return value.toJSON().length === 0;
     }
     if (value instanceof JavaInteger) {
-      return this.isNull(value?.value)
+      return this.isNull(value?.value);
     }
     if (value instanceof JavaDecimal) {
-      return this.isNull(value?.value)
+      return this.isNull(value?.value);
     }
     return !!value;
   },
@@ -149,10 +149,10 @@ const filterData = (info: GraphQLResolveInfo, data = null): unknown => {
     const filteredData = {};
     // filter fields in data based on the query selection set
     info.operation.selectionSet.selections
-      .map(selection => selection as FieldNode)
-      .find(selection => selection.name.value === info.fieldName)
-      .selectionSet.selections.map(fieldNode => (fieldNode as FieldNode).name.value)
-      .forEach(field => {
+      .map((selection) => selection as FieldNode)
+      .find((selection) => selection.name.value === info.fieldName)
+      .selectionSet.selections.map((fieldNode) => (fieldNode as FieldNode).name.value)
+      .forEach((field) => {
         filteredData[field] = data.get(field);
       });
     data = filteredData;

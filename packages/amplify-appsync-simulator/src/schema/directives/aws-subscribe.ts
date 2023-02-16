@@ -8,9 +8,9 @@ export const getAwsSubscribeDirective = () => `directive @${directiveName}(mutat
 export const getAwsSubscribeDirectiveTransformer = (
   simulatorContext: AmplifyAppSyncSimulator,
 ): ((schema: GraphQLSchema) => GraphQLSchema) => {
-  return schema => {
+  return (schema) => {
     return mapSchema(schema, {
-      [MapperKind.MUTATION_ROOT_FIELD]: mutation => {
+      [MapperKind.MUTATION_ROOT_FIELD]: (mutation) => {
         const allSubscriptions = schema.getSubscriptionType()?.getFields();
         const subscriptions = getSubscriberForMutation(schema, allSubscriptions || {}, mutation.astNode?.name.value);
         if (subscriptions.length) {
@@ -18,7 +18,7 @@ export const getAwsSubscribeDirectiveTransformer = (
           const newResolver = async (parent, args, context, info) => {
             const result = await resolve(parent, args, context, info);
             await Promise.all(
-              subscriptions.map(async subscriptionName => {
+              subscriptions.map(async (subscriptionName) => {
                 await simulatorContext.pubsub.publish(subscriptionName, result);
               }),
             );

@@ -91,7 +91,7 @@ export const ensureAmplifyMetaFrontendConfig = (amplifyMeta?): void => {
   // eslint-disable-next-line no-param-reassign
   amplifyMeta.auth[authResourceName].frontendAuthConfig ??= {};
   const metaFrontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig;
-  Object.keys(frontendAuthConfig).forEach(key => {
+  Object.keys(frontendAuthConfig).forEach((key) => {
     metaFrontendAuthConfig[key] = frontendAuthConfig[key];
   });
 

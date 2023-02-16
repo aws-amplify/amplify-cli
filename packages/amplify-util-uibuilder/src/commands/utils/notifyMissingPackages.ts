@@ -1,6 +1,4 @@
-import {
-  pathManager, JSONUtilities, $TSContext, $TSAny,
-} from 'amplify-cli-core';
+import { pathManager, JSONUtilities, $TSContext, $TSAny } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';

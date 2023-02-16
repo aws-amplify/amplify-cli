@@ -18,9 +18,9 @@ async function configure(context) {
   }
 
   publishIgnore = publishIgnore
-    .map(ignore => ignore.trim())
-    .filter(ignore => ignore.length > 0)
-    .filter(ignore => !/^#/.test(ignore));
+    .map((ignore) => ignore.trim())
+    .filter((ignore) => ignore.length > 0)
+    .filter((ignore) => !/^#/.test(ignore));
 
   context.print.info('You can configure the publish command to ignore certain directories or files.');
   context.print.info('Use glob patterns as in the .gitignore file.');
@@ -51,11 +51,9 @@ function getPublishIgnoreFilePath(context) {
 async function configurePublishIgnore(context, publishIgnore) {
   const DONE = 'exit';
   const configActions = ['list', 'add', 'remove', 'remove all', DONE];
-  const action = await prompter.pick(
-    'Please select the configuration action on the publish ignore.',
-    configActions,
-    { initial: byValue(configActions[0]) },
-  );
+  const action = await prompter.pick('Please select the configuration action on the publish ignore.', configActions, {
+    initial: byValue(configActions[0]),
+  });
 
   switch (action) {
     case 'list':
@@ -83,7 +81,7 @@ async function configurePublishIgnore(context, publishIgnore) {
 
 function listPublishIgnore(context, publishIgnore) {
   context.print.info('');
-  publishIgnore.forEach(element => {
+  publishIgnore.forEach((element) => {
     context.print.info(element);
   });
   context.print.info('');
@@ -112,7 +110,7 @@ async function removeIgnore(context, publishIgnore) {
   } else {
     const patternToRemove = await prompter.pick('', [...publishIgnore, CANCEL]);
     if (patternToRemove && patternToRemove !== CANCEL) {
-      publishIgnore = publishIgnore.filter(ignore => patternToRemove !== ignore);
+      publishIgnore = publishIgnore.filter((ignore) => patternToRemove !== ignore);
     }
   }
   return publishIgnore;

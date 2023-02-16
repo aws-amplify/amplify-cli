@@ -1,6 +1,13 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag,
-  addApiWithoutSchema, updateApiSchema, createNewProjectDir, deleteProjectDir,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPush,
+  amplifyPushUpdate,
+  addFeatureFlag,
+  addApiWithoutSchema,
+  updateApiSchema,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('amplify add api', () => {

@@ -97,7 +97,7 @@ function table(data, options: any = {}) {
 }
 
 function columnHeaderDivider(cliTable) {
-  return findWidths(cliTable).map(w => Array(w).join('-'));
+  return findWidths(cliTable).map((w) => Array(w).join('-'));
 }
 
 function findWidths(cliTable) {

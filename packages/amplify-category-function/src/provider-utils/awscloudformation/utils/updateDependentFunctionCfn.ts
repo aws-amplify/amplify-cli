@@ -84,9 +84,7 @@ export async function updateDependentFunctionsCfn(
   }
 }
 
-export function addAppSyncInvokeMethodPermission(
-  functionName: string,
-) {
+export function addAppSyncInvokeMethodPermission(functionName: string) {
   const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, functionName);
   const cfnFileName = `${functionName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
@@ -97,7 +95,7 @@ export function addAppSyncInvokeMethodPermission(
       Type: 'AWS::Lambda::Permission',
       Properties: {
         FunctionName: {
-          Ref: 'LambdaFunction'
+          Ref: 'LambdaFunction',
         },
         Action: 'lambda:InvokeFunction',
         Principal: 'appsync.amazonaws.com',

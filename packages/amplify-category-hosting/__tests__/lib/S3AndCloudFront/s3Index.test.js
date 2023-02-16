@@ -88,7 +88,7 @@ describe('s3IndexModule', () => {
       getProjectMeta: jest.fn(() => {
         return mockAmplifyMeta;
       }),
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
+      readJsonFile: jest.fn((path) => JSON.parse(fs.readFileSync(path))),
     },
     print: {
       info: jest.fn(),
@@ -116,7 +116,7 @@ describe('s3IndexModule', () => {
       return true;
     });
     fs.writeFileSync = jest.fn();
-    fs.readFileSync = jest.fn(filePath => {
+    fs.readFileSync = jest.fn((filePath) => {
       let result;
       filePath = path.normalize(filePath);
       if (filePath.indexOf(templateFileName) > -1) {

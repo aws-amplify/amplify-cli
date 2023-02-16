@@ -41,7 +41,7 @@ export function getCLIPath(testingWithLatestCodebase = false) {
     }
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
-  
+
   const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
   return amplifyScriptPath;
 }
@@ -92,18 +92,20 @@ export async function installAmplifyCLI(version = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
-  
+
   console.log('SETTING PATH:');
-  if(gt(version, '10.0.0')){
-    process.env.AMPLIFY_PATH = process.platform === 'win32'
-    ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
-    : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
+  if (gt(version, '10.0.0')) {
+    process.env.AMPLIFY_PATH =
+      process.platform === 'win32'
+        ? path.join(os.homedir(), '.amplify', 'bin', 'amplify')
+        : path.join(os.homedir(), '.amplify', 'bin', 'amplify');
   } else {
-    process.env.AMPLIFY_PATH = process.platform === 'win32'
-    ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
-    : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+    process.env.AMPLIFY_PATH =
+      process.platform === 'win32'
+        ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
+        : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
   }
-  
+
   console.log('PATH SET:', process.env.AMPLIFY_PATH);
 }
 

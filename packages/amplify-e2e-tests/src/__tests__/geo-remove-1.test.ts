@@ -40,7 +40,7 @@ describe('amplify geo remove', () => {
     await amplifyPushWithoutCodegen(projRoot);
 
     const oldMeta = getProjectMeta(projRoot);
-    const mapId = Object.keys(oldMeta.geo).filter(key => oldMeta.geo[key].service === 'Map')[0];
+    const mapId = Object.keys(oldMeta.geo).filter((key) => oldMeta.geo[key].service === 'Map')[0];
     // remove map
     await removeMap(projRoot);
     await amplifyPushUpdate(projRoot);
@@ -57,7 +57,7 @@ describe('amplify geo remove', () => {
     await amplifyPushWithoutCodegen(projRoot);
 
     const oldMeta = getProjectMeta(projRoot);
-    const placeIndexId = Object.keys(oldMeta.geo).filter(key => oldMeta.geo[key].service === 'PlaceIndex')[0];
+    const placeIndexId = Object.keys(oldMeta.geo).filter((key) => oldMeta.geo[key].service === 'PlaceIndex')[0];
     // remove place index
     await removePlaceIndex(projRoot);
     await amplifyPushUpdate(projRoot);
@@ -76,7 +76,7 @@ describe('amplify geo remove', () => {
     await amplifyPushWithoutCodegen(projRoot);
 
     const oldMeta = getProjectMeta(projRoot);
-    const collectionId = Object.keys(oldMeta.geo).filter(key => oldMeta.geo[key].service === 'GeofenceCollection')[0];
+    const collectionId = Object.keys(oldMeta.geo).filter((key) => oldMeta.geo[key].service === 'GeofenceCollection')[0];
     // remove geofence collection
     await removeGeofenceCollection(projRoot);
     await amplifyPushUpdate(projRoot);

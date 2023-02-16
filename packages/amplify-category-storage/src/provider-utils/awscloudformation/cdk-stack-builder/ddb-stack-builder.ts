@@ -105,7 +105,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       });
     }
     if (this._props.gsi && this._props.gsi.length > 0) {
-      this._props.gsi.forEach(gsi => {
+      this._props.gsi.forEach((gsi) => {
         const gsiIndex = {
           indexName: gsi.name,
           keySchema: [
@@ -123,7 +123,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
           },
         };
 
-        if (usedAttributes.findIndex(attr => attr.fieldName === gsi.partitionKey.fieldName) === -1) {
+        if (usedAttributes.findIndex((attr) => attr.fieldName === gsi.partitionKey.fieldName) === -1) {
           usedAttributes.push(gsi.partitionKey);
         }
         if (gsi.sortKey) {
@@ -131,7 +131,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
             attributeName: gsi.sortKey?.fieldName,
             keyType: 'RANGE',
           });
-          if (usedAttributes.findIndex(attr => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
+          if (usedAttributes.findIndex((attr) => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
             usedAttributes.push(gsi.sortKey);
           }
         }

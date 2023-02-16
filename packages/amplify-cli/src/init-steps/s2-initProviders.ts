@@ -35,7 +35,7 @@ const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
 
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       // eslint-disable-next-line no-param-reassign
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {

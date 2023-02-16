@@ -1,10 +1,7 @@
 import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer-core';
 import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
 // eslint-disable-next-line import/no-cycle
-import {
-  $TSAny,
-  $TSContext,
-} from '..';
+import { $TSAny, $TSContext } from '..';
 
 const API_CATEGORY_NAME = 'api';
 

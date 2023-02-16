@@ -4,9 +4,9 @@ import { localInvoke } from './localinvoke';
 import { relativeShimSrcPath } from './constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
 
-export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
+export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       if (request.selection !== 'go') {
         return Promise.reject(new Error(`Unknown selection ${request.selection}`));
       }
@@ -20,10 +20,10 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         },
       });
     },
-    checkDependencies: runtimeValue => checkDependencies(runtimeValue),
-    package: request => packageResource(request, context),
+    checkDependencies: (runtimeValue) => checkDependencies(runtimeValue),
+    package: (request) => packageResource(request, context),
     build: buildResource,
-    invoke: request => localInvoke(request, context),
+    invoke: (request) => localInvoke(request, context),
   };
 };
 

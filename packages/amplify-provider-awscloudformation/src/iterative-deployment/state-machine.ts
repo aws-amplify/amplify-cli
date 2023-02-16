@@ -142,7 +142,7 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
           initial: 'triggerDeploy',
           states: {
             triggerDeploy: {
-              entry: assign(context => {
+              entry: assign((context) => {
                 return {
                   ...context,
                   currentIndex: context.currentIndex + 1,

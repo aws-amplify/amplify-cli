@@ -26,7 +26,7 @@ export class JavaArray extends Array<any> {
   }
 
   addAll(value) {
-    value.forEach(val => this.push(this.mapper(val)));
+    value.forEach((val) => this.push(this.mapper(val)));
   }
 
   clear() {
@@ -39,7 +39,7 @@ export class JavaArray extends Array<any> {
   }
 
   containsAll(value = []) {
-    return value.every(v => this.contains(v));
+    return value.every((v) => this.contains(v));
   }
 
   isEmpty() {
@@ -53,7 +53,7 @@ export class JavaArray extends Array<any> {
   }
 
   removeAll(value) {
-    value.forEach(val => this.remove(val));
+    value.forEach((val) => this.remove(val));
   }
 
   retainAll() {

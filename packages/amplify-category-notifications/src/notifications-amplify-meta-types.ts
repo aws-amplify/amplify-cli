@@ -5,17 +5,17 @@ import * as backendConfigTypes from './notifications-backend-cfg-types';
  * This is the minimum information to be stored in the 'output' section of amplify-meta for the Pinpoint resource
  */
 export interface ICategoryMeta {
-  Id: string,
-  Name: string,
-  Region: string,
-  regulatedResourceName? : string
-  lastPushTimeStamp: string,
+  Id: string;
+  Name: string;
+  Region: string;
+  regulatedResourceName?: string;
+  lastPushTimeStamp: string;
 }
 
 /**
  *  Channel specific metadata for notifications metadata (output section of Notifications amplify-meta)
  */
-export type IChannelMeta = Record<string, NotificationsChannelMeta>
+export type IChannelMeta = Record<string, NotificationsChannelMeta>;
 
 /**
  * Output section of notifications resource meta.
@@ -35,39 +35,38 @@ export type IPinpointAppMeta = ICategoryMeta & IPinpointAppOutput;
  * note:- some fields have been duplicated to support older schemas.
  */
 export interface INotificationsMeta extends ICategoryMeta {
-  ResourceName: string, // legacy structure to store the resource name (without env)
-  output: Record<string, NotificationsChannelMeta>
+  ResourceName: string; // legacy structure to store the resource name (without env)
+  output: Record<string, NotificationsChannelMeta>;
 }
 
 interface IChannelResourceMeta {
-  ApplicationId: string, // Pinpoint Physical ID
-  CreationDate: string, // Date-Time
-  Enabled : boolean, // Channel is enabled
-  Id: string, // Set to email - unused
-  LastModifiedDate : string, // Timestamp of when was this channel last updated
-  IsArchived: boolean, // SES email state
-  Platform : string, // Set to EMAIL/SMS - unused
-  Version : number, // Increments when channel is updated
+  ApplicationId: string; // Pinpoint Physical ID
+  CreationDate: string; // Date-Time
+  Enabled: boolean; // Channel is enabled
+  Id: string; // Set to email - unused
+  LastModifiedDate: string; // Timestamp of when was this channel last updated
+  IsArchived: boolean; // SES email state
+  Platform: string; // Set to EMAIL/SMS - unused
+  Version: number; // Increments when channel is updated
 }
 
 /**
  * Email channel data type for Pinpoint notifications in Amplify-Meta
  */
-export interface IEmailChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.IEmailChannelBackendConfig{
-  Identity: string, // SES ARN for verified email
-  RoleArn : string, // IAM role Auth/UnAuth with access to SMS
+export interface IEmailChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.IEmailChannelBackendConfig {
+  Identity: string; // SES ARN for verified email
+  RoleArn: string; // IAM role Auth/UnAuth with access to SMS
 }
 
 /**
  * SMS channel data type for Pinpoint notifications in Amplify-Meta
  */
-interface ISMSChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.ISMSChannelBackendConfig {
-}
+interface ISMSChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.ISMSChannelBackendConfig {}
 
 /**
  * InAppMessaging channel data type for Pinpoint in-app functionality in Amplify-Meta
  */
-  type IInAppMsgChannelResourceMeta = IChannelResourceMeta
+type IInAppMsgChannelResourceMeta = IChannelResourceMeta;
 
 /**
  * Union of all valid notification channel meta

@@ -1,9 +1,7 @@
 // @aws-amplify/codegen-ui is in project dependencies
 import { StudioSchema } from '@aws-amplify/codegen-ui'; // eslint-disable-line import/no-extraneous-dependencies
-import {AmplifyStudioClient} from '../clients'; // eslint-disable-line import/no-extraneous-dependencies
-import {
-  isFormDetachedFromModel, isFormSchemaCustomized, isStudioForm, deleteDetachedForms
-} from '../commands/utils';
+import { AmplifyStudioClient } from '../clients'; // eslint-disable-line import/no-extraneous-dependencies
+import { isFormDetachedFromModel, isFormSchemaCustomized, isStudioForm, deleteDetachedForms } from '../commands/utils';
 
 const amplifyStudioClientMock = AmplifyStudioClient as any;
 
@@ -38,7 +36,6 @@ const formWithFields: StudioSchema = {
 };
 
 describe('detachedFormCleanup', () => {
-
   it('isStudioForm should return true', () => {
     expect(isStudioForm(formWithNoCustomization)).toBe(true);
   });
@@ -71,7 +68,7 @@ describe('detachedFormCleanup', () => {
   it('should delete detached forms', async () => {
     const mockedDeleteForm = jest.fn().mockReturnValue(undefined);
     amplifyStudioClientMock.deleteForm = mockedDeleteForm;
-    await deleteDetachedForms([{id: '12345', name: 'BlogCreateForm'}], amplifyStudioClientMock);
+    await deleteDetachedForms([{ id: '12345', name: 'BlogCreateForm' }], amplifyStudioClientMock);
     expect(mockedDeleteForm).toBeCalledTimes(1);
     expect(mockedDeleteForm).toHaveBeenCalledWith('12345');
   });

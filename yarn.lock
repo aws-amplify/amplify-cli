@@ -48,12 +48,12 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^4.1.7":
-  version "4.1.7"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.7.tgz#5c135702800de626291e3ab753cb28f9795da336"
-  integrity sha512-TElfT7+azl4UIkThBXgzqNfEm0s5tl/WR4NRcdoeSE2vaJPs6e3BUAc3bXhn68TSv3ac0c+TtsbltwdtkRwW2g==
+"@aws-amplify/amplify-category-api@^4.1.8":
+  version "4.1.8"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.8.tgz#2b0f630f79418bf279352a109339a30377e8747c"
+  integrity sha512-FRaswRaQ5tIyBktRLjStxGMkjKVLkGddkfQ1QR6zYMMtwz6LxVSsEq7NCM6lJne1EstrFJRl9D4lml5ULlaP7A==
   dependencies:
-    "@aws-amplify/graphql-auth-transformer" "1.2.6"
+    "@aws-amplify/graphql-auth-transformer" "1.2.7"
     "@aws-amplify/graphql-default-value-transformer" "0.7.8"
     "@aws-amplify/graphql-function-transformer" "0.7.36"
     "@aws-amplify/graphql-http-transformer" "0.8.36"
@@ -275,10 +275,10 @@
     "@aws-sdk/client-location" "3.41.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-auth-transformer@1.2.6", "@aws-amplify/graphql-auth-transformer@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.6.tgz#4421b51595ef90d62f0cfc5c5df6731e4b636bd4"
-  integrity sha512-paMZQRy0FRKYQmjizLcD+1msYaWhg9T6hgpau5V2i9LU9PxstKY1tMLOtPvS9WbTrV2lVADCGkN2g07IDtGMew==
+"@aws-amplify/graphql-auth-transformer@1.2.7", "@aws-amplify/graphql-auth-transformer@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.7.tgz#bf5fb4801b28f633ac2b89b58e91d77559057e5f"
+  integrity sha512-Xuj04z1xEjCglz4hyn8bEsS6COM8Kjo6zWICs00sRuS6BCY4BoyxSW26dekimitZ7cvUexXwmge1yTP51FJ83A==
   dependencies:
     "@aws-amplify/graphql-model-transformer" "0.16.8"
     "@aws-amplify/graphql-relational-transformer" "0.12.10"
@@ -21106,6 +21106,11 @@ prettier@^1.19.1:
   version "1.19.1"
   resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
+
+prettier@^2.8.4:
+  version "2.8.4"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.4.tgz#34dd2595629bfbb79d344ac4a91ff948694463c3"
+  integrity sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==
 
 pretty-bytes@^5.3.0, pretty-bytes@^5.4.1:
   version "5.6.0"

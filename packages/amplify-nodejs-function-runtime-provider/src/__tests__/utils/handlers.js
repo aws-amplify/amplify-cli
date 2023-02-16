@@ -6,7 +6,7 @@ const data = JSON.parse(content);
 module.exports.expectedLargeData = data;
 
 // async handlers
-module.exports.asyncReturnEvent = async event => {
+module.exports.asyncReturnEvent = async (event) => {
   return event;
 };
 

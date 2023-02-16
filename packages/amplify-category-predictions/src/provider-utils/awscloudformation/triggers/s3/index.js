@@ -27,7 +27,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
   return resultDeleted;
 }
 
-exports.handler = async event => {
+exports.handler = async (event) => {
   AWS.config.update({
     region: event.Records[0].awsRegion,
   });
