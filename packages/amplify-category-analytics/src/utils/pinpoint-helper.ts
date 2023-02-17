@@ -136,7 +136,7 @@ export const getPinpointRegionMappings = async (context: $TSContext): Promise<Re
     'getPinpointRegionMapping',
     [],
   );
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     Mappings.RegionMapping[region] = {
       pinpointRegion: regionMapping[region],
     };

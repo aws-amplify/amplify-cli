@@ -49,7 +49,9 @@ describe('amplify auth migration d', () => {
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
-    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(
+      (resourceName) => amplifyMeta.auth[resourceName].service === 'Cognito',
+    )[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,

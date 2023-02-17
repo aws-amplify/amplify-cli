@@ -1,4 +1,3 @@
-export type LocalProjectData = {};
 export type LogPayload = {
   message: string;
 };

@@ -9,7 +9,7 @@ const utilsMock = utils as any;
 
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
-utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue(({}));
+utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue({});
 
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),

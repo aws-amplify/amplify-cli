@@ -58,7 +58,7 @@ describe('adding custom resources test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
-    await buildCustomResources(projRoot, {});
+    await buildCustomResources(projRoot);
 
     await amplifyPushAuth(projRoot);
 
@@ -76,7 +76,7 @@ describe('adding custom resources test', () => {
     expect(Object.keys(buildCFNFileJSON?.Outputs)).toEqual(['snsTopicArn']);
 
     const meta = getProjectMeta(projRoot);
-    const { snsTopicArn: customResourceSNSArn } = Object.keys(meta.custom).map(key => meta.custom[key])[0].output;
+    const { snsTopicArn: customResourceSNSArn } = Object.keys(meta.custom).map((key) => meta.custom[key])[0].output;
 
     expect(customResourceSNSArn).toBeDefined();
 

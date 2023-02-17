@@ -3,17 +3,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource } from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import {
-  $TSAny, JSONUtilities, pathManager, AmplifyFault,
-} from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, AmplifyFault } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { authTriggerAssetFilePath } from '../constants';
-import {
-  AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions,
-} from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from './configure-sms';
 
 type CustomResourceAuthStackProps = Readonly<{
@@ -50,7 +46,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
 
-    props.authTriggerConnections.forEach(triggerConfig => {
+    props.authTriggerConnections.forEach((triggerConfig) => {
       const config = triggerConfig;
       const fnName = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}Name`, {
         type: 'String',
@@ -65,7 +61,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
 
       if (!_.isEmpty(props.permissions)) {
-        const lambdaPermission = props.permissions!.find(permission => config.triggerType === permission.trigger);
+        const lambdaPermission = props.permissions!.find((permission) => config.triggerType === permission.trigger);
         if (!_.isEmpty(lambdaPermission)) {
           createPermissionsForAuthTrigger(this, fnName, roleArn, lambdaPermission!, userpoolArn);
         }

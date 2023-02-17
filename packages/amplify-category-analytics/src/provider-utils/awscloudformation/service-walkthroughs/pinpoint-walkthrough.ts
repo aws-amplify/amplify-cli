@@ -127,7 +127,7 @@ const resourceAlreadyExists = (context: $TSContext): string | undefined => {
 
   if (amplifyMeta[category]) {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === serviceName) {
         resourceName = resource;
       }
@@ -168,7 +168,7 @@ export const migrate = (context: $TSContext): void => {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const { amplifyMeta } = context.migrationInfo;
   const { analytics = {} } = amplifyMeta;
-  Object.keys(analytics).forEach(resourceName => {
+  Object.keys(analytics).forEach((resourceName) => {
     const resourcePath = path.join(projectBackendDirPath, category, resourceName);
     const cfn = context.amplify.readJsonFile(path.join(resourcePath, 'pinpoint-cloudformation-template.json'));
     const updatedCfn = migrateCFN(cfn);
@@ -279,7 +279,7 @@ const migrateParams = (context: $TSContext, params: Record<string, $TSAny>): Rec
 
 const replaceRef = (node: $TSAny, refName: string, refReplacement: $TSAny): $TSAny => {
   if (Array.isArray(node)) {
-    return node.forEach(item => replaceRef(item, refName, refReplacement));
+    return node.forEach((item) => replaceRef(item, refName, refReplacement));
   }
   if (typeof node === 'object') {
     if (isRefNode(node, refName)) {
@@ -287,7 +287,7 @@ const replaceRef = (node: $TSAny, refName: string, refReplacement: $TSAny): $TSA
       Object.assign(node, refReplacement);
       return undefined;
     }
-    Object.values(node).forEach(n => {
+    Object.values(node).forEach((n) => {
       replaceRef(n, refName, refReplacement);
     });
   }

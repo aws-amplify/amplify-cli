@@ -7,7 +7,7 @@ import { nspawn as spawn, getCLIPath } from '..';
  */
 export const diagnoseSendReport = async (cwd: string): Promise<string> => {
   let path = '';
-  const callback = (text:string): void => {
+  const callback = (text: string): void => {
     const index = text.lastIndexOf(':');
     path = text.substring(index + 1).trim();
   };
@@ -20,7 +20,7 @@ export const diagnoseSendReport = async (cwd: string): Promise<string> => {
 };
 
 /**
- * Send failing zipping 
+ * Send failing zipping
  * @param cwd current working directory
  */
 export const diagnoseSendReport_ZipFailed = async (cwd: string): Promise<void> => {

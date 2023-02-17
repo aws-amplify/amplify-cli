@@ -65,10 +65,18 @@ async function configure(context) {
   if (context.exeInfo.template.Resources.CloudFrontDistribution) {
     const { DistributionConfig } = context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
 
-    DistributionConfig.DefaultRootObject = await prompter.input('default object to return from origin', { initial: DistributionConfig.DefaultRootObject });
-    DistributionConfig.DefaultCacheBehavior.DefaultTTL = await prompter.input('Default TTL for the default cache behavior', { initial: DistributionConfig.DefaultCacheBehavior.DefaultTTL });
-    DistributionConfig.DefaultCacheBehavior.MaxTTL = await prompter.input('Max TTL for the default cache behavior', { initial: DistributionConfig.DefaultCacheBehavior.MaxTTL });
-    DistributionConfig.DefaultCacheBehavior.MinTTL = await prompter.input('Min TTL for the default cache behavior', { initial: DistributionConfig.DefaultCacheBehavior.MinTTL });
+    DistributionConfig.DefaultRootObject = await prompter.input('default object to return from origin', {
+      initial: DistributionConfig.DefaultRootObject,
+    });
+    DistributionConfig.DefaultCacheBehavior.DefaultTTL = await prompter.input('Default TTL for the default cache behavior', {
+      initial: DistributionConfig.DefaultCacheBehavior.DefaultTTL,
+    });
+    DistributionConfig.DefaultCacheBehavior.MaxTTL = await prompter.input('Max TTL for the default cache behavior', {
+      initial: DistributionConfig.DefaultCacheBehavior.MaxTTL,
+    });
+    DistributionConfig.DefaultCacheBehavior.MinTTL = await prompter.input('Min TTL for the default cache behavior', {
+      initial: DistributionConfig.DefaultCacheBehavior.MinTTL,
+    });
 
     if (await prompter.yesOrNo('Configure Custom Error Responses', true)) {
       await configureCustomErrorResponse(context, DistributionConfig);
@@ -84,7 +92,9 @@ async function configureCustomErrorResponse(context, DistributionConfig) {
   }
   const done = 'exit';
   const configActions = ['list', 'add', 'edit', 'remove', 'remove all', done];
-  const action = await prompter.pick('Please select the action on Custom Error Responses.', configActions, { initial: byValue(configActions[0]) });
+  const action = await prompter.pick('Please select the action on Custom Error Responses.', configActions, {
+    initial: byValue(configActions[0]),
+  });
   switch (action) {
     case 'list':
       listCustomErrorResponses(context, DistributionConfig.CustomErrorResponses);
@@ -121,10 +131,16 @@ async function addCER(context, CustomErrorResponses) {
   const unConfiguredCodes = getUnConfiguredErrorCodes(CustomErrorResponses);
   if (unConfiguredCodes.length > 0) {
     CustomErrorResponses.push({
-      ErrorCode: await prompter.pick('Please select the error code to add custom error response.', unConfiguredCodes, { initial: byValue(unConfiguredCodes[0]), transform: input => parseInt(input, 10) }),
-      ResponseCode: await prompter.input('Response code', { initial: 200, transform: input => parseInt(input, 10) }),
+      ErrorCode: await prompter.pick('Please select the error code to add custom error response.', unConfiguredCodes, {
+        initial: byValue(unConfiguredCodes[0]),
+        transform: (input) => parseInt(input, 10),
+      }),
+      ResponseCode: await prompter.input('Response code', { initial: 200, transform: (input) => parseInt(input, 10) }),
       ResponsePagePath: await prompter.input('Response page path', { initial: '/' }),
-      ErrorCachingMinTTL: await prompter.input('Error caching Min TTL in seconds', { initial: 300, transform: input => parseInt(input, 10) }),
+      ErrorCachingMinTTL: await prompter.input('Error caching Min TTL in seconds', {
+        initial: 300,
+        transform: (input) => parseInt(input, 10),
+      }),
     });
   } else {
     context.print.info('All configurable error codes from the origin have been mapped.');
@@ -135,12 +151,23 @@ async function addCER(context, CustomErrorResponses) {
 async function editCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
-    const errorCode = await prompter.pick('Please select the error code to edit its custom error response.', configuredCodes, { initial: byValue(configuredCodes[0]), transform: input => parseInt(input, 10) });
+    const errorCode = await prompter.pick('Please select the error code to edit its custom error response.', configuredCodes, {
+      initial: byValue(configuredCodes[0]),
+      transform: (input) => parseInt(input, 10),
+    });
     const i = getCerIndex(errorCode, CustomErrorResponses);
     CustomErrorResponses[i].ErrorCode = errorCode;
-    CustomErrorResponses[i].ResponseCode = await prompter.input('Response code', { initial: CustomErrorResponses[i].ResponseCode, transform: input => parseInt(input, 10) });
-    CustomErrorResponses[i].ResponsePagePath = await prompter.input('Response page path', { initial: CustomErrorResponses[i].ResponsePagePath });
-    CustomErrorResponses[i].ErrorCachingMinTTL = await prompter.input('Error caching Min TTL in seconds', { initial: CustomErrorResponses[i].ErrorCachingMinTTL, transform: input => parseInt(input, 10) });
+    CustomErrorResponses[i].ResponseCode = await prompter.input('Response code', {
+      initial: CustomErrorResponses[i].ResponseCode,
+      transform: (input) => parseInt(input, 10),
+    });
+    CustomErrorResponses[i].ResponsePagePath = await prompter.input('Response page path', {
+      initial: CustomErrorResponses[i].ResponsePagePath,
+    });
+    CustomErrorResponses[i].ErrorCachingMinTTL = await prompter.input('Error caching Min TTL in seconds', {
+      initial: CustomErrorResponses[i].ErrorCachingMinTTL,
+      transform: (input) => parseInt(input, 10),
+    });
   } else {
     context.print.info('No configurable error code from the origin has been mapped.');
     context.print.info('You can select to add custom error responses.');
@@ -150,11 +177,9 @@ async function editCER(context, CustomErrorResponses) {
 async function removeCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
-    const selection = await prompter.pick(
-      'Please select the error code to remove its custom error response.',
-      configuredCodes,
-      { initial: configuredCodes[0] }
-    );
+    const selection = await prompter.pick('Please select the error code to remove its custom error response.', configuredCodes, {
+      initial: configuredCodes[0],
+    });
 
     const i = getCerIndex(selection, CustomErrorResponses);
     CustomErrorResponses.splice(i, 1);

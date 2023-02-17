@@ -7,9 +7,7 @@
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "references": [
     {
       "path": "../amplify-category-function"

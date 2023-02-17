@@ -3,8 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import { PluginInfo } from '../../domain/plugin-info';
-import { constants } from '../../domain/constants';
+import { PluginInfo, constants } from 'amplify-cli-core';
 import { addUserPluginPackage, addExcludedPluginPackage as addFromExcluded, confirmAndScan } from '../../plugin-manager';
 import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 import { AddPluginError } from '../../domain/add-plugin-result';
@@ -52,13 +51,13 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
   let result;
 
   const { pluginPlatform } = context;
-  let searchDirPaths = [constants.ParentDirectory, constants.LocalNodeModules, constants.GlobalNodeModules, process.cwd()];
-  searchDirPaths = searchDirPaths.filter(dirPath => !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
+  let searchDirPaths = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES, process.cwd()];
+  searchDirPaths = searchDirPaths.filter((dirPath) => !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
   searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
 
   const candidatePluginDirPaths = searchDirPaths
-    .map(dirPath => path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)))
-    .filter(pluginDirPath => fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory());
+    .map((dirPath) => path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)))
+    .filter((pluginDirPath) => fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory());
 
   if (candidatePluginDirPaths.length === 0) {
     context.print.error('Can not locate the plugin package.');
@@ -97,7 +96,7 @@ async function promptAndAdd(context: Context) {
   const options = new Array<InquirerOption>();
   const { excluded } = context.pluginPlatform;
   if (excluded && Object.keys(excluded).length > 0) {
-    Object.keys(excluded).forEach(key => {
+    Object.keys(excluded).forEach((key) => {
       if (excluded[key].length > 0) {
         const option = {
           name: key + EXPAND,
@@ -184,7 +183,7 @@ async function addExcludedPluginPackage(context: Context, userSelection: PluginI
       await addFromExcluded(context.pluginPlatform, userSelection[0]);
     } else {
       const options = new Array<InquirerOption>();
-      userSelection.forEach(pluginInfo => {
+      userSelection.forEach((pluginInfo) => {
         options.push({
           name: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
           value: pluginInfo,

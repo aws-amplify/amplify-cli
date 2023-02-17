@@ -11,7 +11,7 @@ export async function run(context: $TSContext) {
 
   return amplify
     .serviceSelectionPrompt(context, categoryName, serviceMetadata)
-    .then(async result => {
+    .then(async (result) => {
       const providerController = await import(`../../provider-utils/${result.providerName}`);
 
       if (!providerController) {
@@ -21,12 +21,12 @@ export async function run(context: $TSContext) {
 
       return providerController.updateResource(context, categoryName, result.service);
     })
-    .then(result => {
+    .then((result) => {
       if (result) {
         printer.success('Successfully updated resource');
       }
     })
-    .catch(async err => {
+    .catch(async (err) => {
       if (err.stack) {
         printer.info(err.stack);
       }

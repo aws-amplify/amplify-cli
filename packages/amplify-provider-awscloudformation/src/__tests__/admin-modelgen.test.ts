@@ -32,20 +32,20 @@ pathManagerMock.getBackendDirPath.mockReturnValue('mock/backend/dir/path');
 pathManagerMock.getResourceDirectoryPath.mockReturnValue('mock/resource/dir/path');
 isAmplifyAdminAppMock.mockResolvedValue({ isAdminApp: true, region: 'test', userPoolID: 'test' });
 isDataStoreEnabledMock.mockResolvedValue(true);
-fsMock.createWriteStream.mockReturnValue(({
+fsMock.createWriteStream.mockReturnValue({
   write: {
     bind: jest.fn(),
   },
-} as unknown) as fs.WriteStream);
-fsMock.createReadStream.mockImplementation(filePath => (`mock body of ${filePath}` as unknown) as fs.ReadStream);
+} as unknown as fs.WriteStream);
+fsMock.createReadStream.mockImplementation((filePath) => `mock body of ${filePath}` as unknown as fs.ReadStream);
 
 const s3FactoryMock = S3 as jest.Mocked<typeof S3>;
 
-const s3Mock = ({
+const s3Mock = {
   uploadFile: jest.fn(),
-} as unknown) as jest.Mocked<S3>;
+} as unknown as jest.Mocked<S3>;
 
-s3FactoryMock.getInstance.mockResolvedValue((s3Mock as unknown) as S3);
+s3FactoryMock.getInstance.mockResolvedValue(s3Mock as unknown as S3);
 
 const apiName = 'testApiName';
 const resources = [
@@ -65,11 +65,11 @@ let contextStub: $TSContext;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  contextStub = ({
+  contextStub = {
     amplify: {
       invokePluginMethod: invokePluginMock,
     },
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 });
 
 it('invokes codegen functions and writes assets to S3', async () => {

@@ -35,7 +35,7 @@ export const initializeEnv = async (
 
     const initializedCategories = Object.keys(stateManager.getMeta());
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
-    const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
+    const availableCategories = Object.keys(categoryPluginInfoList).filter((key) => initializedCategories.includes(key));
 
     const importCategoryPluginAndQueueInitEnvTask = async (pluginInfo, category): Promise<void> => {
       try {

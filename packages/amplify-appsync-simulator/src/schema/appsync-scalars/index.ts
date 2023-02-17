@@ -5,7 +5,8 @@ import * as net from 'net';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 
-const EMAIL_ADDRESS_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const EMAIL_ADDRESS_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 // Some of the custom scalars in this file are inspired by the graphql-scalars npm module.
 
@@ -30,21 +31,21 @@ class AWSPhone extends GraphQLScalarType {
     super({
       name,
       description,
-      serialize: value => {
+      serialize: (value) => {
         const ast = {
           kind: Kind.STRING,
           value,
         };
         return phoneValidator(ast, options);
       },
-      parseValue: value => {
+      parseValue: (value) => {
         const ast = {
           kind: Kind.STRING,
           value,
         };
         return phoneValidator(ast, options);
       },
-      parseLiteral: ast => phoneValidator(ast, options),
+      parseLiteral: (ast) => phoneValidator(ast, options),
     });
   }
 }
@@ -113,7 +114,7 @@ are also accepted and these represent the number of seconds till 1970-01-01T00:0
 });
 
 // Unified the code for both types from graphql-scalars library.
-const validateIPAddress = value => {
+const validateIPAddress = (value) => {
   if (typeof value !== 'string') {
     throw new TypeError(`Value is not string: ${value}`);
   }
@@ -171,7 +172,7 @@ const AWSJSON = new GraphQLScalarType({
   },
 });
 
-const validateEmail = value => {
+const validateEmail = (value) => {
   if (typeof value !== 'string') {
     throw new TypeError(`Value is not string: ${value}`);
   }
@@ -198,7 +199,7 @@ const AWSEmail = new GraphQLScalarType({
   },
 });
 
-const parseUrlValue = value => (value ? new URL(value.toString()) : value);
+const parseUrlValue = (value) => (value ? new URL(value.toString()) : value);
 
 const AWSURL = new GraphQLScalarType({
   name: 'AWSURL',
@@ -234,7 +235,7 @@ export const scalars = {
 
 export function wrapSchema(schemaString) {
   const scalarStrings = Object.keys(scalars)
-    .map(scalarKey => `scalar ${scalarKey}\n`)
+    .map((scalarKey) => `scalar ${scalarKey}\n`)
     .join('');
 
   return scalarStrings + schemaString;

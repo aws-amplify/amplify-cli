@@ -45,9 +45,8 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(meta.function).toBeDefined();
     let seenAtLeastOneFunc = false;
     for (const key of Object.keys(meta.function)) {
-      const {
-        service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash,
-      } = meta.function[key];
+      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+        meta.function[key];
       expect(service).toBe('Lambda');
       expect(build).toBeTruthy();
       expect(lastBuildTimeStamp).toBeDefined();

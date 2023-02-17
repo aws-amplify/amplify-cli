@@ -5,7 +5,7 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  removeAuthWithDefault
+  removeAuthWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -31,5 +31,4 @@ describe('amplify add auth...', () => {
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
   });
-
 });

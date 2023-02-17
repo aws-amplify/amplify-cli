@@ -79,7 +79,7 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
         method: 'POST',
         headers,
       },
-      result => {
+      (result) => {
         let data = '';
         result
           .setEncoding('utf-8')
@@ -96,7 +96,7 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
             }
             resolve(body.data);
           })
-          .once('error', err => reject(err));
+          .once('error', (err) => reject(err));
       },
     );
     httpRequest.end(JSON.stringify({ query, variables }));

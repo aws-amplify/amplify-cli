@@ -90,7 +90,7 @@ class AmplifyPrompter implements Prompter {
       name: 'result',
       message,
       // eslint-disable-next-line no-nested-ternary
-      format: value => (submitted ? (value ? 'yes' : 'no') : ''),
+      format: (value) => (submitted ? (value ? 'yes' : 'no') : ''),
       onSubmit: () => {
         submitted = true;
         return true;
@@ -155,18 +155,18 @@ class AmplifyPrompter implements Prompter {
     if (typeof opts.transform === 'function') {
       let functionResult;
       if (Array.isArray(result)) {
-        functionResult = ((await Promise.all(
-          result.map(async part => (opts.transform as Function)(part) as T),
-        )) as unknown) as PromptReturn<RS, T>;
+        functionResult = (await Promise.all(
+          result.map(async (part) => (opts.transform as Function)(part) as T),
+        )) as unknown as PromptReturn<RS, T>;
       } else {
-        functionResult = (opts.transform(result as string) as unknown) as PromptReturn<RS, T>;
+        functionResult = opts.transform(result as string) as unknown as PromptReturn<RS, T>;
       }
       this.pushInteractiveFlow(message, functionResult, enquirerPromptType == EnquirerPromptType.INVISIBLE);
       return functionResult;
     }
 
     this.pushInteractiveFlow(message, result, enquirerPromptType == EnquirerPromptType.INVISIBLE);
-    return (result as unknown) as PromptReturn<RS, T>;
+    return result as unknown as PromptReturn<RS, T>;
   };
 
   /**
@@ -198,18 +198,18 @@ class AmplifyPrompter implements Prompter {
     const genericChoices: GenericChoice<T>[] =
       typeof choices[0] === 'string'
         ? // this assertion is safe because the choice array can only be a string[] if the generic type is a string
-          (((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown) as GenericChoice<T>[])
+          ((choices as string[]).map((choice) => ({ name: choice, value: choice })) as unknown as GenericChoice<T>[])
         : (choices as GenericChoice<T>[]);
 
     const initialIndexes = initialOptsToIndexes(
-      genericChoices.map(choice => choice.value),
+      genericChoices.map((choice) => choice.value),
       opts.initial,
     );
 
     // enquirer requires all choice values be strings, so set up a mapping of string => T
     // and format choices to conform to enquirer's interface
     const choiceValueMap = new Map<string, T>();
-    const enquirerChoices = genericChoices.map(choice => {
+    const enquirerChoices = genericChoices.map((choice) => {
       choiceValueMap.set(choice.name, choice.value);
       const enqResult = { name: choice.name, disabled: choice.disabled, hint: choice.hint };
       return enqResult;
@@ -223,7 +223,7 @@ class AmplifyPrompter implements Prompter {
       this.print.info(`Only one option for [${message}]. Selecting [${result}].`);
     } else if ('pickAtLeast' in opts && (opts.pickAtLeast || 0) >= choices.length) {
       // if you have to pick at least as many options as are available, select all of them and return without prompting
-      result = genericChoices.map(choice => choice.name);
+      result = genericChoices.map((choice) => choice.name);
       this.print.info(`Must pick at least ${opts.pickAtLeast} of ${choices.length} options. Selecting all options [${result}]`);
     } else if (isYes) {
       if (initialIndexes === undefined || (Array.isArray(initialIndexes) && initialIndexes.length === 0)) {
@@ -232,7 +232,7 @@ class AmplifyPrompter implements Prompter {
       if (typeof initialIndexes === 'number') {
         result = genericChoices[initialIndexes].name;
       } else {
-        result = initialIndexes.map(idx => genericChoices[idx].name);
+        result = initialIndexes.map((idx) => genericChoices[idx].name);
       }
     } else {
       // enquirer does not clear the stdout buffer on TSTP (Ctrl + Z) so this listener maps it to process.exit() which will clear the buffer
@@ -264,6 +264,7 @@ class AmplifyPrompter implements Prompter {
         choices: enquirerChoices,
         pointer(_: unknown, i: number) {
           // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           return this.state.index === i ? chalk.cyan('❯') : ' ';
         },
@@ -295,7 +296,7 @@ class AmplifyPrompter implements Prompter {
     let loggedRet;
     if (Array.isArray(result)) {
       // result is an array
-      loggedRet = result.map(item => choiceValueMap.get(item) as T) as PromptReturn<RS, T>;
+      loggedRet = result.map((item) => choiceValueMap.get(item) as T) as PromptReturn<RS, T>;
     } else {
       // result is a string
       loggedRet = choiceValueMap.get(result as string) as PromptReturn<RS, T>;
@@ -316,8 +317,10 @@ export const prompter: Prompter = new AmplifyPrompter();
  * @param equals An optional function to determine if two elements are equal. If not specified, === is used
  * Note that choices are assumed to be unique by the equals function definition
  */
-export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (choices: T[]) =>
-  selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+export const byValues =
+  <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> =>
+  (choices: T[]) =>
+    selection.map((sel) => choices.findIndex((choice) => equals(choice, sel))).filter((idx) => idx >= 0);
 
 /**
  * Helper function to generate a function that will return an index of a single selection from a list
@@ -325,17 +328,19 @@ export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultE
  * @param equals An optional function to determine if two elements are equal. If not specified, === is used
  * Note that choices are assumed to be unique by the equals function definition
  */
-export const byValue = <T>(selection: T, equals: EqualsFunction<T> = defaultEquals): SingleFilterFunction<T> => (choices: T[]) => {
-  const idx = choices.findIndex(choice => equals(choice, selection));
-  return idx < 0 ? undefined : idx;
-};
+export const byValue =
+  <T>(selection: T, equals: EqualsFunction<T> = defaultEquals): SingleFilterFunction<T> =>
+  (choices: T[]) => {
+    const idx = choices.findIndex((choice) => equals(choice, selection));
+    return idx < 0 ? undefined : idx;
+  };
 
 const validateEachWith = (validator?: Validator) => async (input: string[]) => {
   if (!validator) {
     return true;
   }
-  const validationList = await Promise.all(input.map(part => part.trim()).map(async part => ({ part, result: await validator(part) })));
-  const firstInvalid = validationList.find(v => typeof v.result === 'string');
+  const validationList = await Promise.all(input.map((part) => part.trim()).map(async (part) => ({ part, result: await validator(part) })));
+  const firstInvalid = validationList.find((v) => typeof v.result === 'string');
   if (firstInvalid) {
     return `${firstInvalid.part} did not satisfy requirement ${firstInvalid.result}`;
   }

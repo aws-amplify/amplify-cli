@@ -16,9 +16,7 @@ import {
 import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
 
-export const addGeofenceCollectionResource = async (
-  context: $TSContext,
-): Promise<string> => {
+export const addGeofenceCollectionResource = async (context: $TSContext): Promise<string> => {
   // initialize the Geofence Collection parameters
   const geofenceCollectionParams: Partial<GeofenceCollectionParameters> = {
     providerContext: setProviderContext(context, ServiceName.GeofenceCollection),
@@ -34,9 +32,7 @@ export const addGeofenceCollectionResource = async (
   return completeParameters.name;
 };
 
-export const updateGeofenceCollectionResource = async (
-  context: $TSContext,
-): Promise<string> => {
+export const updateGeofenceCollectionResource = async (context: $TSContext): Promise<string> => {
   const geofenceCollectionParams: Partial<GeofenceCollectionParameters> = {
     providerContext: setProviderContext(context, ServiceName.GeofenceCollection),
   };
@@ -51,9 +47,7 @@ export const updateGeofenceCollectionResource = async (
   return completeParameters.name;
 };
 
-export const removeGeofenceCollectionResource = async (
-  context: $TSContext,
-): Promise<string | undefined> => {
+export const removeGeofenceCollectionResource = async (context: $TSContext): Promise<string | undefined> => {
   const { amplify } = context;
   const resourceToRemove = await removeWalkthrough(ServiceName.GeofenceCollection);
   if (!resourceToRemove) return undefined;

@@ -1,4 +1,4 @@
 {
-    "jest.jestCommandLine": "yarn e2e",
-    "jest.monitorLongRun": 1800000
+  "jest.jestCommandLine": "yarn e2e",
+  "jest.monitorLongRun": 1800000
 }

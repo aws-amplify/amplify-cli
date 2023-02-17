@@ -44,7 +44,6 @@ describe('remove ddb command tests', () => {
   });
 });
 
-
 describe('remove s3 command tests', () => {
   let mockContext: $TSContext;
 
@@ -78,4 +77,3 @@ describe('remove s3 command tests', () => {
     expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, 'storage', mockResourceName);
   });
 });
-

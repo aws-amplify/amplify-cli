@@ -1,19 +1,10 @@
 {
-    "extends": "../../tsconfig.base.json",
-    "compilerOptions": {
-      "outDir": "lib",
-      "rootDir": "src",
-      "allowJs": true
-    },
-    "exclude": [
-      "coverage",
-      "lib",
-      "resources",
-    ],
-    "references": [
-      {"path": "../amplify-cli-core"},
-      {"path": "../amplify-prompts"},
-      {"path": "../amplify-cli-extensibility-helper"}
-    ]
-  }
-  
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "allowJs": false
+  },
+  "exclude": ["coverage", "lib", "resources"],
+  "references": [{ "path": "../amplify-cli-core" }, { "path": "../amplify-prompts" }]
+}

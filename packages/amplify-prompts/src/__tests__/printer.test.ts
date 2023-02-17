@@ -1,8 +1,8 @@
 import { AmplifyPrinter } from '../printer';
 import * as flags from '../flags';
-const writeStream_stub = ({
+const writeStream_stub = {
   write: jest.fn(),
-} as unknown) as jest.Mocked<NodeJS.WritableStream>;
+} as unknown as jest.Mocked<NodeJS.WritableStream>;
 
 jest.mock('../flags');
 jest.mock('os');

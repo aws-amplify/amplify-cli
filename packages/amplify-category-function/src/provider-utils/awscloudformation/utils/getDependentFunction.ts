@@ -13,11 +13,11 @@ export async function lambdasWithApiDependency(
   //get the List of functions dependent on deleted model
   const dependentFunctions = [];
   const lambdaFuncResources = allResources.filter(
-    resource =>
+    (resource) =>
       resource.service === ServiceName.LambdaFunction &&
       resource.mobileHubMigrated !== true &&
       resource.dependsOn !== undefined &&
-      resource.dependsOn.find(val => val.category === 'api'),
+      resource.dependsOn.find((val) => val.category === 'api'),
   );
 
   // initialize function parameters for update
@@ -29,7 +29,7 @@ export async function lambdasWithApiDependency(
 
     if (typeof selectedCategories === 'object' && selectedCategories !== null) {
       for (const selectedResources of Object.values(selectedCategories)) {
-        deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
+        deletedModelFound = Object.keys(selectedResources).some((r) => modelsDeleted.includes(r));
         if (deletedModelFound) {
           dependentFunctions.push(lambda);
         }

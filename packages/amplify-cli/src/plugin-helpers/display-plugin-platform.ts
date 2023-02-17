@@ -1,8 +1,6 @@
 import util from 'util';
 import { Context } from '../domain/context';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginCollection } from '../domain/plugin-collection';
-import { PluginPlatform } from '../domain/plugin-platform';
+import { PluginInfo, PluginCollection, PluginPlatform } from 'amplify-cli-core';
 
 const defaultIndentationStr = '  ';
 
@@ -15,7 +13,7 @@ export function displaySimpleString(context: Context, title: string, contents: s
 export function displayStringArray(context: Context, title: string, contents: string[], indentation = 0) {
   const indentationStr = createIndentation(indentation);
   context.print.blue(`${indentationStr}${title}:`);
-  contents.forEach(strItem => {
+  contents.forEach((strItem) => {
     context.print.info(`${indentationStr}${defaultIndentationStr}${strItem}`);
   });
 }
@@ -63,13 +61,13 @@ export function displayPluginPlatform(context: Context, pluginPlatform: PluginPl
 }
 
 export function displayPluginCollection(context: Context, pluginCollection: PluginCollection, group = '') {
-  Object.keys(pluginCollection).forEach(key => {
+  Object.keys(pluginCollection).forEach((key) => {
     displayPluginInfoArray(context, pluginCollection[key], group);
   });
 }
 
 export function displayPluginInfoArray(context: Context, pluginInfoArray: Array<PluginInfo>, group = '') {
-  pluginInfoArray.forEach(pluginInfo => {
+  pluginInfoArray.forEach((pluginInfo) => {
     displayPluginInfo(context, pluginInfo, group);
   });
 }

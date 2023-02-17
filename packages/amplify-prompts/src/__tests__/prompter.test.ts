@@ -68,7 +68,7 @@ describe('input', () => {
   it('throws if yes flag set and no initial value', async () => {
     flagsMock.isYes = true;
     await expect(() => prompter.input('test message')).rejects.toThrowErrorMatchingInlineSnapshot(
-      "\"Cannot prompt for [test message] when '--yes' flag is set\"",
+      '"Cannot prompt for [test message] when \'--yes\' flag is set"',
     );
   });
 
@@ -95,14 +95,15 @@ describe('input', () => {
     const promptResponse = 'this is the result';
     const transformedValue = 'transformed value';
     promptMock.mockResolvedValueOnce({ result: promptResponse });
-    expect(await prompter.input('test message', { transform: _ => transformedValue })).toEqual(transformedValue);
+    expect(await prompter.input('test message', { transform: (_) => transformedValue })).toEqual(transformedValue);
   });
 
   it('transforms each input part separately when "many" specified', async () => {
     promptMock.mockResolvedValueOnce({ result: ['10', '20'] });
-    expect(
-      await prompter.input<'many'>('test message', { returnSize: 'many', transform: input => `${input}suffix` }),
-    ).toEqual(['10suffix', '20suffix']);
+    expect(await prompter.input<'many'>('test message', { returnSize: 'many', transform: (input) => `${input}suffix` })).toEqual([
+      '10suffix',
+      '20suffix',
+    ]);
   });
 });
 
@@ -110,7 +111,7 @@ describe('pick', () => {
   it('throws if yes flag set and multiple options provided', async () => {
     flagsMock.isYes = true;
     await expect(() => prompter.pick('test message', ['opt1', 'opt2'])).rejects.toThrowErrorMatchingInlineSnapshot(
-      "\"Cannot prompt for [test message] when '--yes' flag is set\"",
+      '"Cannot prompt for [test message] when \'--yes\' flag is set"',
     );
   });
 
@@ -166,38 +167,31 @@ describe('pick', () => {
   it('returns selected items when multiSelect', async () => {
     const mockResult = ['val1', 'val3'];
     promptMock.mockResolvedValueOnce({ result: mockResult });
-    expect(
-      await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { returnSize: 'many' }),
-    ).toEqual(mockResult);
+    expect(await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { returnSize: 'many' })).toEqual(mockResult);
   });
 
   it('returns array of single item if only one choice specified and must pick at least 1', async () => {
-    expect(
-      await prompter.pick<'many'>('test message', ['hello'], { returnSize: 'many', pickAtLeast: 1 }),
-    ).toEqual(['hello']);
+    expect(await prompter.pick<'many'>('test message', ['hello'], { returnSize: 'many', pickAtLeast: 1 })).toEqual(['hello']);
     expect(promptMock).toHaveBeenCalledTimes(0);
   });
 
   it('returns array of all choices if must pick at lest that many options', async () => {
-    expect(
-      await prompter.pick<'many'>('test message', ['hello', 'hey'], { returnSize: 'many', pickAtLeast: 3 }),
-    ).toEqual(['hello', 'hey']);
+    expect(await prompter.pick<'many'>('test message', ['hello', 'hey'], { returnSize: 'many', pickAtLeast: 3 })).toEqual(['hello', 'hey']);
     expect(promptMock).toHaveBeenCalledTimes(0);
   });
 
   it('prompts for selection when only one option with returnSize as many', async () => {
     promptMock.mockResolvedValueOnce({ result: ['hello'] });
-    expect(
-      await prompter.pick<'many'>('test message', ['hello'], { returnSize: 'many' }),
-    ).toEqual(['hello']);
+    expect(await prompter.pick<'many'>('test message', ['hello'], { returnSize: 'many' })).toEqual(['hello']);
     expect(promptMock).toHaveBeenCalled();
   });
 
   it('prompts for selection when pick at least is less than options length', async () => {
     promptMock.mockResolvedValueOnce({ result: ['hello', 'hey'] });
-    expect(
-      await prompter.pick<'many'>('test message', ['hello', 'hey', 'hi'], { returnSize: 'many', pickAtLeast: 2 }),
-    ).toEqual(['hello', 'hey']);
+    expect(await prompter.pick<'many'>('test message', ['hello', 'hey', 'hi'], { returnSize: 'many', pickAtLeast: 2 })).toEqual([
+      'hello',
+      'hey',
+    ]);
     expect(promptMock).toHaveBeenCalled();
   });
 });

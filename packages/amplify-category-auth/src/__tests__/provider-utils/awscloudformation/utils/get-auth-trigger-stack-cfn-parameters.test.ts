@@ -20,7 +20,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "userpoolArn": Object {
@@ -62,7 +62,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "snsRoleArn": Object {
@@ -111,7 +111,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "snsRoleArn": Object {
@@ -160,7 +160,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "snsRoleArn": Object {
@@ -209,7 +209,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "snsRoleArn": Object {
@@ -259,7 +259,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "snsRoleArn": Object {
@@ -308,7 +308,7 @@ describe('test auth trigger stack Parameters', () => {
         options: {},
       },
     };
-    const answers = await getAuthTriggerStackCfnParameters((mockContext as unknown) as $TSContext, mockResourceName);
+    const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
       Object {
         "userpoolArn": Object {

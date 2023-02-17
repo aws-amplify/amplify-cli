@@ -628,9 +628,8 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
 
 export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders(
-      true,
-    );
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } =
+      getSocialProviders(true);
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -745,7 +744,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
       .wait('Enter your Key ID for your OAuth flow:')
       .send(APPLE_KEY_ID)
       .sendCarriageReturn()
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .send(APPLE_PRIVATE_KEY)
       .sendCarriageReturn()
       .sendEof()
@@ -1100,16 +1099,10 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .send('googleIDPOOL')
       .sendCarriageReturn();
     if (settings.frontend === 'ios') {
-      chain
-        .wait('Enter your Google iOS Client ID for your identity pool')
-        .send('googleiosclientId')
-        .sendCarriageReturn();
+      chain.wait('Enter your Google iOS Client ID for your identity pool').send('googleiosclientId').sendCarriageReturn();
     }
     if (settings.frontend === 'android') {
-      chain
-        .wait('Enter your Google Android Client ID for your identity pool')
-        .send('googleandroidclientid')
-        .sendCarriageReturn();
+      chain.wait('Enter your Google Android Client ID for your identity pool').send('googleandroidclientid').sendCarriageReturn();
     }
     chain
       .wait('Enter your Amazon App ID for your identity pool')
@@ -1430,7 +1423,7 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .sendLine(settings.appleAppTeamId)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(settings.appleAppKeyID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
@@ -1554,7 +1547,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendLine(settings.appleAppTeamId)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(settings.appleAppKeyID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()

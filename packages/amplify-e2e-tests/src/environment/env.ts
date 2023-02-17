@@ -94,9 +94,7 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
   return new Promise((resolve, reject) => {
     const numEnv = settings.numEnv || 1;
     const regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
-      .wait('| Environments |')
-      .wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
@@ -200,7 +198,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(APPLE_TEAM_ID)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(APPLE_KEY_ID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(APPLE_PRIVATE_KEY)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

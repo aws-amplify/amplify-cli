@@ -157,7 +157,7 @@ export const getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Promi
   const tmpAmplifyMeta = amplifyMeta || stateManager.getMeta();
   const availableChannels = getAvailableChannels();
   const notificationsMeta = await getNotificationsAppMeta(tmpAmplifyMeta);
-  return notificationsMeta ? availableChannels.filter(channel => isNotificationChannelEnabled(notificationsMeta, channel)) : [];
+  return notificationsMeta ? availableChannels.filter((channel) => isNotificationChannelEnabled(notificationsMeta, channel)) : [];
 };
 
 /**
@@ -167,7 +167,7 @@ export const getDisabledChannelsFromAmplifyMeta = async (amplifyMeta?: $TSMeta):
   const disabledChannelList: Array<string> = [];
   const availableChannels = getAvailableChannels();
   const enabledChannels = await getEnabledChannelsFromAppMeta(amplifyMeta);
-  availableChannels.forEach(channel => {
+  availableChannels.forEach((channel) => {
     if (!enabledChannels.includes(channel)) {
       disabledChannelList.push(channel);
     }

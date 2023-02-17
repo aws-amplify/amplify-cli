@@ -7,7 +7,7 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Create') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: pricingPlan
+        PricingPlan: pricingPlan,
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createGeofenceCollection(params).promise();
@@ -21,7 +21,7 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: pricingPlan
+        PricingPlan: pricingPlan,
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateGeofenceCollection(params).promise();
@@ -34,7 +34,7 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Delete') {
       const params = {
-        CollectionName: event.ResourceProperties.collectionName
+        CollectionName: event.ResourceProperties.collectionName,
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deleteGeofenceCollection(params).promise();

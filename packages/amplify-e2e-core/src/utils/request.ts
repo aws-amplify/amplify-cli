@@ -8,9 +8,9 @@ export function post({ body, ...options }) {
         method: 'POST',
         ...options,
       },
-      res => {
+      (res) => {
         const chunks = [];
-        res.on('data', data => chunks.push(data));
+        res.on('data', (data) => chunks.push(data));
         res.on('end', () => {
           let body = Buffer.concat(chunks);
           if (res.headers['content-type'].startsWith('application/json')) {

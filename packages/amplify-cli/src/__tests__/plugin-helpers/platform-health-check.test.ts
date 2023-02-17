@@ -1,11 +1,9 @@
 import { JSONUtilities } from '../../../../amplify-cli-core/lib';
-import { PluginInfo } from '../../domain/plugin-info';
-import { PluginManifest } from '../../domain/plugin-manifest';
-import { PluginPlatform } from '../../domain/plugin-platform';
+import { PluginInfo, PluginManifest, PluginPlatform } from 'amplify-cli-core';
 import { checkPlatformHealth, getOfficialPlugins } from '../../plugin-helpers/platform-health-check';
 
 jest.mock('chalk', () => ({
-  yellow: jest.fn().mockImplementation(input => input),
+  yellow: jest.fn().mockImplementation((input) => input),
 }));
 
 const corePackageJson = {
@@ -51,11 +49,7 @@ const corePackageJson = {
   },
 };
 
-jest.mock('amplify-cli-core', () => ({
-  JSONUtilities: {
-    readJson: jest.fn(),
-  },
-}));
+jest.spyOn(JSONUtilities, 'readJson');
 
 describe('platform-health-check', () => {
   beforeAll(() => {

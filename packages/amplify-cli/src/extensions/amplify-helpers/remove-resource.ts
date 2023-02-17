@@ -48,7 +48,7 @@ export async function removeResource(
 
   if (
     !amplifyMeta[category] ||
-    Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
+    Object.keys(amplifyMeta[category]).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
     printer.error('No resources added for this category');
     await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
@@ -56,7 +56,7 @@ export async function removeResource(
   }
 
   let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
-    r => amplifyMeta[category][r].mobileHubMigrated !== true,
+    (r) => amplifyMeta[category][r].mobileHubMigrated !== true,
   );
 
   if (resourceName) {
@@ -68,7 +68,7 @@ export async function removeResource(
     }
   } else {
     if (options.serviceSuffix) {
-      enabledCategoryResources = enabledCategoryResources.map(resource => {
+      enabledCategoryResources = enabledCategoryResources.map((resource) => {
         const service = _.get(amplifyMeta, [category, resource, 'service']);
         const suffix = _.get(options, ['serviceSuffix', service], '');
         return { name: `${resource} ${suffix}`, value: resource };
@@ -126,9 +126,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   const amplifyMeta = stateManager.getMeta();
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
-    allResources.forEach(resourceItem => {
+    allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach(dependsOnItem => {
+        resourceItem.dependsOn.forEach((dependsOnItem) => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             printer.error('Resource cannot be removed because it has a dependency on another resource');
             printer.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);

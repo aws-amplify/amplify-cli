@@ -224,8 +224,8 @@ export const splitTestsV2 = function splitTests(
   const testFileRunTimes = loadTestTimings().timingData;
 
   testSuites.sort((a, b) => {
-    const runtimeA = testFileRunTimes.find(t => t.test === a)?.medianRuntime ?? 30;
-    const runtimeB = testFileRunTimes.find(t => t.test === b)?.medianRuntime ?? 30;
+    const runtimeA = testFileRunTimes.find((t) => t.test === a)?.medianRuntime ?? 30;
+    const runtimeB = testFileRunTimes.find((t) => t.test === b)?.medianRuntime ?? 30;
     return runtimeA - runtimeB;
   });
   const generateJobsForOS = (os: OS_TYPE) => {
@@ -239,7 +239,7 @@ export const splitTestsV2 = function splitTests(
       const currentJob = osJobs[osJobs.length - 1];
 
       // if the current test is excluded from this OS, skip it
-      if (TEST_EXCLUSIONS[os].find(excluded => test === excluded)) {
+      if (TEST_EXCLUSIONS[os].find((excluded) => test === excluded)) {
         continue;
       }
       // when we are not running E2E on 'dev', we only run a subset of tests on Windows
@@ -247,10 +247,10 @@ export const splitTestsV2 = function splitTests(
       if (isNotDevBranch && os === 'w' && !WINDOWS_SMOKE_TESTS.includes(test)) {
         continue; // skip this test
       }
-      const US_WEST_2 = FORCE_US_WEST_2.find(t => test.startsWith(t));
-      const USE_PARENT = USE_PARENT_ACCOUNT.some(usesParent => test.startsWith(usesParent));
+      const US_WEST_2 = FORCE_US_WEST_2.find((t) => test.startsWith(t));
+      const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
-      if (RUN_SOLO.find(solo => test === solo)) {
+      if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
         if (US_WEST_2) {
@@ -290,7 +290,7 @@ export const splitTestsV2 = function splitTests(
       if (j.tests.length === 0) {
         continue;
       }
-      const names = j.tests.map(tn => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       let jobName = `${j.os}_${names}`;
       if (isMigration) {
         const startIndex = baseJobName.lastIndexOf('_');
@@ -332,7 +332,7 @@ export const splitTestsV2 = function splitTests(
   if (workflows[workflowName]) {
     const workflow = workflows[workflowName];
 
-    const workflowJob = workflow.jobs.find(j => {
+    const workflowJob = workflow.jobs.find((j) => {
       if (typeof j === 'string') {
         return j === baseJobName;
       } else {
@@ -352,7 +352,7 @@ export const splitTestsV2 = function splitTests(
             let requiredJobs = workflowJob[baseJobName].requires || [];
             // don't need to wait on windows if this is a linux test
             if (newJobName.startsWith('l')) {
-              requiredJobs = requiredJobs.filter(j => j !== 'build_windows_workspace_for_e2e');
+              requiredJobs = requiredJobs.filter((j) => j !== 'build_windows_workspace_for_e2e');
             }
             // we can downsize on linux
             let runner = isMigration || isSingleTest ? 'l_medium' : 'l_large';
@@ -376,7 +376,7 @@ export const splitTestsV2 = function splitTests(
       });
 
       const lastJobBatch = Object.values(jobByRegion)
-        .map(regionJobs => getLastBatchJobs(Object.keys(regionJobs as Object), 50))
+        .map((regionJobs) => getLastBatchJobs(Object.keys(regionJobs as Object), 50))
         .reduce((acc, val) => acc.concat(val), []);
       const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, baseJobName), baseJobName, lastJobBatch);
       workflow.jobs = filteredJobs;
@@ -396,7 +396,7 @@ export const splitTestsV2 = function splitTests(
  * @param jobName - job that needs to be removed from workflow
  */
 export function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] {
-  return jobs.filter(j => {
+  return jobs.filter((j) => {
     if (typeof j === 'string') {
       return j !== jobName;
     } else {
@@ -425,12 +425,12 @@ export function getLastBatchJobs(jobs: string[], concurrency: number): string[] 
  * @param jobsToReplaceWith - jobs to add to requires
  */
 export function replaceWorkflowDependency(jobs: WorkflowJob[], jobName: string, jobsToReplaceWith: string[]): WorkflowJob[] {
-  return jobs.map(j => {
+  return jobs.map((j) => {
     if (typeof j === 'string') return j;
     const [currentJobName, jobObj] = Object.entries(j)[0];
     const requires = jobObj.requires || [];
     if (requires.includes(jobName)) {
-      jobObj.requires = [...requires.filter(r => r !== jobName), ...jobsToReplaceWith];
+      jobObj.requires = [...requires.filter((r) => r !== jobName), ...jobsToReplaceWith];
     }
     return {
       [currentJobName]: jobObj,

@@ -1,11 +1,4 @@
-import {
-  AmplifyCategories,
-  AmplifySupportedService,
-  exitOnNextTick,
-  JSONUtilities,
-  pathManager,
-  stateManager,
-} from 'amplify-cli-core';
+import { AmplifyCategories, AmplifySupportedService, exitOnNextTick, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import {
   addTextractPolicies,
   generateLambdaAccessForRekognition,
@@ -73,7 +66,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (identifyTypes.includes(amplifyMeta[category][resourceName].identifyType)) {
       predictionsResources.push({
         name: resourceName,
@@ -83,7 +76,7 @@ async function updateWalkthrough(context) {
   });
   if (predictionsResources.length === 0) {
     throw new AmplifyError('ResourceDoesNotExistError', {
-      message: 'No resources to update. You need to add a resource.'
+      message: 'No resources to update. You need to add a resource.',
     });
   }
   let resourceObj = predictionsResources[0].value;
@@ -134,41 +127,36 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers.identifyType = await prompter.pick(
-      'What would you like to identify?',
-      [
-        {
-          name: 'Identify Text',
-          value: 'identifyText',
-        },
-        {
-          name: 'Identify Entities',
-          value: 'identifyEntities',
-        },
-        {
-          name: 'Identify Labels',
-          value: 'identifyLabels',
-        },
-      ]
-    );
+    answers.identifyType = await prompter.pick('What would you like to identify?', [
+      {
+        name: 'Identify Text',
+        value: 'identifyText',
+      },
+      {
+        name: 'Identify Entities',
+        value: 'identifyEntities',
+      },
+      {
+        name: 'Identify Labels',
+        value: 'identifyLabels',
+      },
+    ]);
 
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
       throw new AmplifyError('ResourceAlreadyExistsError', {
-        message: `${resourceType} has already been added to this project.`
+        message: `${resourceType} has already been added to this project.`,
       });
     }
 
-    answers.resourceName = await prompter.input(
-      'Provide a friendly name for your resource', {
+    answers.resourceName = await prompter.input('Provide a friendly name for your resource', {
       initial: `${answers.identifyType}${defaultValues.resourceName}`,
       validate: alphanumeric(),
     });
     identifyType = answers.identifyType;
     parameters.resourceName = answers.resourceName;
   }
-
 
   Object.assign(answers, await followUpQuestions(identifyType, parameters));
   delete answers.setup;
@@ -355,7 +343,7 @@ async function followUpQuestions(identifyType, parameters) {
 async function followUpIdentifyTextQuestions(parameters) {
   const answers = {
     identifyDoc: await prompter.yesOrNo('Would you also like to identify documents?', parameters?.identifyDoc ?? false),
-    access: await askIdentifyAccess(parameters)
+    access: await askIdentifyAccess(parameters),
   };
 
   if (answers.identifyDoc) {
@@ -363,22 +351,25 @@ async function followUpIdentifyTextQuestions(parameters) {
   }
 
   Object.assign(answers, { format: answers.identifyDoc ? 'ALL' : 'PLAIN' });
-
 }
 
 async function askIdentifyAccess(parameters) {
-  return await prompter.pick('Who should have access?', [
+  return await prompter.pick(
+    'Who should have access?',
+    [
+      {
+        name: 'Auth users only',
+        value: 'auth',
+      },
+      {
+        name: 'Auth and Guest users',
+        value: 'authAndGuest',
+      },
+    ],
     {
-      name: 'Auth users only',
-      value: 'auth',
+      initial: byValue(parameters.access ?? 'auth'),
     },
-    {
-      name: 'Auth and Guest users',
-      value: 'authAndGuest',
-    },
-  ], {
-    initial: byValue(parameters.access ?? 'auth')
-  });
+  );
 }
 
 async function followUpIdentifyEntitiesQuestions(parameters) {
@@ -398,22 +389,19 @@ async function followUpIdentifyEntitiesQuestions(parameters) {
   if (answers.setup === 'advanced') {
     answers.celebrityDetectionEnabled = await prompter.yesOrNo(
       'Would you like to enable celebrity detection?',
-      parameters?.celebrityDetectionEnabled ?? true
+      parameters?.celebrityDetectionEnabled ?? true,
     );
     answers.adminTask = await prompter.yesOrNo(
       'Would you like to identify entities from a collection of images?',
-      parameters?.adminTask ?? false
+      parameters?.adminTask ?? false,
     );
 
     if (answers.adminTask) {
-      answers.maxEntities = await prompter.input(
-        'How many entities would you like to identify?',
-        {
-          initial: parameters?.maxEntities ?? 50,
-          validate: between(1, 100, 'Please enter a number between 1 and 100!'),
-          transform: input => Number.parseInt(input, 10),
-        }
-      );
+      answers.maxEntities = await prompter.input('How many entities would you like to identify?', {
+        initial: parameters?.maxEntities ?? 50,
+        validate: between(1, 100, 'Please enter a number between 1 and 100!'),
+        transform: (input) => Number.parseInt(input, 10),
+      });
       answers.folderPolicies = await prompter.pick(
         'Would you like to allow users to add images to this collection?',
         [
@@ -425,9 +413,10 @@ async function followUpIdentifyEntitiesQuestions(parameters) {
             name: 'No',
             value: 'admin',
           },
-        ], {
-        initial: parameters.folderPolicies ? byValue(parameters.folderPolicies) : 0,
-      }
+        ],
+        {
+          initial: parameters.folderPolicies ? byValue(parameters.folderPolicies) : 0,
+        },
       );
     }
   }
@@ -455,38 +444,39 @@ async function followUpIdentifyEntitiesQuestions(parameters) {
 
 async function followUpIdentifyLabelsQuestions(parameters) {
   const answers = {
-    setup: await prompter.pick(
-      'Would you like to use the default configuration',
-      [
-        {
-          name: 'Default Configuration',
-          value: 'default',
-        },
-        {
-          name: 'Advanced Configuration',
-          value: 'advanced',
-        },
-      ]
-    )
+    setup: await prompter.pick('Would you like to use the default configuration', [
+      {
+        name: 'Default Configuration',
+        value: 'default',
+      },
+      {
+        name: 'Advanced Configuration',
+        value: 'advanced',
+      },
+    ]),
   };
 
   if (answers.setup === 'advanced') {
-    answers.type = await prompter.pick('What kind of label detection?', [
+    answers.type = await prompter.pick(
+      'What kind of label detection?',
+      [
+        {
+          name: 'Only identify unsafe labels',
+          value: 'UNSAFE',
+        },
+        {
+          name: 'Identify labels',
+          value: 'LABELS',
+        },
+        {
+          name: 'Identify all kinds',
+          value: 'ALL',
+        },
+      ],
       {
-        name: 'Only identify unsafe labels',
-        value: 'UNSAFE',
+        initial: byValue(parameters.type ?? 'LABELS'),
       },
-      {
-        name: 'Identify labels',
-        value: 'LABELS',
-      },
-      {
-        name: 'Identify all kinds',
-        value: 'ALL',
-      },
-    ], {
-      initial: byValue(parameters.type ?? 'LABELS')
-    });
+    );
   }
 
   answers.access = await askIdentifyAccess(parameters);
@@ -505,7 +495,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -521,7 +511,7 @@ function resourceAlreadyExists(context, identifyType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].identifyType === identifyType) {
         type = identifyType;
       }
@@ -546,7 +536,7 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     const question = {
       name: identifyAssets.s3bucket.key,
       message: identifyAssets.s3bucket.question,
-      validate: value => {
+      validate: (value) => {
         const regex = new RegExp('^[a-zA-Z0-9-]+$');
         return regex.test(value) ? true : 'Bucket name can only use the following characters: a-z 0-9 -';
       },
@@ -629,7 +619,7 @@ function s3ResourceAlreadyExists() {
 
   if (amplifyMeta[storageCategory]) {
     const categoryResources = amplifyMeta[storageCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === AmplifySupportedService.S3) {
         resourceName = resource;
       }

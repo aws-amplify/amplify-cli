@@ -1240,7 +1240,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithapplePrivateKeyUserPool',
-        question: 'Enter your Private Key for your OAuth flow: ',
+        question: 'Enter your Private Key for your OAuth flow (entire key without line breaks): ',
         required: true,
         andConditions: [
           {
@@ -1249,6 +1249,12 @@ const supportedServices = {
             operator: 'includes',
           },
         ],
+        validation: {
+          operator: 'regex',
+          value: '(-+BEGIN PRIVATE KEY-+)(.+[^-])(-+END PRIVATE KEY-+)',
+          onErrorMsg:
+            'Private key provided is invalid. You must provide the entire key (including the -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY----- on a single line)',
+        },
       },
     ],
     cfnFilename: 'auth-template.yml.ejs',
@@ -1260,7 +1266,7 @@ const supportedServices = {
 };
 export const getSupportedServices = (): $TSAny => {
   const keyToRemove = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'usernameAttributes' : 'aliasAttributes';
-  const inputs = supportedServices.Cognito.inputs.filter(input => input.key !== keyToRemove);
+  const inputs = supportedServices.Cognito.inputs.filter((input) => input.key !== keyToRemove);
   return {
     Cognito: {
       ...supportedServices.Cognito,

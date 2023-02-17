@@ -38,7 +38,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (interpretTypes.includes(amplifyMeta[category][resourceName].interpretType)) {
       predictionsResources.push({
         name: resourceName,
@@ -85,10 +85,7 @@ async function configure(context, resourceObj) {
   // only ask this for add
   if (!parameters.resourceName) {
     const interpretQuestionSetupType = interpretAssets.setup.type();
-    answers.interpretType = await prompter.pick(
-      interpretQuestionSetupType.message,
-      interpretQuestionSetupType.choices,
-    );
+    answers.interpretType = await prompter.pick(interpretQuestionSetupType.message, interpretQuestionSetupType.choices);
 
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.interpretType);
@@ -100,13 +97,10 @@ async function configure(context, resourceObj) {
     }
 
     const interpretQuestionSetupName = interpretAssets.setup.name(`${answers.interpretType}${defaultValues.resourceName}`);
-    answers.resourceName = await prompter.input(
-      interpretQuestionSetupName.message,
-      {
-        validate: interpretQuestionSetupName.validate,
-        initial: interpretQuestionSetupName.default,
-      }
-    );
+    answers.resourceName = await prompter.input(interpretQuestionSetupName.message, {
+      validate: interpretQuestionSetupName.validate,
+      initial: interpretQuestionSetupName.default,
+    });
     interpretType = answers.interpretType;
   }
 
@@ -187,7 +181,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -203,7 +197,7 @@ function resourceAlreadyExists(context, interpretType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].interpretType === interpretType) {
         type = interpretType;
       }

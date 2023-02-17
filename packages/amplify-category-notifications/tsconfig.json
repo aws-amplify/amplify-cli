@@ -5,24 +5,16 @@
     "rootDir": "src",
     "allowJs": false,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*",
-  ],
-  "exclude": [
-    "coverage",
-    "lib",
-    "resources",
-    "scripts",
-    "src/__tests__"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["coverage", "lib", "resources", "scripts", "src/__tests__"],
   "references": [
     {
-      "path": "../amplify-cli-core",
+      "path": "../amplify-cli-core"
     },
     {
-      "path": "../amplify-prompts",
+      "path": "../amplify-prompts"
     }
   ]
 }

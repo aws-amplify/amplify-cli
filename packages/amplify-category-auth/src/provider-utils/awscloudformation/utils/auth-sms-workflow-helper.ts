@@ -17,10 +17,10 @@ export const doesConfigurationIncludeSMS = (request: CognitoConfiguration | Serv
   }
 
   return (
-    request.usernameAttributes?.some(str =>
+    request.usernameAttributes?.some((str) =>
       str
         ?.split(',')
-        .map(str => str.trim())
+        .map((str) => str.trim())
         .includes('phone_number'),
     ) || false
   );
