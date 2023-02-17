@@ -470,6 +470,6 @@ export class AmplifyToolkit {
   };
 
   runCleanUpTasks = async (context: Context) => {
-    await Promise.all(this._cleanUpTasks.map(task => task(context)));
+    await Promise.all(this._cleanUpTasks.map((task) => task(context)));
   };
 }

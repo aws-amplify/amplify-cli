@@ -360,7 +360,7 @@ function isInHeadlessMode(context: $TSContext) {
 function getHeadlessParams(context: $TSContext, resourceName: string) {
   const { inputParams = {} } = context.exeInfo;
   return inputParams.categories && inputParams.categories.function && Array.isArray(inputParams.categories.function)
-    ? inputParams.categories.function.find(i => i.resourceName === resourceName) || {}
+    ? inputParams.categories.function.find((i) => i.resourceName === resourceName) || {}
     : {};
 }
 

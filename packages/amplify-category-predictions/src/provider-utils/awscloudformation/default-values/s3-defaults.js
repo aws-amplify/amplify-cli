@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const getAllS3Defaults = project => {
+const getAllS3Defaults = (project) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid.v4().split('-');
 
@@ -49,7 +49,7 @@ const getAllAuthDefaults = () => {
 
   return authAnswers;
 };
-const getAllAuthDefaultPerm = userInput => {
+const getAllAuthDefaultPerm = (userInput) => {
   userInput.authAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
   userInput.guestAccess = [];
   return userInput;
@@ -78,7 +78,7 @@ const getAllAuthAndGuestDefaults = () => {
   return authAndGuestAnswers;
 };
 
-const getAllAuthAndGuestDefaultPerm = userInput => {
+const getAllAuthAndGuestDefaultPerm = (userInput) => {
   userInput.authAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
   userInput.guestAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
   return userInput;

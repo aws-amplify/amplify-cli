@@ -34,7 +34,7 @@ export async function createLayerWalkthrough(
   const runtimeReturn = await runtimeWalkthrough(context, parameters);
 
   // need to map cloudTemplateValue: string => cloudTemplateValues: string[]
-  parameters.runtimes = runtimeReturn.map(val => ({
+  parameters.runtimes = runtimeReturn.map((val) => ({
     name: val.runtime.name,
     value: val.runtime.value,
     layerExecutablePath: val.runtime.layerExecutablePath,
@@ -67,7 +67,9 @@ export async function updateLayerWalkthrough(
   parameters?: Partial<LayerParameters>,
 ): Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }> {
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
+  const resources = allResources
+    .filter((resource) => resource.service === ServiceName.LambdaLayer)
+    .map((resource) => resource.resourceName);
 
   if (resources.length === 0) {
     const errMessage = 'No Lambda layer resource to update. Please use "amplify add function" to create a new Layer';
@@ -117,7 +119,7 @@ export async function updateLayerWalkthrough(
       const latestVersionText = 'Future layer versions';
       const layerVersionChoices = [
         latestVersionText,
-        ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
+        ...layerVersions.map((layerVersionMetadata) => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
       ];
       const selectedVersion: string = (
         await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
@@ -125,19 +127,19 @@ export async function updateLayerWalkthrough(
 
       if (selectedVersion !== latestVersionText) {
         selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
-        parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));
+        parameters.selectedVersion = _.first(layerVersions.filter((version) => version.Version === selectedVersionNumber));
         permissions = parameters.selectedVersion.permissions;
       }
     }
 
     // load defaults
-    const defaultLayerPermissions = permissions.map(permission => permission.type);
+    const defaultLayerPermissions = permissions.map((permission) => permission.type);
     defaultOrgs = permissions
-      .filter(p => p.type === PermissionEnum.AwsOrg)
+      .filter((p) => p.type === PermissionEnum.AwsOrg)
       .reduce((orgs: string[], permission: OrgsLayer) => [...orgs, ...permission.orgs], []);
 
     defaultAccounts = permissions
-      .filter(p => p.type === PermissionEnum.AwsAccounts)
+      .filter((p) => p.type === PermissionEnum.AwsAccounts)
       .reduce((accounts: string[], permission: AccountsLayer) => [...accounts, ...permission.accounts], []);
 
     // select permission strategy

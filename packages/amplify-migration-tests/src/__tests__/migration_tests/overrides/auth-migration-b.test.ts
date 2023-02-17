@@ -47,7 +47,7 @@ describe('amplify auth migration b', () => {
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(meta.auth).filter((resourceName) => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,

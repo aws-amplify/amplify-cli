@@ -59,7 +59,7 @@ describe('amplify updating auth...', () => {
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

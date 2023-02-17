@@ -44,7 +44,7 @@ const stubInfo = {
   },
 } as unknown;
 export const mockInfo = stubInfo as GraphQLResolveInfo;
-const stubJavaMap: JavaMap = new JavaMap({ field1: 'field1Value', field2: 'field2Value', field3: 'field3Value' }, x => x);
+const stubJavaMap: JavaMap = new JavaMap({ field1: 'field1Value', field2: 'field2Value', field3: 'field3Value' }, (x) => x);
 let util;
 
 beforeEach(() => {

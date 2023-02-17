@@ -30,7 +30,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -48,7 +48,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('get resource attr for resources with build folder with one cfn file', async () => {
@@ -113,7 +113,7 @@ describe('getAllResources() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -131,7 +131,7 @@ describe('getAllResources() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('get all resource types', async () => {
@@ -165,7 +165,7 @@ describe('addCDKResourceDependency() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -183,7 +183,7 @@ describe('addCDKResourceDependency() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('get depenencies for a custom CDK stack', async () => {
@@ -295,7 +295,7 @@ describe('addCFNResourceDependency() scenarios', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = ({
+    mockContext = {
       amplify: {
         openEditor: jest.fn(),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
@@ -314,7 +314,7 @@ describe('addCFNResourceDependency() scenarios', () => {
           ],
         }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   it('add new resource dependency to custom cfn stack ', async () => {

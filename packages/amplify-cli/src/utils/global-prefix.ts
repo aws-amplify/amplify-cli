@@ -50,7 +50,7 @@ function getGlobalNpmPrefix() {
     }
   }
 
-  const nodePath = tryWhich('node') // Search for Node's global executable
+  const nodePath = tryWhich('node'); // Search for Node's global executable
   if (nodePath) {
     const { APPDATA, DESTDIR, OSTYPE } = process.env;
 

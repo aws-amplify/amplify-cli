@@ -92,7 +92,7 @@ export class AuthInputState extends CategoryInputState {
         dependsOn = parameters.dependsOn;
       } else {
         // generate dependsOn from cli-inputs
-        const dependsOnKeys = Object.keys(parameters.triggers).map(i => `${parameters.resourceName}${i}`);
+        const dependsOnKeys = Object.keys(parameters.triggers).map((i) => `${parameters.resourceName}${i}`);
         dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
       }
       parameters = Object.assign(parameters, {

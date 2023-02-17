@@ -131,11 +131,13 @@ describe('nodejs', () => {
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const { Region: region, Name: functionName } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))[0];
+      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter((value) =>
+        value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'),
+      )[0];
       const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' } } };
       const fnResponse = await invokeFunction(functionName, JSON.stringify(payloadObj), region);
 
@@ -188,11 +190,13 @@ describe('nodejs', () => {
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
-      const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      const { Region: region, Name: functionName } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))[0];
+      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter((value) =>
+        value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'),
+      )[0];
       const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' } } };
       const fnResponse = await invokeFunction(functionName, JSON.stringify(payloadObj), region);
 

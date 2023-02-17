@@ -29,7 +29,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
 
     try {
       spinner.start();
-      await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
+      await Promise.all(Object.keys(allEnvs).map((env) => removeEnvFromCloud(context, env, confirmation.deleteS3)));
       const appId = getAmplifyAppId();
       if (confirmation.deleteAmplifyApp && appId) {
         const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');

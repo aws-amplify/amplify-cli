@@ -94,7 +94,7 @@ const updateSecretFlow = async (secretDeltas: SecretDeltas) => {
 
 const removeSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretsToRemove = await multiSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secrets to delete:');
-  secretsToRemove.forEach(secretName => (secretDeltas[secretName] = removeSecret));
+  secretsToRemove.forEach((secretName) => (secretDeltas[secretName] = removeSecret));
 };
 
 const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasModifier> = {
@@ -129,7 +129,7 @@ const selectFunctionToUpdate = async (funcNames: string[]) =>
       name: 'funcToUpdate',
       message: 'Select a function to update secrets for:',
       choices: funcNames
-        .map(name => ({ name, value: name } as { name: string; value: string | false }))
+        .map((name) => ({ name, value: name } as { name: string; value: string | false }))
         .concat({ name: "I'm done", value: false }),
     })
   ).funcToUpdate as string | false;

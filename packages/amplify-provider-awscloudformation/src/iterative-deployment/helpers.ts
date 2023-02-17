@@ -35,8 +35,8 @@ const getOperationPollerActivityHandler = (
   };
 };
 
-export const getDeploymentActivityPollerHandler = fn => getOperationPollerActivityHandler(fn, 'deploying');
-export const getRollbackActivityPollerHandler = fn => getOperationPollerActivityHandler(fn, 'rollingback');
+export const getDeploymentActivityPollerHandler = (fn) => getOperationPollerActivityHandler(fn, 'deploying');
+export const getRollbackActivityPollerHandler = (fn) => getOperationPollerActivityHandler(fn, 'rollingback');
 
 const getOperationHandler = (
   fn: (stack: Readonly<DeploymentMachineOp>) => Promise<void>,
@@ -52,8 +52,8 @@ const getOperationHandler = (
   };
 };
 
-export const getDeploymentOperationHandler = fn => getOperationHandler(fn, 'deploying');
-export const getRollbackOperationHandler = fn => getOperationHandler(fn, 'rollingback');
+export const getDeploymentOperationHandler = (fn) => getOperationHandler(fn, 'deploying');
+export const getRollbackOperationHandler = (fn) => getOperationHandler(fn, 'rollingback');
 
 export const getBucketKey = (keyOrUrl: string, bucketName: string): string => {
   if (keyOrUrl.startsWith('https://') && keyOrUrl.includes(bucketName)) {

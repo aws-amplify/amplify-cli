@@ -12,12 +12,7 @@ import {
   getAppId,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  createDynamoDBSettings,
-  getShortId,
-  headlessPullExpectError,
-  importDynamoDBTable,
-} from '../import-helpers';
+import { createDynamoDBSettings, getShortId, headlessPullExpectError, importDynamoDBTable } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
 

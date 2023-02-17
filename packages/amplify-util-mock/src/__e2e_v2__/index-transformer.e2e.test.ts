@@ -64,7 +64,7 @@ describe('@index transformer', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);

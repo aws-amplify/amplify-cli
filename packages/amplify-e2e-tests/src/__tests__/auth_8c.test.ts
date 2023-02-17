@@ -5,7 +5,7 @@ import {
   deleteProject,
   deleteProjectDir,
   initFlutterProjectWithProfile,
-  removeAuthWithDefault
+  removeAuthWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {

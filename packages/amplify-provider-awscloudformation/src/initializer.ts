@@ -2,16 +2,7 @@
 /* eslint-disable func-style */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {
-  $TSContext,
-  $TSObject,
-  AmplifyError,
-  JSONUtilities,
-  pathManager,
-  stateManager,
-  Tag,
-  Template,
-} from 'amplify-cli-core';
+import { $TSContext, $TSObject, AmplifyError, JSONUtilities, pathManager, stateManager, Tag, Template } from 'amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
@@ -192,7 +183,7 @@ type EventMap = {
 function createInitEventMap(params: ParamType, envName: string, projectName: string): EventMap {
   return {
     rootStackName: params.StackName,
-    rootResources: params.Parameters.map(item => {
+    rootResources: params.Parameters.map((item) => {
       const key = item.ParameterKey;
       return {
         key: key.endsWith('Name') ? key.replace(/.{0,4}$/, '') : key,
@@ -292,16 +283,17 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
   fs.copySync(path.join(rootStackBackendBuildDir, '..'), path.join(rootStackCloudBackendBuildDir, '..'));
 };
 
-const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> => S3.getInstance(context).then(async s3 => {
-  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-  const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-  const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
-  const fileUploadTasks = [];
+const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> =>
+  S3.getInstance(context).then(async (s3) => {
+    const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+    const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
+    const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
+    const fileUploadTasks = [];
 
-  fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
-  fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
-  await sequential(fileUploadTasks);
-});
+    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
+    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
+    await sequential(fileUploadTasks);
+  });
 
 const uploadFile = async (s3, filePath: string, key): Promise<void> => {
   if (fs.existsSync(filePath)) {

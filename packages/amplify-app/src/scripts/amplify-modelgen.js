@@ -10,7 +10,7 @@ async function run() {
   const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
   const modelGen = spawn(amplify, ['codegen', 'model'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
-  modelGen.on('exit', code => {
+  modelGen.on('exit', (code) => {
     if (code === 0) {
       process.exit(0);
     } else {

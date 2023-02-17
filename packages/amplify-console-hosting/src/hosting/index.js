@@ -10,7 +10,7 @@ const ValidationError = require('../error/validation-error').default;
 const clientFactory = require('../utils/client-factory');
 const ora = require('ora');
 const tableUtis = require('../utils/table-utils');
-const {ensureEnvParamManager} = require('@aws-amplify/amplify-environment-parameters');
+const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
@@ -98,7 +98,7 @@ async function remove(context) {
     await configUtils.deleteConsoleConfigFromCurrMeta(context);
   }
 
-  return amplify.removeResource(context, category, resource).catch(err => {
+  return amplify.removeResource(context, category, resource).catch((err) => {
     context.print.info(err.stack);
     context.print.error(REMOVE_ERROR_MESSAGE);
     context.usageData.emitError(err);

@@ -51,7 +51,8 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   await migrationCheck(context);
 
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  commandPath = context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
+  commandPath =
+    context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
   const commandModule = await import(commandPath);
   await commandModule.run(context);
 };
@@ -59,7 +60,7 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
 /**
  * Placeholder to handle notifications from other parts of the Amplify CLI.
  */
-export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny) : void => {
+export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny): void => {
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };

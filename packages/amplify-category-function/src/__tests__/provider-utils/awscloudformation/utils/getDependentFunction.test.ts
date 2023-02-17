@@ -87,8 +87,8 @@ test('get dependent functions', async () => {
         },
       },
     });
-  const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
-  expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
+  const fnMetaToBeUpdated = await lambdasWithApiDependency(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted);
+  expect(fnMetaToBeUpdated.map((resource) => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });
 
 test('get dependent functions with empty permissions', async () => {
@@ -106,6 +106,6 @@ test('get dependent functions with empty permissions', async () => {
       },
     })
     .mockReturnValueOnce({});
-  const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
-  expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
+  const fnMetaToBeUpdated = await lambdasWithApiDependency(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted);
+  expect(fnMetaToBeUpdated.map((resource) => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });

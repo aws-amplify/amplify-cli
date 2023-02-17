@@ -14,11 +14,10 @@ declare global {
 
 export const addCircleCITags = (projectPath: string): void => {
   if (process.env && process.env['CIRCLECI']) {
-
     const tags = stateManager.getProjectTags(projectPath);
 
     const addTagIfNotExist = (key: string, value: string): void => {
-      if (!tags.find(t => t.Key === key)) {
+      if (!tags.find((t) => t.Key === key)) {
         tags.push({
           Key: key,
           Value: value,

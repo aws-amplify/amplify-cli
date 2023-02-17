@@ -16,7 +16,7 @@ test('getAllCategoryPluginInfo', () => {
   const mockInput = new CommandLineInput(mockProcessArgv);
   const mockContext = constructContext(mockPluginPlatform, mockInput);
 
-  const categoryPluginInfoList = (getAllCategoryPluginInfo(mockContext) as unknown) as PluginCollection;
+  const categoryPluginInfoList = getAllCategoryPluginInfo(mockContext) as unknown as PluginCollection;
   expect(categoryPluginInfoList.hosting).toBeDefined();
   expect(Object.keys(categoryPluginInfoList.hosting).length).toEqual(2);
 });

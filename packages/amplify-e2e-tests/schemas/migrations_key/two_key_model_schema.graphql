@@ -4,7 +4,6 @@ type Todo @model @key(name: "byDescription", fields: ["description"]) {
   description: String
 }
 
-
 type Post @model @key(name: "byCreatedAt", fields: ["createdAt"]) {
   id: ID!
   name: String!

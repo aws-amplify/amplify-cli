@@ -73,7 +73,7 @@ export const serviceWalkthrough = async (
 
       /* eslint-disable no-loop-func */
       selectionMetadata.forEach((selection: { [key: string]: any }) => {
-        Object.keys(selection.triggers).forEach(t => {
+        Object.keys(selection.triggers).forEach((t) => {
           if (!tempTriggers[t] && answer.triggers.includes(selection.value)) {
             tempTriggers[t] = selection.triggers[t];
           } else if (tempTriggers[t] && answer.triggers.includes(selection.value)) {
@@ -558,7 +558,7 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
     providers
-      .map(providerName => providerName.toLowerCase())
+      .map((providerName) => providerName.toLowerCase())
       .forEach((providerName: string) => {
         const provider: { authorize_scopes: string } | undefined = parsedMetaData.find(
           (currentProvider: any) => currentProvider.ProviderName === providerName,

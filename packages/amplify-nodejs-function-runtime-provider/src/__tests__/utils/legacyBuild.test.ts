@@ -23,7 +23,7 @@ const stubFileTimestamps = new Map<string, number>([
 describe('legacy build resource', () => {
   it('checks resource directory excluding node_modules and dist for changes', async () => {
     glob_mock.sync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
-    fs_mock.statSync.mockImplementation(file => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
+    fs_mock.statSync.mockImplementation((file) => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
 
     const result = await buildResource({
       lastBuildTimeStamp: new Date(timestamp),
@@ -40,7 +40,7 @@ describe('legacy build resource', () => {
 
   it('checks lastBuildType difference triggers rebuild', async () => {
     glob_mock.sync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
-    fs_mock.statSync.mockImplementation(file => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
+    fs_mock.statSync.mockImplementation((file) => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
 
     const result = await buildResource({
       lastBuildTimeStamp: new Date(timestamp),

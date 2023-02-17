@@ -42,7 +42,7 @@ module.exports = {
         })
         .promise();
 
-      zoneFound = HostedZones.find(zone => `${domain}.`.endsWith(zone.Name));
+      zoneFound = HostedZones.find((zone) => `${domain}.`.endsWith(zone.Name));
 
       Marker = NextMarker;
       truncated = IsTruncated;
@@ -60,11 +60,11 @@ module.exports = {
     if (!options.dryRun) {
       const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
       let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
-      resources = resources.filter(resource => resource.service === 'AppSync');
-      resources = resources.map(resource => resource.resourceName);
+      resources = resources.filter((resource) => resource.service === 'AppSync');
+      resources = resources.map((resource) => resource.resourceName);
       optionsWithUpdateHandler = {
         ...options,
-        handleMigration: resources.length ? opts => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
+        handleMigration: resources.length ? (opts) => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
       };
     }
 
@@ -199,7 +199,7 @@ module.exports = {
    */
   getRegionMappings: () => awsRegions.regionMappings,
   /*eslint-disable*/
-  staticRoles: context => ({
+  staticRoles: (context) => ({
     unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleName,
     authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleName,
     unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleArn,
@@ -209,7 +209,7 @@ module.exports = {
   /**
    *
    */
-  getLambdaFunctions: async context => {
+  getLambdaFunctions: async (context) => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
     const lambdaFunctions = [];
@@ -235,7 +235,7 @@ module.exports = {
   /**
    *
    */
-  getPollyVoices: async context => {
+  getPollyVoices: async (context) => {
     const pollyModel = await new Polly(context);
     logger('getPollyVoices.pollyModel.polly.describeVoices', [])();
     return pollyModel.polly.describeVoices().promise();
@@ -243,7 +243,7 @@ module.exports = {
   /**
    *
    */
-  getDynamoDBTables: async context => {
+  getDynamoDBTables: async (context) => {
     const dynamodbModel = await new DynamoDB(context);
 
     let nextToken;
@@ -296,19 +296,19 @@ module.exports = {
   /**
    * @deprecated Use getGraphQLAPIs instead
    */
-  getAppSyncAPIs: context => module.exports.getGraphQLAPIs(context),
+  getAppSyncAPIs: (context) => module.exports.getGraphQLAPIs(context),
   /**
    *
    */
-  getGraphQLAPIs: context => {
+  getGraphQLAPIs: (context) => {
     logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 })();
 
     return new AppSync(context)
-      .then(result => {
+      .then((result) => {
         const appSyncModel = result;
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
       })
-      .then(result => result.graphqlApis);
+      .then((result) => result.graphqlApis);
   },
   /**
    *
@@ -320,7 +320,7 @@ module.exports = {
     }
 
     return new AppSync(context, awsOptions)
-      .then(result => {
+      .then((result) => {
         const appSyncModel = result;
         logger('getIntrospectionSchema.appSyncModel.appSync.getIntrospectionSchema', [
           {
@@ -330,7 +330,7 @@ module.exports = {
         ])();
         return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' }).promise();
       })
-      .then(result => result.schema.toString() || null);
+      .then((result) => result.schema.toString() || null);
   },
   /**
    *
@@ -345,7 +345,7 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions).then(result => {
+    return new AppSync(context, awsOptions).then((result) => {
       const appSyncModel = result;
       return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
     });
@@ -362,7 +362,7 @@ module.exports = {
       params.nextToken = options;
     }
     logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params])();
-    return new Lex(context).then(result => {
+    return new Lex(context).then((result) => {
       logger();
       return result.lex.getBuiltinSlotTypes(params).promise();
     });
@@ -370,12 +370,12 @@ module.exports = {
   /**
    *
    */
-  getSlotTypes: context => {
+  getSlotTypes: (context) => {
     const params = {
       maxResults: 50,
     };
     logger('getSlotTypes.lex.getSlotTypes', [params])();
-    return new Lex(context).then(result => result.lex.getSlotTypes(params).promise());
+    return new Lex(context).then((result) => result.lex.getSlotTypes(params).promise());
   },
   /**
    * @deprecated Use getGraphQLApiKeys instead
@@ -394,12 +394,12 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions).then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
+    return new AppSync(context, awsOptions).then((result) => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
   },
   /**
    *
    */
-  getEndpoints: async context => {
+  getEndpoints: async (context) => {
     const sagemakerModel = await new SageMaker(context);
     logger('getEndpoints.sageMaker.listEndpoints', [])();
     return sagemakerModel.sageMaker.listEndpoints().promise();
@@ -422,5 +422,5 @@ module.exports = {
   /**
    * Provides the same AWS config used to push the amplify project
    */
-  retrieveAwsConfig: async context => getAwsConfig(context),
+  retrieveAwsConfig: async (context) => getAwsConfig(context),
 };

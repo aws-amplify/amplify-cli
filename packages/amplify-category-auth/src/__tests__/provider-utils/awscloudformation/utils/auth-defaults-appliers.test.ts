@@ -15,7 +15,7 @@ jest.mock(`../../../../provider-utils/awscloudformation/assets/cognito-defaults.
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/auth-questions', () => ({
-  structureOAuthMetadata: jest.fn(result => (result.include = 'this value')),
+  structureOAuthMetadata: jest.fn((result) => (result.include = 'this value')),
 }));
 
 jest.mock('amplify-cli-core', () => {

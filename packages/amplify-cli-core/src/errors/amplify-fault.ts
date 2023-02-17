@@ -1,6 +1,4 @@
-import {
-  AmplifyException, AmplifyExceptionOptions, AmplifyFaultType,
-} from './amplify-exception';
+import { AmplifyException, AmplifyExceptionOptions, AmplifyFaultType } from './amplify-exception';
 
 /**
  * Base class for all Amplify faults
@@ -21,11 +19,7 @@ export class AmplifyFault extends AmplifyException {
    *    throw new AmplifyFault(downstreamException,...,...);
    * }
    */
-  constructor(
-    name: AmplifyFaultType,
-    options: AmplifyExceptionOptions,
-    downstreamException?: Error,
-  ) {
+  constructor(name: AmplifyFaultType, options: AmplifyExceptionOptions, downstreamException?: Error) {
     super(name, 'FAULT', options, downstreamException);
   }
 }

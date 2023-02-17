@@ -7,14 +7,7 @@
     "strictPropertyInitialization": false,
     "inlineSources": true
   },
-  "exclude": [
-    "coverage",
-    "lib",
-    "resources",
-    "scripts",
-    "provider-utils/awscloudformation/triggers",
-    "src/__tests__"
-  ],
+  "exclude": ["coverage", "lib", "resources", "scripts", "provider-utils/awscloudformation/triggers", "src/__tests__"],
   "references": [
     {
       "path": "../amplify-cli-core"
@@ -33,6 +26,6 @@
     },
     {
       "path": "../amplify-environment-parameters"
-    },
+    }
   ]
 }

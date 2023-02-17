@@ -47,14 +47,17 @@ export abstract class AmplifyException extends Error {
   }
 
   toObject = (): object => {
-    const {
-      name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack,
-    } = this;
+    const { name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack } = this;
 
     return {
-      errorName, errorMessage, errorDetails, resolution, link, ...(process.argv.includes('--debug') ? { stack } : {}),
+      errorName,
+      errorMessage,
+      errorDetails,
+      resolution,
+      link,
+      ...(process.argv.includes('--debug') ? { stack } : {}),
     };
-  }
+  };
 }
 
 /**
@@ -66,13 +69,13 @@ export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
  * Amplify Error options object
  */
 export type AmplifyExceptionOptions = {
-  message: string,
-  details?: string,
-  resolution?: string,
-  link?: string,
+  message: string;
+  details?: string;
+  resolution?: string;
+  link?: string;
 
   // CloudFormation or NodeJS error codes
-  code?: string,
+  code?: string;
 };
 
 /**

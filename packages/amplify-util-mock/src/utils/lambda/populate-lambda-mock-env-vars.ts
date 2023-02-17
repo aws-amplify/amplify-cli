@@ -13,7 +13,7 @@ export const populateLambdaMockEnvVars = async (context: $TSContext, processedLa
   // eslint-disable-next-line no-param-reassign
   processedLambda.environment = (
     await Promise.all(
-      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map(envVarGetter =>
+      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map((envVarGetter) =>
         envVarGetter(processedLambda, context),
       ),
     )

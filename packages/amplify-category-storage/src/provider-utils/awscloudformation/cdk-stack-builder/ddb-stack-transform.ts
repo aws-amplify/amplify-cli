@@ -217,7 +217,8 @@ export class DDBStackTransform {
         });
         const projectInfo = getProjectInfo();
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath)
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
             .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
         } catch (err) {
           throw new AmplifyError(

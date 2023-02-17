@@ -964,7 +964,7 @@ class S3MockDataBuilder {
   }
 
   removeAuthPermission(permissionToBeRemoved: S3PermissionType): S3MockDataBuilder {
-    const newPermissions = this.defaultAuthPerms.filter(permission => permission !== permissionToBeRemoved);
+    const newPermissions = this.defaultAuthPerms.filter((permission) => permission !== permissionToBeRemoved);
     this.cliInputs.authAccess = newPermissions;
     return this;
   }

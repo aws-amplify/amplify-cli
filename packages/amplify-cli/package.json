@@ -34,8 +34,8 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^4.1.7",
-    "@aws-amplify/graphql-auth-transformer": "^1.2.6",
+    "@aws-amplify/amplify-category-api": "^4.1.8",
+    "@aws-amplify/graphql-auth-transformer": "^1.2.7",
     "@aws-amplify/amplify-category-auth": "2.15.1",
     "@aws-amplify/amplify-category-custom": "2.6.3",
     "@aws-amplify/amplify-category-storage": "3.7.1",
@@ -44,7 +44,7 @@
     "@aws-cdk/cloudformation-diff": "~1.172.0",
     "amplify-app": "4.3.9",
     "@aws-amplify/amplify-category-hosting": "3.4.9",
-    "@aws-amplify/amplify-category-analytics": "4.4.1",   
+    "@aws-amplify/amplify-category-analytics": "4.4.1",
     "@aws-amplify/amplify-category-geo": "2.11.1",
     "@aws-amplify/amplify-category-function": "4.3.1",
     "@aws-amplify/amplify-category-interactions": "4.3.1",

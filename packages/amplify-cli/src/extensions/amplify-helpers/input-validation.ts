@@ -25,7 +25,7 @@ export function inputValidation(validation) {
     Object.assign(validation, { ...validation.validation });
     delete validation.validation;
   }
-  return input => {
+  return (input) => {
     if (validation.operator === 'includes') {
       return input.includes(validation.value) ? true : validation.onErrorMsg;
     }

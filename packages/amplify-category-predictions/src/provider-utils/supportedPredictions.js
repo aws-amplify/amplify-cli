@@ -23,7 +23,7 @@ const categoryChoices = [
     name: 'Learn More',
     value: 'learnMore',
   },
-]
+];
 
 const consoleCategoryChoices = [
   {
@@ -68,6 +68,6 @@ export async function promptCategory() {
 
 export const promptConsoleSupportedCategory = async () => {
   return await prompter.pick('Please select from one of the categories below', consoleCategoryChoices);
-}
+};
 
 export default {};

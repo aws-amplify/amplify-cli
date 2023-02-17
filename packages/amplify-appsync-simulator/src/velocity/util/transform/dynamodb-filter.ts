@@ -39,17 +39,17 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
           if (Array.isArray(value)) {
             subExpr = scopeExpression(
               value.reduce((expr, subFilter, idx) => {
-                const newExpr = generateFilterExpression(subFilter, [prefix, name, idx].filter(i => i !== null).join('_'));
+                const newExpr = generateFilterExpression(subFilter, [prefix, name, idx].filter((i) => i !== null).join('_'));
                 return merge(expr, newExpr, JOINER);
               }, subExpr),
             );
           } else {
-            subExpr = generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_'));
+            subExpr = generateFilterExpression(value, [prefix, name].filter((val) => val !== null).join('_'));
           }
           break;
         }
         case 'not': {
-          subExpr = scopeExpression(generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_')));
+          subExpr = scopeExpression(generateFilterExpression(value, [prefix, name].filter((val) => val !== null).join('_')));
           subExpr.expressions.unshift('NOT');
           break;
         }
@@ -140,7 +140,7 @@ function merge(expr1: DDBFilterExpression, expr2: DDBFilterExpression, joinCondi
 }
 
 function createExpressionValueName(fieldName, op, prefix?) {
-  return `:${[prefix, fieldName, op].filter(name => name).join('_')}`;
+  return `:${[prefix, fieldName, op].filter((name) => name).join('_')}`;
 }
 function createExpressionName(fieldName) {
   return {
@@ -161,7 +161,7 @@ function createExpressionValue(fieldName, op, value, prefix?) {
 
 function scopeExpression(expr) {
   const result = { ...expr };
-  result.expressions = result.expressions.filter(e => !!e);
+  result.expressions = result.expressions.filter((e) => !!e);
   if (result.expressions.length > 1) {
     result.expressions = ['(' + result.expressions.join(' ') + ')'];
   }

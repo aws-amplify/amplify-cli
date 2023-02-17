@@ -74,7 +74,7 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
       'InvalidCustomResourceError',
     ];
     if (
-      (err instanceof AmplifyException && overrideOrCustomStackErrorsList.find(v => v === err.name)) ||
+      (err instanceof AmplifyException && overrideOrCustomStackErrorsList.find((v) => v === err.name)) ||
       // this is a special exception for the API category which would otherwise have a
       // circular dependency if it imported AmplifyException
       err['_amplifyErrorType'] === 'InvalidOverrideError'

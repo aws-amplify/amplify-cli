@@ -139,7 +139,7 @@ export class WebsocketSubscriptionServer {
 
       this.connections.add(connectionContext);
 
-      const onMessage = message => {
+      const onMessage = (message) => {
         void this.onMessage(connectionContext, message);
       };
 
