@@ -119,6 +119,7 @@
     "eslint-plugin-jest": "^27.0.0",
     "eslint-plugin-jsdoc": "^37.9.6",
     "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-package-json-dependencies": "^1.0.17",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-spellcheck": "^0.0.17",
