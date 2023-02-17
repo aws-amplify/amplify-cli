@@ -11,7 +11,7 @@ import {
   generateModels,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('global sandbox mode b', () => {
   let projectDir: string;

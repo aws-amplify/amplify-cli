@@ -11,7 +11,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { createStorageSettings, getShortId, headlessPullExpectError, importS3 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';

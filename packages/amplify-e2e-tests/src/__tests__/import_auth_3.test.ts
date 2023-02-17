@@ -12,7 +12,7 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   initProjectWithAccessKey,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   addAppClientWithoutSecret,

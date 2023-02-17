@@ -7,7 +7,7 @@ import {
   getAppId,
   initJSProjectWithProfile,
   removeAllNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { getShortId } from '../import-helpers';
 
 describe('notification category pull test', () => {

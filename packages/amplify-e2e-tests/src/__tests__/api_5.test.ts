@@ -12,7 +12,7 @@ import {
   listRolePolicies,
   updateAuthAddAdminQueries,
   validateRestApiMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify add api (REST)', () => {
   let projRoot: string;

@@ -12,7 +12,7 @@ import {
   getMap,
   getPlaceIndex,
   getGeoJSConfiguration,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
 import { getAWSExports } from '../aws-exports/awsExports';
 

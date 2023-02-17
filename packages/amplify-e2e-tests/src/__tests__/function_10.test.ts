@@ -9,7 +9,7 @@ import {
   generateRandomShortId,
   initJSProjectWithProfile,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('test function deploy when other resources are present', () => {
   let projectRoot: string;

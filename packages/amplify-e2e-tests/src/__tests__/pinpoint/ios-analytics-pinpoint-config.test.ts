@@ -1,4 +1,4 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir, initIosProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, deleteProject, deleteProjectDir, initIosProjectWithProfile } from 'amplify-e2e-core';
 import { iosValidate, runPinpointConfigTest } from './analytics-pinpoint-config-util';
 
 const envName = 'integtest';

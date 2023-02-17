@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from '@aws-amplify/amplify-e2e-core';
+import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-e2e-core';
 import { AuthParameters } from '@aws-amplify/amplify-category-auth';
 // eslint-disable-next-line import/no-cycle
 import { $TSAny } from 'amplify-cli-core';

@@ -8,7 +8,7 @@ import {
   deleteProject,
   deleteProjectDir,
   updateAuthAddUserGroups,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';

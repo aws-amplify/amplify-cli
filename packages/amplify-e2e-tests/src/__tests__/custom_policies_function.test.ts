@@ -12,7 +12,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 import AWS from 'aws-sdk';

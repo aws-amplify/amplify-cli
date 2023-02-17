@@ -8,7 +8,7 @@ import {
   generateRandomShortId,
   initJSProjectWithProfile,
   retry,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import fetch from 'node-fetch';
 import { getAWSExports } from '../aws-exports/awsExports';
 

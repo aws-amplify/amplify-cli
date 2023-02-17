@@ -18,7 +18,7 @@ import {
   getSocialProviders,
   getAmplifyDirPath,
   isDeploymentSecretForEnvExists,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { headlessInit } from '../src/pullAndInit/initProject';
 import { headlessPull, authConfigPull } from '../src/pullAndInit/pullProject';
 import { headlessDelete } from '../src/pullAndInit/deleteProject';

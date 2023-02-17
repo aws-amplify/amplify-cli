@@ -8,7 +8,7 @@ import {
   initJSProjectWithProfile,
   removeAllNotificationChannel,
   removeNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { getShortId } from '../import-helpers';
 
 describe('notification category test - FCM', () => {

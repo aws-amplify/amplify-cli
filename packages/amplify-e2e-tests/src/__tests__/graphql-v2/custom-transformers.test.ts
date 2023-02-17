@@ -9,7 +9,7 @@ import {
   initJSProjectWithProfile,
   setTransformConfig,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as path from 'path';
 
 describe('GraphQL transformer v2 - Custom transformers', () => {

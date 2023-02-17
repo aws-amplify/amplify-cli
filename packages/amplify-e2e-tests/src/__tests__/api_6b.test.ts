@@ -9,7 +9,7 @@ import {
   amplifyPushDestructiveApiUpdate,
   addFunction,
   amplifyPushAuth,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 const projName = 'apitest';
 let projRoot;

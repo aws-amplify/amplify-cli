@@ -9,7 +9,7 @@ import {
   addInterpret,
   addIdentifyCollection,
   addAuthWithDefault,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { getAWSExports } from '../aws-exports/awsExports';
 
 describe('amplify add predictions', () => {

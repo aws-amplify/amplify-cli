@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   getEnvVars,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify init c', () => {
   let projRoot: string;

@@ -11,7 +11,7 @@ import {
   getTransformConfig,
   initJSProjectWithProfile,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { existsSync } from 'fs';
 import gql from 'graphql-tag';

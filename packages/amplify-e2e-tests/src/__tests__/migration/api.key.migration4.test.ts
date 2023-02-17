@@ -8,7 +8,7 @@ import {
   updateApiSchema,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify add api', () => {
   let projRoot: string;

@@ -11,7 +11,7 @@ import {
   updateApiWithMultiAuth,
   addApiWithoutSchema,
   updateAuthAddUserGroups,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import gql from 'graphql-tag';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { Auth } from 'aws-amplify';

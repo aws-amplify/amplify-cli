@@ -4,7 +4,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   createRandomName,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @key', () => {

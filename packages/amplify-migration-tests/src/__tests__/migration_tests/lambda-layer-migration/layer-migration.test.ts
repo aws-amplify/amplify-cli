@@ -12,7 +12,7 @@ import {
   removeLayerVersion,
   updateFunction,
   updateLayer,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import {
   initJSProjectWithProfileV4_28_2,

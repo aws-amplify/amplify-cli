@@ -8,7 +8,7 @@ import {
   deleteProjectDir,
   nspawn as spawn,
   getCLIPath,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('project with babel config', () => {
   let projectRoot: string;

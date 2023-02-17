@@ -6,7 +6,7 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify add analytics', () => {
   let projRoot: string;

@@ -11,7 +11,7 @@ import {
   getCloudFormationTemplate,
   getParameters,
   parametersExists,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { Writable } from 'stream';
 import { AmplifyCategories } from 'amplify-cli-core';

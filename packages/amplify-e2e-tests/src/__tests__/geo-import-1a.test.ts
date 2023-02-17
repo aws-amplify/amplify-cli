@@ -12,7 +12,7 @@ import {
   getGeofenceCollection,
   getGeofence,
   getGeoJSONObj,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import _ from 'lodash';

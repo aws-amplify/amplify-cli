@@ -8,7 +8,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify init b', () => {
   let projRoot: string;

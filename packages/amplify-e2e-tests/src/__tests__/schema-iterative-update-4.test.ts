@@ -9,7 +9,7 @@ import {
   amplifyPush,
   updateApiSchema,
   amplifyPushUpdate,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('Schema iterative update - create update and delete', () => {
   let projectDir: string;

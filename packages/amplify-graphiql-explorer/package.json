@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-graphiql-explorer",
+  "name": "amplify-graphiql-explorer",
   "version": "2.5.4-cdkv2.2",
   "private": true,
   "dependencies": {

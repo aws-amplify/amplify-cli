@@ -25,4 +25,4 @@ export const handleAmplifyEvent = async (context: $TSContext, { event }: { event
   await eventHandlerModule.run(context);
 };
 
-// version bump
+// version bump 2

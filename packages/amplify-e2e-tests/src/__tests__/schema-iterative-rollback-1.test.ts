@@ -15,7 +15,7 @@ import {
   getNestedStackID,
   cancelIterativeAmplifyPush,
   createRandomName,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 // 30-45min
 describe('Iterative Rollback - add 2 @keys', () => {

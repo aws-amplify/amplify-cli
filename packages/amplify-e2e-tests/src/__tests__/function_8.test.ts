@@ -15,7 +15,7 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   updateFunction,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('java function tests', () => {

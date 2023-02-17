@@ -12,7 +12,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   updateAuthWithoutTrigger,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';

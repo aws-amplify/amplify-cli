@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-migration-tests",
+  "name": "amplify-migration-tests",
   "version": "5.4.0-cdkv2.3",
   "description": "",
   "repository": {
@@ -26,7 +26,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-e2e-core": "4.7.0-cdkv2.3",
+    "amplify-e2e-core": "4.7.0-cdkv2.3",
     "@aws-cdk/cloudformation-diff": "~2.53.0",
     "amplify-cli-core": "4.0.0-cdkv2.9",
     "fs-extra": "^8.1.0",
@@ -39,8 +39,8 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
-    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
+    "testRunner": "amplify-e2e-core/runner",
+    "testEnvironment": "amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -61,7 +61,7 @@
       "default",
       "jest-junit",
       [
-        "@aws-amplify/amplify-e2e-core/reporter",
+        "amplify-e2e-core/reporter",
         {
           "publicPath": "./amplify-migration-reports",
           "filename": "index.html",

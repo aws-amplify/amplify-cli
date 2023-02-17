@@ -9,7 +9,7 @@ import {
   getBucketEncryption,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify always enables SSE on S3 buckets', () => {
   let projRoot: string;

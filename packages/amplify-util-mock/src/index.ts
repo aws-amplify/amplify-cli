@@ -1,3 +1,3 @@
 export * from './amplify-plugin-index';
 
-// version bump
+// version bump 2

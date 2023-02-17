@@ -11,7 +11,7 @@ import {
   updateApiSchema,
   getDeploymentBucketObject,
   getProjectConfig,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('upload Studio CMS assets on push of Studio enabled project', () => {
   let projRoot: string;

@@ -6,7 +6,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironment, listEnvironment } from '../environment/env';
 import { getShortId } from '../import-helpers';
 

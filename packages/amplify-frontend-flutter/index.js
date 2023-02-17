@@ -118,4 +118,4 @@ module.exports = {
   initializeAmplifyConfiguration,
 };
 
-// version bump
+// version bump 2

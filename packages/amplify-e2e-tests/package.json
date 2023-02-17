@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.0.0-cdkv2.9",
-    "@aws-amplify/amplify-e2e-core": "4.7.0-cdkv2.3",
+    "amplify-e2e-core": "4.7.0-cdkv2.3",
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.5",
     "amplify-cli-core": "4.0.0-cdkv2.9",
     "amplify-dynamodb-simulator": "2.5.6-cdkv2.3",
@@ -58,8 +58,8 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
-    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
+    "testRunner": "amplify-e2e-core/runner",
+    "testEnvironment": "amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -80,7 +80,7 @@
       "default",
       "jest-junit",
       [
-        "@aws-amplify/amplify-e2e-core/reporter",
+        "amplify-e2e-core/reporter",
         {
           "publicPath": "./amplify-e2e-reports",
           "filename": "index.html",
@@ -88,7 +88,7 @@
         }
       ],
       [
-        "@aws-amplify/amplify-e2e-core/failed-test-reporter",
+        "amplify-e2e-core/failed-test-reporter",
         {
           "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
         }

@@ -11,7 +11,7 @@ import {
   initJSProjectWithProfile,
   removeHeadlessStorage,
   updateHeadlessStorage,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { AddStorageRequest, CrudOperation, RemoveStorageRequest, UpdateStorageRequest } from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
 

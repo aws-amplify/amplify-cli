@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';

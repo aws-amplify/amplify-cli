@@ -23,7 +23,7 @@ import {
   initJSProjectWithProfile,
   nonInteractiveInitAttach,
   nonInteractivePullAttach,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { S3 } from 'aws-sdk';
 import { getShortId, importS3 } from '../import-helpers';
 

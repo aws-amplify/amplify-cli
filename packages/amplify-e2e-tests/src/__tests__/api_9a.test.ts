@@ -12,7 +12,7 @@ import {
   getTransformConfig,
   createRandomName,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';

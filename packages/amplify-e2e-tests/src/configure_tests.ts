@@ -1,4 +1,4 @@
-import { amplifyConfigure as configure, injectSessionToken, isCI } from '@aws-amplify/amplify-e2e-core';
+import { amplifyConfigure as configure, injectSessionToken, isCI } from 'amplify-e2e-core';
 
 async function setupAmplify() {
   if (isCI()) {

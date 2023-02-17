@@ -15,7 +15,7 @@ import {
   initJSProjectWithProfile,
   setCustomRolesConfig,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { existsSync, readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';

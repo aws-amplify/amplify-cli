@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { addApi, amplifyPushWithoutCodegen, updateAuthAddUserGroups, getAmplifyFlutterConfig } from '@aws-amplify/amplify-e2e-core';
+import { addApi, amplifyPushWithoutCodegen, updateAuthAddUserGroups, getAmplifyFlutterConfig } from 'amplify-e2e-core';
 import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from '../authHelper';
 import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from '../common';
 import Amplify from 'aws-amplify';

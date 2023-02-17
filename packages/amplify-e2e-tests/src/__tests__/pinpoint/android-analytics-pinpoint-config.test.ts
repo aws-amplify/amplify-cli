@@ -1,4 +1,4 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir, initAndroidProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, deleteProject, deleteProjectDir, initAndroidProjectWithProfile } from 'amplify-e2e-core';
 import { androidValidate, runPinpointConfigTest } from './analytics-pinpoint-config-util';
 
 const envName = 'integtest';

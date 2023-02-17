@@ -4,7 +4,7 @@ import {
   installAmplifyCLI,
   injectSessionToken,
   amplifyConfigureBeforeOrAtV10_7,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import semver from 'semver';
 
 /*

@@ -17,7 +17,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { TYPE_MANUAL } from '../src/consoleHosting/constants';
 import { ORIGINAL_ENV, NEW_ENV } from '../src/consoleHosting/constants';
-import { initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { initJSProjectWithProfile } from 'amplify-e2e-core';
 
 describe('amplify console add hosting', () => {
   let projRoot: string;

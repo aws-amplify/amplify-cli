@@ -6,7 +6,7 @@ import {
   deleteProjectDir,
   getCLIInputs,
   updateRestApi,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
 import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 import { v4 as uuid } from 'uuid';

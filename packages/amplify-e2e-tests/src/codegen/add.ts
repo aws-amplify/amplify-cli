@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from '@aws-amplify/amplify-e2e-core';
+import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 
 type AddCodegenSettings = {
   ios?: boolean;

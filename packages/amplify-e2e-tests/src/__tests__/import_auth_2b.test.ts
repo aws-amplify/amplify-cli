@@ -9,7 +9,7 @@ import {
   getAppId,
   initJSProjectWithProfile,
   addS3StorageWithSettings,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import {
   AuthProjectDetails,
   createIDPAndUserPoolWithOAuthSettings,

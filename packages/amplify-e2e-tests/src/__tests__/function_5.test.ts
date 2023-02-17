@@ -14,7 +14,7 @@ import {
   updateFunction,
   amplifyPushWithoutCodegen,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('test initEnv() behavior in function', () => {

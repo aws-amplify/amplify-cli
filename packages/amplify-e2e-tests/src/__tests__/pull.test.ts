@@ -14,7 +14,7 @@ import {
   getBackendAmplifyMeta,
   getTeamProviderInfo,
   amplifyPullNonInteractive,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

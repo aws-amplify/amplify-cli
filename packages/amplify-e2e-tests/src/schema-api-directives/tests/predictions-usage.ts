@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import aws from 'aws-sdk';
 import gql from 'graphql-tag';
-import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from 'amplify-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { updateSchemaInTestProject } from '../common';

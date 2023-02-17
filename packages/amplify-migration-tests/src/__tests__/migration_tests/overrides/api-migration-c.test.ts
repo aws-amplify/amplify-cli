@@ -12,7 +12,7 @@ import {
   getProjectMeta,
   getTransformConfig,
   updateAPIWithResolutionStrategyWithModels,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';

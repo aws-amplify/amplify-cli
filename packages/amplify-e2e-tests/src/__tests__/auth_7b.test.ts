@@ -6,7 +6,7 @@ import {
   headlessAuthImport,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import {
   expectAuthProjectDetailsMatch,

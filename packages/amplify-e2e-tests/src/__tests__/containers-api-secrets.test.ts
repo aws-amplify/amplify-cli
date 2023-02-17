@@ -7,7 +7,7 @@ import {
   deleteProjectDir,
   initJSProjectWithProfile,
   retry,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import fetch from 'node-fetch';
 import * as fs from 'fs-extra';
 import path from 'path';

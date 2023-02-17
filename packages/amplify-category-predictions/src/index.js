@@ -73,4 +73,4 @@ module.exports = {
   printRekognitionUploadUrl: predictionsConsole.printRekognitionUploadUrl,
 };
 
-// version bump
+// version bump 2

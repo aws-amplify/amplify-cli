@@ -11,7 +11,7 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   updateHeadlessGeo,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { AccessType, AddGeoRequest, MapStyle, UpdateGeoRequest } from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
 

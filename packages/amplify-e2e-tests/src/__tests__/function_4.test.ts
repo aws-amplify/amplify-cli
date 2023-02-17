@@ -16,7 +16,7 @@ import {
   overrideFunctionSrcPython,
   overrideLayerCodeNode,
   overrideLayerCodePython,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('add function with layers for runtime nodeJS', () => {

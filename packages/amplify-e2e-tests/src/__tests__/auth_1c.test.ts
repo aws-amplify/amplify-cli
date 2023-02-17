@@ -10,7 +10,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',

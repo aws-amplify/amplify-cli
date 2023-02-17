@@ -9,7 +9,7 @@ import {
   getAppId,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import {
   expectLocalAndPulledAwsExportsMatching,
   expectLocalAndPulledBackendAmplifyMetaMatching,

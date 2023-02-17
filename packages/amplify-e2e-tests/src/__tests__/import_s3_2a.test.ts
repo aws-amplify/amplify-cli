@@ -11,7 +11,7 @@ import {
   deleteProjectDir,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   createStorageSettings,

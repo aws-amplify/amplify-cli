@@ -1,4 +1,4 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, deleteProject, deleteProjectDir } from 'amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 

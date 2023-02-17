@@ -7,7 +7,7 @@ import {
   deleteProjectDir,
   initJSProjectWithProfile,
   updateSimpleDDBwithGSI,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify add/update storage(DDB) with GSI', () => {
   let projRoot: string;

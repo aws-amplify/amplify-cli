@@ -15,7 +15,7 @@ import {
   gitCommitAll,
   gitInit,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironmentCarryOverEnvVars, checkoutEnvironment, removeEnvironment } from '../environment/env';
 
 describe('upload and delete parameters', () => {

@@ -16,7 +16,7 @@ import {
   loadFunctionTestFile,
   createRandomName,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {

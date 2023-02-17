@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-console-integration-tests",
+  "name": "amplify-console-integration-tests",
   "version": "2.6.5-cdkv2.3",
   "description": "",
   "repository": {
@@ -21,7 +21,7 @@
     "setup-profile": "ts-node ./src/setup-profile.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-e2e-core": "4.7.0-cdkv2.3",
+    "amplify-e2e-core": "4.7.0-cdkv2.3",
     "@types/ini": "^1.3.30",
     "amplify-cli-core": "4.0.0-cdkv2.9",
     "aws-sdk": "^2.1233.0",
@@ -34,8 +34,8 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
-    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
+    "testRunner": "amplify-e2e-core/runner",
+    "testEnvironment": "amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -56,7 +56,7 @@
       "default",
       "jest-junit",
       [
-        "@aws-amplify/amplify-e2e-core/reporter",
+        "amplify-e2e-core/reporter",
         {
           "publicPath": "./console-integration-reports",
           "filename": "index.html",

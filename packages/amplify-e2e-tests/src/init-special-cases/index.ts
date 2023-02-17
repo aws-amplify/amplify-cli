@@ -1,5 +1,5 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '@aws-amplify/amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 

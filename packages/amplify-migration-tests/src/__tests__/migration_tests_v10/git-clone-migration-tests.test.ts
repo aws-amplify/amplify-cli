@@ -17,7 +17,7 @@ import {
   gitCommitAll,
   gitInit,
   nonInteractiveInitWithForcePushAttach,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 
 describe('attach amplify to git-cloned project', () => {

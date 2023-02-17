@@ -7,7 +7,7 @@ import {
   getAmplifyFlutterConfig,
   getAppId,
   removeAllNotificationChannel,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';

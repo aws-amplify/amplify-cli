@@ -7,4 +7,4 @@ export * from './progressbars/multibar';
 export * from './progressbars/spinner';
 export * from './flags';
 
-// version bump
+// version bump 2

@@ -12,7 +12,7 @@ import {
   getRootStackTemplate,
   initJSProjectWithProfile,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import {
   addS3WithAuthConfigurationMismatchErrorExit,
   AuthProjectDetails,

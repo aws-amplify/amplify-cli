@@ -5,7 +5,7 @@ import {
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   updateAuthAddUserGroups,
   amplifyPush,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
 

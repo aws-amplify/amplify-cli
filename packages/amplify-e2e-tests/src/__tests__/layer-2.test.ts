@@ -33,7 +33,7 @@ import {
   updateFunction,
   updateLayer,
   validatePushedVersion,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('amplify add lambda layer with changes', () => {

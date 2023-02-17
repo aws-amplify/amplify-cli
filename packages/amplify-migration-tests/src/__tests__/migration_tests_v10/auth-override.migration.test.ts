@@ -10,7 +10,7 @@ import {
   getAppId,
   getProjectMeta,
   getUserPool,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';

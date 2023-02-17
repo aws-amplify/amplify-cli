@@ -10,7 +10,7 @@ import {
   updateApiSchema,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('transformer @http migration test', () => {
   let projRoot: string;

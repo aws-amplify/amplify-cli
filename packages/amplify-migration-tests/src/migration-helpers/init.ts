@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {

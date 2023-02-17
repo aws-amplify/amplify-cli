@@ -10,7 +10,7 @@ import {
   getUserPoolClients,
   initJSProjectWithProfile,
   validateNodeModulesDirRemoval,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify init and add auth...', () => {
   let projRoot: string;

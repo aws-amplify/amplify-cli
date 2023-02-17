@@ -9,7 +9,7 @@ import {
   amplifyStatus,
   createNewProjectDir,
   deleteProjectDir,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('amplify init d', () => {
   let projRoot: string;

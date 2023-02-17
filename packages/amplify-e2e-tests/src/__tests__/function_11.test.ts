@@ -13,7 +13,7 @@ import {
   updateApiSchema,
   generateRandomShortId,
   addApi,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('Lambda AppSync nodejs:', () => {
   let projRoot: string;

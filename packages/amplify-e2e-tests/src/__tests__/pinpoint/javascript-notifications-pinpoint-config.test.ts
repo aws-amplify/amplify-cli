@@ -1,4 +1,4 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from 'amplify-e2e-core';
 
 import { javascriptValidate, runPinpointConfigTest } from './notifications-pinpoint-config-util';
 

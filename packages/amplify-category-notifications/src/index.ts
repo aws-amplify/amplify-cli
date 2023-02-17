@@ -65,4 +65,4 @@ export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny): void =>
   printer.info(`Received event args ${args}`);
 };
 
-// version bump
+// version bump 2

@@ -1,4 +1,4 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir, initFlutterProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, deleteProject, deleteProjectDir, initFlutterProjectWithProfile } from 'amplify-e2e-core';
 import { flutterValidate, runPinpointConfigTest } from './notifications-pinpoint-config-util';
 
 const envName = 'integtest';

@@ -15,7 +15,7 @@ import {
   getSchemaPath,
   getTransformConfig,
   updateHeadlessApi,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { join } from 'path';

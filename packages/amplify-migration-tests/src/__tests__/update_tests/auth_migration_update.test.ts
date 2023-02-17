@@ -13,7 +13,7 @@ import {
   getUserPoolClients,
   updateAuthWithoutCustomTrigger,
   updateAuthWithoutTrigger,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';

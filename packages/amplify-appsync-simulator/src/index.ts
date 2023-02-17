@@ -190,4 +190,4 @@ export class AmplifyAppSyncSimulator {
   }
 }
 
-// version bump
+// version bump 2

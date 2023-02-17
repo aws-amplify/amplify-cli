@@ -13,7 +13,7 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
   validateRestApiMeta,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { readdirSync, readFileSync } from 'fs';
 import * as path from 'path';
 

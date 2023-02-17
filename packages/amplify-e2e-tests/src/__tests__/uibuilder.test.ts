@@ -12,7 +12,7 @@ import {
   formCheckoutComponent,
   enableAdminUI,
   amplifyStudioHeadlessPull,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { spawnSync, spawn } from 'child_process';
 import { AmplifyUIBuilder } from 'aws-sdk';
 import fs from 'fs-extra';

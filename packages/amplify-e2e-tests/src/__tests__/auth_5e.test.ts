@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
 

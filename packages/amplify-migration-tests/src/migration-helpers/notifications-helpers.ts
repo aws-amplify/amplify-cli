@@ -1,4 +1,4 @@
-import { singleSelect, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { singleSelect, getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
 /**
  * Adds notification resource for a given channel

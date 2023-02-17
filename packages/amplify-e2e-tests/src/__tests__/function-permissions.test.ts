@@ -6,7 +6,7 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { getShortId } from '../import-helpers';
 
 describe('amplify add function with permissions', () => {

@@ -10,7 +10,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, listEnvironment, removeEnvironment } from '../environment/env';
 
 const validate = async (meta: any): Promise<void> => {

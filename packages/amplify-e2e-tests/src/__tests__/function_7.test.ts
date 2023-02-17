@@ -15,7 +15,7 @@ import {
   removeFunction,
   setCategoryParameters,
   updateFunction,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { addEnvironmentYes, removeEnvironment } from '../environment/env';
 
 describe('function secret value', () => {

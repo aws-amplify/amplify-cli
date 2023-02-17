@@ -29,4 +29,4 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
 
 export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimSrcPath];
 
-// version bump
+// version bump 2

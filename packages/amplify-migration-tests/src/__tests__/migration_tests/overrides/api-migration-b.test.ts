@@ -12,7 +12,7 @@ import {
   getProjectMeta,
   updateApiSchema,
   updateApiWithMultiAuth,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { addApiWithoutSchemaOldDx, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';

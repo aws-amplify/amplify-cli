@@ -7,7 +7,7 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
   cancelAmplifyMockApi,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import * as fs from 'fs-extra';

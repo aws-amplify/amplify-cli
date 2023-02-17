@@ -12,7 +12,7 @@ import {
   getAppSyncApi,
   getProjectMeta,
   updateApiSchema,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
 import * as fs from 'fs-extra';

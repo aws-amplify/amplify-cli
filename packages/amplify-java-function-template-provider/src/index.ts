@@ -18,4 +18,4 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
   };
 };
 
-// version bump
+// version bump 2

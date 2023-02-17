@@ -11,7 +11,7 @@ import {
   deleteS3Bucket,
   removeHosting,
   extractHostingBucketInfo,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 describe('generated tags test', () => {
   let projRoot: string;

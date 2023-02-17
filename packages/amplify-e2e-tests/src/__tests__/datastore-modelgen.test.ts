@@ -1,4 +1,4 @@
-import { addFeatureFlag, updateApiSchema, createNewProjectDir, deleteProjectDir, generateModels } from '@aws-amplify/amplify-e2e-core';
+import { addFeatureFlag, updateApiSchema, createNewProjectDir, deleteProjectDir, generateModels } from 'amplify-e2e-core';
 import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
 
 describe('data store modelgen tests', () => {

@@ -14,7 +14,7 @@ import {
   initJSProjectWithProfile,
   updateAuthAddUserGroups,
   updatedInitNewEnvWithProfile,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import * as specialCaseInit from '../init-special-cases';
 
 describe('amplify init', () => {

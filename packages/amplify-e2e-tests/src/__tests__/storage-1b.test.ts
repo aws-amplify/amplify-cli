@@ -12,7 +12,7 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   updateS3AddTriggerNewFunctionWithFunctionExisting,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 
 function getServiceMeta(projectRoot: string, category: string, service: string): $TSAny {
   const meta = getProjectMeta(projectRoot);

@@ -14,7 +14,7 @@ import {
   getBackendAmplifyMeta,
   amplifyPushForce,
   generateRandomShortId,
-} from '@aws-amplify/amplify-e2e-core';
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { addEnvironmentYes } from '../environment/env';
