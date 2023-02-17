@@ -188,38 +188,18 @@ export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plug
   third?: string;
 }
 
-/**
- * CLIOptionFlags is deprecated and will be removed in a future version
- * @deprecated
- */
-export type CLIOptionFlags = {
-  restore?: boolean;
-  json?: boolean;
-  name?: string;
-  awsInfo?: string;
-  config?: string;
-  'iterative-rollback'?: boolean;
-  force?: boolean;
-  env?: string;
-  rootStackName?: string;
-  frontend?: string;
-  quickstart?: boolean;
-  app?: string | boolean;
-  timeout?: string;
-  event?: string;
-  minify?: boolean;
+export type CLIGlobalFlags = {
+  version?: boolean;
   help?: boolean;
-  localEnvFilePath?: string;
   yes?: boolean;
-  appId?: string;
 };
 
-export type CommandLineInput<T = CLIOptionFlags> = {
+export type CommandLineInput = {
   argv: Array<string>;
   plugin?: string;
   command: string;
   subCommands?: string[];
-  options?: T & Record<string, string | boolean>;
+  options?: CLIGlobalFlags & Record<string, any>;
 };
 
 export type Plugin = {
