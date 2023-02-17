@@ -3,6 +3,56 @@
 exports[`api lambda migration tests ...adds lambda with multiple rest APIs with v10 and pulls without drift in latest version 1`] = `
 "Resources
 [~] AWS::Lambda::Function UserPoolClientLambda 
+ ├─ [~] Code
+ │   └─ [~] .ZipFile:
+ │       ├─ [-] const response = require('cfn-response');
+const aws = require('aws-sdk');
+const identity = new aws.CognitoIdentityServiceProvider();
+exports.handler = (event, context, callback) => {
+  if (event.RequestType == 'Delete') {
+    response.send(event, context, response.SUCCESS, {});
+  }
+  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+    const params = {
+      ClientId: event.ResourceProperties.clientId,
+      UserPoolId: event.ResourceProperties.userpoolId,
+    };
+    identity
+      .describeUserPoolClient(params)
+      .promise()
+      .then(res => {
+        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
+      })
+      .catch(err => {
+        response.send(event, context, response.FAILED, { err });
+      });
+  }
+};
+
+ │       └─ [+] const response = require('cfn-response');
+const aws = require('aws-sdk');
+const identity = new aws.CognitoIdentityServiceProvider();
+exports.handler = (event, context, callback) => {
+  if (event.RequestType == 'Delete') {
+    response.send(event, context, response.SUCCESS, {});
+  }
+  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+    const params = {
+      ClientId: event.ResourceProperties.clientId,
+      UserPoolId: event.ResourceProperties.userpoolId,
+    };
+    identity
+      .describeUserPoolClient(params)
+      .promise()
+      .then((res) => {
+        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
+      })
+      .catch((err) => {
+        response.send(event, context, response.FAILED, { err });
+      });
+  }
+};
+
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
@@ -19,6 +69,56 @@ Outputs
 
 Resources
 [~] AWS::Lambda::Function UserPoolClientLambda 
+ ├─ [~] Code
+ │   └─ [~] .ZipFile:
+ │       ├─ [-] const response = require('cfn-response');
+const aws = require('aws-sdk');
+const identity = new aws.CognitoIdentityServiceProvider();
+exports.handler = (event, context, callback) => {
+  if (event.RequestType == 'Delete') {
+    response.send(event, context, response.SUCCESS, {});
+  }
+  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+    const params = {
+      ClientId: event.ResourceProperties.clientId,
+      UserPoolId: event.ResourceProperties.userpoolId,
+    };
+    identity
+      .describeUserPoolClient(params)
+      .promise()
+      .then(res => {
+        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
+      })
+      .catch(err => {
+        response.send(event, context, response.FAILED, { err });
+      });
+  }
+};
+
+ │       └─ [+] const response = require('cfn-response');
+const aws = require('aws-sdk');
+const identity = new aws.CognitoIdentityServiceProvider();
+exports.handler = (event, context, callback) => {
+  if (event.RequestType == 'Delete') {
+    response.send(event, context, response.SUCCESS, {});
+  }
+  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+    const params = {
+      ClientId: event.ResourceProperties.clientId,
+      UserPoolId: event.ResourceProperties.userpoolId,
+    };
+    identity
+      .describeUserPoolClient(params)
+      .promise()
+      .then((res) => {
+        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
+      })
+      .catch((err) => {
+        response.send(event, context, response.FAILED, { err });
+      });
+  }
+};
+
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
