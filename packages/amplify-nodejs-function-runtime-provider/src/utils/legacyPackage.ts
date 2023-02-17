@@ -15,7 +15,7 @@ export async function packageResource(request: PackageRequest, context: $TSConte
       const optPath = path.join(layerDirPath, 'opt');
 
       const conflicts: string[] = [];
-      libGlob.forEach(lib => {
+      libGlob.forEach((lib) => {
         const basename = path.basename(lib);
         if (fs.pathExistsSync(path.join(optPath, basename))) {
           conflicts.push(basename);
@@ -23,7 +23,7 @@ export async function packageResource(request: PackageRequest, context: $TSConte
       });
 
       if (conflicts.length > 0) {
-        const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
+        const libs = conflicts.map((lib) => `"/${lib}"`).join(', ');
         const plural = conflicts.length > 1 ? 'ies' : 'y';
         context.print.warning(
           // eslint-disable-next-line spellcheck/spell-checker
@@ -31,7 +31,7 @@ export async function packageResource(request: PackageRequest, context: $TSConte
         );
       }
 
-      [...libGlob].forEach(folder => {
+      [...libGlob].forEach((folder) => {
         if (fs.lstatSync(folder).isDirectory()) {
           zipEntries.push({
             packageFolder: folder,

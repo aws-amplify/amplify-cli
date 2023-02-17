@@ -17,7 +17,7 @@ export type PackageManager = {
   lockFile: string;
   executable: string;
   // only exists if yarn2 is used
-  yarnrcPath?: string
+  yarnrcPath?: string;
 };
 
 const isWindows = process.platform === 'win32';

@@ -33,11 +33,11 @@ SSMClientWrapperMock.getInstance.mockResolvedValue({
 } as unknown as SSMClientWrapper);
 
 describe('syncSecretDeltas', () => {
-  const contextStub = ({
+  const contextStub = {
     parameters: {
       command: 'update',
     },
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
   beforeEach(jest.clearAllMocks);
 
   it('sets Amplify AppID in team-provider-info if secrets are present', async () => {

@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, getPackageManager, pathManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, getPackageManager, pathManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
@@ -35,10 +33,14 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
 
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Invalid remote github url',
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    }, e);
+    throw new AmplifyError(
+      'ProjectInitError',
+      {
+        message: 'Invalid remote github url',
+        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+      },
+      e,
+    );
   }
 };
 
@@ -58,11 +60,15 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
-      message: 'Unable to clone repository',
-      details: e.message,
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    }, e);
+    throw new AmplifyError(
+      'ProjectInitError',
+      {
+        message: 'Unable to clone repository',
+        details: e.message,
+        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+      },
+      e,
+    );
   }
 };
 

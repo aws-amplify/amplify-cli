@@ -1,14 +1,10 @@
-import {
-  stateManager, $TSContext, AmplifyError,
-} from 'amplify-cli-core';
+import { stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 import proxyAgent from 'proxy-agent';
 import { adminLoginFlow } from '../admin-login';
-import {
-  AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken,
-} from './auth-types';
+import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 /**
  *

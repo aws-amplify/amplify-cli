@@ -1,10 +1,5 @@
 import { AmplifyFault, JSONUtilities } from 'amplify-cli-core';
-import {
-  FileAssetSource,
-  ISynthesisSession,
-  Stack,
-  LegacyStackSynthesizer,
-} from 'aws-cdk-lib';
+import { FileAssetSource, ISynthesisSession, Stack, LegacyStackSynthesizer } from 'aws-cdk-lib';
 import { Template } from 'cloudform-types';
 import crypto from 'crypto';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
@@ -23,9 +18,9 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (
-      stack instanceof AmplifyAuthCognitoStack
-      || stack instanceof AmplifyUserPoolGroupStack
-      || stack instanceof AmplifyUserPoolGroupStackOutputs
+      stack instanceof AmplifyAuthCognitoStack ||
+      stack instanceof AmplifyUserPoolGroupStack ||
+      stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;
@@ -33,7 +28,8 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
       this.setStackAsset(templateName, template);
     } else {
       throw new AmplifyFault('UnknownFault', {
-        message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack',
+        message:
+          'Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack',
       });
     }
   }
@@ -41,9 +37,9 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
   protected synthesizeTemplate(session: ISynthesisSession): FileAssetSource {
     const stack = this.boundStack;
     if (
-      stack instanceof AmplifyAuthCognitoStack
-      || stack instanceof AmplifyUserPoolGroupStack
-      || stack instanceof AmplifyUserPoolGroupStackOutputs
+      stack instanceof AmplifyAuthCognitoStack ||
+      stack instanceof AmplifyUserPoolGroupStack ||
+      stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;
@@ -55,7 +51,8 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
       };
     }
     throw new AmplifyFault('UnknownFault', {
-      message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack',
+      message:
+        'Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack',
     });
   }
 

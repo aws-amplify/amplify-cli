@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, $TSObject, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
@@ -27,9 +25,7 @@ import {
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (
-  context: $TSContext,
-) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -41,13 +37,13 @@ export const getAddAuthHandler = (
 
   // replace secret keys from cli inputs to be stored in deployment secrets
 
-  let sharedParams = ({ ...requestWithDefaults }) as $TSAny;
-  privateKeys.forEach(p => delete sharedParams[p]);
+  let sharedParams = { ...requestWithDefaults } as $TSAny;
+  privateKeys.forEach((p) => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
   const envSpecificParams: $TSObject = {};
   const cliInputs = { ...sharedParams };
-  ENV_SPECIFIC_PARAMS.forEach(paramName => {
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
     if (paramName in request) {
       envSpecificParams[paramName] = cliInputs[paramName];
       delete cliInputs[paramName];
@@ -103,12 +99,12 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     await createUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
   }
   if (
-    (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth)
-    || (requestWithDefaults.updateFlow === 'manual' && !requestWithDefaults.thirdPartyAuth)
+    (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth) ||
+    (requestWithDefaults.updateFlow === 'manual' && !requestWithDefaults.thirdPartyAuth)
   ) {
     delete requestWithDefaults.selectedParties;
     requestWithDefaults.authProviders = [];
-    authProviders.forEach(a => delete (requestWithDefaults as $TSAny)[a.answerHashKey]);
+    authProviders.forEach((a) => delete (requestWithDefaults as $TSAny)[a.answerHashKey]);
     if (requestWithDefaults.googleIos) {
       delete requestWithDefaults.googleIos;
     }
@@ -128,13 +124,13 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     delete requestWithDefaults.authProvidersUserPool;
   }
 
-  let sharedParams = ({ ...requestWithDefaults }) as $TSAny;
-  privateKeys.forEach(p => delete sharedParams[p]);
+  let sharedParams = { ...requestWithDefaults } as $TSAny;
+  privateKeys.forEach((p) => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
   const envSpecificParams: $TSAny = {};
   const cliInputs = { ...sharedParams };
-  ENV_SPECIFIC_PARAMS.forEach(paramName => {
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
     if (paramName in cliInputs) {
       envSpecificParams[paramName] = cliInputs[paramName];
       delete cliInputs[paramName];

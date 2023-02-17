@@ -16,6 +16,9 @@
     "lambda",
     "java"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",

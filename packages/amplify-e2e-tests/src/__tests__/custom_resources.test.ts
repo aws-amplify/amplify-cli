@@ -76,7 +76,7 @@ describe('adding custom resources test', () => {
     expect(Object.keys(buildCFNFileJSON?.Outputs)).toEqual(['snsTopicArn']);
 
     const meta = getProjectMeta(projRoot);
-    const { snsTopicArn: customResourceSNSArn } = Object.keys(meta.custom).map(key => meta.custom[key])[0].output;
+    const { snsTopicArn: customResourceSNSArn } = Object.keys(meta.custom).map((key) => meta.custom[key])[0].output;
 
     expect(customResourceSNSArn).toBeDefined();
 

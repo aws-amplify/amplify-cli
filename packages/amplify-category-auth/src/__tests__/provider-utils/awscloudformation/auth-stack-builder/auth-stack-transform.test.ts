@@ -253,7 +253,11 @@ describe('Check Auth Template', () => {
   it('should validate cfn parameters if match', () => {
     const resourceName = 'mockResource';
     const authTransform = new AmplifyAuthTransform(resourceName);
-    const isValid = authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email'] });
+    const isValid = authTransform.validateCfnParameters(
+      context_stub_typed,
+      { requiredAttributes: ['email'] },
+      { requiredAttributes: ['email'] },
+    );
     expect(isValid).toBe(true);
   });
 
@@ -262,7 +266,11 @@ describe('Check Auth Template', () => {
     process.exit = jest.fn();
     const resourceName = 'mockResource';
     const authTransform = new AmplifyAuthTransform(resourceName);
-    authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email', 'phone_number'] });
+    authTransform.validateCfnParameters(
+      context_stub_typed,
+      { requiredAttributes: ['email'] },
+      { requiredAttributes: ['email', 'phone_number'] },
+    );
     expect(process.exit).toBeCalledTimes(1);
   });
 });

@@ -11,9 +11,9 @@ async function console(context) {
   const { amplifyMeta } = amplify.getProjectDetails();
 
   return promptConsoleSupportedCategory()
-    .then(async result => {
+    .then(async (result) => {
       const predictionsResources = [];
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         if (
           result.services.includes(amplifyMeta[category][resourceName].service) &&
           result.types.includes(amplifyMeta[category][resourceName][result.type])
@@ -40,7 +40,7 @@ async function console(context) {
 
       return providerController.console(context, resourceObj, amplifyMeta);
     })
-    .catch(err => {
+    .catch((err) => {
       context.print.error('Error opening console.');
       context.print.info(err.message);
       context.usageData.emitError(err);

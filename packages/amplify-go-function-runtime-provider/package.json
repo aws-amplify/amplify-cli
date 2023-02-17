@@ -16,6 +16,9 @@
     "lambda",
     "golang"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo resources/localinvoke/go.sum resources/localinvoke/main resources/localinvoke/main.exe",

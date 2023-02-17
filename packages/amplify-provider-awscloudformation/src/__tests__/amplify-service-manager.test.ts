@@ -7,13 +7,13 @@ import { init } from '../amplify-service-manager';
 jest.mock('../aws-utils/aws-amplify');
 jest.mock('../amplify-service-permission-check');
 
-const amplifyClientStub = ({
+const amplifyClientStub = {
   createApp: jest.fn().mockReturnValue({
     promise: jest.fn().mockRejectedValue({
       code: 'LimitExceededException',
     }),
   }),
-} as unknown) as Amplify;
+} as unknown as Amplify;
 const getConfiguredAmplifyClientMock = getConfiguredAmplifyClient as jest.MockedFunction<typeof getConfiguredAmplifyClient>;
 getConfiguredAmplifyClientMock.mockResolvedValue(amplifyClientStub);
 

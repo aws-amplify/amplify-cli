@@ -49,13 +49,13 @@ const createPreRelease = async (version: string, commit: string) => {
 
   await Promise.all(
     platformSuffixes
-      .map(suffix => `${binaryNamePrefix}${suffix}.tgz`)
-      .map(binName => join(binariesDir, binName))
-      .map(binPath => {
+      .map((suffix) => `${binaryNamePrefix}${suffix}.tgz`)
+      .map((binName) => join(binariesDir, binName))
+      .map((binPath) => {
         console.log(`Uploading ${binPath} to release`);
         return binPath;
       })
-      .map(binPath => uploadReleaseFile(releaseIdStr, binPath)),
+      .map((binPath) => uploadReleaseFile(releaseIdStr, binPath)),
   );
 
   console.log('Publishing pre-release');

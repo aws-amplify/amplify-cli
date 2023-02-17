@@ -1,5 +1,5 @@
 import { $TSAny, AmplifyException, AmplifyFaultType, AmplifyFault, executeHooks, HooksMeta, isWindowsPlatform } from 'amplify-cli-core';
-import { getAmplifyLogger } from 'amplify-cli-logger';
+import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';

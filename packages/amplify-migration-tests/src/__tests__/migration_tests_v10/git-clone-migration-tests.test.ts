@@ -62,7 +62,7 @@ describe('attach amplify to git-cloned project', () => {
 
 const assertLambdaexecutionRoleArns = (projRoot: string, isDefined: boolean) => {
   const meta = getProjectMeta(projRoot);
-  const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+  const authKey = Object.keys(meta.auth).find((key) => meta.auth[key].service === 'Cognito');
   const createFunctionResourceName = `${authKey}CreateAuthChallenge`;
   const defineFunctionResourceName = `${authKey}DefineAuthChallenge`;
   const customMessageFunctionResourceName = `${authKey}CustomMessage`;

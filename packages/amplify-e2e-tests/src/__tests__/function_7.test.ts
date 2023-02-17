@@ -289,7 +289,7 @@ const expectParams = async (
   envName: string,
   funcName: string,
 ) => {
-  const result = await getSSMParameters(region, appId, envName, funcName, expectToExist.map(exist => exist.name).concat(expectNotExist));
+  const result = await getSSMParameters(region, appId, envName, funcName, expectToExist.map((exist) => exist.name).concat(expectNotExist));
 
   const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${name}`;
 
@@ -297,9 +297,9 @@ const expectParams = async (
   expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
 
   expect(result.Parameters.length).toBe(expectToExist.length);
-  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: param.Value })).sort(sortByName);
+  const mappedResult = result.Parameters.map((param) => ({ name: param.Name, value: param.Value })).sort(sortByName);
   const mappedExpect = expectToExist
-    .map(exist => ({ name: `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${exist.name}`, value: exist.value }))
+    .map((exist) => ({ name: `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${exist.name}`, value: exist.value }))
     .sort(sortByName);
   expect(mappedResult).toEqual(mappedExpect);
 };

@@ -87,7 +87,7 @@ const backendConfigParameterMapSupplier = (): BackendParameters => {
     throw new AmplifyError('BackendConfigValidationError', {
       message: `backend-config.json parameter config is invalid`,
       resolution: 'Correct the errors in the file and retry the command',
-      details: validator.errors?.map(err => JSON.stringify(err, undefined, 2)).join('\n'),
+      details: validator.errors?.map((err) => JSON.stringify(err, undefined, 2)).join('\n'),
     });
   }
   return uncheckedParamMap as BackendParameters;

@@ -256,9 +256,14 @@ export class PathManager {
       PathConstants.BuildDirName,
     ]);
 
-  getResourceOverrideFilePath = (projectPath: string | undefined, category: string, resourceName: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName, PathConstants.OverrideFileName],
-  );
+  getResourceOverrideFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.OverrideFileName,
+    ]);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

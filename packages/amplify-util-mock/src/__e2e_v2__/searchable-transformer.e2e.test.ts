@@ -90,7 +90,7 @@ describe('@searchable transformer', () => {
       // create test records and wait for 5 secs for local indices to update
       if (!isWindowsPlatform()) {
         await createTestRecords();
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise((r) => setTimeout(r, 5000));
       }
     } catch (e) {
       logDebug('error when setting up test');
@@ -145,8 +145,8 @@ describe('@searchable transformer', () => {
       const { resultItems } = await searchTodos(null, [], []);
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('filter using supported string type operations', async () => {
@@ -174,8 +174,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('filter using match operations on string array type', async () => {
@@ -189,8 +189,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('filter using supported integer type operations', async () => {
@@ -215,8 +215,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('filter using supported float type operations', async () => {
@@ -241,8 +241,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('filter using supported boolean type operations', async () => {
@@ -255,8 +255,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('filter using supported enum type operations', async () => {
@@ -287,8 +287,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
     });
 
     test('sort the results without any filter', async () => {
@@ -343,18 +343,18 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
 
       // check correctness of aggregate results
-      expect(aggregateItems.filter(item => item.name === 'minMyInt')[0].result.value).toEqual(101);
-      expect(aggregateItems.filter(item => item.name === 'maxMyInt')[0].result.value).toEqual(102);
-      expect(aggregateItems.filter(item => item.name === 'avgMyInt')[0].result.value).toEqual(101.5);
-      expect(aggregateItems.filter(item => item.name === 'sumMyInt')[0].result.value).toEqual(203);
-      expect(aggregateItems.filter(item => item.name === 'minMyFloat')[0].result.value).toEqual(101.10099792480469);
-      expect(aggregateItems.filter(item => item.name === 'maxMyFloat')[0].result.value).toEqual(102.10199737548828);
-      expect(aggregateItems.filter(item => item.name === 'avgMyFloat')[0].result.value).toEqual(101.60149765014648);
-      expect(aggregateItems.filter(item => item.name === 'sumMyFloat')[0].result.value).toEqual(203.20299530029297);
+      expect(aggregateItems.filter((item) => item.name === 'minMyInt')[0].result.value).toEqual(101);
+      expect(aggregateItems.filter((item) => item.name === 'maxMyInt')[0].result.value).toEqual(102);
+      expect(aggregateItems.filter((item) => item.name === 'avgMyInt')[0].result.value).toEqual(101.5);
+      expect(aggregateItems.filter((item) => item.name === 'sumMyInt')[0].result.value).toEqual(203);
+      expect(aggregateItems.filter((item) => item.name === 'minMyFloat')[0].result.value).toEqual(101.10099792480469);
+      expect(aggregateItems.filter((item) => item.name === 'maxMyFloat')[0].result.value).toEqual(102.10199737548828);
+      expect(aggregateItems.filter((item) => item.name === 'avgMyFloat')[0].result.value).toEqual(101.60149765014648);
+      expect(aggregateItems.filter((item) => item.name === 'sumMyFloat')[0].result.value).toEqual(203.20299530029297);
     });
 
     test('aggregate terms query on string type fields with a filter', async () => {
@@ -368,8 +368,8 @@ describe('@searchable transformer', () => {
       );
 
       expect(resultItems.length).toEqual(2);
-      expect(resultItems.filter(item => item.id === todo101.id)[0]).toEqual(todo101);
-      expect(resultItems.filter(item => item.id === todo102.id)[0]).toEqual(todo102);
+      expect(resultItems.filter((item) => item.id === todo101.id)[0]).toEqual(todo101);
+      expect(resultItems.filter((item) => item.id === todo102.id)[0]).toEqual(todo102);
 
       // check correctness of aggregate results
       const expectedNameTerms = [
@@ -402,8 +402,8 @@ describe('@searchable transformer', () => {
         },
       ];
 
-      expect(aggregateItems.filter(item => item.name === 'nameTerms')[0].result.buckets.sort()).toEqual(expectedNameTerms.sort());
-      expect(aggregateItems.filter(item => item.name === 'descriptionsTerms')[0].result.buckets.sort()).toEqual(
+      expect(aggregateItems.filter((item) => item.name === 'nameTerms')[0].result.buckets.sort()).toEqual(expectedNameTerms.sort());
+      expect(aggregateItems.filter((item) => item.name === 'descriptionsTerms')[0].result.buckets.sort()).toEqual(
         expectedDescriptionsTerms.sort(),
       );
     });

@@ -8,28 +8,30 @@ import { ExcludeFromCFNDiff } from '../migration-helpers/utils';
  *
  * AWS::ApiGateway::GatewayResponse is also excluded
  */
-export const cfnDiffExclusions: ExcludeFromCFNDiff = (currentCategory: string, currentResourceKey: string, cfnTemplates: {
-  project1: Record<string, unknown>;
-  project2: Record<string, unknown>;
-}) => {
+export const cfnDiffExclusions: ExcludeFromCFNDiff = (
+  currentCategory: string,
+  currentResourceKey: string,
+  cfnTemplates: {
+    project1: Record<string, unknown>;
+    project2: Record<string, unknown>;
+  },
+) => {
   const excludeAPIGateWayDeploymentResource = (cfnTemplate: Record<string, unknown>): void => {
     const resources = cfnTemplate.Resources ?? {};
     const resourceKeys = Object.keys(resources);
-    for(const key of resourceKeys){
+    for (const key of resourceKeys) {
       const resource = resources[key];
-      if(resource.Type === 'AWS::ApiGateway::Deployment'
-        || resource.Type === 'AWS::ApiGateway::GatewayResponse'
-      ){
+      if (resource.Type === 'AWS::ApiGateway::Deployment' || resource.Type === 'AWS::ApiGateway::GatewayResponse') {
         delete resources[key];
       }
-      if(resource.Type === 'AWS::AppSync::ApiKey' && resource.Properties){
+      if (resource.Type === 'AWS::AppSync::ApiKey' && resource.Properties) {
         delete resource.Properties.Expires;
       }
     }
-  }
-  if(currentCategory === 'api'){
+  };
+  if (currentCategory === 'api') {
     excludeAPIGateWayDeploymentResource(cfnTemplates.project1);
     excludeAPIGateWayDeploymentResource(cfnTemplates.project2);
   }
   return { project1: cfnTemplates.project1, project2: cfnTemplates.project2 };
-}
+};

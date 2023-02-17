@@ -62,7 +62,7 @@ describe('amplify function migration', () => {
 
     await amplifyPushAuthV5V6(projRoot);
     let meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
@@ -88,7 +88,7 @@ describe('amplify function migration', () => {
     await amplifyPush(projRoot, true);
 
     meta = getProjectMeta(projRoot);
-    const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+    const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map((key) => meta.api[key])[0].output;
     const result = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
     expect(result.StatusCode).toBe(200);
     expect(result.Payload).toBeDefined();

@@ -1,5 +1,10 @@
 import {
-  $TSContext, AmplifyCategories, AmplifyNodePkgDetectorProps, AmplifyNodePkgDetector, IAmplifyResource, pathManager,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyNodePkgDetectorProps,
+  AmplifyNodePkgDetector,
+  IAmplifyResource,
+  pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -10,16 +15,16 @@ import * as path from 'path';
  * type to print cdk warning message
  */
 export type AmplifyWarning = {
-  impactedFiles: string[],
-  resolutionMessage: string
-}
+  impactedFiles: string[];
+  resolutionMessage: string;
+};
 /**
  * print cdk migration warning if required
  */
 export const printCdkMigrationWarning = async (context: $TSContext): Promise<void> => {
   const resourcesToBuild: IAmplifyResource[] = [];
   const { allResources } = await context.amplify.getResourceStatus();
-  allResources.forEach(resource => {
+  allResources.forEach((resource) => {
     resourcesToBuild.push({
       service: resource.service as string,
       category: resource.category as string,
@@ -60,8 +65,8 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToS
 const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
   let customResourcesWarningObject;
   const customResourceImpactedFiles = [];
-  const customCategoryResources = resourcesToBuild.filter(resource => resource.category === AmplifyCategories.CUSTOM);
-  customCategoryResources.forEach(resource => {
+  const customCategoryResources = resourcesToBuild.filter((resource) => resource.category === AmplifyCategories.CUSTOM);
+  customCategoryResources.forEach((resource) => {
     const targetDir = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot: targetDir,
@@ -96,13 +101,13 @@ export const getMigrationMessage = (resourcesToBuild: IAmplifyResource[]): strin
   }
 
   if (!_.isEmpty(overridesWarningObject)) {
-    overridesWarningObject.impactedFiles.forEach(file => {
+    overridesWarningObject.impactedFiles.forEach((file) => {
       migrationString = migrationString.concat(` - ${file}\n`);
     });
     migrationString = migrationString.concat(`${overridesWarningObject.resolutionMessage}\n`);
   }
   if (!_.isEmpty(customResourceWarningObject)) {
-    customResourceWarningObject.impactedFiles.forEach(file => {
+    customResourceWarningObject.impactedFiles.forEach((file) => {
       migrationString = migrationString.concat(` - ${file}\n`);
     });
     migrationString = migrationString.concat(`${customResourceWarningObject.resolutionMessage}\n`);

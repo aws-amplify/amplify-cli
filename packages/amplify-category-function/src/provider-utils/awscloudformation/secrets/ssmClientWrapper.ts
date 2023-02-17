@@ -19,7 +19,7 @@ export class SSMClientWrapper {
   /**
    * Returns a list of secret name value pairs
    */
-  getSecrets = async (secretNames: string[]): Promise<{ secretName?: string, secretValue?: string }[] | undefined> => {
+  getSecrets = async (secretNames: string[]): Promise<{ secretName?: string; secretValue?: string }[] | undefined> => {
     if (!secretNames || secretNames.length === 0) {
       return [];
     }
@@ -56,7 +56,7 @@ export class SSMClientWrapper {
         .promise();
 
       if (Array.isArray(result?.Parameters)) {
-        accumulator.push(...result.Parameters.filter(param => param?.Name !== undefined).map(param => param.Name));
+        accumulator.push(...result.Parameters.filter((param) => param?.Name !== undefined).map((param) => param.Name));
       }
 
       NextToken = result.NextToken;
@@ -87,7 +87,7 @@ export class SSMClientWrapper {
         Name: secretName,
       })
       .promise()
-      .catch(err => {
+      .catch((err) => {
         if (err.code !== 'ParameterNotFound') {
           // if the value didn't exist in the first place, consider it deleted
           throw err;

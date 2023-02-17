@@ -12,7 +12,7 @@ checkResourceInUseByNotificationsMock.mockResolvedValue(true);
 
 describe('remove analytics handler', () => {
   it('throws error if notifications exists', async () => {
-    const stubContext = ({
+    const stubContext = {
       amplify: {
         removeResource: jest.fn().mockImplementation(async (__context, __category, resourceName, __config, callback) => {
           await callback(resourceName);
@@ -21,7 +21,7 @@ describe('remove analytics handler', () => {
       parameters: {
         first: 'testing',
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
     await expect(() => runRemove(stubContext)).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Analytics resource testing is being used by the notifications category and cannot be removed"`,
     );

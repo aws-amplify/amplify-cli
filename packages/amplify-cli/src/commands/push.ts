@@ -1,20 +1,11 @@
-import {
-  $TSAny,
-  $TSContext,
-  AmplifyError,
-  AmplifyFault,
-  spinner,
-  stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, spinner, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,
   notifySecurityEnhancement,
 } from '../extensions/amplify-helpers/auth-notifications';
-import {
-  getProviderPlugins,
-} from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 
 /**

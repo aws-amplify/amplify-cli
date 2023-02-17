@@ -1,7 +1,4 @@
-import {
-  $TSAny,
-  $TSContext, AmplifyError, IAmplifyResource, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, IAmplifyResource, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';

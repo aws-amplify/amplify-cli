@@ -17,9 +17,10 @@ export const getEnvParametersUploadHandler = async (
   } catch {
     printer.warn('Failed to resolve AppId, skipping parameter download.');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return (__: string, ___: string | boolean | number) => new Promise(resolve => {
-      resolve();
-    });
+    return (__: string, ___: string | boolean | number) =>
+      new Promise((resolve) => {
+        resolve();
+      });
   }
   const envName = stateManager.getCurrentEnvName();
   const { client } = await SSM.getInstance(context);
@@ -59,16 +60,17 @@ const uploadParameterToParameterStore = (
  */
 export const getEnvParametersDownloadHandler = async (
   context: $TSContext,
-): Promise<((keys: string[]) => Promise<Record<string, string | number | boolean>>)> => {
+): Promise<(keys: string[]) => Promise<Record<string, string | number | boolean>>> => {
   let appId: string;
   try {
     appId = resolveAppId(context);
   } catch {
     printer.warn('Failed to resolve AppId, skipping parameter download.');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return (__: string[]) => new Promise(resolve => {
-      resolve({});
-    });
+    return (__: string[]) =>
+      new Promise((resolve) => {
+        resolve({});
+      });
   }
   const envName = stateManager.getCurrentEnvName();
   const { client } = await SSM.getInstance(context);
@@ -85,12 +87,12 @@ const downloadParametersFromParameterStore = (
       return {};
     }
     try {
-      const keyPaths = keys.map(key => `/amplify/${appId}/${envName}/${key}`);
+      const keyPaths = keys.map((key) => `/amplify/${appId}/${envName}/${key}`);
       const sdkPromises = convertKeyPathsToSdkPromises(ssmClient, keyPaths);
       const results = await executeSdkPromisesWithExponentialBackOff<SSMType.GetParametersResult>(sdkPromises);
       return results.reduce((acc, { Parameters }) => {
         Parameters.forEach((param) => {
-          const [/* leading slash */, /* amplify */, /* appId */, /* envName */, key] = param.Name.split('/');
+          const [, , , , /* leading slash */ /* amplify */ /* appId */ /* envName */ key] = param.Name.split('/');
           acc[key] = JSON.parse(param.Value);
         });
         return acc;

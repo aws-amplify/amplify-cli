@@ -11,8 +11,7 @@ import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
 import { customMapLambdaCodePath } from '../service-utils/constants';
 
-type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> &
-  TemplateMappings & { authResourceName: string };
+type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> & TemplateMappings & { authResourceName: string };
 
 /**
  * Class to generate cfn for Map resource
@@ -33,9 +32,7 @@ export class MapStack extends BaseStack {
     this.authResourceName = this.props.authResourceName;
     this.mapRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    const inputParameters: string[] = (this.props.groupPermissions || []).map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`,
-    );
+    const inputParameters: string[] = (this.props.groupPermissions || []).map((group: string) => `authuserPoolGroups${group}GroupRole`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -131,8 +128,7 @@ export class MapStack extends BaseStack {
     });
 
     const cognitoRoles: Array<string> = [];
-    if (this.accessType === AccessType.AuthorizedUsers
-      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
+    if (this.accessType === AccessType.AuthorizedUsers || this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }
     if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
@@ -141,11 +137,7 @@ export class MapStack extends BaseStack {
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
         cognitoRoles.push(
-          cdk.Fn.join('-',
-            [
-            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`,
-            ]),
+          cdk.Fn.join('-', [this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString, `${group}GroupRole`]),
         );
       });
     }

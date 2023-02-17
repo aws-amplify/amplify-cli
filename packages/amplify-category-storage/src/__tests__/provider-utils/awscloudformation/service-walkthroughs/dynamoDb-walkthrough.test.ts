@@ -17,7 +17,7 @@ describe('add ddb walkthrough tests', () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
-    mockContext = ({
+    mockContext = {
       amplify: {
         getProjectDetails: () => {
           return {
@@ -30,7 +30,7 @@ describe('add ddb walkthrough tests', () => {
       input: {
         options: {},
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   afterEach(() => {
@@ -119,7 +119,7 @@ describe('update ddb walkthrough tests', () => {
 
   beforeEach(() => {
     jest.mock('amplify-prompts');
-    mockContext = ({
+    mockContext = {
       amplify: {
         getProjectDetails: () => {
           return {
@@ -132,7 +132,7 @@ describe('update ddb walkthrough tests', () => {
       input: {
         options: {},
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
   });
 
   afterEach(() => {

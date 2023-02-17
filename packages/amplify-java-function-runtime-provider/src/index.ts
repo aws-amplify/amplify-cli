@@ -8,9 +8,9 @@ import path from 'path';
 import { relativeShimSrcPath } from './utils/constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
 
-export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
+export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       const selection = request.selection;
 
       if (selection !== 'java') {
@@ -60,9 +60,9 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
 
       return result;
     },
-    package: params => packageResource(params, context),
+    package: (params) => packageResource(params, context),
     build: buildResource,
-    invoke: params => invokeResource(params, context),
+    invoke: (params) => invokeResource(params, context),
   };
 };
 

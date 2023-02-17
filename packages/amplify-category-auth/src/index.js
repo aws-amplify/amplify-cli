@@ -54,7 +54,7 @@ async function add(context, skipNextSteps = false) {
 
   return amplify
     .serviceSelectionPrompt(context, category, servicesMetadata)
-    .then(result => {
+    .then((result) => {
       resultMetadata = result;
       const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
       if (!providerController) {
@@ -63,7 +63,7 @@ async function add(context, skipNextSteps = false) {
       }
       return providerController.addResource(context, result.service, skipNextSteps);
     })
-    .catch(err => {
+    .catch((err) => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
       context.usageData.emitError(err);
@@ -129,7 +129,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
     const defaultVals = defaults.getAllDefaults(currentAuthName);
     // loop through service questions
-    serviceMetadata.Cognito.inputs.forEach(s => {
+    serviceMetadata.Cognito.inputs.forEach((s) => {
       // find those that would not be displayed if user was entering values manually
       if (!context.amplify.getWhen(s, defaultVals, currentAuthParams, context.amplify)()) {
         // if a value wouldn't be displayed,
@@ -163,12 +163,12 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     // replace secret keys from cli inputs to be stored in deployment secrets
 
     let sharedParams = { ...authProps };
-    privateKeys.forEach(p => delete sharedParams[p]);
+    privateKeys.forEach((p) => delete sharedParams[p]);
     sharedParams = removeDeprecatedProps(sharedParams);
     // extracting env-specific params from parameters object
     const envSpecificParams = {};
     const cliInputs = { ...sharedParams };
-    ENV_SPECIFIC_PARAMS.forEach(paramName => {
+    ENV_SPECIFIC_PARAMS.forEach((paramName) => {
       if (paramName in authProps) {
         envSpecificParams[paramName] = cliInputs[paramName];
         delete cliInputs[paramName];
@@ -277,11 +277,11 @@ async function checkRequirements(requirements, context, category, targetResource
   // Checks handcoded until refactoring of the requirements system
   // since intersections were not handled correctly.
   if (
-    (requirements.authSelections === 'userPoolOnly'
-      && (authParameters.authSelections === 'userPoolOnly' || authParameters.authSelections === 'identityPoolAndUserPool'))
-    || (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolOnly')
-    || (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolAndUserPool')
-    || (requirements.authSelections === 'identityPoolAndUserPool' && authParameters.authSelections === 'identityPoolAndUserPool')
+    (requirements.authSelections === 'userPoolOnly' &&
+      (authParameters.authSelections === 'userPoolOnly' || authParameters.authSelections === 'identityPoolAndUserPool')) ||
+    (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolOnly') ||
+    (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolAndUserPool') ||
+    (requirements.authSelections === 'identityPoolAndUserPool' && authParameters.authSelections === 'identityPoolAndUserPool')
   ) {
     result.authSelections = true;
   } else {
@@ -290,8 +290,8 @@ async function checkRequirements(requirements, context, category, targetResource
   }
 
   if (
-    (requirements.allowUnauthenticatedIdentities === true && authParameters.allowUnauthenticatedIdentities === true)
-    || !requirements.allowUnauthenticatedIdentities // In this case it does not matter if IDP allows unauth access or not, requirements are met.
+    (requirements.allowUnauthenticatedIdentities === true && authParameters.allowUnauthenticatedIdentities === true) ||
+    !requirements.allowUnauthenticatedIdentities // In this case it does not matter if IDP allows unauth access or not, requirements are met.
   ) {
     result.allowUnauthenticatedIdentities = true;
   } else {
@@ -306,9 +306,8 @@ async function checkRequirements(requirements, context, category, targetResource
 
 async function initEnv(context) {
   const { amplify } = context;
-  const {
-    resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources,
-  } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } =
+    await amplify.getResourceStatus('auth');
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeUpdated = [];
@@ -316,27 +315,27 @@ async function initEnv(context) {
   let toBeDeleted = [];
 
   if (resourcesToBeCreated && resourcesToBeCreated.length > 0) {
-    toBeCreated = resourcesToBeCreated.filter(a => a.category === 'auth');
+    toBeCreated = resourcesToBeCreated.filter((a) => a.category === 'auth');
   }
   if (resourcesToBeUpdated && resourcesToBeUpdated.length > 0) {
-    toBeUpdated = resourcesToBeUpdated.filter(c => c.category === 'auth');
+    toBeUpdated = resourcesToBeUpdated.filter((c) => c.category === 'auth');
   }
   if (resourcesToBeSynced && resourcesToBeSynced.length > 0) {
-    toBeSynced = resourcesToBeSynced.filter(b => b.category === 'auth');
+    toBeSynced = resourcesToBeSynced.filter((b) => b.category === 'auth');
   }
   if (resourcesToBeDeleted && resourcesToBeDeleted.length > 0) {
-    toBeDeleted = resourcesToBeDeleted.filter(b => b.category === 'auth');
+    toBeDeleted = resourcesToBeDeleted.filter((b) => b.category === 'auth');
   }
 
   await ensureEnvParamManager();
 
-  toBeDeleted.forEach(authResource => {
+  toBeDeleted.forEach((authResource) => {
     amplify.removeResourceParameters(context, 'auth', authResource.resourceName);
   });
 
   toBeSynced
-    .filter(authResource => authResource.sync === 'unlink')
-    .forEach(authResource => {
+    .filter((authResource) => authResource.sync === 'unlink')
+    .forEach((authResource) => {
       amplify.removeResourceParameters(context, 'auth', authResource.resourceName);
     });
 
@@ -354,7 +353,7 @@ async function initEnv(context) {
     tasks.push(...allResources);
   }
 
-  const authTasks = tasks.map(authResource => {
+  const authTasks = tasks.map((authResource) => {
     const { resourceName } = authResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
@@ -375,7 +374,7 @@ async function authConsole(context) {
 
   return amplify
     .serviceSelectionPrompt(context, category, getSupportedServices())
-    .then(result => {
+    .then((result) => {
       const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
@@ -383,7 +382,7 @@ async function authConsole(context) {
       }
       return providerController.console(context, amplifyMeta);
     })
-    .catch(err => {
+    .catch((err) => {
       context.print.info(err.stack);
       context.print.error('There was an error trying to open the auth web console.');
       throw err;
@@ -396,7 +395,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     try {
       const providerName = amplifyMeta[category][resourceName].providerPlugin;
       if (providerName) {
@@ -466,9 +465,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
-      const {
-        userPoolId, identityPoolId, nativeClientId, webClientId,
-      } = JSONUtilities.parse(headlessPayload);
+      const { userPoolId, identityPoolId, nativeClientId, webClientId } = JSONUtilities.parse(headlessPayload);
       const projectConfig = context.amplify.getProjectConfig();
       const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
       const resourceParams = {
@@ -527,14 +524,14 @@ async function isSMSWorkflowEnabled(context, resourceName) {
  * Execute auth Push command with force yes
  * @param {Object} context - The amplify context.
  */
-const authPushYes = async context => {
+const authPushYes = async (context) => {
   const exeInfoClone = { ...context?.exeInfo };
   const parametersClone = { ...context?.parameters };
   try {
-    context.exeInfo = (context.exeInfo) || {};
-    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo = context.exeInfo || {};
+    context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
-    context.parameters = (context.parameters) || {};
+    context.parameters = context.parameters || {};
     context.parameters.options.yes = true;
     context.parameters.first = undefined;
     await authRunPush(context);
@@ -568,7 +565,7 @@ module.exports = {
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
   authPluginAPIPush: authPushYes,
-  getAuthTriggerStackCfnParameters
+  getAuthTriggerStackCfnParameters,
 };
 
 // force major version bump for cdk v2

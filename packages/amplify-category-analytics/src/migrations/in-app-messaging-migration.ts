@@ -6,7 +6,8 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
-  readCFNTemplate, writeCFNTemplate,
+  readCFNTemplate,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import * as path from 'path';
@@ -31,7 +32,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
   if (resources.length > 0 && !pinpointHasInAppMessagingPolicy(context)) {
     const amplifyMeta = stateManager.getMeta();
     const analytics = amplifyMeta[AmplifyCategories.ANALYTICS] || {};
-    Object.keys(analytics).forEach(resourceName => {
+    Object.keys(analytics).forEach((resourceName) => {
       const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
       const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
       const cfn = JSONUtilities.readJson(templateFilePath);
@@ -59,7 +60,14 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     const templateFileName = 'pinpoint-cloudformation-template.json';
     const templateFilePath = path.join(analyticsResourcePath, templateFileName);
     if (!fs.existsSync(templateFilePath)) {
-      const templateSourceFilePath = path.join(__dirname, '..', 'provider-utils', 'awscloudformation', 'cloudformation-templates', templateFileName);
+      const templateSourceFilePath = path.join(
+        __dirname,
+        '..',
+        'provider-utils',
+        'awscloudformation',
+        'cloudformation-templates',
+        templateFileName,
+      );
       const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
       cfnTemplate.Mappings = await getPinpointRegionMappings(context);
       await writeCFNTemplate(cfnTemplate, templateFilePath);
@@ -72,7 +80,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.ANALYTICS, resource, options);
 
     context.parameters.options.yes = true;
-    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true;
 
     await invokeAuthPush(context);
@@ -121,9 +129,7 @@ const migratePinpointCFN = (cfn: $TSAny): $TSAny => {
         Statement: [
           {
             Effect: 'Allow',
-            Action: [
-              'mobiletargeting:GetInAppMessages',
-            ],
+            Action: ['mobiletargeting:GetInAppMessages'],
             Resource: [
               {
                 'Fn::Join': [
@@ -145,10 +151,7 @@ const migratePinpointCFN = (cfn: $TSAny): $TSAny => {
                     },
                     ':apps/',
                     {
-                      'Fn::GetAtt': [
-                        'PinpointFunctionOutputs',
-                        'Id',
-                      ],
+                      'Fn::GetAtt': ['PinpointFunctionOutputs', 'Id'],
                     },
                     '*',
                   ],

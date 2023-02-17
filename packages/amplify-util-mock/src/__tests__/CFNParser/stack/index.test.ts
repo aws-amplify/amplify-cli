@@ -434,7 +434,7 @@ describe('CloudFormation stack', () => {
           },
         },
       };
-      cfnResourceFetcher.getCloudFormationStackTemplate = jest.fn().mockImplementation(templateName => {
+      cfnResourceFetcher.getCloudFormationStackTemplate = jest.fn().mockImplementation((templateName) => {
         const template = templateName.replace('https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/', '');
         return transformerOutput.stacks[template] as CloudFormationTemplate;
       });

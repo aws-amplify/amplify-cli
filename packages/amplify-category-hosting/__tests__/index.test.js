@@ -23,7 +23,7 @@ describe('index', () => {
       success: jest.fn(),
     },
     amplify: {
-      readJsonFile: jest.fn(filePath => {
+      readJsonFile: jest.fn((filePath) => {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
       }),
     },

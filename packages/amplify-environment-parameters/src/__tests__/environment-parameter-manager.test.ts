@@ -158,8 +158,9 @@ describe('getMissingParameters', () => {
     envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
-    expect(await envParamManager.getMissingParameters())
-      .toEqual([{ categoryName: 'function', resourceName: 'funcName', parameterName: 'missingParam' }]);
+    expect(await envParamManager.getMissingParameters()).toEqual([
+      { categoryName: 'function', resourceName: 'funcName', parameterName: 'missingParam' },
+    ]);
   });
 
   it('returns an empty array when a parameter is missing on an ignored resource', async () => {
@@ -170,9 +171,6 @@ describe('getMissingParameters', () => {
     envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
-    expect(
-      await envParamManager.getMissingParameters([{ category: 'auth', resourceName: 'mockAuth', service: 'Cognito' }])
-    ).toEqual([]);
-
+    expect(await envParamManager.getMissingParameters([{ category: 'auth', resourceName: 'mockAuth', service: 'Cognito' }])).toEqual([]);
   });
 });

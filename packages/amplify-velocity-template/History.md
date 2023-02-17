@@ -67,7 +67,7 @@
 ## 0.8.4 2016-07-04
 
 - fix bug when render `#foreach(${itemData} in ${defaultData})`, see
-[#69](https://github.com/shepherdwind/velocity.js/issues/69#issuecomment-230152986)
+  [#69](https://github.com/shepherdwind/velocity.js/issues/69#issuecomment-230152986)
 
 ## 0.8.3 2016-06-15
 
@@ -140,7 +140,7 @@ But now, in 0.8.0 version, a.c will not set as {}, so output is `$a.c.d`.
 ### 0.4.10 / 2015-01-08
 
 - fix: allow optional space after colon in map passed as parameter to macro
-      ([#38](https://github.com/shepherdwind/velocity.js/pull/38) by @jamescookie)
+  ([#38](https://github.com/shepherdwind/velocity.js/pull/38) by @jamescookie)
 
 ### 0.4.9 / 2014-12-29
 

@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
  * @param filePath - path to cert file
  * @returns p8 decoded content from the file
  */
-export const run = (filePath: string):string => {
+export const run = (filePath: string): string => {
   let content = fs.readFileSync(filePath, 'utf8');
   content = content.replace(/-----.*-----/gi, '').replace(/\s/g, '');
   return content.trim();

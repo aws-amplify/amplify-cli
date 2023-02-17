@@ -3,9 +3,7 @@ import path from 'path';
 import * as fs from 'fs-extra';
 import { stateManager, pathManager } from 'amplify-cli-core';
 import { CLOUD_INITIALIZED } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import {
-  capitalize, globCFNFilePath, ResourceDiff, stackMutationType,
-} from '../../../extensions/amplify-helpers/resource-status-diff';
+import { capitalize, globCFNFilePath, ResourceDiff, stackMutationType } from '../../../extensions/amplify-helpers/resource-status-diff';
 import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 // Mock Glob to fetch test cloudformation
@@ -24,7 +22,7 @@ const allFiles: string[] = [
   'schema.graphql',
 ];
 const templateMatchRegex = '.*template.(json|yaml|yml)$';
-globMock.sync.mockImplementation(() => allFiles.filter(fname => fname.match(templateMatchRegex)));
+globMock.sync.mockImplementation(() => allFiles.filter((fname) => fname.match(templateMatchRegex)));
 
 // Mock fs to pass all file-system checks
 jest.mock('fs-extra', () => ({

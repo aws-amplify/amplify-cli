@@ -7,10 +7,10 @@ process.on('message', (options: InvokeOptions) => {
   const parentPipe = createWriteStream('', { fd: 3 });
   parentPipe.setDefaultEncoding('utf-8');
   void invokeFunction(options)
-    .then(result => {
+    .then((result) => {
       parentPipe.write(JSON.stringify({ result }));
     })
-    .catch(error => {
+    .catch((error) => {
       let plainError = error;
       if (typeof error === 'object') {
         plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {

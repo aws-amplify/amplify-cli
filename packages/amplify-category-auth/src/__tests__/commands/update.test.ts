@@ -76,7 +76,7 @@ describe('auth update:', () => {
       serviceSelectionPrompt: mockSelectionPrompt,
       getPluginInstance: jest.fn().mockReturnValue(mockPluginInstance),
       getImportedAuthProperties: jest.fn().mockReturnValue({ imported: false }),
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
+      readJsonFile: jest.fn((path) => JSON.parse(fs.readFileSync(path, 'utf-8'))),
       pathManager: {
         getBackendDirPath: jest.fn(),
       },

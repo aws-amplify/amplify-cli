@@ -52,9 +52,7 @@ describe('headless auth', () => {
       deleteProjectDir(ogProjectRoot);
     });
 
-    test.each([
-      ['userpool with identitypool', true],
-    ])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
+    test.each([['userpool with identitypool', true]])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
       const ogProjectDetails = await setupOgProjectWithAuth(ogProjectRoot, ogProjectSettings, withIdentityPool);
 
       const importAuthRequest: ImportAuthRequest = {

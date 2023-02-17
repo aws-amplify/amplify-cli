@@ -28,13 +28,12 @@ const deleteParametersFromParameterStore = async (appId: string, envName: string
       return;
     }
     const chunkedKeys: Array<Array<string>> = chunkForParameterStore(envKeysInParameterStore);
-    const deleteKeysFromPSPromises = chunkedKeys.map(keys => {
+    const deleteKeysFromPSPromises = chunkedKeys.map((keys) => {
       const ssmArgument = getSsmSdkParametersDeleteParameters(keys);
       return () => ssmClient.deleteParameters(ssmArgument).promise();
     });
 
     await executeSdkPromisesWithExponentialBackOff<SSMType.DeleteParametersResult>(deleteKeysFromPSPromises);
-
   } catch (e) {
     throw new AmplifyFault(
       'ParametersDeleteFault',
@@ -58,10 +57,10 @@ const getAllEnvParametersFromParameterStore = async (appId: string, envName: str
   let receivedNextToken = '';
   do {
     const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, receivedNextToken);
-    const [data] = await executeSdkPromisesWithExponentialBackOff([
-      () => ssmClient.getParametersByPath(ssmArgument).promise(),
-    ]);
-    parametersUnderPath.push(...data.Parameters.map(returnedParameter => returnedParameter.Name).filter(name => isAmplifyParameter(name)));
+    const [data] = await executeSdkPromisesWithExponentialBackOff([() => ssmClient.getParametersByPath(ssmArgument).promise()]);
+    parametersUnderPath.push(
+      ...data.Parameters.map((returnedParameter) => returnedParameter.Name).filter((name) => isAmplifyParameter(name)),
+    );
     receivedNextToken = data.NextToken;
   } while (receivedNextToken);
   return parametersUnderPath;
@@ -72,7 +71,7 @@ const chunkForParameterStore = (keys: Array<string>): Array<Array<string>> => {
   const chunkedKeys: Array<Array<string>> = [];
   let lastChunk: Array<string> = [];
   chunkedKeys.push(lastChunk);
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (lastChunk.length === maxLength) {
       lastChunk = [];
       chunkedKeys.push(lastChunk);

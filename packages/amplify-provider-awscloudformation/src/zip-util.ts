@@ -35,9 +35,13 @@ export const extractZip = async (tempDir: string, zipFile: string): Promise<stri
 
     return unzippedDir;
   } catch (e) {
-    throw new AmplifyFault('ZipExtractFault', {
-      message: 'Failed to extract zip file: ',
-      details: e.message,
-    }, e);
+    throw new AmplifyFault(
+      'ZipExtractFault',
+      {
+        message: 'Failed to extract zip file: ',
+        details: e.message,
+      },
+      e,
+    );
   }
 };

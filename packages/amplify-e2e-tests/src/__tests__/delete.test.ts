@@ -143,7 +143,7 @@ async function putFiles(bucket: string, count = 1001) {
     Body: 'dummy body',
     Key: `${num}.txt`,
   }));
-  await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
+  await Promise.all(s3Params.map((p) => s3.putObject(p).promise()));
 }
 
 async function bucketExists(bucket: string) {

@@ -7,9 +7,9 @@ import { provideTrigger } from './providers/triggerProvider';
 import { provideLambdaAuth } from './providers/lambdaAuthProvider';
 import { graphqlRequest } from './providers/graphqlRequestProvider';
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       switch (request.selection) {
         case 'hello-world': {
           return provideHelloWorld();

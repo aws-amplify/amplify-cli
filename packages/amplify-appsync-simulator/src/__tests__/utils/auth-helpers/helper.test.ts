@@ -29,5 +29,4 @@ describe('extractIamToken', () => {
   it('should throw accessKeyId error when IAM token is not in the right format', () => {
     expect(() => extractIamToken(`AWS4-HMAC-SHA256 `, appSyncConfig)).toThrowError('missing accessKeyId');
   });
-  
 });

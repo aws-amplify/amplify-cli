@@ -48,7 +48,7 @@ export const pushResources = async (
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
 
-    if (allEnvs.findIndex(env => env === envName) !== -1) {
+    if (allEnvs.findIndex((env) => env === envName) !== -1) {
       context.exeInfo = {};
       context.exeInfo.forcePush = false;
 
@@ -106,22 +106,20 @@ export const pushResources = async (
     resourceParamManager.setParam(parameterName, value);
   };
 
-  const parametersToCheck = resourcesToBuild
-    .filter(({ category: c, resourceName: r }) => {
-      // Filter based on optional parameters
-      if (category) {
-        if (c !== category) {
-          return false;
-        }
+  const parametersToCheck = resourcesToBuild.filter(({ category: c, resourceName: r }) => {
+    // Filter based on optional parameters
+    if (category) {
+      if (c !== category) {
+        return false;
       }
-      if (resourceName) {
-        if (r !== resourceName) {
-          return false;
-        }
+    }
+    if (resourceName) {
+      if (r !== resourceName) {
+        return false;
       }
-      return true;
-    });
-
+    }
+    return true;
+  });
 
   if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
     await envParamManager.verifyExpectedEnvParameters(parametersToCheck);
@@ -129,7 +127,7 @@ export const pushResources = async (
     const missingParameters = await envParamManager.getMissingParameters(parametersToCheck);
     if (missingParameters.length > 0) {
       for (const { categoryName, resourceName, parameterName } of missingParameters) {
-        await promptMissingParameter(categoryName, resourceName, parameterName , envParamManager);
+        await promptMissingParameter(categoryName, resourceName, parameterName, envParamManager);
       }
       await envParamManager.save(); // Values must be in TPI for CFN deployment to work
     }

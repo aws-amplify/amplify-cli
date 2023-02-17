@@ -22,12 +22,11 @@ export function addCFNCustomResource(cwd: string, settings: any, testingWithLate
       .sendLine(settings.name || '\r')
       .wait('Do you want to access Amplify generated resources in your custom CloudFormation file?')
       .sendConfirmYes();
-      if(settings.promptForCategorySelection){
-        chain.wait('Select the categories you want this custom resource to have access to.')
-        .send(' ')
-        .sendCarriageReturn()
-      }
-      chain.wait(/.*/)
+    if (settings.promptForCategorySelection) {
+      chain.wait('Select the categories you want this custom resource to have access to.').send(' ').sendCarriageReturn();
+    }
+    chain
+      .wait(/.*/)
       .wait('Do you want to edit the CloudFormation stack now?')
       .sendConfirmNo()
       .sendEof()

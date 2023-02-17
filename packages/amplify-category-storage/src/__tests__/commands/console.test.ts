@@ -1,6 +1,4 @@
-import {
-  $TSContext, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { Printer, printer } from 'amplify-prompts';
 import { run } from '../../commands/storage/console';
 import * as providerController from '../../provider-utils/awscloudformation/index';

@@ -96,7 +96,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
               return;
             }
             try {
-              const tokenJson = (JSON.parse(Buffer.from(tokenBase64, 'base64').toString()) as unknown) as AdminAuthPayload;
+              const tokenJson = JSON.parse(Buffer.from(tokenBase64, 'base64').toString()) as unknown as AdminAuthPayload;
               await adminLoginServer.storeTokens(tokenJson, appId);
             } catch (e) {
               printer.error('Provided token was invalid.');

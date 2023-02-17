@@ -104,8 +104,8 @@ describe('remove walkthough test', () => {
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
-    const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
-      .removeWalkthrough;
+    const removeWalkthrough =
+      require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough').removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
 
     expect(returnValue).toBeUndefined();
@@ -135,8 +135,8 @@ describe('remove walkthough test', () => {
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
-    const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
-      .removeWalkthrough;
+    const removeWalkthrough =
+      require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough').removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
 
     expect(returnValue).toBeUndefined();
@@ -165,8 +165,8 @@ describe('remove walkthough test', () => {
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
-    const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
-      .removeWalkthrough;
+    const removeWalkthrough =
+      require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough').removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
 
     expect(returnValue).toBeUndefined();
@@ -189,8 +189,8 @@ describe('remove walkthough test', () => {
 
     loadLayerDataFromCloudMock.mockReturnValue(selectedlayerVersions);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
-    const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
-      .removeWalkthrough;
+    const removeWalkthrough =
+      require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough').removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
 
     expect(returnValue).toBeDefined();
@@ -212,8 +212,8 @@ describe('remove walkthough test', () => {
 
     loadLayerDataFromCloudMock.mockReturnValue(selectedlayerVersions);
     selectPromptMock.mockReturnValue({ versions: [] });
-    const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
-      .removeWalkthrough;
+    const removeWalkthrough =
+      require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough').removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
 
     expect(returnValue).toBeUndefined();

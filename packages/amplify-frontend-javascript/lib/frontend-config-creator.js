@@ -97,9 +97,9 @@ function deleteAmplifyConfig(context) {
   const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
   if (gqlConfig && gqlConfig.config) {
     const { projects } = gqlConfig.config;
-    Object.keys(projects).forEach(project => {
+    Object.keys(projects).forEach((project) => {
       const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
-      fileNames.forEach(filename => {
+      fileNames.forEach((filename) => {
         const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget] || 'graphql'}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
@@ -163,8 +163,8 @@ function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
   if (currentAWSExports) {
     Object.keys(currentAWSExports)
-      .filter(key => !CUSTOM_CONFIG_DENY_LIST.includes(key))
-      .forEach(key => {
+      .filter((key) => !CUSTOM_CONFIG_DENY_LIST.includes(key))
+      .forEach((key) => {
         if (!cloudAWSExports[key]) {
           customConfigs[key] = currentAWSExports[key];
         }
@@ -182,7 +182,7 @@ function getAWSExportsObject(resources) {
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
 
-  Object.keys(serviceResourceMapping).forEach(service => {
+  Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {
       case 'Cognito':
         Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
@@ -376,10 +376,10 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   };
 
   if (
-    cognitoResource.output.GoogleWebClient
-    || cognitoResource.output.FacebookWebClient
-    || cognitoResource.output.AmazonWebClient
-    || cognitoResource.output.AppleWebClient
+    cognitoResource.output.GoogleWebClient ||
+    cognitoResource.output.FacebookWebClient ||
+    cognitoResource.output.AmazonWebClient ||
+    cognitoResource.output.AppleWebClient
   ) {
     idpFederation = true;
   }
@@ -519,7 +519,7 @@ function getIdentifyConfig(identifyResources) {
   const baseConfig = {
     proxy: false,
   };
-  identifyResources.forEach(identifyResource => {
+  identifyResources.forEach((identifyResource) => {
     if (identifyResource.identifyType === 'identifyText') {
       resultConfig.identifyText = {
         ...baseConfig,
@@ -588,31 +588,35 @@ function getPinpointConfig(pinpointResources) {
 
   const pinpointConfig = {};
 
-  const pinpointAnalytics = pinpointResources.filter(it => (_.intersection(Object.keys(it.output), Object.keys(channelMapping))).length === 0)
-  const pinpointNotifications = pinpointResources.filter(it => (_.intersection(Object.keys(it.output), Object.keys(channelMapping))).length !== 0)
+  const pinpointAnalytics = pinpointResources.filter(
+    (it) => _.intersection(Object.keys(it.output), Object.keys(channelMapping)).length === 0,
+  );
+  const pinpointNotifications = pinpointResources.filter(
+    (it) => _.intersection(Object.keys(it.output), Object.keys(channelMapping)).length !== 0,
+  );
 
   if (pinpointAnalytics.length !== 0) {
     // legacy
-    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointAnalytics[0].output.Id;
-    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointAnalytics[0].output.Region;
+    pinpointConfig.aws_mobile_analytics_app_id = pinpointConfig.aws_mobile_analytics_app_id || pinpointAnalytics[0].output.Id;
+    pinpointConfig.aws_mobile_analytics_app_region = pinpointConfig.aws_mobile_analytics_app_region || pinpointAnalytics[0].output.Region;
 
     pinpointConfig.Analytics = {
       AWSPinpoint: {
         appId: pinpointConfig.aws_mobile_analytics_app_id,
         region: pinpointConfig.aws_mobile_analytics_app_region,
-      }
-    }
+      },
+    };
   }
 
   for (const [channel, plugin] of Object.entries(channelMapping)) {
-    const notificationPinpoint = pinpointNotifications.find(it => it.output?.[channel]?.Enabled);
+    const notificationPinpoint = pinpointNotifications.find((it) => it.output?.[channel]?.Enabled);
     if (notificationPinpoint) {
       pinpointConfig.Notifications = pinpointConfig.Notifications ?? {};
       pinpointConfig.Notifications[plugin] = {
         AWSPinpoint: {
           appId: notificationPinpoint.output[channel].ApplicationId,
           region: notificationPinpoint.output.Region,
-        }
+        },
       };
     }
   }
@@ -649,7 +653,7 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
 }
 
 function getLexConfig(lexResources) {
-  const config = lexResources.map(r => ({
+  const config = lexResources.map((r) => ({
     name: r.output.BotName,
     alias: '$LATEST',
     region: r.output.Region,
@@ -666,7 +670,7 @@ function getMapConfig(mapResources) {
   const mapConfig = {
     items: {},
   };
-  mapResources.forEach(mapResource => {
+  mapResources.forEach((mapResource) => {
     const mapName = mapResource.output.Name;
     mapConfig.items[mapName] = {
       style: mapResource.output.Style,
@@ -684,7 +688,7 @@ function getPlaceIndexConfig(placeIndexResources) {
   const placeIndexConfig = {
     items: [],
   };
-  placeIndexResources.forEach(placeIndexResource => {
+  placeIndexResources.forEach((placeIndexResource) => {
     const placeIndexName = placeIndexResource.output.Name;
     placeIndexConfig.items.push(placeIndexName);
     if (placeIndexResource.isDefault) {
@@ -700,7 +704,7 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
   const geofenceCollectionConfig = {
     items: [],
   };
-  geofenceCollectionResources.forEach(geofenceCollectionResource => {
+  geofenceCollectionResources.forEach((geofenceCollectionResource) => {
     const geofenceCollectionName = geofenceCollectionResource.output.Name;
     geofenceCollectionConfig.items.push(geofenceCollectionName);
     if (geofenceCollectionResource.isDefault) {

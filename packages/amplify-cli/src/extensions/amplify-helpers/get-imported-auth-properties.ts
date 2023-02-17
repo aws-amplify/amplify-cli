@@ -19,7 +19,7 @@ export const getImportedAuthProperties = (
 
   if (authCategory) {
     const importedAuthResources = Object.entries(authCategory).filter(
-      entry => (entry[1] as any).service === authServiceName && (entry[1] as any).serviceType === 'imported',
+      (entry) => (entry[1] as any).service === authServiceName && (entry[1] as any).serviceType === 'imported',
     );
 
     if (importedAuthResources.length === 1) {

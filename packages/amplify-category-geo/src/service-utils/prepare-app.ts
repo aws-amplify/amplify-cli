@@ -51,7 +51,9 @@ const findTransitiveDeps = (root: IConstruct): Dependency[] => {
     for (const dependable of source.node.dependencies) {
       for (const target of Dependable.of(dependable).dependencyRoots) {
         let foundTargets = found.get(source);
-        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
+        if (!foundTargets) {
+          found.set(source, (foundTargets = new Set()));
+        }
 
         if (!foundTargets.has(target)) {
           ret.push({ source, target });

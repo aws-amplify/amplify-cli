@@ -26,7 +26,7 @@ export const readHeadlessPayload = async (): Promise<string> => {
 
   // resolves a promise on the 'line' event
   return new Promise((resolve, reject) => {
-    rl.on('line', line => resolve(line));
+    rl.on('line', (line) => resolve(line));
     rl.on('close', () => reject(new Error('No input received on stdin')));
   });
 };
@@ -37,7 +37,7 @@ export const isYesFlagSet = (context: Context): boolean => {
   }
 
   // No exeInfo is constructed, get the yes flag from the input directly.
-  const inputParams = normalizeInputParams((context as unknown) as $TSContext);
+  const inputParams = normalizeInputParams(context as unknown as $TSContext);
 
   return inputParams?.yes;
 };

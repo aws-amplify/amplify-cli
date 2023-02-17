@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, Modal } from "semantic-ui-react";
+import { useState } from 'react';
+import { Button, Modal } from 'semantic-ui-react';
 
 type Props = {
   onClose: Function; // Used to close the modal when the user clicks on the cancel button
@@ -21,14 +21,14 @@ export function ClearDataModal(props: Props) {
     <Modal onClose={handleClose} open={isOpen}>
       <Modal.Header>Reset </Modal.Header>
       <Modal.Content>
-        <Modal.Description> {"Do you want to clear the data of your mock server?"} </Modal.Description>
+        <Modal.Description> {'Do you want to clear the data of your mock server?'} </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
         <Button primary onClick={handleReset}>
-          {"Clear"}
+          {'Clear'}
         </Button>
         <Button color="red" onClick={handleClose}>
-          {"Cancel"}
+          {'Cancel'}
         </Button>
       </Modal.Actions>
     </Modal>

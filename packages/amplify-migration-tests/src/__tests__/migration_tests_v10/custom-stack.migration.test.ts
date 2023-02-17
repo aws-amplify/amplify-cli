@@ -64,7 +64,7 @@ describe('adding custom resources migration test', () => {
     });
     expect(Object.keys(buildCFNFileJSON?.Outputs)).toEqual(['snsTopicArn']);
     const meta = getProjectMeta(projRoot);
-    const { snsTopicArn: customResourceSNSArn } = Object.keys(meta.custom).map(key => meta.custom[key])[0].output;
+    const { snsTopicArn: customResourceSNSArn } = Object.keys(meta.custom).map((key) => meta.custom[key])[0].output;
     expect(customResourceSNSArn).toBeDefined();
 
     // using latest code, pull down the project
@@ -90,7 +90,14 @@ describe('adding custom resources migration test', () => {
       await expect(buildCustomResources(projRoot2, usingLatestCode)).rejects.toThrow();
 
       // emulate updating the package.json dependencies
-      const srcVLatestCustomPackageJSONFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cdk-stack-vLatest.package.json');
+      const srcVLatestCustomPackageJSONFilePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'custom-resources',
+        'custom-cdk-stack-vLatest.package.json',
+      );
       const destVLatestCustomPackageJSONFilePath = path.join(projRoot2, 'amplify', 'backend', 'custom', cdkResourceName, 'package.json');
       fs.copyFileSync(srcVLatestCustomPackageJSONFilePath, destVLatestCustomPackageJSONFilePath);
 

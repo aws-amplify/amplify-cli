@@ -2,7 +2,7 @@ import { $TSContext, open } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { run } from '../setup-new-user';
 
-const context_stub = ({
+const context_stub = {
   print: {
     info: jest.fn(),
     warning: jest.fn(),
@@ -11,10 +11,10 @@ const context_stub = ({
   amplify: {
     makeId: jest.fn(),
     pressEnterToContinue: {
-      run: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
+      run: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
     },
   },
-} as unknown) as jest.Mocked<$TSContext>;
+} as unknown as jest.Mocked<$TSContext>;
 
 jest.mock('amplify-cli-core', () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),

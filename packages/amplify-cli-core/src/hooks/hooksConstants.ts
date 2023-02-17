@@ -3,19 +3,7 @@ import { HookExtensions, HooksNoun, HooksVerb } from './hooksTypes';
 export const hookFileSeparator = '-';
 
 export const supportedEvents: Record<HooksVerb, HooksNoun[]> = {
-  add: [
-    'notifications',
-    'analytics',
-    'api',
-    'auth',
-    'function',
-    'hosting',
-    'interactions',
-    'predictions',
-    'storage',
-    'codegen',
-    'env',
-  ],
+  add: ['notifications', 'analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'predictions', 'storage', 'codegen', 'env'],
   update: ['notifications', 'analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'predictions', 'storage', 'env'],
   remove: ['notifications', 'analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'predictions', 'storage', 'env'],
   push: ['analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'storage'],

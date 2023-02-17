@@ -65,7 +65,7 @@ export class CronExpression {
     this.buildExpressionSecondOptional(this.cronExpression.toUpperCase());
   }
 
-  private buildExpressionSecondOptional = function(cronExpression: string): void {
+  private buildExpressionSecondOptional = function (cronExpression: string): void {
     let parsesWithMissingSeconds = false;
     try {
       //assume the expression doesn't contain seconds
@@ -95,7 +95,7 @@ export class CronExpression {
     }
   };
 
-  buildExpression = function(cronExpression: string): void {
+  buildExpression = function (cronExpression: string): void {
     this.expressionParsed = true;
     try {
       if (this.seconds === null) {
@@ -168,7 +168,7 @@ export class CronExpression {
     }
   };
 
-  storeExpressionValues = function(pos: number, s: string, type: number): number {
+  storeExpressionValues = function (pos: number, s: string, type: number): number {
     let increment = 0;
     let i: number = this.skipWhiteSpace(pos, s);
     if (i >= s.length) {
@@ -334,7 +334,7 @@ export class CronExpression {
     return i;
   };
 
-  skipWhiteSpace = function(i: number, s: string): number {
+  skipWhiteSpace = function (i: number, s: string): number {
     for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {
       // empty
     }
@@ -342,7 +342,7 @@ export class CronExpression {
     return i;
   };
 
-  getMonthNumber = function(s: string): number {
+  getMonthNumber = function (s: string): number {
     const integer: number = monthMap.get(s);
 
     if (integer === undefined) {
@@ -352,7 +352,7 @@ export class CronExpression {
     return integer;
   };
 
-  getDayOfWeekNumber = function(s: string): number {
+  getDayOfWeekNumber = function (s: string): number {
     const integer: number = dayMap.get(s);
 
     if (integer === undefined) {
@@ -361,7 +361,7 @@ export class CronExpression {
 
     return integer;
   };
-  addToSet = function(val: number, end: number, increment: number, type: number) {
+  addToSet = function (val: number, end: number, increment: number, type: number) {
     const set = this.getSet(type);
 
     if (type === SECOND || type === MINUTE) {
@@ -452,7 +452,7 @@ export class CronExpression {
     }
   };
 
-  getSet = function(type: number) {
+  getSet = function (type: number) {
     switch (type) {
       case SECOND:
         return this.seconds;
@@ -473,7 +473,7 @@ export class CronExpression {
   };
 
   // get the string value
-  getValue = function(v: number, s: string, i: number) {
+  getValue = function (v: number, s: string, i: number) {
     let c: string = s.charAt(i);
     let s1 = String(v);
     while (c >= '0' && c <= '9') {
@@ -489,19 +489,19 @@ export class CronExpression {
     return val;
   };
 
-  getNumericValue = function(s: string, i: number): number {
+  getNumericValue = function (s: string, i: number): number {
     const endOfVal = this.findNextWhiteSpace(i, s);
     const val: string = s.substring(i, endOfVal);
     return Number(val);
   };
 
-  findNextWhiteSpace = function(i: number, s: string) {
+  findNextWhiteSpace = function (i: number, s: string) {
     for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {
       // empty
     }
     return i;
   };
-  checkNext = function(pos: number, s: string, val: number, type: number): number {
+  checkNext = function (pos: number, s: string, val: number, type: number): number {
     let end = -1;
     let i = pos;
 
@@ -625,7 +625,7 @@ export class CronExpression {
     return i;
   };
 
-  resetState = function() {
+  resetState = function () {
     // reset internal state
     this.expressionParsed = false;
 

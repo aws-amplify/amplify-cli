@@ -4,9 +4,7 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
-import {
-  nspawn as spawn, getCLIPath, singleSelect, addCircleCITags,
-} from '..';
+import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 
@@ -57,7 +55,10 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, {
-      cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection,
+      cwd,
+      stripColors: true,
+      env,
+      disableCIDetection: s.disableCIDetection,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -88,9 +89,11 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
         .wait('Please choose the profile you want to use')
         .sendLine(s.profileName);
     }
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (err) {
           reject(err);
         } else {
@@ -233,9 +236,11 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
       .sendLine(s.profileName);
 
     singleSelect(chain, s.region, amplifyRegions);
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -294,9 +299,11 @@ export function initProjectWithAccessKey(
       .wait('region');
 
     singleSelect(chain, s.region, amplifyRegions);
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -346,7 +353,6 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
-
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {

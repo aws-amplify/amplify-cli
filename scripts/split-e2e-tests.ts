@@ -110,7 +110,7 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
     true,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV5Tests.find(t => t === testName));
+      return tests.filter((testName) => migrationFromV5Tests.find((t) => t === testName));
     },
   );
   const splitV6MigrationTests = splitTestsV2(
@@ -121,7 +121,7 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
     true,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV6Tests.find(t => t === testName));
+      return tests.filter((testName) => migrationFromV6Tests.find((t) => t === testName));
     },
   );
   const splitV10MigrationTests = splitTestsV2(
@@ -132,7 +132,7 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
     true,
     (tests: string[]) => {
-      return tests.filter(testName => migrationFromV10Tests.find(t => t === testName));
+      return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
   console.log(counts);

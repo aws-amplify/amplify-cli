@@ -26,7 +26,7 @@ export function processApiResources(
   transformResult: any,
   appSyncConfig: AmplifyAppSyncSimulatorConfig,
 ): void {
-  Object.values(resources).forEach(resource => {
+  Object.values(resources).forEach((resource) => {
     const { Type: resourceType } = resource;
     const result: any = resource.result;
 
@@ -168,7 +168,7 @@ export function configureSearchEnabledTables(
     const eventSourceMappingPrefix = `Searchable${tableName.substring(0, tableName.lastIndexOf('Table'))}LambdaMapping`;
     return {
       ...table,
-      isSearchable: searchableStackResources?.findIndex(resource => resource?.startsWith(eventSourceMappingPrefix)) !== -1,
+      isSearchable: searchableStackResources?.findIndex((resource) => resource?.startsWith(eventSourceMappingPrefix)) !== -1,
     };
   });
   return processedResources;

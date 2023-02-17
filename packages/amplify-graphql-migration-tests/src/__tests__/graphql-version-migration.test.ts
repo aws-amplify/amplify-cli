@@ -23,11 +23,11 @@ describe('v1 to v2 migration', () => {
 
       // get initial nested stack names
       // TODO will probably have to update the logic a bit if we want to test @searchable migrations here as that will create a SearchableStack that we need to account for
-      const v1nestedStackNames = Object.keys(v1result.stacks).filter(stackName => stackName !== 'ConnectionStack'); // The v1 transformer puts all connection resolvers in a 'ConnectionStack'. This stack does not define any data resources
+      const v1nestedStackNames = Object.keys(v1result.stacks).filter((stackName) => stackName !== 'ConnectionStack'); // The v1 transformer puts all connection resolvers in a 'ConnectionStack'. This stack does not define any data resources
 
       // verify root stack diff
       const diff = cdkDiff.diffTemplate(v1result.rootStack, v2result.rootStack);
-      v1nestedStackNames.forEach(stackName => {
+      v1nestedStackNames.forEach((stackName) => {
         try {
           expect([ResourceImpact.WILL_UPDATE, ResourceImpact.NO_CHANGE]).toContain(diff.resources.changes[stackName].changeImpact);
         } catch (err) {
@@ -38,9 +38,9 @@ describe('v1 to v2 migration', () => {
 
       // verify nested stack diffs
       const nestedStackDiffRules = getNestedStackDiffRules();
-      v1nestedStackNames.forEach(stackName => {
+      v1nestedStackNames.forEach((stackName) => {
         const nestedStackDiff = cdkDiff.diffTemplate(v1result.stacks[stackName], v2result.stacks[stackName]);
-        nestedStackDiffRules.forEach(rule => rule(stackName, nestedStackDiff));
+        nestedStackDiffRules.forEach((rule) => rule(stackName, nestedStackDiff));
       });
     },
   );

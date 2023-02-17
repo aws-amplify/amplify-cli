@@ -80,7 +80,7 @@ export class OpenSearchEmulator {
 
 const wait = (ms: number) => {
   let timeoutHandle: NodeJS.Timeout;
-  const promise = new Promise(accept => {
+  const promise = new Promise((accept) => {
     timeoutHandle = global.setTimeout(accept, ms);
   });
 
@@ -300,10 +300,10 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
 
   await ensureDir(pathToOpenSearchLocal);
 
-  const latestSig = await nodeFetch(sigFileUrl).then(res => res.buffer());
+  const latestSig = await nodeFetch(sigFileUrl).then((res) => res.buffer());
 
-  const latestPublicKey = await nodeFetch(publicKeyUrl).then(res => res.text());
-  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then(res => res.buffer());
+  const latestPublicKey = await nodeFetch(publicKeyUrl).then((res) => res.text());
+  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then((res) => res.buffer());
 
   const signature = await openpgp.signature.read(latestSig);
   const publickey = await openpgp.key.readArmored(latestPublicKey);
