@@ -290,8 +290,8 @@ export const importedDynamoDBEnvInit = async (
   const dynamoDB = await providerUtils.createDynamoDBService(context);
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters

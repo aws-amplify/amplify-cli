@@ -45,7 +45,7 @@ export async function start(context: $TSContext) {
   const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
   context.print.blue('Starting execution...');
   try {
-    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options);
+    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as InvokerOptions);
     const stringResult =
       typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
     context.print.success('Result:');
@@ -58,7 +58,7 @@ export async function start(context: $TSContext) {
   }
 }
 
-interface InvokerOptions {
+export interface InvokerOptions {
   timeout?: string;
 }
 export const timeConstrainedInvoker = async <T>(promise: Promise<T>, options?: InvokerOptions): Promise<T> => {
@@ -94,7 +94,7 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
     onErrorMsg: 'Provide a valid unix-like path to a .json file',
     required: true,
   });
-  let eventName: string = context.input.options ? context.input.options.event : undefined;
+  let eventName: string = context.input.options?.event;
   let promptForEvent = true;
   if (eventName) {
     const validatorOutput = eventNameValidator(eventName);
@@ -122,7 +122,3 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
 
   return JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
 };
-
-interface InvokerOptions {
-  timeout?: string;
-}

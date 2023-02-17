@@ -11,7 +11,7 @@ export const alias = ['notification'];
  * @returns Returns Notifications feature flow output in test/windows environment , and undefined otherwise
  */
 export const run = async (context: $TSContext): Promise<$TSAny | undefined> => {
-  if (context.parameters.options.help) {
+  if (context.parameters.options?.help) {
     return runHelp(context);
   }
   if (/^win/.test(process.platform)) {
