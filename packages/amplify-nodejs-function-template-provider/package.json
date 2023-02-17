@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-nodejs-function-template-provider",
-  "version": "2.7.0-cdkv2.0",
+  "version": "2.7.0-cdkv2.1",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -25,8 +25,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-cdkv2.8",
-    "amplify-function-plugin-interface": "1.9.6-cdkv2.2",
+    "amplify-cli-core": "4.0.0-cdkv2.9",
+    "amplify-function-plugin-interface": "1.9.6-cdkv2.3",
     "graphql-transformer-core": "8.0.0-beta.5",
     "lodash": "^4.17.21"
   },

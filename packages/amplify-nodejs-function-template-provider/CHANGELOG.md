@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.7.0-cdkv2.0...@aws-amplify/amplify-nodejs-function-template-provider@2.7.0-cdkv2.1) (2023-02-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
+
+
+
+
+
 # 2.7.0-cdkv2.0 (2023-02-17)
 
 
