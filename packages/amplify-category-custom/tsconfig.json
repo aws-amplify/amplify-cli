@@ -5,13 +5,6 @@
     "rootDir": "src",
     "allowJs": false
   },
-  "exclude": [
-    "coverage",
-    "lib",
-    "resources",
-  ],
-  "references": [
-    { "path": "../amplify-cli-core" },
-    { "path": "../amplify-prompts" }
-  ]
+  "exclude": ["coverage", "lib", "resources"],
+  "references": [{ "path": "../amplify-cli-core" }, { "path": "../amplify-prompts" }]
 }

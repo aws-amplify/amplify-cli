@@ -12,16 +12,10 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
-import AWSAppSyncClient, {
-  AUTH_TYPE,
-} from 'aws-appsync';
-import {
-  existsSync,
-} from 'fs';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { existsSync } from 'fs';
 import gql from 'graphql-tag';
-import {
-  TRANSFORM_CURRENT_VERSION,
-} from 'graphql-transformer-core';
+import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
 
@@ -169,5 +163,4 @@ describe('amplify add api (GraphQL)', () => {
     expect(disableDSConfig).toBeDefined();
     expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
   });
-
 });

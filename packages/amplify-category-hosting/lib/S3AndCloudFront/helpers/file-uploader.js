@@ -27,7 +27,7 @@ async function run(context, distributionDirPath) {
     cloudFrontS3CanonicalUserId = originAccessIdentity.S3CanonicalUserId;
   }
 
-  fileList.forEach(filePath => {
+  fileList.forEach((filePath) => {
     uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId));
   });
 

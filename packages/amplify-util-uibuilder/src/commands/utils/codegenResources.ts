@@ -26,9 +26,7 @@ import {
   ReactThemeStudioTemplateRendererOptions,
 } from '@aws-amplify/codegen-ui-react';
 import { printer } from 'amplify-prompts';
-import {
-  $TSContext, AmplifyCategories, AmplifySupportedService, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { AmplifyStudioClient } from '../../clients';
 
@@ -68,7 +66,8 @@ export const createUiBuilderTheme = (
 ): StudioTheme => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (component: StudioTheme) => (new ReactThemeStudioTemplateRenderer(component, config, options) as unknown) as StudioTemplateRenderer<
+    (component: StudioTheme) =>
+      new ReactThemeStudioTemplateRenderer(component, config, options) as unknown as StudioTemplateRenderer<
         unknown,
         StudioTheme,
         FrameworkOutputManager<unknown>,
@@ -99,7 +98,8 @@ export const createUiBuilderTheme = (
 export const createUiBuilderForm = (context: $TSContext, schema: StudioForm, dataSchema?: GenericDataSchema): StudioForm => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (form: StudioForm) => (new AmplifyFormRenderer(form, dataSchema, config) as unknown) as StudioTemplateRenderer<
+    (form: StudioForm) =>
+      new AmplifyFormRenderer(form, dataSchema, config) as unknown as StudioTemplateRenderer<
         unknown,
         StudioForm,
         FrameworkOutputManager<unknown>,
@@ -130,7 +130,8 @@ export const createUiBuilderForm = (context: $TSContext, schema: StudioForm, dat
 export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: StudioSchema[]): void => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (schema: StudioSchema[]) => (new ReactIndexStudioTemplateRenderer(schema, config) as unknown) as StudioTemplateRenderer<
+    (schema: StudioSchema[]) =>
+      new ReactIndexStudioTemplateRenderer(schema, config) as unknown as StudioTemplateRenderer<
         unknown,
         StudioSchema[],
         FrameworkOutputManager<unknown>,
@@ -145,7 +146,7 @@ export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: 
   });
 
   try {
-    if(schemas.length) {
+    if (schemas.length) {
       rendererManager.renderSchemaToTemplate(schemas);
     }
   } catch (e) {
@@ -166,7 +167,7 @@ type UtilFileChecks = {
 export const generateAmplifyUiBuilderUtilFile = (context: $TSContext, { hasForms, hasViews }: UtilFileChecks): void => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (utils: UtilTemplateType[]) => (new ReactUtilsStudioTemplateRenderer(utils, config)),
+    (utils: UtilTemplateType[]) => new ReactUtilsStudioTemplateRenderer(utils, config),
   );
 
   const outputPathDir = uiBuilderComponentsPath;
@@ -202,9 +203,7 @@ export const generateAmplifyUiBuilderUtilFile = (context: $TSContext, { hasForms
  * If models are available, they will be populated in the models field of the returned object.
  * If they're not available, it will return undefined
  */
-export const getAmplifyDataSchema = async (
-  studioClient: AmplifyStudioClient,
-): Promise<GenericDataSchema | undefined> => {
+export const getAmplifyDataSchema = async (studioClient: AmplifyStudioClient): Promise<GenericDataSchema | undefined> => {
   if (!studioClient.isGraphQLSupported) {
     return undefined;
   }
@@ -231,8 +230,8 @@ export const getAmplifyDataSchema = async (
 /**
  * generates base create/update froms from names
  */
-export const generateBaseForms = (modelMap: {[model: string]: Set<'create' | 'update'>}): StudioForm[] => {
-  const getSchema = (name: string, type: 'create' | 'update') : StudioForm => ({
+export const generateBaseForms = (modelMap: { [model: string]: Set<'create' | 'update'> }): StudioForm[] => {
+  const getSchema = (name: string, type: 'create' | 'update'): StudioForm => ({
     name: `${name}${type === 'create' ? 'CreateForm' : 'UpdateForm'}`,
     formActionType: type,
     dataType: { dataSourceType: 'DataStore', dataTypeName: name },
@@ -242,10 +241,10 @@ export const generateBaseForms = (modelMap: {[model: string]: Set<'create' | 'up
     cta: {},
   });
 
-  const schemas : StudioForm[] = [];
+  const schemas: StudioForm[] = [];
 
   Object.entries(modelMap).forEach(([name, set]) => {
-    set.forEach(type => schemas.push(getSchema(name, type)));
+    set.forEach((type) => schemas.push(getSchema(name, type)));
   });
   return schemas;
 };

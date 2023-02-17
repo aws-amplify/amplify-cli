@@ -21,7 +21,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       const optPath = path.join(layerDirPath, 'opt');
 
       const conflicts: string[] = [];
-      libGlob.forEach(lib => {
+      libGlob.forEach((lib) => {
         const basename = path.basename(lib);
         if (fs.pathExistsSync(path.join(optPath, basename))) {
           conflicts.push(basename);
@@ -29,7 +29,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       });
 
       if (conflicts.length > 0) {
-        const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
+        const libs = conflicts.map((lib) => `"/${lib}"`).join(', ');
         const plural = conflicts.length > 1 ? 'ies' : 'y';
         context.print.warning(
           // eslint-disable-next-line spellcheck/spell-checker
@@ -37,7 +37,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
         );
       }
 
-      [...libGlob].forEach(folder => {
+      [...libGlob].forEach((folder) => {
         if (fs.lstatSync(folder).isDirectory()) {
           zipEntries.push({ packageFolder: folder });
         }
@@ -46,7 +46,21 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       zipEntries.push({
         sourceFolder: path.join(params.srcRoot, 'src'),
         packageFolder: await getPipenvDir(params.srcRoot),
-        ignoreFiles: ['**/dist/**', '**/__pycache__/**', '**/test/**', '**/tests/**', 'distutils**', 'pip**', 'pkg_resources**', 'setuptools**', 'src.egg-info/**', 'wheel**', '_virtualenv**', 'easy-install.pth', 'src.egg-link'],
+        ignoreFiles: [
+          '**/dist/**',
+          '**/__pycache__/**',
+          '**/test/**',
+          '**/tests/**',
+          'distutils**',
+          'pip**',
+          'pkg_resources**',
+          'setuptools**',
+          'src.egg-info/**',
+          'wheel**',
+          '_virtualenv**',
+          'easy-install.pth',
+          'src.egg-link',
+        ],
       });
     }
     return Promise.resolve({ packageHash, zipEntries });

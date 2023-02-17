@@ -39,15 +39,11 @@ describe('Velocity $context.util.time', () => {
 
   describe('nowFormatted', () => {
     it('should format with JavaScript parameters correctly', () => {
-      expect(time.nowFormatted(FORMAT_CUSTOM_ZONED, 'Australia/Perth')).toEqual(
-        TEST_TIMESTAMP_CUSTOM_PLUS8,
-      );
+      expect(time.nowFormatted(FORMAT_CUSTOM_ZONED, 'Australia/Perth')).toEqual(TEST_TIMESTAMP_CUSTOM_PLUS8);
     });
 
     it('should format with Java parameters correctly', () => {
-      expect(time.nowFormatted(valueMap(FORMAT_CUSTOM_ZONED), valueMap('Australia/Perth'))).toEqual(
-        TEST_TIMESTAMP_CUSTOM_PLUS8,
-      );
+      expect(time.nowFormatted(valueMap(FORMAT_CUSTOM_ZONED), valueMap('Australia/Perth'))).toEqual(TEST_TIMESTAMP_CUSTOM_PLUS8);
     });
   });
 
@@ -72,19 +68,37 @@ describe('Velocity $context.util.time', () => {
       );
     });
     it('should parse Java parameters correctly', () => {
-      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_UTC), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(TEST_TIMESTAMP_MILLIS);
-      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_PLUS8), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(TEST_TIMESTAMP_MILLIS);
-      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_UTC), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(TEST_TIMESTAMP_MILLIS);
-      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_PLUS8), valueMap(FORMAT_CUSTOM_ZONED), valueMap('Australia/Perth'))).toEqual(
+      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_UTC), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(
         TEST_TIMESTAMP_MILLIS,
       );
-      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_UTC_UNZONED), valueMap(FORMAT_CUSTOM_UNZONED), valueMap('UTC'))).toEqual(
+      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_PLUS8), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(
         TEST_TIMESTAMP_MILLIS,
       );
+      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_UTC), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(
+        TEST_TIMESTAMP_MILLIS,
+      );
+      expect(
+        time.parseFormattedToEpochMilliSeconds(
+          valueMap(TEST_TIMESTAMP_CUSTOM_PLUS8),
+          valueMap(FORMAT_CUSTOM_ZONED),
+          valueMap('Australia/Perth'),
+        ),
+      ).toEqual(TEST_TIMESTAMP_MILLIS);
+      expect(
+        time.parseFormattedToEpochMilliSeconds(
+          valueMap(TEST_TIMESTAMP_CUSTOM_UTC_UNZONED),
+          valueMap(FORMAT_CUSTOM_UNZONED),
+          valueMap('UTC'),
+        ),
+      ).toEqual(TEST_TIMESTAMP_MILLIS);
 
-      expect(time.parseFormattedToEpochMilliSeconds(valueMap(TEST_TIMESTAMP_CUSTOM_PLUS8_UNZONED), valueMap(FORMAT_CUSTOM_UNZONED), valueMap('Australia/Perth'))).toEqual(
-        TEST_TIMESTAMP_MILLIS,
-      );
+      expect(
+        time.parseFormattedToEpochMilliSeconds(
+          valueMap(TEST_TIMESTAMP_CUSTOM_PLUS8_UNZONED),
+          valueMap(FORMAT_CUSTOM_UNZONED),
+          valueMap('Australia/Perth'),
+        ),
+      ).toEqual(TEST_TIMESTAMP_MILLIS);
     });
   });
 
@@ -125,10 +139,12 @@ describe('Velocity $context.util.time', () => {
       );
     });
     it('should convert Java parameters to the correct formatted string', () => {
-      expect(time.epochMilliSecondsToFormatted(valueMap(TEST_TIMESTAMP_MILLIS), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(TEST_TIMESTAMP_CUSTOM_UTC);
-      expect(time.epochMilliSecondsToFormatted(valueMap(TEST_TIMESTAMP_MILLIS), valueMap(FORMAT_CUSTOM_ZONED), valueMap('Australia/Perth'))).toEqual(
-        TEST_TIMESTAMP_CUSTOM_PLUS8,
+      expect(time.epochMilliSecondsToFormatted(valueMap(TEST_TIMESTAMP_MILLIS), valueMap(FORMAT_CUSTOM_ZONED))).toEqual(
+        TEST_TIMESTAMP_CUSTOM_UTC,
       );
+      expect(
+        time.epochMilliSecondsToFormatted(valueMap(TEST_TIMESTAMP_MILLIS), valueMap(FORMAT_CUSTOM_ZONED), valueMap('Australia/Perth')),
+      ).toEqual(TEST_TIMESTAMP_CUSTOM_PLUS8);
     });
   });
 });

@@ -217,7 +217,7 @@ describe('amplify app console tests', () => {
     expect(stackName).toBeDefined();
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
+    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
     expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     deleteAmplifyDir(projRoot);
@@ -242,7 +242,7 @@ describe('amplify app console tests', () => {
     appId = teamInfo[envName].awscloudformation.AmplifyAppId;
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
+    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
     expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     // with frontend
@@ -308,7 +308,7 @@ describe('amplify app console tests', () => {
     expect(stackName).toBeDefined();
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
+    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
     expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     deleteAmplifyDir(projRoot);
@@ -320,7 +320,7 @@ describe('amplify app console tests', () => {
     appId = teamInfo[envName].awscloudformation.AmplifyAppId;
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
-    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
+    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map((key) => teamInfo[envName].categories.auth[key])[0];
     expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
   });
 });

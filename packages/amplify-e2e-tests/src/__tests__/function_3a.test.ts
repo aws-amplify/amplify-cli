@@ -1,6 +1,14 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth, getBackendAmplifyMeta,
-  addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  getBackendAmplifyMeta,
+  addFunction,
+  functionMockAssert,
+  functionCloudInvoke,
+  createNewProjectDir,
+  deleteProjectDir,
+  generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
 

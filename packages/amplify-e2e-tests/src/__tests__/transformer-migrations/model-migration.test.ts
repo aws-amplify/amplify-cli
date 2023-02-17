@@ -6,7 +6,11 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';

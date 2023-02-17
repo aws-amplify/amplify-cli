@@ -30,7 +30,7 @@ export class BaseStack extends cdk.Stack {
    */
   constructInputParameters(parameterNames: Array<string>): Map<string, cdk.CfnParameter> {
     const parametersMap: Map<string, cdk.CfnParameter> = new Map();
-    parameterNames.forEach(parameterName => {
+    parameterNames.forEach((parameterName) => {
       const inputParameter = new cdk.CfnParameter(this, parameterName, { type: 'String' });
       parametersMap.set(parameterName, inputParameter);
     });
@@ -44,5 +44,5 @@ export class BaseStack extends cdk.Stack {
     prepareApp(this);
     const cfn = this._toCloudFormation();
     return cfn;
-  }
+  };
 }

@@ -55,16 +55,16 @@ describe('api migration update test b', () => {
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
 
-    const cognito = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
+    const cognito = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
 
     expect(cognito).toBeDefined();
     expect(cognito.userPoolConfig).toBeDefined();
 
-    const iam = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AWS_IAM')[0];
+    const iam = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AWS_IAM')[0];
 
     expect(iam).toBeDefined();
 
-    const oidc = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'OPENID_CONNECT')[0];
+    const oidc = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'OPENID_CONNECT')[0];
 
     expect(oidc).toBeDefined();
     expect(oidc.openIDConnectConfig).toBeDefined();

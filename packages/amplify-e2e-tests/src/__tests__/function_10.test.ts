@@ -1,5 +1,6 @@
 import {
-  addApiWithBlankSchema, addFunction,
+  addApiWithBlankSchema,
+  addFunction,
   amplifyPush,
   amplifyPushFunction,
   createNewProjectDir,
@@ -31,11 +32,14 @@ describe('test function deploy when other resources are present', () => {
     await updateApiSchema(projectRoot, apiName, 'simple_model.graphql');
     await amplifyPush(projectRoot);
     const fnName = `integtestFn${generateRandomShortId()}`;
-    await addFunction(projectRoot, {
-      name: fnName,
-      functionTemplate: 'Hello World',
-    },
-    'nodejs');
+    await addFunction(
+      projectRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+      },
+      'nodejs',
+    );
     await amplifyPushFunction(projectRoot);
   });
 });

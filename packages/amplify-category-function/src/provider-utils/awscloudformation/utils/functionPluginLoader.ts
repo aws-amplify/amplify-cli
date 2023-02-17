@@ -26,7 +26,7 @@ export async function templateWalkthrough(context: $TSContext, params: Partial<F
   const selectionOptions: PluginSelectionOptions<FunctionTemplateCondition> = {
     pluginType: 'functionTemplate',
     listOptionsField: 'templates',
-    predicate: condition => {
+    predicate: (condition) => {
       return (
         condition.provider === params.providerContext.provider &&
         condition.services.includes(service) &&
@@ -65,12 +65,12 @@ export async function runtimeWalkthrough(
   //get the runtimes from template parameters
   let runtimeLayers;
   if (isLayerParameter(params)) {
-    runtimeLayers = params.runtimes.map(runtime => runtime.name);
+    runtimeLayers = params.runtimes.map((runtime) => runtime.name);
   }
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
-    predicate: condition => {
+    predicate: (condition) => {
       return condition.provider === params.providerContext.provider && condition.services.includes(service);
     },
     selectionPrompt: 'Choose the runtime that you want to use:',
@@ -137,17 +137,17 @@ async function getSelectionsFromContributors<T>(
   // load the selections contributed from each provider, constructing a map of selection to provider as we go
   const selectionMap: Map<string, { path: string; pluginId: string }> = new Map();
   const selections = templateProviders
-    .filter(meta => selectionOptions.predicate(meta.manifest[selectionOptions.pluginType].conditions))
-    .map(meta => {
+    .filter((meta) => selectionOptions.predicate(meta.manifest[selectionOptions.pluginType].conditions))
+    .map((meta) => {
       const packageLoc = meta.packageLocation;
       const pluginId = meta.manifest[selectionOptions.pluginType].pluginId;
-      (meta.manifest[selectionOptions.pluginType][selectionOptions.listOptionsField] as ListOption[]).forEach(op => {
+      (meta.manifest[selectionOptions.pluginType][selectionOptions.listOptionsField] as ListOption[]).forEach((op) => {
         selectionMap.set(op.value, { path: packageLoc, pluginId });
       });
       return meta;
     })
-    .map(meta => meta.manifest[selectionOptions.pluginType])
-    .map(contributes => contributes[selectionOptions.listOptionsField])
+    .map((meta) => meta.manifest[selectionOptions.pluginType])
+    .map((contributes) => contributes[selectionOptions.listOptionsField])
     .reduce((acc, it) => acc.concat(it), [])
     .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
@@ -187,7 +187,7 @@ async function getSelectionsFromContributors<T>(
     selection = [selection];
   }
 
-  return selection.map(s => {
+  return selection.map((s) => {
     return {
       value: s,
       pluginPath: selectionMap.get(s).path,
@@ -197,8 +197,10 @@ async function getSelectionsFromContributors<T>(
 }
 
 function isDefaultDefined(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>) {
-  return selectionOptions.defaultSelection &&
-    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime');
+  return (
+    selectionOptions.defaultSelection &&
+    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime')
+  );
 }
 
 export async function loadPluginFromFactory(pluginPath: string, expectedFactoryFunction: string, context: $TSContext): Promise<$TSAny> {
@@ -263,8 +265,8 @@ function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRunti
   } else {
     if (selectionOptions.runtimeState !== undefined) {
       return selections
-        .filter(selection => selectionOptions.runtimeState.includes(selection.name))
-        .forEach(selection => _.assign(selection, { checked: true }));
+        .filter((selection) => selectionOptions.runtimeState.includes(selection.name))
+        .forEach((selection) => _.assign(selection, { checked: true }));
     } else {
       return undefined;
     }

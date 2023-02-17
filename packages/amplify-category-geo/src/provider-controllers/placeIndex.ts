@@ -4,13 +4,15 @@ import { category } from '../constants';
 import { ServiceName } from '../service-utils/constants';
 import { convertToCompletePlaceIndexParams, PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { createPlaceIndexResource, getCurrentPlaceIndexParameters, modifyPlaceIndexResource } from '../service-utils/placeIndexUtils';
-import { createPlaceIndexWalkthrough, updateDefaultPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../service-walkthroughs/placeIndexWalkthrough';
+import {
+  createPlaceIndexWalkthrough,
+  updateDefaultPlaceIndexWalkthrough,
+  updatePlaceIndexWalkthrough,
+} from '../service-walkthroughs/placeIndexWalkthrough';
 import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
 
-export const addPlaceIndexResource = async (
-  context: $TSContext,
-): Promise<string> => {
+export const addPlaceIndexResource = async (context: $TSContext): Promise<string> => {
   // initialize the Place Index parameters
   const placeIndexParams: Partial<PlaceIndexParameters> = {
     providerContext: setProviderContext(context, ServiceName.PlaceIndex),
@@ -26,9 +28,7 @@ export const addPlaceIndexResource = async (
   return completeParameters.name;
 };
 
-export const updatePlaceIndexResource = async (
-  context: $TSContext,
-): Promise<string> => {
+export const updatePlaceIndexResource = async (context: $TSContext): Promise<string> => {
   const placeIndexParams: Partial<PlaceIndexParameters> = {
     providerContext: setProviderContext(context, ServiceName.PlaceIndex),
   };
@@ -43,9 +43,7 @@ export const updatePlaceIndexResource = async (
   return completeParameters.name;
 };
 
-export const removePlaceIndexResource = async (
-  context: $TSContext,
-): Promise<string | undefined> => {
+export const removePlaceIndexResource = async (context: $TSContext): Promise<string | undefined> => {
   const resourceToRemove = await removeWalkthrough(ServiceName.PlaceIndex);
   if (!resourceToRemove) return undefined;
 

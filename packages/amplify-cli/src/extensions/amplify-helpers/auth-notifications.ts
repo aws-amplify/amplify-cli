@@ -96,8 +96,9 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
   const resolversToCheck = Object.entries(resolvers)
     .filter(([resolverFileName, __]) => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
     .map(([__, resolverCode]) => resolverCode);
-  const listQueryPattern = /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
-  const resolversToSecure = resolversToCheck.filter(resolver => listQueryPattern.test(resolver));
+  const listQueryPattern =
+    /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
+  const resolversToSecure = resolversToCheck.filter((resolver) => listQueryPattern.test(resolver));
   if (resolversToSecure.length === 0) {
     return false;
   }
@@ -243,7 +244,7 @@ export const hasFieldAuthDirectives = (doc: DocumentNode): Set<string> => {
   doc.definitions?.forEach((def: $TSAny) => {
     const withAuth: FieldNode[] = (def.fields || []).filter((field: FieldDefinitionNode) => {
       const nonNullable = field.type.kind === 'NonNullType';
-      const hasAuth = field.directives?.some(dir => dir.name.value === 'auth');
+      const hasAuth = field.directives?.some((dir) => dir.name.value === 'auth');
       return hasAuth && nonNullable;
     });
 
@@ -263,7 +264,7 @@ export const hasV2AuthDirectives = (doc: DocumentNode): boolean => {
   const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
 
   doc.definitions?.forEach((def: $TSAny) => {
-    if (def.directives?.some(dir => dir.name.value === 'auth')) {
+    if (def.directives?.some((dir) => dir.name.value === 'auth')) {
       containsAuthDir = true;
     }
   });
@@ -301,7 +302,7 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
 
     const directiveMap = collectDirectivesByTypeNames(project.schema);
     const notifyAuthWithKey = Object.keys(directiveMap.types).some(
-      type => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
+      (type) => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
     );
 
     if (meta?.auth && notifyAuthWithKey) {

@@ -107,7 +107,7 @@ async function addScene(context) {
       name: 'sceneName',
       type: 'input',
       message: 'Provide a name for the scene:',
-      validate: name => {
+      validate: (name) => {
         const existingScenes = getExistingScenes(context);
         if (existingScenes.includes(name)) {
           return `${name} already exists. The scene name must be unique within the project`;
@@ -119,7 +119,7 @@ async function addScene(context) {
         return true;
       },
     })
-    .then(answer => {
+    .then((answer) => {
       sceneName = answer.sceneName;
     });
 
@@ -144,7 +144,7 @@ async function addSceneConfig(context, sceneName) {
     name: 'configFilePath',
     type: 'input',
     message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
-    validate: configFilePath => {
+    validate: (configFilePath) => {
       try {
         if (fs.existsSync(configFilePath)) {
           sumerianConfig = context.amplify.readJsonFile(configFilePath);
@@ -214,7 +214,7 @@ async function updateScene(context) {
       type: 'list',
       choices: existingScenes,
     })
-    .then(async answer => {
+    .then(async (answer) => {
       await addSceneConfig(context, answer.sceneToUpdate);
       context.print.info(`${chalk.green(answer.sceneToUpdate)} has been updated.`);
     });
@@ -223,10 +223,10 @@ async function updateScene(context) {
 async function remove(context) {
   return context.amplify
     .removeResource(context, constants.CategoryName)
-    .then(resource => {
+    .then((resource) => {
       context.amplify.removeResourceParameters(context, constants.CategoryName, resource.resourceName);
     })
-    .catch(err => {
+    .catch((err) => {
       context.print.info(err.stack);
       context.usageData.emitError(err);
       process.exitCode = 1;
@@ -272,7 +272,7 @@ function getIAMPolicies(context, resourceName, crudOptions) {
   let policy = {};
   let actions = new Set();
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption) => {
     switch (crudOption) {
       case 'create':
         actions.add('sumerian:Login');

@@ -13,7 +13,7 @@ export class TemplateSentError extends Error {
       path = path.prev;
     } while (path);
 
-    const fieldNode = info.fieldNodes.find(f => f.name.value === fieldName);
+    const fieldNode = info.fieldNodes.find((f) => f.name.value === fieldName);
     const filedLocation = (fieldNode && fieldNode.loc.startToken) || null;
     this.extensions = {
       message: message,

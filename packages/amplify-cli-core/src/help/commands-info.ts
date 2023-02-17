@@ -744,12 +744,6 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandUsage: 'amplify api override',
         subCommandFlags: [],
       },
-      {
-        subCommand: 'push',
-        subCommandDescription: 'Provisions cloud resources with the latest local changes',
-        subCommandUsage: 'amplify api push',
-        subCommandFlags: [],
-      },
     ],
   },
   {

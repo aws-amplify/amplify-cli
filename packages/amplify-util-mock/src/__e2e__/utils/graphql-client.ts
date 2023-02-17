@@ -23,7 +23,7 @@ export class GraphQLClient {
         query,
         variables,
       },
-      { headers: this.headers }
+      { headers: this.headers },
     );
     return axRes.data;
   }

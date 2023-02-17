@@ -5,7 +5,7 @@ import { Printer, printer as defaultPrinter } from './printer';
  */
 class AmplifyPrintFormatter implements Formatter {
   constructor(private readonly printer: Printer = defaultPrinter) {}
-  list = (items: string[]) => items.forEach(item => this.printer.info(`- ${item}`));
+  list = (items: string[]) => items.forEach((item) => this.printer.info(`- ${item}`));
 }
 
 export const formatter: Formatter = new AmplifyPrintFormatter();

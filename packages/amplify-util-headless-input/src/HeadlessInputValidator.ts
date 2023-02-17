@@ -58,9 +58,7 @@ export class HeadlessInputValidator {
 /**
  * Function that takes a version number and returns a root schema and any dependency schemas for that schema version
  */
-export type VersionedSchemaSupplier = (
-  version: number,
-) => Promise<{
+export type VersionedSchemaSupplier = (version: number) => Promise<{
   readonly rootSchema: JSONSchema7;
   readonly dependencySchemas?: JSONSchema7[];
 } | void>;

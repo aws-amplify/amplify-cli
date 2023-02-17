@@ -7,7 +7,7 @@ import { FunctionSecretsStateManager, getLocalFunctionSecretNames } from './func
 
 export const cloneSecretsOnEnvInitHandler = async (context: $TSContext, sourceEnv: string, destEnv: string) => {
   const functionNames = Object.keys((stateManager.getBackendConfig(undefined, { throwIfNotExist: false }) || {})?.[categoryName]);
-  const functionsWithSecrets = functionNames.filter(name => !!getLocalFunctionSecretNames(name).length);
+  const functionsWithSecrets = functionNames.filter((name) => !!getLocalFunctionSecretNames(name).length);
 
   // if there are no functions with secrets, there's nothing to clone
   if (!functionsWithSecrets.length) {

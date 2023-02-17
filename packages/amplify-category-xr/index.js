@@ -44,7 +44,7 @@ async function initEnv(context) {
           type: 'list',
           choices: envsWithXR,
         })
-        .then(envAnswer => {
+        .then((envAnswer) => {
           const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
           Object.entries(xrResources).forEach(([resource, config]) => {
             const options = {
@@ -78,7 +78,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     const { policy, attributes } = xrManager.getIAMPolicies(context, resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category: XR_CATEGORY_NAME });

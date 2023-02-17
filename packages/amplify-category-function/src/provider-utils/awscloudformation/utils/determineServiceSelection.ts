@@ -4,9 +4,9 @@ import { supportedServices } from '../../supported-services';
 
 export const determineServiceSelection = async (context, chooseServiceMessage) => {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaLayerExists = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).length > 0;
+  const lambdaLayerExists = allResources.filter((resource) => resource.service === ServiceName.LambdaLayer).length > 0;
   const lambdaFunctionExists =
-    allResources.filter(resource => resource.service === ServiceName.LambdaFunction && resource.mobileHubMigrated !== true).length > 0;
+    allResources.filter((resource) => resource.service === ServiceName.LambdaFunction && resource.mobileHubMigrated !== true).length > 0;
 
   if ((!lambdaFunctionExists && !lambdaLayerExists) || (lambdaFunctionExists && !lambdaLayerExists)) {
     return {

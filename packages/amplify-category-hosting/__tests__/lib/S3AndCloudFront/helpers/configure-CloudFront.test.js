@@ -29,7 +29,7 @@ describe('configure-CloudFront', () => {
           return 'mockProjectRootDirPath';
         }),
       },
-      readJsonFile: jsonFilePath => {
+      readJsonFile: (jsonFilePath) => {
         let content = fs.readFileSync(jsonFilePath, 'utf8');
         if (content.charCodeAt(0) === 0xfeff) {
           content = content.slice(1);
@@ -90,10 +90,7 @@ describe('configure-CloudFront', () => {
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
     amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Remove CloudFront from hosting
-    amplifyPrompts.prompter.input = jest
-      .fn()
-      .mockResolvedValueOnce('index.html')
-      .mockResolvedValueOnce('error.html');
+    amplifyPrompts.prompter.input = jest.fn().mockResolvedValueOnce('index.html').mockResolvedValueOnce('error.html');
 
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
@@ -157,10 +154,7 @@ describe('configure-CloudFront', () => {
       .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
       .mockResolvedValueOnce(mockDefaultCacheMinTTL);
 
-    amplifyPrompts.prompter.pick = jest
-      .fn()
-      .mockResolvedValueOnce(configActions.list)
-      .mockResolvedValueOnce(configActions.done);
+    amplifyPrompts.prompter.pick = jest.fn().mockResolvedValueOnce(configActions.list).mockResolvedValueOnce(configActions.done);
 
     let result = await configureCloudFront.configure(mockContext);
     expect(result).toEqual(mockContext);
@@ -308,10 +302,7 @@ describe('configure-CloudFront', () => {
       .mockResolvedValueOnce(mockDefaultCacheMaxTTL)
       .mockResolvedValueOnce(mockDefaultCacheMinTTL);
 
-    amplifyPrompts.prompter.pick = jest
-      .fn()
-      .mockResolvedValueOnce(configActions.removeAll)
-      .mockResolvedValueOnce(configActions.done);
+    amplifyPrompts.prompter.pick = jest.fn().mockResolvedValueOnce(configActions.removeAll).mockResolvedValueOnce(configActions.done);
 
     const { DistributionConfig } = mockContext.exeInfo.template.Resources.CloudFrontDistribution.Properties;
     let result = await configureCloudFront.configure(mockContext);

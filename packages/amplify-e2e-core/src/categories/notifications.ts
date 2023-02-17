@@ -75,8 +75,5 @@ export const addNotificationChannel = async (
       break;
   }
 
-  return chain
-    .wait(`The ${channel} channel has been successfully enabled`)
-    .sendEof()
-    .runAsync();
+  return chain.wait(`The ${channel} channel has been successfully enabled`).sendEof().runAsync();
 };

@@ -62,7 +62,10 @@ async function setBucketName(context, bucketName) {
   }
 
   bucketName = bucketName.replace(/[^-a-z0-9]/g, '');
-  context.exeInfo.parameters.bucketName = await prompter.input('hosting bucket name', { initial: bucketName, validate: validateBucketName });
+  context.exeInfo.parameters.bucketName = await prompter.input('hosting bucket name', {
+    initial: bucketName,
+    validate: validateBucketName,
+  });
 }
 
 module.exports = {

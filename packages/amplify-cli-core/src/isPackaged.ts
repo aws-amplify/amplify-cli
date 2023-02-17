@@ -1,1 +1,1 @@
-export const isPackaged = !!((process as unknown) as { pkg: any }).pkg;
+export const isPackaged = !!(process as unknown as { pkg: any }).pkg;

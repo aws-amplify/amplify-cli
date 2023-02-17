@@ -112,7 +112,7 @@ export class JSONUtilities {
         keepWsc: mergedOptions.preserveComments,
       });
     } else {
-      return (jsonString as unknown) as T;
+      return jsonString as unknown as T;
     }
 
     return data as T;
@@ -142,7 +142,10 @@ export class JSONUtilities {
     if (mergedOptions.orderedKeys) {
       const allKeys: string[] = [];
       // using JSON.stringify to walk the object and push all keys onto a list
-      JSON.stringify(data, (k, v) => { allKeys.push(k); return v; });
+      JSON.stringify(data, (k, v) => {
+        allKeys.push(k);
+        return v;
+      });
       sortKeys = allKeys.sort();
     }
 

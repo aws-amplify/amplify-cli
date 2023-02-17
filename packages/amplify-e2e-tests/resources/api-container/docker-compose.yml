@@ -1,11 +1,11 @@
-version: "3.8"
+version: '3.8'
 services:
   express:
     build:
       context: ./express
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - '8080:8080'
     networks:
       - public
       - private
@@ -19,7 +19,7 @@ services:
       - public
       - private
     ports:
-      - "5000:5000"
+      - '5000:5000'
     secrets:
       - PASSWORD
 networks:

@@ -22,8 +22,8 @@ export const run = async (context: $TSContext) => {
   }
   try {
     const resourcesToBuild = (await getSelectedResources(context, resourceName))
-      .filter(resource => resource.build)
-      .filter(resource => resource.service === ServiceName.LambdaFunction);
+      .filter((resource) => resource.build)
+      .filter((resource) => resource.service === ServiceName.LambdaFunction);
     for await (const resource of resourcesToBuild) {
       resource.lastBuildTimeStamp = await buildFunction(context, resource);
       await packageResource(context, resource);

@@ -67,7 +67,7 @@ export const removeResource = async (context: $TSContext, service: string): Prom
 };
 
 export const projectHasAuth = (): boolean =>
-  !!Object.values(stateManager.getMeta()?.auth || {}).find(meta => (meta as $TSObject)?.service === AmplifySupportedService.COGNITO);
+  !!Object.values(stateManager.getMeta()?.auth || {}).find((meta) => (meta as $TSObject)?.service === AmplifySupportedService.COGNITO);
 
 export const printNextStepsSuccessMessage = () => {
   printer.blankLine();
@@ -120,7 +120,7 @@ export const getTemplateMappings = async (context: $TSContext): Promise<Template
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const providerPlugin = await import(providerPlugins[provider]);
   const regionMapping = providerPlugin.getLocationRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     Mappings.RegionMapping[region] = {
       locationServiceRegion: regionMapping[region],
     };

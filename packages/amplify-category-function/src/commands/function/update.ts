@@ -8,10 +8,10 @@ const subcommand = 'update';
 module.exports = {
   name: subcommand,
   alias: ['configure'],
-  run: async context => {
+  run: async (context) => {
     const servicesMetadata = supportedServices;
     return determineServiceSelection(context, chooseServiceMessageUpdate)
-      .then(result => {
+      .then((result) => {
         const providerController = servicesMetadata[result.service].providerController;
         if (!providerController) {
           context.print.error('Provider not configured for this category');
@@ -22,7 +22,7 @@ module.exports = {
       .then(() => {
         context.print.info('');
       })
-      .catch(err => {
+      .catch((err) => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the function resource');
         context.usageData.emitError(err);

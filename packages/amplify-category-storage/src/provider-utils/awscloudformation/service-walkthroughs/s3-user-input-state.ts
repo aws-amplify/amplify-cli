@@ -332,7 +332,7 @@ export class S3InputState {
     if ((this._inputPayload as S3UserInputs).additionalTriggerFunctions) {
       let functionExists = false;
       const existingTriggerFunctions = (this._inputPayload as S3UserInputs).additionalTriggerFunctions;
-      additionalTriggerFunctions = existingTriggerFunctions?.map(functionParams => {
+      additionalTriggerFunctions = existingTriggerFunctions?.map((functionParams) => {
         if (
           functionParams.triggerPrefix === triggerFunctionParams.triggerPrefix &&
           functionParams.triggerFunction === triggerFunctionParams.triggerFunction

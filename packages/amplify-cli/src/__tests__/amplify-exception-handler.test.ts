@@ -8,12 +8,12 @@ const printerMock = printer as any;
 
 const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
 jest.mock('../commands/diagnose', () => ({
-  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => { /* no-op */ }),
+  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
+    /* no-op */
+  }),
 }));
 
-const processExit = jest
-  .spyOn(process, 'exit')
-  .mockImplementation((__code?: number) => undefined as never);
+const processExit = jest.spyOn(process, 'exit').mockImplementation((__code?: number) => undefined as never);
 
 jest.mock('amplify-prompts');
 

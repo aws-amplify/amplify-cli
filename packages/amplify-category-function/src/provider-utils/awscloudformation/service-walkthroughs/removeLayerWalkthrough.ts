@@ -33,8 +33,8 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     return undefined;
   }
 
-  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.legacyLayer);
-  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.legacyLayer);
+  const legacyLayerSelectedVersions = selectedLayerVersion.filter((r) => r.legacyLayer);
+  const newLayerSelectedVersions = selectedLayerVersion.filter((r) => !r.legacyLayer);
 
   // if everything is selected remove the layer entirely
   if (layerVersionList.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
@@ -42,7 +42,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
   }
 
   context.print.info('Layer versions marked for deletion:');
-  selectedLayerVersion.forEach(version => {
+  selectedLayerVersion.forEach((version) => {
     context.print.info(`- ${version.Version} | Description: ${version.Description || ''}`);
   });
 
@@ -53,7 +53,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     await deleteLayerVersionsWithSdk(
       context,
       getLayerName(context, layerName),
-      legacyLayerSelectedVersions.map(r => r.Version),
+      legacyLayerSelectedVersions.map((r) => r.Version),
     );
   }
 
@@ -63,7 +63,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
       const { envName } = stateManager.getLocalEnvInfo();
       saveLayerVersionsToBeRemovedByCfn(
         layerName,
-        newLayerSelectedVersions.map(r => r.Version),
+        newLayerSelectedVersions.map((r) => r.Version),
         envName,
       );
     }
@@ -89,7 +89,7 @@ function warnLegacyRemoval(
   newLayerVersions: LayerVersionForPossibleRemoval[],
 ) {
   const amplifyPush = chalk.green('amplify push');
-  const legacyVersions: number[] = legacyLayerVersions.map(r => r.Version);
+  const legacyVersions: number[] = legacyLayerVersions.map((r) => r.Version);
 
   if (legacyLayerVersions.length > 0 && newLayerVersions.length > 0) {
     context.print.warning(
@@ -132,7 +132,7 @@ function disablePinnedVersions(
       pathManager.getResourceDirectoryPath(undefined, categoryName, lambdaFunctionName),
     );
 
-    lambdaLayerDependencies.forEach(layerDependency => {
+    lambdaLayerDependencies.forEach((layerDependency) => {
       if (layerDependency.resourceName === layerName && layerDependency.isLatestVersionSelected === false) {
         for (const layerVersion of layerVersionList) {
           if (layerVersion.Version === layerDependency.version) {
@@ -153,7 +153,7 @@ const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionC
     type: 'checkbox',
     choices: layerVersionList
       .sort((versionA, versionB) => versionA.Version - versionB.Version)
-      .map(version => ({
+      .map((version) => ({
         disabled:
           Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0
             ? `Can't be removed. ${version.pinnedByFunctions.join(', ')} depend${

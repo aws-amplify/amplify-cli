@@ -48,11 +48,11 @@ export const setRegPendingDelete = async () => {
     .slice(startIdx)
     .trim()
     .split('\\0')
-    .filter(p => !!p);
+    .filter((p) => !!p);
   const newPaths = currentPaths.concat(`\\??\\${pendingDeletePath}`);
   const newHex = newPaths
     .map(strToLittleEndianHex)
-    .map(hexArr => hexArr.join(','))
+    .map((hexArr) => hexArr.join(','))
     .join(',00,00,00,00,')
     .concat(',00,00,00,00,00,00');
   const regContent = `${regPreamble}${newHex}`;

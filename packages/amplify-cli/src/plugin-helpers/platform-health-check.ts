@@ -111,7 +111,7 @@ export function getOfficialPlugins(): { [key: string]: PluginDescription | Array
 
   Object.keys(officialPlugins).forEach((plugin: string) => {
     const plugins = Array.isArray(officialPlugins[plugin]) ? officialPlugins[plugin] : [officialPlugins[plugin]];
-    plugins.forEach(officialPlugin => {
+    plugins.forEach((officialPlugin) => {
       const { packageName } = officialPlugin;
       if (dependencies[packageName]) {
         const version = dependencies[packageName];

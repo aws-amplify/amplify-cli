@@ -8,7 +8,8 @@ import {
   apiGqlCompile,
   amplifyPush,
   generateModels,
-  createNewProjectDir, deleteProjectDir,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('global sandbox mode c', () => {

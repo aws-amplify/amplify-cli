@@ -59,9 +59,9 @@ describe('headless s3 import', () => {
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
     if (
-      locationResponse.LocationConstraint === undefined
-      || locationResponse.LocationConstraint === ''
-      || locationResponse.LocationConstraint === null
+      locationResponse.LocationConstraint === undefined ||
+      locationResponse.LocationConstraint === '' ||
+      locationResponse.LocationConstraint === null
     ) {
       bucketLocation = 'us-east-1';
     } else {

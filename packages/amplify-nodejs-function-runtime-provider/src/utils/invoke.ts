@@ -9,7 +9,7 @@ export const invoke = async (options: InvokeOptions): Promise<any> => {
     stdio: ['ignore', 'inherit', 'inherit', 'pipe'],
   });
   lambdaExecution.send(options);
-  const childPipe = ((lambdaExecution.stdio as any)[3] as unknown) as Readable;
+  const childPipe = (lambdaExecution.stdio as any)[3] as unknown as Readable;
   childPipe.setEncoding('utf-8');
   let data = '';
 

@@ -15,10 +15,7 @@ import * as Meta from '../notifications-amplify-meta-api';
 import * as Cfg from '../notifications-backend-cfg-api';
 import { ChannelAction, ChannelConfigDeploymentType } from '../channel-types';
 import { INotificationsResourceBackendConfig } from '../notifications-backend-cfg-types';
-import {
-  buildPinpointChannelResponseSuccess,
-  getPinpointAppStatusFromMeta,
-} from '../pinpoint-helper';
+import { buildPinpointChannelResponseSuccess, getPinpointAppStatusFromMeta } from '../pinpoint-helper';
 import * as analyticsClient from '../plugin-client-api-analytics';
 
 jest.mock('amplify-cli-core', () => ({
@@ -75,9 +72,7 @@ describe('channel-InAppMessaging', () => {
 
   describe('configure', () => {
     beforeEach(() => {
-      mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(
-        getMockAnalyticsAPIResponse({ status: true }),
-      );
+      mockInvokeAnalyticsResourceToggleNotificationChannel.mockResolvedValue(getMockAnalyticsAPIResponse({ status: true }));
     });
 
     describe('enabled channel', () => {

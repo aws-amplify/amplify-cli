@@ -48,12 +48,12 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^4.1.7":
-  version "4.1.7"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.7.tgz#5c135702800de626291e3ab753cb28f9795da336"
-  integrity sha512-TElfT7+azl4UIkThBXgzqNfEm0s5tl/WR4NRcdoeSE2vaJPs6e3BUAc3bXhn68TSv3ac0c+TtsbltwdtkRwW2g==
+"@aws-amplify/amplify-category-api@^4.1.8":
+  version "4.1.8"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.8.tgz#2b0f630f79418bf279352a109339a30377e8747c"
+  integrity sha512-FRaswRaQ5tIyBktRLjStxGMkjKVLkGddkfQ1QR6zYMMtwz6LxVSsEq7NCM6lJne1EstrFJRl9D4lml5ULlaP7A==
   dependencies:
-    "@aws-amplify/graphql-auth-transformer" "1.2.6"
+    "@aws-amplify/graphql-auth-transformer" "1.2.7"
     "@aws-amplify/graphql-default-value-transformer" "0.7.8"
     "@aws-amplify/graphql-function-transformer" "0.7.36"
     "@aws-amplify/graphql-http-transformer" "0.8.36"
@@ -275,10 +275,10 @@
     "@aws-sdk/client-location" "3.41.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-auth-transformer@1.2.6", "@aws-amplify/graphql-auth-transformer@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.6.tgz#4421b51595ef90d62f0cfc5c5df6731e4b636bd4"
-  integrity sha512-paMZQRy0FRKYQmjizLcD+1msYaWhg9T6hgpau5V2i9LU9PxstKY1tMLOtPvS9WbTrV2lVADCGkN2g07IDtGMew==
+"@aws-amplify/graphql-auth-transformer@1.2.7", "@aws-amplify/graphql-auth-transformer@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-1.2.7.tgz#bf5fb4801b28f633ac2b89b58e91d77559057e5f"
+  integrity sha512-Xuj04z1xEjCglz4hyn8bEsS6COM8Kjo6zWICs00sRuS6BCY4BoyxSW26dekimitZ7cvUexXwmge1yTP51FJ83A==
   dependencies:
     "@aws-amplify/graphql-model-transformer" "0.16.8"
     "@aws-amplify/graphql-relational-transformer" "0.12.10"
@@ -10372,6 +10372,11 @@ array-includes@^3.1.3, array-includes@^3.1.4:
     get-intrinsic "^1.1.1"
     is-string "^1.0.7"
 
+array-timsort@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/array-timsort/-/array-timsort-1.0.3.tgz#3c9e4199e54fb2b9c3fe5976396a21614ef0d926"
+  integrity sha512-/+3GRL7dDAGEfM6TseQk/U+mi18TU2Ms9I3UlLdUMhz2hbvGNTKdj9xniwXfUqgYhHxRx0+8UnKkvlNwVU+cWQ==
+
 array-union@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
@@ -12117,6 +12122,17 @@ commander@^9.4.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-9.4.0.tgz#bc4a40918fefe52e22450c111ecd6b7acce6f11c"
   integrity sha512-sRPT+umqkz90UA8M1yqYfnHlZA7fF6nSphDtxeywPZ49ysjxDQybzk13CL+mXekDRG92skbcqCLVovuCusNmFw==
 
+comment-json@~4.2.0:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/comment-json/-/comment-json-4.2.3.tgz#50b487ebbf43abe44431f575ebda07d30d015365"
+  integrity sha512-SsxdiOf064DWoZLH799Ata6u7iV658A11PlWtZATDlXPpKGJnbJZ5Z24ybixAi+LUUqJ/GKowAejtC5GFUG7Tw==
+  dependencies:
+    array-timsort "^1.0.3"
+    core-util-is "^1.0.3"
+    esprima "^4.0.1"
+    has-own-prop "^2.0.0"
+    repeat-string "^1.6.1"
+
 comment-parser@1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/comment-parser/-/comment-parser-1.3.0.tgz#68beb7dbe0849295309b376406730cd16c719c44"
@@ -12473,7 +12489,7 @@ core-util-is@1.0.2:
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-core-util-is@~1.0.0:
+core-util-is@^1.0.3, core-util-is@~1.0.0:
   version "1.0.3"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz#a6042d3634c2b27e9328f837b965fac83808db85"
   integrity sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==
@@ -13950,6 +13966,17 @@ eslint-plugin-jsx-a11y@^6.5.1:
     language-tags "^1.0.5"
     minimatch "^3.0.4"
 
+eslint-plugin-package-json-dependencies@^1.0.17:
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-package-json-dependencies/-/eslint-plugin-package-json-dependencies-1.0.17.tgz#d12efb2b5c8dabb803c1e109fb6632b62ba3aa1e"
+  integrity sha512-8PjZIxPXo/VJL+l+UMMFDqJ+yH2nTiNvFUkVN72iECr/7e9pY5SXfstK+2lC2qbSn7ZzL78H8Fcdx8XNLjCp6Q==
+  dependencies:
+    comment-json "~4.2.0"
+    esprima "~4.0.0"
+    lodash "~4.17.0"
+    micromatch "~4.0.0"
+    semver "~7.3.0"
+
 eslint-plugin-prefer-arrow@^1.2.3:
   version "1.2.3"
   resolved "https://registry.npmjs.org/eslint-plugin-prefer-arrow/-/eslint-plugin-prefer-arrow-1.2.3.tgz#e7fbb3fa4cd84ff1015b9c51ad86550e55041041"
@@ -14167,7 +14194,7 @@ esprima@2.7.x, esprima@^2.7.1:
   resolved "https://registry.npmjs.org/esprima/-/esprima-2.7.3.tgz#96e3b70d5779f6ad49cd032673d1c312767ba581"
   integrity sha1-luO3DVd59q1JzQMmc9HDEnZ7pYE=
 
-esprima@^4.0.0, esprima@^4.0.1:
+esprima@^4.0.0, esprima@^4.0.1, esprima@~4.0.0:
   version "4.0.1"
   resolved "https://registry.npmjs.org/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
@@ -15754,6 +15781,11 @@ has-flag@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
+
+has-own-prop@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/has-own-prop/-/has-own-prop-2.0.0.tgz#f0f95d58f65804f5d218db32563bb85b8e0417af"
+  integrity sha512-Pq0h+hvsVm6dDEa8x82GnLSYHOzNDt7f0ddFa3FqcQlgzEiptPqL+XrOJNavjOzSYiYWIrgeVYYgGlLmnxwilQ==
 
 has-property-descriptors@^1.0.0:
   version "1.0.0"
@@ -18863,7 +18895,7 @@ micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.2.3"
 
-micromatch@^4.0.4:
+micromatch@^4.0.4, micromatch@~4.0.0:
   version "4.0.5"
   resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.5.tgz#bc8999a7cbbf77cdc89f132f6e467051b49090c6"
   integrity sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==
@@ -21106,6 +21138,11 @@ prettier@^1.19.1:
   version "1.19.1"
   resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
+
+prettier@^2.8.4:
+  version "2.8.4"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.4.tgz#34dd2595629bfbb79d344ac4a91ff948694463c3"
+  integrity sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==
 
 pretty-bytes@^5.3.0, pretty-bytes@^5.4.1:
   version "5.6.0"

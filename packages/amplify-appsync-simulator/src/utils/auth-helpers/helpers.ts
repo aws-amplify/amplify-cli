@@ -63,7 +63,7 @@ export function extractIamToken(authorization: string, appSyncConfig: AmplifyApp
 
 export function isValidOIDCToken(token: JWTToken, configuredAuthTypes: AmplifyAppSyncAuthenticationProviderConfig[]): boolean {
   const oidcIssuers = configuredAuthTypes
-    .filter(authType => authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)
+    .filter((authType) => authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)
     .map((auth: AmplifyAppSyncAuthenticationProviderOIDCConfig) =>
       auth.openIDConnectConfig.Issuer && auth.openIDConnectConfig.Issuer.endsWith('/')
         ? auth.openIDConnectConfig.Issuer.substring(0, auth.openIDConnectConfig.Issuer.length - 1)
@@ -75,11 +75,11 @@ export function isValidOIDCToken(token: JWTToken, configuredAuthTypes: AmplifyAp
   return oidcIssuers.length > 0 && oidcIssuers.includes(tokenIssuer);
 }
 export function extractHeader(headers: Record<string, string | string[]>, name: string): string {
-  const headerName = Object.keys(headers).find(header => header.toLowerCase() === name.toLowerCase());
+  const headerName = Object.keys(headers).find((header) => header.toLowerCase() === name.toLowerCase());
   const headerValue = headerName && headers[headerName];
   return headerValue ? (Array.isArray(headerValue) ? headerValue[0] : headerValue) : undefined;
 }
 
 export function getAllowedAuthTypes(config: AmplifyAppSyncAPIConfig): AmplifyAppSyncSimulatorAuthenticationType[] {
-  return [config.defaultAuthenticationType, ...config.additionalAuthenticationProviders].map(authType => authType.authenticationType);
+  return [config.defaultAuthenticationType, ...config.additionalAuthenticationProviders].map((authType) => authType.authenticationType);
 }

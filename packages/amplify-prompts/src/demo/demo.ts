@@ -37,7 +37,7 @@ const demo = async () => {
   printResult(await prompter.input("What's your favorite color of Skittle?"));
 
   printer.info('To get an input type besides a string, specify a transform function');
-  const result1 = await prompter.input('How many Skittles do you want?', { transform: input => Number.parseInt(input, 10) });
+  const result1 = await prompter.input('How many Skittles do you want?', { transform: (input) => Number.parseInt(input, 10) });
   printResult(result1);
   printTypeofResult(result1);
 
@@ -46,7 +46,7 @@ const demo = async () => {
   printer.info('Try entering a value that is not a number this time');
   printResult(
     await prompter.input<'one', number>('How many Skittles do you want', {
-      transform: input => Number.parseInt(input, 10),
+      transform: (input) => Number.parseInt(input, 10),
       validate: integer(),
     }),
   );

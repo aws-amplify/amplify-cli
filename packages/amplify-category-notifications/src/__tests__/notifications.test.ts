@@ -3,9 +3,9 @@ import { migrationCheck } from '../migrations/index';
 import * as apiAnalyticsClient from '../plugin-client-api-analytics';
 import { isNotificationChannelEnabled } from '../notifications-amplify-meta-api';
 
-const mockContext = ({
+const mockContext = {
   input: { command: undefined },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 jest.mock('../plugin-client-api-analytics', () => ({ invokeAnalyticsMigrations: jest.fn() }));
 

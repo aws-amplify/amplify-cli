@@ -10,10 +10,10 @@ const runGQLMutation = async (gql_url, mutation, variables) => {
     url: process.env[gql_url],
     region: process.env.REGION,
     auth: {
-        type: AUTH_TYPE.AWS_IAM,
-        credentials: AWS.config.credentials
+      type: AUTH_TYPE.AWS_IAM,
+      credentials: AWS.config.credentials,
     },
-    disableOffline: true
+    disableOffline: true,
   });
   return await client.mutate({ mutation: gql(mutation), variables });
 };

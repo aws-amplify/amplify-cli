@@ -26,7 +26,7 @@ async function publish(context, doSkipBuild, doSkipPush) {
     const env = utils.getCurrEnv(context);
     const spinner = ora();
     spinner.start(ZIPPING_MESSAGE);
-    artifactsPath = await zipArtifacts(context).catch(err => {
+    artifactsPath = await zipArtifacts(context).catch((err) => {
       spinner.fail(ZIPPING_FAILURE_MESSAGE);
       throw err;
     });

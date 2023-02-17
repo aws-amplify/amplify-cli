@@ -26,10 +26,10 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('chalk', () => ({
-  blueBright: jest.fn().mockImplementation(input => input),
+  blueBright: jest.fn().mockImplementation((input) => input),
 }));
 
-const context_stub_typed = (context_stub as unknown) as $TSContext;
+const context_stub_typed = context_stub as unknown as $TSContext;
 
 describe('uninstall node CLI', () => {
   afterEach(() => {
