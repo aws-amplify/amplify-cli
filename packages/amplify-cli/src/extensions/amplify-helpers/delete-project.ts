@@ -30,7 +30,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
 
     try {
       spinner.start();
-      await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
+      await Promise.all(Object.keys(allEnvs).map((env) => removeEnvFromCloud(context, env, confirmation.deleteS3)));
       const appId = getAmplifyAppId();
       if (confirmation.deleteAmplifyApp && appId) {
         const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
@@ -44,7 +44,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
       }
 
       // delete env parameters from service for each env
-      await Promise.all(envNames.map(envName => invokeDeleteEnvParamsFromService(context, envName)));
+      await Promise.all(envNames.map((envName) => invokeDeleteEnvParamsFromService(context, envName)));
 
       spinner.succeed('Project deleted in the cloud.');
     } catch (ex) {

@@ -8,9 +8,7 @@ import {
   initJSProjectWithProfile,
   removeAllNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  getShortId,
-} from '../import-helpers';
+import { getShortId } from '../import-helpers';
 
 describe('notification category pull test', () => {
   const testChannel = 'SMS';

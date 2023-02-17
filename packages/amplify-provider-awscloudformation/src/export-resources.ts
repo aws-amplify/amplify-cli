@@ -107,7 +107,7 @@ const createTagsFile = (exportPath: string): void => {
 
   JSONUtilities.writeJson(
     path.join(exportPath, PathConstants.ExportTagsJsonFileName),
-    hydratedTags.map(tag => ({
+    hydratedTags.map((tag) => ({
       key: tag.Key,
       value: tag.Value,
     })),
@@ -122,7 +122,7 @@ const createTagsFile = (exportPath: string): void => {
 const createCategoryStackMapping = (resources: ResourceDefinition[], amplifyExportFolder: string): void => {
   JSONUtilities.writeJson(
     path.join(amplifyExportFolder, PathConstants.ExportCategoryStackMappingJsonFilename),
-    resources.map(r => _.pick(r, ['category', 'resourceName', 'service'])),
+    resources.map((r) => _.pick(r, ['category', 'resourceName', 'service'])),
   );
 };
 
@@ -190,7 +190,7 @@ const transformManifestParameters = (stackParameters: StackIncludeDetails, expor
     }
     Object.keys(stackParameters.nestedStacks)
       .sort()
-      .forEach(key => {
+      .forEach((key) => {
         manifest.loadNestedStacks[key] = transformManifestParameters(stackParameters.nestedStacks[key], exportPath);
       });
     return manifest;

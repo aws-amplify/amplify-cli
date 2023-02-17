@@ -34,7 +34,7 @@ export const copyOverride = () => {
       }
       // eslint-disable-next-line no-bitwise
       if (flags & fs.constants.COPYFILE_EXCL) {
-        fs.stat(dest, statError => {
+        fs.stat(dest, (statError) => {
           if (!statError) {
             callback(Object.assign(new Error('File already exists'), { code: 'EEXIST' }));
             return;

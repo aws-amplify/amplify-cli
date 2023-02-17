@@ -54,7 +54,7 @@ export const run = async (context: $TSContext): Promise<void> => {
         await (await FunctionSecretsStateManager.getInstance(context)).deleteAllFunctionSecrets(resourceName);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.stack) {
         context.print.info(err.stack);
         context.print.error('An error occurred when removing the function resource');

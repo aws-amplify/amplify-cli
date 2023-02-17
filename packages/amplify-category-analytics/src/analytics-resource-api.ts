@@ -1,8 +1,18 @@
 /* eslint-disable max-depth */
 /* eslint-disable spellcheck/spell-checker */
 import {
-  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource,
-  pathManager, $TSContext, IAnalyticsResource, PluginAPIError, NotificationChannels, IPluginCapabilityAPIResponse, $TSAny, AmplifyError,
+  AmplifyCategories,
+  AmplifySupportedService,
+  stateManager,
+  IAmplifyResource,
+  pathManager,
+  $TSContext,
+  IAnalyticsResource,
+  PluginAPIError,
+  NotificationChannels,
+  IPluginCapabilityAPIResponse,
+  $TSAny,
+  AmplifyError,
 } from 'amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { addResource } from './provider-utils/awscloudformation/index';
@@ -18,10 +28,8 @@ import { analyticsMigrations } from './migrations';
  * then only return resources matching the service.
  * @returns Array of resources in Analytics category (IAmplifyResource type)
  */
-export const analyticsPluginAPIGetResources = (
-  resourceProviderServiceName?: string,
-  context?: $TSContext,
-): Array<IAnalyticsResource> => getAnalyticsResources(context, resourceProviderServiceName);
+export const analyticsPluginAPIGetResources = (resourceProviderServiceName?: string, context?: $TSContext): Array<IAnalyticsResource> =>
+  getAnalyticsResources(context, resourceProviderServiceName);
 
 /**
  * Create an Analytics resource of the given provider type. e.g Pinpoint or Kinesis
@@ -33,7 +41,7 @@ export const analyticsPluginAPICreateResource = async (
   context: $TSContext,
   resourceProviderServiceName: string,
 ): Promise<IAmplifyResource> => {
-  const resources : Array<IAmplifyResource> = analyticsPluginAPIGetResources(resourceProviderServiceName);
+  const resources: Array<IAmplifyResource> = analyticsPluginAPIGetResources(resourceProviderServiceName);
   if (resources.length > 0) {
     return resources[0];
   }
@@ -151,10 +159,10 @@ export const analyticsPushYes = async (context: $TSContext): Promise<void> => {
   const exeInfoClone = { ...context?.exeInfo };
   const parametersClone = { ...context?.parameters };
   try {
-    context.exeInfo = (context.exeInfo) || {};
-    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo = context.exeInfo || {};
+    context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
-    context.parameters = (context.parameters) || {};
+    context.parameters = context.parameters || {};
     context.parameters.options.yes = true;
     context.parameters.first = undefined;
     await analyticsPush(context);
@@ -167,25 +175,27 @@ export const analyticsPushYes = async (context: $TSContext): Promise<void> => {
 /**
  * Invoke post push hook for all dependent plugins ( e.g. notifications )
  */
-export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<$TSContext> => {
+export const analyticsPluginAPIPostPush = async (context: $TSContext): Promise<$TSContext> => {
   const amplifyMeta = stateManager.getMeta();
   let pinpointNotificationsMeta; // build this to update amplify-meta and team-provider-info.json
   // update state only if analytics and notifications resources are present
-  if (amplifyMeta?.[AmplifyCategories.ANALYTICS]
-      && Object.keys(amplifyMeta[AmplifyCategories.ANALYTICS]).length > 0
-      && amplifyMeta[AmplifyCategories.NOTIFICATIONS]
-      && Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length > 0) {
+  if (
+    amplifyMeta?.[AmplifyCategories.ANALYTICS] &&
+    Object.keys(amplifyMeta[AmplifyCategories.ANALYTICS]).length > 0 &&
+    amplifyMeta[AmplifyCategories.NOTIFICATIONS] &&
+    Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length > 0
+  ) {
     // Fetch Analytics data from persistent amplify-meta.json. This is expected to be updated by the push operation.
     const analyticsResourceList = analyticsPluginAPIGetResources(AmplifySupportedService.PINPOINT);
     const notificationsResourceName = Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS])[0];
 
     // Populate the outputs for the notifications plugin.
     // Get analytics resource on which notifications are enabled
-    const analyticsResource = analyticsResourceList.find(p => p.resourceName === notificationsResourceName);
+    const analyticsResource = analyticsResourceList.find((p) => p.resourceName === notificationsResourceName);
     // Check if the resource is deployed to the cloud.
     if (analyticsResource?.output?.Id) {
       pinpointNotificationsMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS][analyticsResource.resourceName];
-      pinpointNotificationsMeta.Name = (pinpointNotificationsMeta.Name) || analyticsResource.output.appName;
+      pinpointNotificationsMeta.Name = pinpointNotificationsMeta.Name || analyticsResource.output.appName;
       pinpointNotificationsMeta.Id = analyticsResource.output.Id;
       pinpointNotificationsMeta.Region = analyticsResource.output.Region;
       // Update Notifications output and channel metadata
@@ -249,8 +259,10 @@ const writeNotificationsTeamProviderInfo = async (pinpointMeta: $TSAny): Promise
   };
   // set params in the notifications and analytics resource param manager
   [AmplifyCategories.NOTIFICATIONS, AmplifyCategories.ANALYTICS]
-    .map(category => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
-    .forEach(resourceParamManager => { resourceParamManager.setAllParams(params); });
+    .map((category) => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
+    .forEach((resourceParamManager) => {
+      resourceParamManager.setAllParams(params);
+    });
 };
 
 /**
@@ -263,11 +275,11 @@ const buildPolicyName = (channel: string, pinpointPolicyName: string): string =>
 };
 
 // Capability: In the future replace with "capabilities" lookup
-const isSupportNotifications = (resourceProviderName: string): boolean => (resourceProviderName === AmplifySupportedService.PINPOINT);
+const isSupportNotifications = (resourceProviderName: string): boolean => resourceProviderName === AmplifySupportedService.PINPOINT;
 
 // Capability: In the future replace with "capabilities" lookup
-const isSupportAnalytics = (resourceProviderName: string): boolean => (resourceProviderName === AmplifySupportedService.PINPOINT)
-  || (resourceProviderName === AmplifySupportedService.KINESIS);
+const isSupportAnalytics = (resourceProviderName: string): boolean =>
+  resourceProviderName === AmplifySupportedService.PINPOINT || resourceProviderName === AmplifySupportedService.KINESIS;
 
 const pinpointAPIEnableNotificationChannel = (
   pinpointResource: IAmplifyResource,
@@ -320,13 +332,10 @@ const pinpointAPIDisableNotificationChannel = (
 /**
  * Checks if analytics pinpoint resource has in-app messaging policy
  */
-export const analyticsPluginAPIPinpointHasInAppMessagingPolicy = async (
-  context: $TSContext,
-): Promise<boolean> => pinpointHasInAppMessagingPolicy(context);
+export const analyticsPluginAPIPinpointHasInAppMessagingPolicy = async (context: $TSContext): Promise<boolean> =>
+  pinpointHasInAppMessagingPolicy(context);
 
 /**
  * Exposes the analytics migration API
  */
-export const analyticsPluginAPIMigrations = (
-  context: $TSContext,
-): Promise<void> => analyticsMigrations(context);
+export const analyticsPluginAPIMigrations = (context: $TSContext): Promise<void> => analyticsMigrations(context);

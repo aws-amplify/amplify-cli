@@ -14,7 +14,7 @@ export const run = async (context): Promise<void> => {
       printer.info(JSONUtilities.stringify(allEnvs) as string);
       return;
     }
-    Object.keys(allEnvs).forEach(env => {
+    Object.keys(allEnvs).forEach((env) => {
       printer.blankLine();
       if (envName === env) {
         printer.info(`*${env}*`, 'red');

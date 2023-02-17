@@ -26,7 +26,7 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
     } while (m !== null);
 
     //replace them
-    valuesToRedact.forEach(val => {
+    valuesToRedact.forEach((val) => {
       s = s.replace(val, redactedInput);
     });
   } else {
@@ -62,7 +62,7 @@ export default function redactInput(
     }
   }
   if (input.options) {
-    Object.keys(input.options).forEach(key => {
+    Object.keys(input.options).forEach((key) => {
       if (key && input.options && input.options[key] && typeof input.options[key] === 'string') {
         if (keyRegEx.test(key) && !isJson(input.options[key].toString())) {
           input.options[key] = replacementString;

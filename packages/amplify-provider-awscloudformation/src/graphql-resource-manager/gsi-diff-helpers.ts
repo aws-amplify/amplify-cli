@@ -57,24 +57,24 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
   const addedOrRemovedIndexNames = _.xor(currentIndexNames, nextIndexNames);
 
   // Partition them as added/removed indexes
-  const [indexToRemove, indexToAdd] = _.partition(addedOrRemovedIndexNames, indexName => currentIndexNames.includes(indexName));
+  const [indexToRemove, indexToAdd] = _.partition(addedOrRemovedIndexNames, (indexName) => currentIndexNames.includes(indexName));
 
   // Get all the indexes that are in both current and next indexes
   const possiblyModifiedIndexNames = _.xor([...currentIndexNames, ...nextIndexNames], addedOrRemovedIndexNames);
 
   const modifiedIndexes = possiblyModifiedIndexNames
-    .filter(indexName => isIndexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
-    .map(indexName => ({
+    .filter((indexName) => isIndexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
+    .map((indexName) => ({
       type: GSIChange.Update,
       indexName,
     }));
 
   return [
-    ...indexToRemove.map(idx => ({
+    ...indexToRemove.map((idx) => ({
       type: GSIChange.Delete,
       indexName: idx,
     })),
-    ...indexToAdd.map(idx => ({
+    ...indexToAdd.map((idx) => ({
       type: GSIChange.Add,
       indexName: idx,
     })),
@@ -92,7 +92,7 @@ export const isIndexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: G
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
     return undefined;
   }
-  return diffs?.some(diff => {
+  return diffs?.some((diff) => {
     const leaf = diff.path?.slice(-1)[0];
     return [
       'IndexName',

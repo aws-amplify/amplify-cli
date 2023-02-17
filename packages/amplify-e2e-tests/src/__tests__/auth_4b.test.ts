@@ -39,7 +39,6 @@ describe('amplify updating auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-
   it('...should init a project and add auth with a custom trigger using legacy language', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     addFeatureFlag(projRoot, 'auth', 'useinclusiveterminology', false);

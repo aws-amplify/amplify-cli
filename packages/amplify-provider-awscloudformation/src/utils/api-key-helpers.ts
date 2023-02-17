@@ -5,7 +5,7 @@ export function getAppSyncApiConfig(): any {
   const apiConfig = stateManager.getMeta()?.api;
   let appSyncApi;
 
-  Object.keys(apiConfig).forEach(k => {
+  Object.keys(apiConfig).forEach((k) => {
     if (apiConfig[k]['service'] === 'AppSync') appSyncApi = apiConfig[k];
   });
 
@@ -25,7 +25,7 @@ function getAdditionalApiKeyConfig(): ApiKeyConfig {
   const { additionalAuthenticationProviders } = authConfig;
   let apiKeyConfig;
 
-  additionalAuthenticationProviders.forEach(authProvider => {
+  additionalAuthenticationProviders.forEach((authProvider) => {
     if (authProvider.authenticationType === 'API_KEY') apiKeyConfig = authProvider.apiKeyConfig;
   });
 

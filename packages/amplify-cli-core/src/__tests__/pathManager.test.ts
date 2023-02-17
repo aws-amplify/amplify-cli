@@ -18,7 +18,7 @@ describe('test getAmplifyPackageLibDirPath', () => {
 
   it('should return correct path for non-scoped packages', () => {
     jest.spyOn(fs, 'pathExistsSync').mockReturnValueOnce(true);
-    
+
     const expectedPath = path.join(pathManager.getAmplifyLibRoot(), nonScopedPackageName);
     expect(pathManager.getAmplifyPackageLibDirPath(nonScopedPackageName)).toEqual(expectedPath);
   });

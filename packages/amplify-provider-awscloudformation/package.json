@@ -1,5 +1,5 @@
 {
-  "name": "amplify-provider-awscloudformation",
+  "name": "@aws-amplify/amplify-provider-awscloudformation",
   "version": "7.0.0-cdkv2.7",
   "description": "AWS CloudFormation Provider",
   "repository": {
@@ -16,6 +16,9 @@
     "appsync",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "test": "yarn jest",
@@ -30,11 +33,11 @@
     "@aws-amplify/cli-extensibility-helper": "3.0.0-cdkv2.7",
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.5",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.5",
-    "amplify-cli-core": "4.0.0-cdkv2.7",
-    "amplify-cli-logger": "1.2.4-cdkv2.1",
     "amplify-codegen": "^3.3.6",
+    "amplify-cli-core": "4.0.0-cdkv2.7",
+    "@aws-amplify/amplify-cli-logger": "1.2.4-cdkv2.1",
     "amplify-prompts": "2.6.4-cdkv2.1",
-    "amplify-util-import": "2.3.2-cdkv2.0",
+    "@aws-amplify/amplify-util-import": "2.3.2-cdkv2.0",
     "archiver": "^5.3.0",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",

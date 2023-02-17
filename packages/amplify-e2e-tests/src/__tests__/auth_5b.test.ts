@@ -12,7 +12,9 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import {
   // eslint-disable-next-line spellcheck/spell-checker
-  AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty,
+  AddAuthRequest,
+  CognitoUserPoolSigninMethod,
+  CognitoUserProperty,
 } from 'amplify-headless-interface';
 
 const PROJECT_NAME = 'authTest';
@@ -54,7 +56,7 @@ describe('headless auth b', () => {
     await addHeadlessAuth(projRoot, addAuthRequest);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const region = meta.providers.awscloudformation.Region;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const mfaConfig = await getMFAConfiguration(id, region);

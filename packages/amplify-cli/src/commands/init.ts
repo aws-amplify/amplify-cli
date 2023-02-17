@@ -36,6 +36,6 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
 
   if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
-    await raisePostEnvAddEvent((context as unknown) as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
+    await raisePostEnvAddEvent(context as unknown as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
   }
 };

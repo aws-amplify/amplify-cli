@@ -79,7 +79,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
 
 export function getAllResources() {
   const meta = stateManager.getMeta();
-  const categories = Object.keys(meta).filter(category => category !== 'providers');
+  const categories = Object.keys(meta).filter((category) => category !== 'providers');
   const allResources: $TSObject = {};
 
   for (const category of categories) {
@@ -129,10 +129,10 @@ export function addCDKResourceDependency(
   const dependsOn: AmplifyDependentResourceDefinition[] = [];
   const dependentParameters: any = {};
 
-  dependentResources.forEach(resource => {
+  dependentResources.forEach((resource) => {
     const attributeList = getResourceCfnOutputAttributes(resource.category, resource.resourceName);
 
-    attributeList.forEach(attr => {
+    attributeList.forEach((attr) => {
       if (!dependentParameters[`${resource.category}`]) {
         dependentParameters[`${resource.category}`] = {};
       }
@@ -198,7 +198,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
     return;
   }
 
-  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
+  const categories = Object.keys(amplifyMeta).filter((category) => category !== 'providers');
   const selectedCategories = await prompter.pick<'many', string>(
     'Select the categories you want this custom resource to have access to.',
     categories,
@@ -214,7 +214,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
 
     if (selectedCategory === categoryName) {
-      resourcesList = resourcesList.filter(name => name !== customResourceName);
+      resourcesList = resourcesList.filter((name) => name !== customResourceName);
     }
 
     if (_.isEmpty(resourcesList)) {

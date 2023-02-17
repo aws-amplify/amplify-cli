@@ -1,5 +1,5 @@
 {
-  "name": "amplify-nodejs-function-template-provider",
+  "name": "@aws-amplify/amplify-nodejs-function-template-provider",
   "version": "2.6.5-cdkv2.1",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
@@ -16,6 +16,9 @@
     "lambda",
     "nodejs"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",

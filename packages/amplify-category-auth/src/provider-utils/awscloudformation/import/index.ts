@@ -1,8 +1,6 @@
-import {
-  $TSAny, $TSContext, ServiceSelection, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
+import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import {
   IdentityProviderType,
   UserPoolClientType,
@@ -87,7 +85,7 @@ const printSuccess = (context: $TSContext, authSelections: AuthSelections, userP
   context.print.info('');
   context.print.info('Next steps:');
   context.print.info('');
-  context.print.info('- This resource will be available for GraphQL APIs (\'amplify add api\')');
+  context.print.info("- This resource will be available for GraphQL APIs ('amplify add api')");
   context.print.info('- Use Amplify libraries to add sign up, sign in, and sign out capabilities to your client');
   context.print.info('  application.');
   context.print.info('  - iOS: https://docs.amplify.aws/lib/auth/getting-started/q/platform/ios');
@@ -216,8 +214,9 @@ const importServiceWalkthrough = async (
     if (answers.authSelections === 'identityPoolAndUserPool') {
       if (questionParameters.validatedIdentityPools && questionParameters.validatedIdentityPools!.length >= 1) {
         // No need to check to have 1 web and 1 native since prefiltering already done that check in ValidateUserPool
-        questionParameters.validatedIdentityPools = questionParameters.validatedIdentityPools
-          .filter(ipc => ipc.providers.filter(p => p.ClientId === answers.appClientWebId || p.ClientId === answers.appClientNativeId));
+        questionParameters.validatedIdentityPools = questionParameters.validatedIdentityPools.filter((ipc) =>
+          ipc.providers.filter((p) => p.ClientId === answers.appClientWebId || p.ClientId === answers.appClientNativeId),
+        );
       } else {
         // There are no Identity Pool candidates print out a message and signal to skip further checks to get back into the loop.
         // This is a fail safe check as we already filtered the Identity Pools upon User Pool selection.
@@ -299,7 +298,7 @@ const importServiceWalkthrough = async (
       answers.identityPool = identityPool;
     } else {
       const identityPoolChoices = questionParameters
-        .validatedIdentityPools!.map(ip => ({
+        .validatedIdentityPools!.map((ip) => ({
           message: `${ip.identityPool!.IdentityPoolName} (${ip.identityPool.IdentityPoolId})`,
           value: ip.identityPool!.IdentityPoolId,
         }))
@@ -324,14 +323,12 @@ const importServiceWalkthrough = async (
       const { identityPoolId } = await enquirer.prompt(identityPoolQuestion as $TSAny);
       answers.identityPoolId = identityPoolId!;
       answers.identityPool = questionParameters.validatedIdentityPools
-        ?.map(ip => ip.identityPool)
-        .find(ip => ip.IdentityPoolId === identityPoolId);
+        ?.map((ip) => ip.identityPool)
+        .find((ip) => ip.IdentityPoolId === identityPoolId);
     }
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const {
-      authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
-    } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;
@@ -370,7 +367,7 @@ const validateUserPool = async (
   userPoolId: string,
 ): Promise<boolean | string> => {
   const userPoolClients = await cognito.listUserPoolClients(userPoolId);
-  const webClients = userPoolClients.filter(c => !c.ClientSecret);
+  const webClients = userPoolClients.filter((c) => !c.ClientSecret);
   const nativeClients = userPoolClients;
 
   // Check if the selected user pool has at least 1 web app client configured.
@@ -386,20 +383,20 @@ const validateUserPool = async (
 
     const identityPoolCandidates = identityPools
       .filter(
-        ip => ip.CognitoIdentityProviders && ip.CognitoIdentityProviders!.filter(a => a.ProviderName?.endsWith(userPoolId)).length > 0,
+        (ip) => ip.CognitoIdentityProviders && ip.CognitoIdentityProviders!.filter((a) => a.ProviderName?.endsWith(userPoolId)).length > 0,
       )
-      .map(ip => ({
+      .map((ip) => ({
         identityPool: ip,
-        providers: ip.CognitoIdentityProviders!.filter(a => a.ProviderName?.endsWith(userPoolId)),
+        providers: ip.CognitoIdentityProviders!.filter((a) => a.ProviderName?.endsWith(userPoolId)),
       }));
 
     const validatedIdentityPools: { identityPool: IdentityPool; providers: CognitoIdentityProvider[] }[] = [];
 
     for (const candidate of identityPoolCandidates) {
-      const hasWebClientProvider = candidate.providers
-        .filter(p => p.ClientId && webClients.map(c => c.ClientId).includes(p.ClientId!)).length > 0;
-      const hasNativeClientProvider = candidate.providers
-        .filter(p => p.ClientId && nativeClients.map(c => c.ClientId).includes(p.ClientId!)).length > 0;
+      const hasWebClientProvider =
+        candidate.providers.filter((p) => p.ClientId && webClients.map((c) => c.ClientId).includes(p.ClientId!)).length > 0;
+      const hasNativeClientProvider =
+        candidate.providers.filter((p) => p.ClientId && nativeClients.map((c) => c.ClientId).includes(p.ClientId!)).length > 0;
 
       if (hasWebClientProvider && hasNativeClientProvider) {
         validatedIdentityPools.push(candidate);
@@ -444,7 +441,7 @@ const selectAppClients = async (
       autoSelected++;
     } else {
       const appClientChoices = questionParameters
-        .webClients!.map(c => ({
+        .webClients!.map((c) => ({
           message: `${c.ClientName!} (${c.ClientId})`,
           value: c.ClientId,
         }))
@@ -464,7 +461,7 @@ const selectAppClients = async (
 
       const { appClientWebId } = await enquirer.prompt(appClientSelectQuestion);
       // eslint-disable-next-line no-param-reassign
-      answers.appClientWeb = questionParameters.webClients!.find(c => c.ClientId! === appClientWebId);
+      answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === appClientWebId);
       // eslint-disable-next-line no-param-reassign
       answers.appClientWebId = undefined; // Only to be used by enquirer
     }
@@ -479,7 +476,7 @@ const selectAppClients = async (
       autoSelected++;
     } else {
       const appClientChoices = questionParameters
-        .nativeClients!.map(c => ({
+        .nativeClients!.map((c) => ({
           message: `${c.ClientName!} (${c.ClientId}) ${c.ClientSecret ? '(has app client secret)' : ''}`,
           value: c.ClientId,
         }))
@@ -499,14 +496,14 @@ const selectAppClients = async (
 
       const { appClientNativeId } = await enquirer.prompt(appClientSelectQuestion);
       // eslint-disable-next-line no-param-reassign
-      answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === appClientNativeId);
+      answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === appClientNativeId);
       // eslint-disable-next-line no-param-reassign
       answers.appClientNativeId = undefined; // Only to be used by enquirer
 
-      changeAppClientSelection = answers.appClientNative === answers.appClientWeb
-
-        ? await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient)
-        : false;
+      changeAppClientSelection =
+        answers.appClientNative === answers.appClientWeb
+          ? await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient)
+          : false;
     }
     // eslint-disable-next-line no-param-reassign
     questionParameters.bothAppClientsWereAutoSelected = autoSelected === 2;
@@ -530,18 +527,19 @@ const appClientsOAuthPropertiesMatching = async (
   const logoutUrlsMatching = isArraysEqual(appClientWeb.LogoutURLs!, appClientNative.LogoutURLs!);
   const allowedOAuthFlowsMatching = isArraysEqual(appClientWeb.AllowedOAuthFlows!, appClientNative.AllowedOAuthFlows!);
   const allowedOAuthScopesMatching = isArraysEqual(appClientWeb.AllowedOAuthScopes!, appClientNative.AllowedOAuthScopes!);
-  const allowedOAuthFlowsUserPoolClientMatching = appClientWeb.AllowedOAuthFlowsUserPoolClient
-    === appClientNative.AllowedOAuthFlowsUserPoolClient;
+  const allowedOAuthFlowsUserPoolClientMatching =
+    appClientWeb.AllowedOAuthFlowsUserPoolClient === appClientNative.AllowedOAuthFlowsUserPoolClient;
   const supportedIdentityProvidersMatching = isArraysEqual(
     appClientWeb.SupportedIdentityProviders!,
     appClientNative.SupportedIdentityProviders!,
   );
-  const propertiesMatching = supportedIdentityProvidersMatching
-    && callbackUrlMatching
-    && logoutUrlsMatching
-    && allowedOAuthFlowsMatching
-    && allowedOAuthScopesMatching
-    && allowedOAuthFlowsUserPoolClientMatching;
+  const propertiesMatching =
+    supportedIdentityProvidersMatching &&
+    callbackUrlMatching &&
+    logoutUrlsMatching &&
+    allowedOAuthFlowsMatching &&
+    allowedOAuthScopesMatching &&
+    allowedOAuthFlowsUserPoolClientMatching;
 
   // If we are in silent mode, just return without showing errors and differences
   if (!propertiesMatching && !printErrors) {
@@ -632,7 +630,7 @@ const appClientsOAuthPropertiesMatching = async (
     };
   }
 
-  const filteredProviders = appClientWeb.SupportedIdentityProviders!.filter(p => supportedIdentityProviders.includes(p));
+  const filteredProviders = appClientWeb.SupportedIdentityProviders!.filter((p) => supportedIdentityProviders.includes(p));
 
   return {
     isValid: true,
@@ -704,17 +702,18 @@ const updateStateFiles = async (
     customAuth: isCustomAuthConfigured(answers.userPool!),
   };
 
-  const hasOAuthConfig = !!answers.oauthProviders
-    && answers.oauthProviders.length > 0
-    && !!answers.oauthProperties
-    && !!answers.oauthProperties.allowedOAuthFlows
-    && answers.oauthProperties.allowedOAuthFlows.length > 0
-    && !!answers.oauthProperties.allowedOAuthScopes
-    && answers.oauthProperties.allowedOAuthScopes.length > 0
-    && !!answers.oauthProperties.callbackURLs
-    && answers.oauthProperties.callbackURLs.length > 0
-    && !!answers.oauthProperties.logoutURLs
-    && answers.oauthProperties.logoutURLs.length > 0;
+  const hasOAuthConfig =
+    !!answers.oauthProviders &&
+    answers.oauthProviders.length > 0 &&
+    !!answers.oauthProperties &&
+    !!answers.oauthProperties.allowedOAuthFlows &&
+    answers.oauthProperties.allowedOAuthFlows.length > 0 &&
+    !!answers.oauthProperties.allowedOAuthScopes &&
+    answers.oauthProperties.allowedOAuthScopes.length > 0 &&
+    !!answers.oauthProperties.callbackURLs &&
+    answers.oauthProperties.callbackURLs.length > 0 &&
+    !!answers.oauthProperties.logoutURLs &&
+    answers.oauthProperties.logoutURLs.length > 0;
 
   // Create and persist parameters
   const resourceParameters: ResourceParameters = {
@@ -727,10 +726,10 @@ const updateStateFiles = async (
   const authResourceParameters: AuthParameters = {
     aliasAttributes: answers.userPool?.AliasAttributes,
     usernameAttributes: answers.userPool?.UsernameAttributes,
-    authProvidersUserPool: answers.oauthProviders?.filter(provider => !!hostedUIProviders.find(it => it.value === provider)),
+    authProvidersUserPool: answers.oauthProviders?.filter((provider) => !!hostedUIProviders.find((it) => it.value === provider)),
     requiredAttributes: (answers.userPool?.SchemaAttributes ?? [])
-      .filter(att => att.Required && !!coreAttributes.find(it => it.value === att.Name))
-      .map(att => att.Name!),
+      .filter((att) => att.Required && !!coreAttributes.find((it) => it.value === att.Name))
+      .map((att) => att.Name!),
     passwordPolicyMinLength: answers.userPool?.Policies?.PasswordPolicy?.MinimumLength ?? 8,
     passwordPolicyCharacters: [
       ...(answers.userPool?.Policies?.PasswordPolicy?.RequireLowercase ? ['Requires Lowercase'] : []),
@@ -896,7 +895,7 @@ const createEnvSpecificResourceParameters = (
 };
 
 const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
-  const credentials = identityProviders.map(idp => {
+  const credentials = identityProviders.map((idp) => {
     if (idp.ProviderName === 'SignInWithApple') {
       return {
         ProviderName: idp.ProviderName!,
@@ -920,7 +919,7 @@ const createParameters = (providerName: string, userPoolList: UserPoolDescriptio
   const questionParameters: ImportParameters = {
     providerName,
     userPoolList: userPoolList
-      .map(up => ({
+      .map((up) => ({
         message: `${up.Name} (${up.Id})`,
         value: up.Id!,
       }))
@@ -933,14 +932,15 @@ const createParameters = (providerName: string, userPoolList: UserPoolDescriptio
 };
 
 const isCustomAuthConfigured = (userPool: UserPoolType): boolean => {
-  const customAuthConfigured = !!userPool
-    && !!userPool.LambdaConfig
-    && !!userPool.LambdaConfig.DefineAuthChallenge
-    && userPool.LambdaConfig.DefineAuthChallenge.length > 0
-    && !!userPool.LambdaConfig.CreateAuthChallenge
-    && userPool.LambdaConfig.CreateAuthChallenge.length > 0
-    && !!userPool.LambdaConfig.VerifyAuthChallengeResponse
-    && userPool.LambdaConfig.VerifyAuthChallengeResponse.length > 0;
+  const customAuthConfigured =
+    !!userPool &&
+    !!userPool.LambdaConfig &&
+    !!userPool.LambdaConfig.DefineAuthChallenge &&
+    userPool.LambdaConfig.DefineAuthChallenge.length > 0 &&
+    !!userPool.LambdaConfig.CreateAuthChallenge &&
+    userPool.LambdaConfig.CreateAuthChallenge.length > 0 &&
+    !!userPool.LambdaConfig.VerifyAuthChallengeResponse &&
+    userPool.LambdaConfig.VerifyAuthChallengeResponse.length > 0;
 
   return customAuthConfigured;
 };
@@ -992,9 +992,7 @@ export const importedAuthEnvInit = async (
       const currentResource = _.get(currentMeta, ['auth', resourceName], undefined);
 
       if (currentResource && currentResource.output) {
-        const {
-          UserPoolId, AppClientIDWeb, AppClientID, IdentityPoolId,
-        } = currentResource.output;
+        const { UserPoolId, AppClientIDWeb, AppClientID, IdentityPoolId } = currentResource.output;
 
         /* eslint-disable no-param-reassign */
         currentEnvSpecificParameters.userPoolId = UserPoolId;
@@ -1011,14 +1009,19 @@ export const importedAuthEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager('auth', resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager(
+      'auth',
+      resourceName,
+    );
 
     if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
         message: importMessages.Questions.ImportPreviousResource(
-          resourceName, resourceParamManager.getParam(AuthParam.USER_POOL_ID)!, context.exeInfo.sourceEnvName,
+          resourceName,
+          resourceParamManager.getParam(AuthParam.USER_POOL_ID)!,
+          context.exeInfo.sourceEnvName,
         ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
@@ -1047,11 +1050,11 @@ export const importedAuthEnvInit = async (
   // If there are no current parameters a service walkthrough is required, it can happen when pulling to an empty directory.
   if (
     !(
-      currentEnvSpecificParameters.userPoolId
-      && currentEnvSpecificParameters.webClientId
-      && currentEnvSpecificParameters.nativeClientId
-      && (resourceParameters.authSelections === 'userPoolOnly'
-        || (resourceParameters.authSelections === 'identityPoolAndUserPool' && currentEnvSpecificParameters.identityPoolId))
+      currentEnvSpecificParameters.userPoolId &&
+      currentEnvSpecificParameters.webClientId &&
+      currentEnvSpecificParameters.nativeClientId &&
+      (resourceParameters.authSelections === 'userPoolOnly' ||
+        (resourceParameters.authSelections === 'identityPoolAndUserPool' && currentEnvSpecificParameters.identityPoolId))
     )
   ) {
     context.print.info(importMessages.ImportNewResourceRequired(resourceName));
@@ -1104,7 +1107,7 @@ export const importedAuthEnvInit = async (
   }
 
   // Get app clients based on passed in previous values
-  answers.appClientWeb = questionParameters.webClients!.find(c => c.ClientId! === currentEnvSpecificParameters.webClientId);
+  answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.webClientId);
 
   if (!answers.appClientWeb) {
     context.print.error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
@@ -1114,7 +1117,7 @@ export const importedAuthEnvInit = async (
     };
   }
 
-  answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
+  answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
 
   if (!answers.appClientNative) {
     context.print.error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
@@ -1143,7 +1146,7 @@ export const importedAuthEnvInit = async (
 
   if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
     const identityPools = questionParameters.validatedIdentityPools!.filter(
-      idp => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
+      (idp) => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
     );
 
     if (identityPools.length !== 1) {
@@ -1161,9 +1164,7 @@ export const importedAuthEnvInit = async (
     answers.identityProviders = identityPools[0].providers;
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const {
-      authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
-    } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;
@@ -1251,13 +1252,13 @@ export const headlessImport = async (
   }
 
   // Get app clients based on passed in previous values
-  answers.appClientWeb = questionParameters.webClients!.find(c => c.ClientId! === currentEnvSpecificParameters.webClientId);
+  answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.webClientId);
 
   if (!answers.appClientWeb) {
     throw new Error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
   }
 
-  answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
+  answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
 
   if (!answers.appClientNative) {
     throw new Error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
@@ -1280,7 +1281,7 @@ export const headlessImport = async (
 
   if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
     const identityPools = questionParameters.validatedIdentityPools!.filter(
-      idp => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
+      (idp) => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
     );
 
     if (identityPools.length !== 1) {
@@ -1294,9 +1295,7 @@ export const headlessImport = async (
     answers.identityProviders = identityPools[0].providers;
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const {
-      authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
-    } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;

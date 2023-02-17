@@ -2,8 +2,11 @@ import { hashLayerResource } from '@aws-amplify/amplify-category-function';
 import { AmplifyException, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
-import { 
-  CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
+import {
+  CLOUD_INITIALIZED,
+  CLOUD_NOT_INITIALIZED,
+  getCloudInitStatus,
+  NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import { print } from '../../../extensions/amplify-helpers/print';
@@ -21,15 +24,15 @@ jest.mock('folder-hash', () => ({
 }));
 
 jest.mock('chalk', () => ({
-  green: jest.fn().mockImplementation(input => input),
-  yellow: jest.fn().mockImplementation(input => input),
-  red: jest.fn().mockImplementation(input => input),
-  blue: jest.fn().mockImplementation(input => input),
-  gray: jest.fn().mockImplementation(input => input),
-  grey: jest.fn().mockImplementation(input => input),
-  bgRgb: jest.fn().mockImplementation(input => input),
-  blueBright: jest.fn().mockImplementation(input => input),
-  greenBright: jest.fn().mockImplementation(input => input),
+  green: jest.fn().mockImplementation((input) => input),
+  yellow: jest.fn().mockImplementation((input) => input),
+  red: jest.fn().mockImplementation((input) => input),
+  blue: jest.fn().mockImplementation((input) => input),
+  gray: jest.fn().mockImplementation((input) => input),
+  grey: jest.fn().mockImplementation((input) => input),
+  bgRgb: jest.fn().mockImplementation((input) => input),
+  blueBright: jest.fn().mockImplementation((input) => input),
+  greenBright: jest.fn().mockImplementation((input) => input),
 }));
 
 jest.mock('../../../extensions/amplify-helpers/print', () => ({

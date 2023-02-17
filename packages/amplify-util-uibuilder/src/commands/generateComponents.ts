@@ -37,7 +37,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     const nothingWouldAutogenerate = !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported;
 
-    if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every(group => !group.entities.length)) {
+    if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
       printer.debug('Skipping UI component generation since none are found.');
       return;
     }
@@ -55,13 +55,13 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
     };
 
     const successfulSchemas: StudioSchema[] = [];
-    const detachedForms: {id: string, name: string}[] = [];
+    const detachedForms: { id: string; name: string }[] = [];
     let hasSuccessfulForm = false;
     const failedResponseNames: string[] = [];
     const modelNames = dataSchema?.models ? new Set(Object.keys(dataSchema.models)) : new Set<string>();
 
     Object.entries(generatedResults).forEach(([key, results]) => {
-      results.forEach(result => {
+      results.forEach((result) => {
         if (result.resultType === 'SUCCESS') {
           successfulSchemas.push(result.schema);
           if (key === 'form') {
@@ -74,14 +74,14 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
            * no longer exists.
            */
           if (
-            isStudioForm(failedSchema)
-            && failedSchema.id
-            && dataSchema
-            && eventType === 'PostPush'
-            && isFormDetachedFromModel(failedSchema, modelNames)
+            isStudioForm(failedSchema) &&
+            failedSchema.id &&
+            dataSchema &&
+            eventType === 'PostPush' &&
+            isFormDetachedFromModel(failedSchema, modelNames)
           ) {
             // Don't need to add form to failedResponseNames if it is going to be deleted
-            detachedForms.push({id: failedSchema.id, name: failedSchema.name});
+            detachedForms.push({ id: failedSchema.id, name: failedSchema.name });
             return;
           }
           failedResponseNames.push(result.schemaName);
@@ -100,8 +100,8 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
     }
 
     const invalidComponentNames = [
-      ...componentSchemas.entities.filter(component => !component.schemaVersion).map(component => component.name),
-      ...formSchemas.entities.filter(form => !form.schemaVersion).map(form => form.name),
+      ...componentSchemas.entities.filter((component) => !component.schemaVersion).map((component) => component.name),
+      ...formSchemas.entities.filter((form) => !form.schemaVersion).map((form) => form.name),
     ];
     if (invalidComponentNames.length) {
       printer.warn(

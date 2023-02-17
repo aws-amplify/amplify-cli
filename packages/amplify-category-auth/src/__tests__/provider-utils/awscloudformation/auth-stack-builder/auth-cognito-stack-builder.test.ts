@@ -2,7 +2,10 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyAuthCognitoStack } from '../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
-import { AttributeType, CognitoStackOptions } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+import {
+  AttributeType,
+  CognitoStackOptions,
+} from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
@@ -81,7 +84,7 @@ describe('generateCognitoStackResources', () => {
     expect(
       cognitoStack
         .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId)
-        .map(logicalIdToken => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
+        .map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
     ).toMatchInlineSnapshot(`
       Array [
         "HostedUICustomResourceInputs",

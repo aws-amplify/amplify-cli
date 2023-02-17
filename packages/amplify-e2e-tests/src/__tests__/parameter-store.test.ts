@@ -16,11 +16,7 @@ import {
   gitInit,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  addEnvironmentCarryOverEnvVars,
-  checkoutEnvironment,
-  removeEnvironment,
-} from '../environment/env';
+import { addEnvironmentCarryOverEnvVars, checkoutEnvironment, removeEnvironment } from '../environment/env';
 
 describe('upload and delete parameters', () => {
   let projRoot: string;
@@ -83,7 +79,7 @@ describe('upload and delete parameters', () => {
     await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, 'function', fnName);
     await expectParametersOptionalValue(
       [],
-      expectedParamsAfterAddEnv.map(pair => pair.name),
+      expectedParamsAfterAddEnv.map((pair) => pair.name),
       region,
       appId,
       secondEnvName,
@@ -94,7 +90,7 @@ describe('upload and delete parameters', () => {
     await deleteProject(projRoot);
     await expectParametersOptionalValue(
       [],
-      expectedParamsAfterAddFunc.map(pair => pair.name),
+      expectedParamsAfterAddFunc.map((pair) => pair.name),
       region,
       appId,
       firstEnvName,
@@ -103,7 +99,7 @@ describe('upload and delete parameters', () => {
     );
     await expectParametersOptionalValue(
       [],
-      expectedParamsAfterAddEnv.map(pair => pair.name),
+      expectedParamsAfterAddEnv.map((pair) => pair.name),
       region,
       appId,
       secondEnvName,

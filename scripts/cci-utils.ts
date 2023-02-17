@@ -132,12 +132,7 @@ export function saveConfig(config: CircleCIConfig): void {
 export function getOldJobName(baseJobName: string, testSuitePath: string): string {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  let name = testSuitePath
-    .substring(startIndex, endIndex)
-    .split('.e2e')
-    .join('')
-    .split('.')
-    .join('-');
+  let name = testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
 
   // additional suffixes are added depending on what the 'base job' is called
   // for most tests, they belong to the 'amplify-e2e-tests-pkg' job
@@ -162,12 +157,7 @@ export function getOldJobName(baseJobName: string, testSuitePath: string): strin
 export const getOldJobNameWithoutSuffixes = (testSuitePath: string): string => {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  return testSuitePath
-    .substring(startIndex, endIndex)
-    .split('.e2e')
-    .join('')
-    .split('.')
-    .join('-');
+  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
 };
 
 /**
@@ -231,8 +221,8 @@ export const getSlowestTestsRunTimes = (testSuites: string[]) => {
     };
   });
 
-  return testSuites.map(t => {
-    let slowTest = slowestTests.find(slowTest => slowTest.file === t);
+  return testSuites.map((t) => {
+    let slowTest = slowestTests.find((slowTest) => slowTest.file === t);
     if (slowTest) {
       return {
         test: t,

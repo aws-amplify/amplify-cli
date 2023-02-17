@@ -9,7 +9,7 @@ const LAYER_ARN_KEY = 'Fn::Sub';
 // only latest version layer will remain a project layer
 export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
-  lambdaLayers.forEach(layer => {
+  lambdaLayers.forEach((layer) => {
     if (layer.type === projectLayer) {
       if (layer.env !== envName && !layer.isLatestVersionSelected) {
         const convertLayer: ExternalLayer = {
@@ -39,7 +39,7 @@ export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[]
 // "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:buildlayers8mytestinglayer1-dev:2"
 export const convertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
-  lambdaLayers.forEach(layer => {
+  lambdaLayers.forEach((layer) => {
     if (layer.type === externalLayer && Object.prototype.hasOwnProperty.call(layer.arn, LAYER_ARN_KEY)) {
       const layerArn = layer.arn[LAYER_ARN_KEY];
       const layerArnSplit = layerArn.split(':');

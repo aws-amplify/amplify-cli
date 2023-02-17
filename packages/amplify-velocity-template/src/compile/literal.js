@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   /**
    * literal解释模块
    * @require {method} getReferences
@@ -11,7 +11,7 @@ module.exports = function(Velocity, utils) {
      * 是literal值描述
      * @return {object|string|number|array}返回对应的js变量
      */
-    getLiteral: function(literal) {
+    getLiteral: function (literal) {
       var type = literal.type;
       var ret = '';
 
@@ -29,10 +29,10 @@ module.exports = function(Velocity, utils) {
 
         utils.forEach(
           map,
-          function(exp, key) {
+          function (exp, key) {
             ret[key] = this.getLiteral(exp);
           },
-          this
+          this,
         );
       } else if (type === 'bool') {
         if (literal.value === 'null') {
@@ -52,7 +52,7 @@ module.exports = function(Velocity, utils) {
     /**
      * 对字符串求值，对已双引号字符串，需要做变量替换
      */
-    getString: function(literal) {
+    getString: function (literal) {
       var val = literal.value;
       var ret = val;
 
@@ -69,7 +69,7 @@ module.exports = function(Velocity, utils) {
      * ，和js基本一致
      * @return {array} 求值得到的数组
      */
-    getArray: function(literal) {
+    getArray: function (literal) {
       var ret = [];
 
       if (literal.isRange) {
@@ -98,10 +98,10 @@ module.exports = function(Velocity, utils) {
       } else {
         utils.forEach(
           literal.value,
-          function(exp) {
+          function (exp) {
             ret.push(this.getLiteral(exp));
           },
-          this
+          this,
         );
       }
 
@@ -111,12 +111,12 @@ module.exports = function(Velocity, utils) {
     /**
      * 对双引号字符串进行eval求值，替换其中的变量，只支持最基本的变量类型替换
      */
-    evalStr: function(str) {
+    evalStr: function (str) {
       str = this.escapeString(str);
       var asts = Velocity.parse(str);
       return this._render(asts, this.condition);
     },
-    escapeString: function(str) {
+    escapeString: function (str) {
       // AWS AppSync Velocity template does not support macro. So escaping #
       return str.replace(/[#]/g, '\\#');
     },

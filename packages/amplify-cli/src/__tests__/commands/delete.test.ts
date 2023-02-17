@@ -85,6 +85,8 @@ describe('amplify delete:', () => {
     },
   };
   it('delete run method should display an error message when using force option', async () => {
-    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow('The "delete" command does not expect additional arguments.');
+    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow(
+      'The "delete" command does not expect additional arguments.',
+    );
   });
 });

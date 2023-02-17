@@ -23,9 +23,7 @@ describe('apns-cert-config', () => {
   });
 
   test('p12decoder invoked', async () => {
-    prompterMock.input
-      .mockResolvedValueOnce(mockFilePath)
-      .mockResolvedValueOnce(mockPassword);
+    prompterMock.input.mockResolvedValueOnce(mockFilePath).mockResolvedValueOnce(mockPassword);
 
     const result = await apnsCertConfig.run(undefined);
     expect(p12decoder.run).toBeCalledWith(mockAnswers);

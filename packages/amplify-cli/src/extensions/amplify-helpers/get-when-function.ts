@@ -6,11 +6,11 @@ export function getWhen(input, answers, previousValues, amplify) {
     let orConditions = true;
 
     if (input.andConditions && input.andConditions.length > 0) {
-      andConditions = input.andConditions.every(condition => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
+      andConditions = input.andConditions.every((condition) => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
     }
 
     if (input.orConditions && input.orConditions.length > 0) {
-      orConditions = input.orConditions.some(condition => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
+      orConditions = input.orConditions.some((condition) => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
     }
 
     return andConditions && orConditions;
@@ -28,7 +28,10 @@ const findMatch = (condition, answers, previousValues, amplify) => {
   }
   /*eslint-disable*/
   if (!condition.preventEdit) {
-    if (condition.operator === '=' && ((answers[condition.key] != undefined && answers[condition.key] !== condition.value) || !answers[condition.key])) {
+    if (
+      condition.operator === '=' &&
+      ((answers[condition.key] != undefined && answers[condition.key] !== condition.value) || !answers[condition.key])
+    ) {
       response = false;
     } else if (condition.operator === '!=' && (!answers[condition.key] || answers[condition.key] === condition.value)) {
       response = false;
@@ -45,7 +48,11 @@ const findMatch = (condition, answers, previousValues, amplify) => {
       response = false;
     } else if (condition.preventEdit === 'exists' && !!previousValues[condition.key]) {
       response = false;
-    } else if (condition.preventEdit === '=' && previousValues[condition.key] != undefined && previousValues[condition.key] === condition.value) {
+    } else if (
+      condition.preventEdit === '=' &&
+      previousValues[condition.key] != undefined &&
+      previousValues[condition.key] === condition.value
+    ) {
       response = false;
     } else if (condition.preventEdit === 'existsInCurrent') {
       if (answers[condition.key]) {

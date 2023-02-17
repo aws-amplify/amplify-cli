@@ -1,5 +1,7 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
   addAuthWithDefault,
   removeAuthWithDefault,
   addAuthWithMaxOptions,
@@ -38,7 +40,7 @@ describe('amplify add auth...c', () => {
     const createFunctionName = `${Object.keys(meta.auth)[1]}CreateAuthChallenge-integtest`;
     const defineFunctionName = `${Object.keys(meta.auth)[1]}DefineAuthChallenge-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[1];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[1];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

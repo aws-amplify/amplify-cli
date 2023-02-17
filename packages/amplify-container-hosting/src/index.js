@@ -32,7 +32,7 @@ async function configure(context) {
         default: enabledServices[0],
       });
       const tasks = [];
-      answers.selectedServices.forEach(service => {
+      answers.selectedServices.forEach((service) => {
         tasks.push(() => categoryManager.runServiceAction(context, service, 'configure'));
       });
       return sequential(tasks);
@@ -89,7 +89,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     const { policy, attributes } = categoryManager.getIAMPolicies(resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category });

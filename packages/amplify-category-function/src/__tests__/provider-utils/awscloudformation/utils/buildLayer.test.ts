@@ -20,24 +20,24 @@ loadLayerConfigurationFile_mock.mockReturnValue({
     {
       value: 'nodejs',
       name: 'NodeJS',
-      runtimePluginId: 'amplify-nodejs-function-runtime-provider',
+      runtimePluginId: '@aws-amplify/amplify-nodejs-function-runtime-provider',
       layerExecutablePath: 'nodejs',
     },
   ],
 });
 
-const runtimePlugin_stub = ({
+const runtimePlugin_stub = {
   checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),
   build: jest.fn().mockResolvedValue({ rebuilt: true }),
-} as unknown) as jest.Mocked<FunctionRuntimeLifecycleManager>;
+} as unknown as jest.Mocked<FunctionRuntimeLifecycleManager>;
 
-const context_stub = ({
+const context_stub = {
   amplify: {
     readBreadcrumbs: jest.fn().mockReturnValue({ pluginId: 'testPluginId' }),
     loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
     updateamplifyMetaAfterBuild: jest.fn(),
   },
-} as unknown) as jest.Mocked<$TSContext>;
+} as unknown as jest.Mocked<$TSContext>;
 
 describe('build function', () => {
   beforeEach(() => {

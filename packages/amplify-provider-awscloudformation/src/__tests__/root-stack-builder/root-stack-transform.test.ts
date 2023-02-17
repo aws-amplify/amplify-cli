@@ -7,7 +7,6 @@ const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 JSONUtilitiesMock.stringify.mockImplementation((data, __) => JSON.stringify(data, null, 2));
 JSONUtilitiesMock.parse.mockImplementation((data) => JSON.parse(data));
 
-
 describe('Root stack template tests', () => {
   it('Generated root stack template during init', async () => {
     const contextStub = {

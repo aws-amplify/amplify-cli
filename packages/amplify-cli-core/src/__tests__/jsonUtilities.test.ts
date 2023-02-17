@@ -41,7 +41,7 @@ describe('JSONUtilities tests', () => {
 
   test('readJson throws error when fileName is not specified', () => {
     expect(() => {
-      JSONUtilities.readJson((undefined as unknown) as string);
+      JSONUtilities.readJson(undefined as unknown as string);
     }).toThrowError(`'fileName' argument missing`);
   });
 
@@ -85,13 +85,13 @@ describe('JSONUtilities tests', () => {
 
   test('writeJson throws error when fileName is not specified', () => {
     expect(() => {
-      JSONUtilities.writeJson((undefined as unknown) as string, (undefined as unknown) as string);
+      JSONUtilities.writeJson(undefined as unknown as string, undefined as unknown as string);
     }).toThrowError(`'fileName' argument missing`);
   });
 
   test('writeJson throws error when data is not specified', () => {
     expect(() => {
-      JSONUtilities.writeJson('test.json', (undefined as unknown) as string);
+      JSONUtilities.writeJson('test.json', undefined as unknown as string);
     }).toThrowError(`'data' argument missing`);
   });
 
@@ -123,22 +123,22 @@ describe('JSONUtilities tests', () => {
   });
 
   test('JSON parse returns successfully for non-string parameters', () => {
-    const result1 = JSONUtilities.parse((true as unknown) as string);
+    const result1 = JSONUtilities.parse(true as unknown as string);
     expect(result1).toBe(true);
 
-    const result2 = JSONUtilities.parse((false as unknown) as string);
+    const result2 = JSONUtilities.parse(false as unknown as string);
     expect(result2).toBe(false);
 
-    const result3 = JSONUtilities.parse((12345 as unknown) as string);
+    const result3 = JSONUtilities.parse(12345 as unknown as string);
     expect(result3).toBe(12345);
 
-    const result4 = JSONUtilities.parse((12345.67 as unknown) as string);
+    const result4 = JSONUtilities.parse(12345.67 as unknown as string);
     expect(result4).toBe(12345.67);
 
-    const result5 = JSONUtilities.parse(('12345' as unknown) as string);
+    const result5 = JSONUtilities.parse('12345' as unknown as string);
     expect(result5).toBe(12345);
 
-    const result6 = JSONUtilities.parse(('12345.67' as unknown) as string);
+    const result6 = JSONUtilities.parse('12345.67' as unknown as string);
     expect(result6).toBe(12345.67);
   });
 
@@ -160,7 +160,7 @@ describe('JSONUtilities tests', () => {
 
   test('JSON parse throws error when jsonString is undefined', () => {
     expect(() => {
-      const _ = JSONUtilities.parse((undefined as unknown) as string);
+      const _ = JSONUtilities.parse(undefined as unknown as string);
     }).toThrowError(`'jsonString' argument missing or empty`);
   });
 
@@ -172,7 +172,7 @@ describe('JSONUtilities tests', () => {
 
   test('JSON stringify throws error when data is undefined', () => {
     expect(() => {
-      JSONUtilities.stringify((undefined as unknown) as any);
+      JSONUtilities.stringify(undefined as unknown as any);
     }).toThrowError(`'data' argument missing`);
   });
 

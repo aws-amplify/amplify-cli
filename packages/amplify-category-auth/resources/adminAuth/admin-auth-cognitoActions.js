@@ -193,7 +193,7 @@ async function listGroupsForUser(username, Limit, NextToken) {
      * We are filtering out the results that seem to be innapropriate for client applications
      * to prevent any informaiton disclosure. Customers can modify if they have the need.
      */
-    result.Groups.forEach(val => {
+    result.Groups.forEach((val) => {
       delete val.UserPoolId, delete val.LastModifiedDate, delete val.CreationDate, delete val.Precedence, delete val.RoleArn;
     });
 

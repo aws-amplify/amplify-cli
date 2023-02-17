@@ -82,19 +82,19 @@ export enum PluginAPIError {
  * This could be extended to return specific API response
  */
 export interface IPluginAPIResponse {
-  pluginName:string,
-  resourceProviderServiceName: string, // Service which provisions capability, subCapability e.g Pinpoint
-  status: boolean, // true - successfully applied, false - failed to apply
-  errorCode?: PluginAPIError,
-  reasonMsg?: string, // In case of error, a user readable error string
+  pluginName: string;
+  resourceProviderServiceName: string; // Service which provisions capability, subCapability e.g Pinpoint
+  status: boolean; // true - successfully applied, false - failed to apply
+  errorCode?: PluginAPIError;
+  reasonMsg?: string; // In case of error, a user readable error string
 }
 
 /**
  * Plugin API response when client configures a capability ( e.g notifications )
  */
 export interface IPluginCapabilityAPIResponse extends IPluginAPIResponse {
-  capability: string, // e.g Notifications
-  subCapability?: string, // e.g In-AppMessaging
+  capability: string; // e.g Notifications
+  subCapability?: string; // e.g In-AppMessaging
 }
 
 /**
@@ -106,22 +106,22 @@ export enum NotificationChannels {
   EMAIL = 'Email',
   SMS = 'SMS',
   IN_APP_MSG = 'InAppMessaging',
-  PUSH_NOTIFICATION = 'PushNotification'
+  PUSH_NOTIFICATION = 'PushNotification',
 }
 
 /**
  * Notifications category metadata
  */
 export interface INotificationsResourceMeta {
-  Id: string, // unique identifier for AWS service resource allocated for Notifications
-  Name: string, // region specific logical identifier for AWS service resource
-  Region: string, // Region in which Notifications resource is deployed.
-  ResourceName: string, // Logical name of Notifications App.
-  service: string, // AWS Service e.g Pinpoint (small s for legacy support)
-  output: Record<string, $TSAny>,
-  mobileHubMigrated?: boolean,
-  lastPushTimeStamp? :string,
-  lastPushDirHash?: string, // this is a pseudo field since all notification pushes are through analytics or sdk
+  Id: string; // unique identifier for AWS service resource allocated for Notifications
+  Name: string; // region specific logical identifier for AWS service resource
+  Region: string; // Region in which Notifications resource is deployed.
+  ResourceName: string; // Logical name of Notifications App.
+  service: string; // AWS Service e.g Pinpoint (small s for legacy support)
+  output: Record<string, $TSAny>;
+  mobileHubMigrated?: boolean;
+  lastPushTimeStamp?: string;
+  lastPushDirHash?: string; // this is a pseudo field since all notification pushes are through analytics or sdk
 }
 
 /**
@@ -137,12 +137,12 @@ export interface IAnalyticsResource extends IAmplifyResource {
  * Amplify Notifications Resource data queried from amplify-meta
  * note:- assigned to analytics until output for each notifications type is added
  */
-export type INotificationsResource = IAnalyticsResource
+export type INotificationsResource = IAnalyticsResource;
 
 /**
  * Amplify Auth Resource data queried from amplify-meta
  */
-export type IAuthResource = IAmplifyResource
+export type IAuthResource = IAmplifyResource;
 
 export const AMPLIFY_DOCS_URL = 'https://docs.amplify.aws';
 export const AWS_DOCS_URL = 'https://docs.aws.amazon.com/';

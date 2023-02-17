@@ -25,9 +25,7 @@ export class NetworkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: NetworkStackProps) {
     super(scope, id);
 
-    const {
-      stackName, vpcId = '', vpcName, internetGatewayId = '', subnetCidrs = new Map<string, string>(),
-    } = props;
+    const { stackName, vpcId = '', vpcName, internetGatewayId = '', subnetCidrs = new Map<string, string>() } = props;
 
     const { outputVpc, outputIgw, vpcCidrBlock } = createVpc(this, vpcId, vpcName, internetGatewayId);
 
@@ -41,7 +39,7 @@ export class NetworkStack extends cdk.Stack {
     const cfn = this._toCloudFormation();
 
     return cfn;
-  }
+  };
 }
 
 const createVpc = (scope: Construct, vpcId: string, vpcName: string, internetGatewayId: string): $TSAny => {
@@ -95,12 +93,14 @@ const createVpc = (scope: Construct, vpcId: string, vpcName: string, internetGat
   };
 };
 
-const createAmplifyEnv = (scope: Construct,
+const createAmplifyEnv = (
+  scope: Construct,
   envName: string,
   vpcId: string,
   vpcCidrBlock: string,
   igwId: string,
-  subnetCidrs: ReadonlyMap<string, string>): $TSAny => {
+  subnetCidrs: ReadonlyMap<string, string>,
+): $TSAny => {
   const availabilityZones = [];
 
   const azSubnetMap = new cdk.CfnMapping(scope, 'AzsMap');

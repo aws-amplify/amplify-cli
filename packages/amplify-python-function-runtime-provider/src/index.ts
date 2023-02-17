@@ -7,9 +7,9 @@ import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
 import { pythonPackage } from './util/packageUtils';
 
-export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
+export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context) => {
   return {
-    contribute: async request => {
+    contribute: async (request) => {
       const selection = request.selection;
       if (selection !== 'python') {
         throw new Error(`Unknown selection ${selection}`);
@@ -32,9 +32,9 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       };
     },
     checkDependencies: checkDeps,
-    package: request => pythonPackage(context, request),
+    package: (request) => pythonPackage(context, request),
     build: pythonBuild,
-    invoke: request => pythonInvoke(context, request),
+    invoke: (request) => pythonInvoke(context, request),
   };
 };
 

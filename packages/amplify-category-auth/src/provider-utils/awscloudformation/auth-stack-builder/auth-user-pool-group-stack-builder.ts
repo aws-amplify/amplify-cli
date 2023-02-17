@@ -148,7 +148,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
   generateUserPoolGroupResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
-    props.groups.forEach(group => {
+    props.groups.forEach((group) => {
       this.userPoolGroup[`${group.groupName}`] = new CfnUserPoolGroup(this, `${group.groupName}Group`, {
         userPoolId: this.getCfnParameter(getCfnParamsLogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,
         groupName: group.groupName,
@@ -393,6 +393,5 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
     throw new Error('Method not implemented.');
   }
 
-  public renderCloudFormationTemplate =
-  (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
+  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
 }

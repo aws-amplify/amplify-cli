@@ -23,7 +23,6 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   pathManager,
-  PathConstants,
   stateManager,
   FeatureFlags,
   JSONUtilities,
@@ -41,7 +40,7 @@ import {
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { AmplifySpinner, printer } from 'amplify-prompts';
+import { printer } from 'amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -55,7 +54,7 @@ import { downloadAPIModels } from './download-api-models';
 import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
-import archiver from './utils/archiver';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { storeArtifactsForAmplifyService, postPushCheck } from './amplify-service-manager';
 import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
@@ -189,7 +188,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
      * calling transform schema here to support old project with out overrides
      */
     await ApiCategoryFacade.transformGraphQLSchema(context, {
-      handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+      handleMigration: (opts) => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options.minify || context.input.options?.minify,
       promptApiKeyCreation: true,
     });
@@ -226,7 +225,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
       const getGqlUpdatedResource = (resourcesToCheck: any[]) =>
         resourcesToCheck.find(
-          resourceToCheck =>
+          (resourceToCheck) =>
             resourceToCheck?.service === 'AppSync' &&
             resourceToCheck?.providerMetadata?.logicalId &&
             resourceToCheck?.providerPlugin === 'awscloudformation',
@@ -238,7 +237,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         deploymentSteps = await gqlManager.run();
 
         // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependency on the tables
-        const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map(meta => meta.stackName); // stackName is the same as the model name
+        const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map((meta) => meta.stackName); // stackName is the same as the model name
         deploymentSteps = await prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables(
           context,
           modelsBeingReplaced,
@@ -292,7 +291,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
         });
 
-        deploymentSteps.forEach(step => deploymentManager.addStep(step));
+        deploymentSteps.forEach((step) => deploymentManager.addStep(step));
 
         // generate nested stack
         const backEndDir = pathManager.getBackendDirPath();
@@ -549,85 +548,9 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
   await context.amplify.updateamplifyMetaAfterPush(resources);
 };
 
-/**
- * Publish files that Amplify Studio depends on outside the zip file so that can read
- * without streaming from the zip.
- */
-const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
-  const amplifyDirPath = pathManager.getAmplifyDirPath();
-  const studioBackendDirName = 'studio-backend';
-  // Delete the contents of the studio backend directory first
-  await s3.deleteDirectory(bucketName, studioBackendDirName);
-  // Create a list of file params to upload to the deployment bucket
-  const uploadFileParams = [
-    'cli.json',
-    'amplify-meta.json',
-    'backend-config.json',
-    'schema.graphql',
-    'transform.conf.json',
-    'parameters.json',
-  ]
-    .flatMap(baseName => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath }))
-    .filter(filePath => !filePath.startsWith('backend'))
-    .map(filePath => ({
-      Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
-      Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
-    }));
-
-  const spinner = new AmplifySpinner();
-  try {
-    spinner.start('Uploading files.');
-    await Promise.all(uploadFileParams.map(params => s3.uploadFile(params, false)));
-  } finally {
-    spinner.stop();
-  }
-};
-
-/**
- * Upload files that Amplify Studio depends on
- */
-export const storeCurrentCloudBackend = async (context: $TSContext) => {
-  const zipFilename = '#current-cloud-backend.zip';
-  const backendDir = pathManager.getBackendDirPath();
-  const tempDir = path.join(backendDir, '.temp');
-  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
-
-  // handle tag file
-  const tagFilePath = pathManager.getTagFilePath();
-  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
-  if (fs.existsSync(tagFilePath)) {
-    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
-  }
-
-  const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
-    cwd: pathManager.getAmplifyDirPath(),
-    absolute: true,
-  });
-
-  const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const result = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
-  const s3Key = `${result.zipFilename}`;
-  const s3 = await S3.getInstance(context);
-
-  const s3Params = {
-    Body: fs.createReadStream(result.zipFilePath),
-    Key: s3Key,
-  };
-
-  logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
-  const deploymentBucketName = await s3.uploadFile(s3Params);
-  await uploadStudioBackendFiles(s3, deploymentBucketName);
-
-  fs.removeSync(tempDir);
-};
-
 const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   // Only build and package resources which are required
-  await Promise.all(resources.filter(resource => resource.build).map(resource => prepareResource(context, resource)));
+  await Promise.all(resources.filter((resource) => resource.build).map((resource) => prepareResource(context, resource)));
 };
 
 const prepareResource = async (context: $TSContext, resource: $TSAny) => {
@@ -715,9 +638,7 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
 
 const storeS3BucketInfo = (category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) => {
   const amplifyMeta = stateManager.getMeta();
-  getEnvParamManager(envName)
-    .getResourceParamManager(category, resourceName)
-    .setParams({ deploymentBucketName, s3Key });
+  getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
@@ -745,7 +666,7 @@ const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpda
   let userAgentAction = '';
 
   if (uniqueCategoriesAdded.length > 0) {
-    uniqueCategoriesAdded.forEach(category => {
+    uniqueCategoriesAdded.forEach((category) => {
       if (category.length >= 2) {
         category = category.substring(0, 2);
       }
@@ -755,7 +676,7 @@ const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpda
   }
 
   if (uniqueCategoriesUpdated.length > 0) {
-    uniqueCategoriesUpdated.forEach(category => {
+    uniqueCategoriesUpdated.forEach((category) => {
       if (category.length >= 2) {
         category = category.substring(0, 2);
       }
@@ -769,7 +690,7 @@ const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpda
 const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
   const categories = new Set();
 
-  resources.forEach(resource => categories.add(resource.category));
+  resources.forEach((resource) => categories.add(resource.category));
 
   return [...categories];
 };
@@ -917,11 +838,11 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
   eventMap.categories = [];
 
   // Type script throws an error unless I explicitly convert to string
-  const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map(item => `${item}`);
+  const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map((item) => `${item}`);
 
-  Object.keys(meta).forEach(category => {
+  Object.keys(meta).forEach((category) => {
     if (category !== 'providers') {
-      Object.keys(meta[category]).forEach(resource => {
+      Object.keys(meta[category]).forEach((resource) => {
         eventMap.rootResources.push(createResourceObject(resource, category));
         handleCfnFiles(eventMap, category, resource, resources);
       });
@@ -934,10 +855,10 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
 const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, updatedResources: string[]) => {
   // Getting corresponding cfn template files
   const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
-  cfnFiles.forEach(file => {
+  cfnFiles.forEach((file) => {
     const categoryResources = getCategoryResources(file, resourceDir);
     // Mapping Resource events to categories.
-    categoryResources.forEach(res => {
+    categoryResources.forEach((res) => {
       eventMap.eventToCategories.set(res, `${category}-${resource}`);
     });
     if (updatedResources.includes(category)) {
@@ -1107,10 +1028,10 @@ export const formNestedStack = async (
 
   let categories = Object.keys(amplifyMeta);
 
-  categories = categories.filter(category => category !== 'providers');
-  categories.forEach(category => {
+  categories = categories.filter((category) => category !== 'providers');
+  categories.forEach((category) => {
     const resources = Object.keys(amplifyMeta[category]);
-    resources.forEach(resource => {
+    resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
 
       if (category === 'auth' && resource !== 'userPoolGroups') {
@@ -1167,7 +1088,7 @@ export const formNestedStack = async (
 
             if (dependsOn[i].exports) {
               Object.keys(dependsOn[i].exports)
-                .map(key => ({ key, value: dependsOn[i].exports[key] }))
+                .map((key) => ({ key, value: dependsOn[i].exports[key] }))
                 .forEach(({ key, value }) => {
                   parameters[key] = { 'Fn::ImportValue': value };
                 });
@@ -1202,14 +1123,8 @@ export const formNestedStack = async (
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
+          context.amplify.getImportedAuthProperties(context);
 
         if (category !== AmplifyCategories.AUTH && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
@@ -1305,7 +1220,7 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
     const currentMeta = stateManager.getCurrentMeta(projectRoot);
     const meta = stateManager.getMeta(projectRoot);
 
-    layerResources.forEach(r => {
+    layerResources.forEach((r) => {
       const layerMetaPath = [AmplifyCategories.FUNCTION, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
       _.set(meta, layerMetaPath, previousHash);

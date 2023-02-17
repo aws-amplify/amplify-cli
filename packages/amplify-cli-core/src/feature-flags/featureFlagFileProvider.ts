@@ -19,7 +19,7 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
 
   public load = async (): Promise<FeatureFlagConfiguration> => {
     if (!this.options.projectPath) {
-      throw new Error('\'projectPath\' option is missing');
+      throw new Error("'projectPath' option is missing");
     }
 
     const result: FeatureFlagConfiguration = {

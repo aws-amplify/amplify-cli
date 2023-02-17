@@ -31,7 +31,7 @@ describe('CloudFormation', () => {
     };
     expect(columnify).toBeCalledTimes(1);
     const timestamps = columnify.mock.calls[0][0];
-    expect(timestamps.map(obj => Object.keys(obj))).toMatchInlineSnapshot(`
+    expect(timestamps.map((obj) => Object.keys(obj))).toMatchInlineSnapshot(`
       Array [
         Array [
           "Timestamp",
@@ -90,7 +90,7 @@ describe('CloudFormation', () => {
       const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
 
       // Only testStackId1 event should be returned since that's the only one in eventToCategories map
-      expect(filteredEvents).toEqual(eventsWithFailure.filter(e => e.StackId == 'testStackId1'));
+      expect(filteredEvents).toEqual(eventsWithFailure.filter((e) => e.StackId == 'testStackId1'));
     });
 
     test('that it filters stack events with cascade failure reasons', async () => {
@@ -149,7 +149,7 @@ describe('CloudFormation', () => {
       const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
 
       // Should not filter testStackId1 event that has a specific error message
-      expect(filteredEvents).toEqual(eventsWithFailure.filter(e => e.StackId == 'testStackId2'));
+      expect(filteredEvents).toEqual(eventsWithFailure.filter((e) => e.StackId == 'testStackId2'));
     });
   });
 });

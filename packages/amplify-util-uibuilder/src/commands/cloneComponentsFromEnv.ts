@@ -15,7 +15,9 @@ export const run = async (context: $TSContext): Promise<void> => {
   const studioClient = await AmplifyStudioClient.setClientInfo(context, sourceEnvName, appId);
 
   const [existingComponents, existingComponentsNewEnv] = await Promise.all([
-    studioClient.listComponents(sourceEnvName), studioClient.listComponents(newEnvName)]);
+    studioClient.listComponents(sourceEnvName),
+    studioClient.listComponents(newEnvName),
+  ]);
   if (existingComponents.entities.length === 0) {
     printer.debug(`${existingComponents.entities.length} components exist in source env. Skipping creation of local components.`);
     return;
@@ -42,11 +44,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       modifiedAt, // eslint-disable-line @typescript-eslint/no-unused-vars
       ...componentCreateData
     } = components[i];
-    await studioClient.createComponent(
-      componentCreateData,
-      newEnvName,
-      appId,
-    );
+    await studioClient.createComponent(componentCreateData, newEnvName, appId);
   }
 
   printer.info(

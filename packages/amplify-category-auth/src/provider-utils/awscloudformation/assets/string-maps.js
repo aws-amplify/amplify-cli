@@ -615,10 +615,10 @@ const additionalConfigMap = [
 ];
 
 const disableOptionsOnEdit = () => {
-  mfaOptions.find(i => i.value === 'ON').disabled = true;
+  mfaOptions.find((i) => i.value === 'ON').disabled = true;
 };
 
-const getAllMaps = edit => {
+const getAllMaps = (edit) => {
   if (edit) {
     disableOptionsOnEdit();
   }

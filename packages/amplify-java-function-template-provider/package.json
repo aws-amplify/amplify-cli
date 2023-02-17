@@ -1,5 +1,5 @@
 {
-  "name": "amplify-java-function-template-provider",
+  "name": "@aws-amplify/amplify-java-function-template-provider",
   "version": "1.5.15-cdkv2.2",
   "description": "JAVA templates supplied by the Amplify Team",
   "repository": {

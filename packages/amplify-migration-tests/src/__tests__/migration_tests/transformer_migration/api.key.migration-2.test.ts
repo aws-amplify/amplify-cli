@@ -17,7 +17,7 @@ import {
 
 describe('amplify key force push', () => {
   let projRoot: string;
-  
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('api-key-cli-migration');
     const migrateFromVersion = { v: 'unintialized' };

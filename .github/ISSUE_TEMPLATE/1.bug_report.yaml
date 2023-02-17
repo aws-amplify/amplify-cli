@@ -1,6 +1,6 @@
 name: Bug Report
 description: Create a report to help us improve Amplify CLI
-labels: ["pending-triage"]
+labels: ['pending-triage']
 
 body:
   - type: markdown
@@ -19,7 +19,7 @@ body:
   - type: input
     attributes:
       label: How did you install the Amplify CLI?
-      description: "For example: npm, yarn, curl, etc."
+      description: 'For example: npm, yarn, curl, etc.'
   - type: input
     attributes:
       label: If applicable, what version of Node.js are you using?
@@ -33,13 +33,13 @@ body:
   - type: input
     attributes:
       label: What operating system are you using?
-      description: "For example: Mac, Windows, Ubuntu."
+      description: 'For example: Mac, Windows, Ubuntu.'
     validations:
       required: true
   - type: textarea
     attributes:
       label: Did you make any manual changes to the cloud resources managed by Amplify? Please describe the changes made.
-      description: "For example: \"Deleted DynamoDB GSIs from the AWS Console or using AWS CLI\" Or \"No manual changes made\""
+      description: 'For example: "Deleted DynamoDB GSIs from the AWS Console or using AWS CLI" Or "No manual changes made"'
     validations:
       required: true
   - type: markdown

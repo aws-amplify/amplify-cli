@@ -28,7 +28,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.5",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "amplify-cli-logger": "1.2.4-cdkv2.1",
+    "@aws-amplify/amplify-cli-logger": "1.2.4-cdkv2.1",
     "amplify-prompts": "2.6.4-cdkv2.1",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",

@@ -32,9 +32,7 @@ describe('amplify init', () => {
     await specialCaseInit.initWithoutCredentialFileAndNoNewUserSetup(projectRoot);
     const meta = getBackendAmplifyMeta(projectRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const {
-      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
-    } = meta;
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);

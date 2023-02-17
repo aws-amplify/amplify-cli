@@ -50,10 +50,10 @@ export const getUpdateAuthDefaultsApplier =
     const defaults = functionMap[result.authSelections](previousResult.resourceName);
 
     // ensure immutable attributes are removed from result
-    immutableAttributes.filter(pv => pv in previousResult).forEach(pv => delete (result as any)[pv]);
+    immutableAttributes.filter((pv) => pv in previousResult).forEach((pv) => delete (result as any)[pv]);
 
     if (['default', 'defaultSocial'].includes(result.useDefault)) {
-      safeDefaults.forEach(sd => delete (previousResult as any)[sd]);
+      safeDefaults.forEach((sd) => delete (previousResult as any)[sd]);
     }
 
     await verificationBucketName(result, previousResult);

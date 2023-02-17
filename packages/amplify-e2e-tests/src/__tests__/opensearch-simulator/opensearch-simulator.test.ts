@@ -68,7 +68,7 @@ describe('emulator operations', () => {
   });
 
   afterEach(async () => {
-    await Promise.all(emulators.map(emu => emu.terminate()));
+    await Promise.all(emulators.map((emu) => emu.terminate()));
   });
 
   afterAll(async () => {

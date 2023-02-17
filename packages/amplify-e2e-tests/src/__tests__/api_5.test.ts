@@ -115,5 +115,4 @@ describe('amplify add api (REST)', () => {
 
     validateRestApiMeta(projRoot, amplifyMeta);
   });
-
 });

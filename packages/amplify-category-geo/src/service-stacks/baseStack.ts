@@ -31,7 +31,7 @@ export class BaseStack extends cdk.Stack {
    */
   constructInputParameters(parameterNames: Array<string>): Map<string, cdk.CfnParameter> {
     const parametersMap: Map<string, cdk.CfnParameter> = new Map();
-    parameterNames.forEach(parameterName => {
+    parameterNames.forEach((parameterName) => {
       const inputParameter = new cdk.CfnParameter(this, parameterName, { type: 'String' });
       parametersMap.set(parameterName, inputParameter);
     });
@@ -53,7 +53,7 @@ export class BaseStack extends cdk.Stack {
     // if this is a nested stack ( i.e. it has a parent), then just read the template as a string
     const template = fs.readFileSync(path.join(assembly.directory, this.templateFile));
     return JSON.parse(template.toString('utf-8'));
-  }
+  };
 }
 
 // force major version bump for cdk v2

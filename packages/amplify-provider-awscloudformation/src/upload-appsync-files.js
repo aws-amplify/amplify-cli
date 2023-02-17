@@ -29,13 +29,13 @@ function getProjectBucket(context) {
  * @param {*} options
  */
 async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options = {}) {
-  const allApiResourceToUpdate = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
-  const allApiResources = allResources.filter(resource => resource.service === 'AppSync');
+  const allApiResourceToUpdate = resourcesToUpdate.filter((resource) => resource.service === 'AppSync');
+  const allApiResources = allResources.filter((resource) => resource.service === 'AppSync');
   const { defaultParams, useDeprecatedParameters } = options;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const projectBucket = getProjectBucket(context);
 
-  const getDeploymentRootKey = async resourceDir => {
+  const getDeploymentRootKey = async (resourceDir) => {
     let deploymentSubKey;
     if (useDeprecatedParameters) {
       deploymentSubKey = new Date().getTime();
@@ -71,7 +71,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
           hasApiKey = true;
         } else if (
           authConfig.additionalAuthenticationProviders &&
-          authConfig.additionalAuthenticationProviders.find(p => p.authenticationType === 'API_KEY')
+          authConfig.additionalAuthenticationProviders.find((p) => p.authenticationType === 'API_KEY')
         ) {
           hasApiKey = true;
         }
@@ -193,7 +193,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     spinner.start();
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
-      upload: async blob => {
+      upload: async (blob) => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
         logger('uploadAppSyncFiles.upload.s3Client.uploadFile', [{ Key }])();

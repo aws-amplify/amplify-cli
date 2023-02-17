@@ -24,10 +24,7 @@ export const CustomIAMPoliciesSchema = {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
       Resource: {
         type: 'array',
-        anyOf: [
-          { contains: { type: 'string' } },
-          { contains: { type: 'object', additionalProperties: true } }
-        ],
+        anyOf: [{ contains: { type: 'string' } }, { contains: { type: 'object', additionalProperties: true } }],
         minItems: 1,
         nullable: false,
       },
@@ -92,14 +89,14 @@ function addCustomPoliciesToCFNTemplate(
 }
 
 function generateCustomPolicyStatements(customPolicies: CustomIAMPolicies): CustomIAMPolicies {
-  return customPolicies.map(policyStatement => ({
+  return customPolicies.map((policyStatement) => ({
     ...replaceEnvWithRef(policyStatement),
     Effect: policyStatement.Effect || 'Allow',
   }));
 }
 
 function replaceEnvWithRef(policy: CustomIAMPolicy): CustomIAMPolicy {
-  const resource = policy.Resource.map(resource =>
+  const resource = policy.Resource.map((resource) =>
     typeof resource === 'string' && resource.includes('${env}') ? Fn.Sub(resource, { env: Fn.Ref('env') }) : resource,
   ) as any[];
   policy.Resource = resource;
@@ -113,7 +110,7 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
   const valid = validatePolicy(data);
   if (!valid) {
     printer.error(`${resourceName} ${categoryName} custom-policies.json failed validation:`);
-    formatter.list((validatePolicy?.errors || []).map(err => `${err.dataPath} ${err.message}`));
+    formatter.list((validatePolicy?.errors || []).map((err) => `${err.dataPath} ${err.message}`));
     throw new CustomPoliciesFormatError(`
       Invalid custom IAM policies for ${resourceName} ${categoryName}.
       See details above and fix errors in <project-dir>/amplify/backend/${categoryName}/${resourceName}/custom-policies.json.
@@ -176,8 +173,8 @@ function resourceHasCustomPolicies(customPolicies: CustomIAMPolicies): boolean {
 
 function warnWildcardCustomPoliciesResource(customPolicies: CustomIAMPolicy[], resourceName: string) {
   customPolicies
-    .filter(policy => policy.Resource.includes('*'))
-    .forEach(policy =>
+    .filter((policy) => policy.Resource.includes('*'))
+    .forEach((policy) =>
       printer.warn(
         `Warning: You've specified "*" as the "Resource" in ${resourceName}'s custom IAM policy.\n This will grant ${resourceName} the ability to perform ${policy.Action} on ALL resources in this AWS Account.`,
       ),

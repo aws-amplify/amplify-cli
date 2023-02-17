@@ -9,9 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { Construct } from 'constructs';
 import { authTriggerAssetFilePath } from '../constants';
 import _ from 'lodash';
-import {
-  AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions,
-} from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from './configure-sms';
 
 type CustomResourceAuthStackProps = Readonly<{
@@ -48,7 +46,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
 
-    props.authTriggerConnections.forEach(triggerConfig => {
+    props.authTriggerConnections.forEach((triggerConfig) => {
       const config = triggerConfig;
       const fnName = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}Name`, {
         type: 'String',
@@ -63,7 +61,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
 
       if (!_.isEmpty(props.permissions)) {
-        const lambdaPermission = props.permissions!.find(permission => config.triggerType === permission.trigger);
+        const lambdaPermission = props.permissions!.find((permission) => config.triggerType === permission.trigger);
         if (!_.isEmpty(lambdaPermission)) {
           createPermissionsForAuthTrigger(this, fnName, roleArn, lambdaPermission!, userpoolArn);
         }
@@ -88,7 +86,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
     // if this is a nested stack ( i.e. it has a parent), then just read the template as a string
     const template = fs.readFileSync(path.join(assembly.directory, this.templateFile));
     return JSON.parse(template.toString('utf-8'));
-  }
+  };
 }
 
 /**
