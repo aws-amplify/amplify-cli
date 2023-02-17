@@ -175,6 +175,7 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 1250
+      - run: yarn eslint --no-eslintrc --config .eslint.package.json.js "**/package.json"
       - run: yarn prettier --check .
 
   verify-api-extract:
