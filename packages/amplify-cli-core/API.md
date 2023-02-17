@@ -397,6 +397,13 @@ export interface CLIEnvironmentProvider {
 }
 
 // @public (undocumented)
+export type CLIGlobalFlags = {
+    version?: boolean;
+    help?: boolean;
+    yes?: boolean;
+};
+
+// @public (undocumented)
 export class CLIInputSchemaGenerator {
     constructor(typeDefs: TypeDef[]);
     // (undocumented)
@@ -427,29 +434,6 @@ export class CLIInputSchemaValidator {
     // (undocumented)
     validateInput(userInput: string): Promise<boolean>;
 }
-
-// @public (undocumented)
-export type CLIOptionFlags = {
-    restore?: boolean;
-    json?: boolean;
-    name?: string;
-    awsInfo?: string;
-    config?: string;
-    'iterative-rollback'?: boolean;
-    force?: boolean;
-    env?: string;
-    rootStackName?: string;
-    frontend?: string;
-    quickstart?: boolean;
-    app?: string | boolean;
-    timeout?: string;
-    event?: string;
-    minify?: boolean;
-    help?: boolean;
-    localEnvFilePath?: string;
-    yes?: boolean;
-    appId?: string;
-};
 
 // @public (undocumented)
 export interface CLIParams {
@@ -527,12 +511,12 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
-export type CommandLineInput<T = CLIOptionFlags> = {
+export type CommandLineInput = {
     argv: Array<string>;
     plugin?: string;
     command: string;
     subCommands?: string[];
-    options?: T & Record<string, string | boolean>;
+    options?: CLIGlobalFlags & Record<string, any>;
 };
 
 // @public (undocumented)
