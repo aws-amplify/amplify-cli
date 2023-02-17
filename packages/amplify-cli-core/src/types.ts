@@ -188,6 +188,10 @@ export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plug
   third?: string;
 }
 
+/**
+ * CLIOptionFlags is deprecated and will be removed in a future minor version
+ * @deprecated
+ */
 export type CLIOptionFlags = {
   restore?: boolean;
   json?: boolean;
