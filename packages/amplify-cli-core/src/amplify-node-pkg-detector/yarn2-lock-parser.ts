@@ -2,16 +2,14 @@ import _ from 'lodash';
 import * as yaml from 'yaml';
 import { AmplifyFault } from '../errors/amplify-fault';
 import { LockfileType } from './lock-file-types';
-import {
-  YarnLockDependency, YarnLockDependencyType, YarnLock, YarnLockParser, YarnLockFileTypes,
-} from './yarn-lock-parser';
+import { YarnLockDependency, YarnLockDependencyType, YarnLock, YarnLockParser, YarnLockFileTypes } from './yarn-lock-parser';
 
 /**
  *  Yarn2LockParser
  */
 export class Yarn2LockParser extends YarnLockParser {
   type: YarnLockFileTypes;
-  dependenciesMap:Record<string, Record<string, YarnLockDependencyType>>;
+  dependenciesMap: Record<string, Record<string, YarnLockDependencyType>>;
 
   constructor() {
     super();
@@ -29,7 +27,7 @@ export class Yarn2LockParser extends YarnLockParser {
       const object: YarnLockDependency = {};
       _.forEach(yarn2LockContent, (packageValue, packageKey) => {
         const actualPackageKeys = this.convertToYarnParserKeys(packageKey);
-        actualPackageKeys.forEach(key => {
+        actualPackageKeys.forEach((key) => {
           object[key.trim()] = packageValue;
         });
       });
@@ -42,11 +40,15 @@ export class Yarn2LockParser extends YarnLockParser {
       yarnLock.dependencies = yarnLock.object;
       return yarnLock;
     } catch (e) {
-      throw new AmplifyFault('LockFileParsingFault', {
-        message: `yarn.lock parsing failed`,
-      }, e);
+      throw new AmplifyFault(
+        'LockFileParsingFault',
+        {
+          message: `yarn.lock parsing failed`,
+        },
+        e,
+      );
     }
-  }
+  };
 
   /**
    * converts yarn2 lock files keys to yarn lock , for comma separated keys will be taking semver version
@@ -56,8 +58,8 @@ export class Yarn2LockParser extends YarnLockParser {
    **/
   private convertToYarnParserKeys = (packageKey: string): string[] => {
     if (packageKey.includes(',')) {
-      return packageKey.split(',').map(key => key.replace(/npm:/g, ''));
+      return packageKey.split(',').map((key) => key.replace(/npm:/g, ''));
     }
     return [packageKey.replace(/npm:/g, '')];
-  }
+  };
 }

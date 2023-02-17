@@ -21,7 +21,7 @@ export type Input = {
   filter?: $TSAny;
   requiredOptions?: $TSAny;
   options?: $TSAny;
-}
+};
 
 /**
  * parses input object and returns a question object
@@ -44,7 +44,7 @@ export const parseInputs = async (
   // Can also have some validations here based on the input json
   // Uncool implementation here
 
-  const color: keyof Chalk = input.prefixColor as keyof Chalk ?? 'green';
+  const color: keyof Chalk = (input.prefixColor as keyof Chalk) ?? 'green';
   const questionChalk = chalk[color] as Chalk;
   const prefix = input.prefix ? `${'\n'} ${questionChalk(input.prefix)} ${'\n'}` : '';
 
@@ -111,11 +111,7 @@ export const parseInputs = async (
   return question;
 };
 
-const iteratorQuestion = (
-  input: $TSAny,
-  question: $TSAny,
-  context: $TSContext,
-) => {
+const iteratorQuestion = (input: $TSAny, question: $TSAny, context: $TSContext) => {
   if (context.updatingAuth[input.iterator]) {
     question = {
       choices: context.updatingAuth[input.iterator].map((i: $TSAny) => ({
@@ -134,20 +130,15 @@ const iteratorQuestion = (
   return question;
 };
 
-const getRequiredOptions = (
-  input: $TSAny,
-  question: $TSAny,
-  getAllMaps: $TSAny,
-  context: $TSContext,
-  currentAnswers: $TSAny,
-) => {
+const getRequiredOptions = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, context: $TSContext, currentAnswers: $TSAny) => {
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map((i: $TSAny) => sourceValues[i] || [])));
   const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter((x: $TSAny) => sourceArray.includes(x.value)) : [];
   const trueOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter((x: $TSAny) => !sourceArray.includes(x.value)) : [];
-  const msg = requiredOptions && requiredOptions.length > 0
-    ? `--- ${input.requiredOptionsMsg} ${requiredOptions.map((t: $TSAny) => t.name).join(', ')}   ---`
-    : '';
+  const msg =
+    requiredOptions && requiredOptions.length > 0
+      ? `--- ${input.requiredOptionsMsg} ${requiredOptions.map((t: $TSAny) => t.name).join(', ')}   ---`
+      : '';
   question = Object.assign(question, {
     choices: [new inquirer.Separator(msg), ...trueOptions],
     filter: (userInput: $TSAny) => userInput.concat(...requiredOptions.map((z: $TSAny) => z.value)),
@@ -155,20 +146,14 @@ const getRequiredOptions = (
   return question;
 };
 
-const filterInputs = (
-  input: $TSAny,
-  question: $TSAny,
-  getAllMaps: $TSAny,
-  context: $TSContext,
-  currentAnswers: $TSAny,
-) => {
+const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, context: $TSContext, currentAnswers: $TSAny) => {
   if (input.filter === 'providers') {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const { requiredAttributes } = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
     if (requiredAttributes) {
       const attrMap = getAllMaps().attributeProviderMap;
       requiredAttributes.forEach((attr: string | number) => {
-        choices.forEach((choice: { missingAttributes: $TSAny[]; value: string; disabled: string; name: $TSAny; }) => {
+        choices.forEach((choice: { missingAttributes: $TSAny[]; value: string; disabled: string; name: $TSAny }) => {
           choice.missingAttributes = [];
           if (!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) {
             choice.missingAttributes = choice.missingAttributes.length < 1 ? [attr] : choice.missingAttributes.concat(attr);
@@ -187,7 +172,7 @@ const filterInputs = (
     let choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     choices = JSON.parse(JSON.stringify(choices));
     const attrMap = getAllMaps().attributeProviderMap;
-    choices.forEach((choice: { missingProviders: $TSAny[]; value: string | number; name: string; }) => {
+    choices.forEach((choice: { missingProviders: $TSAny[]; value: string | number; name: string }) => {
       choice.missingProviders = [];
       if (attrMap[choice.value]) {
         Object.values(attrMap[choice.value]).forEach((provider: $TSAny, index) => {
@@ -214,16 +199,16 @@ const filterInputs = (
   if (input.filter === 'updateOptions' && context.updatingAuth) {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const newChoices = JSON.parse(JSON.stringify(choices));
-    choices.forEach((c: { conditionKey: string; value: $TSAny; conditionMsg: string; name: string; }) => {
+    choices.forEach((c: { conditionKey: string; value: $TSAny; conditionMsg: string; name: string }) => {
       if (c.conditionKey === 'useDefault' && context.updatingAuth[c.conditionKey] === c.value && !c.conditionMsg) {
-        const index = newChoices.findIndex((i: { name: string; }) => i.name === c.name);
+        const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
         newChoices.splice(index, 1);
       } else if (c.conditionMsg && !context.updatingAuth[c.conditionKey]) {
         if (context.updatingAuth.useDefault === 'defaultSocial') {
-          const index = newChoices.findIndex((i: { name: string; }) => i.name === c.name);
+          const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
           newChoices[index].disabled = `Disabled: ${c.conditionMsg}`;
         } else {
-          const index = newChoices.findIndex((i: { name: string; }) => i.name === c.name);
+          const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
           newChoices.splice(index, 1);
         }
       }
@@ -233,19 +218,16 @@ const filterInputs = (
   return question;
 };
 
-const triggerDefaults = (
-  context: $TSContext,
-  input: { key: string | number; },
-  availableOptions: $TSAny[],
-) => {
+const triggerDefaults = (context: $TSContext, input: { key: string | number }, availableOptions: $TSAny[]) => {
   const capabilityDefaults: $TSAny[] = [];
   if (context.updatingAuth.triggers) {
-    const current = typeof context.updatingAuth[input.key] === 'string' ? JSON.parse(context.updatingAuth[input.key]) : context.updatingAuth[input.key];
+    const current =
+      typeof context.updatingAuth[input.key] === 'string' ? JSON.parse(context.updatingAuth[input.key]) : context.updatingAuth[input.key];
     try {
       if (current) {
-        availableOptions.forEach(a => {
+        availableOptions.forEach((a) => {
           let match = true;
-          Object.keys(a.triggers).forEach(t => {
+          Object.keys(a.triggers).forEach((t) => {
             if (current[t]) {
               const test = a.triggers[t].every((c: $TSAny) => current[t].includes(c));
               if (!test) {

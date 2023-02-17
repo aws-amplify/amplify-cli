@@ -11,7 +11,7 @@ export async function packageResource(request: PackageRequest, context: any): Pr
       output.on('close', () => {
         resolve({ packageHash });
       });
-      output.on('error', err => {
+      output.on('error', (err) => {
         reject(new Error(`Failed to copy zip with error: [${err}]`));
       });
       // build through gradle build

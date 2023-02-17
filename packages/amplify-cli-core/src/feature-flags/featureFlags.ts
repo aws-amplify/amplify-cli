@@ -56,7 +56,7 @@ export class FeatureFlags {
     instance.registerFlags();
 
     if (additionalFlags) {
-      Object.keys(additionalFlags).forEach(sectionName => {
+      Object.keys(additionalFlags).forEach((sectionName) => {
         const flags = additionalFlags[sectionName];
 
         instance.registerFlag(sectionName, flags);
@@ -234,7 +234,7 @@ export class FeatureFlags {
       throw new Error(`Section '${parts[0]}' is not registered in feature provider`);
     }
 
-    const flagRegistrationEntry = sectionRegistration?.find(flag => flag.name === parts[1]);
+    const flagRegistrationEntry = sectionRegistration?.find((flag) => flag.name === parts[1]);
 
     if (!flagRegistrationEntry) {
       throw new Error(`Flag '${parts[1]}' within '${parts[0]}' is not registered in feature provider`);
@@ -357,7 +357,7 @@ export class FeatureFlags {
         const unknownFlags: string[] = [];
         const otherErrors: string[] = [];
 
-        schemaValidate.errors.forEach(error => {
+        schemaValidate.errors.forEach((error) => {
           if (error.keyword === 'additionalProperties') {
             const additionalProperty = (<AdditionalPropertiesParams>error.params)?.additionalProperty;
             let flagName: string = error.dataPath.length > 0 && error.dataPath[0] === '.' ? `${error.dataPath.slice(1)}.` : '';
@@ -388,11 +388,11 @@ export class FeatureFlags {
             details:
               (unknownFlags.length > 0
                 ? `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:\n${unknownFlags
-                    .map(el => `- ${el}`)
+                    .map((el) => `- ${el}`)
                     .join(',\n')}\n`
                 : '') +
               (otherErrors.length > 0
-                ? `The following feature flags have validation errors:\n${otherErrors.map(el => `- ${el}`).join(',\n')}`
+                ? `The following feature flags have validation errors:\n${otherErrors.map((el) => `- ${el}`).join(',\n')}`
                 : ''),
             resolution: `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.${
               isCI ? '\nEnsure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.' : ''
@@ -406,12 +406,12 @@ export class FeatureFlags {
     const featureFlagsValidator = (features: FeatureFlagConfiguration): void => {
       validator(features.project);
 
-      Object.keys(features.environments).forEach(env => {
+      Object.keys(features.environments).forEach((env) => {
         validator(features.environments[env]);
       });
     };
 
-    allFlags.forEach(flagItem => {
+    allFlags.forEach((flagItem) => {
       // Validate file provider settings
       featureFlagsValidator(flagItem.flags);
     });
@@ -431,7 +431,7 @@ export class FeatureFlags {
         throw new Error(`Section '${section}' is not registered in feature provider`);
       }
 
-      const flagRegistrationEntry = sectionRegistration.find(flag => flag.name === flagName);
+      const flagRegistrationEntry = sectionRegistration.find((flag) => flag.name === flagName);
 
       if (!flagRegistrationEntry) {
         throw new Error(`Flag '${flagName}' within '${section}' is not registered in feature provider`);
@@ -477,7 +477,7 @@ export class FeatureFlags {
 
     features.project = mapFeatureFlagEntry(features.project);
 
-    Object.keys(features.environments).forEach(env => {
+    Object.keys(features.environments).forEach((env) => {
       features.environments[env] = mapFeatureFlagEntry(features.environments[env]);
     });
     /* eslint-enable */
@@ -538,12 +538,12 @@ export class FeatureFlags {
 
     const newFlags = this.registrations.get(section.toLowerCase()) ?? new Array<FeatureFlagRegistration>();
 
-    flags.forEach(flag => {
+    flags.forEach((flag) => {
       if (!flag.name || flag.name.trim().length === 0) {
         throw new Error('Flag does not have a name specified');
       }
 
-      if (newFlags.find(f => f.name === flag.name.toLowerCase())) {
+      if (newFlags.find((f) => f.name === flag.name.toLowerCase())) {
         throw new Error(`Flag with name: '${flag.name}' is already registered in section: '${section}'`);
       }
 

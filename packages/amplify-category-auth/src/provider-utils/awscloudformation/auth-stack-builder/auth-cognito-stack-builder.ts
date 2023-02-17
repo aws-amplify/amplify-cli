@@ -210,8 +210,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   generateCognitoStackResources = async (props: CognitoStackOptions): Promise<void> => {
     const autoVerifiedAttributes = props.autoVerifiedAttributes
       ? props.autoVerifiedAttributes
-        .concat(props.aliasAttributes ? props.aliasAttributes : [])
-        .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
+          .concat(props.aliasAttributes ? props.aliasAttributes : [])
+          .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
       : [];
     const configureSMS = configureSmsOption(props);
 
@@ -312,7 +312,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
         const schemaAttributes: cognito.CfnUserPool.SchemaAttributeProperty[] = [];
-        props.requiredAttributes.forEach(attr => {
+        props.requiredAttributes.forEach((attr) => {
           schemaAttributes.push({
             name: attr,
             required: true,
@@ -323,7 +323,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
-        props.dependsOn!.forEach(trigger => {
+        props.dependsOn!.forEach((trigger) => {
           if (trigger.resourceName.includes('CreateAuthChallenge')) {
             this.userPool!.lambdaConfig = {
               createAuthChallenge: cdk.Fn.ref(`function${props.resourceName}${'CreateAuthChallenge'}Arn`),
@@ -383,8 +383,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) {
         this.userPool!.autoVerifiedAttributes = autoVerifiedAttributes;
         /**
-     * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
-     */
+         * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
+         */
         this.userPool!.userAttributeUpdateSettings = {
           attributesRequireVerificationBeforeUpdate: autoVerifiedAttributes,
         };
@@ -430,8 +430,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       // updating Lambda Config when FF is (break circular dependency : false)
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
-        props.dependsOn.forEach(trigger => {
-          LambdaTriggersKeys.forEach(key => {
+        props.dependsOn.forEach((trigger) => {
+          LambdaTriggersKeys.forEach((key) => {
             if (trigger.resourceName.includes(key)) {
               const resourceKey = `UserPool${key}LambdaInvokePermission`;
               this.lambdaConfigPermissions![`${resourceKey}`] = new lambda.CfnPermission(this, `${resourceKey}`, {
@@ -529,14 +529,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (
-        props.authProviders
-        && !_.isEmpty(props.authProviders)
-        && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
+        props.authProviders &&
+        !_.isEmpty(props.authProviders) &&
+        !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
       ) {
         this.identityPool.supportedLoginProviders = cdk.Lazy.any({
           produce: () => {
             const supportedProvider: $TSAny = {};
-            props.authProviders?.forEach(provider => {
+            props.authProviders?.forEach((provider) => {
               if (Object.keys(authProvidersList).includes(provider)) {
                 supportedProvider[provider] = cdk.Fn.ref(authProvidersList[provider]);
               }
@@ -840,8 +840,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
- * creates OAuth customResource for Cognito
- */
+   * creates OAuth customResource for Cognito
+   */
   createOAuthCustomResource(): void {
     // lambda function
     this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
@@ -917,8 +917,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
- * creates MFA customResource for Cognito
- */
+   * creates MFA customResource for Cognito
+   */
   createMFACustomResource(props: CognitoStackOptions): void {
     // iam role
     this.mfaLambdaRole = new iam.CfnRole(this, 'MFALambdaRole', {
@@ -1222,7 +1222,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
   generateIAMPolicies = (props: CognitoStackOptions): void => {
     let resource: string;
-    props.permissions?.forEach(permission => {
+    props.permissions?.forEach((permission) => {
       if (permission.resource.paramType === 'string') {
         resource = permission.resource.keys as string;
       }

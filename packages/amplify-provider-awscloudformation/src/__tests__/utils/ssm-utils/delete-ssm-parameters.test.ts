@@ -13,8 +13,8 @@ const fakeAppId = 'fakeAppId';
 const keyPrefix = '/amplify/id/dev/';
 let keys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two', 'toBeIgnored'];
 let expectedKeys: Array<string> = ['AMPLIFY_one', 'AMPLIFY_two'];
-keys = keys.map(key => keyPrefix + key);
-expectedKeys = expectedKeys.map(key => keyPrefix + key);
+keys = keys.map((key) => keyPrefix + key);
+expectedKeys = expectedKeys.map((key) => keyPrefix + key);
 const envName: string = 'dev';
 const contextStub = {
   exeInfo: {
@@ -32,7 +32,7 @@ describe('parameters-delete-handler', () => {
     const deleteParametersMock = jest.fn().mockImplementation(() => ({ promise: deleteParametersPromiseMock }));
 
     const mockGetParamatersReturnedObject: SSMType.GetParametersByPathResult = {
-      Parameters: keys.map(key => {
+      Parameters: keys.map((key) => {
         return { Name: key };
       }),
     };
@@ -47,7 +47,7 @@ describe('parameters-delete-handler', () => {
       },
     });
 
-    await deleteEnvironmentParametersFromService((contextStub as unknown) as $TSContext, envName);
+    await deleteEnvironmentParametersFromService(contextStub as unknown as $TSContext, envName);
     expect(deleteParametersPromiseMock).toBeCalledTimes(1);
     expect(deleteParametersMock).toBeCalledTimes(1);
     const expectedDeleteParamater = getSsmSdkParametersDeleteParameters(expectedKeys);

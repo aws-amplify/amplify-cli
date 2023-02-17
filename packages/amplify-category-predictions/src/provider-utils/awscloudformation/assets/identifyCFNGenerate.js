@@ -182,7 +182,7 @@ const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, pre
   // Modify existing notification configuration here//
 
   const lambdaConfigurations = [];
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach(triggers => {
+  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers) => {
     if (!triggers.Filter) {
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -484,7 +484,7 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
               '        console.log("response data" + JSON.stringify(res));',
               '        response.send(event, context, response.SUCCESS, res);',
               '     }).catch(err => {',
-              '        if (err.code !== \'ParameterNotFound\') {',
+              "        if (err.code !== 'ParameterNotFound') {",
               '          response.send(event, context, response.FAILED);',
               '        } else {',
               '          response.send(event, context, response.SUCCESS);',
@@ -597,11 +597,7 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
         Statement: [
           {
             Effect: 'Allow',
-            Action: [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
             Resource: {
               'Fn::Sub': [
                 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*',
@@ -880,7 +876,7 @@ const addObjectKeys = (original, additional) => ({ ...original, ...additional })
 /**
  * Sets rekognition + textract policies
  */
-const addTextractPolicies = identifyCFNFile => {
+const addTextractPolicies = (identifyCFNFile) => {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
     'rekognition:DetectText',
     'rekognition:DetectLabel',
@@ -895,7 +891,7 @@ const addTextractPolicies = identifyCFNFile => {
 /**
  * Sets only rekognition policies
  */
-const removeTextractPolicies = identifyCFNFile => {
+const removeTextractPolicies = (identifyCFNFile) => {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
     'rekognition:DetectText',
     'rekognition:DetectLabel',

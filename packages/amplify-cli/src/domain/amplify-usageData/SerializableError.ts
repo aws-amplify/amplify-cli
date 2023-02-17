@@ -2,7 +2,8 @@ import { $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 
 const stackTraceRegex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-const ARNRegex = /arn:[a-z0-9][-.a-z0-9]{0,62}:[A-Za-z0-9][A-Za-z0-9_/.-]{0,62}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9][A-Za-z0-9:_/+=,@.-]{0,1023}/g;
+const ARNRegex =
+  /arn:[a-z0-9][-.a-z0-9]{0,62}:[A-Za-z0-9][A-Za-z0-9_/.-]{0,62}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9][A-Za-z0-9:_/+=,@.-]{0,1023}/g;
 
 /**
  * Wrapper around Error.name
@@ -26,7 +27,7 @@ const extractStackTrace = (error: Error): Trace[] => {
   const result: Trace[] = [];
   if (error.stack) {
     const stack = error.stack.split('\n');
-    stack.forEach(line => {
+    stack.forEach((line) => {
       const match = stackTraceRegex.exec(line);
       if (match) {
         const [, methodName, file, lineNumber, columnNumber] = match;
@@ -38,7 +39,7 @@ const extractStackTrace = (error: Error): Trace[] => {
         });
       }
     });
-    const processedPaths = processPaths(result.map(trace => trace.file));
+    const processedPaths = processPaths(result.map((trace) => trace.file));
     result.forEach((trace, index) => {
       // eslint-disable-next-line no-param-reassign
       trace.file = processedPaths[index];
@@ -55,7 +56,7 @@ const processPaths = (paths: string[]): string[] => {
   const longestString = paths.reduce((a, b) => (a.length > b.length ? a : b));
   const directoriesToRemove = longestString.split('/');
   const directoriesRemoved = new Set<string>();
-  directoriesToRemove.forEach(directory => {
+  directoriesToRemove.forEach((directory) => {
     if (directory === '') {
       return;
     }
@@ -67,7 +68,7 @@ const processPaths = (paths: string[]): string[] => {
     }
   });
 
-  return result.map(r => {
+  return result.map((r) => {
     if (r === longestString) {
       return longestString.replace(path.join(...directoriesRemoved), '');
     }

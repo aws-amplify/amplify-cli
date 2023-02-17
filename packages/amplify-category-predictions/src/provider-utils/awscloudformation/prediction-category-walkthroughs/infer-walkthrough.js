@@ -39,7 +39,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (inferTypes.includes(amplifyMeta[category][resourceName].inferType)) {
       predictionsResources.push({
         name: resourceName,
@@ -101,7 +101,7 @@ async function configure(context, resourceObj) {
       [inferAssetsNameInput.name]: await prompter.input(inferAssetsNameInput.message, {
         validate: inferAssetsNameInput.validate,
         initial: inferAssetsNameInput.default,
-      })
+      }),
     });
     inferType = answers.inferType;
     if (inferType === 'modelInfer') {
@@ -168,19 +168,16 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 
 async function followUpQuestions(context, defaultValues, parameters) {
   const answers = {
-    endpointConfig: await prompter.pick(
-      'Would you like to create your endpoint or load an use an existing endpoint?',
-      [
-        {
-          name: 'Create an endpoint',
-          value: 'create',
-        },
-        {
-          name: 'Import an existing endpoint',
-          value: 'import',
-        },
-      ],
-    ),
+    endpointConfig: await prompter.pick('Would you like to create your endpoint or load an use an existing endpoint?', [
+      {
+        name: 'Create an endpoint',
+        value: 'create',
+      },
+      {
+        name: 'Import an existing endpoint',
+        value: 'import',
+      },
+    ]),
   };
 
   if (answers.endpointConfig === 'import') {
@@ -223,7 +220,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -239,7 +236,7 @@ function resourceAlreadyExists(context, inferType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].inferType === inferType) {
         type = inferType;
       }
@@ -252,7 +249,7 @@ async function getEndpoints(context, params) {
   const sagemaker = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getEndpoints');
   const endpoints = [];
   const endpointMap = {};
-  sagemaker.Endpoints.forEach(endpoint => {
+  sagemaker.Endpoints.forEach((endpoint) => {
     endpoints.push({ name: `${endpoint.EndpointName}` });
     endpointMap[endpoint.EndpointName] = { endpointName: endpoint.EndpointName, endpointARN: endpoint.EndpointArn };
   });

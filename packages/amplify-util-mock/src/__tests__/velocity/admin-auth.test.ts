@@ -3,9 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import {
-  VelocityTemplateSimulator, AppSyncVTLContext, getIAMToken,
-} from '../../velocity';
+import { VelocityTemplateSimulator, AppSyncVTLContext, getIAMToken } from '../../velocity';
 import { featureFlags } from './test-helper';
 
 jest.mock('amplify-prompts');

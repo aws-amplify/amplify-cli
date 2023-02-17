@@ -35,7 +35,7 @@ jest.useFakeTimers();
 
 describe('uploading environment parameters', () => {
   it('returns an async function which can invoke the SSM client', async () => {
-    stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': { 'AmplifyAppId': 'mockedAppId' } } });
+    stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: { AmplifyAppId: 'mockedAppId' } } });
     const returnedFn = await getEnvParametersUploadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     await returnedFn('key', 'value');
@@ -43,7 +43,7 @@ describe('uploading environment parameters', () => {
   });
 
   it('returns no-op when AmplifyAppId is undefined', async () => {
-    stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': {} } });
+    stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: {} } });
     const returnedFn = await getEnvParametersUploadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     await returnedFn('key1', 'value');
@@ -59,7 +59,7 @@ describe('downloading environment parameters', () => {
   });
 
   it('returns no-op when AmplifyAppId is undefined', async () => {
-    stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': {} } });
+    stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: {} } });
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn(['mockMissingParam']);
@@ -68,7 +68,7 @@ describe('downloading environment parameters', () => {
   });
 
   it('returns {} when no keys are supplied', async () => {
-    stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': { 'AmplifyAppId': 'mockedAppId' } } });
+    stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: { AmplifyAppId: 'mockedAppId' } } });
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn([]);
@@ -77,20 +77,20 @@ describe('downloading environment parameters', () => {
   });
 
   it('returns an async function which can invoke the SSM client', async () => {
-    stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': { 'AmplifyAppId': 'mockedAppId' } } });
+    stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: { AmplifyAppId: 'mockedAppId' } } });
     const singleResultMock: SSMType.GetParametersResult = { Parameters: [{ Name: '/amplify/mockAppId/mockEnv/key', Value: '"value"' }] };
     getParametersPromiseMock.mockResolvedValueOnce(singleResultMock);
 
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn(['key']);
-    expect(mockParams).toStrictEqual({ 'key': 'value' });
+    expect(mockParams).toStrictEqual({ key: 'value' });
     expect(getParametersMock).toBeCalledTimes(1);
     expect(getParametersPromiseMock).toBeCalledTimes(1);
   });
 
   it('returns function which can handle many parameters in a single request', async () => {
-    stateManagerMock.getMeta.mockReturnValueOnce({ 'providers': { 'awscloudformation': { 'AmplifyAppId': 'mockedAppId' } } });
+    stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: { AmplifyAppId: 'mockedAppId' } } });
     const keys: string[] = [];
     const mockCloudParams: { Name: string; Value: string }[] = [];
     const expectedParams = {};
@@ -100,7 +100,7 @@ describe('downloading environment parameters', () => {
       expectedParams[key] = 'value';
       mockCloudParams.push({ Name: `/amplify/mockedAppId/mockEnv/${key}`, Value: '"value"' });
     }
-    const expectedKeyPaths = keys.map(key => `/amplify/mockedAppId/mockEnv/${key}`);
+    const expectedKeyPaths = keys.map((key) => `/amplify/mockedAppId/mockEnv/${key}`);
     getParametersPromiseMock.mockResolvedValueOnce({ Parameters: mockCloudParams.slice(0, 10) });
     getParametersPromiseMock.mockResolvedValueOnce({ Parameters: mockCloudParams.slice(10) });
 

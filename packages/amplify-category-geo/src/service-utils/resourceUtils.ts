@@ -53,7 +53,7 @@ export const updateParametersFile = (parameters: $TSObject, resourceName: string
  * @returns resource information available in Amplify Meta file
  */
 export const getGeoServiceMeta = async (service: ServiceName): Promise<$TSObject> =>
-  _.pickBy(stateManager.getMeta()?.[category], val => val.service === service);
+  _.pickBy(stateManager.getMeta()?.[category], (val) => val.service === service);
 
 /**
  * Get the Geo resource configurations stored in Amplify Meta file
@@ -71,7 +71,7 @@ export const readResourceMetaParameters = async (service: ServiceName, resourceN
  */
 export const updateDefaultResource = async (context: $TSContext, service: ServiceName, defaultResource?: string) => {
   const serviceResources = await getGeoServiceMeta(service);
-  Object.keys(serviceResources).forEach(resource => {
+  Object.keys(serviceResources).forEach((resource) => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'isDefault', defaultResource === resource);
 
     context.amplify.updateBackendConfigAfterResourceUpdate(category, resource, 'isDefault', defaultResource === resource);
@@ -180,7 +180,7 @@ export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
 
 export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
   const authMeta = stateManager.getMeta()?.[authCategoryName];
-  const cognitoResources = authMeta ? Object.keys(authMeta).filter(authResource => authMeta[authResource].service === 'Cognito') : [];
+  const cognitoResources = authMeta ? Object.keys(authMeta).filter((authResource) => authMeta[authResource].service === 'Cognito') : [];
   if (cognitoResources.length === 0) {
     throw new Error('No auth resource found. Run "amplify add auth"');
   }
@@ -210,7 +210,7 @@ export const getResourceDependencies = (groupNames: string[], authResourceName: 
     dependsOnResources.push({
       category: authCategoryName,
       resourceName: 'userPoolGroups',
-      attributes: groupNames.map(group => `${group}GroupRole`),
+      attributes: groupNames.map((group) => `${group}GroupRole`),
     });
   }
   return dependsOnResources;

@@ -49,6 +49,5 @@ export const makeProjWithTableOnRoot = (table: DynamoDB.Table): DiffableProject 
       [`${table.Properties.TableName || 'MyTable'}Table`]: table,
     },
   },
-  stacks: {
-  },
+  stacks: {},
 });

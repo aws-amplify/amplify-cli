@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
+import { getAmplifyLogger, Redactor, IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { stateManager, CommandLineInput } from 'amplify-cli-core';
-import { getAmplifyLogger, Redactor } from 'amplify-cli-logger';
-import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
+
 import {
   ICommandInput,
   IFlowData,
@@ -72,7 +72,7 @@ export class CLIFlowReport implements IFlowData {
     this.optionFlowData = []; // key-value store with ordering maintained
     // Parse options
     if (input.options?.prompt) {
-      const prompt: string = (input.options.prompt as unknown) as string;
+      const prompt: string = input.options.prompt as unknown as string;
       this.pushInteractiveFlow(prompt, input.options.input);
     }
   }

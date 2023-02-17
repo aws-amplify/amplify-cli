@@ -1,11 +1,9 @@
-import {
-  $TSContext, stateManager
-} from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { categoryName } from '../constants';
 import {
   FunctionSecretsStateManager,
   getLocalFunctionSecretNames,
-  storeSecretsPendingRemoval
+  storeSecretsPendingRemoval,
 } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { ensureLambdaExecutionRoleOutputs } from '../provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 import { ensureEnvironmentVariableValues } from '../provider-utils/awscloudformation/utils/environmentVariablesHelper';
@@ -29,4 +27,3 @@ const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
   }
   await storeSecretsPendingRemoval(context, functionNames);
 };
-

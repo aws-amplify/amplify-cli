@@ -4,7 +4,12 @@ import {
   amplifyPush,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, apiEnableDataStore, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  apiEnableDataStore,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -95,7 +100,8 @@ describe('transformer model searchable migration test', () => {
     }
   };
 
-  const createEntry = async (name: string, description: string, count: number) => await runMutation(getCreateTodosMutation(name, description, count));
+  const createEntry = async (name: string, description: string, count: number) =>
+    await runMutation(getCreateTodosMutation(name, description, count));
 
   const searchTodos = async () => await runQuery(getTodos());
 
@@ -144,7 +150,7 @@ describe('transformer model searchable migration test', () => {
     let searchResponse;
 
     do {
-      await new Promise(r => setTimeout(r, waitInMilliseconds));
+      await new Promise((r) => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();
       currentRetryCount += 1;
       waitInMilliseconds *= 2;

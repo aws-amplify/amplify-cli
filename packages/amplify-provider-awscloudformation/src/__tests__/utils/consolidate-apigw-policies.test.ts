@@ -224,18 +224,21 @@ describe('ApiGatewayAuthStack', () => {
   // The test needs CDK to be updated to 1.140.0 so it can use capture.next. Skipping it for now
   it('should slice managed role when the size of the policy document exceeds 6K', () => {
     // create 100 paths
-    const paths = new Array(100).fill(1).reduce((acc, __, idx) => ({
-      ...acc,
-      [`/items${idx}`]: {
-        lambdaFunction: 'myFn1',
-        name: `/items${idx}`,
-        permissions: {
-          settings: 'protected',
-          auth: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.DELETE, CrudOperation.READ],
-          guest: [CrudOperation.READ],
+    const paths = new Array(100).fill(1).reduce(
+      (acc, __, idx) => ({
+        ...acc,
+        [`/items${idx}`]: {
+          lambdaFunction: 'myFn1',
+          name: `/items${idx}`,
+          permissions: {
+            settings: 'protected',
+            auth: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.DELETE, CrudOperation.READ],
+            guest: [CrudOperation.READ],
+          },
         },
-      },
-    }), {});
+      }),
+      {},
+    );
 
     const app = new cdk.App();
 

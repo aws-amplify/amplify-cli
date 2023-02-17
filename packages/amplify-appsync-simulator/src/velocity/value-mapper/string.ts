@@ -69,7 +69,7 @@ export class JavaString {
     const re = new RegExp(regexString.toString());
 
     const result = this.value.split(re, limit).filter((v, ii) => !(ii % numberOfGroups));
-    return new JavaArray(result, e => new JavaString(e.toString()));
+    return new JavaArray(result, (e) => new JavaString(e.toString()));
   }
 
   startsWith(prefix, offset = 0) {

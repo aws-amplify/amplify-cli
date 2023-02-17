@@ -1,8 +1,6 @@
 // Amplify generated Types for API - override.ts
 
-import {
-  CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver,
-} from 'aws-cdk-lib/aws-appsync';
+import { CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnPolicy, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';

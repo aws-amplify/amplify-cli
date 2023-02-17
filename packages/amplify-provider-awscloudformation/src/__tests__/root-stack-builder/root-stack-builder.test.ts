@@ -68,14 +68,16 @@ describe('Check RootStack Template', () => {
       'AuthRoleName',
     );
 
-    expect(() => stack.addCfnParameter(
-      {
-        type: 'String',
-        description: 'Name of the common deployment bucket provided by the parent stack',
-        default: 'AuthRoleName',
-      },
-      'AuthRoleName',
-    )).toThrow('Logical Id already exists: AuthRoleName.');
+    expect(() =>
+      stack.addCfnParameter(
+        {
+          type: 'String',
+          description: 'Name of the common deployment bucket provided by the parent stack',
+          default: 'AuthRoleName',
+        },
+        'AuthRoleName',
+      ),
+    ).toThrow('Logical Id already exists: AuthRoleName.');
   });
 
   test('adding two resources with same logicalId throw error', () => {
@@ -111,14 +113,16 @@ describe('Check RootStack Template', () => {
       'StackName',
     );
 
-    expect(() => stack.addCfnOutput(
-      {
-        description: 'CloudFormation provider root stack deployment bucket name',
-        value: cdk.Fn.ref('DeploymentBucketName'),
-        exportName: cdk.Fn.sub('${AWS::StackName}-DeploymentBucketName'),
-      },
-      'DeploymentBucketName',
-    )).toThrow(`There is already a Construct with name 'DeploymentBucketName' in AmplifyRootStack`);
+    expect(() =>
+      stack.addCfnOutput(
+        {
+          description: 'CloudFormation provider root stack deployment bucket name',
+          value: cdk.Fn.ref('DeploymentBucketName'),
+          exportName: cdk.Fn.sub('${AWS::StackName}-DeploymentBucketName'),
+        },
+        'DeploymentBucketName',
+      ),
+    ).toThrow(`There is already a Construct with name 'DeploymentBucketName' in AmplifyRootStack`);
   });
 
   test('generates root stack Template', async () => {

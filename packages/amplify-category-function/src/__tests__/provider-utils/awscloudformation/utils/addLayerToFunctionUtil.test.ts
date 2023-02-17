@@ -27,12 +27,12 @@ const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof get
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
 
-const context_stub = ({
+const context_stub = {
   amplify: {
     getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     getProviderPlugins: jest.fn(),
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 const runtimeValue = 'lolcode';
 
@@ -96,10 +96,10 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
 ];
 
 const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
-layerCloudState_mock.getInstance.mockReturnValue(({
+layerCloudState_mock.getInstance.mockReturnValue({
   getLayerVersionsFromCloud: jest.fn(async () => layerCloudReturnStub),
   latestVersionLogicalId: 'mockLogicalId',
-} as unknown) as LayerCloudState);
+} as unknown as LayerCloudState);
 
 describe('layer selection question', () => {
   beforeEach(() => {

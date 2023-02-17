@@ -16,6 +16,9 @@
     "lambda",
     "nodejs"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",

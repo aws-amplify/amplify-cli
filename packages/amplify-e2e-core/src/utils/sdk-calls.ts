@@ -72,7 +72,7 @@ export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
 
   try {
     const result = await s3.listObjects(params).promise();
-    return result.Contents.map(contentObj => contentObj.Key);
+    return result.Contents.map((contentObj) => contentObj.Key);
   } catch (err) {
     throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
@@ -117,14 +117,14 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
   } while (truncated);
   const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
   const deleteReq = chunkedResult
-    .map(r => ({
+    .map((r) => ({
       Bucket: bucket,
       Delete: {
         Objects: r,
         Quiet: true,
       },
     }))
-    .map(delParams => s3.deleteObjects(delParams).promise());
+    .map((delParams) => s3.deleteObjects(delParams).promise());
   await Promise.all(deleteReq);
   await s3
     .deleteBucket({
@@ -204,7 +204,7 @@ export const listUserPoolGroupsForUser = async (userPoolId: string, userName: st
     Username: userName /* required */,
   };
   const res = await provider.adminListGroupsForUser(params).promise();
-  const groups = res.Groups.map(group => group.GroupName);
+  const groups = res.Groups.map((group) => group.GroupName);
   return groups;
 };
 
@@ -290,7 +290,7 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: $TSAny) => {
   const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
-    stack => stack.StackName === stackName || stack.StackId === stackName,
+    (stack) => stack.StackName === stackName || stack.StackId === stackName,
   );
 };
 
@@ -315,11 +315,11 @@ export const getTableResourceId = async (region: string, table: string, StackId:
       StackName: StackId,
     })
     .promise();
-  const resource = apiResources.StackResources.find(stackResource => table === stackResource.LogicalResourceId);
+  const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
   if (resource) {
     const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
     if (tableStack?.Stacks?.length > 0) {
-      const tableName = tableStack.Stacks[0].Outputs.find(out => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      const tableName = tableStack.Stacks[0].Outputs.find((out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
       return tableName.OutputValue;
     }
   }
@@ -397,7 +397,7 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
   }
   return await ssmClient
     .getParameters({
-      Names: parameterNames.map(name => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
+      Names: parameterNames.map((name) => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
     })
     .promise();
@@ -417,7 +417,7 @@ export const getSSMParametersCategoryPrefix = async (
   }
   return ssmClient
     .getParameters({
-      Names: parameterNames.map(name => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`),
+      Names: parameterNames.map((name) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`),
     })
     .promise();
 };
@@ -429,7 +429,7 @@ export const getAllSSMParamatersForAppId = async (appId: string, region: string)
   do {
     const ssmArgument = getSsmSdkParametersByPath(appId, receivedNextToken);
     const data = await ssmClient.getParametersByPath(ssmArgument).promise();
-    retrievedParameters.push(...data.Parameters.map(returnedParameter => returnedParameter.Name));
+    retrievedParameters.push(...data.Parameters.map((returnedParameter) => returnedParameter.Name));
     receivedNextToken = data.NextToken;
   } while (receivedNextToken);
   return retrievedParameters;
@@ -444,16 +444,18 @@ export const expectParametersOptionalValue = async (
   category: string,
   resourceName: string,
 ): Promise<void> => {
-  const parametersToRequest = expectToExist.map(exist => exist.name).concat(expectNotExist);
+  const parametersToRequest = expectToExist.map((exist) => exist.name).concat(expectNotExist);
   const result = await getSSMParametersCategoryPrefix(region, appId, envName, category, resourceName, parametersToRequest);
   const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`;
   expect(result.InvalidParameters.length).toBe(expectNotExist.length);
   expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
   expect(result.Parameters.length).toBe(expectToExist.length);
-  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: JSON.parse(param.Value) })).sort(sortByName);
-  const mappedExpect = expectToExist.map(exist => ({ name: mapName(exist.name), value: exist.value ? exist.value : '' })).sort(sortByName);
+  const mappedResult = result.Parameters.map((param) => ({ name: param.Name, value: JSON.parse(param.Value) })).sort(sortByName);
+  const mappedExpect = expectToExist
+    .map((exist) => ({ name: mapName(exist.name), value: exist.value ? exist.value : '' }))
+    .sort(sortByName);
 
-  const mappedResultKeys = mappedResult.map(parameter => parameter.name);
+  const mappedResultKeys = mappedResult.map((parameter) => parameter.name);
   for (const expectedParam of mappedExpect) {
     if (expectedParam.value) {
       expect(mappedResult).toContainEqual(expectedParam);

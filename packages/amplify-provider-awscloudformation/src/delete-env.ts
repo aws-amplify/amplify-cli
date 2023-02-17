@@ -61,7 +61,7 @@ const getStorageCategoryBucketNameFromCloud = async (context, envName, s3, tempD
   const storage = amplifyMeta.storage || {};
 
   // filter out imported buckets as we cannot touch those.
-  const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3' && storage[r].serviceType !== 'imported');
+  const s3Storage = Object.keys(storage).filter((r) => storage[r].service === 'S3' && storage[r].serviceType !== 'imported');
 
   if (!s3Storage.length) {
     return undefined;

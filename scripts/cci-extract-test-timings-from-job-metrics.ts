@@ -11,7 +11,7 @@ function main(): void {
   let testSuites = getTestFiles(join(REPO_ROOT, 'packages', 'amplify-e2e-tests'));
   testSuites.push(...getTestFiles(join(REPO_ROOT, 'packages', 'amplify-migration-tests')));
   const jobTimings = getTimingsFromJobsData();
-  const testRuntimes = testSuites.map(t => {
+  const testRuntimes = testSuites.map((t) => {
     const oldName = getOldJobNameWithoutSuffixes(t);
     if (jobTimings.has(oldName)) {
       return {

@@ -17,7 +17,7 @@ export function createLayerConfiguration(layerDirPath: string, parameters: Layer
 export function getLayerConfiguration(layerName: string) {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName);
   const { runtimes: cloudTemplateValues, description } = loadLayerParametersJson(layerName);
-  layerConfig.runtimes.forEach(runtimeMeta => {
+  layerConfig.runtimes.forEach((runtimeMeta) => {
     runtimeMeta.cloudTemplateValues = cloudTemplateValues.filter((ctv: string) => ctv.startsWith(runtimeMeta.value));
   });
   layerConfig.description = description;
@@ -129,5 +129,5 @@ export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSA
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => _.pick(runtime, 'value', 'name', 'runtimePluginId', 'layerExecutablePath'));
+  return runtimes.map((runtime) => _.pick(runtime, 'value', 'name', 'runtimePluginId', 'layerExecutablePath'));
 }

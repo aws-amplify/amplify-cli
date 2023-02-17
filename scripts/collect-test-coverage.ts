@@ -34,13 +34,13 @@ const getCoveragePath = (pkg: string): string => {
 
 const mergeCoverageMap = (files: string[]): istanbul.CoverageMap => {
   var map = istanbul.createCoverageMap({});
-  files.forEach(file => {
+  files.forEach((file) => {
     const json = fs.readFileSync(file).toString();
     const fileCoverageMap = istanbul.createCoverageMap(JSON.parse(json));
     map.merge(fileCoverageMap);
   });
   // Remove coverage from e2e, and test files
-  map.filter(file => !file.match(/(__e2e__|__tests__)/));
+  map.filter((file) => !file.match(/(__e2e__|__tests__)/));
   return map;
 };
 
@@ -62,9 +62,7 @@ const main = () => {
   deleteCoverageDir();
   makeCoverageDir();
   listPackages().forEach(copyPackageCoverage);
-  const coveragePaths = listPackages()
-    .map(getCoveragePath)
-    .filter(fs.existsSync);
+  const coveragePaths = listPackages().map(getCoveragePath).filter(fs.existsSync);
   const coverage = mergeCoverageMap(coveragePaths);
   generateReport(coverage, 'lcov', './coverage');
   writeCoverageJson(coverage);

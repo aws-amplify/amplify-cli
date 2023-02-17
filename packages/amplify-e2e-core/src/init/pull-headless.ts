@@ -1,9 +1,7 @@
 import execa from 'execa';
 import { EOL } from 'os';
 // eslint-disable-next-line import/no-cycle
-import {
-  nspawn as spawn, getCLIPath, getAwsProviderConfig,
-} from '..';
+import { nspawn as spawn, getCLIPath, getAwsProviderConfig } from '..';
 import { CategoriesConfig } from './headless-types';
 
 const defaultSettings = {
@@ -81,10 +79,10 @@ export const nonInteractivePullAttach = async (
  * Shape of `--amplify` parameter for pull
  */
 export type AmplifyPullConfig = {
-  projectName: string,
-  envName: string,
-  appId: string,
-  defaultEditor: string,
+  projectName: string;
+  envName: string;
+  appId: string;
+  defaultEditor: string;
 };
 
 /**

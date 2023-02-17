@@ -8,7 +8,7 @@ import { configureSmsOption } from './configure-sms';
  */
 export const getAuthTriggerStackCfnParameters = async (context: $TSContext, authResourceName: string): Promise<AuthTriggerCfnTypes> => {
   const authRootStackResourceName = `auth${authResourceName}`;
-  const authTriggerRootStackParams:AuthTriggerCfnTypes = {
+  const authTriggerRootStackParams: AuthTriggerCfnTypes = {
     userpoolId: {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
     },
@@ -33,7 +33,7 @@ export const getAuthTriggerStackCfnParameters = async (context: $TSContext, auth
  * type returned to Root Stack cfn parameter for auth trigger
  */
 export type AuthTriggerCfnTypes = {
-  userpoolId: Record<'Fn::GetAtt', string[]>,
-  userpoolArn: Record<'Fn::GetAtt', string[]>,
-  snsRoleArn?: Record<'Fn::GetAtt', string[]>
-}
+  userpoolId: Record<'Fn::GetAtt', string[]>;
+  userpoolArn: Record<'Fn::GetAtt', string[]>;
+  snsRoleArn?: Record<'Fn::GetAtt', string[]>;
+};

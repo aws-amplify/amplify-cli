@@ -6,7 +6,10 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  updateApiSchema,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('transformer @http migration test', () => {

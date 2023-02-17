@@ -9,9 +9,10 @@ describe('no package Manager cases', () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(null);
     const projectRoot = path.join(__dirname, 'resources');
     expect(
-      () => new AmplifyNodePkgDetector({
-        projectRoot,
-      }),
+      () =>
+        new AmplifyNodePkgDetector({
+          projectRoot,
+        }),
     ).toThrowErrorMatchingInlineSnapshot(`"No package manager found."`);
   });
 });
@@ -25,9 +26,10 @@ describe('parsing yarn lock files', () => {
     });
     const projectRoot = path.join(__dirname, 'resources');
     expect(
-      () => new AmplifyNodePkgDetector({
-        projectRoot,
-      }),
+      () =>
+        new AmplifyNodePkgDetector({
+          projectRoot,
+        }),
     ).toThrowError();
   });
 
@@ -41,9 +43,9 @@ describe('parsing yarn lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core')).toThrowErrorMatchingInlineSnapshot(
-      `"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`,
-    );
+    expect(() =>
+      new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core'),
+    ).toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`);
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {
@@ -200,9 +202,10 @@ describe('parsing package lock files', () => {
     });
     const projectRoot = path.join(__dirname, 'resources');
     expect(
-      () => new AmplifyNodePkgDetector({
-        projectRoot,
-      }),
+      () =>
+        new AmplifyNodePkgDetector({
+          projectRoot,
+        }),
     ).toThrowError();
   });
 
@@ -216,9 +219,9 @@ describe('parsing package lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core')).toThrowErrorMatchingInlineSnapshot(
-      `"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`,
-    );
+    expect(() =>
+      new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core'),
+    ).toThrowErrorMatchingInlineSnapshot(`"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`);
   });
 
   it('correctly detect dependencies', async () => {
@@ -401,9 +404,9 @@ describe('parsing yarn2 lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(() => new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core')).toThrowErrorMatchingInlineSnapshot(
-      `"yarn.lock parsing failed"`,
-    );
+    expect(() =>
+      new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies('@aws-cdk/core'),
+    ).toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed"`);
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {

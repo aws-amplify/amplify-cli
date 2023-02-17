@@ -137,9 +137,9 @@ describe('import auth headless', () => {
       input: {
         command: 'import',
       },
-      usageData : {
-        pushHeadlessFlow : jest.fn()
-      }
+      usageData: {
+        pushHeadlessFlow: jest.fn(),
+      },
     };
   });
 

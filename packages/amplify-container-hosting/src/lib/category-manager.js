@@ -7,7 +7,7 @@ const supportedServices = require('./supported-services');
 function getAvailableServices(context) {
   const availableServices = [];
   const projectConfig = context.amplify.getProjectConfig();
-  Object.keys(supportedServices).forEach(service => {
+  Object.keys(supportedServices).forEach((service) => {
     if (projectConfig.providers.includes(supportedServices[service].provider)) {
       availableServices.push(service);
     }
@@ -35,7 +35,7 @@ function getCategoryStatus(context) {
         }
       }
     }
-    availableServices.forEach(service => {
+    availableServices.forEach((service) => {
       if (!enabledServices.includes(service)) {
         disabledServices.push(service);
       }
@@ -66,7 +66,7 @@ async function migrate(context) {
   const { migrationInfo } = context;
   const categoryMeta = migrationInfo.amplifyMeta[constants.CategoryName];
   if (categoryMeta) {
-    Object.keys(categoryMeta).forEach(service => {
+    Object.keys(categoryMeta).forEach((service) => {
       const serviceModule = require(path.join(__dirname, `${service}/index.js`));
       migrationTasks.push(() => serviceModule.migrate(context));
     });

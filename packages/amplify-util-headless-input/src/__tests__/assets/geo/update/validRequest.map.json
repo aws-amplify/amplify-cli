@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "serviceModification":{
+  "serviceModification": {
     "serviceName": "Map",
     "accessType": "AuthorizedAndGuestUsers",
     "setAsDefault": true,

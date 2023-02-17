@@ -31,12 +31,8 @@ jest.mock('amplify-cli-core', () => ({
                 Statement: [
                   {
                     Effect: 'Allow',
-                    Action: [
-                      'mockActions',
-                    ],
-                    Resource: [
-                      'mockArn',
-                    ],
+                    Action: ['mockActions'],
+                    Resource: ['mockArn'],
                   },
                 ],
               },

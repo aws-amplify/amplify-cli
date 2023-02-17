@@ -22,9 +22,7 @@ export class LockFileParserFactory {
         return new Yarn2LockParser();
       default:
         throw new AmplifyError('UnsupportedLockFileTypeError', {
-          message: 'Unsupported lockfile type '
-          + `${lockfileType} provided. Only 'npm' or 'yarn' is currently `
-          + 'supported.',
+          message: 'Unsupported lockfile type ' + `${lockfileType} provided. Only 'npm' or 'yarn' is currently ` + 'supported.',
           resolution: 'Install npm6 or yarn1 to compile overrides for this project.',
         });
     }

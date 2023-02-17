@@ -11,9 +11,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
-import {
-  pullPushWithLatestCodebaseValidateParameterAndCfnDrift,
-} from '../../migration-helpers/utils';
+import { pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 describe('geo category migration from v10 to latest', () => {
   const projectName = 'geoMigration';

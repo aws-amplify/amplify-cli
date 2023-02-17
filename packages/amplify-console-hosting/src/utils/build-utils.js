@@ -19,7 +19,7 @@ function zipFile(sourceDir, destFilePath, extraFiles) {
       resolve(zipFilePath);
     });
 
-    archive.on('error', err => {
+    archive.on('error', (err) => {
       reject(err);
     });
     archive.pipe(output);
@@ -46,7 +46,7 @@ function run(command, projectDirectory) {
     const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
-    void execution.on('exit', code => {
+    void execution.on('exit', (code) => {
       if (code === 0) {
         resolve();
       } else if (!rejectFlag) {
@@ -55,7 +55,7 @@ function run(command, projectDirectory) {
       }
     });
 
-    void execution.on('error', err => {
+    void execution.on('error', (err) => {
       console.log(chalk.red('command execution terminated with error'));
       if (!rejectFlag) {
         rejectFlag = true;

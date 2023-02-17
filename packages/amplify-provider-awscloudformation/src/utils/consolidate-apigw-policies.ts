@@ -94,7 +94,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
     let authManagedPolicy: iam.CfnManagedPolicy;
     let unauthManagedPolicy: iam.CfnManagedPolicy;
 
-    props.apiGateways.forEach(apiGateway => {
+    props.apiGateways.forEach((apiGateway) => {
       const apiRef = new cdk.CfnParameter(this, apiGateway.resourceName, {
         type: 'String',
       });
@@ -113,7 +113,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         namePrefix: '',
       };
 
-      Object.keys(apiGateway.params.paths).forEach(pathName => {
+      Object.keys(apiGateway.params.paths).forEach((pathName) => {
         state.path = apiGateway.params.paths[pathName];
         state.path.name = pathName;
 
@@ -163,7 +163,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         // Initial size of 104 for version, statement, etc.
         options.policyDocSize = 104 + policySizeIncrease;
         ++options.roleCount;
-        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, (roleName as unknown) as string);
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
@@ -174,14 +174,14 @@ export class ApiGatewayAuthStack extends cdk.Stack {
   }
 }
 
-const createManagedPolicy = (stack: cdk.Stack,
-  policyName: string, roleName: string): iam.CfnManagedPolicy => new iam.CfnManagedPolicy(stack, policyName, {
-  roles: [roleName],
-  policyDocument: {
-    Version: '2012-10-17',
-    Statement: [{ Effect: 'Allow', Action: ['execute-api:Invoke'], Resource: [] }],
-  },
-});
+const createManagedPolicy = (stack: cdk.Stack, policyName: string, roleName: string): iam.CfnManagedPolicy =>
+  new iam.CfnManagedPolicy(stack, policyName, {
+    roles: [roleName],
+    policyDocument: {
+      Version: '2012-10-17',
+      Statement: [{ Effect: 'Allow', Action: ['execute-api:Invoke'], Resource: [] }],
+    },
+  });
 
 function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: string, apiPath: string) {
   return cdk.Fn.join('', [
@@ -192,10 +192,11 @@ function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: st
     ':',
     apiNameRef,
     '/',
-    (cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown) as string,
+    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown as string,
     method,
     apiPath,
-])};
+  ]);
+}
 // example:
 //          1         2         3         4         5         6         7         8
 // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
@@ -208,8 +209,8 @@ function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: st
 // - 2 * the length of the stage length (amplify env name)
 // - 2 * the length of the method length
 // - 2 * the length of the path length
-const computePolicySizeIncrease = (stageLength: number,
-  methodLength: number, pathLength: number): number => 2 * (64 + stageLength + methodLength + pathLength);
+const computePolicySizeIncrease = (stageLength: number, methodLength: number, pathLength: number): number =>
+  2 * (64 + stageLength + methodLength + pathLength);
 
 export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   const apiGateways = [];
@@ -238,7 +239,7 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
   }
 
   return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways, envInfo.envName) };
-};
+}
 
 /**
  * CRUD operation type
@@ -258,8 +259,8 @@ const convertCrudOperationsToPermissions = (crudOps: CrudOperation[]): string[] 
     [CrudOperation.DELETE]: ['/DELETE'],
   };
   const possibleMethods = Object.values(opMap).flat();
-  const methods = crudOps.flatMap(op => opMap[op]);
-  return possibleMethods.every(m => methods.includes(m)) ? ['/*'] : methods;
+  const methods = crudOps.flatMap((op) => opMap[op]);
+  return possibleMethods.every((m) => methods.includes(m)) ? ['/*'] : methods;
 };
 
 const createApiGatewayAuthResources = (stackName: string, apiGateways: $TSAny, envName: string): string | undefined => {
@@ -320,4 +321,5 @@ export const loadApiCliInputs = async (context: $TSContext, resourceName: string
 };
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-const appendToUrlPath = (path: string, postfix: string): string => (path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`);
+const appendToUrlPath = (path: string, postfix: string): string =>
+  path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`;

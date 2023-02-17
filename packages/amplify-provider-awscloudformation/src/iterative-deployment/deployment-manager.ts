@@ -142,7 +142,7 @@ export class DeploymentManager {
       acc.add(step.rollback.stackTemplatePath);
       return acc;
     }, new Set());
-    await Promise.all(Array.from(deploymentTemplates.values()).map(path => this.ensureTemplateExists(path)));
+    await Promise.all(Array.from(deploymentTemplates.values()).map((path) => this.ensureTemplateExists(path)));
 
     const fns: StateMachineHelperFunctions = {
       deployFn: this.doDeploy,
@@ -168,11 +168,11 @@ export class DeploymentManager {
 
     return new Promise((resolve, reject) => {
       const service = interpret(machine)
-        .onTransition(state => {
+        .onTransition((state) => {
           if (state.changed) {
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
 
-            const deploySpinnerState = Object.keys(deploySpinnerMessages).find(key => state.matches(key));
+            const deploySpinnerState = Object.keys(deploySpinnerMessages).find((key) => state.matches(key));
             if (deploySpinnerState) {
               const deploySpinnerMessage = deploySpinnerMessages[deploySpinnerState];
               this.logger(deploySpinnerMessage.machine, [{ spinner: deploySpinnerMessage.message }])();
@@ -224,7 +224,7 @@ export class DeploymentManager {
       acc.add(step.rollback.stackTemplatePath);
       return acc;
     }, new Set());
-    await Promise.all(Array.from(deploymentTemplates.values()).map(path => this.ensureTemplateExists(path)));
+    await Promise.all(Array.from(deploymentTemplates.values()).map((path) => this.ensureTemplateExists(path)));
     const fns: StateMachineHelperFunctions = {
       preRollbackTableCheck: this.preRollbackTableCheck,
       rollbackFn: this.rollBackStack,
@@ -246,9 +246,9 @@ export class DeploymentManager {
 
     return new Promise((resolve, reject) => {
       const service = interpret(machine)
-        .onTransition(state => {
+        .onTransition((state) => {
           if (state.changed) {
-            const rollbackSpinnerState = Object.keys(rollbackSpinnerMessages).find(key => state.matches(key));
+            const rollbackSpinnerState = Object.keys(rollbackSpinnerMessages).find((key) => state.matches(key));
             if (rollbackSpinnerState) {
               const rollbackSpinnerMessage = rollbackSpinnerMessages[rollbackSpinnerState];
               this.logger(rollbackSpinnerMessage.machine, [{ spinner: rollbackSpinnerMessage.message }])();
@@ -394,7 +394,7 @@ export class DeploymentManager {
         return false;
       }
       const globalSecondaryIndexes = response.Table?.GlobalSecondaryIndexes;
-      return globalSecondaryIndexes ? globalSecondaryIndexes.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+      return globalSecondaryIndexes ? globalSecondaryIndexes.every((idx) => idx.IndexStatus === 'ACTIVE') : true;
     } catch (err) {
       if (err?.code === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
@@ -412,10 +412,10 @@ export class DeploymentManager {
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
     const waiters = tables.map(
-      name =>
-        new Promise(resolve => {
+      (name) =>
+        new Promise((resolve) => {
           const interval = setInterval(() => {
-            void throttledGetTableStatus(name).then(areIndexesReady => {
+            void throttledGetTableStatus(name).then((areIndexesReady) => {
               if (areIndexesReady) {
                 clearInterval(interval);
                 resolve(undefined);
@@ -430,7 +430,7 @@ export class DeploymentManager {
   private waitForIndices = async (stackParams: DeploymentMachineOp): Promise<void> => {
     if (stackParams.tableNames.length) {
       // cfn is async to ddb gsi creation the api can return true before the gsi creation starts
-      await new Promise(res => setTimeout(res, 2000));
+      await new Promise((res) => setTimeout(res, 2000));
     }
     await this.waitForActiveTables(stackParams.tableNames);
     try {

@@ -10,9 +10,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
-import {
-  getShortId, pullPushWithLatestCodebaseValidateParameterAndCfnDrift,
-} from '../../migration-helpers/utils';
+import { getShortId, pullPushWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 describe('storage category migration from v10 to latest', () => {
   const projectName = 'storageMigration';
@@ -32,7 +30,7 @@ describe('storage category migration from v10 to latest', () => {
     });
     await addDDBWithTrigger(projRoot, {});
     await addAuthWithDefault(projRoot, {});
-    await addS3StorageWithSettings(projRoot, { });
+    await addS3StorageWithSettings(projRoot, {});
     await amplifyPushWithoutCodegen(projRoot);
   });
 

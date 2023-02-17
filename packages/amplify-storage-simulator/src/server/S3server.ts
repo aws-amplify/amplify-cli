@@ -216,7 +216,7 @@ export class StorageServer extends EventEmitter {
   private async handleRequestDelete(request, response) {
     const filePath = path.join(this.localDirectoryPath, request.params.path);
     if (fs.existsSync(filePath)) {
-      fs.unlink(filePath, err => {
+      fs.unlink(filePath, (err) => {
         if (err) throw err;
         response.set('Content-Type', 'text/xml');
         response.send(xml(convert.json2xml(JSON.stringify(request.params.id + 'was deleted'))));

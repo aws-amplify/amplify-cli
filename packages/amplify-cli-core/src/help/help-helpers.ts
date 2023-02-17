@@ -59,7 +59,7 @@ const HEADLESS_DOCS_LINK = `${AMPLIFY_CLI_DOCS_URL}/usage/headless`;
 const getDocsLinkForCommand = (commandName: string) => `${AMPLIFY_CLI_DOCS_URL}/commands/${commandName}`;
 
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined {
-  return commandsInfo.find(element => element.command === commandName);
+  return commandsInfo.find((element) => element.command === commandName);
 }
 
 export function lookUpSubcommand(
@@ -71,7 +71,7 @@ export function lookUpSubcommand(
   if (command === undefined) {
     return undefined;
   }
-  return command.subCommands.find(element => element.subCommand === subcommandName);
+  return command.subCommands.find((element) => element.subCommand === subcommandName);
 }
 
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>) {
@@ -79,15 +79,15 @@ export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo
   let specifiedCommands = { command: '', subCommand: '' };
   // get all allowed commands/subcommands from json object
   const acceptableCommands: Array<string> = [];
-  commandsInfo.forEach(command => acceptableCommands.push(command.command));
-  commandsInfo.forEach(command => command.subCommands.forEach(subCommand => acceptableCommands.push(subCommand.subCommand)));
+  commandsInfo.forEach((command) => acceptableCommands.push(command.command));
+  commandsInfo.forEach((command) => command.subCommands.forEach((subCommand) => acceptableCommands.push(subCommand.subCommand)));
   const hasSubcommands = input.subCommands && Array.isArray(input.subCommands) && input.subCommands.length; // check if subcommands exist
   if (hasSubcommands) {
     specifiedCommands = { command: input.subCommands[0], subCommand: '' }; // if just 1 subcommand, set that as command
     if (input.subCommands.length === 1) {
       if (input.options) {
         // check if subcommands are in options field
-        const subcommandsInOptions = acceptableCommands.filter(i => Object.prototype.hasOwnProperty.call(input.options, i));
+        const subcommandsInOptions = acceptableCommands.filter((i) => Object.prototype.hasOwnProperty.call(input.options, i));
         if (subcommandsInOptions && subcommandsInOptions.length === 1) {
           specifiedCommands = { command: input.subCommands[0], subCommand: subcommandsInOptions[0] };
         }
@@ -119,15 +119,15 @@ function getHelpFlagRow(flagObject: CommandFlagInfo): [string, string] {
 }
 
 function printColumns(rowsArray: Array<[string, string]>, minColumnSeparatingSpaces: number, indentation = 2) {
-  const longestFirstColLength = Math.max(...rowsArray.map(row => row[0].length));
-  rowsArray.forEach(function(row) {
+  const longestFirstColLength = Math.max(...rowsArray.map((row) => row[0].length));
+  rowsArray.forEach(function (row) {
     const separatingSpaces = longestFirstColLength - row[0].length + minColumnSeparatingSpaces;
     printBodyText(SPACE.repeat(indentation) + row[0] + SPACE.repeat(separatingSpaces) + row[1]);
   });
 }
 
 function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, defaultNumTabs = 1, extraTabLengthThreshold = 5) {
-  TAG_LINE.forEach(line => printBodyText(line));
+  TAG_LINE.forEach((line) => printBodyText(line));
   printer.blankLine();
 
   printHeaderText(USAGE);
@@ -135,7 +135,10 @@ function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>,
   printer.blankLine();
 
   printHeaderText(COMMANDS);
-  const commandRows: Array<[string, string]> = commandsInfo.map(commandObject => [commandObject.command, commandObject.commandDescription]);
+  const commandRows: Array<[string, string]> = commandsInfo.map((commandObject) => [
+    commandObject.command,
+    commandObject.commandDescription,
+  ]);
   printColumns(commandRows, DEFAULT_COLUMN_SEP_SPACING);
   printer.blankLine();
 
@@ -175,7 +178,7 @@ function printCommandSpecificHelp(
 
   if (command.subCommands.length > 0) {
     printHeaderText(SUBCOMMANDS);
-    const subCommandRows: Array<[string, string]> = command.subCommands.map(subCommandObject => [
+    const subCommandRows: Array<[string, string]> = command.subCommands.map((subCommandObject) => [
       subCommandObject.subCommand,
       subCommandObject.subCommandDescription,
     ]);
@@ -188,7 +191,7 @@ function printCommandSpecificHelp(
 
   if (command.commandFlags.length > 0) {
     printHeaderText(FLAGS);
-    const flagRows: Array<[string, string]> = command.commandFlags.map(flagObject => getHelpFlagRow(flagObject));
+    const flagRows: Array<[string, string]> = command.commandFlags.map((flagObject) => getHelpFlagRow(flagObject));
     printColumns(flagRows, DEFAULT_COLUMN_SEP_SPACING);
     printer.blankLine();
   }
@@ -228,7 +231,7 @@ function printSubcommandSpecificHelp(
 
   if (Object.keys(subCommand.subCommandFlags).length > 0) {
     printHeaderText(FLAGS);
-    const flagRows: Array<[string, string]> = subCommand.subCommandFlags.map(flagObject => getHelpFlagRow(flagObject));
+    const flagRows: Array<[string, string]> = subCommand.subCommandFlags.map((flagObject) => getHelpFlagRow(flagObject));
     printColumns(flagRows, DEFAULT_COLUMN_SEP_SPACING);
     printer.blankLine();
   }
