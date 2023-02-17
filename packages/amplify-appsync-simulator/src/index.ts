@@ -189,3 +189,5 @@ export class AmplifyAppSyncSimulator {
     return this._appSyncConfig;
   }
 }
+
+// version bump

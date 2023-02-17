@@ -72,3 +72,5 @@ module.exports = {
   handleAmplifyEvent,
   printRekognitionUploadUrl: predictionsConsole.printRekognitionUploadUrl,
 };
+
+// version bump

@@ -125,3 +125,5 @@ module.exports = {
   handleAmplifyEvent,
   generateHostingResources,
 };
+
+// version bump

@@ -287,3 +287,5 @@ export const setSecret = (value: string): SetSecret => ({
   operation: 'set',
   value,
 });
+
+// version bump

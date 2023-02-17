@@ -36,3 +36,5 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
     },
   };
 };
+
+// version bump

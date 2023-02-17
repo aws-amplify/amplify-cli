@@ -117,3 +117,5 @@ module.exports = {
   deleteConfig: deleteAmplifyConfig,
   initializeAmplifyConfiguration,
 };
+
+// version bump

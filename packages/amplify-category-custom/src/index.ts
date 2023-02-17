@@ -48,4 +48,4 @@ export const transformCategoryStack = async (context: $TSContext, resource: IAmp
   await buildCustomResources(context, resource.resourceName);
 };
 
-// force major version bump for cdk v2
+// version bump

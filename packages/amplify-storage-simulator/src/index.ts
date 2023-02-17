@@ -42,3 +42,5 @@ export class AmplifyStorageSimulator {
     return this._server;
   }
 }
+
+// version bump

@@ -18,3 +18,5 @@ export const getAmplifyLogger = (): IAmplifyLogger => {
   }
   return logger;
 };
+
+// version bump

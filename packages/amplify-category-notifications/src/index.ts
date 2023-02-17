@@ -64,3 +64,5 @@ export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny): void =>
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };
+
+// version bump
