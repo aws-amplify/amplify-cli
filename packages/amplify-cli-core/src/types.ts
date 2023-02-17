@@ -189,7 +189,7 @@ export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plug
 }
 
 /**
- * CLIOptionFlags is deprecated and will be removed in a future minor version
+ * CLIOptionFlags is deprecated and will be removed in a future version
  * @deprecated
  */
 export type CLIOptionFlags = {
