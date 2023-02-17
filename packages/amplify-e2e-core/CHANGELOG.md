@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.1...@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.2) (2023-02-17)
+
+
+### Bug Fixes
+
+* iterative rollback e2e tests ([#11991](https://github.com/aws-amplify/amplify-cli/issues/11991)) ([f39cddb](https://github.com/aws-amplify/amplify-cli/commit/f39cddb132dbd21cc28ca5e777f33898f212f37c))
+
+
+
+
+
 # [4.7.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.0...@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.1) (2023-02-15)
 
 

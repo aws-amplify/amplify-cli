@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-cdkv2.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.0-cdkv2.7...amplify-cli-core@4.0.0-cdkv2.8) (2023-02-17)
+
+
+### Bug Fixes
+
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+
+
+### Features
+
+* adding cli options commands hooks  ([#11898](https://github.com/aws-amplify/amplify-cli/issues/11898)) ([6090fbe](https://github.com/aws-amplify/amplify-cli/commit/6090fbe3cb31e99fd241974b7c90e27bddeb1db1))
+
+
+
+
+
 # [4.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.0-cdkv2.6...amplify-cli-core@4.0.0-cdkv2.7) (2023-02-15)
 
 

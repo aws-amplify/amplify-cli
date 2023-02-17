@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-cdkv2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-cdkv2.7...@aws-amplify/amplify-category-custom@3.0.0-cdkv2.8) (2023-02-17)
+
+
+### Bug Fixes
+
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+
+
+
+
+
 # [3.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-cdkv2.6...@aws-amplify/amplify-category-custom@3.0.0-cdkv2.7) (2023-02-15)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

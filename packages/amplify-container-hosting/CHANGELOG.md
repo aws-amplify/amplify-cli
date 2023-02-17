@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.11-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.11-cdkv2.1...amplify-container-hosting@2.5.11-cdkv2.2) (2023-02-17)
+
+
+
+## 10.7.2 (2023-02-10)
+
+
+### Bug Fixes
+
+* bump API plugin version to update legacy rds transformers ([705d65c](https://github.com/aws-amplify/amplify-cli/commit/705d65cb3385543a37e276ae1e05a707d98cdd5c))
+
+
+
+
+
 ## [2.5.11-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.11-cdkv2.0...amplify-container-hosting@2.5.11-cdkv2.1) (2023-02-15)
 
 **Note:** Version bump only for package amplify-container-hosting

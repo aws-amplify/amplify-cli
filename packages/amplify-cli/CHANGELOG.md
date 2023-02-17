@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0-cdkv2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-cdkv2.8...@aws-amplify/cli-internal@11.0.0-cdkv2.9) (2023-02-17)
+
+
+### Features
+
+* version bump to 10.8 ([d254081](https://github.com/aws-amplify/amplify-cli/commit/d2540810c32d516f2459a045418b50aaf40838aa))
+
+
+
+## 10.7.2 (2023-02-10)
+
+
+### Bug Fixes
+
+* bump API plugin version to update legacy rds transformers ([705d65c](https://github.com/aws-amplify/amplify-cli/commit/705d65cb3385543a37e276ae1e05a707d98cdd5c))
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+
+
+
+
+
 # [11.0.0-cdkv2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.0-cdkv2.7...@aws-amplify/cli-internal@11.0.0-cdkv2.8) (2023-02-15)
 
 

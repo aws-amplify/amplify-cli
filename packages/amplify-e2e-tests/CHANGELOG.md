@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-cdkv2.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0-cdkv2.7...amplify-e2e-tests@4.0.0-cdkv2.8) (2023-02-17)
+
+
+### Bug Fixes
+
+* studio modelgen e2e test ([#11975](https://github.com/aws-amplify/amplify-cli/issues/11975)) ([9fe529b](https://github.com/aws-amplify/amplify-cli/commit/9fe529b2b75c5ab74c56f0c4badcba876e5d92d9))
+
+
+
+
+
 # [4.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0-cdkv2.6...amplify-e2e-tests@4.0.0-cdkv2.7) (2023-02-15)
 
 

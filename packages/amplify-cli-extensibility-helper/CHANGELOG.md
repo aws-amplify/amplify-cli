@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-cdkv2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.7...@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.8) (2023-02-17)
+
+
+### Bug Fixes
+
+* export AmplifyProjectInfo ([#11961](https://github.com/aws-amplify/amplify-cli/issues/11961)) ([08f5bc0](https://github.com/aws-amplify/amplify-cli/commit/08f5bc06329d7ccea1f05bcfe4705f4bee4eb8f3))
+
+
+
+
+
 # [3.0.0-cdkv2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.6...@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.7) (2023-02-15)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
