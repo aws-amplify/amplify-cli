@@ -37,6 +37,8 @@
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
     "pkg-all": "source .circleci/local_publish_helpers.sh && generatePkgCli",
     "pkg-all-local": "yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
+    "prettify": "yarn prettier --write .",
+    "prettify:changes": "git diff --name-only --diff-filter MRA | xargs yarn prettier --write",
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
