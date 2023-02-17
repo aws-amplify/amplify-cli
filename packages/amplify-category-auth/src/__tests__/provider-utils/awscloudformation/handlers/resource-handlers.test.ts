@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
 import { getUpdateAuthHandler } from '../../../../provider-utils/awscloudformation/handlers/resource-handlers';
 import { getSupportedServices } from '../../../../provider-utils/supported-services';
 import { getUpdateAuthDefaultsApplier } from '../../../../provider-utils/awscloudformation/utils/auth-defaults-appliers';

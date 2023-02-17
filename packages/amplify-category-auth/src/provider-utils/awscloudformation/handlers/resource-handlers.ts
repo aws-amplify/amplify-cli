@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSObject, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
