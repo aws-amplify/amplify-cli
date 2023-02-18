@@ -136,15 +136,6 @@
     rimraf "^3.0.0"
     uuid "^8.3.2"
 
-"@aws-amplify/amplify-environment-parameters@1.3.3":
-  version "1.3.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-environment-parameters/-/amplify-environment-parameters-1.3.3.tgz#21494372bf8303c5724f10dca7d0c5ae4fc171ac"
-  integrity sha512-zc40HjrR94LZ4h2+dbzf9zF2LTmxBkeY9KzB3y3X1x6quqXobRx6+NsTPdvGD9B3UsexxrKR4SNUS9B2FFsWzg==
-  dependencies:
-    ajv "^6.12.6"
-    amplify-cli-core "3.6.1"
-    lodash "^4.17.21"
-
 "@aws-amplify/analytics@5.1.9":
   version "5.1.9"
   resolved "https://registry.npmjs.org/@aws-amplify/analytics/-/analytics-5.1.9.tgz#2152168e147bbd626bdb8ae3527ff8c977454d32"
@@ -455,7 +446,7 @@
     graphql-mapping-template "4.20.7"
     graphql-transformer-common "4.24.4"
 
-"@aws-amplify/graphql-transformer-core@0.18.4", "@aws-amplify/graphql-transformer-core@^0.18.2", "@aws-amplify/graphql-transformer-core@^0.18.4":
+"@aws-amplify/graphql-transformer-core@0.18.4", "@aws-amplify/graphql-transformer-core@^0.18.4":
   version "0.18.4"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-0.18.4.tgz#7f8eb36bf6bfed9d527c4ee9475d96b300328a84"
   integrity sha512-Al9XLIOpbdb9BwxQWPY+typn+dj6+aYGNKK78J9nZVkPrMVjnSS1JyF2siHolUmsLqDbl4wXsIlxmep8xDAKOQ==
@@ -495,7 +486,7 @@
     ts-dedent "^2.0.0"
     vm2 "^3.9.8"
 
-"@aws-amplify/graphql-transformer-interfaces@1.14.12", "@aws-amplify/graphql-transformer-interfaces@^1.14.11", "@aws-amplify/graphql-transformer-interfaces@^1.14.12":
+"@aws-amplify/graphql-transformer-interfaces@1.14.12", "@aws-amplify/graphql-transformer-interfaces@^1.14.12":
   version "1.14.12"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-1.14.12.tgz#9efd77492437a27c302e79c941eae3599edd00d2"
   integrity sha512-DSbor6zEcArpaV1pht+LhUH2QsOnO3DlHIoA3Ou9GelYSizRxV7YasYfvKuIcvppKZlrXPhaDXwZFEGRhtMNvQ==
@@ -10001,74 +9992,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-category-notifications@2.23.1:
-  version "2.23.1"
-  resolved "https://registry.npmjs.org/amplify-category-notifications/-/amplify-category-notifications-2.23.1.tgz#5bddc41eb498f7432b78e00d0ec45bceabd1321b"
-  integrity sha512-9eGZ5teR0tmx8L9H0YZScXUxlK7FasaZomQ79ggpeLk7p9ZYtvwFZ/ItovcAoAfk4kxFhgWB+MCzpTc806ZcNw==
-  dependencies:
-    "@aws-amplify/amplify-environment-parameters" "1.3.3"
-    amplify-cli-core "3.6.1"
-    amplify-prompts "2.6.3"
-    chalk "^4.1.1"
-    fs-extra "^8.1.0"
-    lodash "^4.17.21"
-    ora "^4.0.3"
-    promise-sequential "^1.1.1"
-
-amplify-category-predictions@4.3.1:
-  version "4.3.1"
-  resolved "https://registry.npmjs.org/amplify-category-predictions/-/amplify-category-predictions-4.3.1.tgz#b127d91bff6764d553abad9a0cac70ea0bbc295f"
-  integrity sha512-mf+ofltccSPEKh7MZGqXdyrT71pzoX0ajl9xtHAms+JX1+1i+7/gNK/fQ15p205HWp0cpNuE+grrMBjEpT16zw==
-  dependencies:
-    amplify-cli-core "3.6.1"
-    aws-sdk "^2.1233.0"
-    chalk "^4.1.1"
-    fs-extra "^8.1.0"
-    inquirer "^7.3.3"
-    uuid "^8.3.2"
-
-amplify-cli-core@3.6.1:
-  version "3.6.1"
-  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-3.6.1.tgz#e20e60e67e3980846839bb38dab3c0037aa362f0"
-  integrity sha512-oRr+nNRWXTk+U4wWgt14d+dlI+7FPp4n+BNXu1enLsZ5AX9fsx5OVXDwdmwDQfEBqxrctWwpQ6oSWsElBXM8kg==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "^0.18.2"
-    "@aws-amplify/graphql-transformer-interfaces" "^1.14.11"
-    ajv "^6.12.6"
-    amplify-cli-logger "1.2.3"
-    amplify-prompts "2.6.3"
-    chalk "^4.1.1"
-    ci-info "^2.0.0"
-    cloudform-types "^4.2.0"
-    dotenv "^8.2.0"
-    execa "^5.1.1"
-    fs-extra "^8.1.0"
-    globby "^11.0.3"
-    graphql-transformer-core "^7.6.9"
-    hjson "^3.2.1"
-    js-yaml "^4.0.0"
-    lodash "^4.17.21"
-    node-fetch "^2.6.7"
-    open "^8.4.0"
-    ora "^4.0.3"
-    proxy-agent "^5.0.0"
-    semver "^7.3.5"
-    typescript-json-schema "~0.52.0"
-    which "^2.0.2"
-
-amplify-cli-logger@1.2.3:
-  version "1.2.3"
-  resolved "https://registry.npmjs.org/amplify-cli-logger/-/amplify-cli-logger-1.2.3.tgz#136bf84a904cb4ce7e28ca645c8b98aff466da74"
-  integrity sha512-EM3Xp0A9mn7MjkVyCL76XZ8OWHblxB55+JPe8E1rx9entv1FNH5moLJ/JM1RdHVAiQEni96GspyTSEUPMdTM/g==
-  dependencies:
-    winston "^3.3.3"
-    winston-daily-rotate-file "^4.5.0"
-
-amplify-cli-shared-interfaces@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/amplify-cli-shared-interfaces/-/amplify-cli-shared-interfaces-1.1.1.tgz#e5038dde4b09e065f23c5ded0cc59765f66dc94e"
-  integrity sha512-KbIoXRo0mX1+pLJX5cYMli9EsB152jeHyDSH9i5YHJCMRn9cYT9KzhqI7BVlt+vaW5T9AlZuEFTPMM0MEkm+rw==
-
 amplify-codegen@^3.3.6:
   version "3.3.6"
   resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.3.6.tgz#3edcbf229b4023b1dd9b5fd4813587b2819f884a"
@@ -15744,7 +15667,7 @@ graphql-transformer-common@4.24.4:
     md5 "^2.2.1"
     pluralize "8.0.0"
 
-graphql-transformer-core@7.6.10, graphql-transformer-core@^7.6.10, graphql-transformer-core@^7.6.9:
+graphql-transformer-core@7.6.10, graphql-transformer-core@^7.6.10:
   version "7.6.10"
   resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-7.6.10.tgz#9dbaf36acaaca43f17af67e8cfc7229c83ac89e6"
   integrity sha512-Vcnqz6guEmiuuLzXqCLyPFuu7IiG+5A4ySXdRyAkhgp9Ns7AP3aiFlh6LQGrSf8/5q/ODm9ia6AtxtGlTSoLyg==

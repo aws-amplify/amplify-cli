@@ -10,7 +10,7 @@ import { prompt } from 'enquirer';
 // @ts-ignore
 import * as actions from 'enquirer/lib/combos';
 import chalk from 'chalk';
-import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { isYes, isInteractiveShell } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';

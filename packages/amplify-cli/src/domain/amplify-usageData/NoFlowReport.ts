@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+
 import { FlowRecorder } from 'amplify-cli-core';
-import { ICommandInput, IFlowData, IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
 
 /**
  * No-Op class for flow data logging

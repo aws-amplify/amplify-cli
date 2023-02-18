@@ -6,7 +6,7 @@
 
 /// <reference types="node" />
 
-import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowData } from 'amplify-cli-shared-interfaces';
 
 // @public (undocumented)
 export const alphanumeric: (message?: string) => Validator;
