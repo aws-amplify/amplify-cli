@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-dotnet-function-runtime-provider",
+  "name": "amplify-dotnet-function-runtime-provider",
   "version": "1.7.1",
   "description": "Provides functionality related to functions in .NET on AWS",
   "repository": {
@@ -16,9 +16,6 @@
     "lambda",
     "dotnet"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
