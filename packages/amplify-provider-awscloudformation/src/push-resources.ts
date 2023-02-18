@@ -840,6 +840,12 @@ export const uploadTemplateToS3 = async (
   amplifyMeta: $TSMeta,
 ): Promise<void> => {
   const cfnFile = path.parse(filePath).base;
+  if (cfnFile.includes('.json')) {
+    // Rewrite as a 'minified' json file. minify all the json
+    const possiblyNotMinifiedJSONContents = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const probablyMinifiedJSONContents = JSON.stringify(possiblyNotMinifiedJSONContents);
+    fs.writeFileSync(filePath, probablyMinifiedJSONContents);
+  }
   const s3 = await S3.getInstance(context);
 
   const s3Params = {

@@ -189,6 +189,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (!fs.existsSync(resourceBuildDir)) {
       return;
     }
+    minifyAllJSONInFolderRecursively(resourceBuildDir);
     const spinner = new ora('Uploading files.');
     spinner.start();
     await TransformPackage.uploadAPIProject({
@@ -222,6 +223,31 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     writeUpdatedParametersJson(resource, deploymentRootKey);
   }
 }
+
+const rewriteJSONMinified = (jsonPath) => {
+  if (!jsonPath.includes('.json')) {
+    return; // bail on non-jsoney files
+  }
+  try {
+    const possiblyNotMinifiedJSONContents = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+    const probablyMinifiedJSONContents = JSON.stringify(possiblyNotMinifiedJSONContents);
+    fs.writeFileSync(jsonPath, probablyMinifiedJSONContents);
+  } catch (e) {
+    // This is a non-blocking operation, just a best attempt, bail if something goes sideways in the reading/parsing
+  }
+};
+
+/**
+ * Recursively walk a folder, and minify (print without whitespace) all the json files you discover
+ * @param rootPath the top of the tree to walk
+ */
+const minifyAllJSONInFolderRecursively = (rootPath) => {
+  fs.readdirSync(rootPath).forEach(childHandle => {
+    const childPath = path.join(rootPath, childHandle);
+    if (fs.lstatSync(childPath).isDirectory()) minifyAllJSONInFolderRecursively(childPath);
+    if (fs.lstatSync(childPath).isFile() && childPath.includes('.json')) rewriteJSONMinified(childPath);
+  });
+};
 
 /**
  * Hashes the project directory into a single value. The same project configuration
