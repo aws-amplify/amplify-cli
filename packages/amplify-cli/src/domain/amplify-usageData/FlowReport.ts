@@ -10,7 +10,7 @@ import {
   IOptionFlowCLIData,
   IOptionFlowHeadlessData,
   TypeOptionFlowData,
-} from 'amplify-cli-shared-interfaces';
+} from '@aws-amplify/amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
 
 /**
