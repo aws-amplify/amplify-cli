@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.3-minify-all-cfn.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.2...amplify-util-mock@4.8.3-minify-all-cfn.0) (2023-02-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.1...amplify-util-mock@4.8.2) (2023-02-16)
 
 **Note:** Version bump only for package amplify-util-mock

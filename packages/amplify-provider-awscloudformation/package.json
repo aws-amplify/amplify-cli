@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.10.4",
+  "version": "6.10.5-minify-all-cfn.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",

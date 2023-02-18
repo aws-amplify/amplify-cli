@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.5-minify-all-cfn.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.4...amplify-provider-awscloudformation@6.10.5-minify-all-cfn.0) (2023-02-18)
+
+
+### Bug Fixes
+
+* temporary mitigation for customers encountering 'template size too large' errors ([b4f8c64](https://github.com/aws-amplify/amplify-cli/commit/b4f8c64e9af16c7efae13c68ce8bd089c9c2b965))
+
+
+
+
+
 ## [6.10.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.3...amplify-provider-awscloudformation@6.10.4) (2023-02-16)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
