@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-function",
-  "version": "5.0.0-cdkv2.2",
+  "version": "5.0.0-cdkv2.3",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.0-cdkv2.2",
-    "amplify-cli-core": "4.0.0-cdkv2.9",
-    "amplify-function-plugin-interface": "1.9.6-cdkv2.3",
-    "amplify-prompts": "2.6.4-cdkv2.3",
+    "@aws-amplify/amplify-environment-parameters": "1.4.0-cdkv2.3",
+    "amplify-cli-core": "4.0.0-cdkv2.10",
+    "amplify-function-plugin-interface": "1.9.6-cdkv2.4",
+    "amplify-prompts": "2.6.4-cdkv2.4",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",

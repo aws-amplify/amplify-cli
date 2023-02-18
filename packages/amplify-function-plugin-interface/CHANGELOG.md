@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.6-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6-cdkv2.3...amplify-function-plugin-interface@1.9.6-cdkv2.4) (2023-02-18)
+
+**Note:** Version bump only for package amplify-function-plugin-interface
+
+
+
+
+
 ## [1.9.6-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6-cdkv2.2...amplify-function-plugin-interface@1.9.6-cdkv2.3) (2023-02-17)
 
 **Note:** Version bump only for package amplify-function-plugin-interface

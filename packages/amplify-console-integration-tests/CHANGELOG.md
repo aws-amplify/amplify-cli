@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0-cdkv2.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.43...amplify-console-integration-tests@2.7.0-cdkv2.0) (2023-02-18)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-console-integration-tests/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+
+
+### Features
+
+* add searchable mocking ([#11326](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11326)) ([da313bb](https://github.com/aws-amplify/amplify-console-integration-tests/commit/da313bbaa61068519e6f1dfefd6029e9479d226a))
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-console-integration-tests/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-console-integration-tests/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11696)
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089) [#11324](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11324)
+
+
+
+# 10.2.0 (2022-09-21)
+
+
+### Bug Fixes
+
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-console-integration-tests/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-console-integration-tests/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
 ## [2.6.5-cdkv2.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.5-cdkv2.2...@aws-amplify/amplify-console-integration-tests@2.6.5-cdkv2.3) (2023-02-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests

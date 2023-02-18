@@ -1,6 +1,6 @@
 {
   "name": "amplify-function-plugin-interface",
-  "version": "1.9.6-cdkv2.3",
+  "version": "1.9.6-cdkv2.4",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",

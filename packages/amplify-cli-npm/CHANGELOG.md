@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0-cdkv2.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.0.0-cdkv2.10...@aws-amplify/cli@11.0.0-cdkv2.11) (2023-02-18)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [11.0.0-cdkv2.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.0.0-cdkv2.9...@aws-amplify/cli@11.0.0-cdkv2.10) (2023-02-17)
 
 **Note:** Version bump only for package @aws-amplify/cli

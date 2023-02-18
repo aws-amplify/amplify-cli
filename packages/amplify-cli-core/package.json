@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "4.0.0-cdkv2.9",
+  "version": "4.0.0-cdkv2.10",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -25,11 +25,11 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-logger": "1.3.0-cdkv2.1",
+    "@aws-amplify/amplify-cli-logger": "1.3.0-cdkv2.2",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.5",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "amplify-prompts": "2.6.4-cdkv2.3",
+    "amplify-prompts": "2.6.4-cdkv2.4",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
@@ -62,7 +62,7 @@
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
     "@types/yarnpkg__lockfile": "^1.1.5",
-    "amplify-function-plugin-interface": "1.9.6-cdkv2.3",
+    "amplify-function-plugin-interface": "1.9.6-cdkv2.4",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-predictions",
-  "version": "5.0.0-cdkv2.1",
+  "version": "5.0.0-cdkv2.2",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
@@ -25,8 +25,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-cdkv2.9",
-    "amplify-prompts": "2.6.4-cdkv2.3",
+    "amplify-cli-core": "4.0.0-cdkv2.10",
+    "amplify-prompts": "2.6.4-cdkv2.4",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "fs-extra": "^8.1.0",

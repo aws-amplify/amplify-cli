@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.3.2...amplify-e2e-core@4.7.0-cdkv2.4) (2023-02-18)
+
+
+### Bug Fixes
+
+*  cfn ambda outputs when forcePush flag is used ([fdcb20a](https://github.com/aws-amplify/amplify-cli/commit/fdcb20afffdb6b9d163d60c98f52da253ba04e77))
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* add fallpack for undefined env var ([#11505](https://github.com/aws-amplify/amplify-cli/issues/11505)) ([68505f1](https://github.com/aws-amplify/amplify-cli/commit/68505f10c5a247aea416d587569e3045a4580c48))
+* add human readable names to artifact files ([#11420](https://github.com/aws-amplify/amplify-cli/issues/11420)) ([5c41046](https://github.com/aws-amplify/amplify-cli/commit/5c4104686a1e2ac96a25c02ffec40f34cea70769))
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* bug with carriage return after ctrl A ([#11133](https://github.com/aws-amplify/amplify-cli/issues/11133)) ([de41614](https://github.com/aws-amplify/amplify-cli/commit/de4161441fa69ba7d888ff6ec200eed825f361e8))
+* cognito trigger template permissions ([#11482](https://github.com/aws-amplify/amplify-cli/issues/11482)) ([5d606e0](https://github.com/aws-amplify/amplify-cli/commit/5d606e09d986878ef4dacfb929697c654e424154))
+* custom category prompter tests ([2bd6c9d](https://github.com/aws-amplify/amplify-cli/commit/2bd6c9deb67631640c564b2098f1c7262efe0a0d))
+* default values for interactions prompter ([8208f82](https://github.com/aws-amplify/amplify-cli/commit/8208f82cdc14193b6f8ce4dc4859bd9e0309e725))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* iterative rollback e2e tests ([#11991](https://github.com/aws-amplify/amplify-cli/issues/11991)) ([448fcb3](https://github.com/aws-amplify/amplify-cli/commit/448fcb3720f42852634bf0e1bc54f56dd8df9779))
+* iterative rollback e2e tests ([#11991](https://github.com/aws-amplify/amplify-cli/issues/11991)) ([f39cddb](https://github.com/aws-amplify/amplify-cli/commit/f39cddb132dbd21cc28ca5e777f33898f212f37c))
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+* migration tests ([6f03b0a](https://github.com/aws-amplify/amplify-cli/commit/6f03b0af1cfd12e9f0e3bd96b2f660d6b1a4e03f))
+* parse true and false strings from env vars ([#11386](https://github.com/aws-amplify/amplify-cli/issues/11386)) ([5ed67f5](https://github.com/aws-amplify/amplify-cli/commit/5ed67f52001429b05fb902d9ec2e06960cf2a3ad))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+### Features
+
+* add resource parameter map to `backend-config.json` ([#11417](https://github.com/aws-amplify/amplify-cli/issues/11417)) ([6500436](https://github.com/aws-amplify/amplify-cli/commit/6500436c3c91c7cedfd26b79681acabdc8dfdb7f))
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+* migrates notifications category to support in app messaging channel notifications ([#11170](https://github.com/aws-amplify/amplify-cli/issues/11170)) ([52f5787](https://github.com/aws-amplify/amplify-cli/commit/52f57870bf4b1e67a5aa879d6bcec403b049d6b8))
+* Nodejs graphql IAM template ([#10997](https://github.com/aws-amplify/amplify-cli/issues/10997)) ([880f7eb](https://github.com/aws-amplify/amplify-cli/commit/880f7eb3996133b31c0f498136a66488d1c8ceeb))
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+* pretty-print for iterative deployment ([#11051](https://github.com/aws-amplify/amplify-cli/issues/11051)) ([4184164](https://github.com/aws-amplify/amplify-cli/commit/418416420756273f286d81384f4e63924deda4a9))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([fe79f29](https://github.com/aws-amplify/amplify-cli/commit/fe79f294a09ca2f9b6ee06e833b1f8426fd2543e))
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+* Revert "chore: cleanup orphan appsync apis" ([e92513a](https://github.com/aws-amplify/amplify-cli/commit/e92513a5b2185270ecf6f1cbbb886d802fad83a4))
+
+
+
+## 10.2.1 (2022-09-23)
+
+
+### Bug Fixes
+
+* retain TPI on "restore backend" codepath, set stacktrace in AmplifyException, fix changelog script ([#11057](https://github.com/aws-amplify/amplify-cli/issues/11057)) ([cf54acc](https://github.com/aws-amplify/amplify-cli/commit/cf54accdca6c7bb1663371f98d48321edcaa76a1))
+
+
+
+# 10.2.0 (2022-09-21)
+
+
+### Bug Fixes
+
+* enables -yes flag on amplify publish ([#10774](https://github.com/aws-amplify/amplify-cli/issues/10774)) ([860a0e5](https://github.com/aws-amplify/amplify-cli/commit/860a0e56198a6bcd4c2cc7988a29c80ce1267ec1))
+* headless pull with Oauth social providers ([#11011](https://github.com/aws-amplify/amplify-cli/issues/11011)) ([afbdd20](https://github.com/aws-amplify/amplify-cli/commit/afbdd206b5a19666027cc10d9f6f28e9683f84d4))
+* missing file error and swallowing error ([#10590](https://github.com/aws-amplify/amplify-cli/issues/10590)) ([8e469e1](https://github.com/aws-amplify/amplify-cli/commit/8e469e13c6efb62b64d8223e12ebb4732f8f1906))
+
+
+### Features
+
+* pretty print cloudformation event logs  ([#10720](https://github.com/aws-amplify/amplify-cli/issues/10720)) ([aaf2210](https://github.com/aws-amplify/amplify-cli/commit/aaf22103548a329b3092f52736c28c9b5c5b8b8b))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 # [4.7.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.2...@aws-amplify/amplify-e2e-core@4.7.0-cdkv2.3) (2023-02-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core
