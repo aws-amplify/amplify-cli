@@ -1,5 +1,6 @@
 import { HooksMeta } from '../../hooks/hooksMeta';
 import { stateManager } from '../../state-manager';
+import { CommandLineInput } from '../../types';
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 jest.mock('../../state-manager');
@@ -21,7 +22,7 @@ describe('HooksMeta tests', () => {
   test('should identify env commands', () => {
     const input = { command: 'env', plugin: 'core', subCommands: ['add'] };
     const hooksMeta = HooksMeta.getInstance();
-    hooksMeta.setHookEventFromInput(input);
+    hooksMeta.setHookEventFromInput(input as CommandLineInput);
 
     expect(hooksMeta.getHookEvent()?.command).toEqual('add');
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual('env');
@@ -30,14 +31,14 @@ describe('HooksMeta tests', () => {
   test('should identify configure as update for notification and hosting', () => {
     let hooksMeta = HooksMeta.getInstance();
 
-    hooksMeta.setHookEventFromInput({ command: 'configure', plugin: 'notifications' });
+    hooksMeta.setHookEventFromInput({ command: 'configure', plugin: 'notifications' } as CommandLineInput);
     expect(hooksMeta.getHookEvent()?.command).toEqual('update');
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual('notifications');
 
     HooksMeta.releaseInstance();
     hooksMeta = HooksMeta.getInstance();
 
-    hooksMeta.setHookEventFromInput({ command: 'configure', plugin: 'hosting' });
+    hooksMeta.setHookEventFromInput({ command: 'configure', plugin: 'hosting' } as CommandLineInput);
     expect(hooksMeta.getHookEvent()?.command).toEqual('update');
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual('hosting');
   });
@@ -45,7 +46,7 @@ describe('HooksMeta tests', () => {
   test('should idenfity mock commands', () => {
     const input = { command: 'api', plugin: 'mock' };
     const hooksMeta = HooksMeta.getInstance();
-    hooksMeta.setHookEventFromInput(input);
+    hooksMeta.setHookEventFromInput(input as CommandLineInput);
 
     expect(hooksMeta.getHookEvent()?.command).toEqual('mock');
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual('api');
@@ -54,7 +55,7 @@ describe('HooksMeta tests', () => {
   test('should not set the command and subcommand on unknown/unsupported events', () => {
     const input = { command: 'init', plugin: 'core' };
     const hooksMeta = HooksMeta.getInstance();
-    hooksMeta.setHookEventFromInput(input);
+    hooksMeta.setHookEventFromInput(input as CommandLineInput);
 
     expect(hooksMeta.getHookEvent()?.command).toEqual(undefined);
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual(undefined);
@@ -63,7 +64,7 @@ describe('HooksMeta tests', () => {
   test('should identify environment', () => {
     const input = { command: 'publish', plugin: 'core' };
     const hooksMeta = HooksMeta.getInstance();
-    hooksMeta.setHookEventFromInput(input);
+    hooksMeta.setHookEventFromInput(input as CommandLineInput);
 
     expect(hooksMeta.getHookEvent()?.command).toEqual('publish');
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual(undefined);
@@ -92,7 +93,7 @@ describe('HooksMeta tests', () => {
         options: {
           forcePush: true,
         },
-      },
+      } as unknown as CommandLineInput,
       'pre',
     );
     expect(hooksMeta).toBeDefined();

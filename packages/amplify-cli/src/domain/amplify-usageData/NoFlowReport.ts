@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { ICommandInput, IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
+import { FlowRecorder } from 'amplify-cli-core';
+import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
 
 /**
  * No-Op class for flow data logging
  */
-export class CLINoFlowReport implements IFlowData {
+export class CLINoFlowReport implements FlowRecorder {
   private static _instance: CLINoFlowReport = new CLINoFlowReport();
   pushInteractiveFlow: (prompt: string, input: unknown) => void = (_) => _;
   getFlowReport: () => IFlowReport | Record<string, never> = () => ({});

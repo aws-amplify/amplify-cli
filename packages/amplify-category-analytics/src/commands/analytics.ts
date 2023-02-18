@@ -9,7 +9,7 @@ export const name = 'analytics';
  * @param context amplify cli context
  */
 export const run = async (context: $TSContext): Promise<$TSAny> => {
-  if (context.parameters.options.help) {
+  if (context.parameters.options?.help) {
     return runHelp(context);
   }
   if (/^win/.test(process.platform)) {

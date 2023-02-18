@@ -2,7 +2,7 @@ import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from 'amplify-function-plugin-interface';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
-import { timeConstrainedInvoker } from '../func';
+import { InvokerOptions, timeConstrainedInvoker } from '../func';
 import { printer } from 'amplify-prompts';
 import { LambdaTrigger, LambdaTriggerConfig } from '../utils/lambda/find-lambda-triggers';
 
@@ -58,7 +58,7 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
 
   printer.info('Starting execution...');
   try {
-    const result = await timeConstrainedInvoker(invoker({ event: data }), context?.input?.options);
+    const result = await timeConstrainedInvoker(invoker({ event: data }), context?.input?.options as unknown as InvokerOptions);
     const stringResult = stringifyResult(result);
     printer.success('Result:');
     printer.info(stringResult);

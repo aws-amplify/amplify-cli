@@ -1,5 +1,5 @@
 import redactInput from '../domain/amplify-usageData/identifiable-input-regex';
-import { CommandLineInput } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 
 describe('input-redaction', () => {
   const input = new CommandLineInput([
