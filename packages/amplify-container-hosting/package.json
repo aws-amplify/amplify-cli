@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-container-hosting",
+  "name": "amplify-container-hosting",
   "version": "2.5.12",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
@@ -14,9 +14,6 @@
     "amplify",
     "aws"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "build": "tsc",
     "test-ci": "yarn jest --ci",
