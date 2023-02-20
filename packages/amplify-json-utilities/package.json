@@ -1,5 +1,6 @@
 {
-  "name": "@aws-amplify/amplify-toolkit",
+  "name": "@aws-amplify/json-utilities",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",

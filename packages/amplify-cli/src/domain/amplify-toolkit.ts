@@ -90,7 +90,7 @@ export class AmplifyToolkit {
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
   get confirmPrompt(): any {
-    this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt')).confirmPrompt;
+    this._confirmPrompt = this._confirmPrompt || require('@aws-amplify/amplify-toolkit')
     return this._confirmPrompt;
   }
   get constants(): any {

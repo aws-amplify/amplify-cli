@@ -1,12 +1,12 @@
 {
-  "name": "@aws-amplify/amplify-toolkit",
+  "name": "@aws-amplify/amplify-cli-constants",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
-    "extract-api": "echo Hello, world!"
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",

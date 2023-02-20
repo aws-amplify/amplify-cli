@@ -78,7 +78,7 @@ export class JSONUtilities {
       writeFileOptions.mode = 0o600;
     }
 
-    fs.writeFileSync(fileName, jsonString, writeFileOptions);
+    fs.writeFileSync(fileName, jsonString!, writeFileOptions as unknown as any);
   };
 
   public static parse = <T>(
