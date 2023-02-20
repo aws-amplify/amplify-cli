@@ -1,5 +1,6 @@
 {
-  "name": "amplify-testing",
+  "name": "@aws-amplify/amplify-testing",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
