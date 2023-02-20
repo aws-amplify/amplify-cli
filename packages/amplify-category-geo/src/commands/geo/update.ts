@@ -32,7 +32,7 @@ export const run = async (context: $TSContext) => {
       printer.info(error.stack);
     }
     printer.error('There was an error updating the geo resource');
-    context.usageData.emitError(error);
+    void context.usageData.emitError(error);
     process.exitCode = 1;
   }
   return undefined;

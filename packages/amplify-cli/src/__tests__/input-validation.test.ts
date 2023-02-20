@@ -1,5 +1,6 @@
 import { verifyInput } from '../input-manager';
-import { PluginPlatform, CommandLineInput } from 'amplify-cli-core';
+import { PluginPlatform } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 
 describe('input validation tests', () => {
   it('status -v option should be treated as verbose', () => {

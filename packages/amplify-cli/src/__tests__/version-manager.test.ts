@@ -3,7 +3,7 @@ import { prodUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { UsageData } from '../domain/amplify-usageData';
 import { getLatestApiVersion, getLatestPayloadVersion } from '../domain/amplify-usageData/VersionManager';
-import { CommandLineInput } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';
 
 describe('test version manager', () => {

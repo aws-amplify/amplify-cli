@@ -40,7 +40,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   context.amplify.constructExeInfo(context);
   context.exeInfo.forcePush = false;
   context.exeInfo.isNewEnv = false;
-  context.exeInfo.restoreBackend = context.parameters.options.restore;
+  context.exeInfo.restoreBackend = context.parameters.options?.restore;
 
   // Setup Provider creds/info
   const initializationTasks: (() => Promise<$TSAny>)[] = [];

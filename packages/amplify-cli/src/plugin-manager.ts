@@ -27,7 +27,6 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
     if (isCoreMatching(pluginPlatform)) {
       const lastScanTime = new Date(pluginPlatform.lastScanTime);
       const currentTime = new Date();
-      // tslint:disable-next-line
       const timeDiffInSeconds = (currentTime.getTime() - lastScanTime.getTime()) / 1000;
       if (timeDiffInSeconds > pluginPlatform.maxScanIntervalInSeconds) {
         pluginPlatform = await scan();

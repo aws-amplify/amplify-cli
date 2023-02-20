@@ -1,6 +1,7 @@
+import { IPluginManifest } from '../types';
 import { AmplifyEvent } from './amplify-event';
 
-export class PluginManifest {
+export class PluginManifest implements IPluginManifest {
   constructor(
     public name: string,
     public type: string,

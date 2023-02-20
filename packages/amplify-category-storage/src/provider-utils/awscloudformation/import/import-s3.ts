@@ -302,8 +302,8 @@ export const importedS3EnvInit = async (
   headlessParams: ImportS3HeadlessParameters,
 ): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: S3EnvSpecificResourceParameters }> => {
   const s3 = await providerUtils.createS3Service(context);
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
