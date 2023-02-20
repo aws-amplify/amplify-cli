@@ -48,10 +48,10 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^4.1.8":
-  version "4.1.8"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.8.tgz#2b0f630f79418bf279352a109339a30377e8747c"
-  integrity sha512-FRaswRaQ5tIyBktRLjStxGMkjKVLkGddkfQ1QR6zYMMtwz6LxVSsEq7NCM6lJne1EstrFJRl9D4lml5ULlaP7A==
+"@aws-amplify/amplify-category-api@4.1.9-mxp.0":
+  version "4.1.9-mxp.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-4.1.9-mxp.0.tgz#53e3bb17b247f4872eed2e6c1afce2c929eb6271"
+  integrity sha512-7ygJQEcdPIAie6lIWsDqAj9J0Mj4Fh2GJ4M4ZePsWf9CDx/VuIBJO4RasNvigEU9/V+YdXk7SaK5Gymda/kAJw==
   dependencies:
     "@aws-amplify/graphql-auth-transformer" "1.2.7"
     "@aws-amplify/graphql-default-value-transformer" "0.7.8"
@@ -115,10 +115,10 @@
     constructs "^3.3.125"
     fs-extra "^8.1.0"
     graphql "^15.5.0"
-    graphql-auth-transformer "7.2.48"
+    graphql-auth-transformer "7.2.49-mxp.0"
     graphql-connection-transformer "5.2.47"
     graphql-dynamodb-transformer "7.2.47"
-    graphql-elasticsearch-transformer "5.2.48"
+    graphql-elasticsearch-transformer "5.2.49-mxp.0"
     graphql-function-transformer "3.3.38"
     graphql-http-transformer "5.2.47"
     graphql-key-transformer "3.2.47"
@@ -15421,7 +15421,18 @@ graphiql@^1.3.2:
     graphql-language-service "^4.1.4"
     markdown-it "^12.2.0"
 
-graphql-auth-transformer@7.2.48, graphql-auth-transformer@^7.2.48:
+graphql-auth-transformer@7.2.49-mxp.0:
+  version "7.2.49-mxp.0"
+  resolved "https://registry.npmjs.org/graphql-auth-transformer/-/graphql-auth-transformer-7.2.49-mxp.0.tgz#a3bc613c2a9b80731da567d60e0d0754b957abb3"
+  integrity sha512-DN4oDJeLlmg5TtENXu6agEAQg/L5fgYtIS7khhhMb0M9oGCLnYVlo0VkK1qSCrMaVTYRUdWoszTAgT4BK9FPKA==
+  dependencies:
+    graphql "^15.5.0"
+    graphql-connection-transformer "5.2.47"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
+    graphql-transformer-core "7.6.10"
+
+graphql-auth-transformer@^7.2.48:
   version "7.2.48"
   resolved "https://registry.npmjs.org/graphql-auth-transformer/-/graphql-auth-transformer-7.2.48.tgz#23b082e00d124421b7fe71c47483270db05a832c"
   integrity sha512-b/lQVoCBZjVcFskm3Xjp7XTX9PTHsB5/FPZ8IZPt3WKvve58DZTe1h1tZlpfdz/r7Kb8ibwnwMJOALIufvzH1g==
@@ -15487,7 +15498,18 @@ graphql-dynamodb-transformer@7.2.47, graphql-dynamodb-transformer@^7.2.47:
     md5 "^2.2.1"
     pluralize "^8.0.0"
 
-graphql-elasticsearch-transformer@5.2.48, graphql-elasticsearch-transformer@^5.2.48:
+graphql-elasticsearch-transformer@5.2.49-mxp.0:
+  version "5.2.49-mxp.0"
+  resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.49-mxp.0.tgz#b80e9f05ccc8a320131af757a7ea611b33f646bf"
+  integrity sha512-oYMUG+BYJYSwOzW+eDtlow7cgEfhk6GQjXsq0N3g9g9tebcSqjb44DZpnAnbIMgF1DghYeLp3dfI8U1u1ziG0g==
+  dependencies:
+    cloudform-types "^4.2.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.7"
+    graphql-transformer-common "4.24.4"
+    graphql-transformer-core "7.6.10"
+
+graphql-elasticsearch-transformer@^5.2.48:
   version "5.2.48"
   resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.48.tgz#4d175cf4fa4fc74de5d089a5f079db30daff0b59"
   integrity sha512-H2giRhQ4js8g1aoCyKujC98HT2axLJkOajSLAx14ZTjrs8KQC13Q8S4alfO7HE0Mwjj/zrcRp3mT0dyS5qttNw==
