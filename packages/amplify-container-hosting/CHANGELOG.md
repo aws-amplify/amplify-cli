@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0-mxp.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.12...amplify-container-hosting@2.6.0-mxp.0) (2023-02-20)
+
+
+### Bug Fixes
+
+* reverting changes to dev ([#12039](https://github.com/aws-amplify/amplify-cli/issues/12039)) ([69f5987](https://github.com/aws-amplify/amplify-cli/commit/69f598731e6461bcb40e7507f6ade82640ee280b))
+
+
+### Features
+
+* enable eu-south-1 region ([f412541](https://github.com/aws-amplify/amplify-cli/commit/f412541dd5acdf45ad531f616b01c9ca4c5eb856))
+
+
+
+
+
 ## [2.5.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.11...amplify-container-hosting@2.5.12) (2023-02-16)
 
 **Note:** Version bump only for package amplify-container-hosting

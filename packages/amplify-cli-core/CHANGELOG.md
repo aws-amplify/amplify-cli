@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-mxp.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.2...amplify-cli-core@3.7.0-mxp.0) (2023-02-20)
+
+
+### Bug Fixes
+
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+* get credentials from credential_process in aws profile config ([#11821](https://github.com/aws-amplify/amplify-cli/issues/11821)) ([0aacbb3](https://github.com/aws-amplify/amplify-cli/commit/0aacbb3b4e029e8006d37e227379734d8a5dacfa))
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* merge conflicts and linting ([bdd9f42](https://github.com/aws-amplify/amplify-cli/commit/bdd9f420303872c14db80e38e91c03b627503801))
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+* remove duplicate api push in commands-info.ts ([#12026](https://github.com/aws-amplify/amplify-cli/issues/12026)) ([365c29b](https://github.com/aws-amplify/amplify-cli/commit/365c29b5210fde3061395448e267634f1178b1b6))
+* reverting 5 commits to dev branch ([c54da9e](https://github.com/aws-amplify/amplify-cli/commit/c54da9eb69031bd665d50b6cd2dd8d3833c778bc))
+
+
+### Features
+
+* adding cli options commands hooks  ([#11898](https://github.com/aws-amplify/amplify-cli/issues/11898)) ([6090fbe](https://github.com/aws-amplify/amplify-cli/commit/6090fbe3cb31e99fd241974b7c90e27bddeb1db1))
+
+
+
+
+
 ## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.1...amplify-cli-core@3.6.2) (2023-02-16)
 
 **Note:** Version bump only for package amplify-cli-core

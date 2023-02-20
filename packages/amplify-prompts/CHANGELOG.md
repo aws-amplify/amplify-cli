@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4-mxp.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.3...amplify-prompts@2.6.4-mxp.0) (2023-02-20)
+
+
+### Bug Fixes
+
+* merge conflicts and linting ([bdd9f42](https://github.com/aws-amplify/amplify-cli/commit/bdd9f420303872c14db80e38e91c03b627503801))
+* reverting 5 commits to dev branch ([c54da9e](https://github.com/aws-amplify/amplify-cli/commit/c54da9eb69031bd665d50b6cd2dd8d3833c778bc))
+
+
+
+
+
 ## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.2...amplify-prompts@2.6.3) (2023-02-02)
 
 

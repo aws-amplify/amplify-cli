@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.3-mxp.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.2...@aws-amplify/amplify-category-storage@3.7.3-mxp.0) (2023-02-20)
+
+
+### Bug Fixes
+
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* yarn test spin lock ([#11917](https://github.com/aws-amplify/amplify-cli/issues/11917)) ([2d7dd99](https://github.com/aws-amplify/amplify-cli/commit/2d7dd99c6d8f2e7b8af39a3f4bf3b9cde4d6c622))
+
+
+
+
+
 ## [3.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.1...@aws-amplify/amplify-category-storage@3.7.2) (2023-02-16)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

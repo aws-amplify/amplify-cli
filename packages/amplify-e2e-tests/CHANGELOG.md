@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.18.0-mxp.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.2...amplify-e2e-tests@3.18.0-mxp.0) (2023-02-20)
+
+
+### Bug Fixes
+
+* adding new environment when having a project with notifications ([614a273](https://github.com/aws-amplify/amplify-cli/commit/614a273ec95ecfa43dff40b9793f286805396109))
+* modal windows test for opensearch simulator ([#11911](https://github.com/aws-amplify/amplify-cli/issues/11911)) ([fe8d558](https://github.com/aws-amplify/amplify-cli/commit/fe8d5584e952defc04d0bdd60d0e7c257eac9789))
+* moved opensearch, dynamodb, and storage simulator tests to e2e tests ([#11876](https://github.com/aws-amplify/amplify-cli/issues/11876)) ([116a50c](https://github.com/aws-amplify/amplify-cli/commit/116a50c3a385ebe06a9b50b5c8fbce78ab67d147))
+* studio modelgen e2e test ([#11975](https://github.com/aws-amplify/amplify-cli/issues/11975)) ([9fe529b](https://github.com/aws-amplify/amplify-cli/commit/9fe529b2b75c5ab74c56f0c4badcba876e5d92d9))
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([fe79f29](https://github.com/aws-amplify/amplify-cli/commit/fe79f294a09ca2f9b6ee06e833b1f8426fd2543e))
+
+
+
+
+
 ## [3.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.1...amplify-e2e-tests@3.17.2) (2023-02-16)
 
 **Note:** Version bump only for package amplify-e2e-tests
