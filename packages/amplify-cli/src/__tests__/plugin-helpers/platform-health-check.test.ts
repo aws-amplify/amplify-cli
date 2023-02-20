@@ -45,7 +45,7 @@ const corePackageJson = {
     '@aws-amplify/amplify-category-hosting': '2.7.18',
     'amplify-codegen': '^2.23.1',
     '@aws-amplify/amplify-console-hosting': '1.9.9',
-    'amplify-container-hosting': '1.3.20',
+    '@aws-amplify/amplify-container-hosting': '1.3.20',
   },
 };
 
