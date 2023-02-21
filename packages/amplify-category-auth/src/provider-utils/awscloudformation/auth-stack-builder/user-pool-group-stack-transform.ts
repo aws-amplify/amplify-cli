@@ -197,7 +197,8 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       });
       const projectInfo = getProjectInfo();
       try {
-        await sandboxNode.run(overrideCode)
+        await sandboxNode
+          .run(overrideCode)
           .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate, projectInfo);
       } catch (err: $TSAny) {
         throw new AmplifyError(

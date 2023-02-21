@@ -224,7 +224,8 @@ export class AmplifyS3ResourceStackTransform {
         });
         try {
           const projectInfo = getProjectInfo();
-          await sandboxNode.run(overrideCode, overrideJSFilePath)
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
             .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate, projectInfo);
         } catch (err: $TSAny) {
           throw new AmplifyError(
