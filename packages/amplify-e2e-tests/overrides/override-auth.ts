@@ -1,6 +1,6 @@
 import { AmplifyProjectInfo, AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 
-export function override(props: AmplifyAuthCognitoStackTemplate, projectInfo: AmplifyProjectInfo): void {
+export function override(props: AmplifyAuthCognitoStackTemplate, amplifyProjectInfo: AmplifyProjectInfo): void {
   props.userPool.deviceConfiguration = {
     challengeRequiredOnNewDevice: true,
   };
@@ -8,7 +8,7 @@ export function override(props: AmplifyAuthCognitoStackTemplate, projectInfo: Am
     attributesRequireVerificationBeforeUpdate: ['email'],
   };
 
-  if (!projectInfo || !projectInfo.envName || !projectInfo.projectName) {
+  if (!amplifyProjectInfo || !amplifyProjectInfo.envName || !amplifyProjectInfo.projectName) {
     throw new Error('Project info is missing in override');
   }
 }

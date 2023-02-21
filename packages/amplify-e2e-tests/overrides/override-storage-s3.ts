@@ -1,12 +1,12 @@
 import { AmplifyProjectInfo, AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 
-export function override(props: AmplifyS3ResourceTemplate, projectInfo: AmplifyProjectInfo) {
+export function override(props: AmplifyS3ResourceTemplate, amplifyProjectInfo: AmplifyProjectInfo) {
   //Enable versioning on the bucket
   props.s3Bucket.versioningConfiguration = {
     status: 'Enabled',
   };
 
-  if (!projectInfo || !projectInfo.envName || !projectInfo.projectName) {
+  if (!amplifyProjectInfo || !amplifyProjectInfo.envName || !amplifyProjectInfo.projectName) {
     throw new Error('Project info is missing in override');
   }
 }
