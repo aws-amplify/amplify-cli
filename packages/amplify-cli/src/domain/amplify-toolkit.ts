@@ -1,7 +1,12 @@
 import { Context } from './context';
 import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
+import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
 import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
 import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
+import { getAllEnvs } from 'amplify-cli-core/lib/extensions/get-all-envs';
+import { getEnvDetails } from 'amplify-cli-core/lib/extensions/get-env-details';
+import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
+import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
@@ -28,16 +33,16 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/execute-provider-utils').executeProviderUtils;
   }
   get getAllEnvs() {
-    return require('../extensions/amplify-helpers/get-all-envs').getAllEnvs;
+    return getAllEnvs;
   }
   get getPlugin() {
     return require('../extensions/amplify-helpers/get-plugin').getPlugin;
   }
   get getCategoryPluginInfo() {
-    return require('../extensions/amplify-helpers/get-category-pluginInfo').getCategoryPluginInfo;
+    return getCategoryPluginInfo;
   }
   get getAllCategoryPluginInfo() {
-    return require('../extensions/amplify-helpers/get-all-category-pluginInfos').getAllCategoryPluginInfo;
+    return getAllCategoryPluginInfo;
   }
   get getFrontendPlugins() {
     return require('../extensions/amplify-helpers/get-frontend-plugins').getFrontendPlugins;
@@ -46,10 +51,10 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/get-provider-plugins').getProviderPlugins;
   }
   get getEnvDetails() {
-    return require('../extensions/amplify-helpers/get-env-details').getEnvDetails;
+    return getEnvDetails;
   }
   get getEnvInfo() {
-    return require('../extensions/amplify-helpers/get-env-info').getEnvInfo;
+    return getEnvInfo;
   }
   get getPluginInstance() {
     return require('../extensions/amplify-helpers/get-plugin-instance').getPluginInstance;

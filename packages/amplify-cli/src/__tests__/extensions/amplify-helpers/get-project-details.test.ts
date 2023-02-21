@@ -1,11 +1,10 @@
 import { stateManager } from 'amplify-cli-core';
 import { getProjectDetails } from '../../../extensions/amplify-helpers/get-project-details';
+import * as getEnvInfo from 'amplify-cli-core/lib/extensions/get-env-info';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
-jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
-  getEnvInfo: jest.fn().mockReturnValue({ envName: 'test' }),
-}));
+jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'test' });
 
 jest.mock('amplify-cli-core', () => ({
   stateManager: {

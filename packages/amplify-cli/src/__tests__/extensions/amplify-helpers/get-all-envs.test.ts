@@ -1,4 +1,4 @@
-import { getAllEnvs } from '../../../extensions/amplify-helpers/get-all-envs';
+import { getAllEnvs } from 'amplify-cli-core/lib/extensions/get-all-envs';
 
 jest.mock('amplify-cli-core', () => ({
   stateManager: {

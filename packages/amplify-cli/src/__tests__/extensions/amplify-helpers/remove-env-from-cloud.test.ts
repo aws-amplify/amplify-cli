@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { AmplifyError } from 'amplify-cli-core';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
-import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
+import * as pluginInfo from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
 
 jest.mock('../../../extensions/amplify-helpers/get-project-config', () => ({
   getProjectConfig: jest.fn().mockReturnValue({
@@ -9,10 +9,7 @@ jest.mock('../../../extensions/amplify-helpers/get-project-config', () => ({
   }),
 }));
 
-// eslint-disable-next-line spellcheck/spell-checker
-jest.mock('../../../extensions/amplify-helpers/get-all-category-pluginInfos', () => ({
-  getAllCategoryPluginInfo: jest.fn().mockReturnValue({}),
-}));
+jest.spyOn(pluginInfo, 'getAllCategoryPluginInfo').mockReturnValue({});
 
 jest.mock('../../../extensions/amplify-helpers/get-provider-plugins', () => ({
   getProviderPlugins: jest.fn().mockReturnValue({
@@ -22,7 +19,6 @@ jest.mock('../../../extensions/amplify-helpers/get-provider-plugins', () => ({
 
 jest.mock('../../../execution-manager');
 
-const getAllCategoryPluginInfoMock = getAllCategoryPluginInfo as jest.MockedFunction<typeof getAllCategoryPluginInfo>;
 const deleteEnvMock = jest.fn();
 const deletePinpointAppForEnvMock = jest.fn();
 
@@ -47,7 +43,7 @@ describe('remove-env-from-cloud', () => {
   });
 
   it('invoke deletePinpointAppForEnv method in notificationsModule', async () => {
-    getAllCategoryPluginInfoMock.mockReturnValue({
+    jest.spyOn(pluginInfo, 'getAllCategoryPluginInfo').mockReturnValue({
       notifications: [
         {
           packageLocation: path.join(__dirname, '../../../../__mocks__/faked-plugin'),

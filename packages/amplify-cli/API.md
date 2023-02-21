@@ -10,6 +10,8 @@ import { CommandLineInput } from 'amplify-cli-core/src/types';
 import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
 import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
 import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
+import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
+import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { ICommandInput } from 'amplify-cli-shared-interfaces';
 import { IFlowData } from 'amplify-cli-shared-interfaces';
