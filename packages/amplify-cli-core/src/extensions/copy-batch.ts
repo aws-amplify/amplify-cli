@@ -1,4 +1,4 @@
-import { $TSContext, $TSCopyJob, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, $TSCopyJob, JSONUtilities } from '..';
 
 /**
  * @param context The Amplify CLI context

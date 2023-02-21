@@ -1,5 +1,5 @@
 import { Context } from './context';
-import { confirmPrompt, amplifyCLIConstants } from 'amplify-cli-core/lib/extensions';
+import { confirmPrompt, amplifyCLIConstants, copyBatch } from 'amplify-cli-core/lib/extensions';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
@@ -14,7 +14,7 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/construct-exeInfo').constructExeInfo;
   }
   get copyBatch() {
-    return require('../extensions/amplify-helpers/copy-batch').copyBatch;
+    return copyBatch;
   }
   get crudFlow() {
     return require('../extensions/amplify-helpers/permission-flow').crudFlow;
