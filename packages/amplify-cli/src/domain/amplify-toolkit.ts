@@ -1,19 +1,22 @@
 import { Context } from './context';
+import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
+import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
+import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
 
   get confirmPrompt() {
-    return require('../extensions/amplify-helpers/confirm-prompt').confirmPrompt;
+    return confirmPrompt;
   }
   get constants() {
-    return require('../extensions/amplify-helpers/constants').amplifyCLIConstants;
+    return amplifyCLIConstants;
   }
   get constructExeInfo() {
     return require('../extensions/amplify-helpers/construct-exeInfo').constructExeInfo;
   }
   get copyBatch() {
-    return require('../extensions/amplify-helpers/copy-batch').copyBatch;
+    return copyBatch;
   }
   get crudFlow() {
     return require('../extensions/amplify-helpers/permission-flow').crudFlow;

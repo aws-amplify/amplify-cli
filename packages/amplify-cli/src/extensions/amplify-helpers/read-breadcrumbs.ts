@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import { amplifyCLIConstants } from './constants';
+import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
 import { leaveBreadcrumbs } from './leave-breadcrumbs';
 
 export function readBreadcrumbs(category: string, resourceName: string) {

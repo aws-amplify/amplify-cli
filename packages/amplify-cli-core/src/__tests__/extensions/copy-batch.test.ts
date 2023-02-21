@@ -1,11 +1,11 @@
-import { copyBatch } from '../../../extensions/amplify-helpers/copy-batch';
-import { JSONUtilities, $TSContext, $TSCopyJob } from 'amplify-cli-core';
+import { copyBatch } from '../../extensions/copy-batch';
+import { JSONUtilities, $TSContext, $TSCopyJob } from '../..';
 
 let exists = false;
 
-jest.mock('amplify-cli-core');
+jest.spyOn(JSONUtilities, 'writeJson');
 
-const context_stub = {
+const context_stub: any = {
   prompt: {
     confirm: jest.fn(),
   },

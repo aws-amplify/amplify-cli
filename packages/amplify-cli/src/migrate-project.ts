@@ -5,7 +5,7 @@ import ora from 'ora';
 import { coerce, lt } from 'semver';
 import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny, MigrationInfo } from 'amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
-import { amplifyCLIConstants } from './extensions/amplify-helpers/constants';
+import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
 import { run as push } from './commands/push';
 
