@@ -1,5 +1,5 @@
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
-import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
+import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions';
 import { $TSContext, stateManager } from 'amplify-cli-core';
 import { normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 

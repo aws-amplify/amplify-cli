@@ -1,5 +1,5 @@
 import { Context } from './context';
-import { confirmPrompt } from 'amplify-cli-core/lib/extensions';
+import { confirmPrompt, amplifyCLIConstants } from 'amplify-cli-core/lib/extensions';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
@@ -8,7 +8,7 @@ export class AmplifyToolkit {
     return confirmPrompt;
   }
   get constants() {
-    return require('../extensions/amplify-helpers/constants').amplifyCLIConstants;
+    return amplifyCLIConstants;
   }
   get constructExeInfo() {
     return require('../extensions/amplify-helpers/construct-exeInfo').constructExeInfo;
