@@ -163,7 +163,7 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn lint-check
-      - run: yarn lint-package-json
+      - run: yarn lint-check-package-json
       - run: yarn prettier-check
 
   verify-api-extract:
