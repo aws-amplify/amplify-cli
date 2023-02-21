@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-python-function-template-provider@1.4.0-cdkv2.2...@aws-amplify/amplify-python-function-template-provider@1.4.0-cdkv2.3) (2023-02-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-python-function-template-provider
+
+
+
+
+
 # [1.4.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-python-function-template-provider@1.4.0-cdkv2.1...@aws-amplify/amplify-python-function-template-provider@1.4.0-cdkv2.2) (2023-02-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-python-function-template-provider

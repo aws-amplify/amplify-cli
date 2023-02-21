@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "2.4.4-cdkv2.4",
+  "version": "2.4.4-cdkv2.5",
   "description": ".NET templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-cdkv2.10",
-    "amplify-function-plugin-interface": "1.9.6-cdkv2.4",
+    "amplify-cli-core": "4.0.0-cdkv2.11",
+    "amplify-function-plugin-interface": "1.9.6-cdkv2.5",
     "graphql-transformer-core": "8.0.0-beta.5"
   },
   "devDependencies": {
