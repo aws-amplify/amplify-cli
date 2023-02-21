@@ -1,7 +1,7 @@
 import { CLIInput as CommandLineInput } from '../../../domain/command-input';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 import { constructContext } from '../../../context-manager';
-import { getCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-category-pluginInfo';
+import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
 import { $TSContext } from 'amplify-cli-core';
 
 test('getCategoryPluginInfo returns the first pluginInfo to match category', () => {

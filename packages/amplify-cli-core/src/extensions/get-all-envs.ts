@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '..';
 
 /**
  * Get all locally configured environments

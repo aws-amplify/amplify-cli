@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '..';
 
 export function getCategoryPluginInfo(context: $TSContext, category: string, service?: string) {
   let categoryPluginInfo;

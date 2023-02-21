@@ -1,5 +1,5 @@
 import { $TSAny, stateManager } from 'amplify-cli-core';
-import { getEnvInfo } from './get-env-info';
+import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
 
 /**
  * Amplify project's persistent state

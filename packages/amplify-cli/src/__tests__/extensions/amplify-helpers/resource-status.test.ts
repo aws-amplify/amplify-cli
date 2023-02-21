@@ -8,7 +8,7 @@ import {
   getCloudInitStatus,
   NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
+import * as getEnvInfo from 'amplify-cli-core/lib/extensions/get-env-info';
 import { print } from '../../../extensions/amplify-helpers/print';
 import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
 
@@ -42,10 +42,7 @@ jest.mock('../../../extensions/amplify-helpers/print', () => ({
   },
 }));
 
-jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
-  getEnvInfo: jest.fn(),
-}));
-
+jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({});
 jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
   ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
   getCloudInitStatus: jest.fn(),
@@ -116,7 +113,7 @@ describe('resource-status', () => {
     stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
-    (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });
+    jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'test' });
     (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockImplementation(() => CLOUD_INITIALIZED);
     const hashLayerResourceMock = hashLayerResource as jest.MockedFunction<typeof hashLayerResource>;
     hashLayerResourceMock.mockClear();

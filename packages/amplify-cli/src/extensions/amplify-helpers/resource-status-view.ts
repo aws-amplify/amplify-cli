@@ -1,6 +1,6 @@
 import { getSummaryTableData, getResourceDiffs } from './resource-status-data';
 import * as resourceStatus from './resource-status-diff';
-import { getEnvInfo } from './get-env-info';
+import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
 import { print } from './print';
 import chalk from 'chalk';
 //view: displays resource-diff (cloudformation-diff, input parameters (pending))
