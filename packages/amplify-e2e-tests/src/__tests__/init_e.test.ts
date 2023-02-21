@@ -11,6 +11,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
+  replaceOverrideFileWitProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
 
 import { addEnvironment } from '../environment/env';
@@ -27,7 +28,8 @@ describe('amplify init e', () => {
   });
 
   it('should init the project and override root and push', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    const projectName = 'initTest';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
@@ -54,7 +56,7 @@ describe('amplify init e', () => {
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    replaceOverrideFileWitProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');
