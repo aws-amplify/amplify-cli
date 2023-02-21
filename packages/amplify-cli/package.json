@@ -79,7 +79,7 @@
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
-    "cloudform-types": "^4.2.0",
+    "cloudform-types": "^7.4.2",
     "colors": "1.4.0",
     "ejs": "^3.1.7",
     "env-editor": "^0.5.0",
@@ -122,7 +122,7 @@
     "@types/treeify": "^1.0.0",
     "@types/update-notifier": "^5.1.0",
     "amplify-function-plugin-interface": "1.9.6-beta.5",
-    "cloudform-types": "^4.2.0",
+    "cloudform-types": "^7.4.2",
     "nock": "^12.0.3",
     "typescript": "^4.5.5"
   },

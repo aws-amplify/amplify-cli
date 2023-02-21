@@ -11024,17 +11024,17 @@ clone@^1.0.2:
   resolved "https://registry.npmjs.org/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
-cloudform-types@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/cloudform-types/-/cloudform-types-4.2.0.tgz#698c98a1468bd8fe9c1c275b2e65720f572ca401"
-  integrity sha512-i7fmpsOtrMzF4z3Ltpqn9Khi6pgSxNCMqqsXLXWbaZsczky7vA9mkq/Z2bdMUu5x4Eaj5wvvKc95ENZ0dtN/Uw==
+cloudform-types@^4.2.0, cloudform-types@^7.4.2:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-7.4.2.tgz#0f5f3ed3f266959cc10cd0f719210cc361f628e8"
+  integrity sha512-leJOz2KEu64fhykKoSyDl8XtDeik1l8a9dzJJ0nlrvb/HrxG3UsvM4BjHgmirIoBJyMKyTvzEmnRXrQG6pFTQQ==
 
-cloudform@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/cloudform/-/cloudform-4.2.0.tgz#361b2b1a0da1e302e918554cb62c632712e62f48"
-  integrity sha512-dCKY2a6cWygG0ool77f55UcjF5F69CfdtXIOLBuXpkPvj6UPhDUZbTHoBNnAaSHyAbJWt791lTyrtVpD71bNdA==
+cloudform@^4.2.0, cloudform@^7.4.2:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/cloudform/-/cloudform-7.4.2.tgz#98ccb5b8e23d220ee9b8b9c3fbcd58bdd15e037d"
+  integrity sha512-5vyaWPSsIt8ak71IYGccte9M8lk5zC/IeFoqoYuj7A5CI2/1/sNon+WfWMxRHpItIfJiHK2/HUJZ96n3xL1TUA==
   dependencies:
-    cloudform-types "^4.2.0"
+    cloudform-types "^7.4.2"
     jsonminify "^0.4.1"
     ts-node "^8.9.0"
     typescript "^3.8.3"
