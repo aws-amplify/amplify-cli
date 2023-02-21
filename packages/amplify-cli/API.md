@@ -6,7 +6,6 @@
 
 /// <reference types="node" />
 
-import { $TSAny } from 'amplify-cli-core';
 import { CommandLineInput } from 'amplify-cli-core/src/types';
 import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
