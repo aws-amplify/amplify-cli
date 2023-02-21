@@ -7,6 +7,6 @@ export function override(props: AmplifyS3ResourceTemplate, amplifyProjectInfo: A
   };
 
   if (!amplifyProjectInfo || !amplifyProjectInfo.envName || !amplifyProjectInfo.projectName) {
-    throw new Error('Project info is missing in override');
+    throw new Error(`Project info is missing in override: ${JSON.stringify(amplifyProjectInfo)}`);
   }
 }

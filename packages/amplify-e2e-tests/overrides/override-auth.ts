@@ -9,6 +9,6 @@ export function override(props: AmplifyAuthCognitoStackTemplate, amplifyProjectI
   };
 
   if (!amplifyProjectInfo || !amplifyProjectInfo.envName || !amplifyProjectInfo.projectName) {
-    throw new Error('Project info is missing in override');
+    throw new Error(`Project info is missing in override: ${JSON.stringify(amplifyProjectInfo)}`);
   }
 }
