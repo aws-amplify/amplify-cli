@@ -26,7 +26,7 @@
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify amplify-dev",
     "lint-check": "yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=1085",
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
-    "lint-package-json": "yarn eslint --no-eslintrc --config .eslint.package.json.js '**/package.json'",
+    "lint-check-package-json": "yarn eslint --no-eslintrc --config .eslint.package.json.js '**/package.json'",
     "mergewords": "yarn ts-node ./scripts/handle-dict-conflicts.ts",
     "pkg-all-local": "yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
     "pkg-all": "source .circleci/local_publish_helpers.sh && generatePkgCli",
