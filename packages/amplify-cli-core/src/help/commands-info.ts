@@ -1126,7 +1126,7 @@ export const commandsInfo: Array<CommandInfo> = [
   },
   {
     command: 'build',
-    commandDescription: 'Builds all resources in the Project',
+    commandDescription: 'Builds all resources in the project',
     commandUsage: 'amplify build',
     commandFlags: [],
     subCommands: [],
