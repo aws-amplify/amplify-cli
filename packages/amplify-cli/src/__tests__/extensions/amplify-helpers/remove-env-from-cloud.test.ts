@@ -3,7 +3,7 @@ import { AmplifyError } from 'amplify-cli-core';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
 import * as pluginInfo from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
 
-jest.mock('../../../extensions/amplify-helpers/get-project-config', () => ({
+jest.mock('amplify-cli-core/lib/extensions/get-project-config', () => ({
   getProjectConfig: jest.fn().mockReturnValue({
     providers: ['awscloudformation'],
   }),

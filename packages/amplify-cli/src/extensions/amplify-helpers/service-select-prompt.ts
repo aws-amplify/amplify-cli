@@ -1,7 +1,7 @@
 import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 
-import { getProjectConfig } from './get-project-config';
+import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
 
 type ServiceSelectionOption = {

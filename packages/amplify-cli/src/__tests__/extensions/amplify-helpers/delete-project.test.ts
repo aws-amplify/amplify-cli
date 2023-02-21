@@ -28,7 +28,7 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
+jest.mock('amplify-cli-core/lib/extensions/get-plugin-instance', () => ({
   getPluginInstance: jest.fn().mockReturnValue({
     getConfiguredAmplifyClient: jest.fn().mockResolvedValue({
       listBackendEnvironments: jest.fn().mockReturnValue({

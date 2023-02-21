@@ -1,4 +1,4 @@
-import { getProjectConfig } from './get-project-config';
+import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-config';
 import { getResourceStatus } from './resource-status';
 import { getProviderPlugins } from './get-provider-plugins';
 import { $TSContext } from 'amplify-cli-core';

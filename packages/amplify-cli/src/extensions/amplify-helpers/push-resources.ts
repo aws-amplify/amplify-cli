@@ -13,7 +13,7 @@ import { printer, prompter } from 'amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
-import { getProjectConfig } from './get-project-config';
+import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
