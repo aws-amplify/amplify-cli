@@ -1,4 +1,7 @@
-import { $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext, AmplifyError, AmplifyErrorFactory, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager,
+} from 'amplify-cli-core';
 import { DynamoDB, Template } from 'cloudform-types';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
@@ -119,14 +122,11 @@ export class GraphQLResourceManager {
       sanityCheckDiffs(gqlDiff.diff, gqlDiff.current, gqlDiff.next, diffRules, projectRules);
     } catch (err) {
       if (err.name !== 'InvalidGSIMigrationError') {
-        throw new AmplifyFault(
-          'UnknownFault',
-          {
-            message: err.message,
-            link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
-          },
-          err,
-        );
+        // change here for adding Errors
+        throw new AmplifyErrorFactory(new AmplifyFault('UnknownFault', {
+          message: err.message,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+        }, err)). create(err);
       }
     }
     if (!this.rebuildAllTables) {
@@ -291,8 +291,8 @@ export class GraphQLResourceManager {
             this.addGSI(gsiRecord, tableName, ddbResource);
             this.templateState.add(stackName, JSONUtilities.stringify(ddbResource));
             break;
-
           default:
+            // may be change here
             throw new AmplifyFault('UnknownFault', {
               message: `Unknown GSI change type ${changeStep.type}`,
               link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,

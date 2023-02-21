@@ -29,6 +29,7 @@ export * from './tags';
 export * from './types';
 export * from './utils';
 export * from './errors/amplify-error';
+export * from './errors/amplify-error-factory';
 export * from './errors/amplify-fault';
 export * from './errors/amplify-exception';
 export * from './errors/project-not-initialized-error';

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns regex error if the error contains regex user mapping 1`] = `"SchemaNotFoundError"`;
+
+exports[`returns regex error if the error contains regex user mapping 2`] = `"SchemaNotFoundError"`;
+
+exports[`returns regex error if the error contains regex user mapping 3`] = `"SchemaNotFoundError"`;
+
+exports[`returns regex error if the error contains regex user mapping 4`] = `"DeploymentError"`;
+
+exports[`returns regex error if the error contains regex user mapping 5`] = `"ResourceAlreadyExistsError"`;
+
+exports[`returns regex error if the error contains regex user mapping 6`] = `"DeploymentError"`;

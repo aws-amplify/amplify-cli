@@ -38,6 +38,7 @@ import {
   AmplifyError,
   AmplifyFault,
   ManuallyTimedCodePath,
+  AmplifyErrorFactory,
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -476,7 +477,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw new AmplifyFault(
+     throw new AmplifyErrorFactory( new AmplifyFault(
       'DeploymentFault',
       {
         message: error.message,
@@ -484,7 +485,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         details: error.details,
       },
       error,
-    );
+    ) ).create(error);
   }
 };
 
