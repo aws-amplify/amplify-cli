@@ -156,7 +156,7 @@ describe('auth import identity pool and userpool', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    const authParams1 = getTeamProviderInfo(projectRoot).categories.auth;
+    const authParams1 = getTeamProviderInfo(projectRoot)?.categories?.auth;
     expect(authParams1).toBeDefined();
 
     let projectRootPull;
@@ -166,7 +166,7 @@ describe('auth import identity pool and userpool', () => {
       const envName = 'integtest';
 
       await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
-      const authParams2 = getTeamProviderInfo(projectRootPull).categories.auth;
+      const authParams2 = getTeamProviderInfo(projectRootPull)?.categories?.auth;
       expect(authParams1).toEqual(authParams2);
     } finally {
       deleteProjectDir(projectRootPull);

@@ -102,7 +102,7 @@ describe('dynamodb import 2b', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    const storageParams1 = getTeamProviderInfo(projectRoot).categories.storage;
+    const storageParams1 = getTeamProviderInfo(projectRoot)?.categories?.storage;
     expect(storageParams1).toBeDefined();
 
     let projectRootPull;
@@ -112,7 +112,7 @@ describe('dynamodb import 2b', () => {
       const envName = 'integtest';
 
       await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
-      const storageParams2 = getTeamProviderInfo(projectRootPull).categories.storage;
+      const storageParams2 = getTeamProviderInfo(projectRootPull)?.categories?.storage;
       expect(storageParams1).toEqual(storageParams2);
     } finally {
       deleteProjectDir(projectRootPull);
