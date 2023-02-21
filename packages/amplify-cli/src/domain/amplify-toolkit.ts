@@ -1,10 +1,11 @@
 import { Context } from './context';
+import { confirmPrompt } from 'amplify-cli-core/lib/extensions';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
 
   get confirmPrompt() {
-    return require('../extensions/amplify-helpers/confirm-prompt').confirmPrompt;
+    return confirmPrompt;
   }
   get constants() {
     return require('../extensions/amplify-helpers/constants').amplifyCLIConstants;
