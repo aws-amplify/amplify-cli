@@ -1,5 +1,6 @@
 import { Context } from './context';
 import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
+import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
 import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
 import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
 
@@ -37,7 +38,7 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/get-category-pluginInfo').getCategoryPluginInfo;
   }
   get getAllCategoryPluginInfo() {
-    return require('../extensions/amplify-helpers/get-all-category-pluginInfos').getAllCategoryPluginInfo;
+    return getAllCategoryPluginInfo;
   }
   get getFrontendPlugins() {
     return require('../extensions/amplify-helpers/get-frontend-plugins').getFrontendPlugins;
