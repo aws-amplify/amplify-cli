@@ -1,5 +1,7 @@
 import { Context } from './context';
-import { confirmPrompt, amplifyCLIConstants, copyBatch } from 'amplify-cli-core/lib/extensions';
+import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
+import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
+import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;

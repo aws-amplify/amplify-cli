@@ -14,7 +14,6 @@ export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './errors';
 export * from './exitOnNextTick';
-export * from './extensions';
 export * from './feature-flags';
 export * from './hooks';
 export * from './isCI';
