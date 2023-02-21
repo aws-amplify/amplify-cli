@@ -30,7 +30,7 @@
     "@aws-cdk/cloudformation-diff": "~2.53.0",
     "amplify-cli-core": "4.0.0-beta.7",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "8.0.0-beta.5",
+    "graphql-transformer-core": "8.0.0-beta.6",
     "lodash": "^4.17.21",
     "semver": "^7.3.5",
     "strip-ansi": "^6.0.0",
