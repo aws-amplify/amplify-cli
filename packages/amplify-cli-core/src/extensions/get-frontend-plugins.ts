@@ -1,7 +1,7 @@
 import { $TSContext } from '..';
 
 export function getFrontendPlugins(context: $TSContext) {
-  const frontendPlugins: Record<string, unknown> = {};
+  const frontendPlugins: Record<string, string> = {};
 
   context.runtime.plugins
     .filter((plugin: { pluginType: string }) => plugin.pluginType === 'frontend')
