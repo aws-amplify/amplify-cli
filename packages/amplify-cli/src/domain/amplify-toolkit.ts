@@ -1,16 +1,7 @@
-import * as path from 'path';
-import { $TSContext } from 'amplify-cli-core';
 import { Context } from './context';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
-  private _invokePluginMethod?: <T>(
-    context: $TSContext,
-    category: string,
-    service: string | null,
-    method: string,
-    args: any[],
-  ) => Promise<T>;
 
   get confirmPrompt() {
     return require('../extensions/amplify-helpers/confirm-prompt').confirmPrompt;
@@ -54,7 +45,7 @@ export class AmplifyToolkit {
   get getEnvDetails() {
     return require('../extensions/amplify-helpers/get-env-details').getEnvDetails;
   }
-  get getEnvInfo(): () => any {
+  get getEnvInfo() {
     return require('../extensions/amplify-helpers/get-env-info').getEnvInfo;
   }
   get getPluginInstance() {
@@ -63,10 +54,10 @@ export class AmplifyToolkit {
   get getProjectConfig() {
     return require('../extensions/amplify-helpers/get-project-config').getProjectConfig;
   }
-  get getProjectDetails(): () => any {
+  get getProjectDetails() {
     return require('../extensions/amplify-helpers/get-project-details').getProjectDetails;
   }
-  get getProjectMeta(): () => any {
+  get getProjectMeta() {
     return require('../extensions/amplify-helpers/get-project-meta').getProjectMeta;
   }
   get getResourceStatus() {
