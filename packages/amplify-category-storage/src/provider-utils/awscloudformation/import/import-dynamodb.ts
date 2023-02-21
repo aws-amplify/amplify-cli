@@ -425,8 +425,10 @@ const headlessImport = async (
   currentEnvSpecificParameters: DynamoDBEnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: DynamoDBEnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const resolvedEnvParams = headlessParams?.tables || headlessParams?.region
-    ? ensureHeadlessParameters(resourceParameters, headlessParams) : currentEnvSpecificParameters;
+  const resolvedEnvParams =
+    headlessParams?.tables || headlessParams?.region
+      ? ensureHeadlessParameters(resourceParameters, headlessParams)
+      : currentEnvSpecificParameters;
 
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];

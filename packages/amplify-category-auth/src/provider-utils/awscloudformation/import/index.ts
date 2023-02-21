@@ -971,7 +971,14 @@ export const importedAuthEnvInit = async (
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
     return headlessImport(
-      context, cognito, identity, providerName, resourceName, resourceParameters, headlessParams, currentEnvSpecificParameters,
+      context,
+      cognito,
+      identity,
+      providerName,
+      resourceName,
+      resourceParameters,
+      headlessParams,
+      currentEnvSpecificParameters,
     );
   }
 
@@ -1214,7 +1221,8 @@ export const headlessImport = async (
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
-    ? ensureHeadlessParameters(resourceParameters, headlessParams) : currentEnvSpecificParameters;
+      ? ensureHeadlessParameters(resourceParameters, headlessParams)
+      : currentEnvSpecificParameters;
 
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
@@ -1290,9 +1298,7 @@ export const headlessImport = async (
     );
 
     if (identityPools?.length !== 1) {
-      throw new Error(
-        importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!),
-      );
+      throw new Error(importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!));
     }
 
     answers.identityPoolId = identityPools[0].identityPool.IdentityPoolId;

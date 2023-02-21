@@ -415,8 +415,8 @@ const headlessImport = async (
   currentEnvSpecificParameters: S3EnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: S3EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const resolvedEnvParams = headlessParams?.bucketName || headlessParams?.region
-    ? ensureHeadlessParameters(headlessParams) : currentEnvSpecificParameters;
+  const resolvedEnvParams =
+    headlessParams?.bucketName || headlessParams?.region ? ensureHeadlessParameters(headlessParams) : currentEnvSpecificParameters;
 
   // Validate the parameters, generate the missing ones and import the resource.
   const questionParameters: S3ImportParameters = {
