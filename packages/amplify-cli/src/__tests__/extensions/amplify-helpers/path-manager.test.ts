@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { homedir } from 'os';
-import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions';
+import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
 import {
   searchProjectRootPath,
   getHomeDotAmplifyDirPath,
