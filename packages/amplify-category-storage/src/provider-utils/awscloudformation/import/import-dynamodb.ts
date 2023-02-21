@@ -295,7 +295,7 @@ export const importedDynamoDBEnvInit = async (
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return headlessImport(context, dynamoDB, providerName, resourceParameters, headlessParams);
+    return headlessImport(context, dynamoDB, providerName, resourceParameters, headlessParams, currentEnvSpecificParameters);
   }
 
   // If we are pulling, take the current values if present to skip unneeded service walkthrough
@@ -422,9 +422,11 @@ const headlessImport = async (
   providerName: string,
   resourceParameters: DynamoDBResourceParameters,
   headlessParams: ImportDynamoDBHeadlessParameters,
+  currentEnvSpecificParameters: DynamoDBEnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: DynamoDBEnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
+  const resolvedEnvParams = headlessParams?.tables || headlessParams?.region
+    ? ensureHeadlessParameters(resourceParameters, headlessParams) : currentEnvSpecificParameters;
 
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
@@ -438,16 +440,16 @@ const headlessImport = async (
 
   const answers: DynamoDBImportAnswers = {
     resourceName: resourceParameters.resourceName,
-    tableName: currentEnvSpecificParameters.tableName,
+    tableName: resolvedEnvParams.tableName,
   };
 
-  const tableExists = await dynamoDB.tableExists(currentEnvSpecificParameters.tableName);
+  const tableExists = await dynamoDB.tableExists(resolvedEnvParams.tableName);
 
   if (!tableExists) {
-    throw new Error(importMessages.TableNotFound(currentEnvSpecificParameters.tableName));
+    throw new Error(importMessages.TableNotFound(resolvedEnvParams.tableName));
   }
 
-  answers.tableDescription = await dynamoDB.getTableDetails(currentEnvSpecificParameters.tableName);
+  answers.tableDescription = await dynamoDB.getTableDetails(resolvedEnvParams.tableName);
 
   const newState = await updateStateFiles(context, questionParameters, answers, false);
 

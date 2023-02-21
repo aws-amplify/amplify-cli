@@ -970,7 +970,9 @@ export const importedAuthEnvInit = async (
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return headlessImport(context, cognito, identity, providerName, resourceName, resourceParameters, headlessParams);
+    return headlessImport(
+      context, cognito, identity, providerName, resourceName, resourceParameters, headlessParams, currentEnvSpecificParameters,
+    );
   }
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
@@ -1207,9 +1209,12 @@ export const headlessImport = async (
   resourceName: string,
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
+  currentEnvSpecificParameters: EnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
+  const resolvedEnvParams =
+    headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
+    ? ensureHeadlessParameters(resourceParameters, headlessParams) : currentEnvSpecificParameters;
 
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
@@ -1232,36 +1237,36 @@ export const headlessImport = async (
   const answers: ImportAnswers = {
     authSelections: resourceParameters.authSelections,
     resourceName: resourceParameters.resourceName,
-    userPoolId: currentEnvSpecificParameters.userPoolId,
+    userPoolId: resolvedEnvParams.userPoolId,
   };
 
   try {
-    answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
+    answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      throw new Error(importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
+      throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));
     }
 
     throw error;
   }
 
-  const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, currentEnvSpecificParameters.userPoolId);
+  const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, resolvedEnvParams.userPoolId);
 
   if (typeof validationResult === 'string') {
     throw new Error(validationResult);
   }
 
   // Get app clients based on passed in previous values
-  answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.webClientId);
+  answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === resolvedEnvParams.webClientId);
 
   if (!answers.appClientWeb) {
-    throw new Error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
+    throw new Error(importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId));
   }
 
-  answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
+  answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === resolvedEnvParams.nativeClientId);
 
   if (!answers.appClientNative) {
-    throw new Error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
+    throw new Error(importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId));
   }
 
   // Check OAuth config matching and enabled
@@ -1281,12 +1286,12 @@ export const headlessImport = async (
 
   if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
     const identityPools = questionParameters.validatedIdentityPools!.filter(
-      (idp) => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
+      (idp) => idp.identityPool.IdentityPoolId === resolvedEnvParams.identityPoolId,
     );
 
     if (identityPools.length !== 1) {
       throw new Error(
-        importMessages.IdentityPoolNotFound(currentEnvSpecificParameters.identityPoolName!, currentEnvSpecificParameters.identityPoolId!),
+        importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!),
       );
     }
 

@@ -1,20 +1,19 @@
 /* eslint-disable spellcheck/spell-checker */
-/* eslint-disable import/no-extraneous-dependencies */
 
 import {
   addAuthWithDefault,
   AddDynamoDBSettings,
   addDynamoDBWithGSIWithSettings,
+  amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import { createDynamoDBSettings, getShortId, headlessPullExpectError, importDynamoDBTable } from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
+import { createDynamoDBSettings, getShortId, importDynamoDBTable } from '../import-helpers';
 
 describe('dynamodb import 2b', () => {
   const projectPrefix = 'ddbimp';
@@ -90,7 +89,7 @@ describe('dynamodb import 2b', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('dynamodb headless pull missing parameters', async () => {
+  it('dynamodb headless pull in empty dir', async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -103,29 +102,18 @@ describe('dynamodb import 2b', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    let projectRootPull;
+    const storageParams1 = getTeamProviderInfo(projectRoot).categories.storage;
+    expect(storageParams1).toBeDefined();
 
+    let projectRootPull;
     try {
       projectRootPull = await createNewProjectDir('ddbimport-pull');
 
       const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
 
-      await expect(
-        headlessPullExpectError(
-          projectRootPull,
-          { envName, appId },
-          providersParam,
-          'Error: storage headless is missing the following inputParams tableName, region',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
+      await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
+      const storageParams2 = getTeamProviderInfo(projectRootPull).categories.storage;
+      expect(storageParams1).toEqual(storageParams2);
     } finally {
       deleteProjectDir(projectRootPull);
     }

@@ -39,7 +39,7 @@ export const amplifyPull = (
 
   const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
 
-  if (settings.emptyDir) {
+  if (settings.emptyDir && !settings.yesFlag) {
     chain
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
@@ -61,7 +61,7 @@ export const amplifyPull = (
       .sendCarriageReturn()
       .wait('Do you plan on modifying this backend?')
       .sendLine(settings.noUpdateBackend ? 'n' : 'y');
-  } else if (!settings.noUpdateBackend) {
+  } else if (!settings.noUpdateBackend && !settings.emptyDir) {
     chain.wait('Pre-pull status').wait('Current Environment');
   }
 
