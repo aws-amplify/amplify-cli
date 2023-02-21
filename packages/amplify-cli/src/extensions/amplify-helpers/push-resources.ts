@@ -17,7 +17,7 @@ import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-co
 import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
-import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
+import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from 'amplify-cli-core/lib/extensions/apply-auth-mode';
 import { showBuildDirChangesMessage } from './auto-updates';
 
 /**

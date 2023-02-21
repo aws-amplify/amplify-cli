@@ -21,7 +21,7 @@ describe('getTags', () => {
     },
     HydrateTags,
   });
-  jest.setMock('../extensions/amplify-helpers/get-project-details', {
+  jest.setMock('amplify-cli-core/lib/extensions/get-project-details', {
     getProjectDetails: jest.fn().mockReturnValue(mockConfig),
   });
 

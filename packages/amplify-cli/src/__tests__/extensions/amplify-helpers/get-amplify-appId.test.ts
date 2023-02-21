@@ -1,6 +1,6 @@
-import { getAmplifyAppId } from '../../../extensions/amplify-helpers/get-amplify-appId';
+import { getAmplifyAppId } from 'amplify-cli-core/lib/extensions/get-amplify-appId';
 
-jest.mock('../../../extensions/amplify-helpers/get-project-meta.ts', () => ({
+jest.mock('amplify-cli-core/lib/extensions/get-project-meta', () => ({
   getProjectMeta: jest.fn().mockImplementation(() => ({
     providers: {
       awscloudformation: {

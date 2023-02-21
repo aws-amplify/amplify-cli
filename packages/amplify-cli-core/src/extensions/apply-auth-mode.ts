@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '..';
 import { getProjectMeta } from './get-project-meta';
 
 const errAuthMissingIAM = `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`;
@@ -48,7 +48,7 @@ export const handleValidGraphQLAuthError = async (context: $TSContext, message: 
   return false;
 };
 
-const addGraphQLAuthRequirement = async (context, authType): Promise<$TSAny> =>
+const addGraphQLAuthRequirement = async (context: $TSContext, authType: string): Promise<$TSAny> =>
   context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
     context,
     {

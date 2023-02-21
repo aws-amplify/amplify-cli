@@ -12,6 +12,9 @@ import { getImportedAuthProperties } from 'amplify-cli-core/lib/extensions/get-i
 import { getPluginInstance } from 'amplify-cli-core/lib/extensions/get-plugin-instance';
 import { getPlugin } from 'amplify-cli-core/lib/extensions/get-plugin';
 import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-config';
+import { getProjectDetails } from 'amplify-cli-core/lib/extensions/get-project-details';
+import { getProjectMeta } from 'amplify-cli-core/lib/extensions/get-project-meta';
+import { constructExeInfo } from 'amplify-cli-core/lib/extensions/construct-exeInfo';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
@@ -23,7 +26,7 @@ export class AmplifyToolkit {
     return amplifyCLIConstants;
   }
   get constructExeInfo() {
-    return require('../extensions/amplify-helpers/construct-exeInfo').constructExeInfo;
+    return constructExeInfo;
   }
   get copyBatch() {
     return copyBatch;
@@ -68,10 +71,10 @@ export class AmplifyToolkit {
     return getProjectConfig;
   }
   get getProjectDetails() {
-    return require('../extensions/amplify-helpers/get-project-details').getProjectDetails;
+    return getProjectDetails;
   }
   get getProjectMeta() {
-    return require('../extensions/amplify-helpers/get-project-meta').getProjectMeta;
+    return getProjectMeta;
   }
   get getResourceStatus() {
     return require('../extensions/amplify-helpers/resource-status').getResourceStatus;

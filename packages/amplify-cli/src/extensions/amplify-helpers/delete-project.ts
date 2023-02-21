@@ -8,7 +8,7 @@ import { printer, prompter } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
 import { getPluginInstance } from 'amplify-cli-core/lib/extensions/get-plugin-instance';
-import { getAmplifyAppId } from './get-amplify-appId';
+import { getAmplifyAppId } from 'amplify-cli-core/lib/extensions/get-amplify-appId';
 import { getAmplifyDirPath } from './path-manager';
 
 /**

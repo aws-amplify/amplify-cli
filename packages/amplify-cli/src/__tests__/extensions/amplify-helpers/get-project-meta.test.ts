@@ -1,5 +1,5 @@
 import { stateManager } from 'amplify-cli-core';
-import { getProjectMeta } from '../../../extensions/amplify-helpers/get-project-meta';
+import { getProjectMeta } from 'amplify-cli-core/lib/extensions/get-project-meta';
 
 jest.mock('amplify-cli-core', () => {
   const original = jest.requireActual('amplify-cli-core');

@@ -11,7 +11,7 @@ printerMock.success = jest.fn();
 
 jest.mock('../../../extensions/amplify-helpers/remove-env-from-cloud');
 jest.mock('../../../extensions/amplify-helpers/path-manager');
-jest.mock('../../../extensions/amplify-helpers/get-amplify-appId', () => ({
+jest.mock('amplify-cli-core/lib/extensions/get-amplify-appId', () => ({
   getAmplifyAppId: jest.fn().mockReturnValue(true),
 }));
 jest.mock('amplify-cli-core/lib/extensions/get-frontend-plugins', () => ({
