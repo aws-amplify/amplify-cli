@@ -43,39 +43,46 @@ export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestion
  * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguration output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
-export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
-  const userPoolConfig = cognitoConfig.userPoolConfiguration;
-  const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
-  const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
-  return {
-    serviceName: cognitoConfig.serviceName,
-    resourceName,
-    requiredAttributes,
-    ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
-    ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
-  };
-};
-
-export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
-  const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
-  return {
-    serviceName: serviceModification.serviceName,
-    requiredAttributes,
-    ...mutableAttributeAdaptor(
-      projectType,
+export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
+  (projectType) =>
+  ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
+    const userPoolConfig = cognitoConfig.userPoolConfiguration;
+    const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
+    const requiredAttributes = userPoolConfig.requiredSignupAttributes.map((att) => att.toLowerCase());
+    return {
+      serviceName: cognitoConfig.serviceName,
+      resourceName,
       requiredAttributes,
-      serviceModification.userPoolModification,
-      serviceModification.includeIdentityPool,
-      idPoolModification,
-    ),
+      ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
+      ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
+    };
   };
-};
 
-const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => ({
+export const getUpdateAuthRequestAdaptor =
+  (projectType: string, requiredAttributes: string[]) =>
+  ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
+    const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
+    return {
+      serviceName: serviceModification.serviceName,
+      requiredAttributes,
+      ...mutableAttributeAdaptor(
+        projectType,
+        requiredAttributes,
+        serviceModification.userPoolModification,
+        serviceModification.includeIdentityPool,
+        idPoolModification,
+      ),
+    };
+  };
+
+const immutableAttributeAdaptor = (
+  userPoolConfig: CognitoUserPoolConfiguration,
+  identityPoolConfig?: CognitoIdentityPoolConfiguration,
+) => ({
   userPoolName: userPoolConfig.userPoolName,
   usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
   aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
-    ? userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? []
+    ? userPoolConfig.aliasAttributes?.map((attr) => aliasAttributeMap[attr]) ?? []
     : [],
   ...immutableIdentityPoolMap(identityPoolConfig),
 });
@@ -91,10 +98,10 @@ const mutableAttributeAdaptor = (
   updateFlow: 'manual' as const,
   authSelections: includeIdentityPool ? 'identityPoolAndUserPool' : ('userPoolOnly' as 'userPoolOnly' | 'identityPoolAndUserPool'),
   userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
-  userPoolGroupList: (userPoolConfig.userPoolGroups || []).map(group => group.groupName), // TODO may need to map "customPolicy"
+  userPoolGroupList: (userPoolConfig.userPoolGroups || []).map((group) => group.groupName), // TODO may need to map "customPolicy"
   userpoolClientRefreshTokenValidity: userPoolConfig.refreshTokenPeriod,
-  userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map(att => att.toLowerCase()),
-  userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map(att => att.toLowerCase()),
+  userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map((att) => att.toLowerCase()),
+  userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map((att) => att.toLowerCase()),
   ...adminQueriesMap(userPoolConfig.adminQueries),
   ...mfaMap(userPoolConfig.mfa),
   ...autoVerifiedAttributesMap(userPoolConfig.autoVerifiedAttributes),
@@ -107,8 +114,7 @@ const mutableAttributeAdaptor = (
 const oauthMap = (
   oauthConfig?: Partial<CognitoOAuthConfiguration>,
   requiredAttributes: string[] = [],
-): (OAuthResult & SocialProviderResult
-) | Record<string, unknown> => {
+): (OAuthResult & SocialProviderResult) | Record<string, unknown> => {
   if (!oauthConfig) return {};
   if (isEmpty(oauthConfig)) {
     return {
@@ -121,7 +127,7 @@ const oauthMap = (
     newCallbackURLs: oauthConfig.redirectSigninURIs,
     newLogoutURLs: oauthConfig.redirectSignoutURIs,
     AllowedOAuthFlows: oauthConfig?.oAuthGrantType?.toLowerCase() as 'code' | 'implicit',
-    AllowedOAuthScopes: oauthConfig?.oAuthScopes?.map(scope => scope.toLowerCase()),
+    AllowedOAuthScopes: oauthConfig?.oAuthScopes?.map((scope) => scope.toLowerCase()),
     ...socialProviderMap(oauthConfig.socialProviderConfigurations, requiredAttributes),
   };
 };
@@ -131,7 +137,7 @@ const socialProviderMap = (
   socialConfig: CognitoSocialProviderConfiguration[] = [],
   requiredAttributes: string[] = [],
 ): SocialProviderResult => {
-  const authProvidersUserPool = socialConfig.map(sc => sc.provider).map(provider => pascalCase(provider));
+  const authProvidersUserPool = socialConfig.map((sc) => sc.provider).map((provider) => pascalCase(provider));
   const socialConfigMap = socialConfig.reduce((acc, it) => {
     switch (it.provider) {
       case 'FACEBOOK':
@@ -179,10 +185,10 @@ const mutableIdentityPoolMap = (
     allowUnauthenticatedIdentities: idPoolConfig.unauthenticatedLogin,
     thirdPartyAuth: !!idPoolConfig.identitySocialFederation,
     authProviders: (idPoolConfig.identitySocialFederation || [])
-      .map(socialFed => socialFed.provider)
-      .map(provider => pascalCase(provider))
-      .map(provider => authProviderList.find(ap => ap.name === provider)!)
-      .map(ap => ap.value),
+      .map((socialFed) => socialFed.provider)
+      .map((provider) => pascalCase(provider))
+      .map((provider) => authProviderList.find((ap) => ap.name === provider)!)
+      .map((ap) => ap.value),
     // convert the list of social federation configs into individual key: client id pairs
     ...(idPoolConfig?.identitySocialFederation || []).reduce(
       (acc, it): AppIds => merge(acc, { [socialFederationKeyMap(it.provider, projectType)]: it.clientId }),
@@ -203,7 +209,7 @@ const passwordPolicyMap = (pwPolicy?: CognitoPasswordPolicy): PasswordPolicyResu
   if (!pwPolicy) return {};
   return {
     passwordPolicyMinLength: pwPolicy.minimumLength,
-    passwordPolicyCharacters: (pwPolicy.additionalConstraints || []).map(constraint => passwordConstraintMap[constraint]),
+    passwordPolicyCharacters: (pwPolicy.additionalConstraints || []).map((constraint) => passwordConstraintMap[constraint]),
   };
 };
 
@@ -222,7 +228,7 @@ const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult
   }
   return {
     mfaConfiguration: mfaConfig.mode,
-    mfaTypes: mfaConfig.mfaTypes.map(type => mfaTypeMap[type]),
+    mfaTypes: mfaConfig.mfaTypes.map((type) => mfaTypeMap[type]),
     smsAuthenticationMessage: mfaConfig.smsMessage,
   };
 };

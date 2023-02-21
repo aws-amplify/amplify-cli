@@ -32,7 +32,7 @@ export const gitChangedFiles = async (cwd: string): Promise<string[]> => {
   return stdout
     .trim()
     .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
     .sort();
 };

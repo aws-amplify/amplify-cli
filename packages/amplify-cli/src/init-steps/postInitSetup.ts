@@ -13,7 +13,7 @@ const MISSING_SCRIPTS_ERROR = new Error(
  * Run the post initialization setup for the current project
  */
 export const postInitSetup = async (context: $TSContext): Promise<void> => {
-  if (context.parameters.options.app) {
+  if (context.parameters.options?.app) {
     // Pushing a sample app
     try {
       context.parameters.options.app = true;
@@ -63,7 +63,7 @@ const getPackageScript = (): string => {
   const scripts = _.get(packageJsonContent, 'scripts', {});
 
   return (
-    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName)) ||
+    _.keys(scripts).find((scriptName) => initializationScripts.includes(scriptName)) ||
     (() => {
       throw MISSING_SCRIPTS_ERROR;
     })()

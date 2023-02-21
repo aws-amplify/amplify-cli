@@ -1,5 +1,5 @@
 {
-    "userPoolId": "123",
-    "webClientId": "111",
-    "nativeClientId": "222"
+  "userPoolId": "123",
+  "webClientId": "111",
+  "nativeClientId": "222"
 }

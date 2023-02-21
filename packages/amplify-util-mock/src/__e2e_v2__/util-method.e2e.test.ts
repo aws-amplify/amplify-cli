@@ -16,7 +16,7 @@ const runTransformer = async (validSchema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
     } as FeatureFlagProvider,
     sandboxModeEnabled: true,
   });

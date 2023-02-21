@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import { coerce, lt } from 'semver';
-import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny, MigrationInfo } from 'amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
 import { amplifyCLIConstants } from './extensions/amplify-helpers/constants';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
@@ -82,8 +82,8 @@ const migrateFrom0To1 = async (context: $TSContext, projectPath, projectConfig):
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     let apiMigrateFunction;
 
-    Object.keys(categoryPluginInfoList).forEach(category => {
-      categoryPluginInfoList[category].forEach(pluginInfo => {
+    Object.keys(categoryPluginInfoList).forEach((category) => {
+      categoryPluginInfoList[category].forEach((pluginInfo) => {
         try {
           // eslint-disable-next-line
           const { migrate } = require(pluginInfo.packageLocation);
@@ -165,20 +165,20 @@ const cleanUp = (backupAmplifyDirPath: string): void => {
   fs.removeSync(backupAmplifyDirPath);
 };
 
-const generateMigrationInfo = (projectConfig: $TSAny, projectPath: string): $TSAny => {
-  const migrationInfo: $TSObject = {
+const generateMigrationInfo = (projectConfig: $TSAny, projectPath: string) => {
+  const meta = stateManager.getMeta(projectPath);
+  const migrationInfo: MigrationInfo = {
     projectPath,
     initVersion: projectConfig.version,
     newVersion: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
+    amplifyMeta: meta,
+    currentAmplifyMeta: stateManager.getCurrentMeta(projectPath),
+    projectConfig: generateNewProjectConfig(projectConfig),
+    localEnvInfo: generateLocalEnvInfo(projectConfig),
+    localAwsInfo: generateLocalAwsInfo(projectPath),
+    teamProviderInfo: generateTeamProviderInfo(meta),
+    backendConfig: generateBackendConfig(meta),
   };
-  migrationInfo.amplifyMeta = stateManager.getMeta(projectPath);
-  migrationInfo.currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
-  migrationInfo.projectConfig = generateNewProjectConfig(projectConfig);
-  migrationInfo.localEnvInfo = generateLocalEnvInfo(projectConfig);
-  migrationInfo.localAwsInfo = generateLocalAwsInfo(projectPath);
-  migrationInfo.teamProviderInfo = generateTeamProviderInfo(migrationInfo.amplifyMeta);
-  migrationInfo.backendConfig = generateBackendConfig(migrationInfo.amplifyMeta);
-
   return migrationInfo;
 };
 
@@ -263,11 +263,11 @@ const generateTeamProviderInfo = (amplifyMeta: $TSAny): $TSAny => ({ NONE: ampli
 const generateBackendConfig = (amplifyMeta: $TSAny): $TSAny => {
   const backendConfig = {};
 
-  Object.keys(amplifyMeta).forEach(category => {
+  Object.keys(amplifyMeta).forEach((category) => {
     if (category !== 'providers') {
       backendConfig[category] = {};
 
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         backendConfig[category][resourceName] = {};
         backendConfig[category][resourceName].service = amplifyMeta[category][resourceName].service;
         backendConfig[category][resourceName].providerPlugin = amplifyMeta[category][resourceName].providerPlugin;

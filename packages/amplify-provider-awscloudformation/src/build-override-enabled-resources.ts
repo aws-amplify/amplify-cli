@@ -13,7 +13,7 @@ export const buildOverridesEnabledResources = async (context: $TSContext, resour
     const { allResources } = await context.amplify.getResourceStatus();
     allBuildResources = allResources;
   }
-  allBuildResources.forEach(resourceCreated => {
+  allBuildResources.forEach((resourceCreated) => {
     resourcesToBuild.push({
       service: resourceCreated.service as string,
       category: resourceCreated.category as string,

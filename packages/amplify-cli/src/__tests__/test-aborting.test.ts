@@ -1,4 +1,5 @@
 import { Context } from '../domain/context';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 
 describe('test SIGINT with execute', () => {
   afterAll(() => {
@@ -69,7 +70,7 @@ describe('test SIGINT with execute', () => {
     });
 
     const mockContext: Context = jest.createMockFromModule('../domain/context');
-    mockContext.input = input;
+    mockContext.input = input as unknown as CommandLineInput;
     mockContext.print = {
       warning: jest.fn(),
     };
@@ -126,4 +127,4 @@ describe('test SIGINT with execute', () => {
   });
 });
 
-const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));

@@ -6,7 +6,7 @@ import _, { uniq, pullAll } from 'lodash';
 import path from 'path';
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 import { Sort } from 'enquirer';
-import { $TSContext } from 'amplify-cli-core';
+import { AuthContext } from '../../../context';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
 import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
 
@@ -26,7 +26,7 @@ declare module 'enquirer' {
 
 /* eslint-disable no-param-reassign */
 export const serviceWalkthrough = async (
-  context: $TSContext,
+  context: AuthContext,
   defaultValuesFilename: any,
   stringMapsFilename: any,
   serviceMetadata: any,
@@ -68,12 +68,12 @@ export const serviceWalkthrough = async (
     }
 
     if (answer.triggers && answer.triggers !== '{}') {
-      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
+      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers as string) : {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
       selectionMetadata.forEach((selection: { [key: string]: any }) => {
-        Object.keys(selection.triggers).forEach(t => {
+        Object.keys(selection.triggers).forEach((t) => {
           if (!tempTriggers[t] && answer.triggers.includes(selection.value)) {
             tempTriggers[t] = selection.triggers[t];
           } else if (tempTriggers[t] && answer.triggers.includes(selection.value)) {
@@ -106,7 +106,7 @@ export const serviceWalkthrough = async (
       answer[questionObj.key] &&
       answer[questionObj.key].length > 0
     ) {
-      const replacementArray = context.updatingAuth[questionObj.iterator];
+      const replacementArray = context.updatingAuth?.[questionObj.iterator as keyof AuthContext['updatingAuth']] ?? ([] as unknown[]);
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
         questionObj.validation = questionObj.iteratorValidation;
         const newValue = await inquirer.prompt({
@@ -354,7 +354,7 @@ const updateUserPoolGroups = async (context: any): Promise<string[]> => {
   return sortedUserPoolGroupList;
 };
 
-const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): Promise<string> => {
+const updateAdminQuery = async (context: AuthContext, userPoolGroupList: any[]): Promise<string> => {
   let adminGroup;
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
@@ -498,7 +498,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
 /*
   Format hosted UI oAuth data per lambda spec
 */
-export const structureOAuthMetadata = (coreAnswers: any, context: $TSContext, defaults: any, amplify: any): any => {
+export const structureOAuthMetadata = (coreAnswers: any, context: AuthContext, defaults: any, amplify: any): any => {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
@@ -558,7 +558,7 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
     providers
-      .map(providerName => providerName.toLowerCase())
+      .map((providerName) => providerName.toLowerCase())
       .forEach((providerName: string) => {
         const provider: { authorize_scopes: string } | undefined = parsedMetaData.find(
           (currentProvider: any) => currentProvider.ProviderName === providerName,
@@ -585,7 +585,7 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
   Handle updates
 */
 /* eslint-disable no-param-reassign */
-const handleUpdates = (context: $TSContext, coreAnswers: any): any => {
+const handleUpdates = (context: AuthContext, coreAnswers: any): any => {
   if (context.updatingAuth && context.updatingAuth.triggers) {
     coreAnswers.triggers = {};
     coreAnswers.triggers = context.updatingAuth.triggers;
@@ -611,12 +611,12 @@ const handleUpdates = (context: $TSContext, coreAnswers: any): any => {
 /*
   Adding lambda triggers
 */
-const lambdaFlow = async (context: $TSContext, answers: any): Promise<any> => {
+const lambdaFlow = async (context: AuthContext, answers: any): Promise<any> => {
   const triggers = await context.amplify.triggerFlow(context, 'cognito', 'auth', answers);
   return triggers || answers;
 };
 
-export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptions: any): any => {
+export const getIAMPolicies = (context: AuthContext, resourceName: any, crudOptions: any): any => {
   let policy = {};
   const actions: any[] = [];
 

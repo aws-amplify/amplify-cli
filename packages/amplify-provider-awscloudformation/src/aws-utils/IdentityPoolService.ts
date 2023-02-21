@@ -38,8 +38,8 @@ export class IdentityPoolService implements IIdentityPoolService {
         {
           MaxResults: 60,
         },
-        response => response?.IdentityPools,
-        async response => response?.NextToken,
+        (response) => response?.IdentityPools,
+        async (response) => response?.NextToken,
       );
 
       this.cachedIdentityPoolIds.push(...result);
@@ -55,7 +55,7 @@ export class IdentityPoolService implements IIdentityPoolService {
       const identityPoolDetails = [];
 
       if (identityPools.length > 0) {
-        const describeIdentityPoolPromises = identityPools.map(idp =>
+        const describeIdentityPoolPromises = identityPools.map((idp) =>
           this.cognitoIdentity
             .describeIdentityPool({
               IdentityPoolId: idp.IdentityPoolId,

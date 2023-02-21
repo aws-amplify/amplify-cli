@@ -5,9 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
-import {
-  $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject,
-} from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
@@ -65,11 +63,10 @@ export class StateManager {
     return data;
   };
 
-  getDeploymentSecrets = (): DeploymentSecrets => (
+  getDeploymentSecrets = (): DeploymentSecrets =>
     JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
       throwIfNotExist: false,
-    }) || { appSecrets: [] }
-  );
+    }) || { appSecrets: [] };
 
   getProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getTagFilePath(projectPath));
 
@@ -102,7 +99,7 @@ export class StateManager {
     return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
   };
 
-  getCurrentRegion = (projectPath?: string):string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
+  getCurrentRegion = (projectPath?: string): string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
 
   getCurrentEnvName = (projectPath?: string): string | undefined => this.getLocalEnvInfo(projectPath, { throwIfNotExist: false })?.envName;
 
@@ -177,16 +174,16 @@ export class StateManager {
   getProjectName = (): string => {
     const { projectName } = this.getProjectConfig();
     return projectName;
-  }
+  };
 
-  getAppID = () : string => {
+  getAppID = (): string => {
     const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
     const appId = meta?.providers?.awscloudformation?.AmplifyAppId;
     if (!appId) {
       throw new Error('Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.');
     }
     return appId;
-  }
+  };
 
   getResourceParametersJson = (
     projectPath: string | undefined,
@@ -239,7 +236,8 @@ export class StateManager {
       default: {},
       ...options,
     };
-    const adminConfig = JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
+    const adminConfig =
+      JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
 
     return adminConfig[appId];
   };
@@ -321,7 +319,8 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath?: string): HooksConfig => this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
+  getHooksConfigJson = (projectPath?: string): HooksConfig =>
+    this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
 
   setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
     const targetDirPath = pathManager.getHooksDirPath(projectPath);

@@ -1,5 +1,7 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
   addAuthWithDefault,
   removeAuthWithDefault,
   getBackendAmplifyMeta,

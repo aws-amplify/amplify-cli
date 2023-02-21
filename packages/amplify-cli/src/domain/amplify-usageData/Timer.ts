@@ -2,7 +2,7 @@
  * Used to record the amount of time a code path took
  */
 export class Timer {
-  private startTime: number
+  private startTime: number;
   private constructor(readonly initialTime?: number) {
     this.startTime = initialTime ?? Date.now();
   }

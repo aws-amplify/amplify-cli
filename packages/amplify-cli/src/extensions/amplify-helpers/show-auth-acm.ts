@@ -16,27 +16,24 @@ import { FeatureFlags } from 'amplify-cli-core';
 export function showACM(sdl: string, nodeName: string) {
   const schema = parse(sdl);
   const type = schema.definitions.find(
-    node =>
-      node.kind === 'ObjectTypeDefinition' && node.name.value === nodeName && node?.directives?.find(dir => dir.name.value === 'model'),
+    (node) =>
+      node.kind === 'ObjectTypeDefinition' && node.name.value === nodeName && node?.directives?.find((dir) => dir.name.value === 'model'),
   ) as ObjectTypeDefinitionNode;
   if (!type) {
     throw new Error(`Model "${nodeName}" does not exist.`);
   } else {
     const fields: string[] = type.fields!.map((field: FieldDefinitionNode) => field.name.value);
     const acm = new AccessControlMatrix({ name: type.name.value, operations: MODEL_OPERATIONS, resources: fields });
-    const parentAuthDirective = type.directives?.find(dir => dir.name.value === 'auth');
+    const parentAuthDirective = type.directives?.find((dir) => dir.name.value === 'auth');
     if (parentAuthDirective) {
-      const authRules: AuthRule[] = getAuthDirectiveRules(
-        new DirectiveWrapper(parentAuthDirective),
-        {
-          isField: false,
-          deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
-        },
-      );
+      const authRules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(parentAuthDirective), {
+        isField: false,
+        deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
+      });
       convertModelRulesToRoles(acm, authRules);
     }
     for (const fieldNode of type.fields || []) {
-      const fieldAuthDir = fieldNode.directives?.find(dir => dir.name.value === 'auth') as DirectiveNode;
+      const fieldAuthDir = fieldNode.directives?.find((dir) => dir.name.value === 'auth') as DirectiveNode;
       if (fieldAuthDir) {
         if (parentAuthDirective) {
           acm.resetAccessForResource(fieldNode.name.value);
@@ -63,7 +60,7 @@ function convertModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[
   for (const rule of authRules) {
     const operations: ModelOperation[] = rule.operations || MODEL_OPERATIONS;
     if (rule.groups && !rule.groupsField) {
-      rule.groups.forEach(group => {
+      rule.groups.forEach((group) => {
         const roleName = `${rule.provider}:staticGroup:${group}`;
         acm.setRole({ role: roleName, resource: field, operations });
       });

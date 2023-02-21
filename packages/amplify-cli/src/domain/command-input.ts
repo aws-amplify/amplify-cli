@@ -1,7 +1,9 @@
-export class CommandLineInput {
+import { CommandLineInput } from 'amplify-cli-core/src/types';
+
+export class CLIInput implements CommandLineInput {
   argv: Array<string>;
   plugin?: string;
-  command?: string;
+  command = '';
   subCommands?: string[];
   options?: {
     [key: string]: string | boolean;

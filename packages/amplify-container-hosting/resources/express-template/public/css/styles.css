@@ -2,24 +2,26 @@
   margin: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 html {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Roboto, Arial, sans-serif;
+  font-family: 'Helvetica Neue', Roboto, Arial, sans-serif;
   font-size: 62.5%;
   color: white;
-  background: linear-gradient(to bottom, #2473ab 0%,#1e528e 50%,#ff9900 100%);
+  background: linear-gradient(to bottom, #2473ab 0%, #1e528e 50%, #ff9900 100%);
 }
 
 body {
   font-size: 1.8rem;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 
@@ -53,8 +55,9 @@ h4 {
   float: left;
 }
 
-.message:after, .website-nav:after {
-  content: " ";
+.message:after,
+.website-nav:after {
+  content: ' ';
   display: table;
   clear: both;
 }
@@ -140,7 +143,7 @@ h4 {
   }
 }
 
-@media (min-aspect-ratio: 11/5)  {
+@media (min-aspect-ratio: 11/5) {
   .graphics {
     display: none;
   }

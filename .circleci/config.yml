@@ -190,7 +190,7 @@ jobs:
       - restore_cache:
           key: >-
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - when: 
+      - when:
           condition:
             equal: [true, << pipeline.parameters.e2e_workflow_cleanup >>]
           steps:
@@ -201,7 +201,7 @@ jobs:
                   cd packages/amplify-e2e-tests
                   yarn clean-e2e-resources workflow << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>
                 no_output_timeout: 90m
-      - when: 
+      - when:
           condition:
             equal: [true, << pipeline.parameters.e2e_resource_cleanup >>]
           steps:
@@ -245,7 +245,7 @@ workflows:
             - build
             - publish_to_local_registry
   e2e_resource_cleanup:
-    when: 
+    when:
       or:
         - equal: [true, << pipeline.parameters.e2e_resource_cleanup >>]
         - equal: [true, << pipeline.parameters.e2e_workflow_cleanup >>]

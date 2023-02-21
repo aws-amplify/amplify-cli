@@ -83,9 +83,11 @@ const importServiceWalkthrough = async (
   const storageResources = <{ service: string; output: { Name: string } }[]>(
     Object.values(_.get(amplifyMeta, [AmplifyCategories.STORAGE], []))
   );
-  const dynamoDBResources = storageResources.filter(r => r.service === 'DynamoDB' && !!r.output && !!r.output.Name).map(r => r.output.Name);
+  const dynamoDBResources = storageResources
+    .filter((r) => r.service === 'DynamoDB' && !!r.output && !!r.output.Name)
+    .map((r) => r.output.Name);
 
-  tableList = tableList.filter(t => !dynamoDBResources.includes(t));
+  tableList = tableList.filter((t) => !dynamoDBResources.includes(t));
 
   // Return if no User Pool found in the project's region
   if (_.isEmpty(tableList)) {
@@ -211,11 +213,11 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
     StreamArn: answers.tableDescription!.LatestStreamArn,
   };
 
-  const hashKey = answers.tableDescription!.KeySchema?.find(ks => ks.KeyType === 'HASH');
-  const sortKeys = answers.tableDescription!.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
+  const hashKey = answers.tableDescription!.KeySchema?.find((ks) => ks.KeyType === 'HASH');
+  const sortKeys = answers.tableDescription!.KeySchema?.filter((ks) => ks.KeyType === 'RANGE');
 
   if (hashKey) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === hashKey.AttributeName);
 
     if (attribute) {
       output.PartitionKeyName = hashKey.AttributeName;
@@ -224,7 +226,7 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
   }
 
   if (sortKeys && sortKeys.length > 0) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === sortKeys[0].AttributeName);
 
     if (attribute) {
       output.SortKeyName = sortKeys[0].AttributeName;
@@ -246,11 +248,11 @@ const createEnvSpecificResourceParameters = (
     streamArn: answers.tableDescription!.LatestStreamArn,
   };
 
-  const hashKey = answers.tableDescription!.KeySchema?.find(ks => ks.KeyType === 'HASH');
-  const sortKeys = answers.tableDescription!.KeySchema?.filter(ks => ks.KeyType === 'RANGE');
+  const hashKey = answers.tableDescription!.KeySchema?.find((ks) => ks.KeyType === 'HASH');
+  const sortKeys = answers.tableDescription!.KeySchema?.filter((ks) => ks.KeyType === 'RANGE');
 
   if (hashKey) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === hashKey.AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === hashKey.AttributeName);
 
     if (attribute) {
       envSpecificResourceParameters.partitionKeyName = hashKey.AttributeName;
@@ -259,7 +261,7 @@ const createEnvSpecificResourceParameters = (
   }
 
   if (sortKeys && sortKeys.length > 0) {
-    const attribute = answers.tableDescription!.AttributeDefinitions?.find(a => a.AttributeName === sortKeys[0].AttributeName);
+    const attribute = answers.tableDescription!.AttributeDefinitions?.find((a) => a.AttributeName === sortKeys[0].AttributeName);
 
     if (attribute) {
       envSpecificResourceParameters.sortKeyName = sortKeys[0].AttributeName;
@@ -288,8 +290,8 @@ export const importedDynamoDBEnvInit = async (
   const dynamoDB = await providerUtils.createDynamoDBService(context);
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
@@ -474,18 +476,18 @@ export const ensureHeadlessParameters = (
   }
 
   if (missingParams.length > 0) {
-    throw new AmplifyError( 'InputValidationError', {
+    throw new AmplifyError('InputValidationError', {
       message: `storage headless is missing the following inputParams ${missingParams.join(', ')}`,
-      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
-    }); 
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories',
+    });
   }
 
-  const tableParams = Object.keys(headlessParams.tables).filter(t => t === resourceParameters.resourceName);
+  const tableParams = Object.keys(headlessParams.tables).filter((t) => t === resourceParameters.resourceName);
 
   if (tableParams?.length !== 1) {
-    throw new AmplifyError( 'InputValidationError', {
+    throw new AmplifyError('InputValidationError', {
       message: `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`,
-      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories',
     });
   }
 

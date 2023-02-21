@@ -15,7 +15,7 @@ jest.mock('../../../../__mocks__/faked-plugin', () => ({
 }));
 
 describe('executeProviderUtils', () => {
-  const mockContext = ({} as unknown) as $TSContext;
+  const mockContext = {} as unknown as $TSContext;
   let options = {};
   it('should execute compileSchema', async () => {
     const util = await executeProviderUtils(mockContext, 'awscloudformation', 'compileSchema', options);

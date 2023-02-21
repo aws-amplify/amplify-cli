@@ -1,5 +1,13 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, AmplifyError, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  exitOnNextTick,
+  ResourceAlreadyExistsError,
+  ServiceSelection,
+  stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
@@ -131,7 +139,7 @@ const importServiceWalkthrough = async (
 
     printer.info(importMessages.OneBucket(answers.bucketName));
   } else {
-    const bucketNameList = bucketList.map(b => b.Name!);
+    const bucketNameList = bucketList.map((b) => b.Name!);
 
     const bucketNameQuestion = {
       type: 'autocomplete',
@@ -302,8 +310,8 @@ export const importedS3EnvInit = async (
   headlessParams: ImportS3HeadlessParameters,
 ): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: S3EnvSpecificResourceParameters }> => {
   const s3 = await providerUtils.createS3Service(context);
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
@@ -460,9 +468,9 @@ export const ensureHeadlessParameters = (headlessParams: ImportS3HeadlessParamet
   }
 
   if (missingParams.length > 0) {
-    throw new AmplifyError( 'InputValidationError', {
+    throw new AmplifyError('InputValidationError', {
       message: `storage headless is missing the following inputParams ${missingParams.join(', ')}`,
-      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories'
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories',
     });
   }
 

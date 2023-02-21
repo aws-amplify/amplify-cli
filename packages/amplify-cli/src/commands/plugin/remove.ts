@@ -9,7 +9,7 @@ export const run = async (context: Context) => {
   const { plugins } = context.pluginPlatform;
 
   if (plugins && Object.keys(plugins).length > 0) {
-    Object.keys(plugins).forEach(key => {
+    Object.keys(plugins).forEach((key) => {
       if (key === constants.CORE) {
         return;
       }

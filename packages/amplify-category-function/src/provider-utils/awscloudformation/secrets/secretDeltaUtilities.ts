@@ -28,6 +28,6 @@ export const secretNamesToSecretDeltas = (secretNames: string[], delta: SecretDe
  * Determines if the SecretDeltas have any "set" operations
  */
 export const hasSetSecrets = (secretDeltas: SecretDeltas) =>
-  Object.values(secretDeltas).filter(delta => delta.operation === 'set').length > 0;
+  Object.values(secretDeltas).filter((delta) => delta.operation === 'set').length > 0;
 
 const existingSecretDeltaPredicate = (secretDelta: SecretDelta) => secretDelta.operation !== removeSecret.operation;

@@ -48,7 +48,7 @@ const originalPlatform = process.platform;
 
 expect.addSnapshotSerializer(windowsPathSerializer);
 
-const context_stub_typed = (context_stub as unknown) as $TSContext;
+const context_stub_typed = context_stub as unknown as $TSContext;
 
 describe('uninstall packaged CLI on mac / linux', () => {
   beforeAll(() => {

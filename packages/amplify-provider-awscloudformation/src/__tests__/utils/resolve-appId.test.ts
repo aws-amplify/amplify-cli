@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 
-const contextStub = ({
+const contextStub = {
   exeInfo: {
     inputParams: {
       amplify: {
@@ -8,9 +8,9 @@ const contextStub = ({
       },
     },
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
-const emptyContextStub = ({} as unknown) as $TSContext;
+const emptyContextStub = {} as unknown as $TSContext;
 
 describe('resolve-appId', () => {
   beforeEach(() => {

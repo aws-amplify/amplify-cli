@@ -7,16 +7,7 @@
     "allowJs": true,
     "checkJs": false, // TODO enable till we move everything to TS
     "lib": ["ESNext", "dom"]
-  }, 
-  "include": [
-     "src/**/*",
-     "src/provider-utils/**/*.json"
-  ],
-  "exclude": [
-    "lib",
-    "coverage",
-    "src/__tests__",
-  
-  ],
-  
+  },
+  "include": ["src/**/*", "src/provider-utils/**/*.json"],
+  "exclude": ["lib", "coverage", "src/__tests__"]
 }

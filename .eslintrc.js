@@ -43,7 +43,7 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'error',
     'no-bitwise': 'warn',
     'consistent-return': 'error',
-    'eol-last': [ 'error', 'always' ],
+    'eol-last': ['error', 'always'],
     'no-restricted-syntax': [
       'error',
       {
@@ -104,7 +104,7 @@ module.exports = {
     },
     {
       // disable spell checker in tests
-      files: ['**/__tests__/**','**/__test__/**', '*.test.ts', 'packages/amplify-e2e-*/**', '**/test/**', '**/tests/**'],
+      files: ['**/__tests__/**', '**/__test__/**', '*.test.ts', 'packages/amplify-e2e-*/**', '**/test/**', '**/tests/**'],
       plugins: ['jest'],
       extends: ['plugin:jest/recommended'],
       rules: {

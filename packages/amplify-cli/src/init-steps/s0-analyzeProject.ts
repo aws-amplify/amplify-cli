@@ -19,7 +19,7 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
   setExeInfo(context, projectPath, undefined, env);
   // default behavior in quick start used to be android.
   // default to that here unless different param specified
-  const { frontend } = context?.parameters?.options;
+  const { frontend } = context?.parameters?.options ?? {};
   if (!frontend) {
     context.print.warning('No frontend specified. Defaulting to android.');
     context.exeInfo.projectConfig.frontend = 'android';
@@ -68,7 +68,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   } else {
     defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
   }
-  const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
+  const editorIndex = editors.findIndex((editorEntry) => editorEntry.value === defaultEditor);
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
   context.print.success('The following configuration will be applied:');
@@ -94,7 +94,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
  */
 export const analyzeProject = async (context: $TSContext): Promise<$TSContext> => {
   // eslint-disable-next-line spellcheck/spell-checker
-  if (!context.parameters.options.app || !context.parameters.options.quickstart) {
+  if (!context.parameters.options?.app || !context.parameters.options?.quickstart) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   }
   const projectPath = process.cwd();
@@ -177,7 +177,7 @@ const getProjectName = async (context: $TSContext): Promise<string> => {
         name: 'inputProjectName',
         message: 'Enter a name for the project',
         default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: (input) => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
 
       const answer = await inquirer.prompt(projectNameQuestion);
@@ -254,7 +254,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
       name: 'envName',
       message: 'Enter a name for the environment',
       default: defaultEnvName,
-      validate: input => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
+      validate: (input) => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));

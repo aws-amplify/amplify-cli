@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import path from 'path';
-import { AmplifyEvent, CommandLineInput, PluginManifest, PluginPlatform } from 'amplify-cli-core';
+import { AmplifyEvent, PluginManifest, PluginPlatform } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { Context } from '../domain/context';
 import { PluginInfo } from 'amplify-cli-core';
 import { executeCommand } from '../execution-manager';

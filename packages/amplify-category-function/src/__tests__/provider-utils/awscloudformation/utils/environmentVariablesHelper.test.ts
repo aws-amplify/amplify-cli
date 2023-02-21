@@ -82,12 +82,8 @@ describe('ensureEnvironmentVariableValues', () => {
 
     prompterMock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
 
-    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as $TSContext);
-    expect(
-      getEnvParamManager()
-        .getResourceParamManager('function', 'testFunc')
-        .getAllParams(),
-    ).toEqual({
+    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as unknown as $TSContext);
+    expect(getEnvParamManager().getResourceParamManager('function', 'testFunc').getAllParams()).toEqual({
       envVarOne: 'testVal1',
       envVarTwo: 'testVal2',
       envVarThree: 'testVal3',
@@ -115,7 +111,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
   ];
   const functionNames = ['testFunc'];
   const selectFunctionChoices = functionNames
-    .map(name => ({
+    .map((name) => ({
       name,
       value: name,
     }))
@@ -124,7 +120,7 @@ describe('askEnvironmentVariableCarryOrUpdateQuestions', () => {
       value: abortKey,
     });
   const selectVariablesChoices = ['testEnv']
-    .map(name => ({
+    .map((name) => ({
       name,
       value: name,
     }))

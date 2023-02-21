@@ -71,7 +71,7 @@ export const initEnv = async (context: $TSContext): Promise<$TSAny> => {
         };
         // update backendConfig with current pinpoint meta
         const availableChannels = getAvailableChannels();
-        const enabledChannels = availableChannels.filter(channelName => channelName in pinpointNotificationsMeta.output);
+        const enabledChannels = availableChannels.filter((channelName) => channelName in pinpointNotificationsMeta.output);
         context.exeInfo.backendConfig.notifications = context.exeInfo.backendConfig.notifications || {};
         context.exeInfo.backendConfig.notifications = {
           [regulatedResourceName]: {
@@ -91,7 +91,7 @@ const getAnalyticsResourcesFromMeta = (amplifyMeta: $TSMeta, supportedServiceNam
   const resourceList: IAnalyticsResource[] = [];
   if (amplifyMeta[AmplifyCategories.ANALYTICS]) {
     const categoryResources = amplifyMeta[AmplifyCategories.ANALYTICS];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       // if resourceProviderService is provided, then only return resources provided by that service
       // else return all resources. e.g. Pinpoint, Kinesis
       if (!supportedServiceName || categoryResources[resource].service === supportedServiceName) {
@@ -133,7 +133,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext): Promise<
   // For pull we have to get the pinpoint application for notifications category
   // from cloud meta and as no new resources are created during pull, we should not look for
   // Pinpoint app in analytics category.
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
   const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
     throwIfNotExist: false,
   });
@@ -310,7 +310,7 @@ const getEnabledDisabledChannelsFromConfigAndMeta = (
   // const channelsToUpdate = [];
   const availableChannels = getAvailableChannels();
 
-  availableChannels.forEach(channel => {
+  availableChannels.forEach((channel) => {
     let isCurrentlyEnabled = false;
     let needToBeEnabled = false;
     if (pinpointNotificationsMeta.output?.Id && pinpointNotificationsMeta.output[channel]?.Enabled) {
@@ -449,7 +449,7 @@ const extractMigrationInfo = (context: $TSContext): $TSAny => {
     migrationInfo.Region = migrationInfo.output.Region;
     migrationInfo.channels = [];
     const availableChannels = getAvailableChannels();
-    availableChannels.forEach(channel => {
+    availableChannels.forEach((channel) => {
       if (migrationInfo.output[channel]?.Enabled) {
         migrationInfo.channels.push(channel);
       }
@@ -499,7 +499,7 @@ const buildPinpointInputParametersFromAmplifyMeta = (context: $TSContext): Recor
     return pinpointInputParameters;
   }
 
-  const pinpointResourceName = Object.keys(categoryMeta).find(k => categoryMeta[k].service === AmplifySupportedService.PINPOINT);
+  const pinpointResourceName = Object.keys(categoryMeta).find((k) => categoryMeta[k].service === AmplifySupportedService.PINPOINT);
   if (pinpointResourceName) {
     pinpointInputParameters.service = AmplifySupportedService.PINPOINT;
     if (categoryMeta[pinpointResourceName].output) {

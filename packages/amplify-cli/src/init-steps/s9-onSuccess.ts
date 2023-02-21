@@ -85,7 +85,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   await initializeEnv(context, currentAmplifyMeta);
 
-  if (!context.parameters.options.app) {
+  if (!context.parameters.options?.app) {
     printWelcomeMessage(context);
   }
 
@@ -121,14 +121,14 @@ const generateLocalTagsFile = (context: $TSContext): void => {
     // Preserve existing tags if present
     const tags = stateManager.getProjectTags(projectPath);
 
-    if (!tags.find(t => t.Key === 'user:Stack')) {
+    if (!tags.find((t) => t.Key === 'user:Stack')) {
       tags.push({
         Key: 'user:Stack',
         Value: '{project-env}',
       });
     }
 
-    if (!tags.find(t => t.Key === 'user:Application')) {
+    if (!tags.find((t) => t.Key === 'user:Application')) {
       tags.push({
         Key: 'user:Application',
         Value: '{project-name}',

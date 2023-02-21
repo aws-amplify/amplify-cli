@@ -20,7 +20,7 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 jest.mock('@aws-amplify/amplify-category-function', () => ({
-  getInvoker: jest.fn().mockResolvedValue(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 10))),
+  getInvoker: jest.fn().mockResolvedValue(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 10))),
   getBuilder: jest.fn().mockReturnValue(() => {}),
   isMockable: jest.fn().mockReturnValue({ isMockable: true }),
   category: 'function',
@@ -67,7 +67,7 @@ describe('function start', () => {
   // NOTE: A warning from jest saying that async operations weren't stopped in the test is expected here
   // because the mock function is designed to keep running after the timeout to ensure that the timeout works
   it('times out function execution at the default time', async () => {
-    getInvoker_mock.mockResolvedValueOnce(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 11000)));
+    getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 11000)));
     context_stub.input.options.timeout = undefined;
     await start(context_stub);
     expect(context_stub.print.error.mock.calls[0][0]).toMatchInlineSnapshot(`"funcName failed with the following error:"`);
@@ -76,7 +76,7 @@ describe('function start', () => {
   });
 
   it('times out function execution at the specified time', async () => {
-    getInvoker_mock.mockResolvedValueOnce(() => new Promise(resolve => setTimeout(() => resolve('lambda value'), 2000)));
+    getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 2000)));
     await start(context_stub);
     expect(context_stub.print.info.mock.calls[0][0]).toMatchSnapshot();
   });

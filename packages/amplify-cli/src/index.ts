@@ -11,8 +11,8 @@ import {
   HooksMeta,
   AmplifyError,
   constants,
-  CommandLineInput,
 } from 'amplify-cli-core';
+import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
@@ -145,7 +145,7 @@ export const run = async (startTime: number): Promise<void> => {
   }
 
   // For mobile hub migrated project validate project and command to be executed
-  ensureMobileHubCommandCompatibility((context as unknown) as $TSContext);
+  ensureMobileHubCommandCompatibility(context as unknown as $TSContext);
 
   // Display messages meant for most executions
   await displayBannerMessages(input);
@@ -190,7 +190,7 @@ async function sigIntHandler(context: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: CommandLineInput): Promise<void> => {
+export const execute = async (input: CLIInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 

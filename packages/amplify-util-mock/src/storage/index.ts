@@ -5,10 +5,10 @@ const RESOURCE_NEEDS_PUSH = ['Cognito'];
 export async function start(context) {
   const resources = await context.amplify.getResourceStatus();
   const mockableResources = resources.allResources.filter(
-    resource => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
+    (resource) => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
   );
   const resourceToBePushed = [...resources.resourcesToBeCreated].filter(
-    resource => resource.service && RESOURCE_NEEDS_PUSH.includes(resource.service),
+    (resource) => resource.service && RESOURCE_NEEDS_PUSH.includes(resource.service),
   );
 
   if (mockableResources.length) {

@@ -81,13 +81,13 @@ export async function reDeploy(
 
 async function configureLambdaDataSource(config) {
   config.dataSources
-    .filter(d => d.type === 'AWS_LAMBDA')
-    .forEach(d => {
+    .filter((d) => d.type === 'AWS_LAMBDA')
+    .forEach((d) => {
       const arn = d.LambdaFunctionArn;
       const arnParts = arn.split(':');
       let functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
-      d.invoke = payload => {
+      d.invoke = (payload) => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,
@@ -105,20 +105,20 @@ async function configureOpensearchDataSource(config, opensearchURL) {
     return config;
   }
   const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
-  const opensearchDataSources = config.dataSources.filter(d => d.type === opensearchDataSourceType);
+  const opensearchDataSources = config.dataSources.filter((d) => d.type === opensearchDataSourceType);
   if (_.isEmpty(opensearchDataSources)) {
     return config;
   }
   return {
     ...config,
     dataSources: await Promise.all(
-      config.dataSources.map(async d => {
+      config.dataSources.map(async (d) => {
         if (d.type !== opensearchDataSourceType) {
           return d;
         }
         return {
           ...d,
-          invoke: async payload => {
+          invoke: async (payload) => {
             return await querySearchable(opensearchURL, payload);
           },
         };

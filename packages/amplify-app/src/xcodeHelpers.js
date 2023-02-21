@@ -108,7 +108,7 @@ function getOrCreateGroup(project, name) {
  * @returns {boolean}
  */
 function groupHasFile(group, name) {
-  return group.pbxGroup.children.filter(child => child.comment === name).length > 0;
+  return group.pbxGroup.children.filter((child) => child.comment === name).length > 0;
 }
 
 /**
@@ -137,12 +137,12 @@ function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
 
   // add generated model
   const modelsFilePattern = path.join(rootDir, 'amplify', 'generated', 'models', '*.swift');
-  const modelFiles = glob.sync(modelsFilePattern).map(file => {
+  const modelFiles = glob.sync(modelsFilePattern).map((file) => {
     return path.relative(rootDir, file);
   });
   if (modelFiles && modelFiles.length > 0) {
     const modelsGroup = getOrCreateGroup(xcodeProject, 'AmplifyModels');
-    modelFiles.forEach(file => {
+    modelFiles.forEach((file) => {
       const { base: filename } = path.parse(file);
       if (!groupHasFile(modelsGroup, filename)) {
         xcodeProject.addSourceFile(file, {}, modelsGroup.uuid);
@@ -176,7 +176,7 @@ async function addAmplifyFiles() {
   const rootDir = path.resolve(projectDir, '..', '..');
   const project = xcode.project(projectDir);
   await new Promise((resolve, reject) => {
-    project.parse(error => {
+    project.parse((error) => {
       if (error) {
         reject(error);
         return;

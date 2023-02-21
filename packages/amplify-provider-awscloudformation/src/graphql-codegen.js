@@ -3,7 +3,7 @@ let graphQLConfig;
 const { prePushAddGraphQLCodegenHook, prePushUpdateGraphQLCodegenHook, postPushGraphQLCodegenHook } = require('amplify-codegen');
 
 async function prePushGraphQLCodegen(context, createResources, updateResources) {
-  createResources = createResources.filter(resource => resource.service === 'AppSync');
+  createResources = createResources.filter((resource) => resource.service === 'AppSync');
   // There can only be one appsync resource
   if (createResources.length > 0) {
     const resource = createResources[0];

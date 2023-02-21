@@ -1,17 +1,10 @@
 {
-    "name": "xr",
-    "aliases": ["XR"],
-    "type": "category",
-    "commands": [
-        "add",
-        "console",
-        "push",
-        "remove",
-        "update",
-        "help"
-    ],
-    "commandAliases":{
-        "configure": "update"
-    },
-    "eventHandlers": []
+  "name": "xr",
+  "aliases": ["XR"],
+  "type": "category",
+  "commands": ["add", "console", "push", "remove", "update", "help"],
+  "commandAliases": {
+    "configure": "update"
+  },
+  "eventHandlers": []
 }

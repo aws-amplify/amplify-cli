@@ -60,7 +60,7 @@ beforeAll(async () => {
         }),
       ],
       featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
+        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
       } as FeatureFlagProvider,
     });
     const out = await transformer.transform(validSchema);
@@ -108,7 +108,7 @@ afterEach(async () => {
     );
     const rows = response.data.listPosts.items || [];
     const deletePromises = [];
-    rows.forEach(row => {
+    rows.forEach((row) => {
       deletePromises.push(
         GRAPHQL_CLIENT.query(`mutation delete{
       deletePost(input: {id: "${row.id}"}) { id }
@@ -562,7 +562,7 @@ test('Test enum filters List', async () => {
     expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
     const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
     expect(appearsInNonJediItems.length).toEqual(3);
-    appearsInNonJediItems.forEach(item => {
+    appearsInNonJediItems.forEach((item) => {
       expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
     });
 
@@ -581,7 +581,7 @@ test('Test enum filters List', async () => {
     expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
     const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
     expect(appearsInWithJediItems.length).toEqual(2);
-    appearsInWithJediItems.forEach(item => {
+    appearsInWithJediItems.forEach((item) => {
       expect(['Appears in Empire & JEDI', 'Appears in Jedi'].includes(item.title)).toBeTruthy();
     });
 
@@ -600,7 +600,7 @@ test('Test enum filters List', async () => {
     expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
     const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
     expect(appearsInWithNonJediItems.length).toEqual(2);
-    appearsInWithNonJediItems.forEach(item => {
+    appearsInWithNonJediItems.forEach((item) => {
       expect(['Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
     });
 
@@ -637,7 +637,7 @@ test('Test enum filters List', async () => {
     expect(nonJediEpisode.data.listPosts.items).toBeDefined();
     const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
     expect(nonJediEpisodeItems.length).toEqual(3);
-    nonJediEpisodeItems.forEach(item => {
+    nonJediEpisodeItems.forEach((item) => {
       expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title)).toBeTruthy();
     });
   } catch (e) {

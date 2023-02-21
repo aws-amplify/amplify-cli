@@ -31,7 +31,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
       );
     }
 
-    let editorPath: string | undefined = editor.paths.find(p => fs.existsSync(p));
+    let editorPath: string | undefined = editor.paths.find((p) => fs.existsSync(p));
 
     // Check if the binary can be located with which
     if (!editorPath) {
@@ -71,7 +71,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
             stdio: 'ignore',
           });
 
-          void subProcess.on('error', err => {
+          void subProcess.on('error', (err) => {
             context.print.error(
               `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
             );

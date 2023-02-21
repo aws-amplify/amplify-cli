@@ -25,7 +25,7 @@ const pluginInstance = {
 };
 
 // mock context
-let mockContext = ({
+let mockContext = {
   amplify: {
     getProjectConfig: jest.fn().mockReturnValue({
       projectName: 'authHeadless',
@@ -59,7 +59,7 @@ let mockContext = ({
       yes: true,
     },
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 test('throws amplify error when auth headless params are missing during pull', async () => {
   expect(() => updateConfigOnEnvInit(mockContext, 'auth', 'Cognito')).rejects.toThrowErrorMatchingInlineSnapshot(

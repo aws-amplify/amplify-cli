@@ -2,9 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
-  "references": [
-    { "path": "../amplify-headless-interface" }
-  ]
+  "references": [{ "path": "../amplify-headless-interface" }]
 }

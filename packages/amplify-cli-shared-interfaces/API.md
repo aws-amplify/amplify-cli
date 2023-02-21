@@ -8,7 +8,7 @@ export interface ICommandInput {
   // (undocumented)
   argv: Array<string>;
   // (undocumented)
-  command?: string;
+  command: string;
   // (undocumented)
   options?: {
     [key: string]: string | boolean;

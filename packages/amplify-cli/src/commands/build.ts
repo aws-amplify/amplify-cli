@@ -17,11 +17,11 @@ export const run = async (context: $TSContext): Promise<void> => {
     const resourcesToBuild: IAmplifyResource[] = await getResources(context);
     let filteredResources: IAmplifyResource[] = resourcesToBuild;
     if (categoryName) {
-      filteredResources = filteredResources.filter(resource => resource.category === categoryName);
+      filteredResources = filteredResources.filter((resource) => resource.category === categoryName);
     }
     if (categoryName && resourceName) {
       filteredResources = filteredResources.filter(
-        resource => resource.category === categoryName && resource.resourceName === resourceName,
+        (resource) => resource.category === categoryName && resource.resourceName === resourceName,
       );
     }
     if (!categoryName && !resourceName) {
@@ -36,7 +36,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   } catch (err) {
     printer.error(err.stack);
     printer.error('There was an error building the resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
 };

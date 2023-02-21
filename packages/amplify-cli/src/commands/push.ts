@@ -58,7 +58,7 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
   if (context.exeInfo.localEnvInfo.noUpdateBackend) {
     throw new AmplifyError('NoUpdateBackendError', { message: 'The local environment configuration does not allow backend updates.' });
   }
-  if (context.parameters.options.force) {
+  if (context.parameters.options?.force) {
     context.exeInfo.forcePush = true;
   }
   await syncCurrentCloudBackend(context);

@@ -8,15 +8,15 @@ describe('generate maps and search configuration', () => {
   const mockAmplifyMeta = {
     providers: {
       awscloudformation: {
-        Region: 'us-west-2'
-      }
+        Region: 'us-west-2',
+      },
     },
     geo: {
       map12345: constructMapMeta('map12345', 'VectorEsriStreets', false),
       index12345: constructPlaceIndexMeta('index12345', false),
       defaultMap12345: constructMapMeta('defaultMap12345', 'VectorEsriStreets', true),
-      defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true)
-    }
+      defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true),
+    },
   };
 
   function constructMapMeta(mapName, mapStyle, isDefault, region) {
@@ -25,9 +25,9 @@ describe('generate maps and search configuration', () => {
       output: {
         Style: mapStyle,
         Name: mapName,
-        Region: region
+        Region: region,
       },
-      isDefault: isDefault
+      isDefault: isDefault,
     };
   }
 
@@ -36,18 +36,18 @@ describe('generate maps and search configuration', () => {
       service: placeIndexServiceName,
       output: {
         Name: indexName,
-        Region: region
+        Region: region,
       },
-      isDefault: isDefault
+      isDefault: isDefault,
     };
   }
-  let mockContext = {}
+  let mockContext = {};
   beforeEach(() => {
     jest.clearAllMocks();
     mockContext = {
       amplify: {
-        getProjectMeta: jest.fn()
-      }
+        getProjectMeta: jest.fn(),
+      },
     };
     mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
   });
@@ -70,15 +70,15 @@ describe('generate maps and search configuration', () => {
     mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {
-          Region: projectRegion
-        }
+          Region: projectRegion,
+        },
       },
       geo: {
         map12345: constructMapMeta('map12345', 'VectorEsriStreets', false, resourceRegion),
         index12345: constructPlaceIndexMeta('index12345', false, resourceRegion),
         defaultMap12345: constructMapMeta('defaultMap12345', 'VectorEsriStreets', true, resourceRegion),
-        defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true, resourceRegion)
-      }
+        defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true, resourceRegion),
+      },
     });
     const generatedConfig = configHelper.generateConfig(mockContext, {});
     expect(generatedConfig.geo.plugins.awsLocationGeoPlugin.region).toEqual(resourceRegion);
@@ -89,22 +89,22 @@ describe('generate maps and search configuration', () => {
 describe('customer pinpoint configuration', () => {
   it('generates correct notifications channel pinpoint configuration', () => {
     const amplifyMeta = {
-      'notifications': {
-        'amplifyplayground': {
-          'service': 'Pinpoint',
-          'output': {
-            'Region': 'us-east-1',
-            'InAppMessaging': {
-              'Enabled': true,
-              'ApplicationId': 'fake'
+      notifications: {
+        amplifyplayground: {
+          service: 'Pinpoint',
+          output: {
+            Region: 'us-east-1',
+            InAppMessaging: {
+              Enabled: true,
+              ApplicationId: 'fake',
             },
-            'SMS': {
-              'ApplicationId': 'fake',
-              'Enabled': true,
-            }
+            SMS: {
+              ApplicationId: 'fake',
+              Enabled: true,
+            },
           },
-        }
-      }
+        },
+      },
     };
     const amplifyConfiguration = {};
     configHelper.constructNotifications(amplifyMeta, amplifyConfiguration);
@@ -114,15 +114,15 @@ describe('customer pinpoint configuration', () => {
         plugins: {
           awsPinpointSmsNotificationsPlugin: {
             appId: 'fake',
-            region: 'us-east-1'
+            region: 'us-east-1',
           },
           awsPinpointInAppMessagingNotificationsPlugin: {
             appId: 'fake',
-            region: 'us-east-1'
-          }
-        }
-      }
-    }
-    expect(amplifyConfiguration).toMatchObject(expectedAmplifyConfiguration)
+            region: 'us-east-1',
+          },
+        },
+      },
+    };
+    expect(amplifyConfiguration).toMatchObject(expectedAmplifyConfiguration);
   });
 });

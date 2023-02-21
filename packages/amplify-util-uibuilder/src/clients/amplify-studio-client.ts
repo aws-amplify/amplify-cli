@@ -1,8 +1,6 @@
 import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-import type {
-  CreateComponentData, Component, Theme, Form,
-} from 'aws-sdk/clients/amplifyuibuilder';
+import type { CreateComponentData, Component, Theme, Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
 import { printer } from 'amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
@@ -72,7 +70,7 @@ export default class AmplifyStudioClient {
       printer.debug(`Failed admin app check: ${err.message}`);
       return false;
     }
-  }
+  };
 
   /**
    * Used to configure the AWS Amplify clients.
@@ -234,14 +232,12 @@ export default class AmplifyStudioClient {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
     try {
-      await this.#amplifyUiBuilder
-        .deleteForm({ id: formId, environmentName, appId: resolvedAppId })
-        .promise();
+      await this.#amplifyUiBuilder.deleteForm({ id: formId, environmentName, appId: resolvedAppId }).promise();
     } catch (err) {
       printer.debug(err.toString());
       throw err;
     }
-  }
+  };
 
   getModels = async (resourceName: string, envName?: string, appId?: string): Promise<string | undefined> => {
     try {

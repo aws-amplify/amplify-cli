@@ -32,7 +32,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
   if (resources.length > 0 && !pinpointHasInAppMessagingPolicy(context)) {
     const amplifyMeta = stateManager.getMeta();
     const analytics = amplifyMeta[AmplifyCategories.ANALYTICS] || {};
-    Object.keys(analytics).forEach(resourceName => {
+    Object.keys(analytics).forEach((resourceName) => {
       const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
       const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
       const cfn = JSONUtilities.readJson(templateFilePath);
@@ -79,6 +79,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     };
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.ANALYTICS, resource, options);
 
+    context.parameters.options = context.parameters.options ?? {};
     context.parameters.options.yes = true;
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true;

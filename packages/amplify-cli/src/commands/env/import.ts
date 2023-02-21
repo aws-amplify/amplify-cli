@@ -5,7 +5,7 @@ import { printer } from 'amplify-prompts';
  * Entry point for import command
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  const envName = context.parameters.options.name;
+  const envName = context.parameters.options?.name;
   if (!envName) {
     throw new AmplifyError('EnvironmentNameError', {
       message: 'Environment name was not specified.',
@@ -16,7 +16,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   let config;
 
   try {
-    config = JSONUtilities.parse(context.parameters.options.config);
+    config = JSONUtilities.parse(context.parameters.options?.config ?? '{}');
 
     const awsCF = config.awscloudformation;
 
@@ -66,7 +66,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   let awsInfo;
 
-  if (context.parameters.options.awsInfo) {
+  if (context.parameters.options?.awsInfo) {
     try {
       awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
     } catch (e) {
@@ -103,7 +103,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   // eslint-disable-next-line spellcheck/spell-checker
   // eslint-disable-next-line no-prototype-builtins
   if (allEnvs.hasOwnProperty(envName)) {
-    if (context.parameters.options.yes) {
+    if (context.parameters.options?.yes) {
       addNewEnvConfig();
     } else if (
       await context.amplify.confirmPrompt(

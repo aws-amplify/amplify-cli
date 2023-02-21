@@ -2,7 +2,7 @@ import { AccessType } from './add';
 /**
  * Defines the json object expected by `amplify update geo --headless`
  */
- export interface UpdateGeoRequest {
+export interface UpdateGeoRequest {
   /**
    * The schema version.
    */
@@ -16,7 +16,7 @@ import { AccessType } from './add';
 /**
  * Defines AWS Location Service parameters.
  */
-export type GeoServiceModification = BaseGeoServiceModification & MapModification
+export type GeoServiceModification = BaseGeoServiceModification & MapModification;
 /**
  * Modification that applies to all geo service configuration.
  */
@@ -36,7 +36,7 @@ export interface BaseGeoServiceModification {
   /**
    * The access policy for geo resources.
    */
-  accessType: AccessType
+  accessType: AccessType;
 }
 
 /**

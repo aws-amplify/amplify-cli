@@ -2,7 +2,8 @@ const response = require('cfn-response');
 const aws = require('aws-sdk');
 
 exports.handler = async function (event, context) {
-  const physicalResourceId = event.RequestType === 'Update' ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
+  const physicalResourceId =
+    event.RequestType === 'Update' ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
 
   try {
     const userPoolId = event.ResourceProperties.userpoolId;
@@ -33,7 +34,7 @@ exports.handler = async function (event, context) {
     };
 
     // removing undefined keys
-    Object.keys(updateUserPoolConfig).forEach(key => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
+    Object.keys(updateUserPoolConfig).forEach((key) => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
 
     /* removing UnusedAccountValidityDays as deprecated
     InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
@@ -41,7 +42,7 @@ exports.handler = async function (event, context) {
     if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
       delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
     }
-    lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
+    lambdaConfig.forEach((lambda) => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType === 'Delete') {
       try {
         updateUserPoolConfig.LambdaConfig = {};

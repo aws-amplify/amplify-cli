@@ -8,15 +8,17 @@ jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 jest.mock('./mock-plugin/custom-override-plugin');
 
-const mockContext: $TSContext = ({
+const mockContext: $TSContext = {
   amplify: {
     getCategoryPluginInfo: jest.fn(),
   },
   parameters: {
     options: {},
   },
-} as unknown) as $TSContext;
-const mockGetCategoryPluginInfo = mockContext.amplify.getCategoryPluginInfo as jest.MockedFunction<$TSContext['amplify']['getCategoryPluginInfo']>;
+} as unknown as $TSContext;
+const mockGetCategoryPluginInfo = mockContext.amplify.getCategoryPluginInfo as jest.MockedFunction<
+  $TSContext['amplify']['getCategoryPluginInfo']
+>;
 
 describe('transformResourceWithOverrides', () => {
   beforeEach(() => {

@@ -50,7 +50,7 @@ function getTemplateMappings(context) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins['awscloudformation']);
   const regionMapping = provider.getLexRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     mappings.RegionMapping[region] = {
       lexRegion: regionMapping[region],
     };
@@ -73,7 +73,7 @@ async function addResource(context, category, service, options) {
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then((answers) => {
     copyCfnTemplate(context, category, answers, cfnFilename);
 
     const parameters = { ...answers };
@@ -107,7 +107,7 @@ function updateResource(context, category, service) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then((answers) => {
     answers.shortId = uuid.v4().substring(0, 8);
     copyCfnTemplate(context, category, answers, cfnFilename);
 

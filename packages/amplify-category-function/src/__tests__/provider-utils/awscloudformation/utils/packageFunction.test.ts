@@ -46,17 +46,17 @@ const resourceRequest: PackageRequestMeta = {
 
 describe('package function', () => {
   it('delegates packaging to the runtime manager', async () => {
-    await packageFunction((context_stub as unknown) as $TSContext, resourceRequest);
+    await packageFunction(context_stub as unknown as $TSContext, resourceRequest);
     expect(runtimeManager_mock.package.mock.calls[0][0].srcRoot).toEqual('backend/dir/path/testcategory/testResourceName');
   });
 
   it('updates amplify meta after packaging', async () => {
-    await packageFunction((context_stub as unknown) as $TSContext, resourceRequest);
+    await packageFunction(context_stub as unknown as $TSContext, resourceRequest);
     expect(context_stub.amplify.updateAmplifyMetaAfterPackage.mock.calls[0][0]).toEqual(resourceRequest);
   });
 
   it('throws an error when the size of the function is too large', async () => {
     getFolderSize_mock.mockResolvedValueOnce(251 * 1024 ** 2);
-    await expect(async () => await packageFunction((context_stub as unknown) as $TSContext, resourceRequest)).rejects.toThrow();
+    await expect(async () => await packageFunction(context_stub as unknown as $TSContext, resourceRequest)).rejects.toThrow();
   });
 });

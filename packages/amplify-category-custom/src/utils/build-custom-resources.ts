@@ -1,7 +1,4 @@
-import {
-  $TSAny,
-  $TSContext, AmplifyError, getPackageManager, JSONUtilities, pathManager, ResourceTuple,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, getPackageManager, JSONUtilities, pathManager, ResourceTuple } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -25,23 +22,27 @@ export const buildCustomResources = async (context: $TSContext, resourceName?: s
   try {
     spinner.start();
 
-    const resourcesToBuild = (await getSelectedResources(context, resourceName)).filter(resource => resource.service === 'customCDK');
+    const resourcesToBuild = (await getSelectedResources(context, resourceName)).filter((resource) => resource.service === 'customCDK');
     for await (const resource of resourcesToBuild) {
       await buildResource(resource);
     }
   } catch (err: $TSAny) {
-    throw new AmplifyError('InvalidCustomResourceError', {
-      message: `There was an error building the custom resources`,
-      details: err.message,
-      resolution: 'There may be errors in your custom resource file. If so, fix the errors and try again.',
-    }, err);
+    throw new AmplifyError(
+      'InvalidCustomResourceError',
+      {
+        message: `There was an error building the custom resources`,
+        details: err.message,
+        resolution: 'There may be errors in your custom resource file. If so, fix the errors and try again.',
+      },
+      err,
+    );
   } finally {
     spinner.stop();
   }
 };
 
-const getSelectedResources = async (context: $TSContext, resourceName?: string) :
-  Promise<ResourceMeta[]> => (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as ResourceMeta[];
+const getSelectedResources = async (context: $TSContext, resourceName?: string): Promise<ResourceMeta[]> =>
+  (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as ResourceMeta[];
 
 /**
  *  generates dependent resource type
@@ -49,7 +50,10 @@ const getSelectedResources = async (context: $TSContext, resourceName?: string) 
 export const generateDependentResourcesType = async (): Promise<void> => {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), TYPES_DIR_NAME);
   const target = path.join(resourceDirPath, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME);
-  const dependentResourceAttributesFileContent = `export type AmplifyDependentResourcesAttributes = ${JSONUtilities.stringify(getAllResources(), { orderedKeys: true })}`;
+  const dependentResourceAttributesFileContent = `export type AmplifyDependentResourcesAttributes = ${JSONUtilities.stringify(
+    getAllResources(),
+    { orderedKeys: true },
+  )}`;
 
   await fs.ensureDir(path.dirname(target));
   await fs.writeFile(target, dependentResourceAttributesFileContent);

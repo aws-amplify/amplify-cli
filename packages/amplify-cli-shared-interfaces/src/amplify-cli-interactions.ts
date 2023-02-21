@@ -5,7 +5,7 @@
 export interface ICommandInput {
   argv: Array<string>;
   plugin?: string;
-  command?: string;
+  command: string;
   subCommands?: string[];
   options?: {
     [key: string]: string | boolean;

@@ -6,9 +6,9 @@ import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
  */
 export const normalizeInputParams = (context: $TSContext): $TSObject => {
   const inputParams = {};
-  Object.keys(context.parameters.options).forEach(key => {
+  Object.keys(context.parameters.options ?? {}).forEach((key) => {
     const normalizedKey = normalizeKey(key);
-    const normalizedValue = normalizeValue(context.parameters.options[key]);
+    const normalizedValue = normalizeValue(context.parameters.options?.[key] as string);
     inputParams[normalizedKey] = normalizedValue;
   });
   transform(inputParams);
@@ -57,7 +57,7 @@ const transform = (inputParams: $TSAny): void => {
     inputParams[inputParams.amplify.frontend] = inputParams.frontend;
   }
   if (inputParams.amplify.providers.length > 0) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       inputParams[provider] = inputParams.providers[provider];
     });
   }

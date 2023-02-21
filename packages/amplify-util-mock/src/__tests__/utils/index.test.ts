@@ -4,7 +4,7 @@ import semver = require('semver/preload');
 import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
-  existsSync: jest.fn().mockReturnValue(true)
+  existsSync: jest.fn().mockReturnValue(true),
 }));
 
 type JavaCondition = {
@@ -88,9 +88,9 @@ LibericaJDK 64-Bit Server VM (build 11.0.3-BellSoft+12, mixed mode)`,
     },
   ];
 
-  javas.forEach(java => {
+  javas.forEach((java) => {
     it(`should return ${java.unsupported} on java ${java.name} with JAVA_OPTS: ${java.javaOpts != null}`, () => {
-      const stderr: string = [java.javaOpts, java.versionString].filter(text => text != null).join('\n');
+      const stderr: string = [java.javaOpts, java.versionString].filter((text) => text != null).join('\n');
       const actual = _isUnsupportedJavaVersion(stderr === '' ? null : stderr);
       expect(actual).toBe(java.unsupported);
     });
@@ -106,6 +106,8 @@ describe('Check JAVA_HOME variable', () => {
 
   it('Should not throw when JAVA_HOME is set and is valid', () => {
     process.env.JAVA_HOME = 'pathtojdk';
-    expect( () => { checkJavaHome() }).not.toThrow();
+    expect(() => {
+      checkJavaHome();
+    }).not.toThrow();
   });
 });

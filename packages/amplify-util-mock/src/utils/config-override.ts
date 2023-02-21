@@ -5,7 +5,7 @@ export class ConfigOverrideManager {
   private amplifyMeta: any = {};
   constructor(context) {
     this.overrides = {};
-    context.amplify.addCleanUpTask(async context => {
+    context.amplify.addCleanUpTask(async (context) => {
       await this.restoreFrontendExports(context);
     });
   }

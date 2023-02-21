@@ -2,17 +2,17 @@
  * SMS Channel data type for Pinpoint notifications in Amplify-Meta
  */
 export interface ISMSChannelBackendConfig {
-  PromotionalMessagesPerSecond: number,
+  PromotionalMessagesPerSecond: number;
   // eslint-disable-next-line spellcheck/spell-checker
-  TransactionalMessagesPerSecond: number,
+  TransactionalMessagesPerSecond: number;
 }
 
 /**
  *  Email notification backend config data
  */
 export interface IEmailChannelBackendConfig {
-  FromAddress: string, // Email address bound to the SES (sender endpoint)
-  MessagesPerSecond : number, // Throttling for email messages
+  FromAddress: string; // Email address bound to the SES (sender endpoint)
+  MessagesPerSecond: number; // Throttling for email messages
 }
 
 /**
@@ -23,22 +23,22 @@ export interface IEmailChannelBackendConfig {
 export type INotificationsChannelBackendConfig = IEmailChannelBackendConfig | ISMSChannelBackendConfig;
 
 /**
-* Structure of the Notifications category configuration in backend-config.json
-*/
+ * Structure of the Notifications category configuration in backend-config.json
+ */
 export interface INotificationsResourceBackendConfigValue {
-  service: string,
-  channels: Array<string>
-  channelConfig: Record<string, INotificationsChannelBackendConfig>
+  service: string;
+  channels: Array<string>;
+  channelConfig: Record<string, INotificationsChannelBackendConfig>;
 }
 
 /**
-* Normalized structure of the Notifications category configuration in backend-config.json
-*/
+ * Normalized structure of the Notifications category configuration in backend-config.json
+ */
 export interface INotificationsResourceBackendConfig extends INotificationsResourceBackendConfigValue {
- serviceName: string,
+  serviceName: string;
 }
 
 /**
-* Structure of the Notifications category configuration in backend-config.json
-*/
+ * Structure of the Notifications category configuration in backend-config.json
+ */
 export type INotificationsServiceBackendConfig = Record<string, INotificationsResourceBackendConfigValue>;

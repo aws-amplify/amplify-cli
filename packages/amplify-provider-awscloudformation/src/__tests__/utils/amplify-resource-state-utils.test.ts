@@ -1,41 +1,45 @@
 import { getTableNames, getPreviousDeploymentRecord } from '../../utils/amplify-resource-state-utils';
 import { CloudFormation } from 'aws-sdk';
 
-const cfnClientStub = ({
+const cfnClientStub = {
   describeStackResources: ({ StackName }) => ({
-    promise: () => Promise.resolve({
-      StackResources: [{
-        LogicalResourceId: 'LogicalResourceIdTest1',
-        PhysicalResourceId: 'PhysicalResourceIdTest',
-      }],
-    }),
+    promise: () =>
+      Promise.resolve({
+        StackResources: [
+          {
+            LogicalResourceId: 'LogicalResourceIdTest1',
+            PhysicalResourceId: 'PhysicalResourceIdTest',
+          },
+        ],
+      }),
   }),
   describeStacks: ({ StackName }) => ({
-    promise: () => Promise.resolve({
-      Stacks: [{
-        Outputs: [
+    promise: () =>
+      Promise.resolve({
+        Stacks: [
           {
-            OutputKey: 'GetAttLogicalResourceIdTest1TableName',
-            OutputValue: 'TestStackOutputValue1',
-          },
-          {
-            OutputKey: 'InvalidLogicalResourceIdTableName',
-            OutputValue: 'TestStackOutputValue2',
+            Outputs: [
+              {
+                OutputKey: 'GetAttLogicalResourceIdTest1TableName',
+                OutputValue: 'TestStackOutputValue1',
+              },
+              {
+                OutputKey: 'InvalidLogicalResourceIdTableName',
+                OutputValue: 'TestStackOutputValue2',
+              },
+            ],
+            Parameters: [
+              {
+                ParameterKey: 'TestParameterKey1',
+                ParameterValue: 'TestParameterValue1',
+              },
+            ],
+            Capabilities: ['CAPABILITY_IAM'],
           },
         ],
-        Parameters: [
-          {
-            ParameterKey: 'TestParameterKey1',
-            ParameterValue: 'TestParameterValue1',
-          },
-        ],
-        Capabilities: [
-          'CAPABILITY_IAM',
-        ],
-      }],
-    }),
+      }),
   }),
-} as unknown) as CloudFormation;
+} as unknown as CloudFormation;
 
 describe('amplify-resource-state-utils', () => {
   const StackID = 'TestSTackID';

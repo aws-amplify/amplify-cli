@@ -6,6 +6,7 @@ import {
   exitOnNextTick,
   IAmplifyResource,
   stateManager,
+  ManuallyTimedCodePath,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer, prompter } from 'amplify-prompts';
@@ -17,7 +18,6 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
-import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
 import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
@@ -32,9 +32,9 @@ export const pushResources = async (
 ): Promise<boolean> => {
   context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
 
-  if (context.parameters.options['iterative-rollback']) {
+  if (context.parameters.options?.['iterative-rollback']) {
     // validate --iterative-rollback with --force
-    if (context.parameters.options.force) {
+    if (context.parameters.options?.force) {
       throw new AmplifyError('CommandNotSupportedError', {
         message: '--iterative-rollback and --force are not supported together',
         resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
@@ -43,11 +43,11 @@ export const pushResources = async (
     context.exeInfo.iterativeRollback = true;
   }
 
-  if (context.parameters.options.env) {
+  if (context.parameters.options?.env) {
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
 
-    if (allEnvs.findIndex(env => env === envName) !== -1) {
+    if (allEnvs.findIndex((env) => env === envName) !== -1) {
       context.exeInfo = {};
       context.exeInfo.forcePush = false;
 

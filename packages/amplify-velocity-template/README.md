@@ -1,6 +1,4 @@
-Velocity - Template Engine
-==========================
-
+# Velocity - Template Engine
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
@@ -15,7 +13,6 @@ Velocity - Template Engine
 [travis-url]: https://travis-ci.org/shepherdwind/velocity.js
 [coveralls-image]: https://img.shields.io/coveralls/shepherdwind/velocity.js.svg?style=flat-square
 [coveralls-url]: https://coveralls.io/r/shepherdwind/velocity.js?branch=master
-
 
 Velocityjs is [velocity](http://velocity.apache.org/) template engine for javascript.
 
@@ -87,7 +84,6 @@ Velocity.render('string of velocity', context, macros);
 `context` can have method, and call it just on velocity string.
 
 The `context` will have `eval` method on `this` of inner method body. You can `eval` to rerender velocity string as shown in this example: [$control.setTemplate](https://github.com/shepherdwind/velocity.js/blob/master/tests/compile.js#L532).
-
 
 ### Compile and parse
 

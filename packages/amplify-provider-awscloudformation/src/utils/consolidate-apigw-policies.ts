@@ -89,7 +89,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
     let authManagedPolicy: iam.CfnManagedPolicy;
     let unauthManagedPolicy: iam.CfnManagedPolicy;
 
-    props.apiGateways.forEach(apiGateway => {
+    props.apiGateways.forEach((apiGateway) => {
       const apiRef = new cdk.CfnParameter(this, apiGateway.resourceName, {
         type: 'String',
       });
@@ -108,7 +108,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         namePrefix: '',
       };
 
-      Object.keys(apiGateway.params.paths).forEach(pathName => {
+      Object.keys(apiGateway.params.paths).forEach((pathName) => {
         state.path = apiGateway.params.paths[pathName];
         state.path.name = pathName;
 
@@ -156,7 +156,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         // Initial size of 104 for version, statement, etc.
         options.policyDocSize = 104 + policySizeIncrease;
         ++options.roleCount;
-        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, (roleName as unknown) as string);
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
@@ -186,7 +186,7 @@ function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: st
     ':',
     apiNameRef,
     '/',
-    (cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown) as string,
+    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown as string,
     method,
     apiPath,
   ]);
@@ -252,8 +252,8 @@ function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
     [CrudOperation.DELETE]: ['/DELETE'],
   };
   const possibleMethods = Object.values(opMap).flat();
-  const methods = crudOps.flatMap(op => opMap[op]);
-  return possibleMethods.every(m => methods.includes(m)) ? ['/*'] : methods;
+  const methods = crudOps.flatMap((op) => opMap[op]);
+  return possibleMethods.every((m) => methods.includes(m)) ? ['/*'] : methods;
 }
 
 function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, envName: string): string | undefined {
