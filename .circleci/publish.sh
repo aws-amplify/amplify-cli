@@ -37,10 +37,10 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
 
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     echo "Publishing to local registry under latest tag"
-    npx lerna publish --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
+    npx lerna publish --no-private --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
   else
     echo "Publishing to NPM under $NPM_TAG tag"
-    npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
+    npx lerna publish --no-private --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
   fi
 
 # @latest release
