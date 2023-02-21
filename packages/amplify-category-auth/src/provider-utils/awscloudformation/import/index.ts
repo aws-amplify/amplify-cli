@@ -1257,20 +1257,20 @@ export const headlessImport = async (
   }
 
   // Get app clients based on passed in previous values
-  answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === resolvedEnvParams.webClientId);
+  answers.appClientWeb = questionParameters.webClients?.find((c) => c.ClientId === resolvedEnvParams.webClientId);
 
   if (!answers.appClientWeb) {
     throw new Error(importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId));
   }
 
-  answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === resolvedEnvParams.nativeClientId);
+  answers.appClientNative = questionParameters.nativeClients?.find((c) => c.ClientId === resolvedEnvParams.nativeClientId);
 
   if (!answers.appClientNative) {
     throw new Error(importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId));
   }
 
   // Check OAuth config matching and enabled
-  const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb!, answers.appClientNative!, false);
+  const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb, answers.appClientNative, false);
 
   if (!oauthResult.isValid) {
     throw new Error(importMessages.OAuth.PropertiesAreNotMatching);
@@ -1285,11 +1285,11 @@ export const headlessImport = async (
   }
 
   if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-    const identityPools = questionParameters.validatedIdentityPools!.filter(
+    const identityPools = questionParameters.validatedIdentityPools?.filter(
       (idp) => idp.identityPool.IdentityPoolId === resolvedEnvParams.identityPoolId,
     );
 
-    if (identityPools.length !== 1) {
+    if (identityPools?.length !== 1) {
       throw new Error(
         importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!),
       );

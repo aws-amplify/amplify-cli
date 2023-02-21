@@ -466,8 +466,8 @@ const ensureHeadlessParameters = (headlessParams: ImportS3HeadlessParameters): S
   }
 
   const envSpecificParameters: S3EnvSpecificResourceParameters = {
-    bucketName: headlessParams.bucketName!,
-    region: headlessParams.region!,
+    bucketName: headlessParams.bucketName,
+    region: headlessParams.region,
   };
 
   return envSpecificParameters;
