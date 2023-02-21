@@ -144,9 +144,11 @@ describe('auth import identity pool and userpool', () => {
   });
 
   it('auth headless pull in empty dir', async () => {
+    const envName = 'integtest';
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
+      envName,
     });
 
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
@@ -156,17 +158,15 @@ describe('auth import identity pool and userpool', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    const authParams1 = getTeamProviderInfo(projectRoot)?.categories?.auth;
+    const authParams1 = getTeamProviderInfo(projectRoot)?.[envName]?.categories?.auth;
     expect(authParams1).toBeDefined();
 
     let projectRootPull;
     try {
       projectRootPull = await createNewProjectDir('authidp-pull');
 
-      const envName = 'integtest';
-
       await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
-      const authParams2 = getTeamProviderInfo(projectRootPull)?.categories?.auth;
+      const authParams2 = getTeamProviderInfo(projectRootPull)?.[envName]?.categories?.auth;
       expect(authParams1).toEqual(authParams2);
     } finally {
       deleteProjectDir(projectRootPull);

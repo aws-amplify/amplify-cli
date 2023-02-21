@@ -90,9 +90,12 @@ describe('dynamodb import 2b', () => {
   });
 
   it('dynamodb headless pull in empty dir', async () => {
+    const envName = 'integtest';
+
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
+      envName,
     });
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
@@ -102,17 +105,15 @@ describe('dynamodb import 2b', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    const storageParams1 = getTeamProviderInfo(projectRoot)?.categories?.storage;
+    const storageParams1 = getTeamProviderInfo(projectRoot)?.[envName]?.categories?.storage;
     expect(storageParams1).toBeDefined();
 
     let projectRootPull;
     try {
       projectRootPull = await createNewProjectDir('ddbimport-pull');
 
-      const envName = 'integtest';
-
       await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
-      const storageParams2 = getTeamProviderInfo(projectRootPull)?.categories?.storage;
+      const storageParams2 = getTeamProviderInfo(projectRootPull)?.[envName]?.categories?.storage;
       expect(storageParams1).toEqual(storageParams2);
     } finally {
       deleteProjectDir(projectRootPull);

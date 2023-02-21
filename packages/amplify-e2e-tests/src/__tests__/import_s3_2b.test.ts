@@ -102,7 +102,7 @@ describe('s3 import b', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    const storageParams1 = getTeamProviderInfo(projectRoot)?.categories?.storage;
+    const storageParams1 = getTeamProviderInfo(projectRoot)?.[envName]?.categories?.storage;
     expect(storageParams1).toBeDefined();
 
     let projectRootPull;
@@ -110,7 +110,7 @@ describe('s3 import b', () => {
       projectRootPull = await createNewProjectDir('s3import-pull');
 
       await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
-      const storageParams2 = getTeamProviderInfo(projectRootPull)?.categories?.storage;
+      const storageParams2 = getTeamProviderInfo(projectRootPull)?.[envName]?.categories?.storage;
       expect(storageParams1).toEqual(storageParams2);
     } finally {
       deleteProjectDir(projectRootPull);
