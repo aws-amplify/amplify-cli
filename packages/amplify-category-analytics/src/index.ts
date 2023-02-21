@@ -116,4 +116,4 @@ export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny): P
   printer.info(`Received event args ${args}`);
 };
 
-// version bump 2
+// version bump 3  2

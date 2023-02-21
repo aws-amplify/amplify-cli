@@ -44,4 +44,4 @@ export * from './constants';
 export * from './help';
 export * from './amplify-node-pkg-detector';
 
-// version bump 2
+// version bump 3  2

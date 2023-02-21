@@ -19,4 +19,4 @@ Velocity.render = function (template, context, macros, config) {
 
 module.exports = Velocity;
 
-// version bump 2
+// version bump 3  2

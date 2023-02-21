@@ -48,4 +48,4 @@ export const transformCategoryStack = async (context: $TSContext, resource: IAmp
   await buildCustomResources(context, resource.resourceName);
 };
 
-// version bump 2
+// version bump 3  2

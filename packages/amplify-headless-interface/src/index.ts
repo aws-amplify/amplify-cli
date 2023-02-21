@@ -7,4 +7,4 @@ export * from './interface/storage';
 export * from './interface/geo/add';
 export * from './interface/geo/update';
 
-// version bump 2
+// version bump 3  2

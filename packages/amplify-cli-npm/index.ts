@@ -17,4 +17,4 @@ export const install = async (): Promise<void> => {
 };
 
 // force minor version bump to 10.8.0
-// version bump 2
+// version bump 3  2

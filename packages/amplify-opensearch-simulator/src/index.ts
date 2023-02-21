@@ -372,4 +372,4 @@ export const getOpensearchLocalDirectory = () => {
   return join(opensearchLocalDir, relativePathToOpensearchLocal);
 };
 
-// version bump 2
+// version bump 3  2

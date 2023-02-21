@@ -3,4 +3,4 @@ export * from './IDynamoDBService';
 export * from './IIdentityPoolService';
 export * from './IS3Service';
 
-// version bump 2
+// version bump 3  2
