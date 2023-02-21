@@ -125,10 +125,10 @@ export interface AmplifyDDBResourceTemplate extends AmplifyCDKL1 {
 }
 
 // @public (undocumented)
-export type AmplifyProjectInfo = {
+export type AmplifyProjectInfo = Readonly<{
     envName: string;
     projectName: string;
-};
+}>;
 
 export { AmplifyResourceProps }
 
