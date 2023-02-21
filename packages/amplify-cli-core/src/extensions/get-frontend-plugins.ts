@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '..';
 
 export function getFrontendPlugins(context: $TSContext) {
-  const frontendPlugins = {};
+  const frontendPlugins: Record<string, unknown> = {};
 
   context.runtime.plugins
     .filter((plugin: { pluginType: string }) => plugin.pluginType === 'frontend')

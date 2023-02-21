@@ -4,7 +4,7 @@ import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
 import { displayConfigurationDefaults } from '../init-steps/s0-analyzeProject';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
+import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
 import { isContainersEnabled } from '../execution-manager';
 import { stateManager } from 'amplify-cli-core';
 

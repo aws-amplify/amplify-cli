@@ -7,6 +7,7 @@ import { getAllEnvs } from 'amplify-cli-core/lib/extensions/get-all-envs';
 import { getEnvDetails } from 'amplify-cli-core/lib/extensions/get-env-details';
 import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
 import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
+import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
@@ -45,7 +46,7 @@ export class AmplifyToolkit {
     return getAllCategoryPluginInfo;
   }
   get getFrontendPlugins() {
-    return require('../extensions/amplify-helpers/get-frontend-plugins').getFrontendPlugins;
+    return getFrontendPlugins;
   }
   get getProviderPlugins() {
     return require('../extensions/amplify-helpers/get-provider-plugins').getProviderPlugins;

@@ -4,7 +4,7 @@ import * as inquirer from 'inquirer';
 import * as path from 'path';
 import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
 import { editors, editorSelection, normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
+import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
 

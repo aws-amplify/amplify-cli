@@ -14,7 +14,7 @@ jest.mock('../../../extensions/amplify-helpers/path-manager');
 jest.mock('../../../extensions/amplify-helpers/get-amplify-appId', () => ({
   getAmplifyAppId: jest.fn().mockReturnValue(true),
 }));
-jest.mock('../../../extensions/amplify-helpers/get-frontend-plugins', () => ({
+jest.mock('amplify-cli-core/lib/extensions/get-frontend-plugins', () => ({
   getFrontendPlugins: jest.fn().mockReturnValue({ test: '../../../__mocks__/faked-plugin' }),
 }));
 jest.mock('../../../../__mocks__/faked-plugin', () => ({
