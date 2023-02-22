@@ -2,10 +2,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-dynamic-require */
 import sequential from 'promise-sequential';
-import { $TSAny, $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, stateManager, getEnvInfo, getProviderPlugins } from 'amplify-cli-core';
 import { initializeEnv } from '../../initialize-env';
-import { getProviderPlugins } from 'amplify-cli-core';
-import { getEnvInfo } from 'amplify-cli-core';
 
 /**
  * Entry point for env checkout command

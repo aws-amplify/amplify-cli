@@ -1,8 +1,5 @@
-import { $TSAny, AmplifyFault } from 'amplify-cli-core';
+import { getProviderPlugins, getAllCategoryPluginInfo, getProjectConfig, $TSAny, AmplifyFault } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { getProjectConfig } from 'amplify-cli-core';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core';
-import { getProviderPlugins } from 'amplify-cli-core';
 import { raiseInternalOnlyPostEnvRemoveEvent } from '../../execution-manager';
 
 /**

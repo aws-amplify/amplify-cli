@@ -1,11 +1,18 @@
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import sequential from 'promise-sequential';
-import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny } from 'amplify-cli-core';
+import {
+  getProviderPlugins,
+  CLIContextEnvironmentProvider,
+  FeatureFlags,
+  pathManager,
+  stateManager,
+  $TSContext,
+  $TSAny,
+  getFrontendPlugins,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { printer, prompter } from 'amplify-prompts';
-import { getFrontendPlugins } from 'amplify-cli-core';
-import { getProviderPlugins } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';

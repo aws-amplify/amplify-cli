@@ -3,12 +3,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
-import { FeatureFlags, $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { FeatureFlags, $TSContext, AmplifyFault, getFrontendPlugins, getPluginInstance, getAmplifyAppId } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
-import { getFrontendPlugins } from 'amplify-cli-core';
-import { getPluginInstance } from 'amplify-cli-core';
-import { getAmplifyAppId } from 'amplify-cli-core';
 import { getAmplifyDirPath } from './path-manager';
 
 /**
