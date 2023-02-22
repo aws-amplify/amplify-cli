@@ -81,7 +81,10 @@ export const amplifyPull = (
   if (settings.noUpdateBackend) {
     chain.wait('Added backend environment config object to your project.').wait("Run 'amplify pull' to sync future upstream changes.");
   } else if (settings.emptyDir) {
-    chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync future upstream changes.");
+    chain.wait(/Successfully pulled backend environment .+ from the cloud\./);
+    if (!settings.yesFlag) {
+      chain.wait("Run 'amplify pull' to sync future upstream changes.");
+    }
   } else {
     chain.wait('Post-pull status').wait('Current Environment');
   }
