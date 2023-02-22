@@ -12,7 +12,7 @@ import { generateDependentResourcesType } from '@aws-amplify/amplify-category-cu
 import { printer, prompter } from 'amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
-import { getEnvInfo } from 'amplify-cli-core';
+import { getEnvInfo, getProjectConfig } from 'amplify-cli-core';
 import { getProjectConfig } from 'amplify-cli-core';
 import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
