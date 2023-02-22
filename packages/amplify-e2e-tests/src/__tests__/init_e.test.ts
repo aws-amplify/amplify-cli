@@ -62,6 +62,7 @@ describe('amplify init e', () => {
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');
 
     // create a new env, and the override should remain in place
+    replaceOverrideFileWitProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'envb', projectName);
     await addEnvironment(projRoot, { envName: 'envb' });
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
