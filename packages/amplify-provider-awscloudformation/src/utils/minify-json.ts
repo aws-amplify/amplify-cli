@@ -19,7 +19,7 @@ export const minifyJSONFile = (jsonFilePath: string): void => {
  * @param rootPath the top of the tree to walk
  */
 export const minifyAllJSONInFolderRecursively = (rootPath: string): void => {
-  fs.readdirSync(rootPath).forEach(childHandle => {
+  fs.readdirSync(rootPath).forEach((childHandle) => {
     const childPath = path.join(rootPath, childHandle);
     if (fs.lstatSync(childPath).isDirectory()) minifyAllJSONInFolderRecursively(childPath);
     if (fs.lstatSync(childPath).isFile() && childPath.includes('.json')) minifyJSONFile(childPath);

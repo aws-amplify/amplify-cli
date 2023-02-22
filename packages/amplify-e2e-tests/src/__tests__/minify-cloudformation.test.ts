@@ -31,7 +31,7 @@ describe('minify behavior', () => {
   it('reduces file size when minify flag is provided', async () => {
     const envName = 'devtest';
     const projName = `minify${generateRandomShortId()}`;
-    
+
     // Configure and push app without minification
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithBlankSchema(projRoot);
@@ -42,7 +42,15 @@ describe('minify behavior', () => {
     const currentCloudBackendPath = path.join(projRoot, 'amplify', '#current-cloud-backend');
 
     const nestedApiStackPath = path.join(currentCloudBackendPath, 'api', projName, 'build', 'stacks', 'Todo.json');
-    const rootApiStackPath = path.join(currentCloudBackendPath, 'awscloudformation', 'build', 'api', projName, 'build', 'cloudformation-template.json');
+    const rootApiStackPath = path.join(
+      currentCloudBackendPath,
+      'awscloudformation',
+      'build',
+      'api',
+      projName,
+      'build',
+      'cloudformation-template.json',
+    );
     const rootStackPath = path.join(currentCloudBackendPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
 
     const unminifiedNestedApiStackDefinition = fs.readFileSync(nestedApiStackPath, 'utf-8');
@@ -57,9 +65,9 @@ describe('minify behavior', () => {
     const minifiedNestedApiStackDefinition = fs.readFileSync(nestedApiStackPath, 'utf-8');
     const minifiedRootApiStackDefinition = fs.readFileSync(rootApiStackPath, 'utf-8');
     const minifiedRootStackDefinition = fs.readFileSync(rootStackPath, 'utf-8');
-    
-    expect(minifiedNestedApiStackDefinition.length).toBeLessThan(unminifiedNestedApiStackDefinition.length)
-    expect(minifiedRootApiStackDefinition.length).toBeLessThan(unminifiedRootApiStackDefinition.length)
-    expect(minifiedRootStackDefinition.length).toBeLessThan(unminifiedRootStackDefinition.length)
+
+    expect(minifiedNestedApiStackDefinition.length).toBeLessThan(unminifiedNestedApiStackDefinition.length);
+    expect(minifiedRootApiStackDefinition.length).toBeLessThan(unminifiedRootApiStackDefinition.length);
+    expect(minifiedRootStackDefinition.length).toBeLessThan(unminifiedRootStackDefinition.length);
   });
 });

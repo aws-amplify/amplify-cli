@@ -1,4 +1,4 @@
-import { minifyJSONFile, minifyAllJSONInFolderRecursively } from '../../utils/minify-json'
+import { minifyJSONFile, minifyAllJSONInFolderRecursively } from '../../utils/minify-json';
 import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
@@ -25,10 +25,9 @@ describe('minifyJSONFile', () => {
     expect(minifiedContents.length).toBeLessThan(JSON_STRING.length);
   });
 
-
   it('does not change a non-json file with json contents', () => {
-      const minifiedContents = writeFileMinifyAndReturnReadContents('testfile.dat', JSON_STRING);
-      expect(minifiedContents.length).toEqual(JSON_STRING.length);
+    const minifiedContents = writeFileMinifyAndReturnReadContents('testfile.dat', JSON_STRING);
+    expect(minifiedContents.length).toEqual(JSON_STRING.length);
   });
 
   it('does not change a non-json file with non-json contents', () => {
