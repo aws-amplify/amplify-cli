@@ -16,7 +16,7 @@ import {
   initJSProjectWithProfile,
   overrideDDB,
   overrideS3,
-  replaceOverrideFileWitProjectInfo,
+  replaceOverrideFileWithProjectInfo,
   updateDDBWithTrigger,
   updateSimpleDDBwithGSI,
 } from '@aws-amplify/amplify-e2e-core';
@@ -70,7 +70,7 @@ describe('s3 override tests', () => {
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
     const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
-    replaceOverrideFileWitProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await buildOverrideStorage(projRoot);
     let s3CFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
@@ -207,7 +207,7 @@ describe('ddb override tests', () => {
       `${resourceName}-cloudformation-template.json`,
     );
 
-    replaceOverrideFileWitProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await buildOverrideStorage(projRoot);
     let ddbCFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file

@@ -11,7 +11,7 @@ import {
   getProjectMeta,
   getUserPool,
   initJSProjectWithProfile,
-  replaceOverrideFileWitProjectInfo,
+  replaceOverrideFileWithProjectInfo,
   runAmplifyAuthConsole,
 } from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
@@ -102,7 +102,7 @@ describe('zero config auth', () => {
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
-    replaceOverrideFileWitProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', PROJECT_NAME);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', PROJECT_NAME);
     await amplifyPushOverride(projRoot);
 
     // check overwritten config

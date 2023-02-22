@@ -10,7 +10,7 @@ import {
   getAppId,
   getProjectMeta,
   getUserPool,
-  replaceOverrideFileWitProjectInfo,
+  replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
@@ -56,7 +56,7 @@ describe('amplify migration test auth', () => {
     // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot1, 'amplify', 'backend', 'auth', `${authResourceName}`, 'override.ts');
     const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'overrides', 'override-auth.ts');
-    replaceOverrideFileWitProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await amplifyPushOverride(projRoot1);
 
     const appId = getAppId(projRoot1);
