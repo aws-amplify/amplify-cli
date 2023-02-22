@@ -241,7 +241,7 @@ Amplify CLI uses Jest for testing. See the [Jest Documentation](https://jestjs.i
 
 ### End-To-End Tests
 
-End-to-end tests can be found in `packages/amplify-e2e-tests`. It is not recommended to run all of these tests at a time but to, instead, run a the tests in a single file in order to debug, fix, or update it.
+End-to-end tests can be found in `packages/amplify-e2e-tests`. It is not recommended to run all of these tests at a time but to, instead, run the tests in a single file in order to debug, fix, or update it.
 
 You can run an end to end test with the following:
 
