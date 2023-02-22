@@ -14,8 +14,12 @@ export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
     amplifyMeta = stateManager.getMeta();
   }
 
+  type Output = {
+    metadata: Record<string, unknown>;
+    serviceResourceMapping: Record<string, unknown[]>;
+  };
   // Build the provider object
-  const outputsByProvider: { serviceResourceMapping?; awscloudformation? } = {};
+  const outputsByProvider: Record<string, Output> = {};
   const outputsByCategory: Record<string, Record<string, unknown>> = {};
   const outputsForFrontend: FrontendOutputs = {
     metadata: {},
@@ -25,7 +29,7 @@ export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
 
   if (amplifyMeta.providers) {
     Object.keys(amplifyMeta.providers).forEach((provider) => {
-      outputsByProvider[provider] = {};
+      outputsByProvider[provider] = {} as Output;
       outputsByProvider[provider].metadata = amplifyMeta.providers[provider] || {};
       outputsByProvider[provider].serviceResourceMapping = {};
     });
@@ -45,7 +49,7 @@ export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
               serviceResourceMapping: {},
             };
           }
-          if (!outputsByProvider[providerPlugin].serviceResourceMapping[resourceMeta.service]) {
+          if (outputsByProvider[providerPlugin].serviceResourceMapping !== undefined) {
             outputsByProvider[providerPlugin].serviceResourceMapping[resourceMeta.service] = [];
           }
           /*eslint-disable*/

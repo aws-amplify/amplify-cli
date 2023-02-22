@@ -5,7 +5,7 @@ import {
   UnrecognizedFrontendError,
   validateExportDirectoryPath,
   PathConstants,
-  getResourceOutputs
+  getResourceOutputs,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';

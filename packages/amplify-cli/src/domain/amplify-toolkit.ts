@@ -17,7 +17,7 @@ import {
   getProjectMeta,
   getProviderPlugins,
   constructExeInfo,
-  getResourceOutputs
+  getResourceOutputs,
 } from 'amplify-cli-core';
 
 export class AmplifyToolkit {
