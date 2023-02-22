@@ -1,7 +1,15 @@
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import sequential from 'promise-sequential';
-import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny, getFrontendPlugins } from 'amplify-cli-core';
+import {
+  CLIContextEnvironmentProvider,
+  FeatureFlags,
+  pathManager,
+  stateManager,
+  $TSContext,
+  $TSAny,
+  getFrontendPlugins,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { printer, prompter } from 'amplify-prompts';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
