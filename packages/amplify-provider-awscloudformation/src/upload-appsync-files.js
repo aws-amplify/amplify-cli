@@ -5,6 +5,8 @@ const path = require('path');
 const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
 const { fileLogger } = require('./utils/aws-logger');
+const { minifyAllJSONInFolderRecursively } = require('./utils/minify-json');
+
 const logger = fileLogger('upload-appsync-files');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
@@ -111,7 +113,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
         if (personalParams.CreateAPIKey !== undefined && personalParams.APIKeyExpirationEpoch !== undefined) {
           context.print.warning(
             'APIKeyExpirationEpoch and CreateAPIKey parameters should not used together because it can cause ' +
-              'unwanted behavior. In the future APIKeyExpirationEpoch will be removed, use CreateAPIKey instead.',
+            'unwanted behavior. In the future APIKeyExpirationEpoch will be removed, use CreateAPIKey instead.',
           );
         }
 
@@ -125,7 +127,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
 
             context.print.warning(
               "APIKeyExpirationEpoch parameter's -1 value is deprecated to disable " +
-                'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.',
+              'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.',
             );
           } else {
             currentParameters.CreateAPIKey = 1;
@@ -188,6 +190,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const s3Client = await S3.getInstance(context);
     if (!fs.existsSync(resourceBuildDir)) {
       return;
+    }
+    if (context.input.options?.minify) {
+      minifyAllJSONInFolderRecursively(resourceBuildDir);
     }
     const spinner = new ora('Uploading files.');
     spinner.start();
