@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
-import { ICommandInput, IFlowData } from 'amplify-cli-shared-interfaces';
-import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
+import { ICommandInput, IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { CLIInput } from '../command-input';
 import { IUsageData, IUsageDataPayload } from 'amplify-cli-core';
 import { CLINoFlowReport } from './NoFlowReport';
