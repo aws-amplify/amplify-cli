@@ -8,6 +8,7 @@ import { S3 } from '../aws-utils/aws-s3';
 import { fileLogger } from '../utils/aws-logger';
 import { getPreviousDeploymentRecord } from '../utils/amplify-resource-state-utils';
 import { DeploymentOp, DeploymentStep } from '../iterative-deployment';
+import { AmplifyFault } from '../../../amplify-cli-core/src/errors/amplify-fault';
 
 const logger = fileLogger('disconnect-dependent-resources');
 
@@ -129,6 +130,13 @@ const generateIterativeFuncDeploymentOp = async (
   const funcStack = await cfnClient
     .describeStackResources({ StackName: rootStackId, LogicalResourceId: `function${functionName}` })
     .promise();
+
+  if (!funcStack.StackResources || funcStack.StackResources.length === 0) {
+    throw new AmplifyFault('ResourceNotFoundFault', {
+      message: `Could not find function ${functionName} in root stack ${rootStackId}`,
+    });
+  }
+
   const funcStackId = funcStack.StackResources[0].PhysicalResourceId;
   const { parameters, capabilities } = await getPreviousDeploymentRecord(cfnClient, funcStackId);
   const funcCfnParams = stateManager.getResourceParametersJson(undefined, 'function', functionName, {
