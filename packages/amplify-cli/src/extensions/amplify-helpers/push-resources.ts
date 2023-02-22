@@ -14,7 +14,7 @@ import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from 'amplify-cli-core';
 import { getProjectConfig } from 'amplify-cli-core';
-import { getProviderPlugins } from './get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from 'amplify-cli-core';

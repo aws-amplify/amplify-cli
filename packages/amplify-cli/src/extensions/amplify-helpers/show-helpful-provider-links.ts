@@ -1,6 +1,6 @@
 import { getProjectConfig } from 'amplify-cli-core';
 import { getResourceStatus } from './resource-status';
-import { getProviderPlugins } from './get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 
 export async function showHelpfulProviderLinks(context: $TSContext) {

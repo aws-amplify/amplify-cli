@@ -5,7 +5,7 @@ import {
   notifyListQuerySecurityChange,
   notifySecurityEnhancement,
 } from '../extensions/amplify-helpers/auth-notifications';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 
 /**

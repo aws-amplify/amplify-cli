@@ -15,6 +15,7 @@ import {
   getProjectConfig,
   getProjectDetails,
   getProjectMeta,
+  getProviderPlugins,
   constructExeInfo,
 } from 'amplify-cli-core';
 
@@ -58,7 +59,7 @@ export class AmplifyToolkit {
     return getFrontendPlugins;
   }
   get getProviderPlugins() {
-    return require('../extensions/amplify-helpers/get-provider-plugins').getProviderPlugins;
+    return getProviderPlugins;
   }
   get getEnvDetails() {
     return getEnvDetails;

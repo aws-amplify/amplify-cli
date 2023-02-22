@@ -5,7 +5,7 @@ import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager,
 import _ from 'lodash';
 import { printer, prompter } from 'amplify-prompts';
 import { getFrontendPlugins } from 'amplify-cli-core';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';

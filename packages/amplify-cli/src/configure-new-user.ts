@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
 import sequential from 'promise-sequential';
-import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { CheckboxQuestion } from 'inquirer';
 
 export async function configureNewUser(context) {

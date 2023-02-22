@@ -1,15 +1,6 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import {
-  getProviderPlugins,
-  getConfiguredProviders,
-  executeProviderCommand,
-} from '../../../extensions/amplify-helpers/get-provider-plugins';
+import { $TSContext, stateManager, getProviderPlugins, getConfiguredProviders, executeProviderCommand } from '../..';
 
-jest.mock('amplify-cli-core', () => ({
-  stateManager: {
-    getProjectConfig: jest.fn(),
-  },
-}));
+jest.spyOn(stateManager, 'getProjectConfig');
 
 const mockContext = {
   runtime: {
@@ -17,7 +8,7 @@ const mockContext = {
       {
         pluginType: 'provider',
         pluginName: 'fakedPlugin',
-        directory: '../../../__mocks__/faked-plugin',
+        directory: '../../__mocks__/faked-plugin',
       },
     ],
   },
@@ -31,7 +22,7 @@ beforeEach(() => {
 describe('getProviderPlugins', () => {
   it('should return providerPlugins', () => {
     const providerPlugins = getProviderPlugins(mockContext);
-    expect(providerPlugins).toStrictEqual({ fakedPlugin: '../../../__mocks__/faked-plugin' });
+    expect(providerPlugins).toStrictEqual({ fakedPlugin: '../../__mocks__/faked-plugin' });
   });
 });
 
@@ -40,7 +31,7 @@ describe('getConfiguredProviders', () => {
     stateManagerMock.getProjectConfig.mockImplementation(() => ({
       providers: ['fakedPlugin'],
     }));
-    expect(getConfiguredProviders(mockContext)).toStrictEqual({ fakedPlugin: '../../../__mocks__/faked-plugin' });
+    expect(getConfiguredProviders(mockContext)).toStrictEqual({ fakedPlugin: '../../__mocks__/faked-plugin' });
   });
   it('should throw error when configuredProviders is empty', () => {
     stateManagerMock.getProjectConfig.mockImplementation(() => ({

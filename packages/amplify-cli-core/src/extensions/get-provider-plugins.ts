@@ -1,11 +1,11 @@
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager } from '..';
 import _ from 'lodash';
 
 /**
  * Get the provider plugins
  */
 export const getProviderPlugins = (context: $TSContext): Record<string, string> => {
-  const providers = {};
+  const providers: Record<string, string> = {};
   context.runtime.plugins.forEach((plugin) => {
     if (plugin.pluginType === 'provider') {
       providers[plugin.pluginName] = plugin.directory;

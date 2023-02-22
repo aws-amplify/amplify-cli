@@ -1,11 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
-import { executeProviderUtils } from '../../../extensions/amplify-helpers/execute-provider-utils';
+import { $TSContext } from '../..';
+import { executeProviderUtils } from '../../extensions/execute-provider-utils';
+import * as getProviderPlugins from '../../extensions/get-provider-plugins';
 
-jest.mock('../../../extensions/amplify-helpers/get-provider-plugins.ts', () => ({
-  getProviderPlugins: jest.fn().mockReturnValue({ awscloudformation: '../../../__mocks__/faked-plugin' }),
-}));
-
-jest.mock('../../../../__mocks__/faked-plugin', () => ({
+jest.spyOn(getProviderPlugins, 'getProviderPlugins').mockReturnValue({ awscloudformation: '../../__mocks__/faked-plugin' });
+jest.mock('../../../__mocks__/faked-plugin', () => ({
   providerUtils: {
     compileSchema: jest.fn().mockReturnValue(Promise.resolve({})),
     zipFiles: jest.fn((context, [srcDir, dstZipFilePath]) => {

@@ -1,5 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { getProviderPlugins } from './get-provider-plugins';
+import { $TSAny, $TSContext, getProviderPlugins } from '..';
 
 export async function executeProviderUtils(context: $TSContext, providerName: string, utilName: string, options?: $TSAny) {
   const providerPlugins = getProviderPlugins(context);

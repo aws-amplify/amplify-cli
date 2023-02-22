@@ -4,7 +4,7 @@
 import sequential from 'promise-sequential';
 import { $TSAny, $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
 import { initializeEnv } from '../../initialize-env';
-import { getProviderPlugins } from '../../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { getEnvInfo } from 'amplify-cli-core';
 
 /**
