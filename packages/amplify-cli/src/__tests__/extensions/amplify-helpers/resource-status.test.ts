@@ -1,5 +1,5 @@
 import { hashLayerResource } from '@aws-amplify/amplify-category-function';
-import { AmplifyException, stateManager, getEnvInfo } from 'amplify-cli-core';
+import { stateManager, getEnvInfo } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
