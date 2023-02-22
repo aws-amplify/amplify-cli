@@ -6,7 +6,6 @@ import * as inquirer from 'inquirer';
 import * as envEditor from 'env-editor';
 import { editorSelection } from './editor-selection';
 import { getEnvInfo, $TSContext } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
 
 export async function openEditor(context: $TSContext, filePath: string, waitToContinue = true): Promise<void> {
   const continueQuestion: inquirer.InputQuestion = {
