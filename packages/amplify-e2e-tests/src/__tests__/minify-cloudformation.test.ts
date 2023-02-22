@@ -8,6 +8,7 @@ import {
   getProjectMetaPath,
   addApiWithBlankSchema,
   updateApiSchema,
+  amplifyPushUpdate,
 } from '@aws-amplify/amplify-e2e-core';
 import fs from 'fs';
 import path from 'path';
@@ -59,7 +60,8 @@ describe('minify behavior', () => {
 
     // Tweak schema file and push with minification
     updateApiSchema(projRoot, projName, 'simple_model.graphql', true);
-    await amplifyPush(projRoot, true, { minify: true });
+    //                                waitForText, latestCodebase, destructive, overrideTimeout, minify
+    await amplifyPushUpdate(projRoot, undefined, true, false, 0, true);
 
     // Read Cfn file sizes for both nested API stacks and top-level stacks, verify files are smaller than initial push.
     const minifiedNestedApiStackDefinition = fs.readFileSync(nestedApiStackPath, 'utf-8');

@@ -160,10 +160,14 @@ export function amplifyPushUpdate(
   testingWithLatestCodebase = false,
   allowDestructiveUpdates = false,
   overridePushTimeoutMS = 0,
+  minify?,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
+  }
+  if (minify) {
+    args.push('--minify');
   }
   return spawn(getCLIPath(testingWithLatestCodebase), args, {
     cwd,
