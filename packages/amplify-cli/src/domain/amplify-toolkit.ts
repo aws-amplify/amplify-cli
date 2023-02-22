@@ -17,6 +17,7 @@ import {
   getProjectMeta,
   getProviderPlugins,
   constructExeInfo,
+  getResourceOutputs
 } from 'amplify-cli-core';
 
 export class AmplifyToolkit {
@@ -83,7 +84,7 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/resource-status').getResourceStatus;
   }
   get getResourceOutputs() {
-    return require('../extensions/amplify-helpers/get-resource-outputs').getResourceOutputs;
+    return getResourceOutputs;
   }
   get getWhen() {
     return require('../extensions/amplify-helpers/get-when-function').getWhen;

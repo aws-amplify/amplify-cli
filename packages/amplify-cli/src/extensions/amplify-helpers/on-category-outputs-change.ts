@@ -1,9 +1,8 @@
 import { getFrontendConfig } from '@aws-amplify/amplify-category-auth';
-import { $TSAny, stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager, getResourceOutputs } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import sequential from 'promise-sequential';
-import { getResourceOutputs } from './get-resource-outputs';
 
 /**
  * category output change handler

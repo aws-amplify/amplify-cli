@@ -5,10 +5,10 @@ import {
   UnrecognizedFrontendError,
   validateExportDirectoryPath,
   PathConstants,
+  getResourceOutputs
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
-import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
 import { getResources } from './build';
 import * as _ from 'lodash';

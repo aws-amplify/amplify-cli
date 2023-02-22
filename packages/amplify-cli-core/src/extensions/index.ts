@@ -5,6 +5,7 @@ export * from './construct-exeInfo';
 export * from './copy-batch';
 export * from './execute-provider-utils';
 export * from './get-all-category-pluginInfos';
+export * from './get-resource-outputs';
 export * from './get-provider-plugins';
 export * from './get-all-envs';
 export * from './get-amplify-appId';
