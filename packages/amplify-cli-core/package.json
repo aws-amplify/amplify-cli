@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -25,10 +25,10 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@aws-amplify/amplify-cli-logger": "1.2.3",
     "@aws-amplify/graphql-transformer-core": "^0.18.4",
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.12",
     "ajv": "^6.12.6",
-    "@aws-amplify/amplify-cli-logger": "1.2.3",
     "amplify-prompts": "2.6.3",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",

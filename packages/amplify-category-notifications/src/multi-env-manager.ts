@@ -133,7 +133,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext): Promise<
   // For pull we have to get the pinpoint application for notifications category
   // from cloud meta and as no new resources are created during pull, we should not look for
   // Pinpoint app in analytics category.
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
   const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
     throwIfNotExist: false,
   });

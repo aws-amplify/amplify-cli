@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
 import { ICommandInput, IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
-import { CommandLineInput } from 'amplify-cli-core';
-import { IUsageData } from './UsageDataTypes';
+import { CLIInput } from '../command-input';
+import { IUsageData, IUsageDataPayload } from 'amplify-cli-core';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
 
@@ -19,12 +19,12 @@ export class NoUsageData implements IUsageData, IFlowData {
    * @param state - state to include in the payload
    * @returns UsageDataPayload
    */
-  getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
+  getUsageDataPayload(error: Error | null, state: string): IUsageDataPayload {
     return new UsageDataPayload(
       '',
       '',
       '',
-      new CommandLineInput([]),
+      new CLIInput([]),
       error,
       state,
       '',
@@ -36,7 +36,7 @@ export class NoUsageData implements IUsageData, IFlowData {
         category: '',
         cmd: '',
         executable: '',
-        input: { argv: [] },
+        input: { argv: [], command: '' },
         isHeadless: true,
         optionFlowData: [],
         runtime: '',

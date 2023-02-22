@@ -85,7 +85,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   await initializeEnv(context, currentAmplifyMeta);
 
-  if (!context.parameters.options.app) {
+  if (!context.parameters.options?.app) {
     printWelcomeMessage(context);
   }
 

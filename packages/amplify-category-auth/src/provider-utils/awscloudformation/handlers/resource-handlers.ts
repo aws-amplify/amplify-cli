@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSObject, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
@@ -19,13 +19,14 @@ import {
   removeDeprecatedProps,
   updateUserPoolGroups,
 } from '../utils/synthesize-resources';
+import { AuthContext } from '../../../context';
 
 /**
  * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: AuthContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -80,7 +81,7 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
   } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
   return cognitoCLIInputs.cognitoConfig.resourceName;
@@ -89,9 +90,13 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
 /**
  * Factory function that returns a CognitoConfiguration consumer and handles updates to the auth resource
  */
-export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getUpdateAuthHandler = (context: AuthContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
-  const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
+  const requestWithDefaults = await getUpdateAuthDefaultsApplier(
+    context,
+    defaultValuesFilename,
+    context.updatingAuth as CognitoConfiguration,
+  )(request);
   const resources = stateManager.getMeta();
   if (resources.auth.userPoolGroups) {
     await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
@@ -173,7 +178,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error updating the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
   return cognitoCLIInputs.cognitoConfig.resourceName;

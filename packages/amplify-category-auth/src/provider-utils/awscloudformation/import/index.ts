@@ -965,8 +965,8 @@ export const importedAuthEnvInit = async (
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
   const projectConfig = context.amplify.getProjectConfig();
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters

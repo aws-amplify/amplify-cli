@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import { coerce, lt } from 'semver';
-import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny, MigrationInfo } from 'amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
 import { amplifyCLIConstants } from './extensions/amplify-helpers/constants';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
@@ -165,20 +165,20 @@ const cleanUp = (backupAmplifyDirPath: string): void => {
   fs.removeSync(backupAmplifyDirPath);
 };
 
-const generateMigrationInfo = (projectConfig: $TSAny, projectPath: string): $TSAny => {
-  const migrationInfo: $TSObject = {
+const generateMigrationInfo = (projectConfig: $TSAny, projectPath: string) => {
+  const meta = stateManager.getMeta(projectPath);
+  const migrationInfo: MigrationInfo = {
     projectPath,
     initVersion: projectConfig.version,
     newVersion: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
+    amplifyMeta: meta,
+    currentAmplifyMeta: stateManager.getCurrentMeta(projectPath),
+    projectConfig: generateNewProjectConfig(projectConfig),
+    localEnvInfo: generateLocalEnvInfo(projectConfig),
+    localAwsInfo: generateLocalAwsInfo(projectPath),
+    teamProviderInfo: generateTeamProviderInfo(meta),
+    backendConfig: generateBackendConfig(meta),
   };
-  migrationInfo.amplifyMeta = stateManager.getMeta(projectPath);
-  migrationInfo.currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
-  migrationInfo.projectConfig = generateNewProjectConfig(projectConfig);
-  migrationInfo.localEnvInfo = generateLocalEnvInfo(projectConfig);
-  migrationInfo.localAwsInfo = generateLocalAwsInfo(projectPath);
-  migrationInfo.teamProviderInfo = generateTeamProviderInfo(migrationInfo.amplifyMeta);
-  migrationInfo.backendConfig = generateBackendConfig(migrationInfo.amplifyMeta);
-
   return migrationInfo;
 };
 

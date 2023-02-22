@@ -36,7 +36,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   } catch (err) {
     printer.error(err.stack);
     printer.error('There was an error building the resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
 };

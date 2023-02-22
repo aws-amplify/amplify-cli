@@ -1,4 +1,5 @@
-import { CommandLineInput, PluginPlatform, stateManager, PluginInfo, PluginManifest } from 'amplify-cli-core';
+import { PluginPlatform, stateManager, PluginInfo, PluginManifest } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 import * as appConfig from '../app-config';
 import { constructContext, attachUsageData } from '../context-manager';
 import { Context } from '../domain/context';
