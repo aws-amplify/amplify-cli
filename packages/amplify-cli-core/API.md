@@ -873,6 +873,13 @@ export enum FromStartupTimedCodePaths {
 }
 
 // @public (undocumented)
+export type FrontendOutputs = {
+    metadata: Record<string, unknown>;
+    serviceResourceMapping: Record<string, unknown[]>;
+    testMode: boolean;
+};
+
+// @public (undocumented)
 export type FunctionBreadcrumb = {
     pluginId: string;
     functionRuntime: string;
@@ -985,6 +992,16 @@ export const getProjectMeta: () => $TSMeta;
 
 // @public (undocumented)
 export const getProviderPlugins: (context: $TSContext) => Record<string, string>;
+
+// @public (undocumented)
+export const getResourceOutputs: (amplifyMeta: $TSMeta) => {
+    outputsByProvider: Record<string, {
+        metadata: Record<string, unknown>;
+        serviceResourceMapping: Record<string, unknown[]>;
+    }>;
+    outputsByCategory: Record<string, Record<string, unknown>>;
+    outputsForFrontend: FrontendOutputs;
+};
 
 // @public (undocumented)
 export function green(message: string): void;

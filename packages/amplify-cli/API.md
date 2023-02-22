@@ -12,6 +12,7 @@ import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
 import { confirmPrompt } from 'amplify-cli-core';
 import { constructExeInfo } from 'amplify-cli-core';
 import { copyBatch } from 'amplify-cli-core';
+import { FrontendOutputs } from 'amplify-cli-core/src';
 import { getAllCategoryPluginInfo } from 'amplify-cli-core';
 import { getCategoryPluginInfo } from 'amplify-cli-core';
 import { getFrontendPlugins } from 'amplify-cli-core';
