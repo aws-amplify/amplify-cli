@@ -41,7 +41,7 @@ export const amplifyPull = (
     let providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
     // PowerShell treats : as a special character
     if (process.platform === 'win32') {
-      providerJson = providerJson.replace(':', '`:');
+      providerJson = providerJson.replace(/:/g, '`:');
     }
     args.push('--providers', providerJson);
   }
