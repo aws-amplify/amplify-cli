@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, amplifyCLIConstants } from 'amplify-cli-core';
 import * as path from 'path';
 import { amplifyCLIConstants } from 'amplify-cli-core';
 
