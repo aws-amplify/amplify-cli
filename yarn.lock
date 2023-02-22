@@ -10050,6 +10050,13 @@ amplify-codegen@^3.3.6:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-util-import@2.3.1:
+  version "2.3.1"
+  resolved "https://registry.npmjs.org/amplify-util-import/-/amplify-util-import-2.3.1.tgz#2efe8daccf657c06fcb0cefbece5df131ee994ef"
+  integrity sha512-kX4Awnx3iVum1N71v9XdhYLGcbfGe9S7rHFF+rME5jh8a/pjNE/+oL/ASc0B/H1naIxnw9z7lr8Wg3lvGf45gA==
+  dependencies:
+    aws-sdk "^2.1233.0"
+
 ansi-align@^3.0.0, ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"

@@ -25,6 +25,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "2.15.2",
     "@aws-amplify/amplify-e2e-core": "4.6.4",
+    "@aws-amplify/amplify-headless-interface": "1.17.0",
     "@aws-amplify/graphql-transformer-core": "^0.18.4",
     "@aws-cdk/aws-iam": "~1.172.0",
     "@aws-cdk/aws-sns": "~1.172.0",
@@ -33,7 +34,6 @@
     "@aws-cdk/core": "~1.172.0",
     "amplify-cli-core": "3.6.2",
     "amplify-dynamodb-simulator": "^2.5.3",
-    "@aws-amplify/amplify-headless-interface": "1.17.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1233.0",
