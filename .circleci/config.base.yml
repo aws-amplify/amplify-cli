@@ -162,9 +162,9 @@ jobs:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 1085
-      - run: yarn eslint --no-eslintrc --config .eslint.package.json.js "**/package.json"
-      - run: yarn prettier --check .
+      - run: yarn lint-check
+      - run: yarn lint-check-package-json
+      - run: yarn prettier-check
 
   verify-api-extract:
     <<: *linux-e2e-executor-xlarge
