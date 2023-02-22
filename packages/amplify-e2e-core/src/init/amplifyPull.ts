@@ -38,7 +38,11 @@ export const amplifyPull = (
   }
 
   if (settings.emptyDir && settings.yesFlag) {
-    const providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
+    let providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
+    // PowerShell treats : as a special character
+    if (process.platform === 'win32') {
+      providerJson = providerJson.replace(':', '`:');
+    }
     args.push('--providers', providerJson);
   }
 
