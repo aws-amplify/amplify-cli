@@ -93,7 +93,9 @@ async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: s
 }
 
 async function getAdminStsCredentials(idToken: CognitoIdToken, region: string): Promise<AwsSdkConfig> {
-  const sts = new aws.STS();
+  const sts = new aws.STS({
+    stsRegionalEndpoints: 'regional',
+  });
   const { Credentials } = await sts
     .assumeRole({
       RoleArn: idToken.payload['cognito:preferred_role'],
