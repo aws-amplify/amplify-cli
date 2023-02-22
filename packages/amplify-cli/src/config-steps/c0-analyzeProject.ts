@@ -2,7 +2,7 @@ import * as path from 'path';
 import inquirer, { ListQuestion, InputQuestion } from 'inquirer';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
-import { getEnvInfo } from 'amplify-cli-core';
+import { getEnvInfo, getFrontendPlugins } from 'amplify-cli-core';
 import { displayConfigurationDefaults } from '../init-steps/s0-analyzeProject';
 import { getFrontendPlugins } from 'amplify-cli-core';
 import { isContainersEnabled } from '../execution-manager';
