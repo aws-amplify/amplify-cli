@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { normalizeProviderName } from '../input-params-manager';
 import { ListQuestion } from 'inquirer';
 

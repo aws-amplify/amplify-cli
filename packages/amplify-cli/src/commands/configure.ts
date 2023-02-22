@@ -24,7 +24,7 @@ export const run = async (context: Context) => {
   const { appId, envName }: { appId: string; envName: string } = context?.parameters?.options || {};
   if (appId && envName) {
     try {
-      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context as unknown as $TSContext).awscloudformation);
       await providerPlugin.adminLoginFlow(context, appId, envName);
     } catch (e) {
       context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);

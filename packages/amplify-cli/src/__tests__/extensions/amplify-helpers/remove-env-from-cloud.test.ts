@@ -6,16 +6,13 @@ jest.mock('amplify-cli-core', () => ({
   ...jest.requireActual('amplify-cli-core'),
   getProjectConfig: jest.fn(),
   getAllCategoryPluginInfo: jest.fn(),
-}));
-
-(getAllCategoryPluginInfo as jest.Mocked<any>).mockReturnValue({});
-(getProjectConfig as jest.Mocked<any>).mockReturnValue({ providers: ['awscloudformation'] });
-
-jest.mock('../../../extensions/amplify-helpers/get-provider-plugins', () => ({
   getProviderPlugins: jest.fn().mockReturnValue({
     awscloudformation: path.join(__dirname, '../../../../__mocks__/faked-plugin'),
   }),
 }));
+
+(getAllCategoryPluginInfo as jest.Mocked<any>).mockReturnValue({});
+(getProjectConfig as jest.Mocked<any>).mockReturnValue({ providers: ['awscloudformation'] });
 
 jest.mock('../../../execution-manager');
 

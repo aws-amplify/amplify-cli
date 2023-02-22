@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
 import { pathManager, stateManager, $TSContext, $TSAny } from 'amplify-cli-core';
 import { getFrontendPlugins } from 'amplify-cli-core';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { getProviderPlugins } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
 /**
