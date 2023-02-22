@@ -1,6 +1,7 @@
-import { getAllEnvs } from 'amplify-cli-core/lib/extensions/get-all-envs';
+import { getAllEnvs } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
+  getAllEnvs: jest.requireActual('amplify-cli-core').getAllEnvs,
   stateManager: {
     getLocalAWSInfo: jest.fn().mockReturnValue({ production: 'test', develop: 'test', staging: 'test' }),
   },

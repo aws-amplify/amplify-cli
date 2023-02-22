@@ -11,12 +11,6 @@ printerMock.success = jest.fn();
 
 jest.mock('../../../extensions/amplify-helpers/remove-env-from-cloud');
 jest.mock('../../../extensions/amplify-helpers/path-manager');
-jest.mock('amplify-cli-core/lib/extensions/get-amplify-appId', () => ({
-  getAmplifyAppId: jest.fn().mockReturnValue(true),
-}));
-jest.mock('amplify-cli-core/lib/extensions/get-frontend-plugins', () => ({
-  getFrontendPlugins: jest.fn().mockReturnValue({ test: '../../../__mocks__/faked-plugin' }),
-}));
 jest.mock('../../../../__mocks__/faked-plugin', () => ({
   deleteConfig: jest.fn(),
 }));
@@ -26,9 +20,8 @@ jest.mock('amplify-cli-core', () => ({
     isInitialized: jest.fn().mockReturnValue(true),
     removeFeatureFlagConfiguration: jest.fn().mockResolvedValue(true),
   },
-}));
-
-jest.mock('amplify-cli-core/lib/extensions/get-plugin-instance', () => ({
+  getAmplifyAppId: jest.fn().mockReturnValue(true),
+  getFrontendPlugins: jest.fn().mockReturnValue({ test: '../../../__mocks__/faked-plugin' }),
   getPluginInstance: jest.fn().mockReturnValue({
     getConfiguredAmplifyClient: jest.fn().mockResolvedValue({
       listBackendEnvironments: jest.fn().mockReturnValue({

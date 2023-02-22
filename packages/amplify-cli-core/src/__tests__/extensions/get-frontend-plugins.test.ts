@@ -1,4 +1,4 @@
-import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
+import { getFrontendPlugins } from 'amplify-cli-core';
 
 describe('get-frontend-plugins', () => {
   it('returns map of frontend plugins when frontend plugin exists', () => {

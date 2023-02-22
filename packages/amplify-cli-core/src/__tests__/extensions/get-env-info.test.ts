@@ -1,12 +1,7 @@
-import { stateManager } from 'amplify-cli-core';
-import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
+import { stateManager, getEnvInfo } from 'amplify-cli-core';
 
-jest.mock('amplify-cli-core', () => ({
-  stateManager: {
-    getLocalEnvInfo: jest.fn(),
-    localEnvInfoExists: jest.fn(),
-  },
-}));
+jest.spyOn(stateManager, 'getLocalEnvInfo');
+jest.spyOn(stateManager, 'localEnvInfoExists');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 

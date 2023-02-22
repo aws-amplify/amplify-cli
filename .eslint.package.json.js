@@ -5,6 +5,5 @@ module.exports = {
   rules: {
     'package-json-dependencies/alphabetically-sorted-dependencies': 'error',
   },
-
   ignorePatterns: ['node_modules'],
 };

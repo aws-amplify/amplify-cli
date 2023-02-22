@@ -1,4 +1,4 @@
-import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
+import { amplifyCLIConstants } from '../..';
 
 describe('constants', () => {
   it('should freeze values', () => {

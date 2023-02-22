@@ -1,10 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
-import { constructExeInfo } from '../../../extensions/amplify-helpers/construct-exeInfo';
+import { $TSContext, constructExeInfo } from '../..';
+import * as getProjectDetails from '../../extensions/get-project-details';
 let context_stub = {} as $TSContext;
 
-jest.mock('amplify-cli-core/lib/extensions/get-project-details', () => ({
-  getProjectDetails: jest.fn().mockReturnValue({}),
-}));
+jest.spyOn(getProjectDetails, 'getProjectDetails').mockReturnValue({} as unknown as getProjectDetails.IAmplifyProjectDetails);
 
 describe('constructExeInfo', () => {
   beforeEach(() => {

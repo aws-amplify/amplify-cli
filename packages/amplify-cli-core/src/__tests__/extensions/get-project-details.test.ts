@@ -1,25 +1,7 @@
-import { stateManager } from 'amplify-cli-core';
-import { getProjectDetails } from 'amplify-cli-core/lib/extensions/get-project-details';
-import * as getEnvInfo from 'amplify-cli-core/lib/extensions/get-env-info';
+import { stateManager, getProjectDetails } from '../..';
+import * as getEnvInfo from '../../extensions/get-env-info';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-
-jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'test' });
-
-jest.mock('amplify-cli-core', () => ({
-  stateManager: {
-    getLocalEnvInfo: jest.fn(),
-    getProjectConfig: jest.fn(),
-    metaFileExists: jest.fn(),
-    backendConfigFileExists: jest.fn(),
-    getMeta: jest.fn().mockReturnValue({
-      providers: {
-        awscloudformation: {},
-      },
-    }),
-    getBackendConfig: jest.fn().mockReturnValue({}),
-  },
-}));
 
 const mockProjectConfig = {
   projectName: 'mockProjectName',
@@ -36,6 +18,20 @@ const mockProjectConfig = {
   },
   providers: ['awscloudformation'],
 };
+jest.spyOn(stateManagerMock, 'getProjectConfig').mockReturnValue(mockProjectConfig);
+jest.spyOn(stateManagerMock, 'localEnvInfoExists');
+jest.spyOn(stateManagerMock, 'getLocalEnvInfo');
+jest.spyOn(stateManagerMock, 'metaFileExists');
+jest.spyOn(stateManagerMock, 'backendConfigFileExists');
+jest.spyOn(stateManagerMock, 'getMeta').mockReturnValue({
+  providers: {
+    awscloudformation: {},
+  },
+});
+jest.spyOn(stateManagerMock, 'getBackendConfig').mockReturnValue({});
+
+jest.spyOn(stateManagerMock, 'backendConfigFileExists');
+jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'test' });
 
 describe('getProjectDetails', () => {
   beforeEach(() => {

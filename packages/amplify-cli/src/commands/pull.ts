@@ -4,7 +4,7 @@ import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
-import { getAmplifyAppId } from 'amplify-cli-core/lib/extensions/get-amplify-appId';
+import { getAmplifyAppId } from 'amplify-cli-core';
 import { checkForNestedProject } from './helpers/projectUtils';
 
 /**

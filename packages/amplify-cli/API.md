@@ -6,20 +6,20 @@
 
 /// <reference types="node" />
 
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core/src';
 import { CommandLineInput } from 'amplify-cli-core/src/types';
 import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
-import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
-import { constructExeInfo } from 'amplify-cli-core/lib/extensions/construct-exeInfo';
-import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
-import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
-import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
-import { getPlugin } from 'amplify-cli-core/lib/extensions/get-plugin';
-import { getPluginInstance } from 'amplify-cli-core/lib/extensions/get-plugin-instance';
-import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-config';
+import { confirmPrompt } from 'amplify-cli-core';
+import { constructExeInfo } from 'amplify-cli-core';
+import { copyBatch } from 'amplify-cli-core';
+import { getAllCategoryPluginInfo } from 'amplify-cli-core';
+import { getCategoryPluginInfo } from 'amplify-cli-core';
+import { getFrontendPlugins } from 'amplify-cli-core';
+import { getPlugin } from 'amplify-cli-core';
+import { getPluginInstance } from 'amplify-cli-core';
+import { getProjectConfig } from 'amplify-cli-core';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
-import { IAmplifyProjectDetails } from 'amplify-cli-core/lib/extensions/get-project-details';
+import { IAmplifyProjectDetails } from 'amplify-cli-core/src';
 import { ICommandInput } from 'amplify-cli-shared-interfaces';
 import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { IFlowReport } from 'amplify-cli-shared-interfaces';

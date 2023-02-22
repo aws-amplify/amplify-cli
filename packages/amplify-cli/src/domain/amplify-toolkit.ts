@@ -1,20 +1,22 @@
 import { Context } from './context';
-import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
-import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
-import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
-import { getAllEnvs } from 'amplify-cli-core/lib/extensions/get-all-envs';
-import { getEnvDetails } from 'amplify-cli-core/lib/extensions/get-env-details';
-import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
-import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
-import { getFrontendPlugins } from 'amplify-cli-core/lib/extensions/get-frontend-plugins';
-import { getImportedAuthProperties } from 'amplify-cli-core/lib/extensions/get-imported-auth-properties';
-import { getPluginInstance } from 'amplify-cli-core/lib/extensions/get-plugin-instance';
-import { getPlugin } from 'amplify-cli-core/lib/extensions/get-plugin';
-import { getProjectConfig } from 'amplify-cli-core/lib/extensions/get-project-config';
-import { getProjectDetails } from 'amplify-cli-core/lib/extensions/get-project-details';
-import { getProjectMeta } from 'amplify-cli-core/lib/extensions/get-project-meta';
-import { constructExeInfo } from 'amplify-cli-core/lib/extensions/construct-exeInfo';
+import {
+  confirmPrompt,
+  getAllCategoryPluginInfo,
+  amplifyCLIConstants,
+  copyBatch,
+  getAllEnvs,
+  getEnvDetails,
+  getEnvInfo,
+  getCategoryPluginInfo,
+  getFrontendPlugins,
+  getImportedAuthProperties,
+  getPluginInstance,
+  getPlugin,
+  getProjectConfig,
+  getProjectDetails,
+  getProjectMeta,
+  constructExeInfo,
+} from 'amplify-cli-core';
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;

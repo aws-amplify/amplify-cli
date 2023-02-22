@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import { pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext } from 'amplify-cli-core';
-import * as getEnvInfo from 'amplify-cli-core/lib/extensions/get-env-info';
+import * as cliCore from 'amplify-cli-core';
 import {
   saveEnvResourceParameters,
   loadEnvResourceParameters,
@@ -27,8 +27,8 @@ jest.mock('amplify-cli-core', () => ({
     }),
   },
   removeFromDeploymentSecrets: jest.fn(),
-}));
-jest.spyOn(getEnvInfo, 'getEnvInfo');
+  getEnvInfo: jest.fn(),
+}));cliCore
 
 let getEnvParamManager;
 let ensureEnvParamManager;
@@ -38,7 +38,7 @@ beforeEach(async () => {
   await ensureEnvParamManager('testEnv');
   jest.clearAllMocks();
   (fs.existsSync as any).mockReturnValue(true);
-  jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'testEnv' });
+  jest.spyOn(cliCore, 'getEnvInfo').mockReturnValue({ envName: 'testEnv' });
   (pathManager.getTeamProviderInfoFilePath as any).mockReturnValue('test/path');
 });
 

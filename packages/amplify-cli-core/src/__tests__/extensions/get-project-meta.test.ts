@@ -1,22 +1,12 @@
-import { stateManager } from 'amplify-cli-core';
-import { getProjectMeta } from 'amplify-cli-core/lib/extensions/get-project-meta';
-
-jest.mock('amplify-cli-core', () => {
-  const original = jest.requireActual('amplify-cli-core');
-  return {
-    ...original,
-    stateManager: {
-      metaFileExists: jest.fn(),
-      getMeta: jest.fn().mockImplementation(() => ({
-        auth: {
-          amplifyAuth: 'test',
-        },
-      })),
-    },
-  };
-});
+import { stateManager, getProjectMeta } from '../..';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+jest.spyOn(stateManager, 'metaFileExists').mockImplementation(() => true);
+jest.spyOn(stateManager, 'getMeta').mockImplementation(() => ({
+  auth: {
+    amplifyAuth: 'test',
+  },
+}));
 
 describe('getProjectMeta', () => {
   it('should get the project-meta when metaFile exists', () => {
