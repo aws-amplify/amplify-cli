@@ -786,6 +786,12 @@ export type EventPrefix = 'pre' | 'post';
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 // @public (undocumented)
+export const executeProviderCommand: (context: $TSContext, command: string, args?: unknown[]) => Promise<$TSAny>;
+
+// @public (undocumented)
+export function executeProviderUtils(context: $TSContext, providerName: string, utilName: string, options?: $TSAny): Promise<any>;
+
+// @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
 
 // @public (undocumented)
@@ -904,6 +910,9 @@ export function getAmplifyResourceByCategories(category: string): string[];
 export function getCategoryPluginInfo(context: $TSContext, category: string, service?: string): IPluginInfo | undefined;
 
 // @public (undocumented)
+export const getConfiguredProviders: (context: $TSContext) => Record<string, string>;
+
+// @public (undocumented)
 export const getEnvDetails: () => $TSAny;
 
 // @public (undocumented)
@@ -973,6 +982,9 @@ export const getProjectDetails: () => IAmplifyProjectDetails;
 
 // @public (undocumented)
 export const getProjectMeta: () => $TSMeta;
+
+// @public (undocumented)
+export const getProviderPlugins: (context: $TSContext) => Record<string, string>;
 
 // @public (undocumented)
 export function green(message: string): void;
