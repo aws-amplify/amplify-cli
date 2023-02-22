@@ -28,7 +28,8 @@ jest.mock('amplify-cli-core', () => ({
   },
   removeFromDeploymentSecrets: jest.fn(),
   getEnvInfo: jest.fn(),
-}));cliCore
+}));
+cliCore;
 
 let getEnvParamManager;
 let ensureEnvParamManager;
