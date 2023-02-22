@@ -193,7 +193,7 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
 
   try {
     await context.amplify.removeResource(context, categoryName, resourceName, { headless: true });
-  } catch (error) {
+  } catch (error: $TSAny) {
     printer.error(`An error occurred when headlessly removing the storage resource "${resourceName}": ${error.message || error}`);
 
     await context.usageData.emitError(error);
