@@ -25,7 +25,7 @@ export const open = async (target: string, options: opn.Options): Promise<ChildP
 
 const handleOpenError = (err: Error, target: string) => {
   console.error(`Unable to open ${target}: ${err.message}`);
-  if ('code' in err && err['code'] == 'ENOENT') {
+  if ('code' in err && err['code'] === 'ENOENT') {
     console.warn('Have you installed `xdg-utils` on your machine?');
   }
 };
