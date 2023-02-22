@@ -32,7 +32,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.listComponents(),
       studioClient.listThemes(),
       studioClient.listForms(),
-      getAmplifyDataSchema(studioClient),
+      studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
 
     const nothingWouldAutogenerate = !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported;

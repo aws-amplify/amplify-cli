@@ -14,8 +14,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "2.8.0",
-    "@aws-amplify/codegen-ui-react": "2.8.0",
+    "@aws-amplify/codegen-ui": "2.9.0",
+    "@aws-amplify/codegen-ui-react": "2.9.0",
     "amplify-cli-core": "3.6.2",
     "amplify-prompts": "2.6.3",
     "aws-sdk": "^2.1233.0",
@@ -24,6 +24,7 @@
     "tiny-async-pool": "^2.1.0"
   },
   "devDependencies": {
+    "@aws-amplify/appsync-modelgen-plugin": "^2.3.3",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^26.0.20",
     "@types/semver": "^7.1.0",
