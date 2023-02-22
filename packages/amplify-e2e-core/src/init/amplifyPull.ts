@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-cycle
-import { TEST_PROFILE_NAME, getCLIPath, nspawn as spawn } from '..';
+import { TEST_PROFILE_NAME, getAwsProviderConfig, getCLIPath, nspawn as spawn } from '..';
 
 /**
  * Interactive amplify pull
@@ -35,6 +35,11 @@ export const amplifyPull = (
 
   if (settings.yesFlag) {
     args.push('--yes');
+  }
+
+  if (settings.emptyDir && settings.yesFlag) {
+    const providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
+    args.push('--providers', providerJson);
   }
 
   const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
