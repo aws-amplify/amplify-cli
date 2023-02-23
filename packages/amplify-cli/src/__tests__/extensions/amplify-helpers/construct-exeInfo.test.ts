@@ -14,7 +14,7 @@ describe('constructExeInfo', () => {
           y: 'test',
         },
       },
-    } as $TSContext;
+    } as unknown as $TSContext;
   });
   it('should return normalised inputParams', () => {
     const expected = Object.assign(

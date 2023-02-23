@@ -2,7 +2,7 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, open, $TSContext, $TSObject } from 'amplify-cli-core';
+import { stateManager, open, $TSContext, $TSObject, AmplifyError } from 'amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
@@ -10,6 +10,7 @@ import { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, p
 import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-handlers';
 import { getSupportedServices } from '../supported-services';
 import { importResource, importedAuthEnvInit } from './import';
+import { AuthContext } from '../../context';
 
 export { importResource } from './import';
 
@@ -25,7 +26,7 @@ const serviceQuestions = async (
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 };
 
-export const addResource = async (context: $TSContext, service: string): Promise<string> => {
+export const addResource = async (context: AuthContext, service: string): Promise<string> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(context)(
@@ -33,7 +34,7 @@ export const addResource = async (context: $TSContext, service: string): Promise
   );
 };
 
-export const updateResource = async (context: $TSContext, { service }: { service: any }): Promise<any> => {
+export const updateResource = async (context: AuthContext, { service }: { service: any }): Promise<any> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
@@ -151,7 +152,10 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       });
 
       if (missingParams.length) {
-        throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new AmplifyError('InputValidationError', {
+          message: `auth headless is missing the following inputParameters ${missingParams.join(', ')}`,
+          link: 'https://docs.amplify.aws/cli/usage/headless/#--categories',
+        });
       }
     }
     if (hostedUIProviderMeta) {
@@ -308,7 +312,7 @@ const parseCredsForHeadless = (mergedValues: any, envParams: any): any => {
 /* eslint-enable no-param-reassign */
 
 const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any): any => {
-  const requiredParams = [];
+  const requiredParams: string[] = [];
 
   if (previousValues.thirdPartyAuth) {
     if (previousValues.authProviders.includes('accounts.google.com')) {

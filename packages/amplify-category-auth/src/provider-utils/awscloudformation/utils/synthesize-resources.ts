@@ -442,7 +442,7 @@ const createAdminAuthAPI = async (
 
 const copyS3Assets = async (request: CognitoConfiguration): Promise<void> => {
   const targetDir = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, request.resourceName!, 'assets');
-  const triggers = request.triggers ? JSONUtilities.parse<$TSAny>(request.triggers) : null;
+  const triggers = request.triggers ? JSONUtilities.parse<$TSAny>(request.triggers as string) : null;
   const confirmationFileNeeded = request.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {
     if (!existsSync(targetDir)) {

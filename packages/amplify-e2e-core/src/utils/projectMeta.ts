@@ -24,8 +24,10 @@ export const getAmplifyDirPath = (projectRoot: string): string => path.join(proj
 // eslint-disable-next-line spellcheck/spell-checker
 export const getAWSConfigIOSPath = (projectRoot: string): string => path.join(projectRoot, 'awsconfiguration.json');
 
+export const getProjectMetaPath = (projectRoot: string) => path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+
 export const getProjectMeta = (projectRoot: string): $TSAny => {
-  const metaFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+  const metaFilePath: string = getProjectMetaPath(projectRoot);
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 };
 

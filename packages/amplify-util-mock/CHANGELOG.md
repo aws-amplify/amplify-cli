@@ -804,6 +804,14 @@ group rules are owner will be an optional arg
 
 
 
+## [4.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.1...amplify-util-mock@4.8.2) (2023-02-16)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0...amplify-util-mock@4.8.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-util-mock

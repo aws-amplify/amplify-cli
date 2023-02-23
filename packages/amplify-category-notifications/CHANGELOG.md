@@ -221,6 +221,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.23.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.1...amplify-category-notifications@2.23.2) (2023-02-16)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
 ## [2.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.23.0...amplify-category-notifications@2.23.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-category-notifications

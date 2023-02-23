@@ -57,6 +57,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.3...@aws-amplify/amplify-appsync-simulator@2.9.4) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
 ## [2.9.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.2...@aws-amplify/amplify-appsync-simulator@2.9.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator

@@ -82,7 +82,7 @@ export async function updateWalkthrough(context: $TSContext) {
     const errMessage = 'No resources to update. You need to add a resource.';
 
     printer.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    void context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return undefined;
   }

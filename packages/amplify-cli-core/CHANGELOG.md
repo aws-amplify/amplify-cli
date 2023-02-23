@@ -250,6 +250,14 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [4.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.0-beta.0...amplify-cli-core@4.0.0-beta.1) (2022-11-19)
+## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.1...amplify-cli-core@3.6.2) (2023-02-16)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
 ## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.6.0...amplify-cli-core@3.6.1) (2023-02-06)
 
 

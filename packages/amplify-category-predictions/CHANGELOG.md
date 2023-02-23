@@ -294,6 +294,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.3.1...amplify-category-predictions@4.3.2) (2023-02-16)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
 ## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.3.0...amplify-category-predictions@4.3.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-category-predictions

@@ -39,7 +39,7 @@ export const updateResource = (context: $TSContext, __: string, service: string)
   if (!updateWalkthrough) {
     const message = 'Update functionality not available for this service';
     printer.error(message);
-    context.usageData.emitError(new NotImplementedError(message));
+    void context.usageData.emitError(new NotImplementedError(message));
     exitOnNextTick(0);
   }
 

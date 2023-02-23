@@ -241,6 +241,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.5.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.5.9...amplify-frontend-ios@3.5.10) (2023-02-16)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
 ## [3.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.5.8...amplify-frontend-ios@3.5.9) (2023-02-06)
 
 **Note:** Version bump only for package amplify-frontend-ios

@@ -37,6 +37,7 @@ import {
   ApiCategoryFacade,
   AmplifyError,
   AmplifyFault,
+  ManuallyTimedCodePath,
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -77,6 +78,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { printCdkMigrationWarning } from './print-cdk-migration-warning';
+import { minifyJSONFile } from './utils/minify-json';
 
 const logger = fileLogger('push-resources');
 
@@ -282,8 +284,8 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       context.exeInfo.forcePush ||
       rebuild
     ) {
-      context.usageData.stopCodePathTimer('pushTransform');
-      context.usageData.startCodePathTimer('pushDeployment');
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
+      context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT);
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
@@ -343,7 +345,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           handleCloudFormationError(err);
         }
       }
-      context.usageData.stopCodePathTimer('pushDeployment');
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT);
       // Cleanup the deployment-state file
       await deploymentStateManager.deleteDeploymentStateFile();
     }
@@ -770,6 +772,9 @@ export const uploadTemplateToS3 = async (
   amplifyMeta: $TSMeta,
 ): Promise<void> => {
   const cfnFile = path.parse(filePath).base;
+  if (context.input.options?.minify) {
+    minifyJSONFile(filePath);
+  }
   const s3 = await S3.getInstance(context);
 
   const s3Params = {

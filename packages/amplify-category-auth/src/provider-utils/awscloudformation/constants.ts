@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { CognitoConfiguration } from './service-walkthrough-types/awsCognito-user-input-types';
 
 // category
 export const category = 'auth';
@@ -36,7 +37,7 @@ export const ENV_SPECIFIC_PARAMS = [
   'hostedUIProviderCreds',
 ];
 
-export const safeDefaults = [
+export const safeDefaults: Array<keyof CognitoConfiguration> = [
   'allowUnauthenticatedIdentities',
   'thirdPartyAuth',
   'authProviders',
@@ -50,7 +51,7 @@ export const safeDefaults = [
 ];
 
 // These attributes cannot be modified once the auth resource is created
-export const immutableAttributes = [
+export const immutableAttributes: Array<keyof CognitoConfiguration> = [
   'resourceName',
   'userPoolName',
   'identityPoolName',

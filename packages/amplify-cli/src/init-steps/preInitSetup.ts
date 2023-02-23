@@ -8,12 +8,12 @@ import { generateLocalEnvInfoFile } from './s9-onSuccess';
  * Executes before init
  */
 export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => {
-  if (context.parameters.options.app) {
+  if (context.parameters.options?.app) {
     // Setting up a sample app
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
     const repoUrl = context.parameters.options.app;
 
-    await validateGithubRepo(repoUrl);
+    validateGithubRepo(repoUrl);
     await cloneRepo(repoUrl);
     cleanAmplifyArtifacts();
     await installPackage();
@@ -27,8 +27,11 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
  *
  * @throws error if url is not a valid remote github url
  */
-const validateGithubRepo = async (repoUrl: string): Promise<void> => {
+function validateGithubRepo(repoUrl: string | boolean): asserts repoUrl is string {
   try {
+    if (typeof repoUrl !== 'string') {
+      throw new TypeError('repoUrl must be a string');
+    }
     url.parse(repoUrl);
 
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
@@ -42,7 +45,7 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
       e,
     );
   }
-};
+}
 
 /**
  * Clones repo from url to current directory (must be empty)

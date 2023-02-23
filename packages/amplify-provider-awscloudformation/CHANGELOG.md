@@ -2193,6 +2193,14 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [7.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.1...amplify-provider-awscloudformation@7.0.0-beta.4) (2022-12-28)
+## [6.10.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.3...amplify-provider-awscloudformation@6.10.4) (2023-02-16)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [6.10.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.10.2...amplify-provider-awscloudformation@6.10.3) (2023-02-06)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

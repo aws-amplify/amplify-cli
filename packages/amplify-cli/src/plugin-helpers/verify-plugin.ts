@@ -5,7 +5,9 @@ import { PluginManifest, constants, JSONUtilities, $TSAny, PluginVerificationRes
 type VerificationContext = {
   pluginDirPath: string;
   manifest?: PluginManifest;
-  pluginModule?: any;
+  pluginModule?: {
+    handleAmplifyEvent: string;
+  };
 };
 
 export async function verifyPlugin(pluginDirPath: string): Promise<PluginVerificationResult> {
@@ -117,7 +119,7 @@ async function verifyEventHandlers(context: VerificationContext): Promise<Plugin
 
     isVerified =
       Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HANDLE_AMPLIFY_EVENT) &&
-      typeof context.pluginModule[constants.HANDLE_AMPLIFY_EVENT] === 'function';
+      typeof context.pluginModule?.[constants.HANDLE_AMPLIFY_EVENT] === 'function';
   }
 
   if (isVerified) {

@@ -342,6 +342,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.5...amplify-frontend-javascript@3.7.6) (2023-02-16)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [3.7.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.4...amplify-frontend-javascript@3.7.5) (2023-02-06)
 
 **Note:** Version bump only for package amplify-frontend-javascript
