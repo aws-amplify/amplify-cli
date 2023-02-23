@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.15-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.15...amplify-java-function-template-provider@1.5.15-beta.6) (2023-02-23)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.15-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.15...amplify-java-function-template-provider@1.5.15-beta.5) (2023-02-17)
 
 **Note:** Version bump only for package amplify-java-function-template-provider
