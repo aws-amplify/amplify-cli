@@ -10,6 +10,31 @@ import { Tag } from './tags';
  */
 export type $TSAny = any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 
+export type ExeInfo = {
+  amplifyMeta?: $TSAny;
+  awsConfigInfo?: $TSAny;
+  backendConfig?: $TSAny;
+  existingLocalAwsInfo?: $TSAny;
+  existingLocalEnvInfo?: $TSAny;
+  existingProjectConfig?: $TSAny;
+  existingTeamProviderInfo?: $TSAny;
+  forcePush?: boolean;
+  inputParams?: $TSAny;
+  isNewEnv?: boolean;
+  isNewProject?: boolean;
+  iterativeRollback?: boolean;
+  localEnvInfo?: $TSAny;
+  metaData?: $TSAny;
+  pinpointApp?: $TSAny;
+  pinpointClient?: $TSAny;
+  pinpointInputParams?: $TSAny;
+  projectConfig?: $TSAny;
+  restoreBackend?: boolean;
+  serviceMeta?: $TSAny;
+  sourceEnvName?: string;
+  teamProviderInfo?: $TSAny;
+};
+
 /**
  * Use it for all CLI Context class references, it enables a quick way to see what we have on the context
  */
@@ -27,7 +52,7 @@ export type $TSContext = {
    * @deprecated
    */
   prompt: $TSAny;
-  exeInfo: $TSAny;
+  exeInfo: ExeInfo;
   input: CommandLineInput;
   parameters: ContextParameters;
   usageData: IUsageData;

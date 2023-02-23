@@ -108,7 +108,7 @@ export const initializeEnv = async (
 
     const projectDetails = context.amplify.getProjectDetails();
 
-    context.exeInfo = context.exeInfo || {};
+    context.exeInfo ??= {};
     Object.assign(context.exeInfo, projectDetails);
 
     try {
