@@ -24,7 +24,7 @@ export type $TSContext = {
     migrationInfo: MigrationInfo;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
-    exeInfo: $TSAny;
+    exeInfo: ExeInfo;
     input: CommandLineInput;
     parameters: ContextParameters;
     usageData: IUsageData;
@@ -746,6 +746,32 @@ export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+
+// @public (undocumented)
+export type ExeInfo = {
+    amplifyMeta?: $TSAny;
+    awsConfigInfo?: $TSAny;
+    backendConfig?: $TSAny;
+    existingLocalAwsInfo?: $TSAny;
+    existingLocalEnvInfo?: $TSAny;
+    existingProjectConfig?: $TSAny;
+    existingTeamProviderInfo?: $TSAny;
+    forcePush?: boolean;
+    inputParams?: $TSAny;
+    isNewEnv?: boolean;
+    isNewProject?: boolean;
+    iterativeRollback?: boolean;
+    localEnvInfo?: $TSAny;
+    metaData?: $TSAny;
+    pinpointApp?: $TSAny;
+    pinpointClient?: $TSAny;
+    pinpointInputParams?: $TSAny;
+    projectConfig?: $TSAny;
+    restoreBackend?: boolean;
+    serviceMeta?: $TSAny;
+    sourceEnvName?: string;
+    teamProviderInfo?: $TSAny;
+};
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -2115,7 +2141,7 @@ export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
-// src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
+// src/types.ts:42:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
