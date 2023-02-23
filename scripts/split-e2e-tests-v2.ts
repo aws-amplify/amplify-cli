@@ -82,15 +82,13 @@ const WINDOWS_SMOKE_TESTS = [
   'src/__tests__/hooks-b.test.ts',
   // hosting
   'src/__tests__/hostingPROD.test.ts',
-  // import, s3
-  'src/__tests__/import_s3_2b.test.ts',
   // interactions
   'src/__tests__/interactions.test.ts',
   // schema auth test
   'src/__tests__/schema-auth-1a.test.ts',
   // schema model test
   'src/__tests__/schema-model-e.test.ts',
-  // interative deployments
+  // iterative deployments
   'src/__tests__/schema-iterative-update-1.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
@@ -137,9 +135,11 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/import_auth_2b.test.ts',
     'src/__tests__/import_auth_3.test.ts',
     'src/__tests__/import_dynamodb_2a.test.ts',
+    'src/__tests__/import_dynamodb_2b.test.ts',
     'src/__tests__/import_dynamodb_2c.test.ts',
     'src/__tests__/import_s3_1.test.ts',
     'src/__tests__/import_s3_2a.test.ts',
+    'src/__tests__/import_s3_2b.test.ts',
     'src/__tests__/import_s3_2c.test.ts',
     'src/__tests__/layer-2.test.ts',
     'src/__tests__/mock-api.test.ts',
