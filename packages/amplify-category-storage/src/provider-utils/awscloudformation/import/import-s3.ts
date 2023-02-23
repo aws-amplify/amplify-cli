@@ -307,7 +307,7 @@ export const importedS3EnvInit = async (
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return headlessImport(context, s3, providerName, resourceParameters, headlessParams);
+    return headlessImport(context, s3, providerName, resourceParameters, headlessParams, currentEnvSpecificParameters);
   }
 
   // If we are pulling, take the current values if present to skip unneeded service walkthrough
@@ -412,9 +412,11 @@ const headlessImport = async (
   providerName: string,
   resourceParameters: S3ResourceParameters,
   headlessParams: ImportS3HeadlessParameters,
+  currentEnvSpecificParameters: S3EnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: S3EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const currentEnvSpecificParameters = ensureHeadlessParameters(headlessParams);
+  const resolvedEnvParams =
+    headlessParams?.bucketName || headlessParams?.region ? ensureHeadlessParameters(headlessParams) : currentEnvSpecificParameters;
 
   // Validate the parameters, generate the missing ones and import the resource.
   const questionParameters: S3ImportParameters = {
@@ -424,13 +426,13 @@ const headlessImport = async (
 
   const answers: S3ImportAnswers = {
     resourceName: resourceParameters.resourceName,
-    bucketName: currentEnvSpecificParameters.bucketName,
+    bucketName: resolvedEnvParams.bucketName,
   };
 
-  const bucketExists = await s3.bucketExists(currentEnvSpecificParameters.bucketName);
+  const bucketExists = await s3.bucketExists(resolvedEnvParams.bucketName);
 
   if (!bucketExists) {
-    throw new Error(importMessages.BucketNotFound(currentEnvSpecificParameters.bucketName));
+    throw new Error(importMessages.BucketNotFound(resolvedEnvParams.bucketName));
   }
 
   // Save the region as we need to store it in resource parameters

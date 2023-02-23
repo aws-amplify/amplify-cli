@@ -8,6 +8,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import {
@@ -20,11 +21,8 @@ import {
   getAuthProjectDetails,
   getOGAuthProjectDetails,
   getShortId,
-  headlessPullExpectError,
   importIdentityPoolAndUserPool,
 } from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
 
 describe('auth import identity pool and userpool', () => {
   const projectPrefix = 'auimpidup';
@@ -145,10 +143,12 @@ describe('auth import identity pool and userpool', () => {
     }
   });
 
-  it('auth headless pull missing parameters', async () => {
+  it('auth headless pull in empty dir', async () => {
+    const envName = 'integtest';
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
+      envName,
     });
 
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
@@ -158,29 +158,16 @@ describe('auth import identity pool and userpool', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    let projectRootPull;
+    const authParams1 = getTeamProviderInfo(projectRoot)?.[envName]?.categories?.auth;
+    expect(authParams1).toBeDefined();
 
+    let projectRootPull;
     try {
       projectRootPull = await createNewProjectDir('authidp-pull');
 
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      await expect(
-        headlessPullExpectError(
-          projectRootPull,
-          { envName, appId },
-          providersParam,
-          'Error: auth headless is missing the following inputParams userPoolId, webClientId, nativeClientId, identityPoolId',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
+      await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
+      const authParams2 = getTeamProviderInfo(projectRootPull)?.[envName]?.categories?.auth;
+      expect(authParams1).toEqual(authParams2);
     } finally {
       deleteProjectDir(projectRootPull);
     }
