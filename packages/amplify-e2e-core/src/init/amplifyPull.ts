@@ -38,7 +38,7 @@ export const amplifyPull = (
   }
 
   if (settings.emptyDir && settings.yesFlag) {
-    let providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
+    const providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
     args.push('--providers');
     if (process.platform === 'win32') {
       // https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parsing?view=powershell-7.3#the-stop-parsing-token
