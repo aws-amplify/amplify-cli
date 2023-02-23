@@ -4,6 +4,7 @@
   "description": "amplify-cli",
   "scripts": {
     "addwords": "node ./scripts/add-to-dict.js",
+    "build-and-verify": "yarn clean && yarn dev-build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
     "build-tests-changed": "nx affected --target=build-tests",
     "build-tests": "nx run-many --target=build-tests --all",
     "build": "nx run-many --target=build --all",
