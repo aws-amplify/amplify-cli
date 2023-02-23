@@ -39,11 +39,12 @@ export const amplifyPull = (
 
   if (settings.emptyDir && settings.yesFlag) {
     let providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
-    // PowerShell treats : as a special character
+    args.push('--providers');
     if (process.platform === 'win32') {
-      providerJson = providerJson.replace(/:/g, '`:');
+      // https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parsing?view=powershell-7.3#the-stop-parsing-token
+      args.push('--%');
     }
-    args.push('--providers', providerJson);
+    args.push(providerJson);
   }
 
   const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
