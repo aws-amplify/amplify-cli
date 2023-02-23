@@ -2,7 +2,17 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { buildTypeKeyMap, ServiceName } from '@aws-amplify/amplify-category-function';
-import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
+import {
+  updateBackendConfigAfterResourceAdd,
+  updateBackendConfigAfterResourceUpdate,
+  $TSAny,
+  $TSMeta,
+  $TSObject,
+  JSONUtilities,
+  pathManager,
+  ResourceTuple,
+  stateManager,
+} from 'amplify-cli-core';
 import { BuildType } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
@@ -10,7 +20,6 @@ import _ from 'lodash';
 import * as path from 'path';
 import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
 import { getHashForResourceDir } from './resource-status';
-import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 
 /**
  * Generic resource function to update any arbitrary value in amplify-meta.json and save.

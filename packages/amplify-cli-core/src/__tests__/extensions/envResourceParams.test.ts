@@ -1,34 +1,34 @@
 import * as fs from 'fs-extra';
-import { pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext } from 'amplify-cli-core';
-import * as cliCore from 'amplify-cli-core';
 import {
+  stateManager,
+  DeploymentSecrets,
+  removeFromDeploymentSecrets,
+  $TSContext,
   saveEnvResourceParameters,
   loadEnvResourceParameters,
   removeResourceParameters,
-  removeDeploymentSecrets,
-} from '../../../extensions/amplify-helpers/envResourceParams';
+  pathManager,
+} from '../..';
+import * as getEnvInfo from '../../extensions/get-env-info';
+import * as removeDeploymentSecrets from '../../extensions/envResourceParams';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core', () => ({
-  pathManager: { getTeamProviderInfoFilePath: jest.fn() },
-  stateManager: {
-    getTeamProviderInfo: jest.fn(),
-    setTeamProviderInfo: jest.fn(),
-    getDeploymentSecrets: jest.fn(),
-    setDeploymentSecrets: jest.fn(),
-    getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
-    getBackendConfig: jest.fn(),
-    getMeta: jest.fn().mockReturnValue({
-      providers: {
-        awscloudformation: {
-          StackId: 'arn:aws:cloudformation:us-west-2:1234567890:stack/amplify-test-test-123456/testStackId',
-        },
-      },
-    }),
+jest.spyOn(stateManager, 'getTeamProviderInfo');
+jest.spyOn(stateManager, 'setTeamProviderInfo');
+jest.spyOn(stateManager, 'getDeploymentSecrets');
+jest.spyOn(stateManager, 'setDeploymentSecrets');
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnv' });
+jest.spyOn(stateManager, 'getBackendConfig');
+jest.spyOn(removeDeploymentSecrets, 'removeDeploymentSecrets');
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+  providers: {
+    awscloudformation: {
+      StackId: 'arn:aws:cloudformation:us-west-2:1234567890:stack/amplify-test-test-123456/testStackId',
+    },
   },
-  removeFromDeploymentSecrets: jest.fn(),
-  getEnvInfo: jest.fn(),
-}));
+});
+jest.spyOn(pathManager, 'getTeamProviderInfoFilePath');
+jest.spyOn(getEnvInfo, 'getEnvInfo');
 
 let getEnvParamManager;
 let ensureEnvParamManager;
@@ -38,7 +38,7 @@ beforeEach(async () => {
   await ensureEnvParamManager('testEnv');
   jest.clearAllMocks();
   (fs.existsSync as any).mockReturnValue(true);
-  jest.spyOn(cliCore, 'getEnvInfo').mockReturnValue({ envName: 'testEnv' });
+  jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'testEnv' });
   (pathManager.getTeamProviderInfoFilePath as any).mockReturnValue('test/path');
 });
 
@@ -133,7 +133,7 @@ test('removeDeploymentSecrets remove secrets params', () => {
   const removeFromDeploymentSecretsMock = removeFromDeploymentSecrets as jest.MockedFunction<typeof removeFromDeploymentSecrets>;
   removeFromDeploymentSecretsMock.mockReturnValue(removedSecretsParams);
 
-  removeDeploymentSecrets(undefined, 'testCategory', 'testResourceName');
+  removeDeploymentSecrets.removeDeploymentSecrets(undefined, 'testCategory', 'testResourceName');
 
   expect(removeFromDeploymentSecrets).toHaveBeenCalledWith(deploymentSecretsRemove);
   expect(stateManagerMock.setDeploymentSecrets).toHaveBeenCalledWith(removedSecretsParams);

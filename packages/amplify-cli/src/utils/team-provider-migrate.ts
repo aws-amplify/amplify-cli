@@ -1,9 +1,8 @@
 import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { mergeDeploymentSecrets, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
+import { mergeDeploymentSecrets, PathConstants, pathManager, stateManager, getRootStackId } from 'amplify-cli-core';
 import chalk from 'chalk';
 import { Context } from '../domain/context';
-import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';
 import { isYesFlagSet } from './headless-input-utils';
 
 const message = `Amplify has been upgraded to handle secrets more securely by migrating some values in ${chalk.red(

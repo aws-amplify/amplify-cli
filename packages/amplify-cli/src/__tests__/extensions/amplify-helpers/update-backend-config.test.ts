@@ -1,39 +1,39 @@
-import { stateManager } from 'amplify-cli-core';
 import {
   updateBackendConfigAfterResourceAdd,
   updateBackendConfigAfterResourceUpdate,
   updateBackendConfigAfterResourceRemove,
-} from '../../../extensions/amplify-helpers/update-backend-config';
+  stateManager,
+} from 'amplify-cli-core';
 
-jest.mock('amplify-cli-core');
-
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+jest.spyOn(stateManager, 'getBackendConfig').mockReturnValue({});
+jest.spyOn(stateManager, 'setBackendConfig').mockImplementation(() => {});
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnv' });
 
 describe('update backend config', () => {
   const mockOption = {};
   beforeEach(() => {
-    stateManager_mock.getBackendConfig.mockReturnValue({});
+    (stateManager.getBackendConfig as jest.Mocked<any>).mockReturnValue({});
   });
   afterEach(() => {
     jest.clearAllMocks();
   });
   test('after resource add', () => {
     updateBackendConfigAfterResourceAdd('testCategory', 'testResource', mockOption);
-    expect(stateManager_mock.setBackendConfig.mock.calls[0][1].testCategory.testResource).toBeDefined();
+    expect((stateManager.setBackendConfig as jest.Mocked<any>).mock.calls[0][1].testCategory.testResource).toBeDefined();
   });
   test('after resource update', () => {
     updateBackendConfigAfterResourceUpdate('testCategory', 'testResource', 'testAttribute', 'testValue');
-    expect(stateManager_mock.setBackendConfig.mock.calls[0][1].testCategory.testResource.testAttribute).toBe('testValue');
+    expect((stateManager.setBackendConfig as jest.Mocked<any>).mock.calls[0][1].testCategory.testResource.testAttribute).toBe('testValue');
   });
   test('after resource remove', () => {
     updateBackendConfigAfterResourceRemove('testCategory', 'testResource');
-    expect(stateManager_mock.setBackendConfig.mock.calls[0][1]).toEqual({});
+    expect((stateManager.setBackendConfig as jest.Mocked<any>).mock.calls[0][1]).toEqual({});
   });
 });
 
 describe('update backend config after remove resource', () => {
   beforeAll(() => {
-    stateManager_mock.getBackendConfig.mockReturnValue({
+    (stateManager.getBackendConfig as jest.Mocked<any>).mockReturnValue({
       testCategory: {
         testResource: {},
       },
@@ -41,6 +41,6 @@ describe('update backend config after remove resource', () => {
   });
   it('should remove property from backend config', () => {
     updateBackendConfigAfterResourceRemove('testCategory', 'testResource');
-    expect(stateManager_mock.setBackendConfig.mock.calls[0][1]).toEqual({ testCategory: {} });
+    expect((stateManager.setBackendConfig as jest.Mocked<any>).mock.calls[0][1]).toEqual({ testCategory: {} });
   });
 });

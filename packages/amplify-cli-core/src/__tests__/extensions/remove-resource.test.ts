@@ -1,13 +1,12 @@
-import { stateManager, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { removeResourceParameters, stateManager, exitOnNextTick, ResourceDoesNotExistError, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
-import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
-import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
-import { updateBackendConfigAfterResourceRemove } from '../../../extensions/amplify-helpers/update-backend-config';
+import { removeResource, forceRemoveResource } from '../../extensions/remove-resource';
+import { updateBackendConfigAfterResourceRemove } from '../../extensions/update-backend-config';
 
-jest.mock('../../../extensions/amplify-helpers/envResourceParams');
-jest.mock('../../../extensions/amplify-helpers/update-backend-config');
+jest.mock('../../extensions/envResourceParams');
+jest.mock('../../extensions/update-backend-config');
 
 jest.mock('inquirer', () => ({
   prompt: jest.fn().mockResolvedValue({ resource: 'lambda1' }),
@@ -36,7 +35,7 @@ const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 jest.mock('amplify-prompts');
 
 describe('remove-resource', () => {
-  let context;
+  let context: $TSContext;
 
   beforeEach(() => {
     context = {
@@ -79,7 +78,7 @@ describe('remove-resource', () => {
           ],
         }),
       },
-    };
+    } as unknown as $TSContext;
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
         authResourceName: {
@@ -218,7 +217,7 @@ describe('remove-resource', () => {
     });
 
     it('not remove resource when confirm prompt returns false', async () => {
-      context.amplify.confirmPrompt.mockReturnValue(false);
+      (context.amplify.confirmPrompt as jest.Mocked<any>).mockReturnValue(false);
 
       await expect(removeResource(context as any, 'function', 'lambda1')).resolves.toBeUndefined();
 
@@ -297,11 +296,11 @@ describe('remove-resource', () => {
     });
 
     it('returns undefined when error deleting files', async () => {
-      context.filesystem.remove.mockImplementation(() => {
+      (context.filesystem.remove as jest.Mocked<any>).mockImplementation(() => {
         throw new Error('mock remove file error');
       });
       await expect(
-        forceRemoveResource(context as any, 'function', 'lambdaLayer1', 'backendDirPath/function/lambdaLayer1'),
+        forceRemoveResource(context as unknown as any, 'function', 'lambdaLayer1', 'backendDirPath/function/lambdaLayer1'),
       ).resolves.toBeUndefined();
       expect(printer.error).toBeCalledWith('Unable to force removal of resource: error deleting files');
     });
