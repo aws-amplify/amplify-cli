@@ -7,16 +7,18 @@ import {
   IAmplifyResource,
   stateManager,
   ManuallyTimedCodePath,
+  getEnvInfo,
+  getProjectConfig,
+  isValidGraphQLAuthError,
+  handleValidGraphQLAuthError,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer, prompter } from 'amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
-import { getEnvInfo, getProjectConfig } from 'amplify-cli-core';
 import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
-import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from 'amplify-cli-core';
 import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
