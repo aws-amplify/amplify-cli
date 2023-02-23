@@ -617,8 +617,11 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
 
   if (awsConfigInfo?.config?.accessKeyId && awsConfigInfo?.config?.secretAccessKey) {
     // Already loaded config
-    if (!awsConfigInfo.region) {
+    if (!awsConfigInfo.region && !awsConfigInfo?.config?.region) {
       awsConfigInfo.region = resolveRegion();
+      if (typeof awsConfigInfo.config === 'object') {
+        awsConfigInfo.config.region = awsConfigInfo.region;
+      }
     }
 
     return awsConfigInfo.config;
