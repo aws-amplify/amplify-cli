@@ -2,6 +2,7 @@ import { JSONUtilities } from 'amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,
+  addSimpleDDB,
   amplifyPushAuth,
   buildCustomResources,
   createNewProjectDir,
@@ -54,6 +55,10 @@ describe('adding custom resources test', () => {
     fs.copyFileSync(srcRuntimeErrorTest, destCustomResourceFilePath);
     await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
 
+    // add sample resource from other category that custom stack depends on
+    const ddbName = 'ddb';
+    await addSimpleDDB(projRoot, { name: ddbName });
+
     // happy path test (this custom stack compiles and runs successfully)
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
@@ -69,8 +74,11 @@ describe('adding custom resources test', () => {
 
     // Basic sanity generated CFN file content check
 
-    expect(buildCFNFileJSON?.Parameters).toEqual({
+    expect(buildCFNFileJSON?.Parameters).toMatchSnapshot();
+
+    expect(buildCFNFileJSON?.Parameters).toMatchObject({
       env: { Type: 'String', Description: 'Current Amplify CLI env name' },
+      storageddbName: { Type: 'String' },
     });
 
     expect(Object.keys(buildCFNFileJSON?.Outputs)).toEqual(['snsTopicArn']);
@@ -95,9 +103,11 @@ describe('adding custom resources test', () => {
 
     const customCFNFileJSON: any = JSONUtilities.readJson(customCFNFilePath);
 
+    expect(buildCFNFileJSON?.Parameters).toMatchSnapshot();
+
     // Make sure input params has params from the resource dependency
 
-    expect(customCFNFileJSON?.Parameters).toEqual({
+    expect(customCFNFileJSON?.Parameters).toMatchObject({
       env: { Type: 'String' },
       [`custom${cdkResourceName}snsTopicArn`]: {
         Type: 'String',
