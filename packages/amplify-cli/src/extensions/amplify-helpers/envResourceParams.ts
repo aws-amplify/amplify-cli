@@ -1,5 +1,5 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny } from '..';
+import { $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny } from 'amplify-cli-core';
 
 import _ from 'lodash';
 import { getRootStackId } from './get-root-stack-id';

@@ -1,4 +1,4 @@
-import { stateManager } from '..';
+import { stateManager } from 'amplify-cli-core';
 
 /**
  * Gets the root stack id

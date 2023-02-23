@@ -4,12 +4,12 @@ import {
   pathManager,
   promptConfirmationRemove,
   ResourceDoesNotExistError,
-  removeResourceParameters,
   stateManager,
-} from '..';
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
+import { removeResourceParameters } from './envResourceParams';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
 
 export async function forceRemoveResource(context: $TSContext, category: string, resourceName: string, resourceDir: string) {
@@ -55,14 +55,9 @@ export async function removeResource(
     exitOnNextTick(1);
   }
 
-  type EmbeddedCategoryResource = {
-    name: string;
-    value: string;
-  };
-
-  let enabledCategoryResources: EmbeddedCategoryResource | EmbeddedCategoryResource[] | string[] = Object.keys(
-    amplifyMeta[category],
-  ).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true);
+  let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
+    (r) => amplifyMeta[category][r].mobileHubMigrated !== true,
+  );
 
   if (resourceName) {
     if (!enabledCategoryResources.includes(resourceName)) {
@@ -131,9 +126,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   const amplifyMeta = stateManager.getMeta();
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
-    allResources.forEach((resourceItem: any) => {
+    allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach((dependsOnItem: any) => {
+        resourceItem.dependsOn.forEach((dependsOnItem) => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             printer.error('Resource cannot be removed because it has a dependency on another resource');
             printer.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);

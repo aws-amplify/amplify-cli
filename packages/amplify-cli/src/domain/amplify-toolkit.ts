@@ -18,10 +18,6 @@ import {
   getProviderPlugins,
   constructExeInfo,
   getResourceOutputs,
-  loadEnvResourceParameters,
-  saveEnvResourceParameters,
-  removeResourceParameters,
-  removeDeploymentSecrets,
 } from 'amplify-cli-core';
 
 export class AmplifyToolkit {
@@ -172,26 +168,26 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/update-amplify-meta').updateAmplifyMetaAfterPackage;
   }
   get updateBackendConfigAfterResourceAdd() {
-    return require('amplify-cli-core/lib/extensions/update-backend-config').updateBackendConfigAfterResourceAdd;
+    return require('../extensions/amplify-helpers/update-backend-config').updateBackendConfigAfterResourceAdd;
   }
   get updateBackendConfigAfterResourceUpdate() {
-    return require('amplify-cli-core/lib/extensions/update-backend-config').updateBackendConfigAfterResourceUpdate;
+    return require('../extensions/amplify-helpers/update-backend-config').updateBackendConfigAfterResourceUpdate;
   }
   get updateBackendConfigAfterResourceRemove() {
-    return require('amplify-cli-core/lib/extensions/update-backend-config').updateBackendConfigAfterResourceRemove;
+    return require('../extensions/amplify-helpers/update-backend-config').updateBackendConfigAfterResourceRemove;
   }
   get loadEnvResourceParameters() {
-    return loadEnvResourceParameters;
+    return require('../extensions/amplify-helpers/envResourceParams').loadEnvResourceParameters;
   }
   get saveEnvResourceParameters() {
-    return saveEnvResourceParameters;
+    return require('../extensions/amplify-helpers/envResourceParams').saveEnvResourceParameters;
   }
   get removeResourceParameters() {
-    return removeResourceParameters;
+    return require('../extensions/amplify-helpers/envResourceParams').removeResourceParameters;
   }
 
   get removeDeploymentSecrets() {
-    return removeDeploymentSecrets;
+    return require('../extensions/amplify-helpers/envResourceParams').removeDeploymentSecrets;
   }
 
   get triggerFlow() {

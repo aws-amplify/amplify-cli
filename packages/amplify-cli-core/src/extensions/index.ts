@@ -1,7 +1,4 @@
 export * from './apply-auth-mode';
-export * from './get-root-stack-id';
-export * from './envResourceParams';
-export * from './update-backend-config';
 export * from './confirm-prompt';
 export * from './constants';
 export * from './construct-exeInfo';
