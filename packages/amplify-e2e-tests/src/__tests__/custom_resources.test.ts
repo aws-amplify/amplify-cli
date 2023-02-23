@@ -10,6 +10,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
+  useLatestExtensibilityHelper,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -63,6 +64,10 @@ describe('adding custom resources test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
+    await buildCustomResources(projRoot);
+
+    // check if latest @aws-amplify/cli-extensibility-helper works
+    useLatestExtensibilityHelper(projRoot, cdkResourceName);
     await buildCustomResources(projRoot);
 
     await amplifyPushAuth(projRoot);
