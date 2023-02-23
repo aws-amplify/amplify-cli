@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import { AmplifyFault, $TSAny, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { CloudFormation } from 'aws-sdk';
@@ -8,7 +8,6 @@ import { S3 } from '../aws-utils/aws-s3';
 import { fileLogger } from '../utils/aws-logger';
 import { getPreviousDeploymentRecord } from '../utils/amplify-resource-state-utils';
 import { DeploymentOp, DeploymentStep } from '../iterative-deployment';
-import { AmplifyFault } from '../../../amplify-cli-core/src/errors/amplify-fault';
 
 const logger = fileLogger('disconnect-dependent-resources');
 
