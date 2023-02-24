@@ -12,6 +12,9 @@ describe('getTags', () => {
     },
   };
   jest.setMock('amplify-cli-core', {
+    toolkitExtensions: {
+      getProjectDetails: jest.fn().mockReturnValue(mockConfig),
+    },
     pathManager: {
       findProjectRoot: jest.fn().mockResolvedValue('mockProjectRoot'),
     },
@@ -20,9 +23,6 @@ describe('getTags', () => {
       localEnvInfoExists: jest.fn().mockReturnValue(false),
     },
     HydrateTags,
-  });
-  jest.setMock('amplify-cli-core/lib/extensions/get-project-details', {
-    getProjectDetails: jest.fn().mockReturnValue(mockConfig),
   });
 
   const mockContext = {
