@@ -670,7 +670,15 @@ const updateCloudFormationNestedStack = async (
         resolution: 'Please delete this bucket in the AWS S3 console and try again.',
       });
     } else {
-      throw error;
+      throw new AmplifyFault(
+        'DeploymentFault',
+        {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+        },
+        error,
+      );
     }
   }
 };
