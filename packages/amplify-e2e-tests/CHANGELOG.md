@@ -152,6 +152,14 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 
+## [3.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.1...amplify-e2e-tests@3.17.2) (2023-02-16)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 ## [3.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.0...amplify-e2e-tests@3.17.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-e2e-tests

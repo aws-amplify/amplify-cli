@@ -1,6 +1,6 @@
+import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import { $TSAny, $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import {
   IdentityProviderType,
   UserPoolClientType,
@@ -8,10 +8,12 @@ import {
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { coreAttributes, hostedUIProviders } from '../assets/string-maps';
+import { ensureHeadlessParameters } from './ensure-headless-parameters';
 import { importMessages } from './messages';
 import {
   AuthParameters,
@@ -27,7 +29,6 @@ import {
   ProviderUtils,
   ResourceParameters,
 } from './types';
-import { hostedUIProviders, coreAttributes } from '../assets/string-maps';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
@@ -965,8 +966,8 @@ export const importedAuthEnvInit = async (
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
   const projectConfig = context.amplify.getProjectConfig();
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
@@ -1336,50 +1337,6 @@ export const headlessImport = async (
     succeeded: true,
     envSpecificParameters: newState.envSpecificParameters,
   };
-};
-
-const ensureHeadlessParameters = (
-  resourceParameters: ResourceParameters,
-  headlessParams: ImportAuthHeadlessParameters,
-): EnvSpecificResourceParameters => {
-  // If we are doing headless mode, validate parameter presence and overwrite the input values from env specific params since they can be
-  // different for the current env operation (eg region can mismatch)
-
-  // Validate required arguments to be present
-  const missingParams = [];
-
-  if (!headlessParams.userPoolId) {
-    missingParams.push('userPoolId');
-  }
-
-  if (!headlessParams.webClientId) {
-    missingParams.push('webClientId');
-  }
-
-  if (!headlessParams.nativeClientId) {
-    missingParams.push('nativeClientId');
-  }
-
-  if (resourceParameters.authSelections === 'identityPoolAndUserPool' && !headlessParams.identityPoolId) {
-    missingParams.push('identityPoolId');
-  }
-
-  if (missingParams.length > 0) {
-    throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
-  }
-
-  const envSpecificParameters: EnvSpecificResourceParameters = {
-    userPoolId: headlessParams.userPoolId,
-    userPoolName: '', // Will be filled out later
-    webClientId: headlessParams.webClientId,
-    nativeClientId: headlessParams.nativeClientId,
-  };
-
-  if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-    envSpecificParameters.identityPoolId = headlessParams.identityPoolId;
-  }
-
-  return envSpecificParameters;
 };
 
 enum AuthParam {

@@ -744,12 +744,6 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandUsage: 'amplify api override',
         subCommandFlags: [],
       },
-      {
-        subCommand: 'push',
-        subCommandDescription: 'Provisions cloud resources with the latest local changes',
-        subCommandUsage: 'amplify api push',
-        subCommandFlags: [],
-      },
     ],
   },
   {
@@ -1004,13 +998,13 @@ export const commandsInfo: Array<CommandInfo> = [
       },
       {
         subCommand: 'build',
-        subCommandDescription: 'Removes function resource from your local backend',
+        subCommandDescription: 'Builds all the functions in the project',
         subCommandUsage: 'amplify function build',
         subCommandFlags: [],
       },
       {
         subCommand: 'remove',
-        subCommandDescription: 'Builds all the functions in the project',
+        subCommandDescription: 'Removes function resource from your local backend',
         subCommandUsage: 'amplify function remove',
         subCommandFlags: [],
       },
@@ -1129,5 +1123,12 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandFlags: [],
       },
     ],
+  },
+  {
+    command: 'build',
+    commandDescription: 'Builds all resources in the project',
+    commandUsage: 'amplify build',
+    commandFlags: [],
+    subCommands: [],
   },
 ];

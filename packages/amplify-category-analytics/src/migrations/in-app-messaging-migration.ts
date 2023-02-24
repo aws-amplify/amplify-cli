@@ -79,6 +79,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     };
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.ANALYTICS, resource, options);
 
+    context.parameters.options = context.parameters.options ?? {};
     context.parameters.options.yes = true;
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true;

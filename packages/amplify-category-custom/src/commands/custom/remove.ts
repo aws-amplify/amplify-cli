@@ -10,7 +10,7 @@ export async function run(context: $TSContext) {
   return amplify.removeResource(context, 'custom', resourceName).catch((err: any) => {
     printer.error(err.stack);
     printer.error('An error occurred when removing the custom resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   });
 }

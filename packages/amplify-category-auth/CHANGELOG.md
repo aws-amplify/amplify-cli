@@ -133,6 +133,14 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 # [3.0.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.2...@aws-amplify/amplify-category-auth@3.0.0-beta.4) (2022-12-28)
 
+## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.1...@aws-amplify/amplify-category-auth@2.15.2) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.0...@aws-amplify/amplify-category-auth@2.15.1) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

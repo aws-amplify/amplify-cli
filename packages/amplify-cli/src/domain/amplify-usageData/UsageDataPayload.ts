@@ -1,7 +1,6 @@
-import { $TSAny, isCI, CommandLineInput } from 'amplify-cli-core';
-import { IFlowReport } from 'amplify-cli-shared-interfaces';
+import { $TSAny, isCI, CommandLineInput, InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from 'amplify-cli-core';
+import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import * as os from 'os';
-import { InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from './UsageDataTypes';
 import { SerializableError } from './SerializableError';
 import { getLatestPayloadVersion } from './VersionManager';
 
@@ -13,7 +12,7 @@ export class UsageDataPayload implements IUsageDataPayload {
   installationUuid: string;
   amplifyCliVersion: string;
   input: CommandLineInput | null;
-  inputOptions: InputOptions;
+  inputOptions: CommandLineInput['options'];
   timestamp: string;
   error!: SerializableError;
   downstreamException!: SerializableError;

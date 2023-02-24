@@ -71,6 +71,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [5.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.3...@aws-amplify/amplify-migration-tests@5.3.4) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.2...@aws-amplify/amplify-migration-tests@5.3.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

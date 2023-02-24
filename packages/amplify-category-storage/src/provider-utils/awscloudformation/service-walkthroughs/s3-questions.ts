@@ -74,7 +74,7 @@ export async function askAndInvokeAuthWorkflow(context: $TSContext) {
       await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
       break;
     } else {
-      context.usageData.emitSuccess();
+      void context.usageData.emitSuccess();
       exitOnNextTick(0);
     }
   }

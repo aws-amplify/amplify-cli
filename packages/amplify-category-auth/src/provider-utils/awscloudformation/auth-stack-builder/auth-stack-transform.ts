@@ -183,12 +183,12 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       const triggerPermissions: AuthTriggerPermissions[] = permissions?.map((i: string) => JSON.parse(i));
 
       // handle dependsOn data
-      const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(
+      const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers ?? {}).map(
         (i) => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
       );
       const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
       // generate trigger config
-      const keys = Object.keys(this._cliInputs.cognitoConfig.triggers);
+      const keys = Object.keys(this._cliInputs.cognitoConfig.triggers as string);
       // Auth lambda config for Triggers
       const authTriggerConnections: AuthTriggerConnection[] = [];
       keys.forEach((key) => {

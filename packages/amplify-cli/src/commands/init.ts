@@ -30,7 +30,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
   checkForNestedProject();
 
-  const steps = runStrategy(context?.parameters?.options?.quickstart);
+  const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
     await step(context);
   }

@@ -32,7 +32,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     channelViewName = await prompter.pick('Choose the notification channel to configure', availableChannelViewNames);
   }
-  if (channelViewName) {
+  if (channelViewName && typeof channelName === 'string') {
     const selectedChannel = getChannelNameFromView(channelViewName);
     let pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
     // In-line deployment now requires an amplify-push to create the Pinpoint resource

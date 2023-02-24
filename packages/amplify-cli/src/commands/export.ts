@@ -82,10 +82,10 @@ async function buildAllResources(context: $TSContext) {
 }
 
 async function createFrontEndConfigFile(context: $TSContext, exportPath: string) {
-  const { rootStackName, frontend } = context.input.options;
+  const { rootStackName, frontend } = context.input.options ?? {};
 
   const frontendSet = new Set(Object.keys(context.amplify.getFrontendPlugins(context)));
-  if (!frontendSet.has(frontend)) {
+  if (!frontend || (frontend && !frontendSet.has(frontend))) {
     throw new UnrecognizedFrontendError(`${frontend} is not a supported Amplify frontend`);
   }
   const spinner = Ora(`Extracting outputs from ${rootStackName}`);

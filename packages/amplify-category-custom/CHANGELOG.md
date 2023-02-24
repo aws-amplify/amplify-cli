@@ -227,6 +227,14 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-beta.0...@aws-amplify/amplify-category-custom@3.0.0-beta.1) (2022-11-19)
+## [2.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.3...@aws-amplify/amplify-category-custom@2.6.4) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
 ## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.2...@aws-amplify/amplify-category-custom@2.6.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

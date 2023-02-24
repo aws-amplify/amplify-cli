@@ -455,6 +455,14 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 
 
 # [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-beta.0...amplify-category-geo@3.0.0-beta.1) (2022-11-19)
+## [2.11.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.11.1...amplify-category-geo@2.11.2) (2023-02-16)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
 ## [2.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.11.0...amplify-category-geo@2.11.1) (2023-02-06)
 
 **Note:** Version bump only for package amplify-category-geo

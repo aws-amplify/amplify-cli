@@ -3,7 +3,8 @@
 import inquirer from 'inquirer';
 import { uniq, flatten } from 'lodash';
 import chalk, { Chalk } from 'chalk';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny } from 'amplify-cli-core';
+import { AuthContext, CognitoConfiguration } from '../../../context';
 
 /**
  * Input object for parseInputs
@@ -32,7 +33,7 @@ export const parseInputs = async (
   defaultValuesFilename: $TSAny,
   stringMapsFilename: $TSAny,
   currentAnswers: $TSAny,
-  context: $TSContext,
+  context: AuthContext,
 ): Promise<$TSAny> => {
   // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
@@ -58,11 +59,11 @@ export const parseInputs = async (
     default: () => {
       // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
-      if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
+      if (context.updatingAuth && context.updatingAuth[input.key as keyof CognitoConfiguration] !== undefined) {
         if (input.key === 'triggers') {
           return triggerDefaults(context, input, getAllMaps(context.updatingAuth)[input.map]);
         }
-        return context.updatingAuth[input.key];
+        return context.updatingAuth[input.key as keyof CognitoConfiguration];
       }
       // if not editing or no previous value, get defaults (either w/ or w/out social provider flow)
       return getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
@@ -111,10 +112,10 @@ export const parseInputs = async (
   return question;
 };
 
-const iteratorQuestion = (input: $TSAny, question: $TSAny, context: $TSContext) => {
-  if (context.updatingAuth[input.iterator]) {
+const iteratorQuestion = (input: $TSAny, question: $TSAny, context: AuthContext) => {
+  if (context.updatingAuth?.[input.iterator as keyof CognitoConfiguration]) {
     question = {
-      choices: context.updatingAuth[input.iterator].map((i: $TSAny) => ({
+      choices: context.updatingAuth[input.iterator as keyof CognitoConfiguration].map((i: $TSAny) => ({
         name: i,
         value: i,
       })),
@@ -130,7 +131,7 @@ const iteratorQuestion = (input: $TSAny, question: $TSAny, context: $TSContext) 
   return question;
 };
 
-const getRequiredOptions = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, context: $TSContext, currentAnswers: $TSAny) => {
+const getRequiredOptions = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, context: AuthContext, currentAnswers: $TSAny) => {
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map((i: $TSAny) => sourceValues[i] || [])));
   const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter((x: $TSAny) => sourceArray.includes(x.value)) : [];
@@ -146,7 +147,7 @@ const getRequiredOptions = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny,
   return question;
 };
 
-const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, context: $TSContext, currentAnswers: $TSAny) => {
+const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, context: AuthContext, currentAnswers: $TSAny) => {
   if (input.filter === 'providers') {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const { requiredAttributes } = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
@@ -200,11 +201,11 @@ const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, conte
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const newChoices = JSON.parse(JSON.stringify(choices));
     choices.forEach((c: { conditionKey: string; value: $TSAny; conditionMsg: string; name: string }) => {
-      if (c.conditionKey === 'useDefault' && context.updatingAuth[c.conditionKey] === c.value && !c.conditionMsg) {
+      if (c.conditionKey === 'useDefault' && context.updatingAuth?.[c.conditionKey] === c.value && !c.conditionMsg) {
         const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
         newChoices.splice(index, 1);
-      } else if (c.conditionMsg && !context.updatingAuth[c.conditionKey]) {
-        if (context.updatingAuth.useDefault === 'defaultSocial') {
+      } else if (c.conditionMsg && !context.updatingAuth?.[c.conditionKey as keyof CognitoConfiguration]) {
+        if (context.updatingAuth?.useDefault === 'defaultSocial') {
           const index = newChoices.findIndex((i: { name: string }) => i.name === c.name);
           newChoices[index].disabled = `Disabled: ${c.conditionMsg}`;
         } else {
@@ -218,11 +219,13 @@ const filterInputs = (input: $TSAny, question: $TSAny, getAllMaps: $TSAny, conte
   return question;
 };
 
-const triggerDefaults = (context: $TSContext, input: { key: string | number }, availableOptions: $TSAny[]) => {
+const triggerDefaults = (context: AuthContext, input: { key: string | number }, availableOptions: $TSAny[]) => {
   const capabilityDefaults: $TSAny[] = [];
-  if (context.updatingAuth.triggers) {
+  if (context.updatingAuth?.triggers) {
     const current =
-      typeof context.updatingAuth[input.key] === 'string' ? JSON.parse(context.updatingAuth[input.key]) : context.updatingAuth[input.key];
+      typeof context.updatingAuth[input.key as keyof CognitoConfiguration] === 'string'
+        ? JSON.parse(context.updatingAuth[input.key as keyof CognitoConfiguration])
+        : context.updatingAuth[input.key as keyof CognitoConfiguration];
     try {
       if (current) {
         availableOptions.forEach((a) => {

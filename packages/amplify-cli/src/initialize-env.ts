@@ -1,10 +1,9 @@
 import sequential from 'promise-sequential';
-import { stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault, constants, spinner } from 'amplify-cli-core';
+import { ManuallyTimedCodePath, stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault, constants, spinner } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
@@ -14,7 +13,7 @@ export const initializeEnv = async (
   currentAmplifyMeta: $TSMeta = stateManager.currentMetaFileExists() ? stateManager.getCurrentMeta() : undefined,
 ): Promise<void> => {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;

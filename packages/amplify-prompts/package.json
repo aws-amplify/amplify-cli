@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {
-    "amplify-cli-shared-interfaces": "1.1.1-beta.6",
+    "@aws-amplify/amplify-cli-shared-interfaces": "1.1.1",
     "chalk": "^4.1.1",
     "enquirer": "^2.3.6"
   },

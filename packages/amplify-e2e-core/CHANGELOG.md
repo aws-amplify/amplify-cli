@@ -87,6 +87,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [4.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.3...@aws-amplify/amplify-e2e-core@4.6.4) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
 ## [4.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.6.2...@aws-amplify/amplify-e2e-core@4.6.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

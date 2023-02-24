@@ -3,8 +3,8 @@ import { prodUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { UsageData } from '../domain/amplify-usageData';
 import { getLatestApiVersion, getLatestPayloadVersion } from '../domain/amplify-usageData/VersionManager';
-import { CommandLineInput } from 'amplify-cli-core';
-import { IFlowReport } from 'amplify-cli-shared-interfaces';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
+import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 
 describe('test version manager', () => {
   it('url version should be the latest URL', () => {

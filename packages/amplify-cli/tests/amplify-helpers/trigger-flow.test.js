@@ -130,13 +130,11 @@ describe('TriggerFlow:', () => {
   describe('When updating a trigger...', () => {
     let spyUpdate;
     let readdirSyncSpy;
-    let unlinkSyncSpy;
     let metadataSpy;
 
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1']);
       spyUpdate = jest.spyOn(func, 'update').mockImplementation(() => Promise.resolve());
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => null);
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
