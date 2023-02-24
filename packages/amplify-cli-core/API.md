@@ -114,7 +114,7 @@ export abstract class AmplifyCategoryTransform {
 }
 
 // @public (undocumented)
-export const amplifyCLIConstants: Readonly<{
+const amplifyCLIConstants: Readonly<{
     readonly AmplifyCLIDirName: "amplify";
     readonly DotAmplifyDirName: ".amplify";
     readonly DotConfigAmplifyCLISubDirName: ".config";
@@ -403,7 +403,7 @@ export enum CFNTemplateFormat {
 }
 
 // @public (undocumented)
-export const checkIfAuthExists: () => boolean;
+const checkIfAuthExists: () => boolean;
 
 // @public (undocumented)
 export interface CLIContext {
@@ -556,7 +556,7 @@ export class ConfigurationError extends Error {
 }
 
 // @public (undocumented)
-export function confirmPrompt(message: string, defaultValue?: boolean): Promise<any>;
+function confirmPrompt(message: string, defaultValue?: boolean): Promise<any>;
 
 // @public (undocumented)
 export const constants: {
@@ -587,7 +587,7 @@ export const constants: {
 };
 
 // @public (undocumented)
-export function constructExeInfo(context: $TSContext): void;
+function constructExeInfo(context: $TSContext): void;
 
 // @public (undocumented)
 export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
@@ -610,7 +610,7 @@ export const convertNumBytes: (numBytes: number) => {
 };
 
 // @public (undocumented)
-export function copyBatch(context: $TSContext, jobs: $TSCopyJob, props: object, force?: boolean, writeParams?: boolean | object): Promise<void>;
+function copyBatch(context: $TSContext, jobs: $TSCopyJob, props: object, force?: boolean, writeParams?: boolean | object): Promise<void>;
 
 // @public (undocumented)
 export function createDefaultCustomPoliciesFile(categoryName: string, resourceName: string): void;
@@ -887,33 +887,33 @@ export const generateOverrideSkeleton: (context: $TSContext, srcResourceDirPath:
 export const generateTsConfigforProject: (srcResourceDirPath: string, destDirPath: string) => void;
 
 // @public (undocumented)
-export function getAllCategoryPluginInfo(context: $TSContext): Record<string, {
+function getAllCategoryPluginInfo(context: $TSContext): Record<string, {
     packageLocation: string;
 }[]>;
 
 // @public (undocumented)
-export const getAllEnvs: () => string[];
+const getAllEnvs: () => string[];
 
 // @public (undocumented)
-export const getAmplifyAppId: () => string | undefined;
+const getAmplifyAppId: () => string | undefined;
 
 // @public (undocumented)
 export function getAmplifyResourceByCategories(category: string): string[];
 
 // @public (undocumented)
-export function getCategoryPluginInfo(context: $TSContext, category: string, service?: string): IPluginInfo | undefined;
+function getCategoryPluginInfo(context: $TSContext, category: string, service?: string): IPluginInfo | undefined;
 
 // @public (undocumented)
-export const getEnvDetails: () => $TSAny;
+const getEnvDetails: () => $TSAny;
 
 // @public (undocumented)
-export const getEnvInfo: () => $TSAny;
+const getEnvInfo: () => $TSAny;
 
 // @public (undocumented)
 export function getFolderSize(filePaths: string | string[]): Promise<number>;
 
 // @public (undocumented)
-export function getFrontendPlugins(context: $TSContext): Record<string, string>;
+function getFrontendPlugins(context: $TSContext): Record<string, string>;
 
 // @public (undocumented)
 export function getGraphQLTransformerAuthDocLink(version: number): string;
@@ -931,7 +931,7 @@ export function getGraphQLTransformerOpenSearchDocLink(version: number): string;
 export function getGraphQLTransformerOpenSearchProductionDocLink(version: number): string;
 
 // @public (undocumented)
-export const getImportedAuthProperties: (context: $TSContext) => {
+const getImportedAuthProperties: (context: $TSContext) => {
     imported: boolean;
     userPoolId?: string;
     authRoleArn?: string;
@@ -960,25 +960,25 @@ export const getPackageManager: (rootPath?: string) => PackageManager | null;
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
 
 // @public (undocumented)
-export function getPlugin(context: $TSContext, pluginName: string): string | undefined;
+function getPlugin(context: $TSContext, pluginName: string): string | undefined;
 
 // @public (undocumented)
-export function getPluginInstance(context: $TSContext, pluginName: string): any;
+function getPluginInstance(context: $TSContext, pluginName: string): any;
 
 // @public (undocumented)
-export function getProjectConfig(): any;
+function getProjectConfig(): any;
 
 // @public (undocumented)
-export const getProjectDetails: () => IAmplifyProjectDetails;
+const getProjectDetails: () => IAmplifyProjectDetails;
 
 // @public (undocumented)
-export const getProjectMeta: () => $TSMeta;
+const getProjectMeta: () => $TSMeta;
 
 // @public (undocumented)
 export function green(message: string): void;
 
 // @public (undocumented)
-export const handleValidGraphQLAuthError: (context: $TSContext, message: string) => Promise<boolean>;
+const handleValidGraphQLAuthError: (context: $TSContext, message: string) => Promise<boolean>;
 
 // @public (undocumented)
 export type HookEvent = {
@@ -1053,7 +1053,7 @@ export type HooksVerb = 'add' | 'update' | 'remove' | 'push' | 'pull' | 'publish
 export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv?: boolean): Tag[];
 
 // @public (undocumented)
-export interface IAmplifyProjectDetails {
+interface IAmplifyProjectDetails {
     // (undocumented)
     amplifyMeta: $TSAny;
     // (undocumented)
@@ -1300,7 +1300,7 @@ export const isPackaged: boolean;
 export const isResourceNameUnique: (category: string, resourceName: string, throwOnMatch?: boolean) => boolean;
 
 // @public (undocumented)
-export const isValidGraphQLAuthError: (message: string) => boolean;
+const isValidGraphQLAuthError: (message: string) => boolean;
 
 // @public (undocumented)
 export const isWindowsPlatform: () => boolean;
@@ -2137,6 +2137,33 @@ export interface Template {
 
 // @public (undocumented)
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
+
+declare namespace toolkitExtensions {
+    export {
+        isValidGraphQLAuthError,
+        handleValidGraphQLAuthError,
+        checkIfAuthExists,
+        confirmPrompt,
+        amplifyCLIConstants,
+        constructExeInfo,
+        copyBatch,
+        getAllCategoryPluginInfo,
+        getAllEnvs,
+        getAmplifyAppId,
+        getCategoryPluginInfo,
+        getEnvDetails,
+        getEnvInfo,
+        getFrontendPlugins,
+        getImportedAuthProperties,
+        getPluginInstance,
+        getPlugin,
+        getProjectConfig,
+        IAmplifyProjectDetails,
+        getProjectDetails,
+        getProjectMeta
+    }
+}
+export { toolkitExtensions }
 
 // @public (undocumented)
 export type TypeDef = {
