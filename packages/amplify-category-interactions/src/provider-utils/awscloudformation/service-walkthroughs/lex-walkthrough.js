@@ -385,7 +385,7 @@ async function addSlot(context, intentName, resourceName, parameters) {
       slot.type = slot.type[0];
     }
 
-    slot.prompt = await prompter.prompt('Enter a prompt for your slot (e.g. What city?)', {
+    slot.prompt = await prompter.input('Enter a prompt for your slot (e.g. What city?)', {
       initial: resourceName,
       validate: matchRegex(/^.{1,1000}$/, 'Prompts can have a maximum of 1000 characters and cannot be empty'),
     });
@@ -491,7 +491,7 @@ async function getSlotType(context, newSlotTypes, parameters) {
 }
 
 async function askSlotTypeValue() {
-  return prompter.prompt('Add a possible value for your slot:', {
+  return prompter.input('Add a possible value for your slot:', {
     validate: matchRegex(/^.{1,1000}$/, 'Slot values can have a maximum of 1000 characters and cannot be empty'),
   });
 }
