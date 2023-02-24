@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { getPlugin } from 'amplify-cli-core';
+import { $TSContext, toolkitExtensions } from 'amplify-cli-core';
+const { getPlugin } = toolkitExtensions;
 
 describe('getPlugin', () => {
   it('return plugin directory when exists', () => {
