@@ -1,4 +1,5 @@
-import { confirmPrompt } from '../..';
+import { toolkitExtensions } from '../..';
+const { confirmPrompt } = toolkitExtensions;
 
 jest.mock('inquirer', () => {
   return {

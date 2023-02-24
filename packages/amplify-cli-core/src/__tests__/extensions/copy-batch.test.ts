@@ -1,4 +1,4 @@
-import { copyBatch } from '../../extensions/copy-batch';
+import { copyBatch } from '../../toolkit-extensions/copy-batch';
 import { JSONUtilities, $TSContext, $TSCopyJob } from '../..';
 
 let exists = false;

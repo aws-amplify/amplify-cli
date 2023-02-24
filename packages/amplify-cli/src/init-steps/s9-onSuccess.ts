@@ -8,7 +8,7 @@ import {
   stateManager,
   $TSContext,
   $TSAny,
-  getFrontendPlugins,
+  toolkitExtensions,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { printer, prompter } from 'amplify-prompts';
@@ -17,7 +17,7 @@ import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
 import { DebugConfig } from '../app-config/debug-config';
-
+const { getFrontendPlugins } = toolkitExtensions;
 /**
  * Executes after headless init
  */

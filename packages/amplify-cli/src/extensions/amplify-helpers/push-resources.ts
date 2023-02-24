@@ -7,10 +7,7 @@ import {
   IAmplifyResource,
   stateManager,
   ManuallyTimedCodePath,
-  getEnvInfo,
-  getProjectConfig,
-  isValidGraphQLAuthError,
-  handleValidGraphQLAuthError,
+  toolkitExtensions,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer, prompter } from 'amplify-prompts';
@@ -21,6 +18,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { showBuildDirChangesMessage } from './auto-updates';
 
+const { getEnvInfo, getProjectConfig, isValidGraphQLAuthError, handleValidGraphQLAuthError } = toolkitExtensions;
 /**
  * Entry point for pushing resources to the cloud
  */

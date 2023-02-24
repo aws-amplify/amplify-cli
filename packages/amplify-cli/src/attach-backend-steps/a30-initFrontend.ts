@@ -1,8 +1,9 @@
 import * as inquirer from 'inquirer';
-import { getFrontendPlugins } from 'amplify-cli-core';
+import { toolkitExtensions } from 'amplify-cli-core';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
 import { ListQuestion } from 'inquirer';
 
+const { getFrontendPlugins } = toolkitExtensions;
 export async function initFrontend(context) {
   if (
     context.exeInfo.inputParams &&

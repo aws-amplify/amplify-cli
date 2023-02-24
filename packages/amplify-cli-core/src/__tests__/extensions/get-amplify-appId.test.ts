@@ -1,6 +1,7 @@
-import { getAmplifyAppId } from '../..';
-import * as getProjectMeta from '../../extensions/get-project-meta';
+import { toolkitExtensions } from '../..';
+import * as getProjectMeta from '../../toolkit-extensions/get-project-meta';
 
+const { getAmplifyAppId } = toolkitExtensions;
 jest.spyOn(getProjectMeta, 'getProjectMeta').mockReturnValue({
   providers: {
     awscloudformation: {

@@ -1,11 +1,14 @@
 import * as path from 'path';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
-import { AmplifyError, getProjectConfig, getAllCategoryPluginInfo } from 'amplify-cli-core';
+import { AmplifyError, toolkitExtensions } from 'amplify-cli-core';
+const { getProjectConfig, getAllCategoryPluginInfo } = toolkitExtensions;
 
 jest.mock('amplify-cli-core', () => ({
   ...jest.requireActual('amplify-cli-core'),
-  getProjectConfig: jest.fn(),
-  getAllCategoryPluginInfo: jest.fn(),
+  toolkitExtensions: {
+    getProjectConfig: jest.fn(),
+    getAllCategoryPluginInfo: jest.fn(),
+  },
 }));
 
 (getAllCategoryPluginInfo as jest.Mocked<any>).mockReturnValue({});

@@ -1,5 +1,7 @@
-import { $TSContext, getPluginInstance } from '../..';
+import { $TSContext, toolkitExtensions } from '../..';
 import * as path from 'path';
+
+const { getPluginInstance } = toolkitExtensions;
 
 describe('get-plugin-instance', () => {
   it('returns instance when plugin exists', () => {

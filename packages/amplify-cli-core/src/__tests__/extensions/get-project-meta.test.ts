@@ -1,4 +1,5 @@
-import { stateManager, getProjectMeta } from '../..';
+import { stateManager, toolkitExtensions } from '../..';
+const { getProjectMeta } = toolkitExtensions;
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 jest.spyOn(stateManager, 'metaFileExists').mockImplementation(() => true);

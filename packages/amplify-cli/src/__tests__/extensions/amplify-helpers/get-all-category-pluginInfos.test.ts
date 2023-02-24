@@ -1,10 +1,10 @@
 import { constructContext } from '../../../context-manager';
 
-import { $TSContext, PluginCollection } from 'amplify-cli-core';
+import { toolkitExtensions, $TSContext, PluginCollection } from 'amplify-cli-core';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 
 import { CLIInput as CommandLineInput } from '../../../domain/command-input';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core';
+const { getAllCategoryPluginInfo } = toolkitExtensions;
 
 test('getAllCategoryPluginInfo', () => {
   const mockPluginPlatform = constructMockPluginPlatform();

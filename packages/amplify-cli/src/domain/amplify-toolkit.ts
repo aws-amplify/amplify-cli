@@ -1,5 +1,6 @@
+import { toolkitExtensions } from 'amplify-cli-core';
 import { Context } from './context';
-import {
+const {
   confirmPrompt,
   getAllCategoryPluginInfo,
   amplifyCLIConstants,
@@ -16,7 +17,7 @@ import {
   getProjectDetails,
   getProjectMeta,
   constructExeInfo,
-} from 'amplify-cli-core';
+} = toolkitExtensions;
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;

@@ -1,5 +1,6 @@
-import { stateManager, getProjectDetails } from '../..';
-import * as getEnvInfo from '../../extensions/get-env-info';
+import { stateManager, toolkitExtensions } from '../..';
+import * as getEnvInfo from '../../toolkit-extensions/get-env-info';
+const { getProjectDetails } = toolkitExtensions;
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 

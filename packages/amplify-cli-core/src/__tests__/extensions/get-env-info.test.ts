@@ -1,4 +1,5 @@
-import { stateManager, getEnvInfo } from 'amplify-cli-core';
+import { stateManager, toolkitExtensions } from '../..';
+const { getEnvInfo } = toolkitExtensions;
 
 jest.spyOn(stateManager, 'getLocalEnvInfo');
 jest.spyOn(stateManager, 'localEnvInfoExists');

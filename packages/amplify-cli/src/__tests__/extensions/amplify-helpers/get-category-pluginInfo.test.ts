@@ -1,9 +1,9 @@
 import { CLIInput as CommandLineInput } from '../../../domain/command-input';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 import { constructContext } from '../../../context-manager';
-import { getCategoryPluginInfo } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
+import { toolkitExtensions, $TSContext } from 'amplify-cli-core';
 
+const { getCategoryPluginInfo } = toolkitExtensions;
 test('getCategoryPluginInfo returns the first pluginInfo to match category', () => {
   const mockPluginPlatform = constructMockPluginPlatform();
   const mockProcessArgv = [

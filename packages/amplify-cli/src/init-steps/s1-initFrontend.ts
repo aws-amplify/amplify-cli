@@ -1,7 +1,8 @@
-import { $TSAny, $TSContext, getFrontendPlugins } from 'amplify-cli-core';
+import { $TSAny, $TSContext, toolkitExtensions } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
 
+const { getFrontendPlugins } = toolkitExtensions;
 /**
  * Initializes the frontend
  */

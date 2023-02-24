@@ -1,4 +1,5 @@
-import { amplifyCLIConstants } from '../..';
+import { toolkitExtensions } from '../..';
+const { amplifyCLIConstants } = toolkitExtensions;
 
 describe('constants', () => {
   it('should freeze values', () => {

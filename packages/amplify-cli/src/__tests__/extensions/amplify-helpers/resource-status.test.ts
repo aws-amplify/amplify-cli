@@ -1,5 +1,5 @@
 import { hashLayerResource } from '@aws-amplify/amplify-category-function';
-import { stateManager, getEnvInfo } from 'amplify-cli-core';
+import { toolkitExtensions, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
@@ -10,6 +10,8 @@ import {
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { print } from '../../../extensions/amplify-helpers/print';
 import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
+
+const { getEnvInfo } = toolkitExtensions;
 
 const sampleHash1 = 'testHash1';
 const sampleHash2 = 'testHash2';
@@ -56,7 +58,9 @@ const projectRootPath = 'projectRootPath';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
-  getEnvInfo: jest.fn().mockReturnValue({}),
+  toolkitExtensions: {
+    getEnvInfo: jest.fn().mockReturnValue({}),
+  },
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),

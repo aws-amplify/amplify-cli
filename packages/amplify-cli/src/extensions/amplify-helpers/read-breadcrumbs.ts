@@ -1,6 +1,8 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager, amplifyCLIConstants } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, toolkitExtensions } from 'amplify-cli-core';
 import { leaveBreadcrumbs } from './leave-breadcrumbs';
+
+const { amplifyCLIConstants } = toolkitExtensions;
 
 export function readBreadcrumbs(category: string, resourceName: string) {
   const breadcrumbsPath = path.join(pathManager.getBackendDirPath(), category, resourceName, amplifyCLIConstants.BreadcrumbsFileName);

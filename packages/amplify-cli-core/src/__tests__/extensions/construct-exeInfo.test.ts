@@ -1,5 +1,6 @@
-import { $TSContext, constructExeInfo } from '../..';
-import * as getProjectDetails from '../../extensions/get-project-details';
+import { $TSContext, toolkitExtensions } from '../..';
+import * as getProjectDetails from '../../toolkit-extensions/get-project-details';
+const { constructExeInfo } = toolkitExtensions;
 let context_stub = {} as $TSContext;
 
 jest.spyOn(getProjectDetails, 'getProjectDetails').mockReturnValue({} as unknown as getProjectDetails.IAmplifyProjectDetails);

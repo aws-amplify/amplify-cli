@@ -1,4 +1,5 @@
-import { getFrontendPlugins } from 'amplify-cli-core';
+import { toolkitExtensions } from '../..';
+const { getFrontendPlugins } = toolkitExtensions;
 
 describe('get-frontend-plugins', () => {
   it('returns map of frontend plugins when frontend plugin exists', () => {

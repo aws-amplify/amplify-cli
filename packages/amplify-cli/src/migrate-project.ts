@@ -3,10 +3,19 @@ import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import { coerce, lt } from 'semver';
-import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny, MigrationInfo } from 'amplify-cli-core';
+import {
+  toolkitExtensions,
+  pathManager,
+  stateManager,
+  $TSObject,
+  $TSContext,
+  JSONUtilities,
+  $TSAny,
+  MigrationInfo,
+} from 'amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
-import { amplifyCLIConstants } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
+const { amplifyCLIConstants } = toolkitExtensions;
 import { run as push } from './commands/push';
 
 const spinner = ora('');

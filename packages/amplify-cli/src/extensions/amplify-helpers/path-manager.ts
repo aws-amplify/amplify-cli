@@ -1,8 +1,8 @@
-import { $TSAny, projectNotInitializedError } from 'amplify-cli-core';
+import { $TSAny, projectNotInitializedError, toolkitExtensions } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import * as path from 'path';
-import { amplifyCLIConstants } from 'amplify-cli-core';
+const { amplifyCLIConstants } = toolkitExtensions;
 
 /* Helpers */
 
