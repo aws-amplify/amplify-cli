@@ -655,7 +655,24 @@ const updateCloudFormationNestedStack = async (
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated), {}, eventMap);
 
-  await cfnItem.updateResourceStack(transformedStackPath);
+  try {
+    await cfnItem.updateResourceStack(transformedStackPath);
+  } catch (error) {
+    const s3Indicator = '(AWS::S3::Bucket)';
+    const alreadyExistsSuffix = 'already exists';
+    if (error.details.includes(s3Indicator) && error.details.includes(alreadyExistsSuffix)) {
+      const prefix = `Name: ${
+        error.details.includes('CustomMessageConfirmationBucket') ? 'CustomMessageConfirmationBucket' : 'S3Bucket'
+      } (AWS::S3::Bucket), Event Type: create, Reason:`;
+      const bucketName = error.details.slice(prefix.length, error.details.length - alreadyExistsSuffix.length);
+      throw new AmplifyError('ResourceAlreadyExistsError', {
+        message: `The S3 bucket ${bucketName} already exists.`,
+        resolution: 'Please delete this bucket in the AWS S3 console and try again.',
+      });
+    } else {
+      throw error;
+    }
+  }
 };
 
 const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpdated: $TSAny) => {
