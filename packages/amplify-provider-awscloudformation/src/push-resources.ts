@@ -664,21 +664,13 @@ const updateCloudFormationNestedStack = async (
       const prefix = `Name: ${
         error.details.includes('CustomMessageConfirmationBucket') ? 'CustomMessageConfirmationBucket' : 'S3Bucket'
       } (AWS::S3::Bucket), Event Type: create, Reason:`;
-      const bucketName = error.details.slice(prefix.length, error.details.length - alreadyExistsSuffix.length);
+      const bucketName = error.details.slice(prefix.length + 1, error.details.length - alreadyExistsSuffix.length - 1);
       throw new AmplifyError('ResourceAlreadyExistsError', {
         message: `The S3 bucket ${bucketName} already exists.`,
-        resolution: 'Please delete this bucket in the AWS S3 console and try again.',
+        resolution: `Please delete this bucket in the AWS S3 console and try again. The bucket can be found at: https://s3.console.aws.amazon.com/s3/buckets/${bucketName}.`,
       });
     } else {
-      throw new AmplifyFault(
-        'DeploymentFault',
-        {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-        },
-        error,
-      );
+      throw new AmplifyFault('DeploymentFault', { message: error.message, code: error.code, details: error.details }, error);
     }
   }
 };
