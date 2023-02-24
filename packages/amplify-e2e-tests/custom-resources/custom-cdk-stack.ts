@@ -1,3 +1,4 @@
+import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
@@ -9,7 +10,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class cdkStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
     super(scope, id, props);
 
     /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input parameter */
@@ -54,5 +55,9 @@ export class cdkStack extends cdk.Stack {
         resources: [topic.topicArn],
       }),
     );
+
+    AmplifyHelpers.addResourceDependency(this, amplifyResourceProps.category, amplifyResourceProps.resourceName, [
+      { category: 'storage', resourceName: 'ddb' },
+    ]);
   }
 }
