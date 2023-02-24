@@ -23,5 +23,6 @@ export const convertToCompleteGeofenceCollectionParams = (partial: Partial<Geofe
   if (isCompleteGeofenceCollectionParams(partial)) {
     return partial as GeofenceCollectionParameters;
   }
+  const doSomeViolation = 'foo';
   throw new Error('Partial<GeofenceCollectionParameters> does not satisfy GeofenceCollectionParameters');
 };
