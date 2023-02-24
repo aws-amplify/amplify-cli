@@ -29,16 +29,21 @@ export type LayerPushSettings = {
   usePreviousPermissions?: boolean;
 };
 
+export type PushOpts = {
+  minify?: boolean;
+};
+
 /**
  * Function to test amplify push with verbose status
  */
-export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false, opts?: PushOpts): Promise<void> => {
   // Test detailed status
   await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait(/.*/)
     .runAsync();
+  const pushArgs = ['push', ...(opts?.minify ? ['--minify'] : [])];
   // Test amplify push
-  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), pushArgs, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
     .wait('Do you want to generate code for your newly created GraphQL API')
@@ -155,10 +160,14 @@ export function amplifyPushUpdate(
   testingWithLatestCodebase = false,
   allowDestructiveUpdates = false,
   overridePushTimeoutMS = 0,
+  minify?,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
+  }
+  if (minify) {
+    args.push('--minify');
   }
   return spawn(getCLIPath(testingWithLatestCodebase), args, {
     cwd,
