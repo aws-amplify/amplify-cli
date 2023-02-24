@@ -1,4 +1,6 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
+import path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export const addCDKCustomResource = async (cwd: string, settings: any): Promise<void> => {
   await spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
@@ -21,6 +23,9 @@ export const addCFNCustomResource = async (cwd: string, settings: any): Promise<
     .sendLine(settings.name || '\r')
     .wait('Do you want to access Amplify generated resources in your custom CloudFormation file?')
     .sendYes()
+    .wait('Select the categories you want this custom resource to have access to')
+    .sendCtrlA()
+    .sendCarriageReturn()
     .wait('Do you want to edit the CloudFormation stack now?')
     .sendNo()
     .sendEof()
@@ -42,3 +47,10 @@ export function buildCustomResources(cwd: string) {
       });
   });
 }
+
+export const useLatestExtensibilityHelper = (projectRoot: string, customResourceName: string) => {
+  const packageJsonPath = path.join(projectRoot, 'amplify', 'backend', 'custom', customResourceName, 'package.json');
+  const packageJson: Record<string, Record<string, string>> = JSONUtilities.readJson(packageJsonPath);
+  packageJson.dependencies['@aws-amplify/cli-extensibility-helper'] = 'latest';
+  JSONUtilities.writeJson(packageJsonPath, packageJson);
+};
