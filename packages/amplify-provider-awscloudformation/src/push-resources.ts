@@ -655,24 +655,7 @@ const updateCloudFormationNestedStack = async (
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated), {}, eventMap);
 
-  try {
-    await cfnItem.updateResourceStack(transformedStackPath);
-  } catch (error) {
-    const s3Indicator = '(AWS::S3::Bucket)';
-    const alreadyExistsSuffix = 'already exists';
-    if (error.details.includes(s3Indicator) && error.details.includes(alreadyExistsSuffix)) {
-      const prefix = `Name: ${
-        error.details.includes('CustomMessageConfirmationBucket') ? 'CustomMessageConfirmationBucket' : 'S3Bucket'
-      } (AWS::S3::Bucket), Event Type: create, Reason:`;
-      const bucketName = error.details.slice(prefix.length + 1, error.details.length - alreadyExistsSuffix.length - 1);
-      throw new AmplifyError('ResourceAlreadyExistsError', {
-        message: `The S3 bucket ${bucketName} already exists.`,
-        resolution: `Please delete this bucket in the AWS S3 console and try again. The bucket can be found at: https://s3.console.aws.amazon.com/s3/buckets/${bucketName}.`,
-      });
-    } else {
-      throw new AmplifyFault('DeploymentFault', { message: error.message, code: error.code, details: error.details }, error);
-    }
-  }
+  await cfnItem.updateResourceStack(transformedStackPath);
 };
 
 const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpdated: $TSAny) => {
@@ -1248,7 +1231,7 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
   }
 };
 
-const handleCloudFormationError = (err: Error): void => {
+const handleCloudFormationError = (err: Error & { details?: string }): void => {
   if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
     return;
   }
@@ -1263,6 +1246,19 @@ const handleCloudFormationError = (err: Error): void => {
       },
       err,
     );
+  }
+
+  const s3Indicator = '(AWS::S3::Bucket)';
+  const alreadyExistsSuffix = 'already exists';
+  if (err.details?.includes(s3Indicator) && err.details?.includes(alreadyExistsSuffix)) {
+    const prefix = `Name: ${
+      err.details.includes('CustomMessageConfirmationBucket') ? 'CustomMessageConfirmationBucket' : 'S3Bucket'
+    } (AWS::S3::Bucket), Event Type: create, Reason:`;
+    const bucketName = err.details.slice(prefix.length + 1, err.details.length - alreadyExistsSuffix.length - 1);
+    throw new AmplifyError('ResourceAlreadyExistsError', {
+      message: `The S3 bucket ${bucketName} already exists.`,
+      resolution: `Please delete this bucket in the AWS S3 console and try again. The bucket can be found at: https://s3.console.aws.amazon.com/s3/buckets/${bucketName}.`,
+    });
   }
 
   throw err;
