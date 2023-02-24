@@ -1,7 +1,5 @@
 import { ResourceParameters } from './resourceParams';
 import _ from 'lodash';
-import os from 'os';
-import fs from 'fs-extra';
 
 /**
  * Data structure that represents a Geofence Collection Resource
@@ -25,6 +23,5 @@ export const convertToCompleteGeofenceCollectionParams = (partial: Partial<Geofe
   if (isCompleteGeofenceCollectionParams(partial)) {
     return partial as GeofenceCollectionParameters;
   }
-  fs.writeFileSync(os.tmpdir() + '/foo.txt', 'foo');
   throw new Error('Partial<GeofenceCollectionParameters> does not satisfy GeofenceCollectionParameters');
 };
