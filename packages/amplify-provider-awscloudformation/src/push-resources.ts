@@ -1250,7 +1250,7 @@ const handleCloudFormationError = (err: Error & { details?: string }): void => {
 
   const s3Indicator = '(AWS::S3::Bucket)';
   const alreadyExistsSuffix = 'already exists';
-  if (err.details?.includes(s3Indicator) && err.details?.includes(alreadyExistsSuffix)) {
+  if (err?.details?.includes(s3Indicator) && err?.details?.includes(alreadyExistsSuffix)) {
     const prefix = `Name: ${
       err.details.includes('CustomMessageConfirmationBucket') ? 'CustomMessageConfirmationBucket' : 'S3Bucket'
     } (AWS::S3::Bucket), Event Type: create, Reason:`;
