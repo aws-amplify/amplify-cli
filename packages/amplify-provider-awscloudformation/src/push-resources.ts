@@ -77,6 +77,7 @@ import { prePushTemplateDescriptionHandler } from './template-description-utils'
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
+import { minifyJSONFile } from './utils/minify-json';
 
 const logger = fileLogger('push-resources');
 
@@ -767,6 +768,9 @@ export const uploadTemplateToS3 = async (
   amplifyMeta: $TSMeta,
 ): Promise<void> => {
   const cfnFile = path.parse(filePath).base;
+  if (context.input.options?.minify) {
+    minifyJSONFile(filePath);
+  }
   const s3 = await S3.getInstance(context);
 
   const s3Params = {

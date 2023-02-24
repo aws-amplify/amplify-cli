@@ -8,14 +8,24 @@ import { isCI } from '..';
  * @param target The thing you want to open. Can be a URL, file, or executable.
  * @param options opn.Options
  */
-export const open = (target: string, options: opn.Options): Promise<ChildProcess | void> => {
+export const open = async (target: string, options: opn.Options): Promise<ChildProcess | void> => {
   if (isCI()) {
     return Promise.resolve();
   }
+  let childProcess: ChildProcess;
   try {
-    return opn(target, options);
+    childProcess = await opn(target, options);
+    childProcess.on('error', (e) => handleOpenError(e, target));
   } catch (e) {
-    console.warn(`Unable to open ${target}: ${(e as Error).message}`);
+    handleOpenError(e, target);
     return Promise.resolve();
+  }
+  return Promise.resolve(childProcess);
+};
+
+const handleOpenError = (err: Error, target: string) => {
+  console.error(`Unable to open ${target}: ${err.message}`);
+  if ('code' in err && err['code'] === 'ENOENT') {
+    console.warn('Have you installed `xdg-utils` on your machine?');
   }
 };

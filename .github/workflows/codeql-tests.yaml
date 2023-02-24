@@ -1,5 +1,5 @@
 # Ref: https://tinyurl.com/5d6rr8s7
-name: 'CodeQL'
+name: 'CodeQL Tests'
 
 on:
   push:
@@ -30,8 +30,8 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: +security-and-quality
-          config-file: ./.github/codeql/codeql-config.yml
+          config-file: ./.github/codeql/codeql-config-tests.yml
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
-          category: '/language:${{matrix.language}}'
+          category: '/language:${{matrix.language}}/test'

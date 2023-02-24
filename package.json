@@ -4,6 +4,7 @@
   "description": "amplify-cli",
   "scripts": {
     "addwords": "node ./scripts/add-to-dict.js",
+    "build-and-verify": "yarn clean && yarn dev-build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
     "build-tests-changed": "nx affected --target=build-tests",
     "build-tests": "nx run-many --target=build-tests --all",
     "build": "nx run-many --target=build --all",
@@ -26,6 +27,7 @@
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify amplify-dev",
     "lint-check": "yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=1085",
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
+    "lint-fix-package-json": "yarn lint-check-package-json --fix",
     "lint-check-package-json": "yarn eslint --no-eslintrc --config .eslint.package.json.js '**/package.json'",
     "mergewords": "yarn ts-node ./scripts/handle-dict-conflicts.ts",
     "pkg-all-local": "yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
@@ -75,7 +77,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-      "pre-commit": "yarn verify-commit"
+      "pre-commit": "./scripts/package-json-check.sh && yarn verify-commit"
     }
   },
   "author": "Amazon Web Services",

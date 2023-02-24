@@ -13,9 +13,9 @@ import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
 import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
 import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
-import { ICommandInput } from 'amplify-cli-shared-interfaces';
-import { IFlowData } from 'amplify-cli-shared-interfaces';
-import { IFlowReport } from 'amplify-cli-shared-interfaces';
+import { ICommandInput } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { InputOptions } from 'amplify-cli-core';
 import { IPluginPlatform } from 'amplify-cli-core';
 import { IUsageData } from 'amplify-cli-core';
@@ -24,7 +24,7 @@ import { ProjectSettings } from 'amplify-cli-core';
 import { StartableTimedCodePath } from 'amplify-cli-core';
 import { StoppableTimedCodePath } from 'amplify-cli-core';
 import { TimedCodePath } from 'amplify-cli-core';
-import { TypeOptionFlowData } from 'amplify-cli-shared-interfaces';
+import { TypeOptionFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { UrlWithStringQuery } from 'url';
 
 // Warning: (ae-forgotten-export) The symbol "CLIInput" needs to be exported by the entry point index.d.ts
