@@ -1,4 +1,5 @@
-import { getImportedAuthProperties } from '../../../extensions/amplify-helpers/get-imported-auth-properties';
+import { toolkitExtensions } from 'amplify-cli-core';
+const { getImportedAuthProperties } = toolkitExtensions;
 
 describe('get-imported-auth-properties', () => {
   let context;

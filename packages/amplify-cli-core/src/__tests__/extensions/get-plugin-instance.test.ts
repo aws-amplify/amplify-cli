@@ -1,6 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, toolkitExtensions } from '../..';
 import * as path from 'path';
-import { getPluginInstance } from '../../../extensions/amplify-helpers/get-plugin-instance';
+
+const { getPluginInstance } = toolkitExtensions;
 
 describe('get-plugin-instance', () => {
   it('returns instance when plugin exists', () => {
@@ -9,7 +10,7 @@ describe('get-plugin-instance', () => {
         plugins: {
           test: [
             {
-              packageLocation: path.join(__dirname, '../../../../__mocks__/faked-plugin'),
+              packageLocation: path.join(__dirname, '../../../__mocks__/faked-plugin'),
             },
           ],
         },

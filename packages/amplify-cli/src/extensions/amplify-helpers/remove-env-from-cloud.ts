@@ -1,10 +1,8 @@
-import { $TSAny, AmplifyFault } from 'amplify-cli-core';
+import { $TSAny, AmplifyFault, toolkitExtensions } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { getProjectConfig } from './get-project-config';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
 import { getProviderPlugins } from './get-provider-plugins';
 import { raiseInternalOnlyPostEnvRemoveEvent } from '../../execution-manager';
-
+const { getAllCategoryPluginInfo, getProjectConfig } = toolkitExtensions;
 /**
  * Removes an Amplify App env and all associated resources from the cloud
  */

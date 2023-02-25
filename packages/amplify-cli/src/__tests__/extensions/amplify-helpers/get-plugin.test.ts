@@ -1,4 +1,5 @@
-import { getPlugin } from '../../../extensions/amplify-helpers/get-plugin';
+import { $TSContext, toolkitExtensions } from 'amplify-cli-core';
+const { getPlugin } = toolkitExtensions;
 
 describe('getPlugin', () => {
   it('return plugin directory when exists', () => {
@@ -7,7 +8,7 @@ describe('getPlugin', () => {
         plugins: [{ name: 'test', directory: true }],
       },
     };
-    const result = getPlugin(context_stub, 'test');
+    const result = getPlugin(context_stub as unknown as $TSContext, 'test');
     expect(result).toBe(true);
   });
 
@@ -17,7 +18,7 @@ describe('getPlugin', () => {
         plugins: [],
       },
     };
-    const result = getPlugin(context_stub, 'test');
+    const result = getPlugin(context_stub as unknown as $TSContext, 'test');
     expect(result).toBe(undefined);
   });
 });

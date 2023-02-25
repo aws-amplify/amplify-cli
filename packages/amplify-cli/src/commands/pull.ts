@@ -1,12 +1,12 @@
-import { $TSContext, stateManager, AmplifyError, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyError, AmplifyFault, toolkitExtensions } from 'amplify-cli-core';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
-import { getAmplifyAppId } from '../extensions/amplify-helpers/get-amplify-appId';
 import { checkForNestedProject } from './helpers/projectUtils';
 
+const { getAmplifyAppId } = toolkitExtensions;
 /**
  * Entry point for pull command
  */

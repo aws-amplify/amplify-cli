@@ -1,9 +1,8 @@
-import { getEnvDetails } from 'amplify-cli-core/lib/extensions/get-env-details';
-jest.mock('amplify-cli-core', () => ({
-  stateManager: {
-    getTeamProviderInfo: jest.fn().mockReturnValue({ production: 'test_production', develop: 'test_develop', staging: 'test_staging' }),
-  },
-}));
+import { toolkitExtensions, stateManager } from '../..';
+const { getEnvDetails } = toolkitExtensions;
+jest
+  .spyOn(stateManager, 'getTeamProviderInfo')
+  .mockReturnValue({ production: 'test_production', develop: 'test_develop', staging: 'test_staging' });
 
 describe('getEnvDetails', () => {
   it('should get the details for each env', () => {

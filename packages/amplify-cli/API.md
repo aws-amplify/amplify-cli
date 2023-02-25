@@ -6,12 +6,9 @@
 
 /// <reference types="node" />
 
+import { $TSContext } from 'amplify-cli-core/src';
 import { CommandLineInput } from 'amplify-cli-core/src/types';
 import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
-import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
-import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
-import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { ICommandInput } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
@@ -24,6 +21,7 @@ import { ProjectSettings } from 'amplify-cli-core';
 import { StartableTimedCodePath } from 'amplify-cli-core';
 import { StoppableTimedCodePath } from 'amplify-cli-core';
 import { TimedCodePath } from 'amplify-cli-core';
+import { toolkitExtensions } from 'amplify-cli-core';
 import { TypeOptionFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { UrlWithStringQuery } from 'url';
 

@@ -1,5 +1,5 @@
 import { getProjectDetails } from './get-project-details';
-import { JSONUtilities, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext } from '..';
 
 export function constructExeInfo(context: $TSContext) {
   context.exeInfo = getProjectDetails();
@@ -16,7 +16,7 @@ export function constructExeInfo(context: $TSContext) {
   });
 }
 
-function normalizeKey(key) {
+function normalizeKey(key: string) {
   if (key === 'y') {
     key = 'yes';
   }

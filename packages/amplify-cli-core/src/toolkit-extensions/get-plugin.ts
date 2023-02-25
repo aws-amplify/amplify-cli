@@ -1,4 +1,5 @@
-export function getPlugin(context, pluginName) {
+import { $TSContext } from '..';
+export function getPlugin(context: $TSContext, pluginName: string) {
   let result;
   const { plugins } = context.runtime;
   for (let i = 0; i < plugins.length; i++) {

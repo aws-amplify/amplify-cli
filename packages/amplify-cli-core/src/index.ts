@@ -1,4 +1,5 @@
 /* eslint-disable import/no-cycle */
+import * as toolkitExtensions from './toolkit-extensions';
 export * from './banner-message';
 export * from './category-interfaces';
 export * from './cfnUtilities';
@@ -14,6 +15,7 @@ export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './errors';
 export * from './exitOnNextTick';
+export { toolkitExtensions };
 export * from './feature-flags';
 export * from './hooks';
 export * from './isCI';

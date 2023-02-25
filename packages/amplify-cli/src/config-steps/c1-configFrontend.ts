@@ -1,7 +1,7 @@
 import inquirer, { ListQuestion } from 'inquirer';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
+import { toolkitExtensions } from 'amplify-cli-core';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
-
+const { getFrontendPlugins } = toolkitExtensions;
 export async function configFrontendHandler(context) {
   const frontendPlugins = getFrontendPlugins(context);
   const { frontend } = context.exeInfo.projectConfig;

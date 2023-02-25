@@ -1,8 +1,9 @@
-import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
+import { toolkitExtensions } from '../..';
+const { confirmPrompt } = toolkitExtensions;
 
 jest.mock('inquirer', () => {
   return {
-    prompt: (input) => {
+    prompt: (input: string) => {
       return new Promise((resolve) => resolve({ yesno: input }));
     },
   };

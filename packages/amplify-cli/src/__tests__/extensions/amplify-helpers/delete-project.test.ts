@@ -11,49 +11,44 @@ printerMock.success = jest.fn();
 
 jest.mock('../../../extensions/amplify-helpers/remove-env-from-cloud');
 jest.mock('../../../extensions/amplify-helpers/path-manager');
-jest.mock('../../../extensions/amplify-helpers/get-amplify-appId', () => ({
-  getAmplifyAppId: jest.fn().mockReturnValue(true),
-}));
-jest.mock('../../../extensions/amplify-helpers/get-frontend-plugins', () => ({
-  getFrontendPlugins: jest.fn().mockReturnValue({ test: '../../../__mocks__/faked-plugin' }),
-}));
 jest.mock('../../../../__mocks__/faked-plugin', () => ({
   deleteConfig: jest.fn(),
 }));
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as $TSAny),
+  toolkitExtensions: {
+    getAmplifyAppId: jest.fn().mockReturnValue(true),
+    getFrontendPlugins: jest.fn().mockReturnValue({ test: '../../../__mocks__/faked-plugin' }),
+    getPluginInstance: jest.fn().mockReturnValue({
+      getConfiguredAmplifyClient: jest.fn().mockResolvedValue({
+        listBackendEnvironments: jest.fn().mockReturnValue({
+          promise: jest
+            .fn()
+            .mockImplementationOnce(() => ({
+              backendEnvironments: [],
+            }))
+            .mockImplementationOnce(() => {
+              throw new Error('listBackendEnvironments error');
+            })
+            .mockImplementationOnce(() => {
+              // eslint-disable-next-line no-throw-literal
+              throw {
+                name: 'BucketNotFoundError',
+                message: 'Bucket not found',
+                link: 'https://docs.aws.amazon.com/',
+              };
+            }),
+        }),
+        deleteApp: jest.fn().mockReturnValue({
+          promise: jest.fn().mockResolvedValue(true),
+        }),
+      }),
+    }),
+  },
   FeatureFlags: {
     isInitialized: jest.fn().mockReturnValue(true),
     removeFeatureFlagConfiguration: jest.fn().mockResolvedValue(true),
   },
-}));
-
-jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
-  getPluginInstance: jest.fn().mockReturnValue({
-    getConfiguredAmplifyClient: jest.fn().mockResolvedValue({
-      listBackendEnvironments: jest.fn().mockReturnValue({
-        promise: jest
-          .fn()
-          .mockImplementationOnce(() => ({
-            backendEnvironments: [],
-          }))
-          .mockImplementationOnce(() => {
-            throw new Error('listBackendEnvironments error');
-          })
-          .mockImplementationOnce(() => {
-            // eslint-disable-next-line no-throw-literal
-            throw {
-              name: 'BucketNotFoundError',
-              message: 'Bucket not found',
-              link: 'https://docs.aws.amazon.com/',
-            };
-          }),
-      }),
-      deleteApp: jest.fn().mockReturnValue({
-        promise: jest.fn().mockResolvedValue(true),
-      }),
-    }),
-  }),
 }));
 
 describe('getConfirmation', () => {

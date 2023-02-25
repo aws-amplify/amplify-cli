@@ -1,4 +1,5 @@
-import { getFrontendPlugins } from '../../../extensions/amplify-helpers/get-frontend-plugins';
+import { toolkitExtensions } from '../..';
+const { getFrontendPlugins } = toolkitExtensions;
 
 describe('get-frontend-plugins', () => {
   it('returns map of frontend plugins when frontend plugin exists', () => {

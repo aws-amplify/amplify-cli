@@ -1,8 +1,9 @@
 import { getSummaryTableData, getResourceDiffs } from './resource-status-data';
 import * as resourceStatus from './resource-status-diff';
-import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
+import { toolkitExtensions } from 'amplify-cli-core';
 import { print } from './print';
 import chalk from 'chalk';
+const { getEnvInfo } = toolkitExtensions;
 //view: displays resource-diff (cloudformation-diff, input parameters (pending))
 export async function viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated }) {
   const resourceDiffs = await getResourceDiffs(resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated);

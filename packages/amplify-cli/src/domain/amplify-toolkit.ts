@@ -1,12 +1,23 @@
+import { toolkitExtensions } from 'amplify-cli-core';
 import { Context } from './context';
-import { confirmPrompt } from 'amplify-cli-core/lib/extensions/confirm-prompt';
-import { getAllCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
-import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
-import { copyBatch } from 'amplify-cli-core/lib/extensions/copy-batch';
-import { getAllEnvs } from 'amplify-cli-core/lib/extensions/get-all-envs';
-import { getEnvDetails } from 'amplify-cli-core/lib/extensions/get-env-details';
-import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
-import { getCategoryPluginInfo } from 'amplify-cli-core/lib/extensions/get-category-pluginInfo';
+const {
+  confirmPrompt,
+  getAllCategoryPluginInfo,
+  amplifyCLIConstants,
+  copyBatch,
+  getAllEnvs,
+  getEnvDetails,
+  getEnvInfo,
+  getCategoryPluginInfo,
+  getFrontendPlugins,
+  getImportedAuthProperties,
+  getPluginInstance,
+  getPlugin,
+  getProjectConfig,
+  getProjectDetails,
+  getProjectMeta,
+  constructExeInfo,
+} = toolkitExtensions;
 
 export class AmplifyToolkit {
   private _cleanUpTasks: Array<(...args: any[]) => any>;
@@ -18,7 +29,7 @@ export class AmplifyToolkit {
     return amplifyCLIConstants;
   }
   get constructExeInfo() {
-    return require('../extensions/amplify-helpers/construct-exeInfo').constructExeInfo;
+    return constructExeInfo;
   }
   get copyBatch() {
     return copyBatch;
@@ -36,7 +47,7 @@ export class AmplifyToolkit {
     return getAllEnvs;
   }
   get getPlugin() {
-    return require('../extensions/amplify-helpers/get-plugin').getPlugin;
+    return getPlugin;
   }
   get getCategoryPluginInfo() {
     return getCategoryPluginInfo;
@@ -45,7 +56,7 @@ export class AmplifyToolkit {
     return getAllCategoryPluginInfo;
   }
   get getFrontendPlugins() {
-    return require('../extensions/amplify-helpers/get-frontend-plugins').getFrontendPlugins;
+    return getFrontendPlugins;
   }
   get getProviderPlugins() {
     return require('../extensions/amplify-helpers/get-provider-plugins').getProviderPlugins;
@@ -57,16 +68,16 @@ export class AmplifyToolkit {
     return getEnvInfo;
   }
   get getPluginInstance() {
-    return require('../extensions/amplify-helpers/get-plugin-instance').getPluginInstance;
+    return getPluginInstance;
   }
   get getProjectConfig() {
-    return require('../extensions/amplify-helpers/get-project-config').getProjectConfig;
+    return getProjectConfig;
   }
   get getProjectDetails() {
-    return require('../extensions/amplify-helpers/get-project-details').getProjectDetails;
+    return getProjectDetails;
   }
   get getProjectMeta() {
-    return require('../extensions/amplify-helpers/get-project-meta').getProjectMeta;
+    return getProjectMeta;
   }
   get getResourceStatus() {
     return require('../extensions/amplify-helpers/resource-status').getResourceStatus;
@@ -243,7 +254,7 @@ export class AmplifyToolkit {
   }
 
   get getImportedAuthProperties() {
-    return require('../extensions/amplify-helpers/get-imported-auth-properties').getImportedAuthProperties;
+    return getImportedAuthProperties;
   }
 
   get invokePluginMethod() {

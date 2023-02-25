@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { homedir } from 'os';
-import { amplifyCLIConstants } from 'amplify-cli-core/lib/extensions/constants';
+import { toolkitExtensions } from 'amplify-cli-core';
 import {
   searchProjectRootPath,
   getHomeDotAmplifyDirPath,
@@ -18,6 +18,7 @@ import {
   getAmplifyMetaFilePath,
   getCurrentAmplifyMetaFilePath,
 } from '../../../extensions/amplify-helpers/path-manager';
+const { amplifyCLIConstants } = toolkitExtensions;
 
 jest.mock('fs-extra', () => ({
   existsSync: jest.fn().mockReturnValue(true),

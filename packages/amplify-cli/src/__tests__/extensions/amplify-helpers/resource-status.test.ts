@@ -1,5 +1,5 @@
 import { hashLayerResource } from '@aws-amplify/amplify-category-function';
-import { AmplifyException, stateManager } from 'amplify-cli-core';
+import { toolkitExtensions, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
@@ -8,9 +8,10 @@ import {
   getCloudInitStatus,
   NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import * as getEnvInfo from 'amplify-cli-core/lib/extensions/get-env-info';
 import { print } from '../../../extensions/amplify-helpers/print';
 import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
+
+const { getEnvInfo } = toolkitExtensions;
 
 const sampleHash1 = 'testHash1';
 const sampleHash2 = 'testHash2';
@@ -42,7 +43,6 @@ jest.mock('../../../extensions/amplify-helpers/print', () => ({
   },
 }));
 
-jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({});
 jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
   ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
   getCloudInitStatus: jest.fn(),
@@ -58,6 +58,9 @@ const projectRootPath = 'projectRootPath';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
+  toolkitExtensions: {
+    getEnvInfo: jest.fn().mockReturnValue({}),
+  },
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),
@@ -113,7 +116,7 @@ describe('resource-status', () => {
     stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
-    jest.spyOn(getEnvInfo, 'getEnvInfo').mockReturnValue({ envName: 'test' });
+    (getEnvInfo as jest.Mocked<any>).mockReturnValue({ envName: 'test' });
     (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockImplementation(() => CLOUD_INITIALIZED);
     const hashLayerResourceMock = hashLayerResource as jest.MockedFunction<typeof hashLayerResource>;
     hashLayerResourceMock.mockClear();

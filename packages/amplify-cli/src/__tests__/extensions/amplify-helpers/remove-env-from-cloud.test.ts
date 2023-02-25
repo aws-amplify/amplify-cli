@@ -1,15 +1,18 @@
 import * as path from 'path';
-import { AmplifyError } from 'amplify-cli-core';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
-import * as pluginInfo from 'amplify-cli-core/lib/extensions/get-all-category-pluginInfos';
+import { AmplifyError, toolkitExtensions } from 'amplify-cli-core';
+const { getProjectConfig, getAllCategoryPluginInfo } = toolkitExtensions;
 
-jest.mock('../../../extensions/amplify-helpers/get-project-config', () => ({
-  getProjectConfig: jest.fn().mockReturnValue({
-    providers: ['awscloudformation'],
-  }),
+jest.mock('amplify-cli-core', () => ({
+  ...jest.requireActual('amplify-cli-core'),
+  toolkitExtensions: {
+    getProjectConfig: jest.fn(),
+    getAllCategoryPluginInfo: jest.fn(),
+  },
 }));
 
-jest.spyOn(pluginInfo, 'getAllCategoryPluginInfo').mockReturnValue({});
+(getAllCategoryPluginInfo as jest.Mocked<any>).mockReturnValue({});
+(getProjectConfig as jest.Mocked<any>).mockReturnValue({ providers: ['awscloudformation'] });
 
 jest.mock('../../../extensions/amplify-helpers/get-provider-plugins', () => ({
   getProviderPlugins: jest.fn().mockReturnValue({
@@ -43,7 +46,7 @@ describe('remove-env-from-cloud', () => {
   });
 
   it('invoke deletePinpointAppForEnv method in notificationsModule', async () => {
-    jest.spyOn(pluginInfo, 'getAllCategoryPluginInfo').mockReturnValue({
+    (getAllCategoryPluginInfo as jest.Mocked<any>).mockReturnValue({
       notifications: [
         {
           packageLocation: path.join(__dirname, '../../../../__mocks__/faked-plugin'),

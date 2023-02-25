@@ -114,6 +114,32 @@ export abstract class AmplifyCategoryTransform {
 }
 
 // @public (undocumented)
+const amplifyCLIConstants: Readonly<{
+    readonly AmplifyCLIDirName: "amplify";
+    readonly DotAmplifyDirName: ".amplify";
+    readonly DotConfigAmplifyCLISubDirName: ".config";
+    readonly BackendAmplifyCLISubDirName: "backend";
+    readonly CurrentCloudBackendAmplifyCLISubDirName: "#current-cloud-backend";
+    readonly ProjectConfigFileName: "project-config.json";
+    readonly amplifyMetaFileName: "amplify-meta.json";
+    readonly CliName: "amplify";
+    readonly DateTimeFormatString: "YYYY-MM-DD-HH-mm-ss";
+    readonly DateTimeFormatStringCompact: "YYYYMMDDHHmmss";
+    readonly DefaultAWSAccessKeyId: "<YOUR_ACCESS_KEY_ID>";
+    readonly DefaultAWSSecretAccessKey: "<YOUR_SECRET_ACCESS_KEY>";
+    readonly DefaultAWSRegion: "us-east-1";
+    readonly LocalEnvFileName: "local-env-info.json";
+    readonly ProviderInfoFileName: "team-provider-info.json";
+    readonly BackendConfigFileName: "backend-config.json";
+    readonly TagsFileName: "tags.json";
+    readonly MIN_MIGRATION_PROJECT_CONFIG_VERSION: "3.0";
+    readonly MIN_NODE12_PROJECT_CONFIG_VERSION: "3.1";
+    readonly CURRENT_PROJECT_CONFIG_VERSION: "3.1";
+    readonly BreadcrumbsFileName: "amplify.state";
+    readonly LogDirectory: ".amplify-log";
+}>;
+
+// @public (undocumented)
 export class AmplifyError extends AmplifyException {
     constructor(name: AmplifyErrorType, options: AmplifyExceptionOptions, downstreamException?: Error);
 }
@@ -377,6 +403,9 @@ export enum CFNTemplateFormat {
 }
 
 // @public (undocumented)
+const checkIfAuthExists: () => boolean;
+
+// @public (undocumented)
 export interface CLIContext {
     // (undocumented)
     getEnvInfo: () => $TSAny;
@@ -527,6 +556,9 @@ export class ConfigurationError extends Error {
 }
 
 // @public (undocumented)
+function confirmPrompt(message: string, defaultValue?: boolean): Promise<any>;
+
+// @public (undocumented)
 export const constants: {
     HELP: string;
     HELP_SHORT: string;
@@ -555,6 +587,9 @@ export const constants: {
 };
 
 // @public (undocumented)
+function constructExeInfo(context: $TSContext): void;
+
+// @public (undocumented)
 export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
     // (undocumented)
     array: CommandLineInput['subCommands'];
@@ -573,6 +608,9 @@ export const convertNumBytes: (numBytes: number) => {
     toKB: () => number;
     toMB: () => number;
 };
+
+// @public (undocumented)
+function copyBatch(context: $TSContext, jobs: $TSCopyJob, props: object, force?: boolean, writeParams?: boolean | object): Promise<void>;
 
 // @public (undocumented)
 export function createDefaultCustomPoliciesFile(categoryName: string, resourceName: string): void;
@@ -849,10 +887,33 @@ export const generateOverrideSkeleton: (context: $TSContext, srcResourceDirPath:
 export const generateTsConfigforProject: (srcResourceDirPath: string, destDirPath: string) => void;
 
 // @public (undocumented)
+function getAllCategoryPluginInfo(context: $TSContext): Record<string, {
+    packageLocation: string;
+}[]>;
+
+// @public (undocumented)
+const getAllEnvs: () => string[];
+
+// @public (undocumented)
+const getAmplifyAppId: () => string | undefined;
+
+// @public (undocumented)
 export function getAmplifyResourceByCategories(category: string): string[];
 
 // @public (undocumented)
+function getCategoryPluginInfo(context: $TSContext, category: string, service?: string): IPluginInfo | undefined;
+
+// @public (undocumented)
+const getEnvDetails: () => $TSAny;
+
+// @public (undocumented)
+const getEnvInfo: () => $TSAny;
+
+// @public (undocumented)
 export function getFolderSize(filePaths: string | string[]): Promise<number>;
+
+// @public (undocumented)
+function getFrontendPlugins(context: $TSContext): Record<string, string>;
 
 // @public (undocumented)
 export function getGraphQLTransformerAuthDocLink(version: number): string;
@@ -868,6 +929,16 @@ export function getGraphQLTransformerOpenSearchDocLink(version: number): string;
 
 // @public (undocumented)
 export function getGraphQLTransformerOpenSearchProductionDocLink(version: number): string;
+
+// @public (undocumented)
+const getImportedAuthProperties: (context: $TSContext) => {
+    imported: boolean;
+    userPoolId?: string;
+    authRoleArn?: string;
+    authRoleName?: string;
+    unauthRoleArn?: string;
+    unauthRoleName?: string;
+};
 
 // @public (undocumented)
 export function getMigrateResourceMessageForOverride(categoryName: string, resourceName: string, isUpdate?: boolean): string;
@@ -889,7 +960,25 @@ export const getPackageManager: (rootPath?: string) => PackageManager | null;
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
 
 // @public (undocumented)
+function getPlugin(context: $TSContext, pluginName: string): string | undefined;
+
+// @public (undocumented)
+function getPluginInstance(context: $TSContext, pluginName: string): any;
+
+// @public (undocumented)
+function getProjectConfig(): any;
+
+// @public (undocumented)
+const getProjectDetails: () => IAmplifyProjectDetails;
+
+// @public (undocumented)
+const getProjectMeta: () => $TSMeta;
+
+// @public (undocumented)
 export function green(message: string): void;
+
+// @public (undocumented)
+const handleValidGraphQLAuthError: (context: $TSContext, message: string) => Promise<boolean>;
 
 // @public (undocumented)
 export type HookEvent = {
@@ -962,6 +1051,18 @@ export type HooksVerb = 'add' | 'update' | 'remove' | 'push' | 'pull' | 'publish
 //
 // @public (undocumented)
 export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv?: boolean): Tag[];
+
+// @public (undocumented)
+interface IAmplifyProjectDetails {
+    // (undocumented)
+    amplifyMeta: $TSAny;
+    // (undocumented)
+    backendConfig: $TSAny;
+    // (undocumented)
+    localEnvInfo: $TSAny;
+    // (undocumented)
+    projectConfig: $TSAny;
+}
 
 // @public (undocumented)
 export interface IAmplifyResource {
@@ -1197,6 +1298,9 @@ export const isPackaged: boolean;
 
 // @public (undocumented)
 export const isResourceNameUnique: (category: string, resourceName: string, throwOnMatch?: boolean) => boolean;
+
+// @public (undocumented)
+const isValidGraphQLAuthError: (message: string) => boolean;
 
 // @public (undocumented)
 export const isWindowsPlatform: () => boolean;
@@ -2033,6 +2137,33 @@ export interface Template {
 
 // @public (undocumented)
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
+
+declare namespace toolkitExtensions {
+    export {
+        isValidGraphQLAuthError,
+        handleValidGraphQLAuthError,
+        checkIfAuthExists,
+        confirmPrompt,
+        amplifyCLIConstants,
+        constructExeInfo,
+        copyBatch,
+        getAllCategoryPluginInfo,
+        getAllEnvs,
+        getAmplifyAppId,
+        getCategoryPluginInfo,
+        getEnvDetails,
+        getEnvInfo,
+        getFrontendPlugins,
+        getImportedAuthProperties,
+        getPluginInstance,
+        getPlugin,
+        getProjectConfig,
+        IAmplifyProjectDetails,
+        getProjectDetails,
+        getProjectMeta
+    }
+}
+export { toolkitExtensions }
 
 // @public (undocumented)
 export type TypeDef = {

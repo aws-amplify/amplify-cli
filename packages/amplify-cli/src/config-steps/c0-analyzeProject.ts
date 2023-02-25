@@ -2,11 +2,11 @@ import * as path from 'path';
 import inquirer, { ListQuestion, InputQuestion } from 'inquirer';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
-import { getEnvInfo } from 'amplify-cli-core/lib/extensions/get-env-info';
+import { stateManager, toolkitExtensions } from 'amplify-cli-core';
 import { displayConfigurationDefaults } from '../init-steps/s0-analyzeProject';
-import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isContainersEnabled } from '../execution-manager';
-import { stateManager } from 'amplify-cli-core';
+
+const { getEnvInfo, getFrontendPlugins } = toolkitExtensions;
 
 export async function analyzeProject(context) {
   context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
