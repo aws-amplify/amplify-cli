@@ -38,7 +38,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     await sequential(scanUserLocationTasks);
   }
 
-  if (isPackaged) {
+  if (isPackaged && !pluginPlatform!.pluginDirectories.includes(constants.PACKAGED_NODE_MODULES)) {
     pluginPlatform!.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
   }
 
