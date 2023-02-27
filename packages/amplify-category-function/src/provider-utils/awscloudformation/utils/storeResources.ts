@@ -289,7 +289,7 @@ const updateLayerCfnFile = async (context: $TSContext, parameters: LayerParamete
 
 const setParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaAndBackendConfigParams): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [categoryName, layerName], parameters);
+  _.setWith(amplifyMeta, [categoryName, layerName], parameters);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -297,7 +297,7 @@ const assignParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaA
   const amplifyMeta = stateManager.getMeta();
   const layer = _.get(amplifyMeta, [categoryName, layerName], {});
   _.assign(layer, parameters);
-  _.set(amplifyMeta, [categoryName, layerName], layer);
+  _.setWith(amplifyMeta, [categoryName, layerName], layer);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 

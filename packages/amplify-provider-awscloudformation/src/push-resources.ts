@@ -638,7 +638,7 @@ const storeS3BucketInfo = (category: string, deploymentBucketName: string, envNa
   const amplifyMeta = stateManager.getMeta();
   getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
-  _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
+  _.setWith(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -908,7 +908,7 @@ export const formNestedStack = async (
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
     _.assign(tpiResourceParams, metaToBeUpdated);
-    _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+    _.setWith(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
     stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
   }
 
@@ -1224,7 +1224,7 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
     layerResources.forEach((r) => {
       const layerMetaPath = [AmplifyCategories.FUNCTION, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
-      _.set(meta, layerMetaPath, previousHash);
+      _.setWith(meta, layerMetaPath, previousHash);
     });
 
     stateManager.setMeta(projectRoot, meta);

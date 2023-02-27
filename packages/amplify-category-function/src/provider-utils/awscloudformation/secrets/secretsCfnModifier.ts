@@ -30,7 +30,7 @@ export const updateSecretsInCfnTemplate = async (
   // update secrets env vars
   let envVarsCfn = lambdaCfn?.Properties?.Environment?.Variables;
   if (!envVarsCfn) {
-    _.set(lambdaCfn, ['Properties', 'Environment', 'Variables'], {});
+    _.setWith(lambdaCfn, ['Properties', 'Environment', 'Variables'], {});
     envVarsCfn = lambdaCfn.Properties.Environment.Variables;
   }
 

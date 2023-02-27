@@ -213,14 +213,14 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 };
 
 const setCloudFormationOutputInContext = (context: $TSContext, cfnOutput: $TSObject): void => {
-  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+  _.setWith(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
   const { envName } = context.exeInfo.localEnvInfo;
   if (envName) {
     const providerInfo = _.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]);
     if (providerInfo) {
       _.merge(providerInfo, cfnOutput);
     } else {
-      _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+      _.setWith(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
     }
   }
 };
