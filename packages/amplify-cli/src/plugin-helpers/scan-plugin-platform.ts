@@ -38,12 +38,16 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     await sequential(scanUserLocationTasks);
   }
 
-  if (isPackaged && !pluginPlatform!.pluginDirectories.includes(constants.PACKAGED_NODE_MODULES)) {
-    pluginPlatform!.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
+  if (!pluginPlatform.pluginDirectories) {
+    pluginPlatform.pluginDirectories = new PluginPlatform().pluginDirectories;
   }
 
-  if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
-    const scanDirTasks = pluginPlatform!.pluginDirectories.map((directory) => async () => {
+  if (isPackaged && !pluginPlatform.pluginDirectories.includes(constants.PACKAGED_NODE_MODULES)) {
+    pluginPlatform.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
+  }
+
+  if (pluginPlatform.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
+    const scanDirTasks = pluginPlatform.pluginDirectories.map((directory) => async () => {
       directory = normalizePluginDirectory(directory);
       const exists = await fs.pathExists(directory);
       if (exists) {
