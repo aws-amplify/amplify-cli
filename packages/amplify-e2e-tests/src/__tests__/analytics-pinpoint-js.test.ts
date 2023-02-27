@@ -48,8 +48,8 @@ describe('amplify add analytics', () => {
     // manually add getUserEndpoints policy to verify that it is removed on push
     unAuthAction.push('mobiletargeting:GetUserEndpoints');
     authAction.push('mobiletargeting:GetUserEndpoints');
-    _.set(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
-    _.set(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
+    _.setWith(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
+    _.setWith(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
     JSONUtilities.writeJson(pinpointTemplateFilePath, pinpointTemplateFile);
     await amplifyPushUpdate(projRoot, /Pinpoint URL to track events.*/);
     pinpointTemplateFile = JSONUtilities.readJson(pinpointTemplateFilePath);
@@ -61,8 +61,8 @@ describe('amplify add analytics', () => {
     // manually add getUserEndpoints policy to verify that it is removed on status
     unAuthAction.push('mobiletargeting:GetUserEndpoints');
     authAction.push('mobiletargeting:GetUserEndpoints');
-    _.set(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
-    _.set(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
+    _.setWith(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
+    _.setWith(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
     JSONUtilities.writeJson(pinpointTemplateFilePath, pinpointTemplateFile);
     await amplifyStatus(projRoot, 'No Change');
     pinpointTemplateFile = JSONUtilities.readJson(pinpointTemplateFilePath);

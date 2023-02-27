@@ -117,7 +117,7 @@ export class FeatureFlags {
       await FeatureFlags.ensureDefaultFeatureFlags(false);
     } else if (config.features?.[featureFlagSection]?.[featureFlagName] === undefined) {
       const features = FeatureFlags.getExistingProjectDefaults();
-      _.set(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
+      _.setWith(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
 
       stateManager.setCLIJSON(FeatureFlags.instance.projectPath, config);
     }

@@ -328,7 +328,7 @@ export class ResourceExport extends ResourcePackager {
         }
         stackParameters[stackName].nestedStacks[logicalId] = nestedStack;
 
-        _.set(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
+        _.setWith(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
           s3TemplateURL: templateURL,
           logicalId,
         });
@@ -343,7 +343,7 @@ export class ResourceExport extends ResourcePackager {
         destination: destinationPath,
       };
       JSONUtilities.writeJson(destinationPath, template);
-      _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
+      _.setWith(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
     }
 
     if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
@@ -355,7 +355,7 @@ export class ResourceExport extends ResourcePackager {
           destination: destination,
         };
         await this.copyResource(apiGWAuthFile, destination);
-        _.set(
+        _.setWith(
           this.amplifyMeta,
           [PROVIDER, PROVIDER_NAME, API_GATEWAY_AUTH_URL],
           this.createTemplateUrl(bucket, APIGW_AUTH_STACK_FILE_NAME, API_CATEGORY.NAME),
@@ -377,7 +377,7 @@ export class ResourceExport extends ResourcePackager {
           destination: destination,
         };
         await this.copyResource(pathToTriggerFile, destination);
-        _.set(
+        _.setWith(
           this.amplifyMeta,
           [PROVIDER, PROVIDER_NAME, AUTH_TRIGGER_TEMPLATE_URL],
           this.createTemplateUrl(bucket, AUTH_TRIGGER_TEMPLATE_FILE, AUTH_CATEGORY.NAME),
