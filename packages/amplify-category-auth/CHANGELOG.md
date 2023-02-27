@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.2...@aws-amplify/amplify-category-auth@2.15.3) (2023-02-27)
+
+
+### Bug Fixes
+
+* adding new environment when having a project with notifications ([614a273](https://github.com/aws-amplify/amplify-cli/commit/614a273ec95ecfa43dff40b9793f286805396109))
+* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
+
+
+
+
+
 ## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.1...@aws-amplify/amplify-category-auth@2.15.2) (2023-02-16)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
