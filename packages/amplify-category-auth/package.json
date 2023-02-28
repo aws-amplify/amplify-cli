@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
-    "cloudform-types": "^4.2.0",
+    "cloudform-types": "^7.4.2",
     "rimraf": "^3.0.2"
   },
   "jest": {
