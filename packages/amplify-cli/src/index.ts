@@ -101,6 +101,7 @@ export const run = async (startTime: number): Promise<void> => {
   if (!verificationResult.verified) {
     if (verificationResult.helpCommandAvailable) {
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new AmplifyError('InputValidationError', {
         message: verificationResult.message ?? 'Invalid input',
@@ -206,6 +207,7 @@ export const execute = async (input: CLIInput): Promise<void> => {
     if (verificationResult.helpCommandAvailable) {
       // eslint-disable-next-line no-param-reassign
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new Error(verificationResult.message);
     }
