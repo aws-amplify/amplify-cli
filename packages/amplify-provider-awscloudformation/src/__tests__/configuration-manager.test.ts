@@ -25,6 +25,8 @@ JSONUtilities_mock.readJson.mockReturnValue({
   },
 });
 
+const resolveRegionSpy = jest.spyOn(configManager, 'resolveRegion');
+
 describe('load configuration for env', () => {
   it('does not overwrite awsConfigInfo in context object', async () => {
     const context_stub = {
@@ -55,7 +57,6 @@ describe('load configuration for env', () => {
         },
       },
     } as $TSContext;
-    const resolveRegionSpy = jest.spyOn(configManager, 'resolveRegion');
     const result = await loadConfigurationForEnv(contextStub, 'test');
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -65,5 +66,29 @@ describe('load configuration for env', () => {
       }
     `);
     expect(resolveRegionSpy).not.toBeCalled();
+  });
+
+  it('copies resolved region to config.region', async () => {
+    const contextStub = {
+      exeInfo: {
+        awsConfigInfo: {
+          config: {
+            accessKeyId: 'testAccessKey',
+            secretAccessKey: 'testSecretKey',
+          },
+        },
+      },
+    } as $TSContext;
+    const origRegion = process.env.AWS_REGION;
+    process.env.AWS_REGION = 'us-test-2';
+    const result = await loadConfigurationForEnv(contextStub, 'test');
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "accessKeyId": "testAccessKey",
+        "region": "us-test-2",
+        "secretAccessKey": "testSecretKey",
+      }
+    `);
+    process.env.AWS_REGION = origRegion;
   });
 });
