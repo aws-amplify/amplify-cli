@@ -15,6 +15,7 @@ import { analyticsPush } from '../commands/analytics';
 import { invokeAuthPush } from '../plugin-client-api-auth';
 import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
 import { getAnalyticsResources } from '../utils/analytics-helper';
+import * as pinpointHelper from '../utils/pinpoint-helper';
 import {
   getNotificationsCategoryHasPinpointIfExists,
   getPinpointRegionMappings,
@@ -28,14 +29,15 @@ import {
 export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise<void> => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resources = getAnalyticsResources(context);
+  const hasPinpointResource = pinpointHelper.hasResource(context);
 
-  if (resources.length > 0 && !pinpointHasInAppMessagingPolicy(context)) {
+  if (resources.length > 0 && hasPinpointResource && !pinpointHasInAppMessagingPolicy(context)) {
     const amplifyMeta = stateManager.getMeta();
     const analytics = amplifyMeta[AmplifyCategories.ANALYTICS] || {};
     Object.keys(analytics).forEach((resourceName) => {
       const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
       const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
-      const cfn = JSONUtilities.readJson(templateFilePath);
+      const cfn = JSONUtilities.readJson(templateFilePath, { throwIfNotExist: false });
       const updatedCfn = migratePinpointCFN(cfn);
       fs.ensureDirSync(analyticsResourcePath);
       JSONUtilities.writeJson(templateFilePath, updatedCfn);
