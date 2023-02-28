@@ -351,7 +351,7 @@ async function addSlot(context, intentName, resourceName, parameters) {
       required: true,
       customType: false,
     };
-    slot.name = await askSlotName(resourceName);
+    slot.name = await askSlotName();
 
     // Checks for duplicate slot names
     while (
@@ -365,7 +365,7 @@ async function addSlot(context, intentName, resourceName, parameters) {
       printer.blankLine();
       printer.info('Slot names must be unique');
       printer.blankLine();
-      slot.name = await askSlotName(resourceName);
+      slot.name = await askSlotName();
     }
 
     slot.type = await getSlotType(context, newSlotTypes, parameters);
