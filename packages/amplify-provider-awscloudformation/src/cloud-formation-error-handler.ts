@@ -31,8 +31,7 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
     );
   }
 
-  const s3Indicator = '(AWS::S3::Bucket)';
-  if (err?.details?.includes(s3Indicator)) {
+  if (err?.details?.includes('(AWS::S3::Bucket)')) {
     handleS3Error(err);
   }
 
