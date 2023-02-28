@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.4-rc.6685bec7b.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@3.4.3...amplify-category-xr@3.4.4-rc.6685bec7b.0) (2023-02-28)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [3.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@3.4.2...amplify-category-xr@3.4.3) (2023-02-27)
 
 **Note:** Version bump only for package amplify-category-xr
