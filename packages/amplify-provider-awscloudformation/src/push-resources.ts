@@ -78,7 +78,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { minifyJSONFile } from './utils/minify-json';
-import { handleCloudFormationError } from './handle-cloud-formation-error';
+import { handleCloudFormationError } from './cloud-formation-error-handler';
 
 const logger = fileLogger('push-resources');
 
