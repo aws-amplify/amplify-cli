@@ -10,29 +10,37 @@ import { Tag } from './tags';
  */
 export type $TSAny = any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 
-export type ExeInfo = {
+export type PinpointInfo = {
+  pinpointApp?: $TSAny;
+  pinpointClient?: $TSAny;
+  pinpointInputParams?: $TSAny;
+};
+
+export type ProjectInfo = {
   amplifyMeta?: $TSAny;
   awsConfigInfo?: $TSAny;
   backendConfig?: $TSAny;
   existingLocalAwsInfo?: $TSAny;
-  existingLocalEnvInfo?: $TSAny;
   existingProjectConfig?: $TSAny;
   existingTeamProviderInfo?: $TSAny;
-  forcePush?: boolean;
-  inputParams?: $TSAny;
-  isNewEnv?: boolean;
   isNewProject?: boolean;
-  iterativeRollback?: boolean;
+  inputParams?: $TSAny;
   localEnvInfo?: $TSAny;
-  metaData?: $TSAny;
-  pinpointApp?: $TSAny;
-  pinpointClient?: $TSAny;
-  pinpointInputParams?: $TSAny;
   projectConfig?: $TSAny;
-  restoreBackend?: boolean;
   serviceMeta?: $TSAny;
-  sourceEnvName?: string;
   teamProviderInfo?: $TSAny;
+};
+
+export type EnvironmentInfo = {
+  existingLocalEnvInfo?: $TSAny;
+  isNewEnv?: boolean;
+  sourceEnvName?: string;
+};
+
+export type InputParameters = {
+  forcePush?: boolean;
+  iterativeRollback?: boolean;
+  restoreBackend?: boolean;
 };
 
 /**
@@ -52,7 +60,7 @@ export type $TSContext = {
    * @deprecated
    */
   prompt: $TSAny;
-  exeInfo: ExeInfo;
+  exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
   input: CommandLineInput;
   parameters: ContextParameters;
   usageData: IUsageData;

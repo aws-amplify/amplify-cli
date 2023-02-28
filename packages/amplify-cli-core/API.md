@@ -24,7 +24,7 @@ export type $TSContext = {
     migrationInfo: MigrationInfo;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
-    exeInfo: ExeInfo;
+    exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
     input: CommandLineInput;
     parameters: ContextParameters;
     usageData: IUsageData;
@@ -728,6 +728,13 @@ export class DiagnoseReportUploadError extends Error {
 }
 
 // @public (undocumented)
+export type EnvironmentInfo = {
+    existingLocalEnvInfo?: $TSAny;
+    isNewEnv?: boolean;
+    sourceEnvName?: string;
+};
+
+// @public (undocumented)
 export class EnvVarFormatError extends Error {
     constructor(variableName: string);
 }
@@ -746,32 +753,6 @@ export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
-
-// @public (undocumented)
-export type ExeInfo = {
-    amplifyMeta?: $TSAny;
-    awsConfigInfo?: $TSAny;
-    backendConfig?: $TSAny;
-    existingLocalAwsInfo?: $TSAny;
-    existingLocalEnvInfo?: $TSAny;
-    existingProjectConfig?: $TSAny;
-    existingTeamProviderInfo?: $TSAny;
-    forcePush?: boolean;
-    inputParams?: $TSAny;
-    isNewEnv?: boolean;
-    isNewProject?: boolean;
-    iterativeRollback?: boolean;
-    localEnvInfo?: $TSAny;
-    metaData?: $TSAny;
-    pinpointApp?: $TSAny;
-    pinpointClient?: $TSAny;
-    pinpointInputParams?: $TSAny;
-    projectConfig?: $TSAny;
-    restoreBackend?: boolean;
-    serviceMeta?: $TSAny;
-    sourceEnvName?: string;
-    teamProviderInfo?: $TSAny;
-};
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -1137,6 +1118,13 @@ export interface INotificationsResourceMeta {
 
 // @public (undocumented)
 export type InputOptions = Record<string, string | boolean>;
+
+// @public (undocumented)
+export type InputParameters = {
+    forcePush?: boolean;
+    iterativeRollback?: boolean;
+    restoreBackend?: boolean;
+};
 
 // @public (undocumented)
 export class InvalidSubCommandError extends Error {
@@ -1596,6 +1584,13 @@ export class PathManager {
 export const pathManager: PathManager;
 
 // @public (undocumented)
+export type PinpointInfo = {
+    pinpointApp?: $TSAny;
+    pinpointClient?: $TSAny;
+    pinpointInputParams?: $TSAny;
+};
+
+// @public (undocumented)
 type Plugin_2 = {
     name: string;
     directory: string;
@@ -1735,6 +1730,22 @@ export { print_2 as print }
 
 // @public (undocumented)
 export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
+
+// @public (undocumented)
+export type ProjectInfo = {
+    amplifyMeta?: $TSAny;
+    awsConfigInfo?: $TSAny;
+    backendConfig?: $TSAny;
+    existingLocalAwsInfo?: $TSAny;
+    existingProjectConfig?: $TSAny;
+    existingTeamProviderInfo?: $TSAny;
+    isNewProject?: boolean;
+    inputParams?: $TSAny;
+    localEnvInfo?: $TSAny;
+    projectConfig?: $TSAny;
+    serviceMeta?: $TSAny;
+    teamProviderInfo?: $TSAny;
+};
 
 // @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
@@ -2141,7 +2152,7 @@ export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
-// src/types.ts:42:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
+// src/types.ts:50:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

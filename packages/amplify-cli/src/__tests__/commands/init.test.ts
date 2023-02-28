@@ -131,7 +131,6 @@ describe('amplify init:', () => {
       expect(newContext.exeInfo.projectConfig).not.toBeUndefined();
       expect(newContext.exeInfo.localEnvInfo).not.toBeUndefined();
       expect(newContext.exeInfo.teamProviderInfo).not.toBeUndefined();
-      expect(newContext.exeInfo.metaData).not.toBeUndefined();
     });
   });
 
