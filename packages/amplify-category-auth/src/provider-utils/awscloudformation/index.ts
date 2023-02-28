@@ -120,7 +120,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         resource.lastPushTimeStamp = new Date();
       }
 
-      _.set(meta, [category, service, 'lastPushTimeStamp'], cloudTimestamp);
+      _.setWith(meta, [category, service, 'lastPushTimeStamp'], cloudTimestamp);
       stateManager.setMeta(undefined, meta);
     }
 

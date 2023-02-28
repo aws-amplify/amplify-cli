@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.4.0 (2023-02-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+
+# 4.37.0 (2020-11-27)
+
+
+### Features
+
+* storage import ([#5893](https://github.com/aws-amplify/amplify-cli/issues/5893)) ([ad7b028](https://github.com/aws-amplify/amplify-cli/commit/ad7b028330bcee64d5124be7f27a8494dc8e9400))
+
+
+
+# 4.32.0-alpha.0 (2020-10-27)
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@2.3.0...amplify-util-import@2.3.1) (2023-01-03)
 
 **Note:** Version bump only for package amplify-util-import

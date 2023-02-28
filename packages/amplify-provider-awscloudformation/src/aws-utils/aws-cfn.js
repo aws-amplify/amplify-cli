@@ -512,7 +512,7 @@ class CloudFormation {
             const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
             const tpiResourceParams = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
             _.assign(tpiResourceParams, stateManager.getMeta().providers.awscloudformation);
-            _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+            _.setWith(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
             stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
           });
         });
