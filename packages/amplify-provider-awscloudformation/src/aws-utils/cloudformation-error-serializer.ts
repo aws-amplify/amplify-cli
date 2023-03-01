@@ -11,18 +11,19 @@ export const getStatusToErrorMsg = (status) => {
  * Return an error message from the failed stacks for populating it in the AmplifyFault's details
  */
 export const collectStackErrorMessages = (eventsWithFailure) => {
-  const errorMessages = eventsWithFailure.map((event) => {
-    const err = [];
-    const resourceName = event.LogicalResourceId;
-    err.push(`Name: ${resourceName} (${event.ResourceType})`);
-    err.push(`Event Type: ${getStatusToErrorMsg(event.ResourceStatus)}`);
-    err.push(`Reason: ${event.ResourceStatusReason}`);
-    return err.join(', ');
-  });
-  return errorMessages.join('\n');
+  const errorMessages = {
+    messages: eventsWithFailure.map((event) => {
+      const name = `${event.LogicalResourceId} (${event.ResourceType})`;
+      const eventType = `${getStatusToErrorMsg(event.ResourceStatus)}`;
+      const reason = `${event.ResourceStatusReason}`;
+      const errorMessage: CFNErrorMessage = { name, eventType, reason };
+      return errorMessage;
+    }),
+  };
+  return serializeErrorMessages(errorMessages);
 };
 
-export const serializeErrorMessages = (errorMessages: ErrorMessages) => {
+export const serializeErrorMessages = (errorMessages: CFNErrorMessages) => {
   const serializedStringParts: Array<string> = [];
   errorMessages.messages.forEach((errorMessage) => {
     let currentString = `Name: ${errorMessage.name}, `;
@@ -33,24 +34,26 @@ export const serializeErrorMessages = (errorMessages: ErrorMessages) => {
   return serializedStringParts.join('\n');
 };
 
-export const deserializeErrorMessages = (errorDetails: string): ErrorMessages => {
-  const deserializedMessages: ErrorMessages = { messages: [] };
+export const deserializeErrorMessages = (errorDetails: string): CFNErrorMessages => {
+  const deserializedMessages: CFNErrorMessages = { messages: [] };
   const separateLines = errorDetails.split('\n');
   separateLines.forEach((line) => {
     const separateFields = line.split(/Name: |, Event Type: |, Reason: /);
     const [, name, eventType, reason] = separateFields;
-    const deserializedMessage: ErrorMessage = { name, eventType, reason };
-    deserializedMessages.messages.push(deserializedMessage);
+    if (name && eventType && reason) {
+      const deserializedMessage: CFNErrorMessage = { name, eventType, reason };
+      deserializedMessages.messages.push(deserializedMessage);
+    }
   });
   return deserializedMessages;
 };
 
-export type ErrorMessage = {
+export type CFNErrorMessage = {
   name: string;
   eventType: string;
   reason: string;
 };
 
-export type ErrorMessages = {
-  messages: Array<ErrorMessage>;
+export type CFNErrorMessages = {
+  messages: Array<CFNErrorMessage>;
 };

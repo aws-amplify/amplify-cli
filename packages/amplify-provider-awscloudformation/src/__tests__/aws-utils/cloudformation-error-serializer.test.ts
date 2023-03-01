@@ -1,11 +1,11 @@
-import { deserializeErrorMessages, ErrorMessages } from '../../aws-utils/cloudformation-error-serializer';
+import { deserializeErrorMessages, CFNErrorMessages } from '../../aws-utils/cloudformation-error-serializer';
 
 describe('deserialize errors', () => {
   let errorDetails = 'Name: S3Bucket (AWS::S3::Bucket), Event Type: create, Reason: some-bucket-dev already exists\n';
   errorDetails += 'Name: functionnotifyForNewUser (AWS::CloudFormation::Stack), Event Type: create, Reason: param1 must have values';
 
   it('deserialize error multiline', () => {
-    const deserializedErrorMessages: ErrorMessages = deserializeErrorMessages(errorDetails);
+    const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(errorDetails);
     expect(deserializedErrorMessages.messages.length).toBe(2);
     expect(deserializedErrorMessages.messages[0].name).toBe('S3Bucket (AWS::S3::Bucket)');
     expect(deserializedErrorMessages.messages[0].eventType).toBe('create');

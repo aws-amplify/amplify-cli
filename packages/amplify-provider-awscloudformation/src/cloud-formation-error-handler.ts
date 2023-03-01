@@ -1,17 +1,18 @@
 import { $TSAny, AmplifyError } from 'amplify-cli-core';
-import { deserializeErrorMessages, ErrorMessage, ErrorMessages } from './aws-utils/cloudformation-error-serializer';
+import { deserializeErrorMessages, CFNErrorMessage, CFNErrorMessages } from './aws-utils/cloudformation-error-serializer';
 
 const s3Indicator = '(AWS::S3::Bucket)';
 
 const handleS3Error = (err: Error & { details?: string }): void => {
   const alreadyExistsSuffix = 'already exists';
-  const deserializedErrorMessages: ErrorMessages = deserializeErrorMessages(err.details);
-  const bucketExistsLines: Array<ErrorMessage> = deserializedErrorMessages.messages.filter(
+  const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(err.details);
+  const bucketExistsLines: Array<CFNErrorMessage> = deserializedErrorMessages.messages.filter(
     (message) => message.name.includes(s3Indicator) && message.reason.includes(alreadyExistsSuffix),
   );
   if (bucketExistsLines.length) {
-    const messageWithError: ErrorMessage = bucketExistsLines[0];
-    const bucketName = messageWithError.reason.slice(0, messageWithError.reason.length - alreadyExistsSuffix.length - 1);
+    const messageWithError: CFNErrorMessage = bucketExistsLines[0];
+    const bucketRegex = /(.*) already exists*/;
+    const bucketName = messageWithError.reason.match(bucketRegex)[1];
     throw new AmplifyError('ResourceAlreadyExistsError', {
       message: `The S3 bucket ${bucketName} already exists.`,
       resolution: `Please delete this bucket in the AWS S3 console and try again. The bucket can be found at: https://s3.console.aws.amazon.com/s3/buckets/${bucketName}.`,
