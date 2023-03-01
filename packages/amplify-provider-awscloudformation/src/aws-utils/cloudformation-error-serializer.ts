@@ -22,6 +22,17 @@ export const collectStackErrorMessages = (eventsWithFailure) => {
   return errorMessages.join('\n');
 };
 
+export const serializeErrorMessages = (errorMessages: ErrorMessages) => {
+  const serializedStringParts: Array<string> = [];
+  errorMessages.messages.forEach((errorMessage) => {
+    let currentString = `Name: ${errorMessage.name}, `;
+    currentString += `Event Type: ${errorMessage.eventType}, `;
+    currentString += `Reason: ${errorMessage.reason}\n`;
+    serializedStringParts.push(currentString);
+  });
+  return serializedStringParts.join('\n');
+};
+
 export const deserializeErrorMessages = (errorDetails: string): ErrorMessages => {
   const deserializedMessages: ErrorMessages = { messages: [] };
   const separateLines = errorDetails.split('\n');
