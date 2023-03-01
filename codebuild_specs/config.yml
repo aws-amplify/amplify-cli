@@ -1,0 +1,16 @@
+version: 0.1
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+  pre_build:
+    commands:
+      - yarn production-build
+      - yarn build-tests
+      - echo 'Pre-Build phase completed!'
+  build:
+    commands:
+      - echo 'Build phase completed!'
+artifacts:
+  files:
+    - '**/*'
