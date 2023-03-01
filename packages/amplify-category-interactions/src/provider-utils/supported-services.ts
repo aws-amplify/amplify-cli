@@ -1,3 +1,31 @@
+export type LexSlotType = {
+  slotType: string;
+  slotTypeDescription?: string;
+  slotValues?: string[];
+  customType?: boolean;
+};
+
+export type LexSlot = {
+  name: string;
+  type: LexSlotType;
+  prompt: string;
+  required: boolean;
+  customType: boolean;
+};
+
+export type LexSample = {
+  cancelMessage: string;
+  confirmationQuestion: string;
+  slots: LexSlot[];
+  utterances: string[];
+  intentName: string;
+  newSlotTypes: LexSlotType[];
+};
+
+export type LexSamples = {
+  [key: string]: LexSample[];
+};
+
 export const servicesMetadata = {
   Lex: {
     samples: {
@@ -9,35 +37,45 @@ export const servicesMetadata = {
           slots: [
             {
               name: 'PickUpCity',
-              type: 'AMAZON.US_CITY',
+              type: {
+                slotType: 'AMAZON.US_CITY',
+              },
               prompt: 'In what city do you need to rent a car?',
               required: true,
               customType: false,
             },
             {
               name: 'PickUpDate',
-              type: 'AMAZON.DATE',
+              type: {
+                slotType: 'AMAZON.DATE',
+              },
               prompt: 'What day do you want to start your rental?',
               required: true,
               customType: false,
             },
             {
               name: 'ReturnDate',
-              type: 'AMAZON.DATE',
+              type: {
+                slotType: 'AMAZON.DATE',
+              },
               prompt: 'What day do you want to return the car?',
               required: true,
               customType: false,
             },
             {
               name: 'DriverAge',
-              type: 'AMAZON.NUMBER',
+              type: {
+                slotType: 'AMAZON.NUMBER',
+              },
               prompt: 'How old is the driver for this rental?',
               required: true,
               customType: false,
             },
             {
               name: 'CarType',
-              type: 'CarTypeValues',
+              type: {
+                slotType: 'CarTypeValues',
+              },
               prompt: 'What type of car would you like to rent? Our most popular options are economy, midsize, and luxury',
               required: true,
               customType: true,
@@ -60,28 +98,36 @@ export const servicesMetadata = {
           slots: [
             {
               name: 'Location',
-              type: 'AMAZON.US_CITY',
+              type: {
+                slotType: 'AMAZON.US_CITY',
+              },
               prompt: 'What city will you be staying in?',
               required: true,
               customType: false,
             },
             {
               name: 'CheckInDate',
-              type: 'AMAZON.DATE',
+              type: {
+                slotType: 'AMAZON.DATE',
+              },
               prompt: 'What day do you want to check in?',
               required: true,
               customType: false,
             },
             {
               name: 'Nights',
-              type: 'AMAZON.NUMBER',
+              type: {
+                slotType: 'AMAZON.NUMBER',
+              },
               prompt: 'How many nights will you be staying?',
               required: true,
               customType: false,
             },
             {
               name: 'RoomType',
-              type: 'RoomTypeValues',
+              type: {
+                slotType: 'RoomTypeValues',
+              },
               prompt: 'What type of room would you like: queen, king or deluxe?',
               required: true,
               customType: true,
@@ -105,21 +151,27 @@ export const servicesMetadata = {
           slots: [
             {
               name: 'FlowerType',
-              type: 'FlowerTypes',
+              type: {
+                slotType: 'FlowerTypes',
+              },
               prompt: 'What type of flowers would you like to order?',
               required: true,
               customType: true,
             },
             {
               name: 'PickupDate',
-              type: 'AMAZON.DATE',
+              type: {
+                slotType: 'AMAZON.DATE',
+              },
               prompt: 'What day do you want the {FlowerType} to be picked up?',
               required: true,
               customType: false,
             },
             {
               name: 'PickupTime',
-              type: 'AMAZON.TIME',
+              type: {
+                slotType: 'AMAZON.TIME',
+              },
               prompt: 'At what time do you want the {FlowerType} to be picked up?',
               required: true,
               customType: false,
@@ -143,21 +195,27 @@ export const servicesMetadata = {
           slots: [
             {
               name: 'AppointmentType',
-              type: 'AppointmentTypeValue',
+              type: {
+                slotType: 'AppointmentTypeValue',
+              },
               prompt: 'What type of appointment would you like to schedule?',
               required: true,
               customType: true,
             },
             {
               name: 'Date',
-              type: 'AMAZON.DATE',
+              type: {
+                slotType: 'AMAZON.DATE',
+              },
               prompt: 'When should I schedule your appointment?',
               required: true,
               customType: false,
             },
             {
               name: 'Time',
-              type: 'AMAZON.TIME',
+              type: {
+                slotType: 'AMAZON.TIME',
+              },
               prompt: 'At what time should I schedule your appointment?',
               required: true,
               customType: false,
@@ -174,7 +232,7 @@ export const servicesMetadata = {
           ],
         },
       ],
-    },
+    } as LexSamples,
     defaultValuesFilename: 'lex-defaults.js',
     serviceWalkthroughFilename: 'lex-walkthrough.js',
     cfnFilename: 'lex-cloudformation-template.json.ejs',

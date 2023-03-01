@@ -175,6 +175,7 @@ export type AmplifyFaultType =
   | 'ConfigurationFault'
   | 'DeploymentFault'
   | 'DeploymentStateUploadFault'
+  | 'FileNotFoundFault'
   | 'LockFileNotFoundFault'
   | 'LockFileParsingFault'
   | 'MockProcessFault'
