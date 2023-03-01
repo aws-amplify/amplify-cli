@@ -403,6 +403,84 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     .promise();
 };
 
+export const getSSMParametersCategoryPrefix = async (
+  region: string,
+  appId: string,
+  envName: string,
+  category: string,
+  resourceName: string,
+  parameterNames: string[],
+) => {
+  const ssmClient = new SSM({ region });
+  if (!parameterNames || parameterNames.length === 0) {
+    throw new Error('no parameterNames specified');
+  }
+  return ssmClient
+    .getParameters({
+      Names: parameterNames.map((name) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`),
+    })
+    .promise();
+};
+
+export const getAllSSMParamatersForAppId = async (appId: string, region: string): Promise<Array<string>> => {
+  const ssmClient = new SSM({ region });
+  const retrievedParameters: Array<string> = [];
+  let receivedNextToken = '';
+  do {
+    const ssmArgument = getSsmSdkParametersByPath(appId, receivedNextToken);
+    const data = await ssmClient.getParametersByPath(ssmArgument).promise();
+    retrievedParameters.push(...data.Parameters.map((returnedParameter) => returnedParameter.Name));
+    receivedNextToken = data.NextToken;
+  } while (receivedNextToken);
+  return retrievedParameters;
+};
+
+export const expectParametersOptionalValue = async (
+  expectToExist: NameOptionalValuePair[],
+  expectNotExist: string[],
+  region: string,
+  appId: string,
+  envName: string,
+  category: string,
+  resourceName: string,
+): Promise<void> => {
+  const parametersToRequest = expectToExist.map((exist) => exist.name).concat(expectNotExist);
+  const result = await getSSMParametersCategoryPrefix(region, appId, envName, category, resourceName, parametersToRequest);
+  const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`;
+  expect(result.InvalidParameters.length).toBe(expectNotExist.length);
+  expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
+  expect(result.Parameters.length).toBe(expectToExist.length);
+  const mappedResult = result.Parameters.map((param) => ({ name: param.Name, value: JSON.parse(param.Value) })).sort(sortByName);
+  const mappedExpect = expectToExist
+    .map((exist) => ({ name: mapName(exist.name), value: exist.value ? exist.value : '' }))
+    .sort(sortByName);
+
+  const mappedResultKeys = mappedResult.map((parameter) => parameter.name);
+  for (const expectedParam of mappedExpect) {
+    if (expectedParam.value) {
+      expect(mappedResult).toContainEqual(expectedParam);
+    } else {
+      expect(mappedResultKeys).toContainEqual(expectedParam.name);
+    }
+  }
+};
+
+const sortByName = (a: NameOptionalValuePair, b: NameOptionalValuePair) => a.name.localeCompare(b.name);
+type NameOptionalValuePair = { name: string; value?: string };
+
+const getSsmSdkParametersByPath = (appId: string, nextToken?: string): SsmGetParametersByPathArgument => {
+  const sdkParameters: SsmGetParametersByPathArgument = { Path: `/amplify/${appId}/` };
+  if (nextToken) {
+    sdkParameters.NextToken = nextToken;
+  }
+  return sdkParameters;
+};
+
+type SsmGetParametersByPathArgument = {
+  Path: string;
+  NextToken?: string;
+};
+
 // Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
   const service = new Location({ region });

@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import {
   $TSAny,
   $TSContext,
@@ -15,6 +14,7 @@ import {
   writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -22,6 +22,7 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
 import { AuthStackSynthesizer } from './stack-synthesizer';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 /**
  * UserPool groups metadata
@@ -194,8 +195,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         timeout: 5000,
         sandbox: {},
       });
+      const projectInfo = getProjectInfo();
       try {
-        await sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
+        await sandboxNode
+          .run(overrideCode)
+          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate, projectInfo);
       } catch (err: $TSAny) {
         throw new AmplifyError(
           'InvalidOverrideError',

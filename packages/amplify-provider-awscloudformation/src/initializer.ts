@@ -24,6 +24,7 @@ import { configurePermissionsBoundaryForInit } from './permissions-boundary/perm
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { fileLogger } from './utils/aws-logger';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 const logger = fileLogger('initializer');
 
@@ -102,7 +103,8 @@ export const run = async (context: $TSContext): Promise<void> => {
               external: true,
             },
           });
-          await sandboxNode.run(overrideCode).override(configuration);
+          const projectInfo = getProjectInfo();
+          await sandboxNode.run(overrideCode).override(configuration, projectInfo);
         }
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error

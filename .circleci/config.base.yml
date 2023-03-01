@@ -155,6 +155,18 @@ jobs:
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
 
+  validate_cdk_version:
+    <<: *linux-e2e-executor-medium
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Validate cdk version
+          command: |
+            yarn ts-node .circleci/validate_cdk_version.ts
+
   lint:
     <<: *linux-e2e-executor-large
     steps:
@@ -224,6 +236,7 @@ jobs:
           no_output_timeout: 90m
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+            NODE_OPTIONS: --max-old-space-size=4096
       - store_test_results:
           path: ~/repo/packages/amplify-util-mock/
 
@@ -945,6 +958,9 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - validate_cdk_version:
+          requires:
+            - build
       - mock_e2e_tests:
           requires:
             - build

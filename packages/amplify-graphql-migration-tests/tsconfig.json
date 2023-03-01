@@ -4,5 +4,5 @@
     "outDir": "./lib",
     "rootDir": "./src"
   },
-  "references": [{ "path": "../amplify-function-plugin-interface" }, { "path": "../graphql-transformer-core" }]
+  "references": [{ "path": "../amplify-function-plugin-interface" }]
 }

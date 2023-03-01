@@ -1,6 +1,7 @@
 import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { $TSObject } from 'amplify-cli-core';
+import { Construct } from 'constructs';
 import { DdbAttrType } from '../cfn-template-utils';
 
 /**
@@ -58,7 +59,7 @@ export interface AmplifyS3ResourceInputParameters {
  */
 export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id, undefined);
   }
 

@@ -10,6 +10,7 @@ import { getFrontendPlugins } from './get-frontend-plugins';
 import { getPluginInstance } from './get-plugin-instance';
 import { getAmplifyAppId } from './get-amplify-appId';
 import { getAmplifyDirPath } from './path-manager';
+import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 /**
  * Deletes the amplify project from the cloud and local machine
@@ -41,6 +42,10 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
           printer.warn('Amplify App cannot be deleted, other environments still linked to Application');
         }
       }
+
+      // delete env parameters from service for each env
+      await Promise.all(envNames.map((envName) => invokeDeleteEnvParamsFromService(context, envName)));
+
       spinner.succeed('Project deleted in the cloud.');
     } catch (ex) {
       if ('name' in ex && ex.name === 'BucketNotFoundError') {
