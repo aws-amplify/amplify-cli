@@ -16,6 +16,7 @@ import { isNewVersion, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { saveEnvironmentVariables } from './environmentVariablesHelper';
+import { truncateResourceNames } from './truncateResourceNames';
 
 /**
  * handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -208,6 +209,11 @@ const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters |
       _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')),
     ),
   }));
+
+  parameters = {
+    ...parameters,
+    ...truncateResourceNames(parameters),
+  };
 
   // this is a hack to reuse some old code
   let templateParams: $TSAny = parameters;
