@@ -140,7 +140,6 @@ class CloudFormation {
     });
   }
 
-
   /**
    * Generate user friendly error message from the failed stacks for printing it on the user console
    */
@@ -733,8 +732,6 @@ function filterNestedStacks(uniqueEvents, excludeWithStatus = CFN_SUCCESS_STATUS
   }
   return nestedStacks;
 }
-
-
 
 function getCFNConsoleLink(event, cfn) {
   if (event.ResourceStatus === 'CREATE_FAILED') {
