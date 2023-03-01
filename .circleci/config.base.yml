@@ -1316,6 +1316,9 @@ commands:
                 command: |
                   source .circleci/local_publish_helpers.sh
                   source $BASH_ENV
+                  startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+                  setNpmRegistryUrlToLocal
+                  changeNpmGlobalPath
                   amplify version
                   retry runE2eTest
                 no_output_timeout: 65m

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-console-hosting",
-  "version": "2.4.2",
+  "version": "2.4.4",
   "description": "cli plugin for AWS Amplify Console hosting",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

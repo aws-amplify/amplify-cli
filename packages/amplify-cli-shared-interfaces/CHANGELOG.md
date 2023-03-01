@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.1.1-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1...amplify-cli-shared-interfaces@1.1.1-beta.6) (2023-02-23)
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1...amplify-cli-shared-interfaces@1.1.2) (2023-02-27)
 
 
 ### Bug Fixes
@@ -14,50 +14,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.1.1-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1...amplify-cli-shared-interfaces@1.1.1-beta.5) (2023-02-17)
-
-
-### Bug Fixes
-
-* format files touched by tscontext typing ([#11963](https://github.com/aws-amplify/amplify-cli/issues/11963)) ([64f8354](https://github.com/aws-amplify/amplify-cli/commit/64f83540419f3b512544448baba98bbb3f623f7c))
-
-
-
-
-
-## [1.1.1-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1...amplify-cli-shared-interfaces@1.1.1-beta.4) (2023-02-15)
-
-**Note:** Version bump only for package amplify-cli-shared-interfaces
-
-
-
-
-
-## [1.1.1-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.1...amplify-cli-shared-interfaces@1.1.1-beta.3) (2023-02-07)
-
-**Note:** Version bump only for package amplify-cli-shared-interfaces
-
-
-
-
-
-## [1.1.1-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1-beta.2) (2022-12-28)
-
-**Note:** Version bump only for package amplify-cli-shared-interfaces
-
-
-
-
-
-## [1.1.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1-beta.1) (2022-12-13)
-
-**Note:** Version bump only for package amplify-cli-shared-interfaces
-
-
-
-
-
-## [1.1.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1-beta.0) (2022-12-01)
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-shared-interfaces@1.1.0...amplify-cli-shared-interfaces@1.1.1) (2023-01-03)
 
 **Note:** Version bump only for package amplify-cli-shared-interfaces

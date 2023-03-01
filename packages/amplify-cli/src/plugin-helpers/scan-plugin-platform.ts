@@ -19,54 +19,54 @@ import {
 import sequential from 'promise-sequential';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
-  pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
+  const pluginPlatformLocal = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
 
-  pluginPlatform!.plugins = new PluginCollection();
+  pluginPlatformLocal.plugins = new PluginCollection();
 
-  await addCore(pluginPlatform!);
+  await addCore(pluginPlatformLocal);
 
-  if (pluginPlatform!.userAddedLocations && pluginPlatform!.userAddedLocations.length > 0) {
+  if (pluginPlatformLocal.userAddedLocations && pluginPlatformLocal.userAddedLocations.length > 0) {
     // clean up the userAddedLocation first
-    pluginPlatform!.userAddedLocations = pluginPlatform!.userAddedLocations.filter((pluginDirPath) => {
+    pluginPlatformLocal.userAddedLocations = pluginPlatformLocal.userAddedLocations.filter((pluginDirPath) => {
       const result = fs.existsSync(pluginDirPath);
       return result;
     });
 
-    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(
-      (pluginDirPath) => async () => await verifyAndAdd(pluginPlatform!, pluginDirPath),
+    const scanUserLocationTasks = pluginPlatformLocal.userAddedLocations.map(
+      (pluginDirPath) => async () => await verifyAndAdd(pluginPlatformLocal, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
 
-  if (isPackaged) {
-    pluginPlatform!.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
+  if (isPackaged && !pluginPlatformLocal.pluginDirectories.includes(constants.PACKAGED_NODE_MODULES)) {
+    pluginPlatformLocal.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
   }
 
-  if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
-    const scanDirTasks = pluginPlatform!.pluginDirectories.map((directory) => async () => {
+  if (pluginPlatformLocal.pluginDirectories.length > 0 && pluginPlatformLocal.pluginPrefixes.length > 0) {
+    const scanDirTasks = pluginPlatformLocal.pluginDirectories.map((directory) => async () => {
       directory = normalizePluginDirectory(directory);
       const exists = await fs.pathExists(directory);
       if (exists) {
         //adding subDir based on amplify-
         const subDirNames = await fs.readdir(directory);
-        await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform!);
+        await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatformLocal);
         //adding plugin based on @aws-amplify/amplify-
         if (subDirNames.includes('@aws-amplify')) {
           const nameSpacedDir = path.join(directory, '@aws-amplify');
           const nameSpacedPackages = await fs.readdir(nameSpacedDir);
-          await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatform!);
+          await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatformLocal);
         }
       }
     });
     await sequential(scanDirTasks);
   }
 
-  pluginPlatform!.lastScanTime = new Date();
-  writePluginsJsonFile(pluginPlatform!);
+  pluginPlatformLocal.lastScanTime = new Date();
+  writePluginsJsonFile(pluginPlatformLocal);
 
-  await checkPlatformHealth(pluginPlatform);
+  await checkPlatformHealth(pluginPlatformLocal);
 
-  return pluginPlatform;
+  return pluginPlatformLocal;
 }
 
 export function getCorePluginDirPath(): string {

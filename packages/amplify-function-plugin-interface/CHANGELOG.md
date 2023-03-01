@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.9.6-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6...amplify-function-plugin-interface@1.9.6-beta.6) (2023-02-23)
+## [1.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6...amplify-function-plugin-interface@1.9.7) (2023-02-27)
 
 **Note:** Version bump only for package amplify-function-plugin-interface
 
@@ -11,47 +11,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.9.6-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6...amplify-function-plugin-interface@1.9.6-beta.5) (2023-02-17)
-
-**Note:** Version bump only for package amplify-function-plugin-interface
-
-
-
-
-
-## [1.9.6-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6...amplify-function-plugin-interface@1.9.6-beta.4) (2023-02-15)
-
-**Note:** Version bump only for package amplify-function-plugin-interface
-
-
-
-
-
-## [1.9.6-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.6...amplify-function-plugin-interface@1.9.6-beta.3) (2023-02-07)
-
-**Note:** Version bump only for package amplify-function-plugin-interface
-
-
-
-
-
-## [1.9.6-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.5...amplify-function-plugin-interface@1.9.6-beta.2) (2022-12-28)
-
-**Note:** Version bump only for package amplify-function-plugin-interface
-
-
-
-
-
-## [1.9.6-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.5...amplify-function-plugin-interface@1.9.6-beta.1) (2022-12-13)
-
-**Note:** Version bump only for package amplify-function-plugin-interface
-
-
-
-
-
-## [1.9.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.5...amplify-function-plugin-interface@1.9.6-beta.0) (2022-12-01)
 ## [1.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.5...amplify-function-plugin-interface@1.9.6) (2023-01-03)
 
 **Note:** Version bump only for package amplify-function-plugin-interface

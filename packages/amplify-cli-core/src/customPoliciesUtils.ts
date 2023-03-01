@@ -191,7 +191,7 @@ function applyCustomPolicyToLambda(generatedCustomPolicies: CustomIAMPolicies, c
     Roles: [Fn.Ref('LambdaExecutionRole')],
   });
   policy.dependsOn('LambdaExecutionRole');
-  _.set(cfnTemplate, ['Resources', 'CustomLambdaExecutionPolicy'], policy);
+  _.setWith(cfnTemplate, ['Resources', 'CustomLambdaExecutionPolicy'], policy);
 
   return cfnTemplate;
 }
@@ -210,6 +210,6 @@ function applyCustomPolicyToElasticContainers(generatedCustomPolicies: CustomIAM
     PolicyName: 'CustomExecutionPolicyForContainer',
     Roles: [Fn.Ref(taskRoleArn[0])],
   });
-  _.set(cfnTemplate, ['Resources', 'CustomExecutionPolicyForContainer'], policy);
+  _.setWith(cfnTemplate, ['Resources', 'CustomExecutionPolicyForContainer'], policy);
   return cfnTemplate;
 }

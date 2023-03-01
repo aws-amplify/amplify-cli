@@ -8,7 +8,7 @@ export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecr
     rootStackId,
     environments: {},
   };
-  _.set(newDeploymentAppSecret, ['environments', envName, category, resource, keyName], value);
+  _.setWith(newDeploymentAppSecret, ['environments', envName, category, resource, keyName], value);
 
   const filteredSecrets = currentDeploymentSecrets.appSecrets?.filter((appSecret) => appSecret.rootStackId !== rootStackId) || [];
 
