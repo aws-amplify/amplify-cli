@@ -466,7 +466,7 @@ const fillBackendConfig = (context: $TSContext, migrationInfo: $TSAny): void => 
       service: migrationInfo.service,
       channels: migrationInfo.channels,
     };
-    Object.assign(context.migrationInfo.backendConfig[AmplifyCategories.NOTIFICATIONS], backendConfig);
+    Object.assign(context.migrationInfo.backendConfig[AmplifyCategories.NOTIFICATIONS]!, backendConfig);
   }
 };
 
@@ -485,7 +485,7 @@ const fillTeamProviderInfo = (context: $TSContext, migrationInfo: $TSAny): void 
 
     teamProviderInfo[migrationInfo.envName].categories = teamProviderInfo[migrationInfo.envName].categories || {};
 
-    Object.assign(teamProviderInfo[migrationInfo.envName].categories, categoryTeamInfo);
+    Object.assign(teamProviderInfo[migrationInfo.envName].categories!, categoryTeamInfo);
   }
 };
 

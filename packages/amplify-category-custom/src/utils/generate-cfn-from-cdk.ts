@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as path from 'path';
 import { categoryName } from './constants';

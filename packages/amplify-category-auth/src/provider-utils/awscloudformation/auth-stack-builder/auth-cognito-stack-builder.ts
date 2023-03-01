@@ -1,13 +1,13 @@
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
+import { Construct } from 'constructs';
 import {
   hostedUILambdaFilePath,
   hostedUIProviderLambdaFilePath,
@@ -53,7 +53,7 @@ export type AmplifyAuthCognitoStackProps = {
  * L2 construct for amplify auth cognito stack
  */
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate {
-  private _scope: cdk.Construct;
+  private _scope: Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
@@ -103,7 +103,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   openIdLambdaInputs?: cdk.CustomResource;
   openIdLambdaRole?: iam.CfnRole;
 
-  constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
+  constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
     this._scope = scope;
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
@@ -612,7 +612,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.userPoolClientLambda.addDependsOn(this.userPoolClientRole);
@@ -686,7 +686,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.hostedUICustomResource.addDependsOn(this.userPoolClientRole!);
@@ -767,7 +767,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.hostedUIProvidersCustomResource.addDependsOn(this.userPoolClientRole!);
@@ -850,7 +850,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
 
@@ -984,7 +984,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('MFALambdaRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.mfaLambda.addDependsOn(this.mfaLambdaRole);
@@ -1127,7 +1127,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('OpenIdLambdaRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.openIdLambda.addDependsOn(this.openIdLambdaRole);

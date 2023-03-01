@@ -1,6 +1,5 @@
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
-import { App } from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
+import { AmplifyS3ResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import {
   $TSAny,
   $TSContext,
@@ -37,7 +36,7 @@ export const transformS3ResourceStack = async (context: $TSContext, resource: IA
  * Stack transformer for S3
  */
 export class AmplifyS3ResourceStackTransform {
-  private app: App;
+  private app: cdk.App;
   private cliInputs: S3UserInputs;
   private resourceTemplateObj: AmplifyS3ResourceCfnStack | undefined;
   private cliInputsState: S3InputState;
@@ -47,7 +46,7 @@ export class AmplifyS3ResourceStackTransform {
   private resourceName: string;
 
   constructor(resourceName: string, context: $TSContext) {
-    this.app = new App();
+    this.app = new cdk.App();
     // Validate the cli-inputs.json for the resource
     this.cliInputsState = new S3InputState(context, resourceName, undefined);
     this.cliInputs = this.cliInputsState.getCliInputPayload();
@@ -224,7 +223,10 @@ export class AmplifyS3ResourceStackTransform {
           },
         });
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
+          const projectInfo = getProjectInfo();
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
+            .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate, projectInfo);
         } catch (err: $TSAny) {
           throw new AmplifyError(
             'InvalidOverrideError',

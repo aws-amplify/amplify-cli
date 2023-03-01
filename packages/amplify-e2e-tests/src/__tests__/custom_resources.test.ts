@@ -94,8 +94,7 @@ describe('adding custom resources test', () => {
     expect(customResourceSNSArn).toBeDefined();
 
     // Add custom CFN and add dependency of custom CDK resource on the custom CFN
-
-    await addCFNCustomResource(projRoot, { name: cfnResourceName });
+    await addCFNCustomResource(projRoot, { name: cfnResourceName, promptForCategorySelection: true });
 
     const customCFNFilePath = path.join(
       projRoot,

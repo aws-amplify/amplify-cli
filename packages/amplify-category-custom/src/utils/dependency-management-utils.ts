@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import { byValue, byValues, printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';

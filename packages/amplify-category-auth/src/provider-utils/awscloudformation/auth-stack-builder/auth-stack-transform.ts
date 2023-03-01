@@ -1,5 +1,3 @@
-/* eslint-disable max-lines-per-function */
-import * as cdk from '@aws-cdk/core';
 import {
   $TSAny,
   $TSContext,
@@ -18,6 +16,7 @@ import {
   writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -28,7 +27,9 @@ import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } fr
 import { configureSmsOption } from '../utils/configure-sms';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
+import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
+import { AuthStackSynthesizer } from './stack-synthesizer';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -123,10 +124,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           external: true,
         },
       });
+      const projectInfo = getProjectInfo();
       try {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
+          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',
