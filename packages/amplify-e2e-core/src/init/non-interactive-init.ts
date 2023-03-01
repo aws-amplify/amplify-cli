@@ -1,7 +1,8 @@
 import execa from 'execa';
+import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-cycle
 import { getCLIPath, TEST_PROFILE_NAME } from '..';
-import { CategoriesConfig, AwsProviderConfig } from './headless-types';
+import { AmplifyProfileConfig, AwsProviderConfig, AwsProviderGeneralConfig, AwsProviderProfileConfig, CategoriesConfig } from './headless-types';
 
 /**
  * Executes a non-interactive init to attach a local project to an existing cloud environment
@@ -9,8 +10,8 @@ import { CategoriesConfig, AwsProviderConfig } from './headless-types';
 export const nonInteractiveInitAttach = async (
   projRoot: string,
   amplifyInitConfig: AmplifyInitConfig,
+  awsProviderConfig: AwsProviderConfig,
   categoriesConfig?: CategoriesConfig,
-  awsProviderConfig = getAwsProviderConfig(),
 ): Promise<void> => {
   const args = [
     'init',
@@ -67,10 +68,27 @@ export const getAmplifyInitConfig = (projectName: string, envName: string): Ampl
 /**
  * Returns a default AwsProviderConfig
  */
-export const getAwsProviderConfig = (): AwsProviderConfig => ({
+export const getAwsProviderConfig = (profileType?: AmplifyProfileConfig): AwsProviderConfig => {
+  if(profileType === 'general'){
+    return getAwsProviderGeneralConfig();
+  }
+  return getAwsProviderProfileConfig();
+};
+
+/**
+ * Returns a amplify profile AwsProviderConfig
+ */
+export const getAwsProviderProfileConfig = (): AwsProviderProfileConfig => ({
   configLevel: 'project',
   useProfile: true,
   profileName: TEST_PROFILE_NAME,
+});
+
+/**
+ * Returns a general AwsProviderConfig
+ */
+export const getAwsProviderGeneralConfig = (): AwsProviderGeneralConfig => ({
+  configLevel: 'general',
 });
 
 /**
