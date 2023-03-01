@@ -7,7 +7,8 @@ const handleS3Error = (err: Error & { details?: string }): void => {
   const alreadyExistsSuffix = 'already exists';
   const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(err.details);
   const bucketExistsLines: Array<CFNErrorMessage> = deserializedErrorMessages.messages.filter(
-    (message) => message.name.includes(s3Indicator) && message.reason.includes(alreadyExistsSuffix),
+    (message) =>
+      message.name.includes(s3Indicator) && message.reason.includes(alreadyExistsSuffix) && !message.name.includes('DeploymentBucket'),
   );
   if (bucketExistsLines.length) {
     const messageWithError: CFNErrorMessage = bucketExistsLines[0];

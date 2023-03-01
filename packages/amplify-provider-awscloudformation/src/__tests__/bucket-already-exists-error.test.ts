@@ -12,7 +12,7 @@ describe('bucket already exists error', () => {
   const mockErrorMultiLineDetails = {
     name: 'DeploymentFault',
     message: 'Resource is not in the state stackUpdateComplete',
-    details: `Name: <stackName> (AWS::CloudFormation::Stack), Event Type: update, Reason: Parameters: [a1] must have values\nName: S3Bucket (AWS::S3::Bucket), Event Type: create, Reason: ${bucketName} already exists`,
+    details: `Name: DeploymentBucket (AWS::S3::Bucket), Event Type: create, Reason: amplify-something-deployment already exists\nName: <stackName> (AWS::CloudFormation::Stack), Event Type: update, Reason: Parameters: [a1] must have values\nName: S3Bucket (AWS::S3::Bucket), Event Type: create, Reason: ${bucketName} already exists\n`,
   };
 
   it('bucket already exists error contents', async () => {
