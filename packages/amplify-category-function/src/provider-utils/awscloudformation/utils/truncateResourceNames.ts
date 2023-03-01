@@ -21,7 +21,7 @@ export const truncateResourceNames = (params: Readonly<Params>): Params => {
 };
 
 class ResourceNameTruncator {
-  // this is an arbitrary uuid that is used as a seed to generate deterministic hashes from a given function name
+  // this is an arbitrary uuid that is used as a seed to generate deterministic hashes from a given resource name
   // eslint-disable-next-line spellcheck/spell-checker
   private readonly uuidSeed = '319569b2-7cdc-4712-8390-e22b1f6ce5a9';
   private readonly envNameLen = 10;
@@ -42,7 +42,7 @@ class ResourceNameTruncator {
     if (resourceName.length < this.effectiveResourceNameLengthLimit) {
       return resourceName;
     }
-    // grabbing a substring from the beginnign and end of the input name will hopefully capture any human-readable prefixes or suffixes that the customer has used in the name
+    // grabbing a substring from the beginning and end of the input name will hopefully capture any human-readable prefixes or suffixes that the customer has used in the name
     const prefix = resourceName.slice(0, this.resourceNameSlicePoint / 2);
     const suffix = resourceName.slice(resourceName.length - this.resourceNameSlicePoint / 2);
     const remainder = resourceName.slice(this.resourceNameSlicePoint);
