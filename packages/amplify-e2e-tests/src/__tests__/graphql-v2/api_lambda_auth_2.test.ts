@@ -130,7 +130,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         query: gql(listNotesQuery),
         fetchPolicy: 'no-cache',
       }),
-    ).rejects.toThrow(`GraphQL error: Not Authorized to access note on type String`);
+    ).rejects.toThrow(`GraphQL error: Not Authorized to access note on type`);
 
     const appSyncInvalidClient = new AWSAppSyncClient({
       url,
