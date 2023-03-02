@@ -113,7 +113,7 @@ Release PR for ${mergeBranch}.
 This PR merges ${releaseBranch} into ${devBranch}.
 `;
   const parameters = [];
-  parameters.push(['title', `chore(release): ${mergeBranch}`]);
+  parameters.push(['title', `chore(release): Merge ${releaseBranch} into ${devBranch}`]);
   parameters.push(['labels', 'release']);
   parameters.push(['body', PR_TEMPLATE]);
   const parameterString = parameters.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
