@@ -83,7 +83,7 @@ export class Git {
     if (branch) {
       command.push(branch);
     }
-    execSync(`git fetch ${remote} ${branch}`);
+    execSync(command.join(' '));
   }
 
   isCleanWorkingTree(): boolean {
@@ -105,7 +105,11 @@ export async function shouldContinue(read: rl.Interface, prompt: string): Promis
 }
 
 export function getCompareLink(repository: string, devBranch: string, mergeBranch: string): string {
-  return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}`;
+  const parameters = [];
+  parameters.push('template=RELEASE_PR_TEMPLATE.md');
+  parameters.push(`title=chore(release): ${mergeBranch}`);
+  parameters.push('labels=release');
+  return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameters.join('&')}`;
 }
 
 export function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: Git) {
