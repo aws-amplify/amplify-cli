@@ -1,4 +1,4 @@
-import * as finishRelease from './finish-release';
+import * as finishRelease from '../finish-release';
 
 import * as childProcess from 'child_process';
 const { Git, extractUpstreamNameFromRemotes } = finishRelease;
