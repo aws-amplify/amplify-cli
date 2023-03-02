@@ -104,18 +104,27 @@ export async function shouldContinue(read: rl.Interface, prompt: string): Promis
   });
 }
 
-export function getCompareLink(repository: string, releaseBranch: string, devBranch: string, mergeBranch: string): string {
-  const PR_TEMPLATE = `
+function generatePRTemplate(mergeBranch: string, releaseBranch: string, devBranch: string): string {
+  return `
 Release PR for ${mergeBranch}.
 
-## The PR must be merged using "Create a merge commit" option.
+## This PR must be merged using "Create a merge commit" option.
 
 This PR merges ${releaseBranch} into ${devBranch}.
 `;
+}
+
+export function getCompareLink(
+  repository: string,
+  releaseBranch: string,
+  devBranch: string,
+  mergeBranch: string,
+  pullRequestBody: string,
+): string {
   const parameters = [];
   parameters.push(['title', `chore(release): Merge ${releaseBranch} into ${devBranch}`]);
   parameters.push(['labels', 'release']);
-  parameters.push(['body', PR_TEMPLATE]);
+  parameters.push(['body', pullRequestBody]);
   const parameterString = parameters.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
   return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameterString}`;
 }
@@ -213,6 +222,7 @@ export async function main() {
   }
 
   git.push(upstreamName, mergeBranch);
+  const prBody = generatePRTemplate(mergeBranch, releaseBranch, devBranch);
 
   console.info(`
 You can compare changes between the branches here: ${getCompareLink(
@@ -220,8 +230,8 @@ You can compare changes between the branches here: ${getCompareLink(
     releaseBranch,
     devBranch,
     mergeBranch,
-  )}. To finish the release, open a pull request between ${mergeBranch} into ${devBranch}
-`);
+    prBody,
+  )}.\n\nTo finish the release, use the link above to open a pull request.`);
 
   process.exit(0);
 }
