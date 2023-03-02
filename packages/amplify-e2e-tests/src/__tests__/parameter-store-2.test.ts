@@ -22,7 +22,7 @@ describe('parameters in Parameter Store', () => {
   const envName = 'enva';
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('multi-env-parameters-test');
+    projRoot = await createNewProjectDir('multi-env');
   });
 
   afterEach(async () => {
