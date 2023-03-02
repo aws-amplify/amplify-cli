@@ -37,7 +37,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     Object.keys(analytics).forEach((resourceName) => {
       const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
       const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
-      const cfn = JSONUtilities.readJson(templateFilePath, { throwIfNotExist: false });
+      const cfn = JSONUtilities.readJson(templateFilePath);
       const updatedCfn = migratePinpointCFN(cfn);
       fs.ensureDirSync(analyticsResourcePath);
       JSONUtilities.writeJson(templateFilePath, updatedCfn);
