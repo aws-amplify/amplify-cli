@@ -110,7 +110,7 @@ Release PR for ${mergeBranch}.
 
 ## The PR must be merged using "Create a merge commit" option.
 
-This PR merges ${mergeBranch} into ${devBranch}.
+This PR merges ${releaseBranch} into ${devBranch}.
 `;
   const parameters = [];
   parameters.push(['title', `chore(release): ${mergeBranch}`]);
