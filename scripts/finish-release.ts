@@ -143,13 +143,7 @@ function getArgs(): Args {
 }
 
 export async function main() {
-  const {
-    continue: continueArg,
-    releaseBranch: RELEASE_BRANCH,
-    devBranch: DEV_BRANCH,
-    repository: REPO_NAME,
-    mergeBranch: mergeBranchArg,
-  } = getArgs();
+  const { continue: continueArg, releaseBranch, devBranch, repository, mergeBranch: mergeBranchArg } = getArgs();
   const git = new Git();
   const rlInterface = rl.createInterface({
     input: stdin,
@@ -162,16 +156,16 @@ export async function main() {
   }
 
   const remoteOutput = git.remote(true);
-  const upstreamName = extractUpstreamNameFromRemotes(remoteOutput, REPO_NAME);
+  const upstreamName = extractUpstreamNameFromRemotes(remoteOutput, repository);
   if (!upstreamName) {
     console.error('could not find remote name for the aws-amplify/amplify-cli repository');
     process.exit(1);
   }
 
-  console.info(`Fetching ${upstreamName}/${RELEASE_BRANCH}`);
-  git.fetch(upstreamName, RELEASE_BRANCH);
+  console.info(`Fetching ${upstreamName}/${releaseBranch}`);
+  git.fetch(upstreamName, releaseBranch);
 
-  const releaseSha = git.getShortSha(`${upstreamName}/${RELEASE_BRANCH}`);
+  const releaseSha = git.getShortSha(`${upstreamName}/${releaseBranch}`);
   const mergeBranch = mergeBranchArg ?? 'dev-main-merge-' + releaseSha;
   const doesMergeBranchExist = git.isExistingBranch(mergeBranch);
 
@@ -187,8 +181,8 @@ export async function main() {
     process.exit(0);
   }
 
-  console.info('Switching to branch ' + DEV_BRANCH);
-  git.checkout(DEV_BRANCH);
+  console.info('Switching to branch ' + devBranch);
+  git.checkout(devBranch);
   git.pull();
   console.info('Creating merge branch ' + mergeBranch);
   try {
@@ -199,8 +193,8 @@ export async function main() {
     process.exit(1);
   }
 
-  console.info(`Merging ${upstreamName}/${RELEASE_BRANCH} into ${mergeBranch}`);
-  git.merge(`${upstreamName}/${RELEASE_BRANCH}`, { message: 'chore: merge release commit from main to dev' });
+  console.info(`Merging ${upstreamName}/${releaseBranch} into ${mergeBranch}`);
+  git.merge(`${upstreamName}/${releaseBranch}`, { message: 'chore: merge release commit from main to dev' });
 
   if (!git.isCleanWorkingTree()) {
     console.info('Resolve merge conflicts and commit merge, then run `yarn run finish-release --continue`');
@@ -211,9 +205,9 @@ export async function main() {
 
   console.info(`
 You can compare changes between the branches here: ${getCompareLink(
-    DEV_BRANCH,
+    devBranch,
     mergeBranch,
-  )}. To finish the release, open a pull request between ${mergeBranch} into ${DEV_BRANCH}
+  )}. To finish the release, open a pull request between ${mergeBranch} into ${devBranch}
 `);
 
   process.exit(0);
