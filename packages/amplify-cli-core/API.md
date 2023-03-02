@@ -749,7 +749,7 @@ export class DiagnoseReportUploadError extends Error {
 }
 
 // @public (undocumented)
-export type EnvironmentInfo = {
+type EnvironmentInfo = {
     existingLocalEnvInfo?: $TSAny;
     isNewEnv?: boolean;
     sourceEnvName?: string;
@@ -774,6 +774,16 @@ export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+
+declare namespace ExeInfo {
+    export {
+        EnvironmentInfo,
+        InputParameters,
+        PinpointInfo,
+        ProjectInfo
+    }
+}
+export { ExeInfo }
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -1141,7 +1151,7 @@ export interface INotificationsResourceMeta {
 export type InputOptions = Record<string, string | boolean>;
 
 // @public (undocumented)
-export type InputParameters = {
+type InputParameters = {
     forcePush?: boolean;
     iterativeRollback?: boolean;
     restoreBackend?: boolean;
@@ -1609,7 +1619,7 @@ export class PathManager {
 export const pathManager: PathManager;
 
 // @public (undocumented)
-export type PinpointInfo = {
+type PinpointInfo = {
     pinpointApp?: $TSAny;
     pinpointClient?: $TSAny;
     pinpointInputParams?: $TSAny;
@@ -1757,7 +1767,7 @@ export { print_2 as print }
 export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
 
 // @public (undocumented)
-export type ProjectInfo = {
+type ProjectInfo = {
     amplifyMeta?: $TSAny;
     awsConfigInfo?: $TSAny;
     backendConfig?: $TSAny;
@@ -2177,7 +2187,7 @@ export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
-// src/types.ts:50:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
+// src/types.ts:18:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
