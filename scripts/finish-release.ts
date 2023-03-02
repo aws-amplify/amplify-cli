@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import * as rl from 'readline';
 import { stdin, stdout } from 'process';
+import yargs from 'yargs';
 
 export function extractUpstreamNameFromRemotes(remoteGitVerbose: string, upstreamRepositoryName: string): string | undefined {
   const lineWithRepoName = remoteGitVerbose.split('\n').find((l) => l.indexOf(upstreamRepositoryName) > -1);
@@ -107,8 +108,6 @@ export function getCompareLink(devBranch: string, mergeBranch: string): string {
   return `https://github.com/aws-amplify/amplify-cli/compare/${devBranch}...${mergeBranch}`;
 }
 
-export function finalize(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: Git) {}
-
 export function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: Git) {
   git.checkout(devBranch);
   git.pull(upstreamName, devBranch);
@@ -118,22 +117,39 @@ export function prepareBranches(upstreamName: string, devBranch: string, mergeBr
 }
 type Args = {
   continue: boolean;
+  releaseBranch: string;
+  mergeBranch?: string;
+  devBranch: string;
+  repository: string;
 };
 function getArgs(): Args {
-  const args = process.argv.slice(2);
+  const args = yargs(process.argv.slice(2))
+    .string('release-branch')
+    .default('release-branch', 'main')
+    .string('dev-branch')
+    .default('dev-branch', 'dev')
+    .string('repository')
+    .default('repository', 'aws-amplify/amplify-cli')
+    .boolean('continue')
+    .default('continue', false)
+    .string('merge-branch').argv;
   return {
-    continue: args.length > 0 && args.indexOf('--continue') > -1,
+    continue: args.continue,
+    releaseBranch: args['release-branch'],
+    devBranch: args['dev-branch'],
+    mergeBranch: args['merge-branch'],
+    repository: args.repository,
   };
 }
 
-process.on('uncaughtException', (err) => {
-  if (err.message === 'dirty working tree') {
-    process.exit(1);
-  }
-});
-
 export async function main() {
-  const args = getArgs();
+  const {
+    continue: continueArg,
+    releaseBranch: RELEASE_BRANCH,
+    devBranch: DEV_BRANCH,
+    repository: REPO_NAME,
+    mergeBranch: mergeBranchArg,
+  } = getArgs();
   const git = new Git();
   const rlInterface = rl.createInterface({
     input: stdin,
@@ -145,27 +161,27 @@ export async function main() {
     process.exit(2);
   }
 
-  const releaseSha = git.getShortSha('main');
-  const DEV_BRANCH = 'dev';
-  const RELEASE_BRANCH = 'main';
-  const REPO_NAME = 'aws-amplify/amplify-cli';
-  const mergeBranch = 'dev-main-merge-' + releaseSha;
   const remoteOutput = git.remote(true);
   const upstreamName = extractUpstreamNameFromRemotes(remoteOutput, REPO_NAME);
-
-  const doesMergeBranchExist = git.isExistingBranch(mergeBranch);
-
   if (!upstreamName) {
     console.error('could not find remote name for the aws-amplify/amplify-cli repository');
     process.exit(1);
   }
-  if (!args.continue && doesMergeBranchExist) {
+
+  console.info(`Fetching ${upstreamName}/${RELEASE_BRANCH}`);
+  git.fetch(upstreamName, RELEASE_BRANCH);
+
+  const releaseSha = git.getShortSha(`${upstreamName}/${RELEASE_BRANCH}`);
+  const mergeBranch = mergeBranchArg ?? 'dev-main-merge-' + releaseSha;
+  const doesMergeBranchExist = git.isExistingBranch(mergeBranch);
+
+  if (!continueArg && doesMergeBranchExist) {
     console.error(
       `The merge branch \`${mergeBranch}\` already exists. Please delete the merge branch and try again, or run the script with \`--continue\``,
     );
     process.exit(1);
   }
-  const canContinue = args.continue || (await shouldContinue(rlInterface, `This will create the merge branch \`${mergeBranch}\`.`));
+  const canContinue = continueArg || (await shouldContinue(rlInterface, `This will create the merge branch \`${mergeBranch}\`.`));
   if (!canContinue) {
     console.info('Exiting...');
     process.exit(0);
@@ -182,8 +198,6 @@ export async function main() {
     console.error('Failed to create merge branch, exiting...');
     process.exit(1);
   }
-  console.info(`Fetching ${upstreamName}/${RELEASE_BRANCH}`);
-  git.fetch(upstreamName, RELEASE_BRANCH);
 
   console.info(`Merging ${upstreamName}/${RELEASE_BRANCH} into ${mergeBranch}`);
   git.merge(`${upstreamName}/${RELEASE_BRANCH}`, { message: 'chore: merge release commit from main to dev' });
