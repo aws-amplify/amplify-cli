@@ -10,7 +10,7 @@ export const addSampleInteraction = async (cwd: string): Promise<void> => {
     .sendCarriageReturn()
     .wait("Please indicate if your use of this bot is subject to the Children's")
     .sendYes()
-    .sendEof()
+    .wait('Successfully added resource')
     .runAsync();
 };
 
@@ -63,7 +63,7 @@ export const addInteractionsWithBotFromScratch = async (
     .wait('How would you like the intent to be fulfilled?')
     .sendKeyDown()
     .sendCarriageReturn()
-    .wait('Would you like to add another intent?')
+    .wait('Would you like to create another intent?')
     .sendNo()
     .wait('Successfully added resource')
     .runAsync();
@@ -94,6 +94,6 @@ export const updateInteractions = async (cwd: string, settings: { slotName: stri
     .sendYes()
     .wait('Would you like to add another slot?')
     .sendNo()
-    .wait('Successfully added resource')
+    .wait('Successfully updated resource')
     .runAsync();
 };

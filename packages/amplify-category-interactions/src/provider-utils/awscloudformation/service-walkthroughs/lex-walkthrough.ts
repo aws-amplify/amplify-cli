@@ -246,9 +246,7 @@ const addSlot = async (context: $TSContext, intentName: string, resourceName: st
   do {
     const slot: LexSlot = {
       name: '',
-      type: {
-        slotType: '',
-      },
+      type: '',
       prompt: '',
       required: true,
       customType: false,
@@ -270,10 +268,11 @@ const addSlot = async (context: $TSContext, intentName: string, resourceName: st
       slot.name = await askSlotName();
     }
 
-    slot.type = await getSlotType(context, newSlotTypes, parameters);
-    if (slot.type.slotTypeDescription) {
-      newSlotTypes.push(slot.type);
-      slot.customType = true;
+    const slotType: LexSlotType = await getSlotType(context, newSlotTypes, parameters);
+    slot.type = slotType.slotType;
+    slot.customType = slotType.customType ?? false;
+    if (slotType.slotTypeDescription) {
+      newSlotTypes.push(slotType);
     }
 
     slot.prompt = await prompter.input('Enter a prompt for your slot (e.g. What city?)', {
