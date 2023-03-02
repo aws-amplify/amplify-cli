@@ -105,11 +105,19 @@ export async function shouldContinue(read: rl.Interface, prompt: string): Promis
 }
 
 export function getCompareLink(repository: string, devBranch: string, mergeBranch: string): string {
+  const PR_TEMPLATE = `
+Release PR for ${mergeBranch}. This PR merges }
+
+## The PR must be merged using "Create a merge commit" option.
+
+This PR merges ${mergeBranch} into ${devBranch}.
+`;
   const parameters = [];
-  parameters.push('template=RELEASE_PR_TEMPLATE.md');
-  parameters.push(`title=chore(release): ${mergeBranch}`);
-  parameters.push('labels=release');
-  return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameters.join('&')}`;
+  parameters.push(['title', `chore(release): ${mergeBranch}`]);
+  parameters.push(['labels', 'release']);
+  parameters.push(['body', PR_TEMPLATE]);
+  const parameterString = parameters.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
+  return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameterString}`;
 }
 
 export function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: Git) {
