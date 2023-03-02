@@ -2,6 +2,7 @@
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 import { Tag } from './tags';
+import { EnvironmentInfo, InputParameters, PinpointInfo, ProjectInfo } from './exeInfo';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -9,39 +10,6 @@ import { Tag } from './tags';
  *  Use it for all 'any's where we can't define the type, but doing a strict TypeScript conversion
  */
 export type $TSAny = any; // eslint-disable-line  @typescript-eslint/no-explicit-any
-
-export type PinpointInfo = {
-  pinpointApp?: $TSAny;
-  pinpointClient?: $TSAny;
-  pinpointInputParams?: $TSAny;
-};
-
-export type ProjectInfo = {
-  amplifyMeta?: $TSAny;
-  awsConfigInfo?: $TSAny;
-  backendConfig?: $TSAny;
-  existingLocalAwsInfo?: $TSAny;
-  existingProjectConfig?: $TSAny;
-  existingTeamProviderInfo?: $TSAny;
-  isNewProject?: boolean;
-  inputParams?: $TSAny;
-  localEnvInfo?: $TSAny;
-  projectConfig?: $TSAny;
-  serviceMeta?: $TSAny;
-  teamProviderInfo?: $TSAny;
-};
-
-export type EnvironmentInfo = {
-  existingLocalEnvInfo?: $TSAny;
-  isNewEnv?: boolean;
-  sourceEnvName?: string;
-};
-
-export type InputParameters = {
-  forcePush?: boolean;
-  iterativeRollback?: boolean;
-  restoreBackend?: boolean;
-};
 
 /**
  * Use it for all CLI Context class references, it enables a quick way to see what we have on the context
