@@ -214,5 +214,8 @@ You can compare changes between the branches here: ${getCompareLink(
 }
 
 if (require.main === module) {
-  main().catch(() => process.exit(1));
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
 }
