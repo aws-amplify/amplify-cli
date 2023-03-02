@@ -181,7 +181,6 @@ export async function main() {
     process.exit(0);
   }
 
-  console.info('Switching to branch ' + devBranch);
   git.checkout(devBranch);
   git.pull();
   console.info('Creating merge branch ' + mergeBranch);
