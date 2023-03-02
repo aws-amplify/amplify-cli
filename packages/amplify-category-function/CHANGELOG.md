@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-generalconfig.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.0.1...@aws-amplify/amplify-category-function@5.1.0-generalconfig.0) (2023-03-02)
+
+
+### Bug Fixes
+
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.0.0...@aws-amplify/amplify-category-function@5.0.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-function
