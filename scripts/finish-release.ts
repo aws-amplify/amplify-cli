@@ -104,8 +104,8 @@ export async function shouldContinue(read: rl.Interface, prompt: string): Promis
   });
 }
 
-export function getCompareLink(devBranch: string, mergeBranch: string): string {
-  return `https://github.com/aws-amplify/amplify-cli/compare/${devBranch}...${mergeBranch}`;
+export function getCompareLink(repository: string, devBranch: string, mergeBranch: string): string {
+  return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}`;
 }
 
 export function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: Git) {
@@ -205,6 +205,7 @@ export async function main() {
 
   console.info(`
 You can compare changes between the branches here: ${getCompareLink(
+    repository,
     devBranch,
     mergeBranch,
   )}. To finish the release, open a pull request between ${mergeBranch} into ${devBranch}
