@@ -24,7 +24,7 @@ export class Git {
   isExistingBranch(branch: string): boolean {
     const command = ['git', 'rev-parse', '--verify', branch];
     try {
-      execSync(command.join(' '));
+      execSync(command.join(' '), { stdio: 'ignore' });
       return true;
     } catch (e) {
       return false;
