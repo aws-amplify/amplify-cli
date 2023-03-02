@@ -121,11 +121,14 @@ export function getCompareLink(
   mergeBranch: string,
   pullRequestBody: string,
 ): string {
-  const parameters = [];
-  parameters.push(['title', `chore(release): Merge ${releaseBranch} into ${devBranch}`]);
-  parameters.push(['labels', 'release']);
-  parameters.push(['body', pullRequestBody]);
-  const parameterString = parameters.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
+  const parameters = {
+    title: `chore(release): Merge ${releaseBranch} into ${devBranch}`,
+    labels: 'release',
+    body: pullRequestBody,
+  };
+  const parameterString = Object.entries(parameters)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
   return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameterString}`;
 }
 
