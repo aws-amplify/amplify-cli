@@ -83,8 +83,8 @@ const WINDOWS_SMOKE_TESTS = [
   // hosting
   'src/__tests__/hostingPROD.test.ts',
   // parameter store
-  'src/__tests__/parameter-store-test-1.test.ts',
-  'src/__tests__/parameter-store-test-2.test.ts',
+  'src/__tests__/parameter-store-1.test.ts',
+  'src/__tests__/parameter-store-2.test.ts',
   // interactions
   'src/__tests__/interactions.test.ts',
   // schema auth test
