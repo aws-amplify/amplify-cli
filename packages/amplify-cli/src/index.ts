@@ -18,7 +18,7 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
-import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
+import { saveAll as saveAllEnvParams, ServiceUploadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
@@ -101,6 +101,7 @@ export const run = async (startTime: number): Promise<void> => {
   if (!verificationResult.verified) {
     if (verificationResult.helpCommandAvailable) {
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new AmplifyError('InputValidationError', {
         message: verificationResult.message ?? 'Invalid input',
@@ -151,18 +152,34 @@ export const run = async (startTime: number): Promise<void> => {
   await displayBannerMessages(input);
   await executeCommand(context);
 
-  const exitCode = process.exitCode || 0;
-  if (exitCode === 0) {
-    await context.usageData.emitSuccess();
-  }
-
   // no command supplied defaults to help, give update notification at end of execution
   if (input.command === 'help') {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: true, isGlobal: true });
   }
 
-  await saveAllEnvParams();
+  if (context.input.command === 'push') {
+    const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
+    const CloudFormationProviderName = 'awscloudformation';
+    let uploadHandler: ServiceUploadHandler | undefined;
+    if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
+      uploadHandler = await context.amplify.invokePluginMethod(
+        context,
+        CloudFormationProviderName,
+        undefined,
+        'getEnvParametersUploadHandler',
+        [context],
+      );
+    }
+    await saveAllEnvParams(uploadHandler);
+  } else {
+    await saveAllEnvParams();
+  }
+
+  const exitCode = process.exitCode || 0;
+  if (exitCode === 0) {
+    await context.usageData.emitSuccess();
+  }
 };
 
 const ensureFilePermissions = (filePath: string): void => {
@@ -206,6 +223,7 @@ export const execute = async (input: CLIInput): Promise<void> => {
     if (verificationResult.helpCommandAvailable) {
       // eslint-disable-next-line no-param-reassign
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new Error(verificationResult.message);
     }

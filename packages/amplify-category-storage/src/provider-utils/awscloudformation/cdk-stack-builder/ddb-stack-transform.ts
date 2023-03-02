@@ -1,8 +1,7 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
-import { App } from '@aws-cdk/core';
+import { AmplifyDDBResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -16,7 +15,7 @@ import { AmplifyDDBResourceInputParameters } from './types';
  * Entry point class to transform User parameters into stack and apply overrides
  */
 export class DDBStackTransform {
-  app: App;
+  app: cdk.App;
   _context: $TSContext;
   _cliInputs: DynamoDBCLIInputs;
   _resourceTemplateObj: AmplifyDDBResourceStack | undefined;
@@ -26,7 +25,7 @@ export class DDBStackTransform {
   _resourceName: string;
 
   constructor(context: $TSContext, resourceName: string) {
-    this.app = new App();
+    this.app = new cdk.App();
     this._context = context;
     this._resourceName = resourceName;
 
@@ -215,8 +214,11 @@ export class DDBStackTransform {
             external: true,
           },
         });
+        const projectInfo = getProjectInfo();
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
+            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
         } catch (err) {
           throw new AmplifyError(
             'InvalidOverrideError',

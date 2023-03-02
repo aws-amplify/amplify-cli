@@ -41,3 +41,4 @@ export * from './context/plugin-manifest';
 export * from './context/plugin-verification-result';
 export * from './constants';
 export * from './help';
+export * from './amplify-node-pkg-detector';
