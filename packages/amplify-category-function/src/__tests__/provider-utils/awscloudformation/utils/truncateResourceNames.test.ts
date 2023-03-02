@@ -30,8 +30,8 @@ describe('truncateResourceNames', () => {
   it('truncates resource names above limit', () => {
     expect(truncateResourceNames({ functionName: longName, roleName: longName })).toMatchInlineSnapshot(`
       Object {
-        "functionName": "thisIsASuperLongNameWreYouStillReadingThisfdb3cbae26d4",
-        "roleName": "thisIsASuperLongNameWreYouStillReadingThisfdb3cbae26d4",
+        "functionName": "thisIsASuperLongNameWreYouStillReadingThis2670c1f20258",
+        "roleName": "thisIsASuperLongNameWreYouStillReadingThis2670c1f20258",
       }
     `);
   });

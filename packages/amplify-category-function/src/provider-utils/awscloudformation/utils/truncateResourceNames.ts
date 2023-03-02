@@ -45,8 +45,8 @@ class ResourceNameTruncator {
     // grabbing a substring from the beginning and end of the input name will hopefully capture any human-readable prefixes or suffixes that the customer has used in the name
     const prefix = resourceName.slice(0, this.resourceNameSlicePoint / 2);
     const suffix = resourceName.slice(resourceName.length - this.resourceNameSlicePoint / 2);
-    const remainder = resourceName.slice(this.resourceNameSlicePoint);
-    const hash = uuid(remainder, this.uuidSeed);
+    const middle = resourceName.slice(this.resourceNameSlicePoint / 2, resourceName.length - this.resourceNameSlicePoint / 2);
+    const hash = uuid(middle, this.uuidSeed);
     const shortHash = hash.slice(hash.length - this.hashLen);
     return `${prefix}${suffix}${shortHash}`;
   }
