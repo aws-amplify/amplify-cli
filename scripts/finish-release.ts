@@ -104,9 +104,9 @@ export async function shouldContinue(read: rl.Interface, prompt: string): Promis
   });
 }
 
-export function getCompareLink(repository: string, devBranch: string, mergeBranch: string): string {
+export function getCompareLink(repository: string, releaseBranch: string, devBranch: string, mergeBranch: string): string {
   const PR_TEMPLATE = `
-Release PR for ${mergeBranch}. This PR merges }
+Release PR for ${mergeBranch}.
 
 ## The PR must be merged using "Create a merge commit" option.
 
@@ -217,6 +217,7 @@ export async function main() {
   console.info(`
 You can compare changes between the branches here: ${getCompareLink(
     repository,
+    releaseBranch,
     devBranch,
     mergeBranch,
   )}. To finish the release, open a pull request between ${mergeBranch} into ${devBranch}
