@@ -128,6 +128,5 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   }
   await buildOverridesEnabledResources(context);
   await generateDependentResourcesType();
-  // after this generate type
   return context;
 }
