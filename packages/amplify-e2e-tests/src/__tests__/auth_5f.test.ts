@@ -30,7 +30,7 @@ describe('headless auth f', () => {
 
   it('removes auth resource', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     const { auth: authBefore } = getBackendAmplifyMeta(projRoot);
     const authResourceName = _.keys(authBefore).find(() => true); // first element or undefined

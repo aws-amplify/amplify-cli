@@ -50,7 +50,7 @@ describe('dynamodb import 2b', () => {
     ogSettings = createDynamoDBSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
+    await addAuthWithDefault(ogProjectRoot);
     await addDynamoDBWithGSIWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -59,7 +59,7 @@ describe('dynamodb import 2b', () => {
     dummyOGSettings = createDynamoDBSettings(dummyOGProjectSettings.name, dummyOGShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
+    await addAuthWithDefault(dummyOGProjectRoot);
     await addDynamoDBWithGSIWithSettings(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });
@@ -97,7 +97,7 @@ describe('dynamodb import 2b', () => {
       disableAmplifyAppCreation: false,
       envName,
     });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
     await amplifyPushAuth(projectRoot);

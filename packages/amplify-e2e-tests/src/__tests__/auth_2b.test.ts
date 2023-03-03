@@ -28,7 +28,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaultSocial, pull into empty dir, and then remove federation', async () => {
     await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: 'integtest', disableAmplifyAppCreation: false });
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot);
     await amplifyPushAuth(projRoot);
     const appId = getAppId(projRoot);
     const projRoot2 = await createNewProjectDir('auth2');
