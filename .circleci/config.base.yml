@@ -1320,6 +1320,7 @@ commands:
                   setNpmRegistryUrlToLocal
                   changeNpmGlobalPath
                   amplify version
+                  cd packages/amplify-e2e-tests
                   retry runE2eTest
                 no_output_timeout: 65m
   scan_e2e_test_artifacts:
