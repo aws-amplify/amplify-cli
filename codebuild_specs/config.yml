@@ -5,8 +5,7 @@ phases:
       nodejs: 16
   pre_build:
     commands:
-      - yarn production-build
-      - yarn build-tests
+      - npm --version
       - echo 'Pre-Build phase completed!'
   build:
     commands:
