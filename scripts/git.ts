@@ -4,6 +4,10 @@ export interface MergeOptions {
   message: string;
   mode: 'ff-only';
 }
+
+export interface CheckoutOptions {
+  startPoint?: string;
+}
 export class Git {
   remote = (verbose?: boolean): string => {
     let command = ['git', 'remote'];
@@ -44,12 +48,16 @@ export class Git {
     execSync(command.join(' '));
   }
 
-  checkout(branch: string, create: boolean = false): void {
+  checkout(branch: string, create: boolean = false, options: CheckoutOptions = {}): void {
+    const { startPoint } = options;
     const command = ['git', 'checkout'];
     if (create) {
       command.push('-b');
     }
     command.push(branch);
+    if (create && startPoint) {
+      command.push(startPoint);
+    }
     execSync(command.join(' '));
   }
 
