@@ -5,6 +5,7 @@ phases:
       nodejs: 16
     commands:
       - npm install
+      - echo "Install phase"
   pre_build:
     commands:
       - npm --version
