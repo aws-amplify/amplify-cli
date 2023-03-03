@@ -32,7 +32,7 @@
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-cli-core": "3.7.1",
+    "amplify-cli-core": "4.0.0-beta.8",
     "amplify-prompts": "2.6.4",
     "amplify-velocity-template": "1.4.9",
     "aws-sdk": "^2.1233.0",

@@ -1,10 +1,9 @@
-import { $TSAny, $TSContext, spinner } from 'amplify-cli-core';
-import aws from 'aws-sdk';
+import { $TSContext } from 'amplify-cli-core';
+import type { SSM } from 'aws-sdk';
 
 /**
  * Wrapper around SSM SDK calls
  */
-// eslint-disable-next-line
 export class SSMClientWrapper {
   private static instance: SSMClientWrapper;
 
@@ -15,12 +14,12 @@ export class SSMClientWrapper {
     return SSMClientWrapper.instance;
   };
 
-  private constructor(private readonly ssmClient: aws.SSM) {}
+  private constructor(private readonly ssmClient: SSM) {}
 
   /**
    * Returns a list of secret name value pairs
    */
-  getSecrets = async (secretNames: string[]): Promise<$TSAny> => {
+  getSecrets = async (secretNames: string[]): Promise<{ secretName?: string; secretValue?: string }[] | undefined> => {
     if (!secretNames || secretNames.length === 0) {
       return [];
     }
@@ -31,7 +30,7 @@ export class SSMClientWrapper {
       })
       .promise();
 
-    return result.Parameters.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value }));
+    return result?.Parameters?.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value }));
   };
 
   /**
@@ -41,8 +40,7 @@ export class SSMClientWrapper {
     let NextToken;
     const accumulator: string[] = [];
     do {
-      // eslint-disable-next-line
-      const result = await this.ssmClient
+      const result: SSM.GetParametersByPathResult = await this.ssmClient
         .getParametersByPath({
           Path: secretPath,
           MaxResults: 10,
@@ -56,7 +54,11 @@ export class SSMClientWrapper {
           NextToken,
         })
         .promise();
-      accumulator.push(...result.Parameters.map((param) => param.Name));
+
+      if (Array.isArray(result?.Parameters)) {
+        accumulator.push(...result.Parameters.filter((param) => param?.Name !== undefined).map((param) => param.Name));
+      }
+
       NextToken = result.NextToken;
     } while (NextToken);
     return accumulator;
@@ -108,21 +110,14 @@ export class SSMClientWrapper {
   };
 }
 
-const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
-  try {
-    spinner.start();
-    spinner.text = 'Building and packaging resources';
+const getSSMClient = async (context: $TSContext): Promise<SSM> => {
+  const { client } = await context.amplify.invokePluginMethod<{ client: SSM }>(
+    context,
+    'awscloudformation',
+    undefined,
+    'getConfiguredSSMClient',
+    [context],
+  );
 
-    const { client } = await context.amplify.invokePluginMethod<{ client: aws.SSM }>(
-      context,
-      'awscloudformation',
-      undefined,
-      'getConfiguredSSMClient',
-      [context],
-    );
-
-    return client;
-  } finally {
-    spinner.stop();
-  }
+  return client;
 };

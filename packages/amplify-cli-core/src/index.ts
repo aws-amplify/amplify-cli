@@ -1,4 +1,6 @@
 /* eslint-disable import/no-cycle */
+import * as ExeInfo from './exeInfo';
+export { ExeInfo };
 export * from './banner-message';
 export * from './category-interfaces';
 export * from './cfnUtilities';
@@ -41,3 +43,4 @@ export * from './context/plugin-manifest';
 export * from './context/plugin-verification-result';
 export * from './constants';
 export * from './help';
+export * from './amplify-node-pkg-detector';

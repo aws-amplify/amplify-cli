@@ -13,6 +13,7 @@ export * from './appsync';
 export * from './envVars';
 export * from './getAppId';
 export * from './headless';
+export * from './overrides';
 export * from './nexpect';
 export * from './pinpoint';
 export * from './projectMeta';

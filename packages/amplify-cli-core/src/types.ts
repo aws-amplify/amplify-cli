@@ -2,6 +2,7 @@
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 import { Tag } from './tags';
+import { EnvironmentInfo, InputParameters, PinpointInfo, ProjectInfo } from './exeInfo';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -27,7 +28,7 @@ export type $TSContext = {
    * @deprecated
    */
   prompt: $TSAny;
-  exeInfo: $TSAny;
+  exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
   input: CommandLineInput;
   parameters: ContextParameters;
   usageData: IUsageData;
@@ -292,8 +293,8 @@ export type IContextPrint = {
  */
 export type IContextFilesystem = {
   remove: (targetPath: string) => void;
-  read: (targetPath: string, encoding?: string) => $TSAny;
-  write: (targetPath: string, data: unknown) => void;
+  read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
+  write: (targetPath: string, data: string | NodeJS.ArrayBufferView) => void;
   exists: (targetPath: string) => boolean;
   isFile: (targetPath: string) => boolean;
   path: (...pathParts: string[]) => string;
@@ -561,8 +562,21 @@ interface AmplifyToolkit {
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSObject) => void;
   updateBackendConfigAfterResourceUpdate: (category: string, resourceName: string, attribute: string, value: $TSAny) => void;
   updateBackendConfigAfterResourceRemove: (category: string, resourceName: string) => void;
+  /**
+   * use EnvironmentParameterManager from the amplify-environment-parameters package
+   * @deprecated
+   */
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
+  /**
+   * use EnvironmentParameterManager from the amplify-environment-parameters package
+   * @deprecated
+   */
+  saveEnvResourceParameters: (
+    context: $TSContext | undefined,
+    category: string,
+    resourceName: string,
+    envSpecificParams?: $TSObject,
+  ) => void;
   removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
   triggerFlow: (...args: unknown[]) => $TSAny;
   addTrigger: () => $TSAny;

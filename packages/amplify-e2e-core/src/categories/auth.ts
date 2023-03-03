@@ -61,9 +61,9 @@ export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   });
 }
 
-export function removeAuthWithDefault(cwd: string): Promise<void> {
+export function removeAuthWithDefault(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'auth'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource? This')
