@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+import execa from 'execa';
 
 const defaultSettings = {
   name: EOL,
@@ -493,31 +494,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
   });
 }
 
-export function initHeadless(cwd: string, appId: string, envName: string, settings: Record<string, unknown>) {
-  const s = { ...defaultSettings, ...settings };
-  let env;
-
-  if (s.disableAmplifyAppCreation === true) {
-    env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-    };
-  }
-
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--appId', appId, '--envName', envName, '--yes'], {
-      cwd,
-      stripColors: true,
-      env,
-      disableCIDetection: s.disableCIDetection,
-    })
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          addCircleCITags(cwd);
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const initHeadless = async (projRoot: string, appId: string, envName: string): Promise<void> => {
+  const args = ['init', '--yes', '--appId', appId, '--envName', envName];
+  await execa(getCLIPath(), args, { cwd: projRoot });
+};
