@@ -18,7 +18,7 @@ export class Git {
     if (verbose) {
       command.push('-v');
     }
-    return execa.sync(command[0], command.slice(1)).toString();
+    return execa.sync(command[0], command.slice(1)).stdout;
   }
 
   isExistingBranch(branch: string): boolean {
@@ -33,7 +33,7 @@ export class Git {
 
   getShortSha(ref: string = 'HEAD'): string {
     const command = ['git', 'rev-parse', '--short', ref];
-    return execa.sync(command[0], command.slice(1)).toString().trim();
+    return execa.sync(command[0], command.slice(1)).stdout.trim();
   }
 
   deleteBranch(branch: string) {
@@ -88,7 +88,7 @@ export class Git {
 
   isCleanWorkingTree(): boolean {
     const buffer = execa.sync('git', ['status', '--porcelain']);
-    return !buffer.toString().trim();
+    return !buffer.stdout.trim();
   }
 }
 
