@@ -54,7 +54,7 @@ export class APITest {
   private userOverriddenSlots: string[] = [];
   private searchableTables: string[] = [];
 
-  async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
+  public async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
     try {
       context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
@@ -73,7 +73,7 @@ export class APITest {
         wsPort,
       });
       await this.appSyncSimulator.start();
-      await this.resolverOverrideManager.start();
+      this.resolverOverrideManager.start();
       await this.watch(context);
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
 
@@ -99,7 +99,7 @@ export class APITest {
     }
   }
 
-  async stop(context) {
+  public async stop(context) {
     this.ddbClient = null;
     if (this.watcher) {
       await this.watcher.close();
@@ -129,8 +129,8 @@ export class APITest {
       );
     }
 
-    await this.appSyncSimulator.stop();
-    this.resolverOverrideManager.stop();
+    await this.appSyncSimulator?.stop();
+    this.resolverOverrideManager?.stop();
   }
 
   private async runTransformer(context, parameters = {}) {
