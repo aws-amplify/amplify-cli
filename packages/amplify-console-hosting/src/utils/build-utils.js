@@ -1,4 +1,3 @@
-const chalk = require('chalk');
 const { command: executeCommand } = require('execa');
 const fs = require('fs-extra');
 const path = require('path');
