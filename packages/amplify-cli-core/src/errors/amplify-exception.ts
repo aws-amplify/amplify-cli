@@ -144,6 +144,7 @@ export type AmplifyErrorType =
   | 'ProjectInitError'
   | 'ProjectNotFoundError'
   | 'ProjectNotInitializedError'
+  | 'ProjectBuildCommandError'
   | 'PushResourcesError'
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
