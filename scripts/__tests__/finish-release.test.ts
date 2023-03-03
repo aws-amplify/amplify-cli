@@ -1,16 +1,12 @@
 import * as finishRelease from '../finish-release';
 
-import * as childProcess from 'child_process';
+import * as execa from 'execa';
 const { Git, extractUpstreamNameFromRemotes } = finishRelease;
 
-jest.mock('child_process', () => {
-  return {
-    __esModule: true,
-    execSync: () => '',
-  };
-});
-
-const mockedChildProcess: jest.Mocked<typeof childProcess> = childProcess as jest.Mocked<typeof childProcess>;
+jest.mock('execa', () => ({
+  __esModule: true,
+  sync: jest.fn(),
+}));
 
 const REPO_NAME = 'aws-amplify/amplify-cli';
 describe('when finding the remote name', () => {
@@ -37,16 +33,18 @@ upstream        git@github.com:someonesrepositoryname/amplify-cli.git (fetch)`,
 describe('isCleanWorkingTree', () => {
   test('returns false if there is not a clean working tree', () => {
     const git = new Git();
-    mockedChildProcess.execSync = jest.fn().mockReturnValue('a changed file');
+    const syncSpy = jest
+      .spyOn(execa, 'sync')
+      .mockReturnValue({ stdout: 'a changed file' } as unknown as execa.ExecaSyncReturnValue<Buffer>);
     const result = git.isCleanWorkingTree();
-    expect(mockedChildProcess.execSync).toHaveBeenCalledWith('git status --porcelain');
+    expect(syncSpy).toHaveBeenCalledWith('git', ['status', '--porcelain']);
     expect(result).toBeFalsy();
   });
   test('returns true if there is a clean working tree', () => {
     const git = new Git();
-    mockedChildProcess.execSync = jest.fn().mockReturnValue('');
+    const syncSpy = jest.spyOn(execa, 'sync').mockReturnValue({ stdout: '' } as unknown as execa.ExecaSyncReturnValue<Buffer>);
     const result = git.isCleanWorkingTree();
-    expect(mockedChildProcess.execSync).toHaveBeenCalledWith('git status --porcelain');
+    expect(syncSpy).toHaveBeenCalledWith('git', ['status', '--porcelain']);
     expect(result).toBeTruthy();
   });
 });
