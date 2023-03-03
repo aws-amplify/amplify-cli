@@ -129,6 +129,7 @@ jobs:
           steps:
             - checkout
             - run: yarn config set script-shell $(which bash)
+            - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
             - run:
                 name: Build tests
                 command: yarn build-tests
