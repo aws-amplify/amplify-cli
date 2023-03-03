@@ -292,8 +292,8 @@ export type IContextPrint = {
  */
 export type IContextFilesystem = {
   remove: (targetPath: string) => void;
-  read: (targetPath: string, encoding?: string) => $TSAny;
-  write: (targetPath: string, data: unknown) => void;
+  read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
+  write: (targetPath: string, data: string | NodeJS.ArrayBufferView) => void;
   exists: (targetPath: string) => boolean;
   isFile: (targetPath: string) => boolean;
   path: (...pathParts: string[]) => string;
