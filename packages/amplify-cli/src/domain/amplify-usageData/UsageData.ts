@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { ICommandInput, IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
-import { prompter } from 'amplify-prompts';
+import { prompter, printer } from 'amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
@@ -23,6 +23,7 @@ import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';
 import { Timer } from './Timer';
 import { UsageDataPayload } from './UsageDataPayload';
+import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
@@ -49,6 +50,7 @@ export class UsageData implements IUsageData {
     this.input = new CLIInput([]);
     this.projectSettings = {};
     this.inputOptions = {};
+    getAmplifyLogger().logInfo({ message: 'Usage Data URL: ' + this.url.href });
   }
 
   /**
