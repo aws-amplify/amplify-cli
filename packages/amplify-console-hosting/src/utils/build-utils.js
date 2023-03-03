@@ -53,7 +53,7 @@ async function run(command, projectDirectory) {
     throw new AmplifyError(
       `ProjectBuildCommandError`,
       {
-        message: `Failed to run frontend build command: ${command}`,
+        message: `Build command "${command}" exited with failure"`,
         resolution: 'Check the console output for more information, or run `amplify configure project` to change the build command.',
         link: 'https://docs.amplify.aws/cli/start/workflows/#amplify-configure-project',
       },
