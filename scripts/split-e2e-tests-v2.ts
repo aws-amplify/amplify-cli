@@ -14,6 +14,7 @@ const RUN_SOLO = [
   'src/__tests__/geo-remove-3.test.ts',
   'src/__tests__/geo-update-1.test.ts',
   'src/__tests__/geo-update-2.test.ts',
+  'src/__tests__/hostingPROD.test.ts',
   'src/__tests__/import_auth_1a.test.ts',
   'src/__tests__/import_auth_1b.test.ts',
   'src/__tests__/import_auth_2a.test.ts',
