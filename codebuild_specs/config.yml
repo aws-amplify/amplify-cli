@@ -1,4 +1,4 @@
-version: 0.1
+version: 0.2
 phases:
   install:
     runtime-versions:
@@ -11,6 +11,8 @@ phases:
   build:
     commands:
       - echo 'Build phase completed!'
+batch:
+    fast-fail: true
 artifacts:
   files:
     - '**/*'
