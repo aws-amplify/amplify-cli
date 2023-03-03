@@ -493,11 +493,22 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
   });
 }
 
-export function initHeadless(cwd: string, appId: string, envName: string) {
+export function initHeadless(cwd: string, appId: string, envName: string, settings: Record<string, unknown>) {
+  const s = { ...defaultSettings, ...settings };
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['init', '--appId', appId, '--envName', envName, '--yes'], {
       cwd,
       stripColors: true,
+      env,
+      disableCIDetection: s.disableCIDetection,
     })
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
