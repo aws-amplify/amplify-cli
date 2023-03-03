@@ -22,7 +22,6 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@types/glob": "^7.1.1",
     "amplify-cli-core": "4.0.0-beta.8",
     "amplify-headless-interface": "1.17.1",
     "aws-sdk": "^2.1233.0",
@@ -43,5 +42,8 @@
     "strip-ansi": "^6.0.0",
     "throat": "^5.0.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1"
   }
 }
