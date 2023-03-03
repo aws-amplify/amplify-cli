@@ -431,7 +431,7 @@ export class ResourceExport extends ResourcePackager {
         // remove url parameters will set it in the construct
         // remove template URL the stack, CDK will update the URL
         if (deleteParameters) {
-          const { Parameters, ...others } = template.Resources[resourceKey].Properties;
+          const { Parameters, TemplateURL, ...others } = template.Resources[resourceKey].Properties;
           if (Parameters) {
             const params = this.extractParameters(Parameters, false);
             resource.Properties = {
@@ -442,7 +442,7 @@ export class ResourceExport extends ResourcePackager {
             resource.Properties = others;
           }
         } else {
-          const { ...others } = template.Resources[resourceKey].Properties;
+          const { TemplateURL, ...others } = template.Resources[resourceKey].Properties;
           resource.Properties = others;
         }
       }
