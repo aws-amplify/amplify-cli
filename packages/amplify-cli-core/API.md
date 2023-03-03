@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
@@ -1031,8 +1033,8 @@ export type IAuthResource = IAmplifyResource;
 // @public (undocumented)
 export type IContextFilesystem = {
     remove: (targetPath: string) => void;
-    read: (targetPath: string, encoding?: string) => $TSAny;
-    write: (targetPath: string, data: unknown) => void;
+    read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
+    write: (targetPath: string, data: string | NodeJS.ArrayBufferView) => void;
     exists: (targetPath: string) => boolean;
     isFile: (targetPath: string) => boolean;
     path: (...pathParts: string[]) => string;
@@ -1332,7 +1334,7 @@ export class JSONUtilities {
     static stringify: (data: unknown, options?: {
         minify?: boolean;
         orderedKeys?: boolean;
-    }) => string | undefined;
+    }) => string;
     // (undocumented)
     static writeJson: (fileName: string, data: unknown, options?: {
         mode?: number;

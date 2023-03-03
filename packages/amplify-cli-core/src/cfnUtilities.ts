@@ -60,7 +60,7 @@ const writeCFNTemplateDefaultOptions: Required<WriteCFNTemplateOptions> = {
  */
 export const writeCFNTemplate = async (template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> => {
   const mergedOptions = { ...writeCFNTemplateDefaultOptions, ...options };
-  let serializedTemplate: string | undefined;
+  let serializedTemplate: string;
   switch (mergedOptions.templateFormat) {
     case CFNTemplateFormat.JSON:
       serializedTemplate = JSONUtilities.stringify(template, { minify: mergedOptions.minify });
