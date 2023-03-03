@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import execa from 'execa';
 import * as rl from 'readline';
 import { stdin, stdout } from 'process';
 import yargs from 'yargs';
@@ -18,13 +18,13 @@ export class Git {
     if (verbose) {
       command.push('-v');
     }
-    return execSync(command.join(' ')).toString();
+    return execa.sync(command[0], command.slice(1)).toString();
   }
 
   isExistingBranch(branch: string): boolean {
     const command = ['git', 'rev-parse', '--verify', branch];
     try {
-      execSync(command.join(' '), { stdio: 'ignore' });
+      execa.sync(command[0], command.slice(1), { stdio: 'ignore' });
       return true;
     } catch (e) {
       return false;
@@ -33,12 +33,12 @@ export class Git {
 
   getShortSha(ref: string = 'HEAD'): string {
     const command = ['git', 'rev-parse', '--short', ref];
-    return execSync(command.join(' ')).toString().trim();
+    return execa.sync(command[0], command.slice(1)).toString().trim();
   }
 
   deleteBranch(branch: string) {
     let command = ['git', 'branch', '-D', branch];
-    execSync(command.join(' '));
+    execa.sync(command[0], command.slice(1));
   }
 
   pull(remote?: string, branch?: string) {
@@ -49,7 +49,7 @@ export class Git {
         command.push(branch);
       }
     }
-    execSync(command.join(' '));
+    execa.sync(command[0], command.slice(1));
   }
 
   checkout(branch: string, create: boolean = false): void {
@@ -58,7 +58,7 @@ export class Git {
       command.push('-b');
     }
     command.push(branch);
-    execSync(command.join(' '));
+    execa.sync(command[0], command.slice(1));
   }
 
   merge(branch: string, options: Partial<MergeOptions> = {}): void {
@@ -70,12 +70,12 @@ export class Git {
     if (options.mode) {
       command.push(`--${options.mode}`);
     }
-    execSync(command.join(' '));
+    execa.sync(command[0], command.slice(1));
   }
 
   push(remote: string, branch: string) {
     const command = ['git', 'push', remote, branch];
-    execSync(command.join(' '));
+    execa.sync(command[0], command.slice(1));
   }
 
   fetch(remote: string, branch?: string) {
@@ -83,11 +83,11 @@ export class Git {
     if (branch) {
       command.push(branch);
     }
-    execSync(command.join(' '));
+    execa.sync(command[0], command.slice(1));
   }
 
   isCleanWorkingTree(): boolean {
-    const buffer = execSync('git status --porcelain');
+    const buffer = execa.sync('git', ['status', '--porcelain']);
     return !buffer.toString().trim();
   }
 }
