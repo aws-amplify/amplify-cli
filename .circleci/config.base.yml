@@ -129,7 +129,6 @@ jobs:
           steps:
             - checkout
             - run: yarn config set script-shell $(which bash)
-            - run: yarn run production-build
             - run:
                 name: Build tests
                 command: yarn build-tests
