@@ -25,6 +25,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/lodash": "^4.14.149",
     "amplify-function-plugin-interface": "1.9.7"
   },
   "devDependencies": {
