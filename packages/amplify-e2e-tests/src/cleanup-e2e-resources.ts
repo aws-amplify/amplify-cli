@@ -23,6 +23,8 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'ap-southeast-2',
 ];
 
+const AWS_REGIONS_TO_RUN_TESTS_PINPOINT = AWS_REGIONS_TO_RUN_TESTS.filter((region) => region !== 'eu-west-3');
+
 // Limits are enforced per region
 // we collect resources from each region & then delete as an entire batch
 const DELETE_LIMITS = {
@@ -945,7 +947,9 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
-  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanPinpointApplications(account, region));
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
+    getOrphanPinpointApplications(account, region),
+  );
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
   const orphanAppSyncApisPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanAppSyncApis(account, region));
