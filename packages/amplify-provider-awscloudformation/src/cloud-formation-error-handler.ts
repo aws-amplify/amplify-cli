@@ -4,11 +4,11 @@ import { deserializeErrorMessages, CFNErrorMessage, CFNErrorMessages } from './a
 const s3Indicator = '(AWS::S3::Bucket)';
 
 const handleS3Error = (err: Error & { details?: string }): void => {
-  const alreadyExistsSuffix = 'already exists';
   const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(err.details);
+  const bucketNameRegex = /(S3Bucket|CustomMessageConfirmationBucket) \(AWS::S3::Bucket\)*/;
+  const bucketReasonRegex = /.* already exists*/;
   const bucketExistsLines: Array<CFNErrorMessage> = deserializedErrorMessages.messages.filter(
-    (message) =>
-      message.name.includes(s3Indicator) && message.reason.includes(alreadyExistsSuffix) && !message.name.includes('DeploymentBucket'),
+    (message) => bucketNameRegex.test(message.name) && bucketReasonRegex.test(message.reason),
   );
   if (bucketExistsLines.length) {
     const messageWithError: CFNErrorMessage = bucketExistsLines[0];
