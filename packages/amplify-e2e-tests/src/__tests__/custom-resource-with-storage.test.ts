@@ -55,7 +55,7 @@ describe('adding custom resources test', () => {
     console.log('LINE 52');
 
     await gitCleanFdx(projRoot);
-    await initHeadless(projRoot, appId, envName);
+    await initHeadless(projRoot, appId, envName, {});
     const typesPath = path.join(projRoot, 'amplify', 'backend', 'types', 'amplify-dependent-resources-ref.d.ts');
     const typesFileJSON = JSONUtilities.readJson(typesPath);
     const keys = Object.keys(typesFileJSON);
