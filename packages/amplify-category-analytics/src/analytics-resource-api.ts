@@ -159,7 +159,7 @@ export const analyticsPushYes = async (context: $TSContext): Promise<void> => {
   const exeInfoClone = { ...context?.exeInfo };
   const parametersClone = { ...context?.parameters };
   try {
-    context.exeInfo = context.exeInfo || {};
+    context.exeInfo ??= {};
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
     context.parameters = context.parameters || {};

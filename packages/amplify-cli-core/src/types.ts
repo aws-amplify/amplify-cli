@@ -2,6 +2,7 @@
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 import { Tag } from './tags';
+import { EnvironmentInfo, InputParameters, PinpointInfo, ProjectInfo } from './exeInfo';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -27,7 +28,7 @@ export type $TSContext = {
    * @deprecated
    */
   prompt: $TSAny;
-  exeInfo: $TSAny;
+  exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
   input: CommandLineInput;
   parameters: ContextParameters;
   usageData: IUsageData;
