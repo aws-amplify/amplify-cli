@@ -22,12 +22,14 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
     "test": "jest --logHeapUsage",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.0-beta.2",
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-prompts": "2.6.4",
+    "@aws-amplify/amplify-environment-parameters": "file://home/akz/workspace/amplify-cli/packages/amplify-environment-parameters/aws-amplify-amplify-environment-parameters-1.4.0-beta.2.tgz",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
     "fs-extra": "^8.1.0",
     "uuid": "^8.3.2"
   },
@@ -46,5 +48,12 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-environment-parameters",
+    "amplify-cli-core",
+    "amplify-prompts",
+    "fs-extra",
+    "uuid"
+  ]
 }

@@ -9,7 +9,9 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "publishConfig": {
     "access": "public"
@@ -50,5 +52,9 @@
   "dependencies": {
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
-  }
+  },
+  "bundledDependencies": [
+    "winston",
+    "winston-daily-rotate-file"
+  ]
 }

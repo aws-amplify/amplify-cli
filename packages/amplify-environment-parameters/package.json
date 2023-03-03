@@ -24,11 +24,13 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules src/schemas",
     "test": "jest --logHeapUsage",
     "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack",
     "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path src/backend-parameters.d.ts --type BackendParameters --no-type-check --out lib/schemas/BackendParameters.schema.json && copyfiles --flat lib/schemas/BackendParameters.schema.json src/schemas"
   },
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.0-beta.8",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -55,5 +57,10 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "ajv",
+    "amplify-cli-core",
+    "lodash"
+  ]
 }

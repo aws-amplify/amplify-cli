@@ -24,11 +24,13 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-function-plugin-interface": "1.9.7",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-function-plugin-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-function-plugin-interface/amplify-function-plugin-interface-1.9.7.tgz",
     "execa": "^5.1.1",
     "exit": "^0.1.2",
     "fs-extra": "^8.1.0",
@@ -57,5 +59,13 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "amplify-cli-core",
+    "amplify-function-plugin-interface",
+    "execa",
+    "exit",
+    "fs-extra",
+    "glob"
+  ]
 }

@@ -7,7 +7,9 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "keywords": [
     "aws",
@@ -24,5 +26,8 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.6"
-  }
+  },
+  "bundledDependencies": [
+    "aws-sdk"
+  ]
 }

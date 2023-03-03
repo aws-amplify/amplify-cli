@@ -23,12 +23,12 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.0.0-beta.8",
+    "@aws-amplify/amplify-category-auth": "file://home/akz/workspace/amplify-cli/packages/amplify-category-auth/aws-amplify-amplify-category-auth-3.0.0-beta.8.tgz",
     "@aws-amplify/amplify-e2e-core": "4.7.1",
     "@aws-amplify/graphql-transformer-core": "1.1.0-beta.6",
-    "amplify-cli-core": "4.0.0-beta.8",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
     "amplify-dynamodb-simulator": "2.5.8",
-    "amplify-headless-interface": "1.17.1",
+    "amplify-headless-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-headless-interface/amplify-headless-interface-1.17.1.tgz",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.53.0",

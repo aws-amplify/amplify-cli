@@ -20,7 +20,9 @@
     "test": "jest --logHeapUsage --passWithNoTests",
     "build": "tsc",
     "watch": "tsc -w",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
     "body-parser": "^1.19.2",
@@ -45,5 +47,19 @@
     "@types/uuid": "^8.3.1",
     "@types/xml": "^1.0.4",
     "aws-sdk": "^2.1233.0"
-  }
+  },
+  "bundledDependencies": [
+    "body-parser",
+    "cors",
+    "etag",
+    "express",
+    "fs-extra",
+    "glob",
+    "object-to-xml",
+    "promise-toolbox",
+    "serve-static",
+    "uuid",
+    "xml",
+    "xml-js"
+  ]
 }

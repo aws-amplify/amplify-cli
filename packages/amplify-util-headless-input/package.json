@@ -7,7 +7,9 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "keywords": [
     "amplify",
@@ -17,7 +19,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-headless-interface": "1.17.1"
+    "amplify-headless-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-headless-interface/amplify-headless-interface-1.17.1.tgz"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5",
@@ -34,5 +36,9 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
     }
-  }
+  },
+  "bundledDependencies": [
+    "ajv",
+    "amplify-headless-interface"
+  ]
 }

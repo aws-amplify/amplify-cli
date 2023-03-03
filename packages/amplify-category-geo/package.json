@@ -16,7 +16,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
     "watch": "tsc -w",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "keywords": [
     "amplify",
@@ -27,10 +29,10 @@
   },
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-headless-interface": "1.17.1",
-    "amplify-prompts": "2.6.4",
-    "amplify-util-headless-input": "1.9.10",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-headless-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-headless-interface/amplify-headless-interface-1.17.1.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
+    "amplify-util-headless-input": "file://home/akz/workspace/amplify-cli/packages/amplify-util-headless-input/amplify-util-headless-input-1.9.10.tgz",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "constructs": "^10.0.5",
@@ -57,5 +59,18 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "ajv",
+    "amplify-cli-core",
+    "amplify-headless-interface",
+    "amplify-prompts",
+    "amplify-util-headless-input",
+    "aws-cdk-lib",
+    "aws-sdk",
+    "constructs",
+    "fs-extra",
+    "lodash",
+    "uuid"
+  ]
 }

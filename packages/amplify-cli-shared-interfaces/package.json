@@ -8,7 +8,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "demo": "yarn build && node lib/demo/demo.js",
     "watch": "tsc -w",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,6 @@
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "devDependencies": {
     "rimraf": "^3.0.2"
-  }
+  },
+  "bundledDependencies": []
 }

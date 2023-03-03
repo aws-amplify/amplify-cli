@@ -17,7 +17,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "generateSchemas": "ts-node ./resources/genInputSchema.ts",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "keywords": [
     "amplify",
@@ -27,12 +29,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.0-beta.2",
-    "@aws-amplify/amplify-util-import": "2.4.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.0-beta.8",
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-headless-interface": "1.17.1",
-    "amplify-prompts": "2.6.4",
+    "@aws-amplify/amplify-environment-parameters": "file://home/akz/workspace/amplify-cli/packages/amplify-environment-parameters/aws-amplify-amplify-environment-parameters-1.4.0-beta.2.tgz",
+    "@aws-amplify/amplify-util-import": "file://home/akz/workspace/amplify-cli/packages/amplify-util-import/aws-amplify-amplify-util-import-2.4.0.tgz",
+    "@aws-amplify/cli-extensibility-helper": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-extensibility-helper/aws-amplify-cli-extensibility-helper-3.0.0-beta.8.tgz",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-headless-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-headless-interface/amplify-headless-interface-1.17.1.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
@@ -71,5 +73,23 @@
       "json",
       "html"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-environment-parameters",
+    "@aws-amplify/amplify-util-import",
+    "@aws-amplify/cli-extensibility-helper",
+    "amplify-cli-core",
+    "amplify-headless-interface",
+    "amplify-prompts",
+    "aws-cdk-lib",
+    "aws-sdk",
+    "chalk",
+    "constructs",
+    "enquirer",
+    "fs-extra",
+    "lodash",
+    "promise-sequential",
+    "uuid",
+    "vm2"
+  ]
 }

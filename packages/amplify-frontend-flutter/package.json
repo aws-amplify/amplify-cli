@@ -20,11 +20,18 @@
   },
   "scripts": {
     "test": "jest --logHeapUsage",
-    "test-watch": "yarn test --watch"
+    "test-watch": "yarn test --watch",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.3.3"
-  }
+  },
+  "bundledDependencies": [
+    "fs-extra",
+    "graphql-config",
+    "inquirer"
+  ]
 }

@@ -21,17 +21,19 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf ./lib node_modules"
+    "clean": "rimraf ./lib node_modules",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "engines": {
     "node": ">=12.0.0",
     "@aws-amplify/cli": ">=5.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-frontend-android": "3.5.0",
-    "@aws-amplify/amplify-frontend-flutter": "1.4.0",
-    "@aws-amplify/amplify-frontend-ios": "3.6.1",
-    "@aws-amplify/amplify-frontend-javascript": "3.8.1",
+    "@aws-amplify/amplify-frontend-android": "file://home/akz/workspace/amplify-cli/packages/amplify-frontend-android/aws-amplify-amplify-frontend-android-3.5.0.tgz",
+    "@aws-amplify/amplify-frontend-flutter": "file://home/akz/workspace/amplify-cli/packages/amplify-frontend-flutter/aws-amplify-amplify-frontend-flutter-1.4.0.tgz",
+    "@aws-amplify/amplify-frontend-ios": "file://home/akz/workspace/amplify-cli/packages/amplify-frontend-ios/aws-amplify-amplify-frontend-ios-3.6.1.tgz",
+    "@aws-amplify/amplify-frontend-javascript": "file://home/akz/workspace/amplify-cli/packages/amplify-frontend-javascript/aws-amplify-amplify-frontend-javascript-3.8.1.tgz",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
@@ -43,5 +45,22 @@
     "semver": "^7.3.5",
     "xcode": "^2.1.0",
     "yargs": "^15.1.0"
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-frontend-android",
+    "@aws-amplify/amplify-frontend-flutter",
+    "@aws-amplify/amplify-frontend-ios",
+    "@aws-amplify/amplify-frontend-javascript",
+    "chalk",
+    "execa",
+    "fs-extra",
+    "ini",
+    "inquirer",
+    "node-emoji",
+    "ora",
+    "rimraf",
+    "semver",
+    "xcode",
+    "yargs"
+  ]
 }

@@ -16,7 +16,7 @@
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
-    "dev-build": "yarn --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
+    "dev-build": "yarn && nx run-many --target=build --all",
     "e2e": "nx run e2e",
     "extract-api": "nx run-many --target=extract-api --all",
     "extract-formatting-changes": "yarn ts-node ./scripts/extract-formatting-changes.ts",
@@ -61,7 +61,9 @@
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
     "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
-    "yarn-use-bash": "yarn config set script-shell /bin/bash"
+    "yarn-use-bash": "yarn config set script-shell /bin/bash",
+    "create-tar": "nx run-many --target=bundle-dependencies --all",
+    "create-bundle-dependencies": "nx run-many --target=pack-packages --all"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"

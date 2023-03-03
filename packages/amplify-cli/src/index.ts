@@ -69,7 +69,7 @@ export const run = async (startTime: number): Promise<void> => {
   // Most of these warning messages are targeting searchable directive, which needs to migrate from elastic search to open search
   // This is not disabled in debug mode
   disableCDKDeprecationWarning();
-
+  console.log('printing through tar file');
   let pluginPlatform = await getPluginPlatform();
   let input = getCommandLineInput(pluginPlatform);
 

@@ -28,7 +28,7 @@
   "dependencies": {
     "@aws-amplify/amplify-e2e-core": "4.7.1",
     "@aws-cdk/cloudformation-diff": "~2.53.0",
-    "amplify-cli-core": "4.0.0-beta.8",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "8.0.0-beta.6",
     "lodash": "^4.17.21",

@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "test": "jest --logHeapUsage",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -16,8 +18,8 @@
   "dependencies": {
     "@aws-amplify/codegen-ui": "2.8.0",
     "@aws-amplify/codegen-ui-react": "2.8.0",
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-prompts": "2.6.4",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
     "aws-sdk": "^2.1233.0",
     "fs-extra": "^8.1.0",
     "ora": "^4.0.3",
@@ -70,5 +72,15 @@
     "outputName": "js-test-results.xml",
     "usePathForSuiteName": "true",
     "addFileAttribute": "true"
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/codegen-ui",
+    "@aws-amplify/codegen-ui-react",
+    "amplify-cli-core",
+    "amplify-prompts",
+    "aws-sdk",
+    "fs-extra",
+    "ora",
+    "tiny-async-pool"
+  ]
 }

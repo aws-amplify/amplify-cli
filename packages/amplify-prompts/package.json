@@ -9,7 +9,9 @@
     "demo": "yarn build && node lib/demo/demo.js",
     "test": "jest --logHeapUsage --color",
     "watch": "tsc -w",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "repository": {
     "type": "git",
@@ -27,7 +29,7 @@
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {
-    "@aws-amplify/amplify-cli-shared-interfaces": "1.1.2",
+    "@aws-amplify/amplify-cli-shared-interfaces": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-shared-interfaces/aws-amplify-amplify-cli-shared-interfaces-1.1.2.tgz",
     "chalk": "^4.1.1",
     "enquirer": "^2.3.6"
   },
@@ -52,5 +54,10 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-cli-shared-interfaces",
+    "chalk",
+    "enquirer"
+  ]
 }

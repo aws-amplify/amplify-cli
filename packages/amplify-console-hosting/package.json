@@ -7,8 +7,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.0-beta.2",
-    "amplify-cli-core": "4.0.0-beta.8",
+    "@aws-amplify/amplify-environment-parameters": "file://home/akz/workspace/amplify-cli/packages/amplify-environment-parameters/aws-amplify-amplify-environment-parameters-1.4.0-beta.2.tgz",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
     "archiver": "^5.3.0",
     "chalk": "^4.1.1",
     "cli-table3": "^0.6.0",
@@ -26,6 +26,21 @@
     "build": "tsc && copyfiles -u 1 \"./src/hosting/templates/*.json\" \"./lib\"",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
-  }
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-environment-parameters",
+    "amplify-cli-core",
+    "archiver",
+    "chalk",
+    "cli-table3",
+    "execa",
+    "fs-extra",
+    "glob",
+    "inquirer",
+    "node-fetch",
+    "ora"
+  ]
 }

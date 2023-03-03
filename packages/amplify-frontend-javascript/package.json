@@ -4,7 +4,9 @@
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "scripts": {
     "test": "jest --logHeapUsage",
-    "test-watch": "yarn test --watch"
+    "test-watch": "yarn test --watch",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "repository": {
     "type": "git",
@@ -25,12 +27,23 @@
   "dependencies": {
     "@babel/core": "^7.10.5",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
-    "amplify-cli-core": "4.0.0-beta.8",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21"
-  }
+  },
+  "bundledDependencies": [
+    "@babel/core",
+    "@babel/plugin-transform-modules-commonjs",
+    "amplify-cli-core",
+    "chalk",
+    "execa",
+    "fs-extra",
+    "graphql-config",
+    "inquirer",
+    "lodash"
+  ]
 }

@@ -25,11 +25,13 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "3.0.0-beta.8",
-    "amplify-cli-core": "4.0.0-beta.8",
+    "@aws-amplify/amplify-category-custom": "file://home/akz/workspace/amplify-cli/packages/amplify-category-custom/aws-amplify-amplify-category-custom-3.0.0-beta.8.tgz",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
     "aws-cdk-lib": "~2.53.0"
   },
   "jest": {
@@ -50,5 +52,10 @@
       "node"
     ],
     "collectCoverage": true
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-category-custom",
+    "amplify-cli-core",
+    "aws-cdk-lib"
+  ]
 }

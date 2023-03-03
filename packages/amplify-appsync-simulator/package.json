@@ -27,14 +27,16 @@
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
     "test": "jest --logHeapUsage --forceExit",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-prompts": "2.6.4",
-    "amplify-velocity-template": "1.4.9",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
+    "amplify-velocity-template": "/home/akz/workspace/amplify-cli/packages/amplify-velocity-template/amplify-velocity-template-1.4.9.tgz",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
@@ -86,5 +88,34 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "@graphql-tools/schema",
+    "@graphql-tools/utils",
+    "amplify-cli-core",
+    "amplify-prompts",
+    "amplify-velocity-template",
+    "aws-sdk",
+    "chalk",
+    "cors",
+    "dataloader",
+    "express",
+    "get-port",
+    "graphql",
+    "graphql-iso-date",
+    "graphql-subscriptions",
+    "ip",
+    "js-string-escape",
+    "jwt-decode",
+    "libphonenumber-js",
+    "lodash",
+    "moment",
+    "moment-jdateformatparser",
+    "moment-timezone",
+    "promise-toolbox",
+    "slash",
+    "ulid",
+    "uuid",
+    "ws"
+  ]
 }

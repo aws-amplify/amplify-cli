@@ -19,9 +19,14 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.9.7"
-  }
+    "amplify-function-plugin-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-function-plugin-interface/amplify-function-plugin-interface-1.9.7.tgz"
+  },
+  "bundledDependencies": [
+    "amplify-function-plugin-interface"
+  ]
 }

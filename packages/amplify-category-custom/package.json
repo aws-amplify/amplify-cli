@@ -16,7 +16,9 @@
     "test": "jest --logHeapUsage",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc -w",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "keywords": [
     "amplify",
@@ -26,8 +28,8 @@
     "access": "public"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-prompts": "2.6.4",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
     "aws-cdk-lib": "~2.53.0",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
@@ -57,5 +59,15 @@
       "src/**/*.ts",
       "!**/*.d.ts"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "amplify-cli-core",
+    "amplify-prompts",
+    "aws-cdk-lib",
+    "execa",
+    "fs-extra",
+    "glob",
+    "ora",
+    "uuid"
+  ]
 }

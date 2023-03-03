@@ -22,15 +22,22 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-function-plugin-interface": "1.9.7",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-function-plugin-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-function-plugin-interface/amplify-function-plugin-interface-1.9.7.tgz",
     "graphql-transformer-core": "8.0.0-beta.6"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
     "@types/node": "^12.12.6"
-  }
+  },
+  "bundledDependencies": [
+    "amplify-cli-core",
+    "amplify-function-plugin-interface",
+    "graphql-transformer-core"
+  ]
 }

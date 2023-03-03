@@ -22,14 +22,16 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-logger": "1.3.0",
+    "@aws-amplify/amplify-cli-logger": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-logger/aws-amplify-amplify-cli-logger-1.3.0.tgz",
     "@aws-amplify/graphql-transformer-interfaces": "2.1.0-beta.6",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "amplify-prompts": "2.6.4",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
@@ -63,7 +65,7 @@
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
     "@types/yarnpkg__lockfile": "^1.1.5",
-    "amplify-function-plugin-interface": "1.9.7",
+    "amplify-function-plugin-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-function-plugin-interface/amplify-function-plugin-interface-1.9.7.tgz",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",
@@ -87,5 +89,34 @@
       "node"
     ],
     "collectCoverage": true
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-cli-logger",
+    "@aws-amplify/graphql-transformer-interfaces",
+    "@yarnpkg/lockfile",
+    "ajv",
+    "amplify-prompts",
+    "chalk",
+    "ci-info",
+    "cli-table3",
+    "cloudform-types",
+    "colors",
+    "dotenv",
+    "ejs",
+    "execa",
+    "fs-extra",
+    "globby",
+    "hjson",
+    "inquirer",
+    "js-yaml",
+    "lodash",
+    "node-fetch",
+    "open",
+    "ora",
+    "proxy-agent",
+    "semver",
+    "typescript-json-schema",
+    "which",
+    "yaml"
+  ]
 }

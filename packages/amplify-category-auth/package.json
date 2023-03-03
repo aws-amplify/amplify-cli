@@ -25,16 +25,18 @@
     "test": "jest --logHeapUsage",
     "test-watch": "jest --watch",
     "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.0-beta.2",
-    "@aws-amplify/amplify-util-import": "2.4.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.0-beta.8",
-    "amplify-cli-core": "4.0.0-beta.8",
-    "amplify-headless-interface": "1.17.1",
-    "amplify-prompts": "2.6.4",
-    "amplify-util-headless-input": "1.9.10",
+    "@aws-amplify/amplify-environment-parameters": "file://home/akz/workspace/amplify-cli/packages/amplify-environment-parameters/aws-amplify-amplify-environment-parameters-1.4.0-beta.2.tgz",
+    "@aws-amplify/amplify-util-import": "file://home/akz/workspace/amplify-cli/packages/amplify-util-import/aws-amplify-amplify-util-import-2.4.0.tgz",
+    "@aws-amplify/cli-extensibility-helper": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-extensibility-helper/aws-amplify-cli-extensibility-helper-3.0.0-beta.8.tgz",
+    "amplify-cli-core": "file://home/akz/workspace/amplify-cli/packages/amplify-cli-core/amplify-cli-core-4.0.0-beta.8.tgz",
+    "amplify-headless-interface": "file://home/akz/workspace/amplify-cli/packages/amplify-headless-interface/amplify-headless-interface-1.17.1.tgz",
+    "amplify-prompts": "file://home/akz/workspace/amplify-cli/packages/amplify-prompts/amplify-prompts-2.6.4.tgz",
+    "amplify-util-headless-input": "file://home/akz/workspace/amplify-cli/packages/amplify-util-headless-input/amplify-util-headless-input-1.9.10.tgz",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
@@ -74,5 +76,28 @@
       "json",
       "node"
     ]
-  }
+  },
+  "bundledDependencies": [
+    "@aws-amplify/amplify-environment-parameters",
+    "@aws-amplify/amplify-util-import",
+    "@aws-amplify/cli-extensibility-helper",
+    "amplify-cli-core",
+    "amplify-headless-interface",
+    "amplify-prompts",
+    "amplify-util-headless-input",
+    "aws-cdk-lib",
+    "aws-sdk",
+    "chalk",
+    "change-case",
+    "constructs",
+    "enquirer",
+    "fs-extra",
+    "inquirer",
+    "lodash",
+    "mime-types",
+    "ora",
+    "promise-sequential",
+    "uuid",
+    "vm2"
+  ]
 }

@@ -15,6 +15,9 @@
     "build": "tsc",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
     "watch": "tsc -w",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
-  }
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
+  },
+  "bundledDependencies": []
 }

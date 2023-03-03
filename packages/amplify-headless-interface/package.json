@@ -7,7 +7,9 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "generateSchemas": "ts-node ./scripts/generateSchemas.ts",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts",
+    "bundle-dependencies": "bundle-dependencies update",
+    "pack-packages": "npm pack"
   },
   "keywords": [
     "amplify",
@@ -19,5 +21,6 @@
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
     "typescript-json-schema": "~0.52.0"
-  }
+  },
+  "bundledDependencies": []
 }
