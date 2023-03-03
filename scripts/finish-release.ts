@@ -1,4 +1,4 @@
-import execa from 'execa';
+import * as execa from 'execa';
 import * as rl from 'readline';
 import { stdin, stdout } from 'process';
 import yargs from 'yargs';
