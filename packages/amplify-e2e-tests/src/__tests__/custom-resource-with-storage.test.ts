@@ -27,7 +27,7 @@ describe('adding custom resources test', () => {
   const envName = 'dev';
   beforeEach(async () => {
     projRoot = await createNewProjectDir('custom-resources');
-    await initJSProjectWithProfile(projRoot, { envName });
+    await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
     await gitInit(projRoot);
   });
 
@@ -39,10 +39,6 @@ describe('adding custom resources test', () => {
   it('export custom storage types', async () => {
     await addAuthWithDefault(projRoot, {});
     await addS3WithGuestAccess(projRoot, {});
-    await amplifyPushAuth(projRoot);
-
-    console.log('LINE 44');
-
     const appId = getAppId(projRoot);
     const cdkResourceName = `custom${uuid().split('-')[0]}`;
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
@@ -51,8 +47,6 @@ describe('adding custom resources test', () => {
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
     await buildCustomResources(projRoot);
     await amplifyPushAuth(projRoot);
-
-    console.log('LINE 52');
 
     await gitCleanFdx(projRoot);
     await initHeadless(projRoot, appId, envName);
