@@ -30,7 +30,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaultSocial', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

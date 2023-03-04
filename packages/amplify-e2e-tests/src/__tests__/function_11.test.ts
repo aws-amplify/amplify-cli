@@ -97,7 +97,7 @@ describe('Lambda AppSync nodejs:', () => {
       'nodejs',
     );
 
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -148,7 +148,7 @@ describe('Lambda AppSync nodejs:', () => {
       'nodejs',
     );
 
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);

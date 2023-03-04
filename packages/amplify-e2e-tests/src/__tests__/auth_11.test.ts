@@ -31,7 +31,7 @@ describe('amplify add auth...', () => {
 
   it('...should init an Android project and add default auth', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     let config = await getAwsAndroidConfig(projRoot);
     expect(config.CognitoUserPool.Default.AppClientSecret).toBeUndefined();
@@ -61,7 +61,7 @@ describe('amplify add auth...', () => {
 
   it('should init with a long env name and add default auth', async () => {
     await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: 'longenviro' });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;

@@ -29,7 +29,7 @@ describe('environment commands with HostedUI params', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
     await initJSProjectWithProfile(projRoot, { envName: 'enva' });
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot);
     await amplifyPushAuth(projRoot);
   });
 

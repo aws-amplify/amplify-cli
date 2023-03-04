@@ -689,7 +689,7 @@ function setupAuthType(authType: string, chain: any, settings?: any) {
       setupCognitoUserPool(chain);
       break;
     case 'IAM':
-      setupIAM(chain);
+      // no-op
       break;
     case 'OpenID Connect':
       setupOIDC(chain, settings);
@@ -715,10 +715,6 @@ function setupCognitoUserPool(chain: any) {
     .sendCarriageReturn()
     .wait('Do you want to configure advanced settings?')
     .sendCarriageReturn();
-}
-
-function setupIAM(__chain: any) {
-  // no need to do anything
 }
 
 function setupOIDC(chain: any, settings?: any) {
@@ -853,7 +849,7 @@ export function modifyRestAPI(projectDir: string, apiName: string) {
   fs.writeFileSync(indexFilePath, modifiedApi);
 }
 
-export function cancelAmplifyMockApi(cwd: string, __settings: any = {}): Promise<void> {
+export function cancelAmplifyMockApi(cwd: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
       .wait('AppSync Mock endpoint is running')
