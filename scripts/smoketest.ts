@@ -83,13 +83,21 @@ export class Amplify {
     const args = ['init', '-y'];
     const result = execa('amplify', args, this.executionArgs);
     result.stdout?.pipe(process.stdout);
-    return (await result).exitCode;
+    const exitCode = (await result).exitCode;
+    if (exitCode !== 0) {
+      throw new Error(exitCode);
+    }
+    return exitCode;
   };
   delete = async (): Promise<number> => {
     const args = ['delete', '--force'];
     const result = execa('amplify', args, this.executionArgs);
     result.stdout?.pipe(process.stdout);
-    return (await result).exitCode;
+    const exitCode = (await result).exitCode;
+    if (exitCode !== 0) {
+      throw new Error(exitCode);
+    }
+    return exitCode;
   };
   private static wait = (term: string) => ({
     evaluate(data: string) {
@@ -146,7 +154,11 @@ export class Amplify {
   push = async () => {
     const result = execa('amplify', ['push', '-y'], this.executionArgs);
     result.stdout?.pipe(process.stdout);
-    return (await result).exitCode;
+    const exitCode = (await result).exitCode;
+    if (exitCode !== 0) {
+      throw new Error(exitCode);
+    }
+    return exitCode;
   };
   pull = async (appId?: string, envName?: string) => {
     const args = ['pull', '-y'];
@@ -158,7 +170,11 @@ export class Amplify {
     }
     const result = execa('amplify', args, this.executionArgs);
     result.stdout?.pipe(process.stdout);
-    return (await result).exitCode;
+    const exitCode = (await result).exitCode;
+    if (exitCode !== 0) {
+      throw new Error(exitCode);
+    }
+    return exitCode;
   };
   addAuth = () => {
     const queue: Evaluatable[] = [
@@ -235,7 +251,11 @@ export class Amplify {
   status = () => {
     const result = execa.sync('amplify', ['status'], this.executionArgs);
     console.log(result.stdout.toString());
-    return Promise.resolve(result.exitCode);
+    const exitCode = result.exitCode;
+    if (exitCode !== 0) {
+      return Promise.reject(exitCode);
+    }
+    return Promise.resolve(exitCode);
   };
   modifyGraphQlSchema = (schema: string) => {
     try {
@@ -267,7 +287,19 @@ type Todo @model {
 }
 `;
 
-const createCommands = (amplify: Amplify): Command[] => [
+const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
+  {
+    description: 'Install Amplify CLI',
+    run: () => {
+      try {
+        NPM.install(`@aws-amplify/cli@${cliVersion}`, true);
+        return Promise.resolve(0);
+      } catch (e) {
+        console.error(e);
+        return Promise.reject(1);
+      }
+    },
+  },
   {
     description: 'Create an Amplify project',
     run: () => amplify.init(),
@@ -326,6 +358,17 @@ const createCommands = (amplify: Amplify): Command[] => [
   },
 ];
 
+function writeBanner(text: string) {
+  const count = text.length;
+  console.log('\n');
+  console.log('#'.repeat(count + 8));
+  console.log(`#${' '.repeat(count + 6)}#`);
+  console.log(`#   ${text}   #`);
+  console.log(`#${' '.repeat(count + 6)}#`);
+  console.log('#'.repeat(count + 8));
+  console.log('\n');
+}
+
 async function main() {
   const args = await getArgs();
   console.info(args.projectDirectory);
@@ -337,11 +380,9 @@ async function main() {
   }
   assertEmpty(args.projectDirectory);
 
-  NPM.install(`@aws-amplify/cli@${args.cliVersion}`, true);
-
-  const commands = createCommands(amplify);
+  const commands = createCommands(amplify, args.cliVersion);
   for (const command of commands) {
-    console.log(`Running command: ${command.description}`);
+    writeBanner(command.description);
     try {
       await command.run();
     } catch (e) {
