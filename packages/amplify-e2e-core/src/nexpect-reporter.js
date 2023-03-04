@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { v4: uuid } = require('uuid');
 const localTemplatePath = path.resolve(__dirname, '../dist/index.html');
 
 const getShortNameForTestSuite = (testSuitePath) => {

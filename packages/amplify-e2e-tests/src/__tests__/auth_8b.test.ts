@@ -28,7 +28,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a Flutter project and add auth with defaults', async () => {
     await initFlutterProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;

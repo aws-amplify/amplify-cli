@@ -41,6 +41,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
+    'import/no-extraneous-dependencies': 'error',
     'no-bitwise': 'warn',
     'consistent-return': 'error',
     'eol-last': ['error', 'always'],

@@ -64,6 +64,7 @@
     "@aws-amplify/amplify-util-mock": "5.0.1",
     "@aws-amplify/amplify-util-uibuilder": "1.6.10",
     "@aws-amplify/graphql-auth-transformer": "^2.1.0",
+    "@aws-amplify/graphql-transformer-core": "^1.1.0",
     "@aws-cdk/cloudformation-diff": "~2.53.0",
     "amplify-cli-core": "4.0.0-beta.8",
     "amplify-codegen": "^3.3.6",

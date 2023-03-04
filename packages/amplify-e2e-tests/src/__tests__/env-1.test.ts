@@ -51,7 +51,7 @@ describe('environment commands', () => {
   it('init a project, pull, add auth, pull to override auth change', async () => {
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     await amplifyPull(projRoot, { override: false });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPull(projRoot, { override: true });
 
     const meta = getProjectMeta(projRoot);

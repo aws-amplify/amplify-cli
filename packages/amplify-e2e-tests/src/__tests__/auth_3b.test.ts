@@ -33,7 +33,7 @@ describe('amplify add auth...b', () => {
 
   it('...should init a project with only user pool and no identity pool', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthUserPoolOnly(projRoot, {});
+    await addAuthUserPoolOnly(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map((key) => meta.auth[key])[1].output.UserPoolId;

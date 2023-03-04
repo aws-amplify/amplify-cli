@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
-export const addSampleInteraction = async (cwd: string, settings: any): Promise<void> => {
+export const addSampleInteraction = async (cwd: string): Promise<void> => {
   return spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true })
     .wait('Provide a friendly resource name that will be used to label this category')
     .sendCarriageReturn()

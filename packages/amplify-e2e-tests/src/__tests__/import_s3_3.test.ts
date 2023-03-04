@@ -122,7 +122,7 @@ describe('headless s3 import', () => {
 
   it('import storage when there is already a storage resource in the project', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
 
     const processResult = await importHeadlessStorage(
       projectRoot,
@@ -157,7 +157,7 @@ describe('headless s3 import', () => {
 
   it('import storage with non-existent bucket`', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
 
     const fakeBucketName = `fake-bucket-name-${getShortId()}`;
 
@@ -179,7 +179,7 @@ describe('headless s3 import', () => {
 
   it('import storage successfully and push, remove storage and push`', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
 
     const processResult = await importHeadlessStorage(projectRoot, {
       version: 1,
