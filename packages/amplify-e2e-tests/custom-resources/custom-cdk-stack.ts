@@ -1,3 +1,5 @@
+// extraneous by design - this file is used in a project created by e2e tests, not by e2e tests directly
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';

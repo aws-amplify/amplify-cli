@@ -1,4 +1,6 @@
 /* eslint-disable import/no-cycle */
+import * as ExeInfo from './exeInfo';
+export { ExeInfo };
 export * from './banner-message';
 export * from './category-interfaces';
 export * from './cfnUtilities';

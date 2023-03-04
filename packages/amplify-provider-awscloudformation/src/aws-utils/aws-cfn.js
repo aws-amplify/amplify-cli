@@ -17,6 +17,7 @@ const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
 const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
+const { getStatusToErrorMsg, collectStackErrorMessages } = require('./cloudformation-error-serializer');
 
 const { printer } = require('amplify-prompts');
 
@@ -127,7 +128,7 @@ class CloudFormation {
             console.log(t);
             console.log('\n');
           });
-          resolve(this.collectStackErrorMessages(failedStacks));
+          resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks)));
         } catch (e) {
           Promise.reject(e);
         } finally {
@@ -137,21 +138,6 @@ class CloudFormation {
         }
       });
     });
-  }
-
-  /**
-   * Return an error message from the failed stacks for populating it in the AmplifyFault's details
-   */
-  collectStackErrorMessages(eventsWithFailure) {
-    const errorMessages = this.filterFailedStackEvents(eventsWithFailure).map((event) => {
-      const err = [];
-      const resourceName = event.LogicalResourceId;
-      err.push(`Name: ${resourceName} (${event.ResourceType})`);
-      err.push(`Event Type: ${getStatusToErrorMsg(event.ResourceStatus)}`);
-      err.push(`Reason: ${event.ResourceStatusReason}`);
-      return err.join(', ');
-    });
-    return errorMessages.join('\n');
   }
 
   /**
@@ -745,15 +731,6 @@ function filterNestedStacks(uniqueEvents, excludeWithStatus = CFN_SUCCESS_STATUS
     }
   }
   return nestedStacks;
-}
-
-function getStatusToErrorMsg(status) {
-  const MAP = {
-    CREATE_FAILED: 'create',
-    DELETE_FAILED: 'delete',
-    UPDATE_FAILED: 'update',
-  };
-  return MAP[status] || status;
 }
 
 function getCFNConsoleLink(event, cfn) {

@@ -48,23 +48,23 @@ describe('amplify add/update storage(S3)', () => {
 
   it('init a project and add S3 bucket with Auth user access only', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot);
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
 
   it('init a javascript project and add S3 bucket with guest access', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3WithGuestAccess(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addS3WithGuestAccess(projRoot);
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
 
   it('init a flutter project and add S3 bucket with guest access', async () => {
     await initFlutterProjectWithProfile(projRoot, { name: 'storageTest' });
-    await addAuthWithDefault(projRoot, {});
-    await addS3WithGuestAccess(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addS3WithGuestAccess(projRoot);
     await amplifyPushAuth(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
     await validate(projRoot);
