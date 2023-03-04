@@ -70,7 +70,7 @@ export function removeProjectDirectory(projectDirectory: string) {
 }
 
 export type Evaluatable = {
-  evaluate(data: string, ptyProcess: pty.IPty): boolean;
+  evaluate(data: string, ptyProcess: pty.IPty): Promise<boolean>;
 };
 export class Amplify {
   private executionArgs: { cwd: string; encoding: 'utf8' };
@@ -100,14 +100,19 @@ export class Amplify {
     return exitCode;
   };
   private static wait = (term: string) => ({
-    evaluate(data: string) {
-      return data.includes(term);
+    async evaluate(data: string, _: pty.IPty): Promise<boolean> {
+      return Promise.resolve(data.includes(term));
     },
   });
+  private static delay = 800;
   private static send = (val: string) => ({
-    evaluate(_: string, ptyProcess: pty.IPty) {
-      ptyProcess.write(val);
-      return true;
+    evaluate(_: string, ptyProcess: pty.IPty): Promise<boolean> {
+      return new Promise<boolean>((resolve) => {
+        setTimeout(() => {
+          ptyProcess.write(val);
+          resolve(true);
+        }, Amplify.delay);
+      });
     },
   });
   private runProcess = (command: string[], queue: Evaluatable[]): Promise<number> => {
@@ -126,12 +131,12 @@ export class Amplify {
           reject(exitCode);
         }
       });
-      ptyProcess.onData((data) => {
+      ptyProcess.onData(async (data) => {
         const dataString = data.toString();
         process.stdout.write(dataString);
         if (queue.length) {
           const { evaluate } = queue[0];
-          if (evaluate(dataString, ptyProcess)) {
+          if (await evaluate(dataString, ptyProcess)) {
             queue.shift();
           }
         }
@@ -139,7 +144,7 @@ export class Amplify {
     });
   };
   addApi = (): Promise<number> => {
-    const queue: { evaluate(data: string, ptyProcess: pty.IPty): boolean }[] = [
+    const queue: Evaluatable[] = [
       Amplify.wait('Select from one of the below mentioned services:'),
       Amplify.send(Amplify.carriageReturn),
       Amplify.wait('Here is the GraphQL API that we will create.'),
