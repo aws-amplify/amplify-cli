@@ -1,4 +1,4 @@
-import * as execa from 'execa';
+import execa from 'execa';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -75,20 +75,21 @@ export type Evaluatable = {
 export class Amplify {
   private executionArgs: { cwd: string; encoding: 'utf8' };
   private static carriageReturn = process.platform === 'win32' ? '\r' : os.EOL;
+  private static timeout = 1000 * 60 * 10;
   constructor(projectDirectory: string) {
     this.executionArgs = { cwd: projectDirectory, encoding: 'utf8' };
   }
-  init = () => {
+  init = async () => {
     const command = ['amplify', 'init', '-y'];
-    const result = execa.sync(command[0], command.slice(1), this.executionArgs);
-    console.log(result.stdout.toString());
-    return Promise.resolve(result.exitCode);
+    const result = execa(command[0], command.slice(1), this.executionArgs);
+    result.stdout?.pipe(process.stdout);
+    return (await result).exitCode;
   };
-  delete = (): Promise<number> => {
+  delete = async (): Promise<number> => {
     const command = ['amplify', 'delete', '--force'];
-    const result = execa.sync(command[0], command.slice(1), this.executionArgs);
-    console.log(result.stdout.toString());
-    return Promise.resolve(result.exitCode);
+    const result = execa(command[0], command.slice(1), this.executionArgs);
+    result.stdout?.pipe(process.stdout);
+    return (await result).exitCode;
   };
   private static wait = (term: string) => ({
     evaluate(data: string) {
@@ -104,8 +105,13 @@ export class Amplify {
   private runProcess = (command: string[], queue: Evaluatable[]): Promise<number> => {
     return new Promise((resolve, reject) => {
       const ptyProcess = pty.spawn(command[0], command.slice(1), { ...this.executionArgs, cols: 120, rows: 30 });
+      const timeout = setTimeout(() => {
+        console.error('Timed out waiting for process to complete');
+        process.exit(1);
+      }, Amplify.timeout);
       process.on('exit', () => ptyProcess.kill());
       ptyProcess.onExit(({ exitCode }) => {
+        clearTimeout(timeout);
         if (exitCode === 0) {
           resolve(exitCode);
         } else {
@@ -114,7 +120,7 @@ export class Amplify {
       });
       ptyProcess.onData((data) => {
         const dataString = data.toString();
-        console.log(dataString);
+        process.stdout.write(dataString);
         if (queue.length) {
           const { evaluate } = queue[0];
           if (evaluate(dataString, ptyProcess)) {
@@ -137,22 +143,12 @@ export class Amplify {
     ];
     return this.runProcess(['amplify', 'add', 'api'], queue);
   };
-  push = () => {
-    return new Promise((resolve, reject) => {
-      const result = execa.command('amplify push -y', this.executionArgs);
-      result.stdout?.on('data', (data: string) => {
-        console.log(data.toString());
-      });
-      result.on('close', (code: number) => {
-        if (code === 0) {
-          resolve(code);
-        } else {
-          reject(code);
-        }
-      });
-    });
+  push = async () => {
+    const result = execa('amplify', ['push', '-y'], this.executionArgs);
+    result.stdout?.pipe(process.stdout);
+    return (await result).exitCode;
   };
-  pull = (appId?: string, envName?: string) => {
+  pull = async (appId?: string, envName?: string) => {
     const args = ['pull', '-y'];
     if (appId) {
       args.push('--appId', appId);
@@ -160,11 +156,12 @@ export class Amplify {
     if (envName) {
       args.push('--envName', envName);
     }
-    const result = execa.sync('amplify', args, this.executionArgs);
-    return Promise.resolve(result.exitCode);
+    const result = execa('amplify', args, this.executionArgs);
+    result.stdout?.pipe(process.stdout);
+    return (await result).exitCode;
   };
   addAuth = () => {
-    const queue: { evaluate(data: string, ptyProcess: pty.IPty): boolean }[] = [
+    const queue: Evaluatable[] = [
       Amplify.wait('Do you want to use the default authentication and security configuration?'),
       Amplify.send(Amplify.carriageReturn),
       Amplify.wait('How do you want users to be able to sign in?'),
@@ -176,10 +173,80 @@ export class Amplify {
     ];
     return this.runProcess(['amplify', 'add', 'auth'], queue);
   };
+  updateAuth = () => {
+    const queue: Evaluatable[] = [
+      Amplify.wait('What do you want to do?'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('What domain name prefix do you want to use?'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Enter your redirect signin URI:'),
+      Amplify.send('http://localhost:3000/'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Do you want to add another redirect signin URI'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Enter your redirect signout URI:'),
+      Amplify.send('http://localhost:3000/'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Do you want to add another redirect signout URI'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Select the identity providers you want to configure for your user pool:'),
+      Amplify.send(' '),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Enter your Facebook App ID for your OAuth flow:'),
+      Amplify.send('1234567890'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Enter your Facebook App Secret for your OAuth flow:'),
+      Amplify.send('1234567890'),
+      Amplify.send(Amplify.carriageReturn),
+    ];
+    return this.runProcess(['amplify', 'update', 'auth'], queue);
+  };
+  addRestApi = () => {
+    const queue: Evaluatable[] = [
+      Amplify.send('\x1b[B'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Provide a friendly name for your resource to be used as a label for this category in the project:'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Provide a path (e.g., /book/{isbn}):'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Choose a Lambda source'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Provide an AWS Lambda function name:'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Choose the runtime that you want to use:'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Choose the function template that you want to use:'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Do you want to configure advanced settings?'),
+      Amplify.send('n'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Do you want to edit the local lambda function now?'),
+      Amplify.send('n'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Restrict API access?'),
+      Amplify.send('n'),
+      Amplify.send(Amplify.carriageReturn),
+      Amplify.wait('Do you want to add another path?'),
+      Amplify.send('n'),
+      Amplify.send(Amplify.carriageReturn),
+    ];
+    return this.runProcess(['amplify', 'add', 'api'], queue);
+  };
   status = () => {
     const result = execa.sync('amplify', ['status'], this.executionArgs);
     console.log(result.stdout.toString());
     return Promise.resolve(result.exitCode);
+  };
+  modifyGraphQlSchema = (schema: string) => {
+    try {
+      const [apiName] = fs.readdirSync(path.join(this.executionArgs.cwd, 'amplify', 'backend', 'api'));
+      const targetPath = path.join(this.executionArgs.cwd, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
+      fs.writeFileSync(targetPath, schema);
+      console.info('Wrote to', targetPath);
+      return Promise.resolve(0);
+    } catch (e) {
+      return Promise.reject(1);
+    }
   };
 }
 
@@ -187,6 +254,77 @@ type Command = {
   run: () => Promise<number>;
   description: string;
 };
+
+const newGraphqlSchema = `
+
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+  helloWorld: String
+}
+`;
+
+const createCommands = (amplify: Amplify): Command[] => [
+  {
+    description: 'Create an Amplify project',
+    run: () => amplify.init(),
+  },
+  {
+    description: 'Add an API to the Amplify project',
+    run: () => amplify.addApi(),
+  },
+  {
+    description: 'Get project status',
+    run: () => amplify.status(),
+  },
+  {
+    description: 'Add Auth to the Amplify project',
+    run: () => amplify.addAuth(),
+  },
+  {
+    description: 'Get project status',
+    run: () => amplify.status(),
+  },
+  {
+    description: 'Push the Amplify project',
+    run: () => amplify.push(),
+  },
+  {
+    description: 'Get project status',
+    run: () => amplify.status(),
+  },
+  {
+    description: 'Modify the GraphQL schema',
+    run: () => amplify.modifyGraphQlSchema(newGraphqlSchema),
+  },
+  {
+    description: 'Update Auth',
+    run: () => amplify.updateAuth(),
+  },
+  {
+    description: 'Push the Amplify project',
+    run: () => amplify.push(),
+  },
+  {
+    description: 'Add REST API',
+    run: () => amplify.addRestApi(),
+  },
+  {
+    description: 'Get project status',
+    run: () => amplify.status(),
+  },
+  {
+    description: 'Push the Amplify project',
+    run: () => amplify.push(),
+  },
+  {
+    description: 'Delete the Amplify project',
+    run: () => amplify.delete(),
+  },
+];
 
 async function main() {
   const args = getArgs();
@@ -197,47 +335,19 @@ async function main() {
   if (args.destructive) {
     fs.emptyDirSync(args.projectDirectory);
   }
-  const commands: Command[] = [
-    {
-      description: 'Create an Amplify project',
-      run: () => amplify.init(),
-    },
-    {
-      description: 'Add an API to the Amplify project',
-      run: () => amplify.addApi(),
-    },
-    {
-      description: 'Get project status',
-      run: () => amplify.status(),
-    },
-    {
-      description: 'Add Auth to the Amplify project',
-      run: () => amplify.addAuth(),
-    },
-    {
-      description: 'Get project status',
-      run: () => amplify.status(),
-    },
-    {
-      description: 'Push the Amplify project',
-      run: () => amplify.push(),
-    },
-    {
-      description: 'Get project status',
-      run: () => amplify.status(),
-    },
-    {
-      description: 'Delete the Amplify project',
-      run: () => amplify.delete(),
-    },
-  ];
   assertEmpty(args.projectDirectory);
 
   NPM.install(`@aws-amplify/cli@${args.cliVersion}`, true);
 
+  const commands = createCommands(amplify);
   for (const command of commands) {
     console.log(`Running command: ${command.description}`);
-    await command.run();
+    try {
+      await command.run();
+    } catch (e) {
+      console.error(e);
+      process.exit(1);
+    }
   }
 }
 
