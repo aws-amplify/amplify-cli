@@ -2,7 +2,6 @@ import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
 import { templateRoot } from '../utils/constants';
 import path from 'path';
 import fs from 'fs-extra';
-import _ from 'lodash';
 import { getDstMap } from '../utils/destFileMapper';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda/serverless');

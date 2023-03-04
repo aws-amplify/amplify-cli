@@ -43,7 +43,7 @@ describe('nodejs', () => {
       const functionName = `testcorsfunction${generateRandomShortId()}`;
       process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER = 'true';
       await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
-      await functionBuild(projRoot, {});
+      await functionBuild(projRoot);
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
       const { Arn: functionArn, Name, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
@@ -62,7 +62,7 @@ describe('nodejs', () => {
     it('init a project and add simple function', async () => {
       await initJSProjectWithProfile(projRoot, {});
       await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
-      await functionBuild(projRoot, {});
+      await functionBuild(projRoot);
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
       const {
@@ -85,7 +85,7 @@ describe('nodejs', () => {
       await updateApiSchema(projRoot, 'graphqltriggerinfra', 'simple_model.graphql');
       await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'DynamoDB' }, 'nodejs', addLambdaTrigger);
 
-      await functionBuild(projRoot, {});
+      await functionBuild(projRoot);
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
       const {
@@ -141,7 +141,7 @@ describe('nodejs', () => {
       await addKinesis(projRoot, { rightName: `kinesisintegtest${generateRandomShortId()}`, wrongName: '$' });
       await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'Kinesis' }, 'nodejs', addLambdaTrigger);
 
-      await functionBuild(projRoot, {});
+      await functionBuild(projRoot);
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
       const {

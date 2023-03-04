@@ -156,7 +156,6 @@ export class StorageServer extends EventEmitter {
       maxKeys = 1000;
     }
     const delimiter = request.query.delimiter || '';
-    const startAfter = request.query.startAfter || '';
     let keyCount = 0;
     // getting folders recursively
     const dirPath = path.normalize(path.join(this.localDirectoryPath, request.params.path));

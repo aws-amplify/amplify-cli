@@ -29,7 +29,7 @@ describe('amplify add auth...', () => {
 
   it('...should init an IOS project and add default auth', async () => {
     await initIosProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     let config = await getAwsIOSConfig(projRoot);
     expect(config.CognitoUserPool.Default.AppClientSecret).toBeUndefined();

@@ -34,7 +34,7 @@ describe('nodejs', () => {
     it('add lambda with AdminQueries API permissions', async () => {
       await initJSProjectWithProfile(projRoot, {});
       const fnName = `integtestfn${generateRandomShortId()}`;
-      await addAuthWithGroupsAndAdminAPI(projRoot, {});
+      await addAuthWithGroupsAndAdminAPI(projRoot);
       await addFunction(
         projRoot,
         {
