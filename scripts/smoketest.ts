@@ -6,19 +6,19 @@ import * as pty from 'node-pty';
 import yargs from 'yargs';
 
 export const NPM = {
-  install(pkgName: string, global: boolean = false) {
-    const command = ['npm', 'install', pkgName];
-    if (global) {
-      command.push('-g');
+  install(pkgName: string, isGlobal: boolean = false) {
+    const args = ['install', pkgName];
+    if (isGlobal) {
+      args.push('-g');
     }
-    execa.sync(command[0], command.slice(1), { stdio: 'inherit' });
+    execa.sync('npm', args, { stdio: 'inherit' });
   },
-  uninstall(pkgName: string, global: boolean = false) {
-    const command = ['npm', 'uninstall', pkgName];
-    if (global) {
-      command.push('-g');
+  uninstall(pkgName: string, isGlobal: boolean = false) {
+    const args = ['uninstall', pkgName];
+    if (isGlobal) {
+      args.push('-g');
     }
-    execa.sync(command[0], command.slice(1), { stdio: 'inherit' });
+    execa.sync('npm', args, { stdio: 'inherit' });
   },
 };
 
@@ -81,13 +81,13 @@ export class Amplify {
   }
   init = async () => {
     const args = ['init', '-y'];
-    const result = execa('amplify', args.slice(1), this.executionArgs);
+    const result = execa('amplify', args, this.executionArgs);
     result.stdout?.pipe(process.stdout);
     return (await result).exitCode;
   };
   delete = async (): Promise<number> => {
     const args = ['delete', '--force'];
-    const result = execa('amplify', args.slice(1), this.executionArgs);
+    const result = execa('amplify', args, this.executionArgs);
     result.stdout?.pipe(process.stdout);
     return (await result).exitCode;
   };
