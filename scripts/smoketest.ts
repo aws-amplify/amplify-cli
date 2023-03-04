@@ -80,14 +80,14 @@ export class Amplify {
     this.executionArgs = { cwd: projectDirectory, encoding: 'utf8' };
   }
   init = async () => {
-    const command = ['amplify', 'init', '-y'];
-    const result = execa(command[0], command.slice(1), this.executionArgs);
+    const args = ['init', '-y'];
+    const result = execa('amplify', args.slice(1), this.executionArgs);
     result.stdout?.pipe(process.stdout);
     return (await result).exitCode;
   };
   delete = async (): Promise<number> => {
-    const command = ['amplify', 'delete', '--force'];
-    const result = execa(command[0], command.slice(1), this.executionArgs);
+    const args = ['delete', '--force'];
+    const result = execa('amplify', args.slice(1), this.executionArgs);
     result.stdout?.pipe(process.stdout);
     return (await result).exitCode;
   };
