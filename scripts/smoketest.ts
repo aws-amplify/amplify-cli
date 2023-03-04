@@ -1,4 +1,4 @@
-import execa from 'execa';
+import * as execa from 'execa';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -28,8 +28,8 @@ export type SmoketestArgs = {
   destructive: boolean;
 };
 
-function getArgs(): SmoketestArgs {
-  const args = yargs
+async function getArgs(): Promise<SmoketestArgs> {
+  const args = await yargs(process.argv.slice(2))
     .option('destructive', {
       type: 'boolean',
       description: 'DANGEROUS: Deletes the project directory if it exists',
@@ -41,14 +41,14 @@ function getArgs(): SmoketestArgs {
       description: 'The version of @aws-amplify/cli to test',
       demandOption: true,
     })
-    .option('projectDirectory', {
+    .option('project-directory', {
       type: 'string',
       default: path.join(os.tmpdir(), 'smoketest'),
     })
     .help()
     .alias('help', 'h').argv;
   return {
-    projectDirectory: args.projectDirectory,
+    projectDirectory: args['project-directory'],
     cliVersion: args['cli-version'],
     destructive: args.destructive,
   };
@@ -327,7 +327,7 @@ const createCommands = (amplify: Amplify): Command[] => [
 ];
 
 async function main() {
-  const args = getArgs();
+  const args = await getArgs();
   console.info(args.projectDirectory);
 
   const amplify = new Amplify(args.projectDirectory);

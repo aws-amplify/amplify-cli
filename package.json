@@ -14,7 +14,7 @@
     "cloud-e2e-with-rc": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e-with-rc/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "commit": "git-cz",
-    "coverage:collect": "yarn ts-node ./scripts/collect-test-coverage.ts",
+    "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
     "dev-build": "yarn --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
     "e2e": "nx run e2e",
@@ -44,13 +44,13 @@
     "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
     "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-aa-win",
     "setup-dev": "yarn dev-build && yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev",
-    "smoketest": "yarn ts-node ./scripts/smoketest.ts",
+    "smoketest": "ts-node ./scripts/smoketest.ts",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "test-changed": "nx affected --target=test",
     "test-ci": "nx run-many --target=test --all -- --ci --runInBand",
     "test": "nx run-many --target=test --all -- --runInBand",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
-    "update-test-timing-data": "yarn ts-node ./scripts/cci-get-job-metrics.ts && ts-node ./scripts/cci-extract-test-timings-from-job-metrics.ts",
+    "update-test-timing-data": "ts-node ./scripts/cci-get-job-metrics.ts && ts-node ./scripts/cci-extract-test-timings-from-job-metrics.ts",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
     "verdaccio-connect": "source .circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal",
@@ -85,7 +85,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^6.4.1",
-    "strip-ansi": "^6.0.0"
+    "strip-ansi": "^6.0.0",
+    "yargs": "^17.7.1"
   },
   "workspaces": {
     "packages": [
@@ -111,6 +112,7 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^27.0.0",
     "@types/js-yaml": "^4.0.0",
+    "@types/yargs": "^17.0.22",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
     "@zkochan/cmd-shim": "^5.1.0",
