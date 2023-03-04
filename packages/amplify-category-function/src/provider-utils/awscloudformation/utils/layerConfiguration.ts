@@ -57,7 +57,7 @@ export function deleteLayerVersionsToBeRemovedByCfn(layerName: string, envName: 
 
 export function saveLayerVersionsToBeRemovedByCfn(layerName: string, skipVersions: number[], envName: string) {
   const layerConfig = loadLayerConfigurationFile(layerName);
-  _.set(layerConfig, [ephemeralField, deleteVersionsField, envName], skipVersions);
+  _.setWith(layerConfig, [ephemeralField, deleteVersionsField, envName], skipVersions);
   writeLayerConfigurationFile(layerName, layerConfig);
 }
 

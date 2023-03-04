@@ -92,8 +92,12 @@ export const getProfiledAwsConfig = async (
         ...roleCredentials,
       };
     } else if (profileConfig.credential_process) {
-      const credentialProcess = new ProcessCredentials({ profile: profileName, filename: configFilePath });
+      // need to force AWS_SDK_LOAD_CONFIG to a truthy value to force ProcessCredentials to prefer the credential process in ~/.aws/config instead of ~/.aws/credentials
+      const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
+      process.env.AWS_SDK_LOAD_CONFIG = '1';
+      const credentialProcess = new ProcessCredentials({ profile: profileName });
       await credentialProcess.getPromise();
+      process.env.AWS_SDK_LOAD_CONFIG = sdkLoadConfigOriginal;
 
       awsConfigInfo = {
         region: profileConfig.region,

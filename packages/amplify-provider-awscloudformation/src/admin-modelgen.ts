@@ -66,7 +66,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
 
     // generateModelIntrospection expects --output-dir option to be set
-    _.set(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
+    _.setWith(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);

@@ -272,7 +272,7 @@ const setStoredList = (resourceName: string, newList: $TSAny): void => {
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const functionParameterFilePath = path.join(resourcePath, functionParametersFileName);
   const functionParameters = JSONUtilities.readJson<$TSObject>(functionParameterFilePath, { throwIfNotExist: false }) || {};
-  _.set(functionParameters, 'environmentVariableList', newList);
+  _.setWith(functionParameters, 'environmentVariableList', newList);
   JSONUtilities.writeJson(functionParameterFilePath, functionParameters);
 };
 
@@ -291,7 +291,7 @@ const setStoredReference = (resourceName: string, newReferences: $TSAny): void =
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
   const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
-  _.set(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], newReferences);
+  _.setWith(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], newReferences);
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
 
@@ -310,7 +310,7 @@ const setStoredParameters = (resourceName: string, newParameters: $TSAny): void 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
   const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
-  _.set(cfnContent, ['Parameters'], newParameters);
+  _.setWith(cfnContent, ['Parameters'], newParameters);
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
 

@@ -26,7 +26,7 @@ export function updateBackendConfigAfterResourceUpdate(category: string, resourc
     default: {},
   });
 
-  _.set(backendConfig, [category, resourceName, attribute], value);
+  _.setWith(backendConfig, [category, resourceName, attribute], value);
 
   stateManager.setBackendConfig(undefined, backendConfig);
 }

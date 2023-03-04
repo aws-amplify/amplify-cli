@@ -3,6 +3,171 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.8.0...@aws-amplify/amplify-frontend-javascript@3.8.1) (2023-02-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
+
+
+
+
+
+# 3.8.0 (2023-02-27)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+
+
+### Features
+
+* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+
+
+
+# 10.2.0 (2022-09-21)
+
+
+### Bug Fixes
+
+* aws-exports to be read regardless of JS project type ([#10918](https://github.com/aws-amplify/amplify-cli/issues/10918)) ([c9586c7](https://github.com/aws-amplify/amplify-cli/commit/c9586c7933b656b264bdfbe3c57e97c0b865b430))
+* babel transform of aws-exports.js file when user defined babel configuration ([#11041](https://github.com/aws-amplify/amplify-cli/issues/11041)) ([ba43751](https://github.com/aws-amplify/amplify-cli/commit/ba4375129f4e1f8b7c8a50b10188582b0991d5a9)), closes [#11029](https://github.com/aws-amplify/amplify-cli/issues/11029)
+* use EOL instead of \n when reading aws-exports ([#10147](https://github.com/aws-amplify/amplify-cli/issues/10147)) ([846048c](https://github.com/aws-amplify/amplify-cli/commit/846048c746d143483972aea801f05d81358e2d7d))
+
+
+### Features
+
+* **amplify-category-geo:** add geo category workflows for maps and search ([1663c8d](https://github.com/aws-amplify/amplify-cli/commit/1663c8d57699b28e0e7cc16b7ef9f3085a0e38b6)), closes [#7566](https://github.com/aws-amplify/amplify-cli/issues/7566) [#7858](https://github.com/aws-amplify/amplify-cli/issues/7858) [#7891](https://github.com/aws-amplify/amplify-cli/issues/7891) [#8031](https://github.com/aws-amplify/amplify-cli/issues/8031) [#8122](https://github.com/aws-amplify/amplify-cli/issues/8122) [#8155](https://github.com/aws-amplify/amplify-cli/issues/8155) [#8182](https://github.com/aws-amplify/amplify-cli/issues/8182) [#8237](https://github.com/aws-amplify/amplify-cli/issues/8237) [#8890](https://github.com/aws-amplify/amplify-cli/issues/8890) [#8822](https://github.com/aws-amplify/amplify-cli/issues/8822) [#9281](https://github.com/aws-amplify/amplify-cli/issues/9281) [#9399](https://github.com/aws-amplify/amplify-cli/issues/9399) [#9453](https://github.com/aws-amplify/amplify-cli/issues/9453) [#9594](https://github.com/aws-amplify/amplify-cli/issues/9594) [#10038](https://github.com/aws-amplify/amplify-cli/issues/10038)
+* **category-geo:** add two new map styles ([#10115](https://github.com/aws-amplify/amplify-cli/issues/10115)) ([9845573](https://github.com/aws-amplify/amplify-cli/commit/9845573ab01429a783103e38ccf69137454aa35b))
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* fix amplify pull and init to regenerated frontend configuration  ([#9499](https://github.com/aws-amplify/amplify-cli/issues/9499)) ([e3e9c2d](https://github.com/aws-amplify/amplify-cli/commit/e3e9c2dc8be90432d95751db09c706eb9ace2863))
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-frontend-javascript:** geo region default ([#8552](https://github.com/aws-amplify/amplify-cli/issues/8552)) ([60255ee](https://github.com/aws-amplify/amplify-cli/commit/60255ee718f8d047ee665237db61d357a24fc41c))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+* Geo category plugin - support for additional regions ([#8373](https://github.com/aws-amplify/amplify-cli/issues/8373)) ([3a0c29f](https://github.com/aws-amplify/amplify-cli/commit/3a0c29fc1cb07fb1f16ac9546148c564eee97989))
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+## 4.51.1 (2021-05-18)
+
+
+### Bug Fixes
+
+* respect headless frontend JS config input ([#7328](https://github.com/aws-amplify/amplify-cli/issues/7328)) ([4cc2b2c](https://github.com/aws-amplify/amplify-cli/commit/4cc2b2c9bb7fa04d5722f758cdad7e7b8c3cafc7))
+
+
+### Features
+
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-cli/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-cli/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* added project to angular ([#7069](https://github.com/aws-amplify/amplify-cli/issues/7069)) ([bdf252b](https://github.com/aws-amplify/amplify-cli/commit/bdf252b9453906b5075f2592159e026b498a3c48))
+* **amplify-codegen:** set sourceDir path to correct graphql schema location ([#6512](https://github.com/aws-amplify/amplify-cli/issues/6512)) ([6edf229](https://github.com/aws-amplify/amplify-cli/commit/6edf2298ebbabda57230f9e0b9c6c4f504f8a275)), closes [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483) [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483)
+* better error message when angular.json is missing ([#6253](https://github.com/aws-amplify/amplify-cli/issues/6253)) ([0c8175e](https://github.com/aws-amplify/amplify-cli/commit/0c8175e6312fc6fcd5b9e1334cf2011d1e8d392a))
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+* container based deployments on native projects ([#6201](https://github.com/aws-amplify/amplify-cli/issues/6201)) ([5ebcae8](https://github.com/aws-amplify/amplify-cli/commit/5ebcae83625d4626daf4391240b19fb7bd475759))
+* frontend flag not honoring passed in framework ([#7126](https://github.com/aws-amplify/amplify-cli/issues/7126)) (ref [#7046](https://github.com/aws-amplify/amplify-cli/issues/7046)) ([1e67fc9](https://github.com/aws-amplify/amplify-cli/commit/1e67fc9a2fab262334181bbb50cba91999e24c33))
+* set default sourceDir for rn projects to 'src' ([#6319](https://github.com/aws-amplify/amplify-cli/issues/6319)) ([6ebbe41](https://github.com/aws-amplify/amplify-cli/commit/6ebbe411aa0a8c790f0ed64ef6d0aa71b70d14ec))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+# 4.37.0 (2020-11-27)
+
+
+
+# 4.32.0-alpha.0 (2020-10-27)
+
+
+### Bug Fixes
+
+* **amplify-cli:** promise not resolving in lts/dubnium ([#1028](https://github.com/aws-amplify/amplify-cli/issues/1028)) ([8a966be](https://github.com/aws-amplify/amplify-cli/commit/8a966beeed5a6fb57874ba084e6b42a23aded20a))
+* **amplify-codegen:** fix cross os issue ([#1741](https://github.com/aws-amplify/amplify-cli/issues/1741)) ([ae20d0d](https://github.com/aws-amplify/amplify-cli/commit/ae20d0dff97e08dbbea462fd6c12da550b70e799)), closes [#1522](https://github.com/aws-amplify/amplify-cli/issues/1522)
+* **amplify-frontend-javascript:** changed exports to common js ([#5220](https://github.com/aws-amplify/amplify-cli/issues/5220)) ([5debb76](https://github.com/aws-amplify/amplify-cli/commit/5debb76bed86ab925becbcba85fd06347c0fa15a))
+* **amplify-frontend-javascript:** fix headless pull ([42ccc0e](https://github.com/aws-amplify/amplify-cli/commit/42ccc0eb2316cbcc85256909ea1868a0e5398008)), closes [#5228](https://github.com/aws-amplify/amplify-cli/issues/5228)
+* **amplify-frontend-javascript:** fix implicit grant oauth bug ([#2213](https://github.com/aws-amplify/amplify-cli/issues/2213)) ([16c71d7](https://github.com/aws-amplify/amplify-cli/commit/16c71d7da38c1b13555fedcdadd8ff170abc3d14))
+* **amplify-frontend-javascript:** use execa for spawning child process ([#5150](https://github.com/aws-amplify/amplify-cli/issues/5150)) ([28b1832](https://github.com/aws-amplify/amplify-cli/commit/28b183272eb26afe3f38fe27e909405b277ef534)), closes [#4626](https://github.com/aws-amplify/amplify-cli/issues/4626)
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032603db49022c444e41faa5881592ce5dc9)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+* **cli:** support es6 import/export ([#1635](https://github.com/aws-amplify/amplify-cli/issues/1635)) ([18d5409](https://github.com/aws-amplify/amplify-cli/commit/18d5409e80c13d2a1d700be846af3f0af5c67dc2)), closes [#1623](https://github.com/aws-amplify/amplify-cli/issues/1623)
+* fix [#1205](https://github.com/aws-amplify/amplify-cli/issues/1205) ([#1961](https://github.com/aws-amplify/amplify-cli/issues/1961)) ([e8d8b97](https://github.com/aws-amplify/amplify-cli/commit/e8d8b97cf337d86417e1be1dc52dff2740253d9e))
+* lint errors ([4cb6e57](https://github.com/aws-amplify/amplify-cli/commit/4cb6e570814b95e1f21fbec024a5068f212b7c66))
+* local mock fix ([#1982](https://github.com/aws-amplify/amplify-cli/issues/1982)) ([8ee9029](https://github.com/aws-amplify/amplify-cli/commit/8ee90298189f4d3140ab84fe2d40d16bcb95485f))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d04a43e685901f4f1cd96e2a227164c71ee))
+* point to correct file to delete for amplify config ([#3116](https://github.com/aws-amplify/amplify-cli/issues/3116)) ([61c0769](https://github.com/aws-amplify/amplify-cli/commit/61c0769cb1d40faa76ff3de8e82f2f58199b4a0f)), closes [#2997](https://github.com/aws-amplify/amplify-cli/issues/2997)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+* revert frontend files ([#5231](https://github.com/aws-amplify/amplify-cli/issues/5231)) ([381cb4e](https://github.com/aws-amplify/amplify-cli/commit/381cb4e191f247b06208f5d71eee248b7501ef22))
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07ab22d50409ff93c41350995cd7d2a1084)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+* update xr sumerian config generation and bump versions ([4f02f1d](https://github.com/aws-amplify/amplify-cli/commit/4f02f1d98cd863df9ec604dd5af736ec2d64f915))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* **amplify-frontend-javascript:** adding Ember config for amplify-cli ([b4748b9](https://github.com/aws-amplify/amplify-cli/commit/b4748b966d36b035a5b5ad9b874d1e72514c57a4))
+* **amplify-frontend-javascript:** detect dist dir in angular ([#5199](https://github.com/aws-amplify/amplify-cli/issues/5199)) ([bb06162](https://github.com/aws-amplify/amplify-cli/commit/bb06162bdc9c9c567df4ae7f2a684bb6b586c6ab)), closes [#4669](https://github.com/aws-amplify/amplify-cli/issues/4669)
+* changes for native packaging ([#5548](https://github.com/aws-amplify/amplify-cli/issues/5548)) ([7a06f6d](https://github.com/aws-amplify/amplify-cli/commit/7a06f6d96e42a5863e2192560890adbd741b0dc6))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd4f2da8c90727b36469eca646d289877b6))
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8634b97474424f22cdd7031bff58138cd2))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* Multiauth external api add ([#1329](https://github.com/aws-amplify/amplify-cli/issues/1329)) ([13d9fc3](https://github.com/aws-amplify/amplify-cli/commit/13d9fc3fa32be5fc6be454fe91e0de0bb7226bef))
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de411e5a576271f270d765cc31e4ee1424d))
+* use cloudformation to update meta ([d4ae437](https://github.com/aws-amplify/amplify-cli/commit/d4ae43733e5686724e4665329751f9208669adef))
+
+
+
+
+
 ## [3.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.5...amplify-frontend-javascript@3.7.6) (2023-02-16)
 
 **Note:** Version bump only for package amplify-frontend-javascript

@@ -14,6 +14,7 @@ export const constants = {
   CODEGEN: 'codegen',
   AMPLIFY: 'amplify',
   DOT_AMPLIFY_DIR_NAME: '.amplify',
+  DEFAULT_PROVIDER: 'awscloudformation',
   AMPLIFY_PREFIX: 'amplify-',
   LOCAL_NODE_MODULES: 'cli-local-node-modules',
   PARENT_DIRECTORY: 'cli-parent-directory',

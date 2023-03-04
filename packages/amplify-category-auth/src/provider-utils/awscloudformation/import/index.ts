@@ -1,6 +1,6 @@
+import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import { $TSAny, $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import {
   IdentityProviderType,
   UserPoolClientType,
@@ -8,10 +8,12 @@ import {
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { coreAttributes, hostedUIProviders } from '../assets/string-maps';
+import { ensureHeadlessParameters } from './ensure-headless-parameters';
 import { importMessages } from './messages';
 import {
   AuthParameters,
@@ -27,7 +29,6 @@ import {
   ProviderUtils,
   ResourceParameters,
 } from './types';
-import { hostedUIProviders, coreAttributes } from '../assets/string-maps';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
@@ -970,7 +971,16 @@ export const importedAuthEnvInit = async (
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return headlessImport(context, cognito, identity, providerName, resourceName, resourceParameters, headlessParams);
+    return headlessImport(
+      context,
+      cognito,
+      identity,
+      providerName,
+      resourceName,
+      resourceParameters,
+      headlessParams,
+      currentEnvSpecificParameters,
+    );
   }
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
@@ -1207,9 +1217,13 @@ export const headlessImport = async (
   resourceName: string,
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
+  currentEnvSpecificParameters: EnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
+  const resolvedEnvParams =
+    headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
+      ? ensureHeadlessParameters(resourceParameters, headlessParams)
+      : currentEnvSpecificParameters;
 
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
@@ -1232,40 +1246,40 @@ export const headlessImport = async (
   const answers: ImportAnswers = {
     authSelections: resourceParameters.authSelections,
     resourceName: resourceParameters.resourceName,
-    userPoolId: currentEnvSpecificParameters.userPoolId,
+    userPoolId: resolvedEnvParams.userPoolId,
   };
 
   try {
-    answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
+    answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      throw new Error(importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
+      throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));
     }
 
     throw error;
   }
 
-  const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, currentEnvSpecificParameters.userPoolId);
+  const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, resolvedEnvParams.userPoolId);
 
   if (typeof validationResult === 'string') {
     throw new Error(validationResult);
   }
 
   // Get app clients based on passed in previous values
-  answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.webClientId);
+  answers.appClientWeb = questionParameters.webClients?.find((c) => c.ClientId === resolvedEnvParams.webClientId);
 
   if (!answers.appClientWeb) {
-    throw new Error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
+    throw new Error(importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId));
   }
 
-  answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
+  answers.appClientNative = questionParameters.nativeClients?.find((c) => c.ClientId === resolvedEnvParams.nativeClientId);
 
   if (!answers.appClientNative) {
-    throw new Error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
+    throw new Error(importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId));
   }
 
   // Check OAuth config matching and enabled
-  const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb!, answers.appClientNative!, false);
+  const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb, answers.appClientNative, false);
 
   if (!oauthResult.isValid) {
     throw new Error(importMessages.OAuth.PropertiesAreNotMatching);
@@ -1280,14 +1294,12 @@ export const headlessImport = async (
   }
 
   if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-    const identityPools = questionParameters.validatedIdentityPools!.filter(
-      (idp) => idp.identityPool.IdentityPoolId === currentEnvSpecificParameters.identityPoolId,
+    const identityPools = questionParameters.validatedIdentityPools?.filter(
+      (idp) => idp.identityPool.IdentityPoolId === resolvedEnvParams.identityPoolId,
     );
 
-    if (identityPools.length !== 1) {
-      throw new Error(
-        importMessages.IdentityPoolNotFound(currentEnvSpecificParameters.identityPoolName!, currentEnvSpecificParameters.identityPoolId!),
-      );
+    if (identityPools?.length !== 1) {
+      throw new Error(importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!));
     }
 
     answers.identityPoolId = identityPools[0].identityPool.IdentityPoolId;
@@ -1325,50 +1337,6 @@ export const headlessImport = async (
     succeeded: true,
     envSpecificParameters: newState.envSpecificParameters,
   };
-};
-
-const ensureHeadlessParameters = (
-  resourceParameters: ResourceParameters,
-  headlessParams: ImportAuthHeadlessParameters,
-): EnvSpecificResourceParameters => {
-  // If we are doing headless mode, validate parameter presence and overwrite the input values from env specific params since they can be
-  // different for the current env operation (eg region can mismatch)
-
-  // Validate required arguments to be present
-  const missingParams = [];
-
-  if (!headlessParams.userPoolId) {
-    missingParams.push('userPoolId');
-  }
-
-  if (!headlessParams.webClientId) {
-    missingParams.push('webClientId');
-  }
-
-  if (!headlessParams.nativeClientId) {
-    missingParams.push('nativeClientId');
-  }
-
-  if (resourceParameters.authSelections === 'identityPoolAndUserPool' && !headlessParams.identityPoolId) {
-    missingParams.push('identityPoolId');
-  }
-
-  if (missingParams.length > 0) {
-    throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
-  }
-
-  const envSpecificParameters: EnvSpecificResourceParameters = {
-    userPoolId: headlessParams.userPoolId,
-    userPoolName: '', // Will be filled out later
-    webClientId: headlessParams.webClientId,
-    nativeClientId: headlessParams.nativeClientId,
-  };
-
-  if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-    envSpecificParameters.identityPoolId = headlessParams.identityPoolId;
-  }
-
-  return envSpecificParameters;
 };
 
 enum AuthParam {

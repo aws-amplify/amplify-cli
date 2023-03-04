@@ -20,7 +20,7 @@ loadLayerConfigurationFile_mock.mockReturnValue({
     {
       value: 'nodejs',
       name: 'NodeJS',
-      runtimePluginId: '@aws-amplify/amplify-nodejs-function-runtime-provider',
+      runtimePluginId: 'amplify-nodejs-function-runtime-provider',
       layerExecutablePath: 'nodejs',
     },
   ],

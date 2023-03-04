@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import { AmplifyFault, $TSAny, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { CloudFormation } from 'aws-sdk';
@@ -129,6 +129,13 @@ const generateIterativeFuncDeploymentOp = async (
   const funcStack = await cfnClient
     .describeStackResources({ StackName: rootStackId, LogicalResourceId: `function${functionName}` })
     .promise();
+
+  if (!funcStack.StackResources || funcStack.StackResources.length === 0) {
+    throw new AmplifyFault('ResourceNotFoundFault', {
+      message: `Could not find function ${functionName} in root stack ${rootStackId}`,
+    });
+  }
+
   const funcStackId = funcStack.StackResources[0].PhysicalResourceId;
   const { parameters, capabilities } = await getPreviousDeploymentRecord(cfnClient, funcStackId);
   const funcCfnParams = stateManager.getResourceParametersJson(undefined, 'function', functionName, {
