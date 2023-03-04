@@ -85,7 +85,7 @@ export class Amplify {
     result.stdout?.pipe(process.stdout);
     const exitCode = (await result).exitCode;
     if (exitCode !== 0) {
-      throw new Error(exitCode);
+      throw new Error(`${exitCode}`);
     }
     return exitCode;
   };
@@ -95,7 +95,7 @@ export class Amplify {
     result.stdout?.pipe(process.stdout);
     const exitCode = (await result).exitCode;
     if (exitCode !== 0) {
-      throw new Error(exitCode);
+      throw new Error(`${exitCode}`);
     }
     return exitCode;
   };
@@ -156,7 +156,7 @@ export class Amplify {
     result.stdout?.pipe(process.stdout);
     const exitCode = (await result).exitCode;
     if (exitCode !== 0) {
-      throw new Error(exitCode);
+      throw new Error(`${exitCode}`);
     }
     return exitCode;
   };
@@ -172,7 +172,7 @@ export class Amplify {
     result.stdout?.pipe(process.stdout);
     const exitCode = (await result).exitCode;
     if (exitCode !== 0) {
-      throw new Error(exitCode);
+      throw new Error(`${exitCode}`);
     }
     return exitCode;
   };
@@ -360,12 +360,13 @@ const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
 
 function writeBanner(text: string) {
   const count = text.length;
+  const textPadding = 3;
   console.log('\n');
-  console.log('#'.repeat(count + 8));
-  console.log(`#${' '.repeat(count + 6)}#`);
-  console.log(`#   ${text}   #`);
-  console.log(`#${' '.repeat(count + 6)}#`);
-  console.log('#'.repeat(count + 8));
+  console.log('#'.repeat(count + 2 + textPadding * 2));
+  console.log(`#${' '.repeat(count + textPadding * 2)}#`);
+  console.log(`#${' '.repeat(textPadding)}${text}${' '.repeat(textPadding)}#`);
+  console.log(`#${' '.repeat(count + textPadding * 2)}#`);
+  console.log('#'.repeat(count + 2 + textPadding * 2));
   console.log('\n');
 }
 
