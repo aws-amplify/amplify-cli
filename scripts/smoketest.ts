@@ -104,7 +104,7 @@ export class Amplify {
       return Promise.resolve(data.includes(term));
     },
   });
-  private static delay = 800;
+  private static delay = 1500;
   private static send = (val: string) => ({
     evaluate(_: string, ptyProcess: pty.IPty): Promise<boolean> {
       return new Promise<boolean>((resolve) => {
