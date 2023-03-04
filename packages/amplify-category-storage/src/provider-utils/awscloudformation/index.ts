@@ -164,10 +164,8 @@ const isInHeadlessMode = (context: $TSContext) => {
 };
 
 const getHeadlessParams = (context: $TSContext) => {
-  const { inputParams } = context.exeInfo;
   try {
-    // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSONUtilities.parse(inputParams) : inputParams;
+    const { categories = {} } = context.exeInfo.inputParams;
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);
