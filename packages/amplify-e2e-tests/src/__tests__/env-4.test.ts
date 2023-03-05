@@ -29,7 +29,7 @@ describe('environment commands with recaptcha trigger', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
     await initJSProjectWithProfile(projRoot, { envName: 'enva' });
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuth(projRoot);
   });
 

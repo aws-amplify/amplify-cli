@@ -146,7 +146,7 @@ export const pollDDBStreamAndInvokeLambda = async (
       }
 
       // The frequency of polling is 4 per second - same as the cloud
-      await new Promise((resolve, reject) => setTimeout(resolve, 0.25 * 1000));
+      await new Promise((resolve) => setTimeout(resolve, 0.25 * 1000));
     });
   }
 };

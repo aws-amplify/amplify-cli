@@ -44,7 +44,7 @@ describe('amplify auth migration c', () => {
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();

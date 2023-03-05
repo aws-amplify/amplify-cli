@@ -1,7 +1,7 @@
 const fs = require('fs');
 const upperCase = require('upper-case');
 
-exports.handler = async (event) => {
+exports.handler = async () => {
   const data = fs.readFileSync('/opt/data.txt');
   const response = {
     statusCode: 200,
