@@ -122,7 +122,7 @@ describe('function environment variables', () => {
       },
       'nodejs',
     );
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await amplifyPushAuth(projRoot);
     let meta = getBackendAmplifyMeta(projRoot);
     const { lastPushDirHash: beforeDirHash } = meta.function[functionName];

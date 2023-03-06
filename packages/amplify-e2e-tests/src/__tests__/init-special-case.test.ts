@@ -42,7 +42,7 @@ describe('amplify init', () => {
     const envName = 'dev';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await updateAuthAddUserGroups(projectRoot, ['group']);
     await amplifyPushAuth(projectRoot);
     const teamInfo = getTeamProviderInfo(projectRoot);

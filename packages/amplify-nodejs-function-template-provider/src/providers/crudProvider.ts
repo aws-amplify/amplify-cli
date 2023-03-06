@@ -3,7 +3,6 @@ import { templateRoot } from '../utils/constants';
 import path from 'path';
 import fs from 'fs-extra';
 import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkthrough';
-import _ from 'lodash';
 import { getDstMap } from '../utils/destFileMapper';
 import { $TSContext } from 'amplify-cli-core';
 

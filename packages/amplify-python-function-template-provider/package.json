@@ -28,6 +28,7 @@
     "amplify-function-plugin-interface": "1.9.7"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6"
   }
 }

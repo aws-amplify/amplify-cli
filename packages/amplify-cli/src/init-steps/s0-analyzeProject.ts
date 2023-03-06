@@ -149,7 +149,6 @@ const setExeInfo = (context: $TSContext, projectPath: string, defaultEditor?: st
     envName,
   };
   context.exeInfo.teamProviderInfo = {};
-  context.exeInfo.metaData = {};
 
   return context;
 };

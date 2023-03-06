@@ -27,7 +27,7 @@ describe('amplify add auth...a', () => {
 
   it('...should init a project and add auth with defaults and push, then remove auth and push should clean up trust relationship conditions', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
 
     const amplifyMeta = getBackendAmplifyMeta(projRoot);

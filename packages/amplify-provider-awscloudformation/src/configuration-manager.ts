@@ -122,7 +122,7 @@ function doesAwsConfigExists(context: $TSContext) {
   if (stateManager.localAWSInfoExists()) {
     const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
-      context.exeInfo = context.exeInfo || {};
+      context.exeInfo ??= {};
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
       context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;
@@ -617,8 +617,11 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
 
   if (awsConfigInfo?.config?.accessKeyId && awsConfigInfo?.config?.secretAccessKey) {
     // Already loaded config
-    if (!awsConfigInfo.region) {
+    if (!awsConfigInfo.region && !awsConfigInfo?.config?.region) {
       awsConfigInfo.region = resolveRegion();
+      if (typeof awsConfigInfo.config === 'object') {
+        awsConfigInfo.config.region = awsConfigInfo.region;
+      }
     }
 
     return awsConfigInfo.config;

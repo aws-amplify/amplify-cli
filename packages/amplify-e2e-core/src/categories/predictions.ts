@@ -1,7 +1,7 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
 // add convert resource
-export function addConvert(cwd: string, settings: any): Promise<void> {
+export function addConvert(cwd: string): Promise<void> {
   const resourceName = 'convertTest1';
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
@@ -31,7 +31,7 @@ export function addConvert(cwd: string, settings: any): Promise<void> {
 }
 
 // add identify test
-export const addIdentifyCollection = async (cwd: string, settings: any): Promise<void> => {
+export const addIdentifyCollection = async (cwd: string): Promise<void> => {
   const resourceName = 'identifyCollectionTest1';
   return spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
     .wait('Please select from one of the categories below')
@@ -62,7 +62,7 @@ export const addIdentifyCollection = async (cwd: string, settings: any): Promise
 };
 
 // add interpret resource
-export function addInterpret(cwd: string, settings: any): Promise<void> {
+export function addInterpret(cwd: string): Promise<void> {
   const resourceName = 'interpretTest1';
   return spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true })
     .wait('Please select from one of the categories below')

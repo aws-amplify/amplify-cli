@@ -41,7 +41,7 @@ describe('amplify updating auth...', () => {
 
   it('...should init an ios project and add customAuth flag, and remove the flag when custom auth triggers are removed upon update', async () => {
     await initIosProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuth(projRoot);
     let meta = getAwsIOSConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();

@@ -5,7 +5,7 @@ import { printer } from 'amplify-prompts';
 export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   constructor(private _config) {}
 
-  async load(payload, extraData) {
+  async load(payload) {
     try {
       if (process?.platform?.startsWith('win')) {
         return null;

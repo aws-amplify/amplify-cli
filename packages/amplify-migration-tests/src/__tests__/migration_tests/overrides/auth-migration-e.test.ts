@@ -65,7 +65,7 @@ describe('amplify auth migration e', () => {
     };
 
     await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
     const meta = getProjectMeta(projRoot);

@@ -26,7 +26,7 @@ describe('attach amplify to git-cloned project', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('clone-test');
     await initJSProjectWithProfileV10(projRoot, { envName, disableAmplifyAppCreation: false });
-    await addAuthUserPoolOnly(projRoot, {});
+    await addAuthUserPoolOnly(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     await gitInit(projRoot);
     await gitCommitAll(projRoot);

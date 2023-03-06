@@ -37,7 +37,7 @@ describe('cross project environment commands', () => {
 
   it('init two projects, get and import environment from one to the other', async () => {
     await initJSProjectWithProfile(projRoot, { envName: 'env' });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
     await amplifyPushUpdate(projRoot);
 

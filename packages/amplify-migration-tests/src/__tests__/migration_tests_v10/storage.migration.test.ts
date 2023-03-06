@@ -29,7 +29,7 @@ describe('storage category migration from v10 to latest', () => {
       gsiName: `${projectName}gsi${getShortId()}`,
     });
     await addDDBWithTrigger(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await addS3StorageWithSettings(projRoot, {});
     await amplifyPushWithoutCodegen(projRoot);
   });

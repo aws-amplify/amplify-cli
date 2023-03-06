@@ -79,6 +79,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
+import { handleCloudFormationError } from './cloud-formation-error-handler';
 
 const logger = fileLogger('push-resources');
 
@@ -1233,24 +1234,4 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
 
     stateManager.setMeta(projectRoot, meta);
   }
-};
-
-const handleCloudFormationError = (err: Error): void => {
-  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-    return;
-  }
-
-  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
-    throw new AmplifyError(
-      'DeploymentInProgressError',
-      {
-        message: 'Deployment is already in progress.',
-        resolution: 'Wait for the other deployment to finish and try again.',
-        code: (err as $TSAny).code,
-      },
-      err,
-    );
-  }
-
-  throw err;
 };
