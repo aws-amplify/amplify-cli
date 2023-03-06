@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { sync } from 'execa';
 
 export interface MergeOptions {
   message: string;
@@ -9,18 +9,19 @@ export interface CheckoutOptions {
   startPoint?: string;
 }
 export class Git {
+  private git = 'git';
   remote = (verbose?: boolean): string => {
-    let command = ['git', 'remote'];
+    const args = ['remote'];
     if (verbose) {
-      command.push('-v');
+      args.push('-v');
     }
-    return execSync(command.join(' ')).toString();
+    return sync(this.git, args).stdout.toString();
   };
 
   isExistingBranch(branch: string): boolean {
-    const command = ['git', 'rev-parse', '--verify', branch];
+    const args = ['rev-parse', '--verify', branch];
     try {
-      execSync(command.join(' '), { stdio: 'ignore' });
+      sync(this.git, args, { stdio: 'ignore' });
       return true;
     } catch (e) {
       return false;
@@ -28,67 +29,67 @@ export class Git {
   }
 
   getShortSha(ref: string = 'HEAD'): string {
-    const command = ['git', 'rev-parse', '--short', ref];
-    return execSync(command.join(' ')).toString().trim();
+    const args = ['rev-parse', '--short', ref];
+    return sync(this.git, args).stdout.toString();
   }
 
   deleteBranch(branch: string) {
-    let command = ['git', 'branch', '-D', branch];
-    execSync(command.join(' '));
+    let args = ['branch', '-D', branch];
+    sync(this.git, args);
   }
 
   pull(remote?: string, branch?: string) {
-    let command = ['git', 'pull'];
+    let args = ['pull'];
     if (remote) {
-      command.push(remote);
+      args.push(remote);
       if (branch) {
-        command.push(branch);
+        args.push(branch);
       }
     }
-    execSync(command.join(' '));
+    sync(this.git, args);
   }
 
   checkout(branch: string, create: boolean = false, options: CheckoutOptions = {}): void {
     const { startPoint } = options;
-    const command = ['git', 'checkout'];
+    const args = ['checkout'];
     if (create) {
-      command.push('-b');
+      args.push('-b');
     }
-    command.push(branch);
+    args.push(branch);
     if (create && startPoint) {
-      command.push(startPoint);
+      args.push(startPoint);
     }
-    execSync(command.join(' '));
+    sync(this.git, args);
   }
 
   merge(branch: string, options: Partial<MergeOptions> = {}): void {
-    const command = ['git', 'merge', branch];
+    const args = ['merge', branch];
     if (options.message) {
-      command.push('-m');
-      command.push(`"${options.message}"`);
+      args.push('-m');
+      args.push(`"${options.message}"`);
     }
     if (options.mode) {
-      command.push(`--${options.mode}`);
+      args.push(`--${options.mode}`);
     }
-    execSync(command.join(' '));
+    sync(this.git, args);
   }
 
   push(remote: string, branch: string) {
-    const command = ['git', 'push', remote, branch];
-    execSync(command.join(' '));
+    const args = ['push', remote, branch];
+    sync(this.git, args);
   }
 
   fetch(remote: string, branch?: string) {
-    const command = ['git', 'fetch', remote];
+    const args = ['fetch', remote];
     if (branch) {
-      command.push(branch);
+      args.push(branch);
     }
-    execSync(command.join(' '));
+    sync(this.git, args);
   }
 
   isCleanWorkingTree(): boolean {
-    const buffer = execSync('git status --porcelain');
-    return !buffer.toString().trim();
+    const args = ['status', '--porcelain'];
+    return sync(this.git, args).stdout.toString().trim() === '';
   }
 
   getRemoteNameForRepository = (repository: string): string | undefined => {
