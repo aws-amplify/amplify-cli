@@ -1,7 +1,6 @@
 import { AmplifyError, open } from 'amplify-cli-core';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import isOnWsl from 'is-wsl';
 import constants from './constants.js';
 import * as systemConfigManager from './system-config-manager';
 import obfuscationUtil from './utility-obfuscate';

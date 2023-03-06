@@ -13,10 +13,10 @@ export interface DiffableProject {
   root: Template;
 }
 
-export type DiffChanges<T> = Array<Diff<DiffableProject, DiffableProject>>;
+export type DiffChanges = Array<Diff<DiffableProject, DiffableProject>>;
 
 interface GQLDiff {
-  diff: DiffChanges<DiffableProject>;
+  diff: DiffChanges;
   next: DiffableProject;
   current: DiffableProject;
 }

@@ -234,7 +234,6 @@ export class APITest {
   }
 
   private async ensureDDBTables(config) {
-    const tables = config.tables.map((t) => t.Properties);
     return await createAndUpdateTable(this.ddbClient, config);
   }
 
@@ -369,11 +368,9 @@ export class APITest {
   private async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
     const { api: apis = {} } = currentMeta;
-    let appSyncApi = null;
     let name = null;
     Object.entries(apis).some((entry: any) => {
       if (entry[1].service === 'AppSync' && entry[1].providerPlugin === 'awscloudformation') {
-        appSyncApi = entry[1];
         name = entry[0];
         return true;
       }

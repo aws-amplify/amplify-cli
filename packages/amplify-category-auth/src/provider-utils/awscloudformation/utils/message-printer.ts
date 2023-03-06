@@ -18,7 +18,7 @@ export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps
  * A factory function that returns a function that prints the "success message" after updating auth
  * @param context The amplify print object
  */
-export const getPostUpdateAuthMessagePrinter = (print: any) => (resourceName: string) => {
+export const getPostUpdateAuthMessagePrinter = () => (resourceName: string) => {
   printer.success(`Successfully updated auth resource ${resourceName} locally`);
   printCommonText();
 };

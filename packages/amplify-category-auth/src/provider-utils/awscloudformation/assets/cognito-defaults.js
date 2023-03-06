@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-const { booleanOptions, oAuthScopes } = require('./string-maps');
+const { oAuthScopes } = require('./string-maps');
 
 const [sharedId] = uuid.v4().split('-');
 

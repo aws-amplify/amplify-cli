@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as chokidar from 'chokidar';
 
 export class ResolverOverrides {
   private overrides: Set<string>;
