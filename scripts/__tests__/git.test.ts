@@ -1,23 +1,23 @@
-import * as childProcess from 'child_process';
+import * as execa from 'execa';
 import { Git } from '../git';
-const mockedChildProcess: jest.Mocked<typeof childProcess> = childProcess as jest.Mocked<typeof childProcess>;
-jest.mock('child_process', () => ({
+const mockedExeca: jest.Mocked<typeof execa> = execa as jest.Mocked<typeof execa>;
+jest.mock('execa', () => ({
   __esModule: true,
-  execSync: jest.fn(),
+  sync: jest.fn(),
 }));
 describe('isCleanWorkingTree', () => {
   test('returns false if there is not a clean working tree', () => {
     const git = new Git();
-    mockedChildProcess.execSync = jest.fn().mockReturnValue('a changed file');
+    mockedExeca.sync = jest.fn().mockReturnValue({ stdout: 'M src/index.ts' });
     const result = git.isCleanWorkingTree();
-    expect(mockedChildProcess.execSync).toHaveBeenCalledWith('git status --porcelain');
+    expect(mockedExeca.sync).toHaveBeenCalledWith('git', ['status', '--porcelain']);
     expect(result).toBeFalsy();
   });
   test('returns true if there is a clean working tree', () => {
     const git = new Git();
-    mockedChildProcess.execSync = jest.fn().mockReturnValue('');
+    mockedExeca.sync = jest.fn().mockReturnValue({ stdout: '' });
     const result = git.isCleanWorkingTree();
-    expect(mockedChildProcess.execSync).toHaveBeenCalledWith('git status --porcelain');
+    expect(mockedExeca.sync).toHaveBeenCalledWith('git', ['status', '--porcelain']);
     expect(result).toBeTruthy();
   });
 });
