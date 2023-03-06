@@ -1,8 +1,5 @@
 version: 0.2
 
-batch:
-  fast-fail: false
-
 phases:
   install:
     runtime-versions:
