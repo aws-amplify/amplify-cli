@@ -112,6 +112,13 @@ module.exports = {
         'spellcheck/spell-checker': 'off',
       },
     },
+    {
+      // Disable no-unused-vars for templates
+      files: ['packages/amplify-cli/templates/**'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
+    },
   ],
   // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)

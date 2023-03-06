@@ -73,7 +73,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
     const policyID = buildShortUUID(); //prefix/suffix for all resources.
     const defaultValues = getAllDefaults(amplify.getProjectDetails(), policyID);
     const storageResourceName = await askResourceNameQuestion(context, defaultValues); //Cannot be changed once added
-    const bucketName = await askBucketNameQuestion(context, defaultValues, storageResourceName); //Cannot be changed once added
+    const bucketName = await askBucketNameQuestion(context, defaultValues); //Cannot be changed once added
     let cliInputs: S3UserInputs = Object.assign({}, defaultValues);
     cliInputs.policyUUID = policyID;
     cliInputs.resourceName = storageResourceName;

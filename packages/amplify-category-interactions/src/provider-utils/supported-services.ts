@@ -131,7 +131,7 @@ export const servicesMetadata = {
             {
               slotType: 'FlowerTypes',
               slotTypeDescription: 'Types of flowers to pick up',
-              slotValues: ['tulips', 'lillies', 'roses'],
+              slotValues: ['tulips', 'lilies', 'roses'],
             },
           ],
         },

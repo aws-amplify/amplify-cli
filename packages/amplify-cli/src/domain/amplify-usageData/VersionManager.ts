@@ -6,7 +6,7 @@ export function getLatestApiVersion(): string {
   return [...APIVersionToPayloadVersion.keys()].reduce(getMaxVersion, '0');
 }
 
-function getMaxVersion(previousValue: string, currentValue: string, _: number, _a: string[]): string {
+function getMaxVersion(previousValue: string, currentValue: string): string {
   const cleanVer = semver.coerce(currentValue);
   const cleanPreviousVer = semver.coerce(previousValue);
   if (cleanVer === null || cleanPreviousVer == null) throw new Error('version format is wrong ');
