@@ -1,4 +1,4 @@
-import { $TSContext, getPackageManager, JSONUtilities, LocalAwsInfo, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';

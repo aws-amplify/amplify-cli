@@ -1,8 +1,5 @@
 import { $TSAny, $TSObject, LocalEnvInfo } from './types';
 
-// base type
-export type ExeInfo = EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
-
 export type EnvironmentInfo = {
   existingLocalEnvInfo?: LocalEnvInfo;
   isNewEnv?: boolean;

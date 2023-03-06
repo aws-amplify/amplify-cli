@@ -779,7 +779,6 @@ export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 declare namespace ExeInfo {
     export {
-        ExeInfo_2 as ExeInfo,
         EnvironmentInfo,
         InputParameters,
         PinpointInfo,
@@ -787,9 +786,6 @@ declare namespace ExeInfo {
     }
 }
 export { ExeInfo }
-
-// @public (undocumented)
-type ExeInfo_2 = EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
