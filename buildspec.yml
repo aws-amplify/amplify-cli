@@ -1,9 +1,12 @@
 version: 0.2
 
+batch:
+  fast-fail: false
+
 phases:
   install:
     runtime-versions:
-      java: node16
+      nodejs: 16
   pre_build:
     commands:
       - echo Nothing to do in the pre_build phase...
