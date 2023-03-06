@@ -1,5 +1,5 @@
 import { AmplifyDDBResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
-import { $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
