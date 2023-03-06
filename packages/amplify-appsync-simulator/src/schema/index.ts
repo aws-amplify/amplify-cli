@@ -47,7 +47,7 @@ export function generateResolvers(
         },
         ...(typeName === 'Subscription'
           ? {
-              subscribe: (source, args, context, info) => {
+              subscribe: (source, args, context) => {
                 // Connect time error. Not allowing subscription
                 if (context.appsyncErrors.length) {
                   throw new Error('Subscription failed');

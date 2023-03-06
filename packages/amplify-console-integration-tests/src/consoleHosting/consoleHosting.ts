@@ -1,21 +1,6 @@
 import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { getCLIPath } from '../util';
-import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
-import { EOL } from 'os';
-
-const defaultSettings = {
-  name: EOL,
-  envName: ORIGINAL_ENV,
-  editor: EOL,
-  appType: EOL,
-  framework: EOL,
-  srcDir: EOL,
-  distDir: EOL,
-  buildCmd: EOL,
-  startCmd: EOL,
-  useProfile: EOL,
-  profileName: EOL,
-};
+import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE } from './constants';
 
 export const deleteProject = async (cwd: string): Promise<void> => {
   const noOutputTimeout = 10 * 60 * 1000; // 10 minutes

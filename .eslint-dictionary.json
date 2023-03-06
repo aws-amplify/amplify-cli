@@ -437,6 +437,7 @@
   "xcconfig",
   "xcode",
   "xcodeproj",
+  "xray",
   "yaml",
   "yarnrc",
   "ulid",

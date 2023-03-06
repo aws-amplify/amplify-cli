@@ -1,5 +1,5 @@
 import { AmplifyFault, JSONUtilities } from 'amplify-cli-core';
-import { FileAssetSource, ISynthesisSession, Stack, LegacyStackSynthesizer } from 'aws-cdk-lib';
+import { FileAssetSource, Stack, LegacyStackSynthesizer } from 'aws-cdk-lib';
 import { Template } from 'cloudform-types';
 import crypto from 'crypto';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
@@ -16,14 +16,14 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
    * This method has been deprecated by cdk and is not used in runtime.
    * @deprecated Replaced by synthesizeTemplate.
    */
-  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
+  protected synthesizeStackTemplate(stack: Stack): void {
     if (
       stack instanceof AmplifyAuthCognitoStack ||
       stack instanceof AmplifyUserPoolGroupStack ||
       stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
-      const template = stack.renderCloudFormationTemplate(session) as string;
+      const template = stack.renderCloudFormationTemplate() as string;
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
     } else {
@@ -34,7 +34,7 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
     }
   }
 
-  protected synthesizeTemplate(session: ISynthesisSession): FileAssetSource {
+  protected synthesizeTemplate(): FileAssetSource {
     const stack = this.boundStack;
     if (
       stack instanceof AmplifyAuthCognitoStack ||
@@ -42,7 +42,7 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
       stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
-      const template = stack.renderCloudFormationTemplate(session) as string;
+      const template = stack.renderCloudFormationTemplate() as string;
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
       const contentHash = crypto.createHash('sha256').update(template).digest('hex');

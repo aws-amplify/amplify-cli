@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
@@ -21,7 +20,7 @@ export const createGeofenceCollectionWalkthrough = async (
   parameters: Partial<GeofenceCollectionParameters>,
 ): Promise<Partial<GeofenceCollectionParameters>> => {
   // get the geofence collection name
-  parameters = merge(parameters, await geofenceCollectionNameWalkthrough(context));
+  parameters = merge(parameters, await geofenceCollectionNameWalkthrough());
 
   // get the access
   parameters = merge(parameters, await geofenceCollectionAccessWalkthrough(context, parameters));
@@ -37,7 +36,7 @@ export const createGeofenceCollectionWalkthrough = async (
   return parameters;
 };
 
-export const geofenceCollectionNameWalkthrough = async (context: any): Promise<Pick<GeofenceCollectionParameters, 'name'>> => {
+export const geofenceCollectionNameWalkthrough = async (): Promise<Pick<GeofenceCollectionParameters, 'name'>> => {
   const [shortId] = uuid().split('-');
   const nameValidationErrMsg =
     'Geofence Collection name can only use the following characters: a-z 0-9 and should have minimum 1 character and max of 95 characters';

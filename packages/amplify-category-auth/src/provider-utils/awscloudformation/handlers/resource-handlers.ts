@@ -170,7 +170,7 @@ export const getUpdateAuthHandler = (context: AuthContext) => async (request: Se
     }
 
     await getPostUpdateAuthMetaUpdater(context)(cognitoCLIInputs.cognitoConfig.resourceName);
-    await getPostUpdateAuthMessagePrinter(context.print)(cognitoCLIInputs.cognitoConfig.resourceName);
+    await getPostUpdateAuthMessagePrinter()(cognitoCLIInputs.cognitoConfig.resourceName);
 
     if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning();

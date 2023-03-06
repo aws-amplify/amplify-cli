@@ -1,7 +1,6 @@
 const { JSONUtilities, pathManager } = require('amplify-cli-core');
 const path = require('path');
 const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
-const { AuthInputState } = require('../auth-inputs-manager/auth-input-state');
 
 async function transformUserPoolGroupSchema(context) {
   const userPoolPrecedencePath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { importResource } from '../../provider-controllers/import';
 

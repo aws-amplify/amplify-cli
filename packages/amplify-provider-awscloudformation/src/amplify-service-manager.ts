@@ -285,7 +285,7 @@ export async function postPushCheck(context) {
   if (searchAmplifyServiceResult.backendEnvExists) {
     amplifyAppId = searchAmplifyServiceResult.amplifyAppId; // eslint-disable-line
   } else {
-    // TODO reimplement this check using service calls instead of team-provider-info.json
+    // TODO re-implement this check using service calls instead of team-provider-info.json
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const envList = Object.keys(teamProviderInfo);
 

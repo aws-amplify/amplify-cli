@@ -1,7 +1,6 @@
 import { Fn, IAM, Template } from 'cloudform-types';
 import { pathManager, stateManager } from './state-manager';
 import Ajv from 'ajv';
-import { EOL } from 'os';
 import * as _ from 'lodash';
 import { formatter, printer } from 'amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
