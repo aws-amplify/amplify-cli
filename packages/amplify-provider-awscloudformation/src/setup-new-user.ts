@@ -1,7 +1,6 @@
 import { AmplifyError, open } from 'amplify-cli-core';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import isOnWsl from 'is-wsl';
 import constants from './constants.js';
 import * as systemConfigManager from './system-config-manager';
 import obfuscationUtil from './utility-obfuscate';
@@ -65,7 +64,7 @@ export const run = async (context): Promise<string> => {
       message: 'accessKeyId: ',
       default: awsConfigInfo.accessKeyId,
       transformer: obfuscationUtil.transform,
-      validate: input => {
+      validate: (input) => {
         if (input === constants.DefaultAWSAccessKeyId || input.length < 16 || input.length > 128 || !/^[\w]+$/.test(input)) {
           let message = 'You must enter a valid accessKeyId';
           if (input.length < 16) {
@@ -87,7 +86,7 @@ export const run = async (context): Promise<string> => {
       message: 'secretAccessKey: ',
       default: awsConfigInfo.secretAccessKey,
       transformer: obfuscationUtil.transform,
-      validate: input => {
+      validate: (input) => {
         if (input === constants.DefaultAWSSecretAccessKey || input.trim().length === 0) {
           return 'You must enter a valid secretAccessKey';
         }

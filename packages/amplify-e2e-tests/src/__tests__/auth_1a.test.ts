@@ -27,11 +27,11 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaults', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
   });

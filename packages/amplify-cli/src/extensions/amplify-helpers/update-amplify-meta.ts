@@ -168,7 +168,7 @@ export const updateProviderAmplifyMeta = (providerName: string, options: $TSObje
     amplifyMeta.providers[providerName] = {};
   }
 
-  Object.keys(options).forEach(key => {
+  Object.keys(options).forEach((key) => {
     amplifyMeta.providers[providerName][key] = options[key];
   });
 
@@ -269,8 +269,8 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promis
  */
 export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
-  _.set(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
+  _.setWith(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
+  _.setWith(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -283,10 +283,10 @@ export const updateAmplifyMetaAfterPackage = (
   hash?: { resourceKey: string; hashValue: string },
 ): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
-  _.set(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
+  _.setWith(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
+  _.setWith(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
   if (hash) {
-    _.set(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
+    _.setWith(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
   }
   stateManager.setMeta(undefined, amplifyMeta);
 };
@@ -321,14 +321,14 @@ const checkForCyclicDependencies = (
   let cyclicDependency = false;
 
   if (dependsOn) {
-    dependsOn.forEach(resource => {
+    dependsOn.forEach((resource) => {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
       if (amplifyMeta[resource.category] && amplifyMeta[resource.category][resource.resourceName]) {
         const dependsOnResourceDependency = amplifyMeta[resource.category][resource.resourceName].dependsOn;
         if (dependsOnResourceDependency) {
-          dependsOnResourceDependency.forEach(dependsOnResource => {
+          dependsOnResourceDependency.forEach((dependsOnResource) => {
             if (dependsOnResource.category === category && dependsOnResource.resourceName === resourceName) {
               cyclicDependency = true;
             }

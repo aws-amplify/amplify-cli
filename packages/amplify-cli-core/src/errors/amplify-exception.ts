@@ -47,14 +47,17 @@ export abstract class AmplifyException extends Error {
   }
 
   toObject = (): object => {
-    const {
-      name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack,
-    } = this;
+    const { name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack } = this;
 
     return {
-      errorName, errorMessage, errorDetails, resolution, link, ...(process.argv.includes('--debug') ? { stack } : {}),
+      errorName,
+      errorMessage,
+      errorDetails,
+      resolution,
+      link,
+      ...(process.argv.includes('--debug') ? { stack } : {}),
     };
-  }
+  };
 }
 
 /**
@@ -66,13 +69,13 @@ export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
  * Amplify Error options object
  */
 export type AmplifyExceptionOptions = {
-  message: string,
-  details?: string,
-  resolution?: string,
-  link?: string,
+  message: string;
+  details?: string;
+  resolution?: string;
+  link?: string;
 
   // CloudFormation or NodeJS error codes
-  code?: string,
+  code?: string;
 };
 
 /**
@@ -105,8 +108,8 @@ export type AmplifyErrorType =
   | 'ConfigurationError'
   | 'DeploymentError'
   | 'DeploymentInProgressError'
-  | 'DirectoryError'
   | 'DirectoryAlreadyExistsError'
+  | 'DirectoryError'
   | 'DuplicateLogicalIdError'
   | 'EnvironmentConfigurationError'
   | 'EnvironmentNameError'
@@ -123,11 +126,13 @@ export type AmplifyErrorType =
   | 'LambdaLayerDeleteError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
+  | 'MissingExpectedParameterError'
   | 'MissingOverridesInstallationRequirementsError'
+  | 'MockProcessError'
   | 'ModelgenError'
   | 'NestedProjectInitError'
-  | 'NoUpdateBackendError'
   | 'NotImplementedError'
+  | 'NoUpdateBackendError'
   | 'OpenSslCertificateError'
   | 'ParameterNotFoundError'
   | 'PermissionsError'
@@ -145,36 +150,48 @@ export type AmplifyErrorType =
   | 'ResourceAlreadyExistsError'
   | 'ResourceInUseError'
   | 'ResourceNotReadyError'
+  | 'SearchableMockProcessError'
+  | 'SearchableMockUnavailablePortError'
+  | 'SearchableMockUnsupportedPlatformError'
   | 'StackNotFoundError'
   | 'StackStateError'
-  | 'UserInputError'
+  | 'UnsupportedLockFileTypeError'
   | 'MockProcessError'
   | 'SearchableMockUnsupportedPlatformError'
   | 'SearchableMockUnavailablePortError'
-  | 'SearchableMockProcessError';
+  | 'SearchableMockProcessError'
+  | 'UserInputError';
 
 /**
  * Amplify fault types
  */
 export type AmplifyFaultType =
-  | 'AnalyticsCategoryFault'
   | 'AmplifyBackupFault'
+  | 'AnalyticsCategoryFault'
+  | 'AuthCategoryFault'
+  | 'BackendDeleteFault'
   | 'BackendPullFault'
   | 'ConfigurationFault'
-  | 'BackendDeleteFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
+  | 'DeploymentStateUploadFault'
+  | 'LockFileNotFoundFault'
+  | 'LockFileParsingFault'
+  | 'MockProcessFault'
   | 'NotificationsChannelAPNSFault'
   | 'NotificationsChannelEmailFault'
   | 'NotificationsChannelFCMFault'
-  | 'NotificationsChannelSmsFault'
   | 'NotificationsChannelInAppMessagingFault'
+  | 'NotificationsChannelSmsFault'
   | 'NotImplementedFault'
-  | 'ProjectDeleteFault'
-  | 'ProjectInitFault'
+  | 'ParameterDownloadFault'
+  | 'ParameterUploadFault'
   | 'PluginNotLoadedFault'
-  | 'PushResourcesFault'
+  | 'ProjectDeleteFault'
+  | 'ParametersDeleteFault'
+  | 'ProjectInitFault'
   | 'PullBackendFault'
+  | 'PushResourcesFault'
   | 'ResourceExportFault'
   | 'ResourceNotFoundFault'
   | 'ResourceNotReadyFault'
@@ -187,6 +204,4 @@ export type AmplifyFaultType =
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault'
-  | 'MockProcessFault'
-  | 'AuthCategoryFault'
   | 'ZipExtractFault';

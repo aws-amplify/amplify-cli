@@ -1,9 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  Extractor,
-  ExtractorConfig
-} from '@microsoft/api-extractor';
+import { Extractor, ExtractorConfig } from '@microsoft/api-extractor';
 
 const configTemplatePath = path.join(__dirname, 'api-extractor.json');
 
@@ -14,19 +11,17 @@ const extractApi = (packagePath: string): void => {
     console.log('Skipping ' + packagePath);
     return;
   } else {
-    console.log('Extracting ' + packagePath)
+    console.log('Extracting ' + packagePath);
   }
 
   const pkgConfigPath = path.join(packagePath, 'api-extractor.json');
   fs.copySync(configTemplatePath, pkgConfigPath);
   try {
     const extractorConfig = ExtractorConfig.loadFileAndPrepare(pkgConfigPath);
-    Extractor.invoke(
-      extractorConfig,
-      {
-        localBuild: true,
-        showVerboseMessages: false
-      });
+    Extractor.invoke(extractorConfig, {
+      localBuild: true,
+      showVerboseMessages: false,
+    });
   } finally {
     const tmpPath = path.join(packagePath, 'temp');
     if (fs.pathExistsSync(tmpPath)) {
@@ -34,6 +29,6 @@ const extractApi = (packagePath: string): void => {
     }
     fs.removeSync(pkgConfigPath);
   }
-}
+};
 
 extractApi(process.cwd());

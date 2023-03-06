@@ -11,18 +11,11 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  addEnvironment,
-  checkoutEnvironment,
-  listEnvironment,
-  pullEnvironment,
-} from '../environment/env';
+import { addEnvironment, checkoutEnvironment, listEnvironment, pullEnvironment } from '../environment/env';
 
-const validate = async (meta: any) : Promise<void> => {
+const validate = async (meta: any): Promise<void> => {
   expect(meta.providers.awscloudformation).toBeDefined();
-  const {
-    AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId,
-  } = meta.providers.awscloudformation;
+  const { AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId } = meta.providers.awscloudformation;
 
   expect(authRoleArn).toBeDefined();
   expect(region).toBeDefined();
@@ -36,7 +29,7 @@ describe('environment commands with recaptcha trigger', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
     await initJSProjectWithProfile(projRoot, { envName: 'enva' });
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuth(projRoot);
   });
 

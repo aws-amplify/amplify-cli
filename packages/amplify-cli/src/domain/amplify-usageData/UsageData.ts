@@ -1,27 +1,28 @@
 /* eslint-disable class-methods-use-this */
-import { JSONUtilities } from 'amplify-cli-core';
-import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
+import { ICommandInput, IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { prompter } from 'amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
 import { v4 as uuid } from 'uuid';
-import { CommandLineInput } from 'amplify-cli-core';
+import { CLIInput } from '../command-input';
+import {
+  JSONUtilities,
+  FromStartupTimedCodePaths,
+  InputOptions,
+  IUsageData,
+  ManuallyTimedCodePath,
+  IUsageDataPayload,
+  ProjectSettings,
+  StartableTimedCodePath,
+  StoppableTimedCodePath,
+  TimedCodePath,
+} from 'amplify-cli-core';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';
 import { Timer } from './Timer';
 import { UsageDataPayload } from './UsageDataPayload';
-import {
-  FromStartupTimedCodePaths,
-  InputOptions,
-  IUsageData,
-  ManuallyTimedCodePath,
-  ProjectSettings,
-  StartableTimedCodePath,
-  StoppableTimedCodePath,
-  TimedCodePath,
-} from './UsageDataTypes';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
@@ -31,7 +32,7 @@ export class UsageData implements IUsageData {
   accountId = '';
   installationUuid = '';
   version = '';
-  input: CommandLineInput;
+  input: CLIInput;
   projectSettings: ProjectSettings;
   url: UrlWithStringQuery;
   inputOptions: InputOptions;
@@ -45,7 +46,7 @@ export class UsageData implements IUsageData {
   private constructor() {
     this.sessionUuid = uuid();
     this.url = getUrl();
-    this.input = new CommandLineInput([]);
+    this.input = new CLIInput([]);
     this.projectSettings = {};
     this.inputOptions = {};
   }
@@ -56,7 +57,7 @@ export class UsageData implements IUsageData {
   init(
     installationUuid: string,
     version: string,
-    input: CommandLineInput,
+    input: CLIInput,
     accountId: string,
     projectSettings: ProjectSettings,
     processStartTimeStamp: number,
@@ -178,8 +179,8 @@ export class UsageData implements IUsageData {
     while (cfnStackStack.length !== 0) {
       const head = cfnStackStack.pop();
       const children = events
-        .filter(r => r.StackId === head && r.PhysicalResourceId !== head)
-        .map(r => r.PhysicalResourceId)
+        .filter((r) => r.StackId === head && r.PhysicalResourceId !== head)
+        .map((r) => r.PhysicalResourceId)
         .reduce((set, val) => set.add(val), new Set<string>());
       if (children.size > 0) {
         cfnStackStack.push(...children.values());
@@ -231,7 +232,7 @@ export class UsageData implements IUsageData {
   /**
    * get usage data partial payload to use in reporter
    */
-  getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
+  getUsageDataPayload(error: Error | null, state: string): IUsageDataPayload {
     return new UsageDataPayload(
       this.sessionUuid,
       this.installationUuid,
@@ -248,10 +249,10 @@ export class UsageData implements IUsageData {
   }
 
   private async send(payload: UsageDataPayload): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       const data: string = JSONUtilities.stringify(payload, {
         minify: true,
-      })!;
+      }) as string;
       const req = https.request({
         hostname: this.url.hostname,
         port: this.url.port,

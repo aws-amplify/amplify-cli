@@ -100,7 +100,7 @@ export class ResourceExport extends ResourcePackager {
       });
       const nestedStackName = resource.category + resource.resourceName;
       const usedParameters = nestedStack[nestedStackName].parameters;
-      Object.keys(usedParameters).forEach(paramKey => {
+      Object.keys(usedParameters).forEach((paramKey) => {
         if (paramKey in fileParameters) {
           usedParameters[paramKey] = fileParameters[paramKey];
         }
@@ -141,7 +141,7 @@ export class ResourceExport extends ResourcePackager {
       printer.blankLine();
       printer.warn(
         `The ${NOTIFICATIONS_CATEGORY.NAME} resource '${notificationsResources
-          .map(r => r.resourceName)
+          .map((r) => r.resourceName)
           .join(', ')}' cannot be exported since it is managed using SDK`,
       );
     }
@@ -293,7 +293,7 @@ export class ResourceExport extends ResourcePackager {
         if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.APP_SYNC) {
           const parameters = await this.processAndWriteCfn(cfnFile, destination, false);
 
-          [...parameters.keys()].forEach(key => {
+          [...parameters.keys()].forEach((key) => {
             const nestedStackPath = path.join(
               this.exportDirectoryPath,
               resource.category,
@@ -312,8 +312,8 @@ export class ResourceExport extends ResourcePackager {
         } else if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
           const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
           Object.keys(cfnTemplate.Resources)
-            .filter(key => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
-            .forEach(layerVersionResourceKey => {
+            .filter((key) => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
+            .forEach((layerVersionResourceKey) => {
               const layerVersionResource = cfnTemplate.Resources[layerVersionResourceKey];
               const s3Key = _.get(layerVersionResource.Properties, ['Content', 'S3Key']);
 
@@ -328,7 +328,7 @@ export class ResourceExport extends ResourcePackager {
         }
         stackParameters[stackName].nestedStacks[logicalId] = nestedStack;
 
-        _.set(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
+        _.setWith(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
           s3TemplateURL: templateURL,
           logicalId,
         });
@@ -343,7 +343,7 @@ export class ResourceExport extends ResourcePackager {
         destination: destinationPath,
       };
       JSONUtilities.writeJson(destinationPath, template);
-      _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
+      _.setWith(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
     }
 
     if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
@@ -355,7 +355,7 @@ export class ResourceExport extends ResourcePackager {
           destination: destination,
         };
         await this.copyResource(apiGWAuthFile, destination);
-        _.set(
+        _.setWith(
           this.amplifyMeta,
           [PROVIDER, PROVIDER_NAME, API_GATEWAY_AUTH_URL],
           this.createTemplateUrl(bucket, APIGW_AUTH_STACK_FILE_NAME, API_CATEGORY.NAME),
@@ -377,7 +377,7 @@ export class ResourceExport extends ResourcePackager {
           destination: destination,
         };
         await this.copyResource(pathToTriggerFile, destination);
-        _.set(
+        _.setWith(
           this.amplifyMeta,
           [PROVIDER, PROVIDER_NAME, AUTH_TRIGGER_TEMPLATE_URL],
           this.createTemplateUrl(bucket, AUTH_TRIGGER_TEMPLATE_FILE, AUTH_CATEGORY.NAME),
@@ -425,7 +425,7 @@ export class ResourceExport extends ResourcePackager {
    * @returns {Template}
    */
   private async modifyRootStack(template: Template, deleteParameters: boolean): Promise<Template> {
-    Object.keys(template.Resources).map(resourceKey => {
+    Object.keys(template.Resources).map((resourceKey) => {
       const resource = template.Resources[resourceKey];
       if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
         // remove url parameters will set it in the construct
@@ -453,7 +453,7 @@ export class ResourceExport extends ResourcePackager {
   }
 
   private getAuthCognitoResource(resources: ResourceDefinition[]): ResourceDefinition | undefined {
-    return resources.find(resource => resource.category === AUTH_CATEGORY.NAME && resource.service === AUTH_CATEGORY.SERVICE.COGNITO);
+    return resources.find((resource) => resource.category === AUTH_CATEGORY.NAME && resource.service === AUTH_CATEGORY.SERVICE.COGNITO);
   }
 
   private writeRootStackToPath(template: Template) {

@@ -24,7 +24,7 @@ describe('intrinsic-functions', () => {
     };
     it('should join values', () => {
       const node: any = ['-', ['foo', 'bar', 'baz']];
-      const parseValue = jest.fn(ip => ip);
+      const parseValue = jest.fn((ip) => ip);
       expect(cfnJoin(node, cfnContext, parseValue)).toEqual('foo-bar-baz');
       expect(parseValue).toHaveBeenCalledTimes(3);
       node[1].forEach((val, index) => {
@@ -55,7 +55,7 @@ describe('intrinsic-functions', () => {
       exports: {},
     };
     it('should substitute variable', () => {
-      const parseValue = jest.fn(val => val);
+      const parseValue = jest.fn((val) => val);
       const expr = ['My name is ${name}. I am ${age} years old', { name: 'John', age: '25' }];
       expect(cfnSub(expr, cfnContext, parseValue)).toEqual('My name is John. I am 25 years old');
       expect(parseValue).toHaveBeenCalledTimes(2);
@@ -63,11 +63,11 @@ describe('intrinsic-functions', () => {
 
     it('should throw error if there are no substitute variable', () => {
       const expr = ['My name is ${name}. I am ${age} years old'];
-      expect(() => cfnSub(expr, cfnContext, val => val)).toThrow();
+      expect(() => cfnSub(expr, cfnContext, (val) => val)).toThrow();
     });
     it('should throw error if there are no substitute variable', () => {
       const expr = ['My name is ${name}. I am ${age} years old'];
-      expect(() => cfnSub(expr, cfnContext, val => val)).toThrow();
+      expect(() => cfnSub(expr, cfnContext, (val) => val)).toThrow();
     });
   });
 
@@ -88,21 +88,21 @@ describe('intrinsic-functions', () => {
     };
     it('should get attribute value from parsed resources', () => {
       const node = ['FooResource', 'prop1'];
-      expect(cfnGetAtt(node, cfnContext, () => {})).toEqual('prop1 value');
+      expect(cfnGetAtt(node, cfnContext)).toEqual('prop1 value');
     });
 
     it('should throw error if resource is missing in the context', () => {
       const node = ['MissingResource', 'prop1'];
-      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+      expect(() => cfnGetAtt(node, cfnContext)).toThrow();
     });
 
     it('should throw if the property is missing in the resource', () => {
       const node = ['FooResource', 'missing-prop'];
-      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+      expect(() => cfnGetAtt(node, cfnContext)).toThrow();
     });
     it('should throw if the property is exposed in cfnExposedAttribute but missing in the result', () => {
       const node = ['FooResource', 'prop2'];
-      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+      expect(() => cfnGetAtt(node, cfnContext)).toThrow();
     });
   });
 
@@ -115,14 +115,14 @@ describe('intrinsic-functions', () => {
     };
     it('should split string', () => {
       const node = ['-', 'foo-bar-baz'];
-      const processValue = jest.fn(val => val);
+      const processValue = jest.fn((val) => val);
       expect(cfnSplit(node, cfnContext, processValue)).toEqual(['foo', 'bar', 'baz']);
       expect(processValue).toHaveBeenCalledWith(node[1], cfnContext);
     });
 
     it('should throw error when split string is missing', () => {
       const node = ['-'];
-      const processValue = jest.fn(val => val);
+      const processValue = jest.fn((val) => val);
       expect(() => cfnSplit(node, cfnContext, processValue)).toThrow();
     });
   });
@@ -149,7 +149,7 @@ describe('intrinsic-functions', () => {
 
     it('should call parseValue if the ref is not a string', () => {
       const node = [{ 'Fn::Join': ['-', ['foo', 'bar']] }];
-      const parseValue = jest.fn(val => 'fromParam');
+      const parseValue = jest.fn((val) => 'fromParam');
       expect(cfnRef(node, cfnContext, parseValue)).toEqual('foo');
     });
 
@@ -174,7 +174,7 @@ describe('intrinsic-functions', () => {
     afterEach(() => {
       jest.resetAllMocks();
     });
-    const parseValue = jest.fn(val => val);
+    const parseValue = jest.fn((val) => val);
 
     it('should select the value', () => {
       const node: any = ['2', ['foo', 'bar', 'baz']];
@@ -184,7 +184,7 @@ describe('intrinsic-functions', () => {
       expect(parseValue.mock.calls[1][0]).toEqual('baz');
     });
     it('should resolve nested intrinsic functions to a list', () => {
-      parseValue.mockReturnValueOnce(['this', 'is', 'the', 'expected value']).mockImplementationOnce(input => input);
+      parseValue.mockReturnValueOnce(['this', 'is', 'the', 'expected value']).mockImplementationOnce((input) => input);
       const parseThis = { parse: 'this' };
       const node: any = [3, parseThis];
       expect(cfnSelect(node, cfnContext, parseValue)).toEqual('expected value');
@@ -217,7 +217,7 @@ describe('intrinsic-functions', () => {
     };
     let parseValue;
     beforeEach(() => {
-      parseValue = jest.fn(val => val);
+      parseValue = jest.fn((val) => val);
     });
     it('should return true value section when condition is true', () => {
       const node = ['foo', 'foo value', 'bar value'];
@@ -243,7 +243,7 @@ describe('intrinsic-functions', () => {
       resources: {},
       exports: {},
     };
-    const parseValue = jest.fn(val => val);
+    const parseValue = jest.fn((val) => val);
     it('should return true when equal', () => {
       const node = ['foo', 'foo'];
       expect(cfnEquals(node, cfnContext, parseValue)).toBeTruthy();
@@ -252,7 +252,7 @@ describe('intrinsic-functions', () => {
 
     it('should return false when not equal', () => {
       const node = ['foo', 'bar'];
-      expect(cfnEquals(node, cfnContext, val => val)).toBeFalsy();
+      expect(cfnEquals(node, cfnContext, (val) => val)).toBeFalsy();
     });
   });
 
@@ -263,7 +263,7 @@ describe('intrinsic-functions', () => {
       resources: {},
       exports: {},
     };
-    const parseValue = jest.fn(val => val);
+    const parseValue = jest.fn((val) => val);
     it('should return false when Fn::Not(trueCondition)', () => {
       parseValue.mockReturnValueOnce(true);
       const node = ['trueCondition'];
@@ -349,7 +349,7 @@ describe('intrinsic-functions', () => {
     };
     let parseValue;
     beforeEach(() => {
-      parseValue = jest.fn(val => val);
+      parseValue = jest.fn((val) => val);
     });
 
     it('should return value for key from exports', () => {
@@ -376,11 +376,11 @@ describe('intrinsic-functions', () => {
     };
 
     it('should return condition value', () => {
-      expect(cfnCondition('bar', cfnContext, () => {})).toBeFalsy();
-      expect(cfnCondition('foo', cfnContext, () => {})).toBeTruthy();
+      expect(cfnCondition('bar', cfnContext)).toBeFalsy();
+      expect(cfnCondition('foo', cfnContext)).toBeTruthy();
     });
     it('should throw if the condition is missing', () => {
-      expect(() => cfnCondition('missing-condition', cfnContext, () => {})).toThrow();
+      expect(() => cfnCondition('missing-condition', cfnContext)).toThrow();
     });
   });
 });

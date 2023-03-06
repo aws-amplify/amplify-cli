@@ -51,7 +51,7 @@ const adminTask = [
         value: 'app',
       },
     ],
-    when: answers => answers.adminTask,
+    when: (answers) => answers.adminTask,
     default: 'admin',
   },
 ];

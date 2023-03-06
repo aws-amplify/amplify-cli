@@ -1,4 +1,4 @@
-import { Redactor, getAmplifyLogger } from 'amplify-cli-logger';
+import { Redactor, getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
 const mainModule = 'amplify-provider-awscloudformation';
 

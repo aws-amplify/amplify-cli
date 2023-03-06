@@ -84,9 +84,9 @@ export const console = async (context: $TSContext): Promise<void> => {
 export const migrate = async (context: $TSContext): Promise<void> => {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
-  Object.keys(amplifyMeta).forEach(category => {
+  Object.keys(amplifyMeta).forEach((category) => {
     if (category === categoryName) {
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         try {
           // eslint-disable-next-line
           const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
@@ -119,7 +119,7 @@ export const getPermissionPolicies = async (
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     try {
       const providerName = amplifyMeta[categoryName][resourceName].providerPlugin;
       if (providerName) {
@@ -155,13 +155,13 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
   const resourceCategoryFilter = (resource: { category: string }): boolean => resource.category === categoryName;
 
-  resourcesToBeDeleted.filter(resourceCategoryFilter).forEach(functionResource => {
+  resourcesToBeDeleted.filter(resourceCategoryFilter).forEach((functionResource) => {
     amplify.removeResourceParameters(context, categoryName, functionResource.resourceName);
   });
 
   const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated).filter(resourceCategoryFilter);
 
-  const functionTasks = tasks.map(functionResource => {
+  const functionTasks = tasks.map((functionResource) => {
     const { resourceName, service } = functionResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, resourceName, service);
@@ -180,15 +180,15 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
   allResources
     .filter(resourceCategoryFilter)
-    .filter(r => !changedResources.includes(r))
-    .forEach(r => {
+    .filter((r) => !changedResources.includes(r))
+    .forEach((r) => {
       const { resourceName }: { resourceName: string } = r;
       const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
 
       const s3Bucket = _.get(currentAmplifyMeta, [categoryName, resourceName, 's3Bucket'], undefined);
       if (s3Bucket) {
         resourceParamManager.setParams(s3Bucket);
-        _.set(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
+        _.setWith(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
       }
 
       // if the function has secrets, set the appId key in team-provider-info
@@ -197,7 +197,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       }
     });
   const sourceEnvParamManager = (await ensureEnvParamManager(sourceEnv)).instance;
-  resourcesToBeCreated.forEach(resource => {
+  resourcesToBeCreated.forEach((resource) => {
     const { resourceName, service } = resource;
     const sourceEnvResourceParamManager = sourceEnvParamManager.getResourceParamManager(categoryName, resourceName);
     const currentEnvResourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
@@ -277,9 +277,9 @@ export const isMockable = (context: $TSContext, resourceName: string): IsMockabl
 
   const dependsOnLayers = Array.isArray(dependsOn)
     ? dependsOn
-        .filter(dependency => dependency.category === categoryName)
-        .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
-        .filter(val => val.service === ServiceName.LambdaLayer)
+        .filter((dependency) => dependency.category === categoryName)
+        .map((val) => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
+        .filter((val) => val.service === ServiceName.LambdaLayer)
     : [];
 
   const hasLayer = service === ServiceName.LambdaFunction && Array.isArray(dependsOnLayers) && dependsOnLayers.length !== 0;
@@ -343,14 +343,14 @@ export const lambdaLayerPrompt = async (context: $TSContext, resources: $TSAny[]
 };
 
 const getLambdaLayerResources = (resources: $TSAny[]): $TSAny[] =>
-  resources.filter(r => r.service === ServiceName.LambdaLayer && r.category === categoryName);
+  resources.filter((r) => r.service === ServiceName.LambdaLayer && r.category === categoryName);
 
 /**
  * Lambda layer cleanup
  */
 export const postPushCleanup = async (resource: $TSAny[], envName: string): Promise<void> => {
   const lambdaLayerResource = getLambdaLayerResources(resource);
-  lambdaLayerResource.forEach(llResource => {
+  lambdaLayerResource.forEach((llResource) => {
     deleteLayerVersionsToBeRemovedByCfn(llResource.resourceName, envName);
     deleteLayerVersionPermissionsToBeUpdatedInCfn(llResource.resourceName, envName);
   });

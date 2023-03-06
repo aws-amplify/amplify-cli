@@ -60,7 +60,7 @@ export function setupAWSProfile() {
   }
 
   let isCredSet = false;
-  Object.keys(credentials).forEach(key => {
+  Object.keys(credentials).forEach((key) => {
     const keyName = key.trim();
     if (profileName === keyName) {
       credentials[key].aws_access_key_id = process.env.AWS_ACCESS_KEY_ID;
@@ -83,7 +83,7 @@ export function setupAWSProfile() {
 
   process.env.CONSOLE_REGION = process.env.CONSOLE_REGION || testRegionPool[Math.floor(Math.random() * testRegionPool.length)];
   let isConfigSet = false;
-  Object.keys(config).forEach(key => {
+  Object.keys(config).forEach((key) => {
     const keyName = key.replace('profile', '').trim();
     if (profileName === keyName) {
       config[key].region = process.env.CONSOLE_REGION;

@@ -1,6 +1,7 @@
-import { $TSContext, stateManager, CommandLineInput } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
+import { CLIInput as CommandLineInput } from '../../domain/command-input';
 import { constructContext } from '../../context-manager';
 
 jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({ envA: 'test', envB: 'test' });
@@ -18,19 +19,19 @@ describe('analyzeProject', () => {
       '-y',
     ];
     const mockInput = new CommandLineInput(mockProcessArgv);
-    mockContext = (constructContext(mockPluginPlatform, mockInput) as unknown) as $TSContext;
+    mockContext = constructContext(mockPluginPlatform, mockInput) as unknown as $TSContext;
     const frontendPlugins = [
       {
-        name: 'amplify-frontend-javascript',
+        name: '@aws-amplify/amplify-frontend-javascript',
         pluginType: 'frontend',
         pluginName: 'javascript',
-        directory: 'amplify-frontend-javascript',
+        directory: '@aws-amplify/amplify-frontend-javascript',
       },
       {
-        name: 'amplify-frontend-flutter',
+        name: '@aws-amplify/amplify-frontend-flutter',
         pluginType: 'frontend',
         pluginName: 'flutter',
-        directory: 'amplify-frontend-flutter',
+        directory: '@aws-amplify/amplify-frontend-flutter',
       },
     ];
     mockContext.exeInfo = {

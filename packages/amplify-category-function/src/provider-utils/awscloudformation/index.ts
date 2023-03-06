@@ -360,7 +360,7 @@ function isInHeadlessMode(context: $TSContext) {
 function getHeadlessParams(context: $TSContext, resourceName: string) {
   const { inputParams = {} } = context.exeInfo;
   return inputParams.categories && inputParams.categories.function && Array.isArray(inputParams.categories.function)
-    ? inputParams.categories.function.find(i => i.resourceName === resourceName) || {}
+    ? inputParams.categories.function.find((i) => i.resourceName === resourceName) || {}
     : {};
 }
 
@@ -402,7 +402,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     const amplifyMeta = stateManager.getMeta(projectPath);
     const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, versionHash], undefined);
     if (currentCloudVersionHash) {
-      _.set(amplifyMeta, [categoryName, resourceName, versionHash], currentCloudVersionHash);
+      _.setWith(amplifyMeta, [categoryName, resourceName, versionHash], currentCloudVersionHash);
     }
 
     // Since the CFN template and parameters.json are updated on each new layer version which are specific to each env, we need to update

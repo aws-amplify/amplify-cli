@@ -1,5 +1,7 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
   addAuthWithDefault,
   removeAuthWithDefault,
   addAuthWithMaxOptions,
@@ -31,10 +33,10 @@ describe('amplify add auth...b', () => {
 
   it('...should init a project with only user pool and no identity pool', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthUserPoolOnly(projRoot, {});
+    await addAuthUserPoolOnly(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[1].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
@@ -48,5 +50,4 @@ describe('amplify add auth...b', () => {
     expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientIDWeb');
     expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientID');
   });
-
 });

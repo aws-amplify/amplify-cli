@@ -73,11 +73,15 @@ describe('existing dotnet core functions compatibility test', () => {
   });
 
   it('use dotnet hello world function and mock locally', async () => {
-    await functionMockAssert(projRoot, {
-      funcName,
-      successString: '  "key3": "VALUE3"',
-      eventFile: 'src/event.json',
-    }, true); // will throw if successString is not in output
+    await functionMockAssert(
+      projRoot,
+      {
+        funcName,
+        successString: '  "key3": "VALUE3"',
+        eventFile: 'src/event.json',
+      },
+      true,
+    ); // will throw if successString is not in output
 
     assertDotNetVersion();
   });

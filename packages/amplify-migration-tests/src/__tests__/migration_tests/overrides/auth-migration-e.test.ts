@@ -16,16 +16,14 @@ import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
-import {
-  versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0
-} from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
 };
 describe('amplify auth migration e', () => {
   let projRoot: string;
-  
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth_migration');
     const migrateFromVersion = { v: 'unintialized' };
@@ -67,11 +65,11 @@ describe('amplify auth migration e', () => {
     };
 
     await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
     expect(_.get(meta, ['auth', 'userPoolGroups'])).toBeDefined();

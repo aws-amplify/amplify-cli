@@ -11,7 +11,7 @@ var BLOCK_TYPES = ['if', 'foreach', 'macro', 'noescape'];
 Jsonify.prototype = {
   constructor: Jsonify,
 
-  init: function(asts, context, macros) {
+  init: function (asts, context, macros) {
     this.fns = {
       context: context || {},
       macros: macros || {},
@@ -31,13 +31,13 @@ Jsonify.prototype = {
 
   getRefText: Helper.getRefText,
 
-  _render: function(asts) {
+  _render: function (asts) {
     var block = [];
     var index = 0;
 
     utils.forEach(
       asts,
-      function(ast) {
+      function (ast) {
         var type = ast.type;
 
         //foreach if macro时，index加一
@@ -76,7 +76,7 @@ Jsonify.prototype = {
             break;
         }
       },
-      this
+      this,
     );
   },
 };

@@ -4,8 +4,9 @@ import * as uuid from 'uuid';
 
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
-import { CommandLineInput, AmplifyError } from 'amplify-cli-core';
-import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
+import { AmplifyError } from 'amplify-cli-core';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
+import { ManuallyTimedCodePath } from 'amplify-cli-core';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
 
@@ -60,7 +61,7 @@ describe('test usageData', () => {
   it('records specified code path timer', async () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
     usageData.stopCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
     scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
 
@@ -169,7 +170,7 @@ describe('test usageData', () => {
     );
     /* eslint-enable spellcheck/spell-checker */
 
-    expect(((UsageData.Instance as unknown) as any).pushNormalizationFactor).toEqual(3);
+    expect((UsageData.Instance as unknown as any).pushNormalizationFactor).toEqual(3);
   });
 
   it('errors if starting a duplicate timer', () => {

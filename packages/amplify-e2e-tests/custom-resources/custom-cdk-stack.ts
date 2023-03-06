@@ -1,15 +1,19 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as sns from '@aws-cdk/aws-sns';
-import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import * as sqs from '@aws-cdk/aws-sqs';
+// extraneous by design - this file is used in a project created by e2e tests, not by e2e tests directly
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Construct } from 'constructs';
 
 /**
  * Base amplify stack class
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class cdkStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
     super(scope, id, props);
 
     /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input parameter */
@@ -54,5 +58,9 @@ export class cdkStack extends cdk.Stack {
         resources: [topic.topicArn],
       }),
     );
+
+    AmplifyHelpers.addResourceDependency(this, amplifyResourceProps.category, amplifyResourceProps.resourceName, [
+      { category: 'storage', resourceName: 'ddb' },
+    ]);
   }
 }

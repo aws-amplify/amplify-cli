@@ -39,7 +39,6 @@ describe('amplify updating auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-
   it('...should init a project and add auth with a custom trigger using legacy language', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     addFeatureFlag(projRoot, 'auth', 'useinclusiveterminology', false);
@@ -58,7 +57,7 @@ describe('amplify updating auth...', () => {
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuth(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();

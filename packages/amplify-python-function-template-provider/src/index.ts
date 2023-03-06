@@ -3,9 +3,9 @@ import fs from 'fs-extra';
 
 const pathToTemplateFiles = `${__dirname}/../resources/hello-world`;
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = () => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       const selection = request.selection;
       if (selection !== 'hello-world') {
         throw new Error(`Unknown python template selection ${selection}`);

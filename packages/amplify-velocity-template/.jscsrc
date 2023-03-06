@@ -1,12 +1,6 @@
 {
   "fileExtensions": [".js"],
-  "excludeFiles": [
-    "**/node_modules",
-    "**/sea-modules",
-    "**/spm-modules",
-    "**/dist",
-    "**/_dist"
-  ],
+  "excludeFiles": ["**/node_modules", "**/sea-modules", "**/spm-modules", "**/dist", "**/_dist"],
   "esnext": true,
   "validateIndentation": 2,
   "disallowSpacesInNamedFunctionExpression": {
@@ -27,9 +21,7 @@
   "disallowSpaceAfterObjectKeys": true,
   "disallowSpaceAfterPrefixUnaryOperators": true,
   "disallowSpaceBeforePostfixUnaryOperators": true,
-  "disallowSpaceBeforeBinaryOperators": [
-    ","
-  ],
+  "disallowSpaceBeforeBinaryOperators": [","],
   "disallowMixedSpacesAndTabs": true,
   "disallowMultipleLineStrings": true,
   "disallowNewlineBeforeBlockStatements": true,
@@ -43,23 +35,8 @@
   "requireSpaceAfterBinaryOperators": true,
   "requireLineFeedAtFileEnd": true,
   "requireSpaceAfterLineComment": true,
-  "requireSpaceAfterKeywords": [
-    "if",
-    "else",
-    "for",
-    "while",
-    "do",
-    "switch",
-    "case",
-    "return",
-    "try",
-    "catch",
-    "typeof"
-  ],
-  "safeContextKeyword": [
-    "that",
-    "self"
-  ],
+  "requireSpaceAfterKeywords": ["if", "else", "for", "while", "do", "switch", "case", "return", "try", "catch", "typeof"],
+  "safeContextKeyword": ["that", "self"],
   "validateLineBreaks": "LF",
   "maximumLineLength": {
     "value": 120,
@@ -67,8 +44,5 @@
     "allowComments": true,
     "allowRegex": true
   },
-  "disallowKeywordsOnNewLine": [
-    "else",
-    "catch"
-  ]
+  "disallowKeywordsOnNewLine": ["else", "catch"]
 }

@@ -16,7 +16,7 @@ function saveResourceParameters(context, category, resource, parameters, envSpec
   const sharedParams = { ...parameters };
 
   // extracting env-specific params from parameters object
-  envSpecificParamsName.forEach(paramName => {
+  envSpecificParamsName.forEach((paramName) => {
     if (paramName in parameters) {
       envSpecificParams[paramName] = parameters[paramName];
       delete sharedParams[paramName];
@@ -43,7 +43,7 @@ function loadResourceParameters(context, category, resource) {
   const envSpecificParams = context.amplify.loadEnvResourceParameters(context, category, resource);
   let resourceParameters = { ...parameters, ...envSpecificParams };
   if (category === 'auth' && parameters && parameters.hostedUI && !resourceParameters[hostedUIProviderCredsField]) {
-    resourceParameters = _.set(resourceParameters, hostedUIProviderCredsField, '[]');
+    resourceParameters = _.setWith(resourceParameters, hostedUIProviderCredsField, '[]');
   }
   return resourceParameters;
 }

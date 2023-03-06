@@ -3,6 +3,95 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.4.0-beta.2) (2023-02-23)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+* yarn test spin lock ([#11917](https://github.com/aws-amplify/amplify-cli/issues/11917)) ([2d7dd99](https://github.com/aws-amplify/amplify-cli/commit/2d7dd99c6d8f2e7b8af39a3f4bf3b9cde4d6c622))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
+# [1.4.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.4.0-beta.1) (2023-02-17)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+* yarn test spin lock ([#11917](https://github.com/aws-amplify/amplify-cli/issues/11917)) ([2d7dd99](https://github.com/aws-amplify/amplify-cli/commit/2d7dd99c6d8f2e7b8af39a3f4bf3b9cde4d6c622))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
+# [1.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.4.0-beta.0) (2023-02-15)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
+## [1.3.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.3.4-beta.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+
+
+
+
+
+## [1.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.5...@aws-amplify/amplify-environment-parameters@1.3.6) (2023-02-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
+
+
+
+
+
+## [1.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.4...@aws-amplify/amplify-environment-parameters@1.3.5) (2023-02-27)
+
+
+### Bug Fixes
+
+* null entries in TPI file when project has number value resource name ([5680e31](https://github.com/aws-amplify/amplify-cli/commit/5680e310f0387824844add0397aa3f598ab3c6fe))
+* yarn test spin lock ([#11917](https://github.com/aws-amplify/amplify-cli/issues/11917)) ([2d7dd99](https://github.com/aws-amplify/amplify-cli/commit/2d7dd99c6d8f2e7b8af39a3f4bf3b9cde4d6c622))
+
+
+
+
+
+## [1.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.3.4) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
+
+
+
+
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.2...@aws-amplify/amplify-environment-parameters@1.3.3) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

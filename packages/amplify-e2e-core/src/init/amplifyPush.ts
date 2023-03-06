@@ -29,16 +29,21 @@ export type LayerPushSettings = {
   usePreviousPermissions?: boolean;
 };
 
+export type PushOpts = {
+  minify?: boolean;
+};
+
 /**
  * Function to test amplify push with verbose status
  */
-export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false, opts?: PushOpts): Promise<void> => {
   // Test detailed status
   await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait(/.*/)
     .runAsync();
+  const pushArgs = ['push', ...(opts?.minify ? ['--minify'] : [])];
   // Test amplify push
-  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), pushArgs, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
     .wait('Do you want to generate code for your newly created GraphQL API')
@@ -52,9 +57,7 @@ export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false
  */
 export const amplifyPushLegacy = async (cwd: string): Promise<void> => {
   // Test detailed status
-  await spawn(getCLIPath(false), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait(/.*/)
-    .runAsync();
+  await spawn(getCLIPath(false), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS }).wait(/.*/).runAsync();
   // Test amplify push
   await spawn(getCLIPath(false), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
@@ -114,7 +117,7 @@ export function cancelIterativeAmplifyPush(
     .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
     .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
     .sendCtrlC()
-    .runAsync((err: Error) => err.message === 'Process exited with non-zero code 130');
+    .runAsync((err: Error) => err.message === 'Process exited with non zero exit code 130');
 }
 
 /**
@@ -157,10 +160,14 @@ export function amplifyPushUpdate(
   testingWithLatestCodebase = false,
   allowDestructiveUpdates = false,
   overridePushTimeoutMS = 0,
+  minify?,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
+  }
+  if (minify) {
+    args.push('--minify');
   }
   return spawn(getCLIPath(testingWithLatestCodebase), args, {
     cwd,
@@ -200,6 +207,16 @@ export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false):
   spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
+    .wait(/.*/)
+    .runAsync();
+
+/**
+ * Function to test amplify push
+ */
+export const amplifyPushAuthV10 = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
     .wait(/.*/)
     .runAsync();
 

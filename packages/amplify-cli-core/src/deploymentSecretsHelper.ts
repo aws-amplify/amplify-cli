@@ -4,13 +4,13 @@ import { recursiveOmit } from './utils/recursiveOmit';
 
 export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretMerge): DeploymentSecrets => {
   const { currentDeploymentSecrets, category, rootStackId, envName, resource, keyName, value } = deploymentSecretsModifier;
-  const newDeploymentAppSecret = _.find(currentDeploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId) || {
+  const newDeploymentAppSecret = _.find(currentDeploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId) || {
     rootStackId,
     environments: {},
   };
-  _.set(newDeploymentAppSecret, ['environments', envName, category, resource, keyName], value);
+  _.setWith(newDeploymentAppSecret, ['environments', envName, category, resource, keyName], value);
 
-  const filteredSecrets = currentDeploymentSecrets.appSecrets?.filter(appSecret => appSecret.rootStackId !== rootStackId) || [];
+  const filteredSecrets = currentDeploymentSecrets.appSecrets?.filter((appSecret) => appSecret.rootStackId !== rootStackId) || [];
 
   return {
     appSecrets: [...filteredSecrets, newDeploymentAppSecret],
@@ -19,12 +19,12 @@ export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecr
 
 export const removeFromDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretsRemove): DeploymentSecrets => {
   const { currentDeploymentSecrets, category, rootStackId, envName, resource, keyName } = deploymentSecretsModifier;
-  const secretsByAppId = _.find(currentDeploymentSecrets.appSecrets, secrets => secrets.rootStackId === rootStackId);
+  const secretsByAppId = _.find(currentDeploymentSecrets.appSecrets, (secrets) => secrets.rootStackId === rootStackId);
   if (secretsByAppId) {
     recursiveOmit(secretsByAppId.environments, [envName, category, resource, keyName]);
     if (Object.keys(secretsByAppId.environments).length === 0) {
       currentDeploymentSecrets.appSecrets =
-        currentDeploymentSecrets.appSecrets?.filter(appSecret => appSecret.rootStackId !== rootStackId) || [];
+        currentDeploymentSecrets.appSecrets?.filter((appSecret) => appSecret.rootStackId !== rootStackId) || [];
     }
   }
   return currentDeploymentSecrets;

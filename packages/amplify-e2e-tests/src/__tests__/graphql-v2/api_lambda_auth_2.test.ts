@@ -44,9 +44,8 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(meta.function).toBeDefined();
     let seenAtLeastOneFunc = false;
     for (const key of Object.keys(meta.function)) {
-      const {
-        service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash,
-      } = meta.function[key];
+      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+        meta.function[key];
       expect(service).toBe('Lambda');
       expect(build).toBeTruthy();
       expect(lastBuildTimeStamp).toBeDefined();
@@ -131,7 +130,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         query: gql(listNotesQuery),
         fetchPolicy: 'no-cache',
       }),
-    ).rejects.toThrow(`GraphQL error: Not Authorized to access note on type String`);
+    ).rejects.toThrow(`GraphQL error: Not Authorized to access note on type`);
 
     const appSyncInvalidClient = new AWSAppSyncClient({
       url,

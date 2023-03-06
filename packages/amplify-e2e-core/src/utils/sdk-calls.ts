@@ -72,7 +72,7 @@ export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
 
   try {
     const result = await s3.listObjects(params).promise();
-    return result.Contents.map(contentObj => contentObj.Key);
+    return result.Contents.map((contentObj) => contentObj.Key);
   } catch (err) {
     throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
@@ -82,10 +82,12 @@ export const getDeploymentBucketObject = async (projectRoot: string, objectKey: 
   const meta = getProjectMeta(projectRoot);
   const deploymentBucket = meta.providers.awscloudformation.DeploymentBucketName;
   const s3 = new S3();
-  const result = await s3.getObject({
-    Bucket: deploymentBucket,
-    Key: objectKey,
-  }).promise();
+  const result = await s3
+    .getObject({
+      Bucket: deploymentBucket,
+      Key: objectKey,
+    })
+    .promise();
   return result.Body.toLocaleString();
 };
 
@@ -115,14 +117,14 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
   } while (truncated);
   const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
   const deleteReq = chunkedResult
-    .map(r => ({
+    .map((r) => ({
       Bucket: bucket,
       Delete: {
         Objects: r,
         Quiet: true,
       },
     }))
-    .map(delParams => s3.deleteObjects(delParams).promise());
+    .map((delParams) => s3.deleteObjects(delParams).promise());
   await Promise.all(deleteReq);
   await s3
     .deleteBucket({
@@ -198,11 +200,11 @@ export const addUserToUserPool = async (userPoolId: string, region: string) => {
 export const listUserPoolGroupsForUser = async (userPoolId: string, userName: string, region: string): Promise<string[]> => {
   const provider = new CognitoIdentityServiceProvider({ region });
   const params = {
-    UserPoolId: userPoolId, /* required */
-    Username: userName, /* required */
+    UserPoolId: userPoolId /* required */,
+    Username: userName /* required */,
   };
   const res = await provider.adminListGroupsForUser(params).promise();
-  const groups = res.Groups.map(group => group.GroupName);
+  const groups = res.Groups.map((group) => group.GroupName);
   return groups;
 };
 
@@ -288,7 +290,7 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: $TSAny) => {
   const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
-    stack => stack.StackName === stackName || stack.StackId === stackName,
+    (stack) => stack.StackName === stackName || stack.StackId === stackName,
   );
 };
 
@@ -313,11 +315,11 @@ export const getTableResourceId = async (region: string, table: string, StackId:
       StackName: StackId,
     })
     .promise();
-  const resource = apiResources.StackResources.find(stackResource => table === stackResource.LogicalResourceId);
+  const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
   if (resource) {
     const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
     if (tableStack?.Stacks?.length > 0) {
-      const tableName = tableStack.Stacks[0].Outputs.find(out => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      const tableName = tableStack.Stacks[0].Outputs.find((out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
       return tableName.OutputValue;
     }
   }
@@ -395,48 +397,136 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
   }
   return await ssmClient
     .getParameters({
-      Names: parameterNames.map(name => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
+      Names: parameterNames.map((name) => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
     })
     .promise();
 };
 
+export const getSSMParametersCategoryPrefix = async (
+  region: string,
+  appId: string,
+  envName: string,
+  category: string,
+  resourceName: string,
+  parameterNames: string[],
+) => {
+  const ssmClient = new SSM({ region });
+  if (!parameterNames || parameterNames.length === 0) {
+    throw new Error('no parameterNames specified');
+  }
+  return ssmClient
+    .getParameters({
+      Names: parameterNames.map((name) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`),
+    })
+    .promise();
+};
+
+export const getAllSSMParamatersForAppId = async (appId: string, region: string): Promise<Array<string>> => {
+  const ssmClient = new SSM({ region });
+  const retrievedParameters: Array<string> = [];
+  let receivedNextToken = '';
+  do {
+    const ssmArgument = getSsmSdkParametersByPath(appId, receivedNextToken);
+    const data = await ssmClient.getParametersByPath(ssmArgument).promise();
+    retrievedParameters.push(...data.Parameters.map((returnedParameter) => returnedParameter.Name));
+    receivedNextToken = data.NextToken;
+  } while (receivedNextToken);
+  return retrievedParameters;
+};
+
+export const expectParametersOptionalValue = async (
+  expectToExist: NameOptionalValuePair[],
+  expectNotExist: string[],
+  region: string,
+  appId: string,
+  envName: string,
+  category: string,
+  resourceName: string,
+): Promise<void> => {
+  const parametersToRequest = expectToExist.map((exist) => exist.name).concat(expectNotExist);
+  const result = await getSSMParametersCategoryPrefix(region, appId, envName, category, resourceName, parametersToRequest);
+  const mapName = (name: string) => `/amplify/${appId}/${envName}/AMPLIFY_${category}_${resourceName}_${name}`;
+  expect(result.InvalidParameters.length).toBe(expectNotExist.length);
+  expect(result.InvalidParameters.sort()).toEqual(expectNotExist.map(mapName).sort());
+  expect(result.Parameters.length).toBe(expectToExist.length);
+  const mappedResult = result.Parameters.map((param) => ({ name: param.Name, value: JSON.parse(param.Value) })).sort(sortByName);
+  const mappedExpect = expectToExist
+    .map((exist) => ({ name: mapName(exist.name), value: exist.value ? exist.value : '' }))
+    .sort(sortByName);
+
+  const mappedResultKeys = mappedResult.map((parameter) => parameter.name);
+  for (const expectedParam of mappedExpect) {
+    if (expectedParam.value) {
+      expect(mappedResult).toContainEqual(expectedParam);
+    } else {
+      expect(mappedResultKeys).toContainEqual(expectedParam.name);
+    }
+  }
+};
+
+const sortByName = (a: NameOptionalValuePair, b: NameOptionalValuePair) => a.name.localeCompare(b.name);
+type NameOptionalValuePair = { name: string; value?: string };
+
+const getSsmSdkParametersByPath = (appId: string, nextToken?: string): SsmGetParametersByPathArgument => {
+  const sdkParameters: SsmGetParametersByPathArgument = { Path: `/amplify/${appId}/` };
+  if (nextToken) {
+    sdkParameters.NextToken = nextToken;
+  }
+  return sdkParameters;
+};
+
+type SsmGetParametersByPathArgument = {
+  Path: string;
+  NextToken?: string;
+};
+
 // Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
   const service = new Location({ region });
-  return await service.describeMap({
-    MapName: mapName,
-  }).promise();
+  return await service
+    .describeMap({
+      MapName: mapName,
+    })
+    .promise();
 };
 
 export const getPlaceIndex = async (placeIndexName: string, region: string) => {
   const service = new Location({ region });
-  return await service.describePlaceIndex({
-    IndexName: placeIndexName,
-  }).promise();
+  return await service
+    .describePlaceIndex({
+      IndexName: placeIndexName,
+    })
+    .promise();
 };
 
 export const getGeofenceCollection = async (geofenceCollectionName: string, region: string) => {
   const service = new Location({ region });
-  return await service.describeGeofenceCollection({
-    CollectionName: geofenceCollectionName,
-  }).promise();
+  return await service
+    .describeGeofenceCollection({
+      CollectionName: geofenceCollectionName,
+    })
+    .promise();
 };
 
 export const getGeofence = async (geofenceCollectionName: string, geofenceId: string, region: string) => {
   const service = new Location({ region });
-  return (await service.getGeofence({
-    CollectionName: geofenceCollectionName,
-    GeofenceId: geofenceId,
-  })).promise();
+  return (
+    await service.getGeofence({
+      CollectionName: geofenceCollectionName,
+      GeofenceId: geofenceId,
+    })
+  ).promise();
 };
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const listGeofences = async (geofenceCollectionName: string, region: string, nextToken: string = null) => {
   const service = new Location({ region });
   // eslint-disable-next-line spellcheck/spell-checker
-  return (await service.listGeofences({
-    CollectionName: geofenceCollectionName,
-    NextToken: nextToken,
-  })).promise();
+  return (
+    await service.listGeofences({
+      CollectionName: geofenceCollectionName,
+      NextToken: nextToken,
+    })
+  ).promise();
 };

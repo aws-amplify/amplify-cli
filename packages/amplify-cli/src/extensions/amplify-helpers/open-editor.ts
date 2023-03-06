@@ -1,12 +1,11 @@
 import * as fs from 'fs-extra';
 import * as which from 'which';
-import open from 'open';
 import execa, { sync as execaSync } from 'execa';
 import * as inquirer from 'inquirer';
 import * as envEditor from 'env-editor';
 import { editorSelection } from './editor-selection';
 import { getEnvInfo } from './get-env-info';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, open } from 'amplify-cli-core';
 
 export async function openEditor(context: $TSContext, filePath: string, waitToContinue = true): Promise<void> {
   const continueQuestion: inquirer.InputQuestion = {
@@ -31,7 +30,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
       );
     }
 
-    let editorPath: string | undefined = editor.paths.find(p => fs.existsSync(p));
+    let editorPath: string | undefined = editor.paths.find((p) => fs.existsSync(p));
 
     // Check if the binary can be located with which
     if (!editorPath) {
@@ -71,7 +70,7 @@ export async function openEditor(context: $TSContext, filePath: string, waitToCo
             stdio: 'ignore',
           });
 
-          void subProcess.on('error', err => {
+          void subProcess.on('error', (err) => {
             context.print.error(
               `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
             );

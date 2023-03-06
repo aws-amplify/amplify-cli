@@ -58,8 +58,8 @@ describe('delete old version', () => {
   });
 
   it('prints warning if old version cannot be deleted', () => {
-    const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(()=>{});
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     fs_mock.removeSync.mockImplementationOnce(() => {
       throw new Error('test error removing old binary');
     });

@@ -6,8 +6,10 @@ import {
   exitOnNextTick,
   IAmplifyResource,
   stateManager,
+  ManuallyTimedCodePath,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from 'amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
@@ -17,7 +19,6 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
-import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
 import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
@@ -32,9 +33,9 @@ export const pushResources = async (
 ): Promise<boolean> => {
   context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
 
-  if (context.parameters.options['iterative-rollback']) {
+  if (context.parameters.options?.['iterative-rollback']) {
     // validate --iterative-rollback with --force
-    if (context.parameters.options.force) {
+    if (context.parameters.options?.force) {
       throw new AmplifyError('CommandNotSupportedError', {
         message: '--iterative-rollback and --force are not supported together',
         resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
@@ -43,11 +44,11 @@ export const pushResources = async (
     context.exeInfo.iterativeRollback = true;
   }
 
-  if (context.parameters.options.env) {
+  if (context.parameters.options?.env) {
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
 
-    if (allEnvs.findIndex(env => env === envName) !== -1) {
+    if (allEnvs.findIndex((env) => env === envName) !== -1) {
       context.exeInfo = {};
       context.exeInfo.forcePush = false;
 
@@ -88,6 +89,48 @@ export const pushResources = async (
     printer.info('\nNo changes detected');
     context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
+  }
+
+  // Verify any environment parameters before push operation
+  const envParamManager = (await ensureEnvParamManager()).instance;
+
+  const promptMissingParameter = async (
+    categoryName: string,
+    resourceName: string,
+    parameterName: string,
+    envParamManager: IEnvironmentParameterManager,
+  ): Promise<void> => {
+    printer.warn(`Could not find value for parameter ${parameterName}`);
+    const value = await prompter.input(`Enter a value for ${parameterName} for the ${categoryName} resource: ${resourceName}`);
+    const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
+    resourceParamManager.setParam(parameterName, value);
+  };
+
+  const parametersToCheck = resourcesToBuild.filter(({ category: c, resourceName: r }) => {
+    // Filter based on optional parameters
+    if (category) {
+      if (c !== category) {
+        return false;
+      }
+    }
+    if (resourceName) {
+      if (r !== resourceName) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
+    await envParamManager.verifyExpectedEnvParameters(parametersToCheck);
+  } else {
+    const missingParameters = await envParamManager.getMissingParameters(parametersToCheck);
+    if (missingParameters.length > 0) {
+      for (const { categoryName, resourceName, parameterName } of missingParameters) {
+        await promptMissingParameter(categoryName, resourceName, parameterName, envParamManager);
+      }
+      await envParamManager.save(); // Values must be in TPI for CFN deployment to work
+    }
   }
 
   // rebuild has an upstream confirmation prompt so no need to prompt again here

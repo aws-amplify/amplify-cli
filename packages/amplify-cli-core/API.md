@@ -4,18 +4,16 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import opn from 'open';
 import { Ora } from 'ora';
 import { Template as Template_2 } from 'cloudform-types';
-
-// @public (undocumented)
-export type $IPluginManifest = $TSAny;
 
 // @public (undocumented)
 export type $TSAny = any;
@@ -24,19 +22,18 @@ export type $TSAny = any;
 export type $TSContext = {
     amplify: AmplifyToolkit;
     print: IContextPrint;
-    migrationInfo: $TSAny;
+    migrationInfo: MigrationInfo;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
-    exeInfo: $TSAny;
-    input: $TSAny;
-    parameters: $TSAny;
-    usageData: $TSAny;
-    runtime: $TSAny;
+    exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
+    input: CommandLineInput;
+    parameters: ContextParameters;
+    usageData: IUsageData;
+    runtime: Runtime;
     pluginPlatform: IPluginPlatform;
-    newUserInfo?: $TSAny;
+    newUserInfo?: string;
     filesystem: IContextFilesystem;
     template: IContextTemplate;
-    updatingAuth: $TSAny;
 };
 
 // @public (undocumented)
@@ -123,7 +120,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryError' | 'DirectoryAlreadyExistsError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'ModelgenError' | 'NestedProjectInitError' | 'NoUpdateBackendError' | 'NotImplementedError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'StackNotFoundError' | 'StackStateError' | 'UserInputError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'UnsupportedLockFileTypeError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError' | 'UserInputError';
 
 // @public (undocumented)
 export enum AmplifyEvent {
@@ -231,7 +228,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AnalyticsCategoryFault' | 'AmplifyBackupFault' | 'BackendPullFault' | 'ConfigurationFault' | 'BackendDeleteFault' | 'ConfigurationFault' | 'DeploymentFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelSmsFault' | 'NotificationsChannelInAppMessagingFault' | 'NotImplementedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PluginNotLoadedFault' | 'PushResourcesFault' | 'PullBackendFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'MockProcessFault' | 'AuthCategoryFault' | 'ZipExtractFault';
+export type AmplifyFaultType = 'AmplifyBackupFault' | 'AnalyticsCategoryFault' | 'AuthCategoryFault' | 'BackendDeleteFault' | 'BackendPullFault' | 'ConfigurationFault' | 'ConfigurationFault' | 'DeploymentFault' | 'DeploymentStateUploadFault' | 'LockFileNotFoundFault' | 'LockFileParsingFault' | 'MockProcessFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelInAppMessagingFault' | 'NotificationsChannelSmsFault' | 'NotImplementedFault' | 'ParameterDownloadFault' | 'ParameterUploadFault' | 'PluginNotLoadedFault' | 'ProjectDeleteFault' | 'ParametersDeleteFault' | 'ProjectInitFault' | 'PullBackendFault' | 'PushResourcesFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'ZipExtractFault';
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -248,6 +245,18 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
     // (undocumented)
     envName: string;
 }
+
+// @public (undocumented)
+export class AmplifyNodePkgDetector {
+    constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
+    // (undocumented)
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+}
+
+// @public (undocumented)
+export type AmplifyNodePkgDetectorProps = {
+    projectRoot: string;
+};
 
 // @public (undocumented)
 export interface AmplifyPostEnvAddEventData {
@@ -272,21 +281,21 @@ export interface AmplifyProjectConfig {
 // @public (undocumented)
 export interface AmplifyStackTemplate {
     // (undocumented)
-    addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
+    addCfnCondition: (props: cdk.CfnConditionProps, logicalId: string) => void;
     // (undocumented)
-    addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
+    addCfnMapping: (props: cdk.CfnMappingProps, logicalId: string) => void;
     // (undocumented)
-    addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
+    addCfnOutput: (props: cdk.CfnOutputProps, logicalId: string) => void;
     // (undocumented)
-    addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
+    addCfnParameter: (props: cdk.CfnParameterProps, logicalId: string) => void;
     // (undocumented)
-    getCfnCondition(logicalId: string): cdk.CfnCondition;
+    getCfnCondition: (logicalId: string) => cdk.CfnCondition;
     // (undocumented)
-    getCfnMapping(logicalId: string): cdk.CfnMapping;
+    getCfnMapping: (logicalId: string) => cdk.CfnMapping;
     // (undocumented)
-    getCfnOutput(logicalId: string): cdk.CfnOutput;
+    getCfnOutput: (logicalId: string) => cdk.CfnOutput;
     // (undocumented)
-    getCfnParameter(logicalId: string): cdk.CfnParameter;
+    getCfnParameter: (logicalId: string) => cdk.CfnParameter;
 }
 
 // @public (undocumented)
@@ -314,7 +323,7 @@ export class ApiCategoryFacade {
     // (undocumented)
     static getTransformerVersion(context: $TSContext): Promise<number>;
     // (undocumented)
-    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | DeploymentResources_2 | undefined>;
+    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | undefined>;
 }
 
 // @public (undocumented)
@@ -399,6 +408,13 @@ export interface CLIEnvironmentProvider {
     // (undocumented)
     getCurrentEnvName(): string;
 }
+
+// @public (undocumented)
+export type CLIGlobalFlags = {
+    version?: boolean;
+    help?: boolean;
+    yes?: boolean;
+};
 
 // @public (undocumented)
 export class CLIInputSchemaGenerator {
@@ -508,21 +524,13 @@ export type CommandInfo = {
 };
 
 // @public (undocumented)
-export class CommandLineInput {
-    constructor(argv: Array<string>);
-    // (undocumented)
+export type CommandLineInput = {
     argv: Array<string>;
-    // (undocumented)
-    command?: string;
-    // (undocumented)
-    options?: {
-        [key: string]: string | boolean;
-    };
-    // (undocumented)
     plugin?: string;
-    // (undocumented)
+    command: string;
     subCommands?: string[];
-}
+    options?: CLIGlobalFlags & Record<string, any>;
+};
 
 // @public (undocumented)
 export const commandsInfo: Array<CommandInfo>;
@@ -548,6 +556,7 @@ export const constants: {
     CODEGEN: string;
     AMPLIFY: string;
     DOT_AMPLIFY_DIR_NAME: string;
+    DEFAULT_PROVIDER: string;
     AMPLIFY_PREFIX: string;
     LOCAL_NODE_MODULES: string;
     PARENT_DIRECTORY: string;
@@ -558,6 +567,20 @@ export const constants: {
     HANDLE_AMPLIFY_EVENT: string;
     LOG_FILENAME: string;
 };
+
+// @public (undocumented)
+export interface ContextParameters extends Pick<CommandLineInput, 'argv' | 'plugin' | 'command' | 'options'> {
+    // (undocumented)
+    array: CommandLineInput['subCommands'];
+    // (undocumented)
+    first?: string;
+    // (undocumented)
+    raw: CommandLineInput['argv'];
+    // (undocumented)
+    second?: string;
+    // (undocumented)
+    third?: string;
+}
 
 // @public (undocumented)
 export const convertNumBytes: (numBytes: number) => {
@@ -715,8 +738,24 @@ export enum DeploymentStepStatus {
 }
 
 // @public (undocumented)
+export type DetectedDependency = {
+    packageName?: string;
+    dependentPackage?: {
+        name: string;
+        version: string;
+    };
+};
+
+// @public (undocumented)
 export class DiagnoseReportUploadError extends Error {
 }
+
+// @public (undocumented)
+type EnvironmentInfo = {
+    existingLocalEnvInfo?: $TSAny;
+    isNewEnv?: boolean;
+    sourceEnvName?: string;
+};
 
 // @public (undocumented)
 export class EnvVarFormatError extends Error {
@@ -737,6 +776,16 @@ export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+
+declare namespace ExeInfo {
+    export {
+        EnvironmentInfo,
+        InputParameters,
+        PinpointInfo,
+        ProjectInfo
+    }
+}
+export { ExeInfo }
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -796,6 +845,36 @@ export type FeatureFlagsEntry = Record<string, Record<string, $TSAny>>;
 
 // @public (undocumented)
 export type FeatureFlagType = 'boolean' | 'number';
+
+// @public (undocumented)
+export interface FlowRecorder {
+    // (undocumented)
+    assignProjectIdentifier: (envName?: string) => string | undefined;
+    // (undocumented)
+    getFlowReport: () => IFlowReport | Record<string, never>;
+    // (undocumented)
+    pushHeadlessFlow: (headlessFlowDataString: string, input: CommandLineInput) => void;
+    // (undocumented)
+    pushInteractiveFlow: (prompt: string, input: unknown) => void;
+    // (undocumented)
+    setIsHeadless: (headless: boolean) => void;
+}
+
+// @public (undocumented)
+export enum FromStartupTimedCodePaths {
+    // (undocumented)
+    PLATFORM_STARTUP = "platformStartup",
+    // (undocumented)
+    TOTAL_DURATION = "totalDuration"
+}
+
+// @public (undocumented)
+export type FunctionBreadcrumb = {
+    pluginId: string;
+    functionRuntime: string;
+    defaultEditorFile: string;
+    useLegacyBuild: true;
+};
 
 // @public (undocumented)
 export const generateAmplifyOverrideProjectBuildFiles: (backendDir: string, srcResourceDirPath: string) => void;
@@ -864,6 +943,7 @@ export type HookEvent = {
 // @public (undocumented)
 export type HookExtensions = Record<string, {
     runtime: string;
+    runtime_options?: string[];
     runtime_windows?: string;
 }>;
 
@@ -893,15 +973,7 @@ export class HooksMeta {
     // (undocumented)
     getHookEvent(): HookEvent;
     // (undocumented)
-    static getInstance: (input?: {
-        command?: string;
-        plugin?: string;
-        subCommands?: string[];
-        options?: {
-            forcePush?: boolean;
-        };
-        argv?: string[];
-    }, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter) => HooksMeta;
+    static getInstance: (input?: CommandLineInput, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter) => HooksMeta;
     // (undocumented)
     mergeDataParameter(newDataParameter: DataParameter): void;
     // (undocumented)
@@ -917,19 +989,11 @@ export class HooksMeta {
     // (undocumented)
     setEventSubCommand(subCommand?: string): void;
     // (undocumented)
-    setHookEventFromInput(input?: {
-        command?: string;
-        plugin?: string;
-        subCommands?: string[];
-        argv?: string[];
-        options?: {
-            forcePush?: boolean;
-        };
-    }): void;
+    setHookEventFromInput(input?: CommandLineInput): void;
 }
 
 // @public (undocumented)
-export type HooksNoun = 'notifications' | 'analytics' | 'api' | 'auth' | 'function' | 'hosting' | 'interactions' | 'predictions' | 'storage' | 'xr' | 'codegen' | 'env';
+export type HooksNoun = 'notifications' | 'analytics' | 'api' | 'auth' | 'function' | 'hosting' | 'interactions' | 'predictions' | 'storage' | 'codegen' | 'env';
 
 // @public (undocumented)
 export type HooksVerb = 'add' | 'update' | 'remove' | 'push' | 'pull' | 'publish' | 'delete' | 'checkout' | 'list' | 'get' | 'mock' | 'build' | 'status' | 'import' | 'gqlcompile' | 'addgraphqldatasource' | 'statements' | 'types';
@@ -969,8 +1033,8 @@ export type IAuthResource = IAmplifyResource;
 // @public (undocumented)
 export type IContextFilesystem = {
     remove: (targetPath: string) => void;
-    read: (targetPath: string, encoding?: string) => $TSAny;
-    write: (targetPath: string, data: unknown) => void;
+    read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
+    write: (targetPath: string, data: string | NodeJS.ArrayBufferView) => void;
     exists: (targetPath: string) => boolean;
     isFile: (targetPath: string) => boolean;
     path: (...pathParts: string[]) => string;
@@ -1030,6 +1094,34 @@ export interface IDeploymentStateManager {
 }
 
 // @public (undocumented)
+export interface IFlowReport {
+    // (undocumented)
+    category: string;
+    // (undocumented)
+    cmd: string;
+    // (undocumented)
+    executable: string;
+    // (undocumented)
+    input: CommandLineInput;
+    // (undocumented)
+    isHeadless: boolean;
+    // (undocumented)
+    optionFlowData: Array<TypeOptionFlowData>;
+    // (undocumented)
+    projectEnvIdentifier?: string;
+    // (undocumented)
+    projectIdentifier?: string;
+    // (undocumented)
+    runtime: string;
+    // (undocumented)
+    subCmd: string | undefined;
+    // (undocumented)
+    timestamp: string;
+    // (undocumented)
+    version: string;
+}
+
+// @public (undocumented)
 export function info(message: string): void;
 
 // @public (undocumented)
@@ -1058,7 +1150,35 @@ export interface INotificationsResourceMeta {
 }
 
 // @public (undocumented)
+export type InputOptions = Record<string, string | boolean>;
+
+// @public (undocumented)
+type InputParameters = {
+    forcePush?: boolean;
+    iterativeRollback?: boolean;
+    restoreBackend?: boolean;
+};
+
+// @public (undocumented)
 export class InvalidSubCommandError extends Error {
+}
+
+// @public (undocumented)
+export interface IOptionFlowCLIData {
+    // (undocumented)
+    input: unknown;
+    // (undocumented)
+    prompt: string;
+    // (undocumented)
+    timestamp: number;
+}
+
+// @public (undocumented)
+export interface IOptionFlowHeadlessData {
+    // (undocumented)
+    input: string;
+    // (undocumented)
+    timestamp: number;
 }
 
 // @public (undocumented)
@@ -1093,7 +1213,16 @@ export type IPluginInfo = {
     packageName: string;
     packageVersion: string;
     packageLocation: string;
-    manifest: $IPluginManifest;
+    manifest: IPluginManifest;
+};
+
+// @public (undocumented)
+export type IPluginManifest = {
+    name: string;
+    type: string;
+    commands?: string[];
+    services?: string[];
+    functionRuntime?: FunctionBreadcrumb;
 };
 
 // @public (undocumented)
@@ -1120,6 +1249,77 @@ export const isResourceNameUnique: (category: string, resourceName: string, thro
 export const isWindowsPlatform: () => boolean;
 
 // @public (undocumented)
+export interface IUsageData extends IUsageMetricsData, FlowRecorder {
+}
+
+// @public (undocumented)
+export interface IUsageDataPayload {
+    // (undocumented)
+    accountId: string;
+    // (undocumented)
+    amplifyCliVersion: string;
+    // (undocumented)
+    codePathDurations: Partial<Record<TimedCodePath, number>>;
+    // (undocumented)
+    downstreamException: SerializableError;
+    // (undocumented)
+    error: SerializableError;
+    // (undocumented)
+    flowReport: IFlowReport;
+    // (undocumented)
+    input: CommandLineInput | null;
+    // (undocumented)
+    inputOptions: CommandLineInput['options'];
+    // (undocumented)
+    installationUuid: string;
+    // (undocumented)
+    isCi: boolean;
+    // (undocumented)
+    nodeVersion: string;
+    // (undocumented)
+    osPlatform: string;
+    // (undocumented)
+    osRelease: string;
+    // (undocumented)
+    payloadVersion: string;
+    // (undocumented)
+    projectSetting: ProjectSettings;
+    // (undocumented)
+    pushNormalizationFactor: number;
+    // (undocumented)
+    sessionUuid: string;
+    // (undocumented)
+    state: string;
+    // (undocumented)
+    timestamp: string;
+}
+
+// @public (undocumented)
+export interface IUsageMetricsData {
+    // (undocumented)
+    calculatePushNormalizationFactor: (events: {
+        StackId: string;
+        PhysicalResourceId: string;
+    }[], StackId: string) => void;
+    // (undocumented)
+    emitAbort: () => Promise<void>;
+    // (undocumented)
+    emitError: (error: Error | null) => Promise<void>;
+    // (undocumented)
+    emitSuccess: () => Promise<void>;
+    // (undocumented)
+    getSessionUuid: () => string;
+    // (undocumented)
+    getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload;
+    // (undocumented)
+    init: (installationUuid: string, version: string, input: CommandLineInput, accountId: string, projectSettings: ProjectSettings, processStartTimeStamp: number) => void;
+    // (undocumented)
+    startCodePathTimer: (codePath: StartableTimedCodePath) => void;
+    // (undocumented)
+    stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
+}
+
+// @public (undocumented)
 export class JSONUtilities {
     // (undocumented)
     static parse: <T>(jsonString: string, options?: {
@@ -1134,7 +1334,7 @@ export class JSONUtilities {
     static stringify: (data: unknown, options?: {
         minify?: boolean;
         orderedKeys?: boolean;
-    }) => string | undefined;
+    }) => string;
     // (undocumented)
     static writeJson: (fileName: string, data: unknown, options?: {
         mode?: number;
@@ -1145,10 +1345,34 @@ export class JSONUtilities {
 }
 
 // @public (undocumented)
+export type LocalAwsInfo = {
+    NONE: Record<string, unknown>;
+};
+
+// @public (undocumented)
+export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
+
+// @public (undocumented)
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
 
 // @public (undocumented)
 export function lookUpSubcommand(commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string): SubCommandInfo | undefined;
+
+// @public (undocumented)
+export enum ManuallyTimedCodePath {
+    // (undocumented)
+    INIT_ENV_CATEGORIES = "initEnvCategories",
+    // (undocumented)
+    INIT_ENV_PLATFORM = "initEnvPlatform",
+    // (undocumented)
+    PLUGIN_TIME = "pluginTime",
+    // (undocumented)
+    PROMPT_TIME = "promptTime",
+    // (undocumented)
+    PUSH_DEPLOYMENT = "pushDeployment",
+    // (undocumented)
+    PUSH_TRANSFORM = "pushTransform"
+}
 
 // Warning: (ae-forgotten-export) The symbol "deploymentSecretMerge" needs to be exported by the entry point index.d.ts
 //
@@ -1166,6 +1390,30 @@ export type Message = {
         endTime?: string;
     };
 };
+
+// @public (undocumented)
+export interface MigrationInfo {
+    // (undocumented)
+    amplifyMeta: $TSMeta;
+    // (undocumented)
+    backendConfig: Record<string, unknown>;
+    // (undocumented)
+    currentAmplifyMeta: $TSMeta;
+    // (undocumented)
+    initVersion: string;
+    // (undocumented)
+    localAwsInfo: LocalAwsInfo;
+    // (undocumented)
+    localEnvInfo: LocalEnvInfo;
+    // (undocumented)
+    newVersion: string;
+    // (undocumented)
+    projectConfig: ProjectConfig;
+    // (undocumented)
+    projectPath: string;
+    // (undocumented)
+    teamProviderInfo: TeamProviderInfo;
+}
 
 // @public (undocumented)
 export class MissingParametersError extends Error {
@@ -1214,10 +1462,11 @@ export type PackageManager = {
     packageManager: PackageManagerType;
     lockFile: string;
     executable: string;
+    yarnrcPath?: string;
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export type PackageManagerType = 'yarn' | 'npm' | 'yarn2';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
@@ -1274,6 +1523,7 @@ export const PathConstants: {
     ExportManifestJsonFilename: string;
     ExportTagsJsonFileName: string;
     ExportCategoryStackMappingJsonFilename: string;
+    OverrideFileName: string;
 };
 
 // @public (undocumented)
@@ -1354,6 +1604,8 @@ export class PathManager {
     // (undocumented)
     getResourceInputsJsonFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
+    getResourceOverrideFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
+    // (undocumented)
     getResourceParametersFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
     getRootOverrideDirPath: (projectPath: string) => string;
@@ -1367,6 +1619,23 @@ export class PathManager {
 
 // @public (undocumented)
 export const pathManager: PathManager;
+
+// @public (undocumented)
+type PinpointInfo = {
+    pinpointApp?: $TSAny;
+    pinpointClient?: $TSAny;
+    pinpointInputParams?: $TSAny;
+};
+
+// @public (undocumented)
+type Plugin_2 = {
+    name: string;
+    directory: string;
+    pluginName: string;
+    pluginType: string;
+    commands: string[];
+};
+export { Plugin_2 as Plugin }
 
 // @public (undocumented)
 export enum PluginAPIError {
@@ -1406,7 +1675,7 @@ export class PluginInfo implements IPluginInfo {
 }
 
 // @public (undocumented)
-export class PluginManifest {
+export class PluginManifest implements IPluginManifest {
     constructor(name: string, type: string, displayName?: string | undefined, aliases?: string[] | undefined, commands?: string[] | undefined, commandAliases?: {
         [key: string]: string;
     } | undefined, services?: string[] | undefined, eventHandlers?: AmplifyEvent[] | undefined);
@@ -1497,7 +1766,39 @@ const print_2: {
 export { print_2 as print }
 
 // @public (undocumented)
+export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
+
+// @public (undocumented)
+type ProjectInfo = {
+    amplifyMeta?: $TSAny;
+    awsConfigInfo?: $TSAny;
+    backendConfig?: $TSAny;
+    existingLocalAwsInfo?: $TSAny;
+    existingProjectConfig?: $TSAny;
+    existingTeamProviderInfo?: $TSAny;
+    isNewProject?: boolean;
+    inputParams?: $TSAny;
+    localEnvInfo?: $TSAny;
+    projectConfig?: $TSAny;
+    serviceMeta?: $TSAny;
+    teamProviderInfo?: $TSAny;
+};
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
+
+// @public (undocumented)
+export type ProjectSettings = {
+    frontend?: string;
+    editor?: string;
+    envName?: string;
+    framework?: string;
+    version?: string;
+    providers?: string[];
+    projectPath?: string;
+    defaultEditor?: string;
+    frontendHandler?: unknown;
+};
 
 // @public (undocumented)
 export function promptConfirmationRemove(context: $TSContext, serviceType?: string): Promise<boolean>;
@@ -1579,7 +1880,21 @@ export interface ResourceTuple {
 export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): void;
 
 // @public (undocumented)
+export type Runtime = {
+    plugins: Plugin_2[];
+};
+
+// @public (undocumented)
 export const SecretFileMode = 384;
+
+// @public (undocumented)
+export type SerializableError = {
+    name: string;
+    message: string;
+    details?: string;
+    code?: string;
+    trace?: StackTraceElement[];
+};
 
 // @public (undocumented)
 export type ServiceSelection = {
@@ -1599,6 +1914,17 @@ export const skipHooksFilePath = "/opt/amazon";
 
 // @public (undocumented)
 export const spinner: Ora;
+
+// @public (undocumented)
+export type StackTraceElement = {
+    methodName: string;
+    file: string;
+    lineNumber: string;
+    columnNumber: string;
+};
+
+// @public (undocumented)
+export type StartableTimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath;
 
 // @public (undocumented)
 export class StateManager {
@@ -1711,6 +2037,9 @@ export const stateManager: StateManager;
 export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
 
 // @public (undocumented)
+export type StoppableTimedCodePath = ManuallyTimedCodePath | FromStartupTimedCodePaths;
+
+// @public (undocumented)
 export type SubCommandInfo = {
     subCommand: string;
     subCommandDescription: string;
@@ -1741,6 +2070,16 @@ export interface Tag {
 }
 
 // @public (undocumented)
+export type TeamProviderEnvironment = {
+    categories: Record<string, unknown>;
+};
+
+// @public (undocumented)
+export type TeamProviderInfo = {
+    [envName: string]: Record<string, unknown>;
+};
+
+// @public (undocumented)
 export interface Template {
     // (undocumented)
     AWSTemplateFormatVersion?: string;
@@ -1767,10 +2106,16 @@ export interface Template {
 }
 
 // @public (undocumented)
+export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
+
+// @public (undocumented)
 export type TypeDef = {
     typeName: string;
     service: string;
 };
+
+// @public (undocumented)
+export type TypeOptionFlowData = IOptionFlowHeadlessData | IOptionFlowCLIData;
 
 // @public (undocumented)
 export class UnknownArgumentError extends Error {
@@ -1786,6 +2131,12 @@ export class UnrecognizedFrameworkError extends Error {
 
 // @public (undocumented)
 export class UnrecognizedFrontendError extends Error {
+}
+
+// @public (undocumented)
+export enum UntilExitTimedCodePath {
+    // (undocumented)
+    POST_PROCESS = "postProcess"
 }
 
 // @public (undocumented)
@@ -1838,7 +2189,7 @@ export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
-// src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
+// src/types.ts:18:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

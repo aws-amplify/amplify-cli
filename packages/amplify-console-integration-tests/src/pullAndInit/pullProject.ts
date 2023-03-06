@@ -27,9 +27,9 @@ export type FrontendConfig = {
 };
 export function headlessPull(
   projectRootDirPath: string,
-  amplifyParam: Object,
-  providersParam: Object,
-  categoryConfig?: Object,
+  amplifyParam: Record<string, unknown>,
+  providersParam: Record<string, unknown>,
+  categoryConfig?: Record<string, unknown>,
   frontendConfig?: FrontendConfig,
 ): Promise<void> {
   const pullCommand: string[] = [
@@ -57,10 +57,10 @@ export function headlessPull(
 export function authConfigPull(
   projectRootDirPath: string,
   params: { appId: string; envName: string },
-  settings: Object = {},
+  settings: Record<string, unknown> = {},
 ): Promise<void> {
   const pullCommand: string[] = ['pull'];
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);
   });
   const s = { ...defaultSettings, ...settings };

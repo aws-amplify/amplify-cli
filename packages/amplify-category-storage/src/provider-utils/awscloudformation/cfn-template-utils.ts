@@ -24,7 +24,7 @@ export const getExistingStorageAttributeDefinitions = async (resourceName: strin
 };
 
 export const getExistingTableColumnNames = async (resourceName: string): Promise<string[]> => {
-  return (await getExistingStorageAttributeDefinitions(resourceName)).map(att => att.AttributeName.toString());
+  return (await getExistingStorageAttributeDefinitions(resourceName)).map((att) => att.AttributeName.toString());
 };
 
 const loadTable = async (resourceName?: string): Promise<Table | undefined> => {
@@ -44,7 +44,7 @@ const getTableFromTemplate = (cfnTemplate?: Template): Table | undefined => {
   if (_.isEmpty(cfnTemplate?.Resources)) {
     return undefined;
   }
-  const cfnTable = Object.values(cfnTemplate!.Resources!).find(resource => resource.Type === 'AWS::DynamoDB::Table') as Table | undefined;
+  const cfnTable = Object.values(cfnTemplate!.Resources!).find((resource) => resource.Type === 'AWS::DynamoDB::Table') as Table | undefined;
   return cfnTable;
 };
 

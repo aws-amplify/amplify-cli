@@ -1,6 +1,12 @@
 import {
-  initJSProjectWithProfile, amplifyPushUpdate, deleteProject, generateRandomShortId,
-  addKinesis, removeAnalytics, createNewProjectDir, deleteProjectDir,
+  initJSProjectWithProfile,
+  amplifyPushUpdate,
+  deleteProject,
+  generateRandomShortId,
+  addKinesis,
+  removeAnalytics,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -13,7 +19,7 @@ describe('amplify add analytics', () => {
   });
 
   afterEach(async () => {
-    await removeAnalytics(projRoot, {});
+    await removeAnalytics(projRoot);
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });

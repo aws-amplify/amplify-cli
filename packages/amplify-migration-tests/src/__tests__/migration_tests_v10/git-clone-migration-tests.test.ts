@@ -26,7 +26,7 @@ describe('attach amplify to git-cloned project', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('clone-test');
     await initJSProjectWithProfileV10(projRoot, { envName, disableAmplifyAppCreation: false });
-    await addAuthUserPoolOnly(projRoot, {});
+    await addAuthUserPoolOnly(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
@@ -62,7 +62,7 @@ describe('attach amplify to git-cloned project', () => {
 
 const assertLambdaexecutionRoleArns = (projRoot: string, isDefined: boolean) => {
   const meta = getProjectMeta(projRoot);
-  const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+  const authKey = Object.keys(meta.auth).find((key) => meta.auth[key].service === 'Cognito');
   const createFunctionResourceName = `${authKey}CreateAuthChallenge`;
   const defineFunctionResourceName = `${authKey}DefineAuthChallenge`;
   const customMessageFunctionResourceName = `${authKey}CustomMessage`;

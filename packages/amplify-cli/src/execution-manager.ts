@@ -1,13 +1,22 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import sequential from 'promise-sequential';
 import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import { AmplifyEvent, AmplifyEventArgs, stateManager, executeHooks, HooksMeta, PluginInfo, constants } from 'amplify-cli-core';
+import {
+  FromStartupTimedCodePaths,
+  ManuallyTimedCodePath,
+  UntilExitTimedCodePath,
+  AmplifyEvent,
+  AmplifyEventArgs,
+  stateManager,
+  executeHooks,
+  HooksMeta,
+  PluginInfo,
+  constants,
+} from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command
@@ -49,13 +58,15 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
 
   if (promptForSelection) {
     // only use the manifest's displayName if there are no duplicates
-    const displayNames = pluginCandidates.map(candidate => candidate?.manifest?.displayName);
+    const displayNames = pluginCandidates.map((candidate) => candidate?.manifest?.displayName);
     const noDuplicateDisplayNames = new Set(displayNames).size === displayNames.length;
 
     // special handling for hosting plugins
-    const consoleHostingPlugins = pluginCandidates.filter(pluginInfo => pluginInfo.packageName === 'amplify-console-hosting');
+    const consoleHostingPlugins = pluginCandidates.filter(
+      (pluginInfo) => pluginInfo.packageName === '@aws-amplify/amplify-console-hosting',
+    );
     if (consoleHostingPlugins.length > 0) {
-      const otherPlugins = pluginCandidates.filter(pluginInfo => pluginInfo.packageName !== 'amplify-console-hosting');
+      const otherPlugins = pluginCandidates.filter((pluginInfo) => pluginInfo.packageName !== '@aws-amplify/amplify-console-hosting');
       // put console hosting plugin at the top
       // eslint-disable-next-line no-param-reassign
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
@@ -67,12 +78,12 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
     if (!isContainersEnabled(context) || Region !== 'us-east-1') {
       // SSL Certificates only available to be created on us-east-1 only
       // eslint-disable-next-line no-param-reassign
-      pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
+      pluginCandidates = pluginCandidates.filter((plugin) => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
     result = await prompter.pick(
       'Select the plugin module to execute',
-      pluginCandidates.map(plugin => {
+      pluginCandidates.map((plugin) => {
         const displayName =
           plugin.manifest.displayName && noDuplicateDisplayNames
             ? plugin.manifest.displayName
@@ -105,7 +116,7 @@ const smartPickPlugin = (pluginCandidates: PluginInfo[]): PluginInfo | undefined
     // 1. if all the services under the category in metadata are in one and only one plugin candidate
     // 2. if no service in metadata is declared in any candidate's manifest, and only one candidate does not define the optional
     // "services" field in its manifest, select the candidate, this is for the existing implementation of official plugins
-    pluginCandidates.forEach(candidate => {
+    pluginCandidates.forEach((candidate) => {
       if (candidate.manifest.services && candidate.manifest.services!.length > 0) {
         const servicesSetInPlugin = new Set<string>(candidate.manifest.services);
         if (twoStringSetsAreEqual(servicesSetInMeta, servicesSetInPlugin)) {
@@ -319,11 +330,11 @@ export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args:
   const plugins = getPluginsWithEventHandler(context.pluginPlatform, args.event);
   if (plugins.length > 0) {
     const eventHandlers = plugins
-      .filter(plugin => {
+      .filter((plugin) => {
         const exists = fs.existsSync(plugin.packageLocation);
         return exists;
       })
-      .map(plugin => {
+      .map((plugin) => {
         const eventHandler = async (): Promise<void> => {
           try {
             await attachContextExtensions(context, plugin);
@@ -335,7 +346,9 @@ export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args:
         };
         return eventHandler;
       });
-    await sequential(eventHandlers);
+    for (const eventHandler of eventHandlers) {
+      await eventHandler();
+    }
   }
 };
 

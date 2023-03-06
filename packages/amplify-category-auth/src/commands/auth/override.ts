@@ -11,7 +11,7 @@ export const name = 'overrides';
 export const run = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const authResources: string[] = [];
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     authResources.push(resourceName);
   });
   if (authResources.length === 0) {

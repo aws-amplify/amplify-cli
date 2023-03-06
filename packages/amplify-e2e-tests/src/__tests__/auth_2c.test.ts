@@ -30,13 +30,13 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithGroupTrigger(projRoot, {});
+    await addAuthWithGroupTrigger(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

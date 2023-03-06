@@ -1,7 +1,4 @@
-import {
-  $TSAny,
-  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { DynamoDB, Template } from 'cloudform-types';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
@@ -18,9 +15,7 @@ import path from 'path';
 import { DeploymentOp, DeploymentStep, DEPLOYMENT_META } from '../iterative-deployment';
 import { DiffChanges, DiffableProject, getGQLDiff } from './utils';
 import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
-import {
-  GSIRecord, TemplateState, getPreviousDeploymentRecord, getTableNames,
-} from '../utils/amplify-resource-state-utils';
+import { GSIRecord, TemplateState, getPreviousDeploymentRecord, getTableNames } from '../utils/amplify-resource-state-utils';
 import { ROOT_APPSYNC_S3_KEY, hashDirectory } from '../upload-appsync-files';
 import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 
@@ -124,10 +119,14 @@ export class GraphQLResourceManager {
       sanityCheckDiffs(gqlDiff.diff, gqlDiff.current, gqlDiff.next, diffRules, projectRules);
     } catch (err) {
       if (err.name !== 'InvalidGSIMigrationError') {
-        throw new AmplifyFault('UnknownFault', {
-          message: err.message,
-          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
-        }, err);
+        throw new AmplifyFault(
+          'UnknownFault',
+          {
+            message: err.message,
+            link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+          },
+          err,
+        );
       }
     }
     if (!this.rebuildAllTables) {
@@ -169,7 +168,7 @@ export class GraphQLResourceManager {
 
       const tables = this.templateState.getKeys();
       const tableNames = [];
-      tables.forEach(tableName => {
+      tables.forEach((tableName) => {
         tableNames.push(tableNameMap.get(tableName));
         const tableNameStackFilePath = path.join(stepPath, 'stacks', `${tableName}.json`);
         fs.ensureDirSync(path.dirname(tableNameStackFilePath));
@@ -244,10 +243,10 @@ export class GraphQLResourceManager {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private gsiManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject): any => {
-    const gsiChanges = _.filter(diffs, diff => diff.path.includes('GlobalSecondaryIndexes'));
+  private gsiManagement = (diffs: DiffChanges, currentState: DiffableProject, nextState: DiffableProject): any => {
+    const gsiChanges = _.filter(diffs, (diff) => diff.path.includes('GlobalSecondaryIndexes'));
 
-    const tableWithGSIChanges = _.uniqBy(gsiChanges, diff => diff.path?.slice(0, 3).join('/')).map(gsiChange => {
+    const tableWithGSIChanges = _.uniqBy(gsiChanges, (diff) => diff.path?.slice(0, 3).join('/')).map((gsiChange) => {
       const tableName = (gsiChange.path[0] === ROOT_LEVEL ? gsiChange.path[2] : gsiChange.path[3]) as string;
       const stackName = (gsiChange.path[0] === ROOT_LEVEL ? ROOT_LEVEL : gsiChange.path[1].split('.')[0]) as string;
 
@@ -304,7 +303,7 @@ export class GraphQLResourceManager {
   };
 
   private tableRecreationManagement = (currentState: DiffableProject) => {
-    this.getTablesBeingReplaced().forEach(tableMeta => {
+    this.getTablesBeingReplaced().forEach((tableMeta) => {
       const ddbStack = this.getStack(tableMeta.stackName, currentState);
       this.dropTemplateResources(ddbStack);
 
@@ -326,15 +325,13 @@ export class GraphQLResourceManager {
       return _.uniq(
         diffs
           // diff.path looks like [ "stacks", "ModelName.json", "Resources", "TableName", "Properties", "KeySchema", 0, "AttributeName"]
-          .filter(
-            diff => {
-              const keySchemaModified = diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema';
-              const sortKeyAddedOrRemoved = diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'KeySchema' && diff.index === 1;
-              const localSecondaryIndexModified = diff.path.some(pathEntry => pathEntry === 'LocalSecondaryIndexes');
-              return keySchemaModified || sortKeyAddedOrRemoved || localSecondaryIndexModified;
-            },
-          ) // filter diffs with changes that require replacement
-          .map(diff => ({
+          .filter((diff) => {
+            const keySchemaModified = diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema';
+            const sortKeyAddedOrRemoved = diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'KeySchema' && diff.index === 1;
+            const localSecondaryIndexModified = diff.path.some((pathEntry) => pathEntry === 'LocalSecondaryIndexes');
+            return keySchemaModified || sortKeyAddedOrRemoved || localSecondaryIndexModified;
+          }) // filter diffs with changes that require replacement
+          .map((diff) => ({
             // extract table name and stack name from diff path
             tableName: diff.path?.[3] as string,
             stackName: diff.path[1].split('.')[0] as string,
@@ -342,12 +339,13 @@ export class GraphQLResourceManager {
       ) as { tableName: string; stackName: string }[];
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getAllTables = (): any => Object.entries(currentState.stacks)
-      .map(([name, template]) => ({
-        tableName: this.getTableNameFromTemplate(template),
-        stackName: path.basename(name, '.json'),
-      }))
-      .filter(meta => !!meta.tableName);
+    const getAllTables = (): any =>
+      Object.entries(currentState.stacks)
+        .map(([name, template]) => ({
+          tableName: this.getTableNameFromTemplate(template),
+          stackName: path.basename(name, '.json'),
+        }))
+        .filter((meta) => !!meta.tableName);
     return this.rebuildAllTables ? getAllTables() : getTablesRequiringReplacement();
   };
 
@@ -356,14 +354,14 @@ export class GraphQLResourceManager {
       return proj.root.Resources[gsiChange.path[2]] as DynamoDB.Table;
     }
     return proj.stacks[gsiChange.path[1]].Resources[gsiChange.path[3]] as DynamoDB.Table;
-  }
+  };
 
   private getStack = (stackName: string, proj: DiffableProject): Template => {
     if (stackName === ROOT_LEVEL) {
       return proj.root;
     }
     return proj.stacks[`${stackName}.json`];
-  }
+  };
 
   private addGSI = (gsiRecord: GSIRecord, tableName: string, template: Template): void => {
     const table = template.Resources[tableName] as DynamoDB.Table;
@@ -390,5 +388,6 @@ export class GraphQLResourceManager {
     }
   };
 
-  private getTableNameFromTemplate = (template: Template): string | undefined => Object.entries(template?.Resources || {}).find(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
+  private getTableNameFromTemplate = (template: Template): string | undefined =>
+    Object.entries(template?.Resources || {}).find(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
 }

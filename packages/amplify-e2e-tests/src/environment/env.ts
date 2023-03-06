@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from '@aws-amplify/amplify-e2e-core';
 
-export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
+export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number; cloneParams?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
@@ -18,6 +18,20 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       }
     });
   });
+}
+
+export async function addEnvironmentCarryOverEnvVars(cwd: string, settings: { envName: string }): Promise<void> {
+  return spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
+    .wait('Enter a name for the environment')
+    .sendLine(settings.envName)
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendCarriageReturn()
+    .wait('You have configured environment variables for functions. How do you want to proceed?')
+    .sendCarriageReturn()
+    .wait('Initialized your environment successfully.')
+    .runAsync();
 }
 
 export function updateEnvironment(cwd: string, settings: { permissionsBoundaryArn: string }) {
@@ -94,9 +108,7 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
   return new Promise((resolve, reject) => {
     const numEnv = settings.numEnv || 1;
     const regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
-      .wait('| Environments |')
-      .wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
@@ -200,7 +212,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(APPLE_TEAM_ID)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(APPLE_KEY_ID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(APPLE_PRIVATE_KEY)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

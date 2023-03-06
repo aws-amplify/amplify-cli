@@ -84,8 +84,8 @@ describe('amplify delete', () => {
 
   it('should delete bucket', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addS3(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);
@@ -143,7 +143,7 @@ async function putFiles(bucket: string, count = 1001) {
     Body: 'dummy body',
     Key: `${num}.txt`,
   }));
-  await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
+  await Promise.all(s3Params.map((p) => s3.putObject(p).promise()));
 }
 
 async function bucketExists(bucket: string) {

@@ -264,10 +264,7 @@ const coreFunction = (
     }
 
     // edit function question
-    chain
-      .wait('Do you want to edit the local lambda function now?')
-      .sendConfirmNo()
-      .sendEof();
+    chain.wait('Do you want to edit the local lambda function now?').sendConfirmNo().sendEof();
 
     runChain(chain, resolve, reject);
   });
@@ -328,7 +325,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = async (cwd: string, settings: any): Promise<void> => {
+export const functionBuild = async (cwd: string): Promise<void> => {
   return spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
     .wait('Are you sure you want to continue building the resources?')
     .sendYes()
@@ -356,7 +353,7 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
-export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext, cwd: string, settings: any): void => {
+export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext): void => {
   chain.wait('Choose a DynamoDB data source option');
   singleSelect(chain, 'Create a new DynamoDB table', [
     'Use DynamoDB table configured in the current Amplify project',
@@ -391,7 +388,9 @@ export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext, cwd: s
 
 export const removeFunction = (cwd: string, funcName: string) =>
   new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run((err) =>
+      err ? reject(err) : resolve(),
+    );
   });
 
 export interface LayerOptions {
@@ -432,12 +431,12 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
 
   // If no versions present in options, skip the version selection prompt
   if (options.versions) {
-    options.select.forEach(selection => {
+    options.select.forEach((selection) => {
       chain.wait(`Select a version for ${selection}`);
 
       singleSelect(chain, options.versions[selection].version.toString(), [
         'Always choose latest version',
-        ...options.versions[selection].expectedVersionOptions.map(op => op.toString()),
+        ...options.versions[selection].expectedVersionOptions.map((op) => op.toString()),
       ]);
     });
   }
@@ -516,18 +515,12 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
 };
 
 const addminutes = (chain: ExecutionContext) => {
-  chain
-    .wait('Enter rate for minutes(1-59)?')
-    .sendLine('5')
-    .sendCarriageReturn();
+  chain.wait('Enter rate for minutes(1-59)?').sendLine('5').sendCarriageReturn();
   return chain;
 };
 
 const addhourly = (chain: ExecutionContext) => {
-  chain
-    .wait('Enter rate for hours(1-23)?')
-    .sendLine('5')
-    .sendCarriageReturn();
+  chain.wait('Enter rate for hours(1-23)?').sendLine('5').sendCarriageReturn();
   return chain;
 };
 
@@ -561,10 +554,7 @@ const addCron = (chain: ExecutionContext, settings: any) => {
       addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
-      moveDown(chain, 2)
-        .sendCarriageReturn()
-        .wait('Select the start time in UTC (use arrow keys):')
-        .sendCarriageReturn();
+      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time in UTC (use arrow keys):').sendCarriageReturn();
       break;
     case 'Weekly':
       addWeekly(moveDown(chain, 3).sendCarriageReturn());
@@ -603,7 +593,7 @@ export const functionMockAssert = (
     chain
       .wait('Finished execution.')
       .sendEof()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 };
 

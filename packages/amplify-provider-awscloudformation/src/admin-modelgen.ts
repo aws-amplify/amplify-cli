@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import _ from 'lodash';
@@ -13,7 +11,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
  * Generates DataStore Models for Admin UI CMS to consume
  */
 export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
-  const appSyncResources = resources.filter(resource => resource.service === 'AppSync');
+  const appSyncResources = resources.filter((resource) => resource.service === 'AppSync');
 
   if (appSyncResources.length === 0) {
     return;
@@ -68,7 +66,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
 
     // generateModelIntrospection expects --output-dir option to be set
-    _.set(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
+    _.setWith(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
@@ -105,7 +103,7 @@ const uploadCMSArtifacts = async (s3Client: S3, uploadMap: Record<LocalPath, S3K
       Body: fs.createReadStream(localPath),
       Key: s3Key,
     }))
-    .map(uploadParams => s3Client.uploadFile(uploadParams, doNotShowSpinner));
+    .map((uploadParams) => s3Client.uploadFile(uploadParams, doNotShowSpinner));
   await Promise.all(uploadPromises);
 };
 

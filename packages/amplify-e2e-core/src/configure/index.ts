@@ -20,6 +20,7 @@ export const amplifyRegions = [
   'us-west-1',
   'us-west-2',
   'eu-north-1',
+  'eu-south-1',
   'eu-west-1',
   'eu-west-2',
   'eu-west-3',
@@ -42,7 +43,7 @@ const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
 export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
+  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
@@ -80,7 +81,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
 
 export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration): Promise<void> => {
   const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
+  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }

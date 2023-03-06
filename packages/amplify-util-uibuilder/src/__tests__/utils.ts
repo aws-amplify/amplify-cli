@@ -60,12 +60,11 @@ export const exampleSchema: GenericDataSchema = {
           isArray: false,
         },
       },
-      isJoinTable: true
+      isJoinTable: true,
     },
     EmptyModel: {
       primaryKeys: ['id'],
-      fields: {
-      },
+      fields: {},
     },
   },
   enums: {}, // eslint-disable-line spellcheck/spell-checker

@@ -31,7 +31,6 @@ const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   : 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
-const { LOG_DUMP_FILE } = process.env;
 
 // https://notes.burke.libbey.me/ansi-escape-codes/
 export const KEY_UP_ARROW = '\x1b[A';
@@ -131,7 +130,7 @@ function chain(context: Context): ExecutionContext {
     },
     resumeRecording: (): ExecutionContext => {
       const _resumeRecording: ExecutionStep = {
-        fn: data => {
+        fn: () => {
           context.process.resumeRecording();
           return true;
         },
@@ -146,7 +145,7 @@ function chain(context: Context): ExecutionContext {
     },
     expect(expectation: string | RegExp): ExecutionContext {
       const _expect: ExecutionStep = {
-        fn: data => testExpectation(data, expectation, context),
+        fn: (data) => testExpectation(data, expectation, context),
         name: '_expect',
         shift: true,
         description: `[expect] ${expectation}`,
@@ -165,7 +164,7 @@ function chain(context: Context): ExecutionContext {
       },
     ): ExecutionContext {
       const _wait: ExecutionStep = {
-        fn: data => {
+        fn: (data) => {
           const val = testExpectation(data, expectation, context);
           if (val === true && typeof callback === 'function') {
             callback(data);
@@ -402,15 +401,15 @@ function chain(context: Context): ExecutionContext {
           const recordings = context.process?.getRecordingFrames() || [];
           const lastScreen = recordings.length
             ? recordings
-                .filter(f => f[1] === 'o')
-                .map(f => f[2])
+                .filter((f) => f[1] === 'o')
+                .map((f) => f[2])
                 .slice(-10)
                 .join('\n')
             : 'No output';
           const err = new Error(
-            `Killed the process as no output receive for ${context.noOutputTimeout /
-              1000} Sec. The no output timeout is set to ${context.noOutputTimeout /
-              1000} seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
+            `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
+              context.noOutputTimeout / 1000
+            } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
           err.stack = undefined;
           return onError(err, true);
@@ -571,7 +570,7 @@ function chain(context: Context): ExecutionContext {
         data = strip(data);
       }
 
-      const lines = data.split(EOL).filter(line => line.length > 0 && line !== '\r');
+      const lines = data.split(EOL).filter((line) => line.length > 0 && line !== '\r');
       stdout = stdout.concat(lines);
 
       while (lines.length > 0) {
@@ -586,7 +585,7 @@ function chain(context: Context): ExecutionContext {
     // `context.queue` and responds to the `callback` accordingly.
     //
     function flushQueue() {
-      const remainingQueue = context.queue.slice().map(item => {
+      const remainingQueue = context.queue.slice().map((item) => {
         const description = ['_sendline', '_send'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
         return {
           ...item,
@@ -595,7 +594,7 @@ function chain(context: Context): ExecutionContext {
       });
       const step = context.queue.shift();
       const { fn: currentFn, name: currentFnName } = step;
-      const nonEmptyLines = stdout.map(line => line.replace('\r', '').trim()).filter(line => line !== '');
+      const nonEmptyLines = stdout.map((line) => line.replace('\r', '').trim()).filter((line) => line !== '');
 
       const lastLine = nonEmptyLines[nonEmptyLines.length - 1];
 
@@ -664,7 +663,7 @@ function chain(context: Context): ExecutionContext {
     run,
     runAsync: (expectedErrorPredicate?: (err: Error) => boolean) =>
       new Promise<void>((resolve, reject) =>
-        run(err =>
+        run((err) =>
           (expectedErrorPredicate && expectedErrorPredicate(err)) || (!err && !expectedErrorPredicate) ? resolve() : reject(err),
         ),
       ),
@@ -682,7 +681,7 @@ function testExpectation(data: string, expectation: string | RegExp, context: Co
 }
 
 function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep[]) {
-  const desc: string[] = remainingQueue.map(it => it.description);
+  const desc: string[] = remainingQueue.map((it) => it.description);
   const msg = `${message}\n${desc.join('\n')}`;
 
   return new AssertionError({

@@ -56,7 +56,7 @@ export class APITest {
 
   async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
     try {
-      context.amplify.addCleanUpTask(async context => {
+      context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
@@ -238,22 +238,23 @@ export class APITest {
   }
 
   private async ensureDDBTables(config) {
-    const tables = config.tables.map(t => t.Properties);
     return await createAndUpdateTable(this.ddbClient, config);
   }
 
   private async startDDBListeners(context: $TSContext, config: $TSAny, onlyNewTables: boolean): Promise<void> {
     let tables = config?.tables;
-    const searchableEnabledTableNames = config?.tables?.filter(table => table?.isSearchable)?.map(table => table?.Properties?.TableName);
+    const searchableEnabledTableNames = config?.tables
+      ?.filter((table) => table?.isSearchable)
+      ?.map((table) => table?.Properties?.TableName);
     if (onlyNewTables) {
-      tables = config?.tables?.filter(table => table?.isNewlyAdded);
+      tables = config?.tables?.filter((table) => table?.isNewlyAdded);
     }
     const tableNames = tables?.map((t: $TSAny) => t?.Properties?.TableName);
 
     // enable triggers for newly added searchable tables
     let newlyAddedSearchableTableNames: string[] = [];
     if (!_.isEmpty(searchableEnabledTableNames)) {
-      newlyAddedSearchableTableNames = searchableEnabledTableNames.filter(tableName => !this.searchableTables.includes(tableName));
+      newlyAddedSearchableTableNames = searchableEnabledTableNames.filter((tableName) => !this.searchableTables.includes(tableName));
     }
     this.searchableTables = searchableEnabledTableNames;
 
@@ -290,14 +291,14 @@ export class APITest {
   }
 
   private async configureLambdaDataSource(context, config) {
-    const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
+    const lambdaDataSources = config.dataSources.filter((d) => d.type === 'AWS_LAMBDA');
     if (lambdaDataSources.length === 0) {
       return config;
     }
     return {
       ...config,
       dataSources: await Promise.all(
-        config.dataSources.map(async d => {
+        config.dataSources.map(async (d) => {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
@@ -309,7 +310,7 @@ export class APITest {
           });
           return {
             ...d,
-            invoke: payload => {
+            invoke: (payload) => {
               return timeConstrainedInvoker(
                 invoker({
                   event: payload,
@@ -328,20 +329,20 @@ export class APITest {
       return config;
     }
     const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
-    const opensearchDataSources = config.dataSources.filter(d => d.type === opensearchDataSourceType);
+    const opensearchDataSources = config.dataSources.filter((d) => d.type === opensearchDataSourceType);
     if (_.isEmpty(opensearchDataSources)) {
       return config;
     }
     return {
       ...config,
       dataSources: await Promise.all(
-        config.dataSources.map(async d => {
+        config.dataSources.map(async (d) => {
           if (d.type !== opensearchDataSourceType) {
             return d;
           }
           return {
             ...d,
-            invoke: async payload => {
+            invoke: async (payload) => {
               return await querySearchable(this.opensearchURL, payload);
             },
           };
@@ -353,13 +354,13 @@ export class APITest {
   private async watch(context) {
     this.watcher = await this.registerWatcher(context);
     this.watcher
-      .on('add', path => {
+      .on('add', (path) => {
         void this.reload(context, path, 'add');
       })
-      .on('change', path => {
+      .on('change', (path) => {
         void this.reload(context, path, 'change');
       })
-      .on('unlink', path => {
+      .on('unlink', (path) => {
         void this.reload(context, path, 'unlink');
       });
   }
@@ -371,11 +372,9 @@ export class APITest {
   private async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
     const { api: apis = {} } = currentMeta;
-    let appSyncApi = null;
     let name = null;
     Object.entries(apis).some((entry: any) => {
       if (entry[1].service === 'AppSync' && entry[1].providerPlugin === 'awscloudformation') {
-        appSyncApi = entry[1];
         name = entry[0];
         return true;
       }

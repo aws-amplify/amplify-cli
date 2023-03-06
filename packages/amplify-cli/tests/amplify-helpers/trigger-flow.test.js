@@ -23,7 +23,7 @@ const triggerPackagePath = '';
 const triggerDir = '';
 const triggerTemplate = '';
 
-describe('TriggerFlow:  ', () => {
+describe('TriggerFlow:', () => {
   beforeEach(() => {
     context = {
       runtime: {
@@ -130,13 +130,11 @@ describe('TriggerFlow:  ', () => {
   describe('When updating a trigger...', () => {
     let spyUpdate;
     let readdirSyncSpy;
-    let unlinkSyncSpy;
     let metadataSpy;
 
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1']);
       spyUpdate = jest.spyOn(func, 'update').mockImplementation(() => Promise.resolve());
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => null);
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -646,12 +644,6 @@ describe('TriggerFlow:  ', () => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(metadataSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('...should call readdirSync once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
-      await triggerFlow.cleanFunctions(key, values, category, context, path);
-      expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call readdirSync once', async () => {

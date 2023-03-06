@@ -1,10 +1,6 @@
-import {
-  $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
-import {
-  ensureDir, existsSync, readFileSync, readJSON, readdirSync,
-} from 'fs-extra';
+import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
 import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
@@ -57,7 +53,7 @@ describe('amplify init:', () => {
     getLocalAWSInfo: mockGetLocalAWSInfo,
   };
 
-  const mockContext = ({
+  const mockContext = {
     amplify: {
       AmplifyToolkit: jest.fn(),
       pathManager: mockPathManager,
@@ -89,7 +85,7 @@ describe('amplify init:', () => {
     input: {},
     runtime: {},
     pluginPlatform: {},
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 
   jest.mock('amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),
@@ -122,7 +118,7 @@ describe('amplify init:', () => {
           },
         },
       };
-      await preInitSetup(context);
+      await preInitSetup(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
       expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });
@@ -135,7 +131,6 @@ describe('amplify init:', () => {
       expect(newContext.exeInfo.projectConfig).not.toBeUndefined();
       expect(newContext.exeInfo.localEnvInfo).not.toBeUndefined();
       expect(newContext.exeInfo.teamProviderInfo).not.toBeUndefined();
-      expect(newContext.exeInfo.metaData).not.toBeUndefined();
     });
   });
 

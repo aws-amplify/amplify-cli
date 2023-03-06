@@ -105,8 +105,8 @@ export async function init(amplifyServiceParams) {
           apps = apps.concat(listAppsResponse.apps);
         } while (listAppsResponse.nextToken);
 
-        const verifiedAppIds = apps.map(app => app.appId);
-        appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter(appId => verifiedAppIds.includes(appId));
+        const verifiedAppIds = apps.map((app) => app.appId);
+        appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter((appId) => verifiedAppIds.includes(appId));
 
         if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
           amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
@@ -132,21 +132,23 @@ export async function init(amplifyServiceParams) {
       }
     } catch (e) {
       if (e.code === 'LimitExceededException') {
-        // Do nothing
-      } else if (
-        e.code === 'BadRequestException' &&
-        e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
-      ) {
-        // Do nothing
-      } else {
-        throw new AmplifyFault(
-          'ProjectInitFault',
+        throw new AmplifyError(
+          'ProjectInitError',
           {
-            message: e.message,
+            message: 'You have reached the Amplify App limit for this account and region',
+            resolution:
+              'Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify',
           },
           e,
         );
       }
+      throw new AmplifyFault(
+        'ProjectInitFault',
+        {
+          message: e.message,
+        },
+        e,
+      );
     }
   }
 
@@ -298,8 +300,8 @@ export async function postPushCheck(context) {
       }
     }
 
-    const verifiedAppIds = searchAmplifyServiceResult.apps.map(app => app.appId);
-    appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter(appId => verifiedAppIds.includes(appId));
+    const verifiedAppIds = searchAmplifyServiceResult.apps.map((app) => app.appId);
+    appIdsInTheSameLocalProjectAndRegion = appIdsInTheSameLocalProjectAndRegion.filter((appId) => verifiedAppIds.includes(appId));
 
     if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
       amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
@@ -475,7 +477,7 @@ async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySe
 }
 
 export function storeArtifactsForAmplifyService(context) {
-  return S3.getInstance(context).then(async s3 => {
+  return S3.getInstance(context).then(async (s3) => {
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
     const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
     const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');

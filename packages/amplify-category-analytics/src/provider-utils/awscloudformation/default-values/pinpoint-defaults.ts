@@ -9,7 +9,7 @@ import * as uuid from 'uuid';
  * @param project.projectConfig.projectName Amplify project name
  * @returns default parameter values for Pinpoint
  */
-export const getAllDefaults = (project: { amplifyMeta: $TSMeta; projectConfig: { projectName: string } }) : Record<string, $TSAny> => {
+export const getAllDefaults = (project: { amplifyMeta: $TSMeta; projectConfig: { projectName: string } }): Record<string, $TSAny> => {
   const appName = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid.v4().split('-');
 

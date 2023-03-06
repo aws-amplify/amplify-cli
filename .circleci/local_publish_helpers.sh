@@ -59,7 +59,10 @@ function generatePkgCli {
   yarn --production
 
   # Optimize package size
-  yarn rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
+  find . \
+    -name "*.d.ts" -or -name "*.js.map" -or -name "*.d.ts.map" -or \
+    -iname "readme.md" -or -iname "changelog.md" -or -iname "history.md" \
+    | xargs rm
 
   # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
   cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
@@ -267,19 +270,12 @@ function setAwsAccountCredentials {
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
-    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-        setNpmRegistryUrlToLocal
-        changeNpmGlobalPath
-        cd $(pwd)/packages/amplify-e2e-tests
-    fi
-
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
-        failedTests=$(<$FAILED_TEST_REGEX_FILE)=
-        yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --forceExit --no-cache --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --forceExit --no-cache --maxWorkers=3 $TEST_SUITE
     fi
 }
 

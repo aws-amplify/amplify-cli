@@ -56,9 +56,9 @@ function attachPrompt(context: $TSContext) {
       });
       return yesno;
     },
-    ask: async (questions: any) => {
+    ask: async (questions: Parameters<inquirer.PromptModule>[0]) => {
       if (Array.isArray(questions)) {
-        questions = questions.map(q => {
+        questions = questions.map((q) => {
           // eslint-disable-next-line spellcheck/spell-checker
           if (q.type === 'rawlist' || q.type === 'list') {
             q.type = 'select';
@@ -90,11 +90,10 @@ function attachParameters(context: $TSContext) {
     argv,
     plugin,
     command,
-    options,
+    options: options ?? {},
+    raw: argv,
+    array: subCommands,
   };
-  context.parameters.options = context.parameters.options || {};
-  context.parameters.raw = argv;
-  context.parameters.array = subCommands;
   /* tslint:disable */
   if (subCommands && subCommands.length > 0) {
     if (subCommands.length > 0) {
@@ -114,14 +113,14 @@ function attachRuntime(context: $TSContext) {
   context.runtime = {
     plugins: [],
   };
-  Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
+  Object.keys(context.pluginPlatform.plugins).forEach((pluginShortName) => {
     const pluginInformation = context.pluginPlatform.plugins[pluginShortName];
-    pluginInformation.forEach(pluginEntry => {
+    pluginInformation.forEach((pluginEntry) => {
       const name = path.basename(pluginEntry.packageLocation);
       const directory = pluginEntry.packageLocation;
       const pluginName = pluginEntry.manifest.name;
       const pluginType = pluginEntry.manifest.type;
-      const commands = pluginEntry.manifest.commands;
+      const commands = pluginEntry.manifest.commands ?? [];
       context.runtime.plugins.push({
         name,
         directory,
@@ -141,11 +140,11 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding = 'utf8'): any => {
-    const result = fs.readFileSync(targetPath, encoding);
+  read: (targetPath: string, encoding: BufferEncoding = 'utf8'): string => {
+    const result = fs.readFileSync(targetPath, { encoding });
     return result;
   },
-  write: (targetPath: string, data: any): void => {
+  write: (targetPath: string, data: string | NodeJS.ArrayBufferView): void => {
     fs.ensureFileSync(targetPath);
     fs.writeFileSync(targetPath, data, 'utf-8');
   },
@@ -257,13 +256,13 @@ export const print = {
 };
 
 function columnHeaderDivider(cliTable: CLITable.Table): string[] {
-  return findWidths(cliTable).map(w => Array(w).join('-'));
+  return findWidths(cliTable).map((w) => Array(w).join('-'));
 }
 
 function findWidths(cliTable: CLITable.Table): number[] {
-  return [(cliTable as any).options.head]
+  return [cliTable.options.head]
     .concat(getRows(cliTable))
-    .reduce((colWidths, row) => row.map((str: string, i: number) => Math.max(`${str}`.length + 1, colWidths[i] || 1)), []);
+    .reduce<number[]>((colWidths, row) => row.map((str: string, i: number) => Math.max(`${str}`.length + 1, colWidths[i] || 1)), []);
 }
 
 function getRows(cliTable: CLITable.Table) {

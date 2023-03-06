@@ -5,7 +5,7 @@ import {
   deleteProject,
   deleteProjectDir,
   initFlutterProjectWithProfile,
-  removeAuthWithDefault
+  removeAuthWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -25,10 +25,10 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
     await initFlutterProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     await removeAuthWithDefault(projRoot);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
   });
 });

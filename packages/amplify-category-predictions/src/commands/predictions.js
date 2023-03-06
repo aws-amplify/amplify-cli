@@ -5,9 +5,9 @@ const categoryName = 'predictions';
 module.exports = {
   name: categoryName,
   alias: ['Predictions'],
-  run: async context => {
+  run: async (context) => {
     if (context.parameters.options.help) {
-      return runHelp(context);
+      runHelp(context);
     }
   },
 };

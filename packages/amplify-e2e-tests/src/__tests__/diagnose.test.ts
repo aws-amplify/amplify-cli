@@ -27,8 +27,7 @@ const BACKEND = 'backend';
 const BACKEND_CONFIG_JSON = 'backend-config.json';
 const AMPLIFY = 'amplify';
 
-const defaultsSettings = {
-};
+const defaultsSettings = {};
 
 describe('amplify diagnose --send-report', () => {
   let projectRoot: string;
@@ -45,7 +44,7 @@ describe('amplify diagnose --send-report', () => {
   it('...should send zips and verify files', async () => {
     await initJSProjectWithProfile(projectRoot, defaultsSettings);
     await addApiWithoutSchema(projectRoot, { transformerVersion: 2 });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await addS3StorageWithAuthOnly(projectRoot);
     const pathToZip = await diagnoseSendReport(projectRoot);
     expect(fs.existsSync(pathToZip)).toBeTruthy();
@@ -54,7 +53,7 @@ describe('amplify diagnose --send-report', () => {
     const backend = getBackendConfig(projectRoot);
     const resources: { category: string; resourceName: string; service: string }[] = [];
     Object.keys(backend).reduce((array, key) => {
-      Object.keys(backend[key]).forEach(resourceKey => {
+      Object.keys(backend[key]).forEach((resourceKey) => {
         array.push({
           category: key,
           resourceName: resourceKey,
@@ -65,7 +64,7 @@ describe('amplify diagnose --send-report', () => {
     }, resources);
     const files = [];
     const amplifyBackendUnzipped = path.join(unzippedDir, AMPLIFY, BACKEND);
-    resources.forEach(r => {
+    resources.forEach((r) => {
       const categoryUnzippedPath = path.join(amplifyBackendUnzipped, r.category, r.resourceName);
       if (r.category === 'api') {
         files.push(path.join(categoryUnzippedPath, BUILD, CLOUDFORMATION_TEMPLATE_JSON));
@@ -105,8 +104,10 @@ const unzipAndReturnFiles = async (zipPath: string, unzippedDir: string): Promis
   fs.ensureDirSync(unzippedDir);
   await extract(zipPath, { dir: unzippedDir });
   console.log(unzippedDir);
-  return glob.sync('**/*.*', {
-    cwd: unzippedDir,
-    absolute: true,
-  }).sort();
+  return glob
+    .sync('**/*.*', {
+      cwd: unzippedDir,
+      absolute: true,
+    })
+    .sort();
 };

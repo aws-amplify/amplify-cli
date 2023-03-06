@@ -5,7 +5,7 @@ import { run as p8decoderRun } from './apns-cert-p8decoder';
 /**
  * APNs Key config run function
  */
-export const run = async (channelInput: $TSAny) : Promise<$TSAny> => {
+export const run = async (channelInput: $TSAny): Promise<$TSAny> => {
   let keyConfig;
 
   if (channelInput) {

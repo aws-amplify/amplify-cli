@@ -155,109 +155,97 @@ describe('test ensureLambdaExecutionRoleOutputs function', () => {
     `);
   });
 
-    it(' when functions have role arns in outputs', async () => {
-        stateManagerMock.getMeta.mockReturnValue({
-            "auth": {
-              "authtriggertestb3a9da62b3a9da62": {
-                "customAuth": false,
-                "dependsOn": [
-                  {
-                    "attributes": [
-                      "Arn",
-                      "Name"
-                    ],
-                    "category": "function",
-                    "resourceName": "authtriggertestb3a9da62b3a9da62PostAuthentication",
-                    "triggerProvider": "Cognito"
-                  },
-                  {
-                    "attributes": [
-                      "Arn",
-                      "Name"
-                    ],
-                    "category": "function",
-                    "resourceName": "authtriggertestb3a9da62b3a9da62PostConfirmation",
-                    "triggerProvider": "Cognito"
-                  },
-                  {
-                    "attributes": [
-                      "Arn",
-                      "Name"
-                    ],
-                    "category": "function",
-                    "resourceName": "authtriggertestb3a9da62b3a9da62PreAuthentication",
-                    "triggerProvider": "Cognito"
-                  },
-                  {
-                    "attributes": [
-                      "Arn",
-                      "Name"
-                    ],
-                    "category": "function",
-                    "resourceName": "authtriggertestb3a9da62b3a9da62PreSignup",
-                    "triggerProvider": "Cognito"
-                  }
-                ],
-                "providerPlugin": "awscloudformation",
-                "service": "Cognito",
-              }
+  it(' when functions have role arns in outputs', async () => {
+    stateManagerMock.getMeta.mockReturnValue({
+      auth: {
+        authtriggertestb3a9da62b3a9da62: {
+          customAuth: false,
+          dependsOn: [
+            {
+              attributes: ['Arn', 'Name'],
+              category: 'function',
+              resourceName: 'authtriggertestb3a9da62b3a9da62PostAuthentication',
+              triggerProvider: 'Cognito',
             },
-            "function": {
-              "authtriggertestb3a9da62b3a9da62PostAuthentication": {
-                "build": true,
-                "providerPlugin": "awscloudformation",
-                "service": "Lambda",
-              },
-              "authtriggertestb3a9da62b3a9da62PostConfirmation": {
-                "build": true,
-                "providerPlugin": "awscloudformation",
-                "service": "Lambda",
-              },
-              "authtriggertestb3a9da62b3a9da62PreAuthentication": {
-                "build": true,
-                "providerPlugin": "awscloudformation",
-                "service": "Lambda",
-              },
-              "authtriggertestb3a9da62b3a9da62PreSignup": {
-                "build": true,
-                "providerPlugin": "awscloudformation",
-                "service": "Lambda",
-              }
-            }
-          })
-          readCFNTemplateMock.mockReturnValue({
-            templateFormat: CFNTemplateFormat.JSON,
-            cfnTemplate: {
-              Outputs: {
-                Name: {
-                  Value: {
-                    Ref: 'LambdaFunction',
-                  },
-                },
-                Arn: {
-                  Value: {
-                    'Fn::GetAtt': ['LambdaFunction', 'Arn'],
-                  },
-                },
-                LambdaExecutionRole: {
-                  Value: {
-                    Ref: 'LambdaExecutionRole',
-                  },
-                },
-                LambdaExecutionRoleArn: {
-                    Value: {
-                      Ref: 'LambdaExecutionRoleArn',
-                    },
-                  },
-                Region: {
-                  Value: {
-                    Ref: 'AWS::Region',
-                  },
-                },
-              },
+            {
+              attributes: ['Arn', 'Name'],
+              category: 'function',
+              resourceName: 'authtriggertestb3a9da62b3a9da62PostConfirmation',
+              triggerProvider: 'Cognito',
             },
-          });
-        await ensureLambdaExecutionRoleOutputs();
-        expect(writeCFNTemplateMock).not.toBeCalled();;
-    })
+            {
+              attributes: ['Arn', 'Name'],
+              category: 'function',
+              resourceName: 'authtriggertestb3a9da62b3a9da62PreAuthentication',
+              triggerProvider: 'Cognito',
+            },
+            {
+              attributes: ['Arn', 'Name'],
+              category: 'function',
+              resourceName: 'authtriggertestb3a9da62b3a9da62PreSignup',
+              triggerProvider: 'Cognito',
+            },
+          ],
+          providerPlugin: 'awscloudformation',
+          service: 'Cognito',
+        },
+      },
+      function: {
+        authtriggertestb3a9da62b3a9da62PostAuthentication: {
+          build: true,
+          providerPlugin: 'awscloudformation',
+          service: 'Lambda',
+        },
+        authtriggertestb3a9da62b3a9da62PostConfirmation: {
+          build: true,
+          providerPlugin: 'awscloudformation',
+          service: 'Lambda',
+        },
+        authtriggertestb3a9da62b3a9da62PreAuthentication: {
+          build: true,
+          providerPlugin: 'awscloudformation',
+          service: 'Lambda',
+        },
+        authtriggertestb3a9da62b3a9da62PreSignup: {
+          build: true,
+          providerPlugin: 'awscloudformation',
+          service: 'Lambda',
+        },
+      },
+    });
+    readCFNTemplateMock.mockReturnValue({
+      templateFormat: CFNTemplateFormat.JSON,
+      cfnTemplate: {
+        Outputs: {
+          Name: {
+            Value: {
+              Ref: 'LambdaFunction',
+            },
+          },
+          Arn: {
+            Value: {
+              'Fn::GetAtt': ['LambdaFunction', 'Arn'],
+            },
+          },
+          LambdaExecutionRole: {
+            Value: {
+              Ref: 'LambdaExecutionRole',
+            },
+          },
+          LambdaExecutionRoleArn: {
+            Value: {
+              Ref: 'LambdaExecutionRoleArn',
+            },
+          },
+          Region: {
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          },
+        },
+      },
+    });
+    await ensureLambdaExecutionRoleOutputs();
+    expect(writeCFNTemplateMock).not.toBeCalled();
+  });
 });

@@ -6,7 +6,10 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  updateApiSchema,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('transformer @http migration test', () => {
@@ -17,7 +20,7 @@ describe('transformer @http migration test', () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
   });
 
   afterEach(async () => {

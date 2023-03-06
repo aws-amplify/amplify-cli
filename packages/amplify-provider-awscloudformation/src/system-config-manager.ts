@@ -36,7 +36,7 @@ export const setProfile = (awsConfigInfo: $TSAny, profileName: string): void => 
   }
 
   let isCredSet = false;
-  Object.keys(credentials).forEach(key => {
+  Object.keys(credentials).forEach((key) => {
     const keyName = key.trim();
     if (profileName === keyName) {
       credentials[key].aws_access_key_id = awsConfigInfo.accessKeyId;
@@ -52,7 +52,7 @@ export const setProfile = (awsConfigInfo: $TSAny, profileName: string): void => 
   }
 
   let isConfigSet = false;
-  Object.keys(config).forEach(key => {
+  Object.keys(config).forEach((key) => {
     const keyName = key.replace('profile', '').trim();
     if (profileName === keyName) {
       config[key].region = awsConfigInfo.region;
@@ -92,8 +92,12 @@ export const getProfiledAwsConfig = async (
         ...roleCredentials,
       };
     } else if (profileConfig.credential_process) {
-      const credentialProcess = new ProcessCredentials({ profile: profileName, filename: configFilePath });
+      // need to force AWS_SDK_LOAD_CONFIG to a truthy value to force ProcessCredentials to prefer the credential process in ~/.aws/config instead of ~/.aws/credentials
+      const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
+      process.env.AWS_SDK_LOAD_CONFIG = '1';
+      const credentialProcess = new ProcessCredentials({ profile: profileName });
       await credentialProcess.getPromise();
+      process.env.AWS_SDK_LOAD_CONFIG = sdkLoadConfigOriginal;
 
       awsConfigInfo = {
         region: profileConfig.region,
@@ -189,7 +193,7 @@ const getMfaTokenCode = async (): Promise<string> => {
     type: 'input',
     name: 'tokenCode',
     message: 'Enter the MFA token code:',
-    validate: value => {
+    validate: (value) => {
       let isValid = value.length === 6;
       if (!isValid) {
         return 'Must have length equal to 6';
@@ -300,7 +304,7 @@ const getProfileConfig = (profileName: string): $TSAny => {
   logger('getProfileConfig', [profileName])();
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-    Object.keys(config).forEach(key => {
+    Object.keys(config).forEach((key) => {
       const keyName = key.replace('profile', '').trim();
       if (profileName === keyName) {
         profileConfig = config[key];
@@ -319,7 +323,7 @@ export const getProfileCredentials = (profileName: string): $TSAny => {
   if (fs.existsSync(credentialsFilePath)) {
     const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
 
-    Object.keys(credentials).forEach(key => {
+    Object.keys(credentials).forEach((key) => {
       const keyName = key.trim();
       if (profileName === keyName) {
         profileCredentials = credentials[key];
@@ -381,7 +385,7 @@ export const getNamedProfiles = (): $TSAny => {
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     namedProfiles = {};
-    Object.keys(config).forEach(key => {
+    Object.keys(config).forEach((key) => {
       const profileName = key.replace('profile', '').trim();
       if (!namedProfiles[profileName]) {
         namedProfiles[profileName] = config[key];

@@ -1,0 +1,17 @@
+.yarn
+packages/*/build
+packages/*/lib
+coverage
+node_modules
+API.md
+CHANGELOG.md
+
+packages/amplify-appsync-simulator/public
+packages/amplify-cli-core/src/__tests__/testFiles/custom-policies-test/function/functionTest/custom-policies.json
+packages/amplify-cli-core/src/__tests__/testFiles/packageManager-npm/package-lock.json
+packages/amplify-cli-core/src/__tests__/testFiles/testProject-initialize-json-error/amplify/cli.json
+packages/amplify-e2e-core/dist/index.html
+packages/amplify-e2e-tests/amplify-e2e-reports
+packages/amplify-environment-parameters/src/schemas/BackendParameters.schema.json
+packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/handlerWithSyntaxError.js
+packages/amplify-velocity-template/src/parse/velocity.yy

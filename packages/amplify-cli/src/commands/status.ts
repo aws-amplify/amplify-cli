@@ -1,7 +1,5 @@
 import * as path from 'path';
-import {
-  ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade,
-} from 'amplify-cli-core';
+import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { readProjectSchema } from 'graphql-transformer-core';
 
@@ -13,7 +11,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     cliCommand: context?.input?.command,
     // eslint-disable-next-line spellcheck/spell-checker
     cliSubcommands: context?.input?.subCommands,
-    cliOptions: context?.input?.options,
+    cliOptions: context?.input?.options ?? {},
   };
 
   const view = new ViewResourceTableParams(cliParams);
@@ -59,7 +57,7 @@ const showApiAuthAcm = async (context): Promise<void> => {
   }
 
   const apiNames = Object.entries(stateManager.getMeta()?.api || {})
-    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name);
 
   if (apiNames.length === 0) {

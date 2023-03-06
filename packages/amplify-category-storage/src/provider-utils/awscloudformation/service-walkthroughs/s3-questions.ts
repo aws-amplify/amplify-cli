@@ -32,7 +32,7 @@ export enum UserPermissionTypeOptions {
   LEARN_MORE = 'Learn more',
 }
 
-export const possibleCRUDOperations = Object.keys(permissionMap).map(el => ({
+export const possibleCRUDOperations = Object.keys(permissionMap).map((el) => ({
   name: el,
   value: normalizePermissionsMapValue(permissionMap[el]),
 }));
@@ -74,7 +74,7 @@ export async function askAndInvokeAuthWorkflow(context: $TSContext) {
       await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
       break;
     } else {
-      context.usageData.emitSuccess();
+      void context.usageData.emitSuccess();
       exitOnNextTick(0);
     }
   }
@@ -329,7 +329,7 @@ function getIndexArray(choices: string[], selectedChoices: string[]): Array<numb
 
 function getIndexArrayByValue(choices: { name: string; value: $TSAny }[], selectedChoiceValues: string[]): Array<number> {
   const selectedIndexes: Array<number> = [];
-  const choiceValues = choices?.map(choice => choice.value);
+  const choiceValues = choices?.map((choice) => choice.value);
   if (choiceValues) {
     for (const selectedChoiceValue of selectedChoiceValues) {
       const index = choiceValues.indexOf(selectedChoiceValue);

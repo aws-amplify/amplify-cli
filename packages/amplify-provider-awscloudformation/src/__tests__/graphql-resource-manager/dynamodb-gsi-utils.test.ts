@@ -335,7 +335,7 @@ describe('DynamoDB GSI Utils', () => {
 
     it('should keep the attributes that are in table KeySchema even if the same is used in removed index', () => {
       const tableWitGSI = makeTableWithGSI({
-        ...tableDefinition
+        ...tableDefinition,
       });
       const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
 
@@ -345,7 +345,7 @@ describe('DynamoDB GSI Utils', () => {
         {
           AttributeName: 'id',
           AttributeType: 'S',
-        }
+        },
       ]);
     });
   });

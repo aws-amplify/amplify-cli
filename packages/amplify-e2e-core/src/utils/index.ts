@@ -13,6 +13,7 @@ export * from './appsync';
 export * from './envVars';
 export * from './getAppId';
 export * from './headless';
+export * from './overrides';
 export * from './nexpect';
 export * from './pinpoint';
 export * from './projectMeta';
@@ -44,7 +45,7 @@ config();
 export const deleteProjectDir = (root: string): void => {
   try {
     rimraf.sync(root);
-  } catch(e){
+  } catch (e) {
     // directory does not exist/was already deleted
   }
 };
@@ -173,9 +174,11 @@ export const getFunctionSrcNode = (root: string, functionName: string, fileName 
   return fs.readFileSync(indexPath).toString();
 };
 
-const getTestFileNamePath = (fileName: string): string => path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
+const getTestFileNamePath = (fileName: string): string =>
+  path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
 const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
-const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string => path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
+const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string =>
+  path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
 
 /**
  * Generate short v4 UUID

@@ -70,9 +70,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendConfirmNo()
-      .wait(
-        '"amplify publish" will build all your local backend and frontend resources',
-      )
+      .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -97,9 +95,7 @@ export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { 
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendConfirmNo()
-      .wait(
-        '"amplify publish" will build all your local backend and frontend resources',
-      )
+      .wait('"amplify publish" will build all your local backend and frontend resources')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -126,9 +122,7 @@ export function addApiWithThreeModels(cwd: string, opts: Partial<AddApiOptions &
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendConfirmNo()
-      .wait(
-        '"amplify publish" will build all your local backend and frontend resources',
-      )
+      .wait('"amplify publish" will build all your local backend and frontend resources')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -160,9 +154,7 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
-      .wait(
-        '"amplify publish" will build all your local backend and frontend resources',
-      )
+      .wait('"amplify publish" will build all your local backend and frontend resources')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -199,9 +191,7 @@ export function addApiWithBlankSchemaAndConflictDetection(
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
-      .wait(
-        '"amplify publish" will build all your local backend and frontend resources',
-      )
+      .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -618,8 +608,7 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
     default:
       throw new Error(`updateOperation ${completeSettings.updateOperation} is not implemented`);
   }
-  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo()
-    .wait('Successfully updated resource');
+  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo().wait('Successfully updated resource');
   return chain.runAsync();
 }
 
@@ -652,7 +641,7 @@ export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSA
 
         chain.wait('Configure additional auth types?').sendConfirmYes();
 
-        authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
+        authTypesToSelectFrom = authTypesToSelectFrom.filter((x) => x !== defaultType);
 
         multiSelect(
           chain.wait('Choose the additional authorization types you want to configure for the API'),
@@ -660,7 +649,7 @@ export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSA
           authTypesToSelectFrom,
         );
 
-        authTypesToAdd.forEach(authType => {
+        authTypesToAdd.forEach((authType) => {
           if (requireAuthSetup) setupAuthType(authType, chain, authTypesConfig);
         });
       } else {
@@ -700,7 +689,7 @@ function setupAuthType(authType: string, chain: any, settings?: any) {
       setupCognitoUserPool(chain);
       break;
     case 'IAM':
-      setupIAM(chain);
+      // no-op
       break;
     case 'OpenID Connect':
       setupOIDC(chain, settings);
@@ -726,10 +715,6 @@ function setupCognitoUserPool(chain: any) {
     .sendCarriageReturn()
     .wait('Do you want to configure advanced settings?')
     .sendCarriageReturn();
-}
-
-function setupIAM(__chain: any) {
-  // no need to do anything
 }
 
 function setupOIDC(chain: any, settings?: any) {
@@ -828,7 +813,7 @@ export function rebuildApi(projDir: string, apiName: string) {
     spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
       .wait('Type the name of the API to confirm you want to continue')
       .sendLine(apiName)
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 }
 
@@ -864,7 +849,7 @@ export function modifyRestAPI(projectDir: string, apiName: string) {
   fs.writeFileSync(indexFilePath, modifiedApi);
 }
 
-export function cancelAmplifyMockApi(cwd: string, __settings: any = {}): Promise<void> {
+export function cancelAmplifyMockApi(cwd: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
       .wait('AppSync Mock endpoint is running')
@@ -899,9 +884,8 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
   expect(meta.function).toBeDefined();
   let seenAtLeastOneFunc = false;
   for (const key of Object.keys(meta.function)) {
-    const {
-      service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash,
-    } = meta.function[key];
+    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+      meta.function[key];
     expect(service).toBe('Lambda');
     expect(build).toBeTruthy();
     expect(lastBuildTimeStamp).toBeDefined();

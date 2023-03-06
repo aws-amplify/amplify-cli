@@ -73,7 +73,7 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    const writeFileOptions: { encoding: string; mode?: number } = { encoding: 'utf8', mode: options?.mode };
+    const writeFileOptions: { encoding: BufferEncoding; mode?: number } = { encoding: 'utf8', mode: options?.mode };
     if (mergedOptions.secureFile) {
       writeFileOptions.mode = 0o600;
     }
@@ -112,7 +112,7 @@ export class JSONUtilities {
         keepWsc: mergedOptions.preserveComments,
       });
     } else {
-      return (jsonString as unknown) as T;
+      return jsonString as unknown as T;
     }
 
     return data as T;
@@ -124,7 +124,7 @@ export class JSONUtilities {
       minify?: boolean;
       orderedKeys?: boolean; // if true, will print object keys in alphabetical order
     },
-  ): string | undefined => {
+  ): string => {
     if (!data) {
       throw new Error("'data' argument missing");
     }
@@ -142,7 +142,10 @@ export class JSONUtilities {
     if (mergedOptions.orderedKeys) {
       const allKeys: string[] = [];
       // using JSON.stringify to walk the object and push all keys onto a list
-      JSON.stringify(data, (k, v) => { allKeys.push(k); return v; });
+      JSON.stringify(data, (k, v) => {
+        allKeys.push(k);
+        return v;
+      });
       sortKeys = allKeys.sort();
     }
 

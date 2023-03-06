@@ -9,7 +9,7 @@ export type TemplateModifier = (template: Template) => Promise<void>;
 
 export type ResourceModifier<T extends Resource> = (resource: T) => Promise<T>;
 
-export const prePushCfnTemplateModifier: TemplateModifier = async template => {
+export const prePushCfnTemplateModifier: TemplateModifier = async (template) => {
   if (!template.Resources) {
     return;
   }
@@ -32,4 +32,4 @@ const resourceTransformerRegistry: Record<string, ResourceModifier<Resource>[]> 
   'AWS::IAM::Role': [iamRolePermissionsBoundaryModifier],
 };
 
-const identityResourceModifier: ResourceModifier<Resource> = async resource => resource;
+const identityResourceModifier: ResourceModifier<Resource> = async (resource) => resource;

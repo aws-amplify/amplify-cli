@@ -35,7 +35,7 @@ async function configureProviders(context, providerPlugins, currentProviders) {
   const providerPluginList = Object.keys(providerPlugins);
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);

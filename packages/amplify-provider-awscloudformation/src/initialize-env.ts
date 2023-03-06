@@ -12,9 +12,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import {
-  $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
@@ -83,8 +81,8 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
 
     // Copy providerMetadata for each resource - from what is there in the cloud
 
-    Object.keys(amplifyMeta).forEach(category => {
-      Object.keys(amplifyMeta[category]).forEach(resource => {
+    Object.keys(amplifyMeta).forEach((category) => {
+      Object.keys(amplifyMeta[category]).forEach((resource) => {
         if (currentAmplifyMeta[category] && currentAmplifyMeta[category][resource]) {
           amplifyMeta[category][resource].providerMetadata = currentAmplifyMeta[category][resource].providerMetadata;
         }
@@ -106,14 +104,14 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     );
 
     Object.keys(s3AmplifyMeta)
-      .filter(k => k !== 'providers')
-      .forEach(category => {
-        Object.keys(s3AmplifyMeta[category]).forEach(resourceName => {
+      .filter((k) => k !== 'providers')
+      .forEach((category) => {
+        Object.keys(s3AmplifyMeta[category]).forEach((resourceName) => {
           const resource = s3AmplifyMeta[category][resourceName];
 
           // Mobile hub migrated resources does not have an assigned provider
           if (resource.mobileHubMigrated === true) {
-            _.set(amplifyMeta, [category, resourceName], resource);
+            _.setWith(amplifyMeta, [category, resourceName], resource);
             hasMigratedResources = true;
           }
         });

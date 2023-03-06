@@ -42,66 +42,67 @@ export class FeatureFlagEnvironmentProvider implements FeatureFlagValueProvider 
     };
   }
 
-  public load = (): Promise<FeatureFlagConfiguration> => new Promise((resolve, reject) => {
-    if (!process.env) {
-      resolve({
-        project: {},
-        environments: {},
-      });
-    }
-
-    // Load .env file from the project's directory (cwd if not passed in)
-    const envFilePath = this.options.projectPath ? path.join(this.options.projectPath, '.env') : undefined;
-
-    dotenvConfig({
-      path: envFilePath,
-    });
-
-    const variableReducer = (result: FeatureFlagConfiguration, key: string): FeatureFlagConfiguration => {
-      if (key.startsWith(this.options.prefix!) && process.env[key] !== undefined) {
-        let normalizedKey = key
-          .toLowerCase()
-          .slice(this.options.prefix!.length)
-          .replace(this.options.envPathSeparator!, this.options.internalSeparator!);
-
-        if (normalizedKey.startsWith(this.options.environmentNameSeparator!)) {
-          // Check if variable name starts with Amplify environment separator or not
-
-          normalizedKey = normalizedKey.slice(this.options.environmentNameSeparator!.length);
-
-          const [env, envRemaining] = this.parseUntilNextSeparator(key, normalizedKey, this.options.noEnvironmentNameSeparator!);
-          const [section, property] = this.parseUntilNextSeparator(key, envRemaining, this.options.internalSeparator!);
-
-          this.setValue(result, env, section, property, process.env[key]);
-        } else if (normalizedKey.startsWith(this.options.noEnvironmentNameSeparator!)) {
-          // Check if variable name starts with Amplify path separator character or not
-
-          normalizedKey = normalizedKey.slice(this.options.noEnvironmentNameSeparator!.length);
-
-          const [section, property] = this.parseUntilNextSeparator(key, normalizedKey, this.options.internalSeparator!);
-
-          this.setValue(result, null, section, property, process.env[key]);
-        } else {
-          // Throw error since the format of the environment variable is incorrect, could be a mistake
-          // skipping it could cause hard to find errors for customers. Error message does not contain the value
-          // since that can be sensitive data.
-          reject(new EnvVarFormatError(key));
-        }
+  public load = (): Promise<FeatureFlagConfiguration> =>
+    new Promise((resolve, reject) => {
+      if (!process.env) {
+        resolve({
+          project: {},
+          environments: {},
+        });
       }
 
-      return result;
-    };
+      // Load .env file from the project's directory (cwd if not passed in)
+      const envFilePath = this.options.projectPath ? path.join(this.options.projectPath, '.env') : undefined;
 
-    const variableMap = Object.keys(process.env).reduce<FeatureFlagConfiguration>(
-      (result: FeatureFlagConfiguration, key) => variableReducer(result, key),
-      {
-        project: {},
-        environments: {},
-      },
-    );
+      dotenvConfig({
+        path: envFilePath,
+      });
 
-    resolve(variableMap);
-  });
+      const variableReducer = (result: FeatureFlagConfiguration, key: string): FeatureFlagConfiguration => {
+        if (key.startsWith(this.options.prefix!) && process.env[key] !== undefined) {
+          let normalizedKey = key
+            .toLowerCase()
+            .slice(this.options.prefix!.length)
+            .replace(this.options.envPathSeparator!, this.options.internalSeparator!);
+
+          if (normalizedKey.startsWith(this.options.environmentNameSeparator!)) {
+            // Check if variable name starts with Amplify environment separator or not
+
+            normalizedKey = normalizedKey.slice(this.options.environmentNameSeparator!.length);
+
+            const [env, envRemaining] = this.parseUntilNextSeparator(key, normalizedKey, this.options.noEnvironmentNameSeparator!);
+            const [section, property] = this.parseUntilNextSeparator(key, envRemaining, this.options.internalSeparator!);
+
+            this.setValue(result, env, section, property, process.env[key]);
+          } else if (normalizedKey.startsWith(this.options.noEnvironmentNameSeparator!)) {
+            // Check if variable name starts with Amplify path separator character or not
+
+            normalizedKey = normalizedKey.slice(this.options.noEnvironmentNameSeparator!.length);
+
+            const [section, property] = this.parseUntilNextSeparator(key, normalizedKey, this.options.internalSeparator!);
+
+            this.setValue(result, null, section, property, process.env[key]);
+          } else {
+            // Throw error since the format of the environment variable is incorrect, could be a mistake
+            // skipping it could cause hard to find errors for customers. Error message does not contain the value
+            // since that can be sensitive data.
+            reject(new EnvVarFormatError(key));
+          }
+        }
+
+        return result;
+      };
+
+      const variableMap = Object.keys(process.env).reduce<FeatureFlagConfiguration>(
+        (result: FeatureFlagConfiguration, key) => variableReducer(result, key),
+        {
+          project: {},
+          environments: {},
+        },
+      );
+
+      resolve(variableMap);
+    });
 
   private parseUntilNextSeparator = (key: string, input: string, separator: string, throwIfNotFound = true): [string, string] => {
     const separatorIndex = input.indexOf(separator);
@@ -133,9 +134,9 @@ export class FeatureFlagEnvironmentProvider implements FeatureFlagValueProvider 
     }
 
     if (environment === null) {
-      _.set(featureFlags, ['project', section, property], value);
+      _.setWith(featureFlags, ['project', section, property], value);
     } else {
-      _.set(featureFlags, ['environments', environment, section, property], value);
+      _.setWith(featureFlags, ['environments', environment, section, property], value);
     }
   };
 }

@@ -4,9 +4,9 @@ import { CloudFormationParseContext } from '../types';
 import { isWindowsPlatform } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
-export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
+export function dynamoDBResourceHandler(resourceName, resource) {
   const tableName = resourceName;
-  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
+  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map((gsi) => {
     const p = { ...gsi };
     delete p.ProvisionedThroughput;
     return p;
@@ -130,7 +130,7 @@ export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: Cl
     GraphQLUrl: 'http://localhost:20002/',
     ...(resource.Properties.AdditionalAuthenticationProviders
       ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
+          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map((p) => {
             return {
               authenticationType: p.AuthenticationType,
               ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
@@ -149,11 +149,7 @@ export type AppSyncAPIKeyProcessedResource = CloudFormationProcessedResourceResu
   ApiKey: string;
   Ref: string;
 };
-export function appSyncAPIKeyResourceHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-): AppSyncAPIKeyProcessedResource {
+export function appSyncAPIKeyResourceHandler(): AppSyncAPIKeyProcessedResource {
   // eslint-disable-next-line spellcheck/spell-checker
   const value = 'da2-fakeApiId123456';
   // eslint-disable-next-line spellcheck/spell-checker
@@ -218,7 +214,7 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     if (typeof properties.PipelineConfig === 'undefined') {
       throw new Error('Pipeline DataSource config is missing required property PipelineConfig');
     }
-    functions = (properties.PipelineConfig.Functions || []).map(f => parseValue(f, cfnContext));
+    functions = (properties.PipelineConfig.Functions || []).map((f) => parseValue(f, cfnContext));
   } else {
     dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   }

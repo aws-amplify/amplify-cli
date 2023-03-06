@@ -90,6 +90,7 @@ Amplify CLI is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/featu
 - Submit a PR
 
 #### What's with all the lint errors?
+
 For a long time, the codebase had relatively lax lint checking. We have now added more strict rules but decided that it wasn't feasible to
 update all the code to adhere to the new rules at once. Instead we have opted for an iterative approach where lint errors are fixed as
 files are touched. If you are the first person to touch a file since the rules have been inforced we ask that you try your best to address
@@ -121,6 +122,7 @@ If the change is a breaking change ([as defined by semantic versioning](https://
    - Use slashes to separate parts of branch names
 1. Once your work is committed and you're ready to share, run `yarn test`. Manually test your changes in a sample app with different edge cases and also test across different platforms if possible.
 1. Run `yarn lint-fix` to find and fix any linting errors
+1. Run `yarn prettify:changes` to fix styling issues
 1. Then, push your branch: `git push origin HEAD` (pushes the current branch to origin remote)
 1. Open GitHub to create a PR from your newly published branch. Fill out the PR template and submit a PR.
 1. Finally, the Amplify CLI team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
@@ -153,6 +155,7 @@ Commit messages should follow the [conventional commits](https://www.conventiona
 `git commit -m 'docs(cli): correct spelling of CHANGELOG'`
 
 Valid commit types are as follows:
+
 - `build`
 - `chore`
 - `ci`
@@ -190,17 +193,80 @@ The "pre-commit" hook runs the [verify-commit](https://github.com/aws-amplify/am
 
 #### "pre-push" hook:
 
-The "pre-push" hook will build test files and run the  `split-e2e-tests` script to ensure the correct configuration file is generated for our CICD workflow.
+The "pre-push" hook will build test files and run the `split-e2e-tests` script to ensure the correct configuration file is generated for our CI/CD workflow.
 
 ## Tests
 
-Please ensure that your change still passes unit tests, and ideally integration/UI tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Wherever possible, pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.
+Please ensure that your change still passes unit tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.
+
+### How to Find and Create Unit Tests
+
+Unit tests should be located under `.../src/__tests__/` with the expectation that the directory tree under `__tests__` mirrors that of `src`. In general it is expected that unit tests take the name of the file they test. For example:
+
+File:
+
+`amplify-category-function/src/provider-utils/service-walkthroughs/execPermissionsWalkthough.ts`
+
+Unit Tests:
+
+`amplify-category-function/src/__tests__/provider-utils/service-walkthroughs/execPermissionsWalkthrough.test.ts`
+
+### Running Unit Tests
 
 To run the test suite:
 
 ```bash
 yarn test
 ```
+
+Or, to run the tests for a specific package,
+
+```bash
+cd packages/amplify-category-function
+yarn test
+```
+
+A preferred workflow is to watch tests while writing code.
+For example, you can open a terminal in the directory of the package you are updating
+and watch tests in that package.
+
+```bash
+cd packages/amplify-category-function
+yarn test --watch
+```
+
+Using the `watch` option, the unit tests will re-run every time a change is made to the code.
+
+Amplify CLI uses Jest for testing. See the [Jest Documentation](https://jestjs.io/docs/getting-started) for more information.
+
+### End-To-End Tests
+
+End-to-end tests can be found in `packages/amplify-e2e-tests`. It is not recommended to run all of these tests at a time but to, instead, run the tests in a single file in order to debug, fix, or update it.
+
+You can run an end to end test with the following:
+
+```bash
+cd packages/amplify-e2e-tests
+yarn e2e src/__tests__/some_e2e_test.test.ts
+```
+
+You can also run a specific test from a file using:
+
+```bash
+yarn e2e src/__tests__/some_e2e_test.test.ts -t name-of-test
+```
+
+End to end tests generally provision real resources and attempt to tear them down again after the test has run. If tests are interrupted due to manual intervention or some other issue, resources may stick around and require manual removal.
+
+### Code Coverage
+
+Code coverage can be seen by running all tests, `yarn test`, then running `yarn coverage:collect`.
+The coverage is collected in the `coverage/` file at the root of the project.
+
+The coverage can be viewed in a browser by opening `coverage/lcov-report/index.html`,
+or in IDE tools utilizing `coverage/lcov.info`.
+
+### Manual Testing
 
 To test your category in sample application, do the following:
 
@@ -241,6 +307,11 @@ Sometimes issues can be solved by doing a clean and fresh build. To start from a
     # Windows
     yarn setup-dev-win
     ```
+
+If you are using Visual Studio Code, the built-in Javascript Debug Terminal is useful for performing runtime debugging.
+
+In order to use the terminal, build the application. Then, execute the built binary, `amplify-dev`, from the Javascript Debug Terminal. See [VSCode's documentation](https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_javascript-debug-terminal)
+for more information.
 
 ## Code Style
 

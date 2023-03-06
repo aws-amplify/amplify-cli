@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0-beta.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.2...@aws-amplify/cli@11.0.0-beta.8) (2023-02-23)
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* force version bump ([#11913](https://github.com/aws-amplify/amplify-cli/issues/11913)) ([330b053](https://github.com/aws-amplify/amplify-cli/commit/330b05304467916bdaad955836a3c47930efa0d4))
+* version bump to 10.8 for cli-npm ([bb4859e](https://github.com/aws-amplify/amplify-cli/commit/bb4859ef2a1b6bf73dc668c82b4bf71d0655a3bd))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+## [10.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.8.0...@aws-amplify/cli@10.8.1) (2023-02-28)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [10.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.3...@aws-amplify/cli@10.8.0) (2023-02-27)
+
+
+### Features
+
+* force version bump ([#11913](https://github.com/aws-amplify/amplify-cli/issues/11913)) ([330b053](https://github.com/aws-amplify/amplify-cli/commit/330b05304467916bdaad955836a3c47930efa0d4))
+* version bump to 10.8 for cli-npm ([bb4859e](https://github.com/aws-amplify/amplify-cli/commit/bb4859ef2a1b6bf73dc668c82b4bf71d0655a3bd))
+
+
+
+
+
+## [10.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.2...@aws-amplify/cli@10.7.3) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [10.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.1...@aws-amplify/cli@10.7.2) (2023-02-13)
+
+
+### Bug Fixes
+
+* bump API plugin version to update legacy rds transformers ([705d65c](https://github.com/aws-amplify/amplify-cli/commit/705d65cb3385543a37e276ae1e05a707d98cdd5c))
+
+
+
+
+
 ## [10.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.7.0...@aws-amplify/cli@10.7.1) (2023-02-06)
 
 **Note:** Version bump only for package @aws-amplify/cli

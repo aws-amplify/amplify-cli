@@ -48,7 +48,7 @@ describe('amplify auth migration', () => {
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
@@ -63,7 +63,7 @@ describe('amplify auth migration', () => {
     expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
 
     // update and push with codebase
-    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(meta.auth).filter((resourceName) => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,
@@ -81,10 +81,10 @@ describe('amplify auth migration', () => {
 
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // add and push auth with installed cli
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(meta.auth).filter((resourceName) => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,

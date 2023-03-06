@@ -120,7 +120,7 @@ function publish(context, args) {
         open(WebsiteURL, { wait: false });
       }
     })
-    .catch(e => {
+    .catch((e) => {
       throw e;
     });
 }

@@ -3,9 +3,9 @@ import { categoryName } from '../../constants';
 
 export const name = 'console';
 
-export const run = async context => {
+export const run = async (context) => {
   const { amplify } = context;
-  return amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata).then(async result => {
+  return amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata).then(async (result) => {
     const providerController = servicesMetadata[result.service].providerController;
     if (!providerController) {
       context.print.error('Provider not configured for this category');

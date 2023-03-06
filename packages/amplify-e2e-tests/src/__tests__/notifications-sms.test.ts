@@ -10,9 +10,7 @@ import {
   removeAllNotificationChannel,
   removeNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  getShortId,
-} from '../import-helpers';
+import { getShortId } from '../import-helpers';
 
 describe('notification category test - SMS', () => {
   const testChannel = 'SMS';

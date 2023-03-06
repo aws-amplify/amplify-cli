@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, $TSObject, AmplifyError, pathManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import extract from 'extract-zip';
 import * as fs from 'fs-extra';
@@ -20,7 +18,7 @@ export const downloadAPIModels = async (context: $TSContext, allResources: $TSOb
     return;
   }
 
-  const resources = allResources.filter(resource => resource.service === 'API Gateway');
+  const resources = allResources.filter((resource) => resource.service === 'API Gateway');
   const promises = [];
 
   if (resources.length > 0) {

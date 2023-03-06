@@ -1,11 +1,12 @@
-import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks, CommandLineInput } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks } from 'amplify-cli-core';
+import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { printer } from 'amplify-prompts';
 
 /**
  * display banner messages
  */
-export const displayBannerMessages = async (input: CommandLineInput): Promise<void> => {
+export const displayBannerMessages = async (input: CLIInput): Promise<void> => {
   const excludedCommands = ['delete', 'env', 'help', 'logout', 'version'];
   if (isCI || (input.command && excludedCommands.includes(input.command))) {
     return;
@@ -54,10 +55,9 @@ const displayXrDeprecationMessage = async (): Promise<void> => {
     if (hasXr) {
       printer.blankLine();
       printer.warn(
-        'The XR category depends on Amazon Sumerian to function.' +
-          ' Amazon Sumerian scenes will not be accessible as of February 21, 2023.' +
-          ' Follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/' +
-          ' to learn more about your migration options.',
+        'The Amazon Sumerian service is no longer accepting new customers.' +
+          ' Existing customer scenes will not be available after February 21, 2023.' +
+          ' The AWS Amplify XR features depend on the Amazon Sumerian service to function and as a result, will no longer be available.',
       );
       printer.blankLine();
     }

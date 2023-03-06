@@ -5,7 +5,11 @@ import {
   createRandomName,
   addS3AndAuthWithAuthOnlyAccess,
   amplifyPushForce,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
@@ -20,7 +24,7 @@ describe('transformer predictions migration test', () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot);
   });
 
   afterEach(async () => {

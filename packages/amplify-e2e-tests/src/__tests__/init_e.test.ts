@@ -11,6 +11,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
+  replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
 
 import { addEnvironment } from '../environment/env';
@@ -27,12 +28,11 @@ describe('amplify init e', () => {
   });
 
   it('should init the project and override root and push', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    const projectName = 'initTest';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const {
-      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
-    } = meta;
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
@@ -56,12 +56,13 @@ describe('amplify init e', () => {
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');
 
     // create a new env, and the override should remain in place
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'envb', projectName);
     await addEnvironment(projRoot, { envName: 'envb' });
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');

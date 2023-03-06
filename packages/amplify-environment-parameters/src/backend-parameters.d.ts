@@ -10,5 +10,5 @@ export type BackendParameters = Record<ParameterName, ParameterConfig>;
 type ParameterName = string;
 
 type ParameterConfig = {
-  usedBy: ResourceTuple[],
-}
+  usedBy: ResourceTuple[];
+};

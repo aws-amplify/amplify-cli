@@ -32,9 +32,7 @@ describe('amplify init', () => {
     await specialCaseInit.initWithoutCredentialFileAndNoNewUserSetup(projectRoot);
     const meta = getBackendAmplifyMeta(projectRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const {
-      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
-    } = meta;
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
@@ -44,7 +42,7 @@ describe('amplify init', () => {
     const envName = 'dev';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await updateAuthAddUserGroups(projectRoot, ['group']);
     await amplifyPushAuth(projectRoot);
     const teamInfo = getTeamProviderInfo(projectRoot);

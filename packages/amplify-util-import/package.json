@@ -1,6 +1,6 @@
 {
-  "name": "amplify-util-import",
-  "version": "2.3.1",
+  "name": "@aws-amplify/amplify-util-import",
+  "version": "2.4.0",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
@@ -14,6 +14,9 @@
     "amplify",
     "import"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {

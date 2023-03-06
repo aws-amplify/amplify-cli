@@ -27,7 +27,7 @@ export const ensureValidFunctionModelDependencies = async (
   if (dependentFunctionResource.length === 0) {
     return dependentFunctionResource;
   }
-  const dependentFunctionsNames = dependentFunctionResource.map(lambda => lambda.resourceName);
+  const dependentFunctionsNames = dependentFunctionResource.map((lambda) => lambda.resourceName);
   context.print.info('');
   context.print.warning(`Functions ${dependentFunctionsNames} have access to removed GraphQL API model(s) ${tablesDeleted}`);
 
@@ -66,7 +66,7 @@ export const ensureValidFunctionModelDependencies = async (
 const getTableNameDiff = async (currentBackendDir: string, backendDir: string, apiResourceName: string): Promise<string[]> => {
   const deployedModelNames = await getTableNames(currentBackendDir, apiResourceName);
   const currentModelNames = await getTableNames(backendDir, apiResourceName);
-  const modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));
+  const modelsDeleted = deployedModelNames.filter((val) => !currentModelNames.includes(val));
   return modelsDeleted;
 };
 
@@ -76,9 +76,9 @@ const getTableNames = async (backendDir: string, apiResourceName: string): Promi
   const resourceDirPath = path.join(backendDir, 'api', apiResourceName);
   const project = await readProjectConfiguration(resourceDirPath);
   const directivesMap: $TSAny = collectDirectivesByTypeNames(project.schema);
-  const modelNames = Object.keys(directivesMap.types).filter(typeName => directivesMap.types[typeName].includes('model'));
+  const modelNames = Object.keys(directivesMap.types).filter((typeName) => directivesMap.types[typeName].includes('model'));
   const tableNames = modelNames
-    .map(modelName => getTableNameForModel(project.schema, modelName))
-    .map(modelName => `${modelName}:${appsyncTableSuffix}`);
+    .map((modelName) => getTableNameForModel(project.schema, modelName))
+    .map((modelName) => `${modelName}:${appsyncTableSuffix}`);
   return tableNames;
 };
