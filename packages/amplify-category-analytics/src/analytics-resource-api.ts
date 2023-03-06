@@ -22,7 +22,7 @@ import { invokeNotificationsAPIGetAvailableChannelNames } from './plugin-client-
 import { pinpointHasInAppMessagingPolicy } from './utils/pinpoint-helper';
 import { getAnalyticsResources } from './utils/analytics-helper';
 import { analyticsMigrations } from './migrations';
-import { LocalEnvInfo } from 'amplify-cli-core/src/types';
+import { LocalEnvInfo } from 'amplify-cli-core';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,
