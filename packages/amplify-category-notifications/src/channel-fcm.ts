@@ -47,7 +47,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
     answers = {
-      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey, transform: (input) => input.trim() }),
+      ApiKey: await prompter.input('Server Key', { initial: channelOutput.ApiKey, transform: (input) => input.trim() }),
     };
   }
 
@@ -80,8 +80,8 @@ export const enable = async (context: $TSContext, successMessage: string | undef
 const validateInputParams = (channelInput: $TSAny): $TSAny => {
   if (!channelInput.ApiKey) {
     throw new AmplifyError('UserInputError', {
-      message: 'ApiKey is missing for the FCM channel',
-      resolution: 'Provide the ApiKey for the FCM channel',
+      message: 'Server Key is missing for the FCM channel',
+      resolution: 'Server Key for the FCM channel',
     });
   }
   return channelInput;
@@ -102,10 +102,9 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
     answers = {
-      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey, transform: (input) => input.trim() }),
+      ApiKey: await prompter.input('Server Key', { initial: channelOutput.ApiKey, transform: (input) => input.trim() }),
     };
   }
-
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
