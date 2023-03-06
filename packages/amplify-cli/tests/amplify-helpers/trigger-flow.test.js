@@ -678,12 +678,11 @@ describe('TriggerFlow:', () => {
 
   describe('When calling choicesFromMetadata...', () => {
     let readdirSyncSpy;
-    let readFileSync;
     let statSyncSpy;
 
     beforeEach(() => {
       statSyncSpy = jest.spyOn(fs, 'statSync').mockImplementation(() => ({ isDirectory: jest.fn() }));
-      readFileSync = jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
+      jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
     });
 
