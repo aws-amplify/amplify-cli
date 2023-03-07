@@ -1,7 +1,7 @@
 import * as rl from 'readline';
 import { stdin, stdout } from 'process';
 import yargs from 'yargs';
-import simpleGit, { SimpleGit } from 'simple-git';
+import simpleGit from 'simple-git';
 import { GitExtensions } from './git-extensions';
 
 export async function shouldContinue(read: rl.Interface, prompt: string): Promise<boolean> {
@@ -44,13 +44,6 @@ export function getCompareLink(
   return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameterString}`;
 }
 
-export async function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: SimpleGit) {
-  await git.checkout(devBranch);
-  await git.pull(upstreamName, devBranch);
-  await git.checkout(mergeBranch, ['-b']);
-  await git.fetch(upstreamName, releaseBranch);
-  await git.mergeFromTo(`${upstreamName}/${releaseBranch}`, mergeBranch, ['-m', 'chore: merge release commit from main to dev']);
-}
 type Args = {
   continue: boolean;
   releaseBranch: string;
@@ -87,10 +80,10 @@ export async function main() {
     output: stdout,
   });
 
-  //  if (!(await gitExtensions.isCleanWorkingTree())) {
-  //    console.error('Please run the script from a clean working tree');
-  //    process.exit(2);
-  //  }
+  if (!(await gitExtensions.isCleanWorkingTree())) {
+    console.error('Please run the script from a clean working tree');
+    process.exit(2);
+  }
 
   const upstreamName = await gitExtensions.getRemoteNameForRepository(repository);
   if (!upstreamName) {
