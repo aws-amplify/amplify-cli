@@ -35,12 +35,12 @@ describe('Test Mock API methods', () => {
   });
 
   it('attempts to copy searchable lambda trigger artifacts correctly', async () => {
-    const mockContext = ({
+    const mockContext = {
       amplify: {
         getEnvInfo: jest.fn().mockReturnValue({ projectPath: mockProjectRoot }),
         loadRuntimePlugin: jest.fn().mockReturnValue({}),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
     const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', '..', 'resources', 'mock-searchable-lambda-trigger');
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(mockContext);
 
@@ -68,7 +68,7 @@ describe('Test Mock API methods', () => {
 
   it('Shows the error when no appsync api exist', async () => {
     ConfigOverrideManager.getInstance = jest.fn().mockReturnValue(jest.fn);
-    const mockContext = ({
+    const mockContext = {
       print: {
         error: jest.fn(),
       },
@@ -79,7 +79,7 @@ describe('Test Mock API methods', () => {
         },
         readJsonFile: jest.fn().mockReturnValue({ api: {} }),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
 
     const testApi = new APITest();
     const testApiStartPromise = testApi.start(mockContext);
