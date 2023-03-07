@@ -327,6 +327,7 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-linux-x64.zip
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -350,6 +351,7 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-macos-x64.zip
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -373,6 +375,7 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-windows-x64.zip
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -396,6 +399,7 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-linux-arm64.zip
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
