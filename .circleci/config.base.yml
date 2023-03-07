@@ -327,6 +327,11 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/goldbez/pkg-fetch/releases/download/v14.21.3/node14-linux-x64.zip
+            mkdir -p ~/.pkg-cache/v3.4/
+            unzip node14-linux-x64.zip -d ~/.pkg-cache/v3.4/
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-x64 ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-x64
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-x64.sha256sum ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -350,6 +355,15 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/goldbez/pkg-fetch/releases/download/v14.21.3/node14-macos-x64.zip
+            mkdir -p ~/.pkg-cache/v3.4/
+            unzip node14-macos-x64.zip -d ~/.pkg-cache/v3.4/
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-macos-x64 ~/.pkg-cache/v3.4/fetched-v14.21.3-macos-x64
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-macos-x64.sha256sum ~/.pkg-cache/v3.4/fetched-v14.21.3-macos-x64.sha256sum
+            wget https://github.com/goldbez/pkg-fetch/releases/download/v14.21.3/node14-linux-x64.zip
+            unzip node14-linux-x64.zip -d ~/.pkg-cache/v3.4/
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-x64 ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-x64
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-x64.sha256sum ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -373,6 +387,15 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/goldbez/pkg-fetch/releases/download/v14.21.3/node14-windows-x64.zip
+            mkdir -p ~/.pkg-cache/v3.4/
+            unzip node14-windows-x64.zip -d ~/.pkg-cache/v3.4/
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-win-x64 ~/.pkg-cache/v3.4/fetched-v14.21.3-win-x64
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-win-x64.sha256sum ~/.pkg-cache/v3.4/fetched-v14.21.3-win-x64.sha256sum
+            wget https://github.com/goldbez/pkg-fetch/releases/download/v14.21.3/node14-linux-x64.zip
+            unzip node14-linux-x64.zip -d ~/.pkg-cache/v3.4/
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-x64 ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-x64
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-x64.sha256sum ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -396,6 +419,11 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            wget https://github.com/goldbez/pkg-fetch/releases/download/v14.21.3/node14-linux-arm64.zip
+            mkdir -p ~/.pkg-cache/v3.4/
+            unzip node14-linux-arm64.zip -d ~/.pkg-cache/v3.4/
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-arm64 ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-arm64
+            cp ~/.pkg-cache/v3.4/node-v14.21.3-linux-arm64.sha256sum ~/.pkg-cache/v3.4/fetched-v14.21.3-linux-arm64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath

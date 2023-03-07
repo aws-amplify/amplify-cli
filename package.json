@@ -158,6 +158,7 @@
     "**/jake/async": "^2.6.4",
     "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
-    "**/undici": "^5.8.0"
+    "**/undici": "^5.8.0",
+    "**/pkg-fetch": "https://github.com/goldbez/pkg-fetch.git#b390a556c236c277bcadda5773a06bdc7df55691"
   }
 }
