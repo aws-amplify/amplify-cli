@@ -18,6 +18,7 @@ export async function mockAllCategories(context: any) {
         context.print.info(
           'Some resources have changed locally and these resources are not mockable. The resources listed below need to be pushed to the cloud before starting the mock server.',
         );
+        context.amplify.constructExeInfo(context);
         const didPush = await context.amplify.pushResources(context, undefined, undefined, resourceToBePushed);
         if (!didPush) {
           context.print.info('\n\nMocking may not work as expected since some of the changed resources were not pushed.');
