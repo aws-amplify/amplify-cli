@@ -1,7 +1,8 @@
 import * as rl from 'readline';
-import { Git } from './git';
 import { stdin, stdout } from 'process';
 import yargs from 'yargs';
+import simpleGit, { SimpleGit } from 'simple-git';
+import { GitExtensions } from './git-extensions';
 
 export async function shouldContinue(read: rl.Interface, prompt: string): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
@@ -43,12 +44,12 @@ export function getCompareLink(
   return `https://github.com/${repository}/compare/${devBranch}...${mergeBranch}?${parameterString}`;
 }
 
-export function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: Git) {
-  git.checkout(devBranch);
-  git.pull(upstreamName, devBranch);
-  git.checkout(mergeBranch, true);
-  git.fetch(upstreamName, releaseBranch);
-  git.merge(`${upstreamName}/${releaseBranch}`, { message: 'chore: merge release commit from main to dev' });
+export async function prepareBranches(upstreamName: string, devBranch: string, mergeBranch: string, releaseBranch: string, git: SimpleGit) {
+  await git.checkout(devBranch);
+  await git.pull(upstreamName, devBranch);
+  await git.checkout(mergeBranch, ['-b']);
+  await git.fetch(upstreamName, releaseBranch);
+  await git.mergeFromTo(`${upstreamName}/${releaseBranch}`, mergeBranch, ['-m', 'chore: merge release commit from main to dev']);
 }
 type Args = {
   continue: boolean;
@@ -79,29 +80,30 @@ function getArgs(): Args {
 
 export async function main() {
   const { continue: continueArg, releaseBranch, devBranch, repository, mergeBranch: mergeBranchArg } = getArgs();
-  const git = new Git();
+  const git = simpleGit();
+  const gitExtensions = new GitExtensions(git);
   const rlInterface = rl.createInterface({
     input: stdin,
     output: stdout,
   });
 
-  if (!git.isCleanWorkingTree()) {
-    console.error('Please run the script from a clean working tree');
-    process.exit(2);
-  }
+  //  if (!(await gitExtensions.isCleanWorkingTree())) {
+  //    console.error('Please run the script from a clean working tree');
+  //    process.exit(2);
+  //  }
 
-  const upstreamName = git.getRemoteNameForRepository(repository);
+  const upstreamName = await gitExtensions.getRemoteNameForRepository(repository);
   if (!upstreamName) {
     console.error('could not find remote name for the aws-amplify/amplify-cli repository');
     process.exit(1);
   }
 
   console.info(`Fetching ${upstreamName}/${releaseBranch}`);
-  git.fetch(upstreamName, releaseBranch);
+  await git.fetch(upstreamName, releaseBranch);
 
-  const releaseSha = git.getShortSha(`${upstreamName}/${releaseBranch}`);
+  const releaseSha = await gitExtensions.getShortSha(`${upstreamName}/${releaseBranch}`);
   const mergeBranch = mergeBranchArg ?? 'dev-main-merge-' + releaseSha;
-  const doesMergeBranchExist = git.isExistingBranch(mergeBranch);
+  const doesMergeBranchExist = await gitExtensions.isExistingBranch(mergeBranch);
 
   if (!continueArg && doesMergeBranchExist) {
     console.error(
@@ -115,26 +117,26 @@ export async function main() {
     process.exit(0);
   }
 
-  git.checkout(devBranch);
-  git.pull();
+  await git.checkout(devBranch);
+  await git.pull();
   console.info('Creating merge branch ' + mergeBranch);
   try {
-    const shouldAttemptCreate = !doesMergeBranchExist;
-    git.checkout(mergeBranch, shouldAttemptCreate);
+    await git.checkout(['-B', mergeBranch]);
   } catch (e) {
     console.error('Failed to create merge branch, exiting...');
+    console.trace(e);
     process.exit(1);
   }
 
   console.info(`Merging ${upstreamName}/${releaseBranch} into ${mergeBranch}`);
-  git.merge(`${upstreamName}/${releaseBranch}`, { message: 'chore: merge release commit from main to dev' });
+  await git.raw(`merge`, `${upstreamName}/${releaseBranch}`, `-m`, `"chore: merge release commit from main to dev"`, '--no-verify');
 
-  if (!git.isCleanWorkingTree()) {
+  if (!(await gitExtensions.isCleanWorkingTree())) {
     console.info('Resolve merge conflicts and commit merge, then run `yarn run finish-release --continue`');
     process.exit(0);
   }
 
-  git.push(upstreamName, mergeBranch);
+  await git.push(upstreamName, mergeBranch);
   const prBody = generatePRTemplate(mergeBranch, releaseBranch, devBranch);
 
   console.info(`
