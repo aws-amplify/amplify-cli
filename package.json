@@ -158,6 +158,7 @@
     "**/jake/async": "^2.6.4",
     "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
+    "**/pkg-fetch": "https://github.com/sobolk/pkg-fetch.git",
     "**/undici": "^5.8.0"
   }
 }
