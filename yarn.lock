@@ -19623,7 +19623,7 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
 
 pkg-fetch@3.4.2, "pkg-fetch@https://github.com/sobolk/pkg-fetch.git":
   version "3.5.0-sobolk.0"
-  resolved "https://github.com/sobolk/pkg-fetch.git#fd0bf7c510e07b3cd0dca2e71811c90f30703825"
+  resolved "https://github.com/sobolk/pkg-fetch.git#eadd901c4d6bb27b0716373b50f96de4fd8d7af4"
   dependencies:
     chalk "^4.1.2"
     fs-extra "^9.1.0"
