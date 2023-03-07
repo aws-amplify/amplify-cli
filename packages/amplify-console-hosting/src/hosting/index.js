@@ -8,9 +8,9 @@ const configUtils = require('../utils/config-utils');
 const questions = require('../modules/questions/question-generator');
 const ValidationError = require('../error/validation-error').default;
 const clientFactory = require('../utils/client-factory');
-const ora = require('ora');
 const tableUtis = require('../utils/table-utils');
 const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
+const { spinner } = require('amplify-cli-core');
 
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
@@ -144,7 +144,6 @@ function loadDeployType(context) {
 }
 
 async function validateHosting(context) {
-  const spinner = ora();
   spinner.start();
   try {
     if (isHostingEnabled(context)) {
