@@ -386,8 +386,8 @@ jobs:
             wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-windows-x64.zip
             mkdir -p ~/.pkg-cache/v3.5/
             unzip node14-windows-x64.zip -d ~/.pkg-cache/v3.5/
-            cp ~/.pkg-cache/v3.5/node-v14.21.3-windows-x64 ~/.pkg-cache/v3.5/fetched-v14.21.3-windows-x64
-            cp ~/.pkg-cache/v3.5/node-v14.21.3-windows-x64.sha256sum ~/.pkg-cache/v3.5/fetched-v14.21.3-windows-x64.sha256sum
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-win-x64 ~/.pkg-cache/v3.5/fetched-v14.21.3-win-x64
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-win-x64.sha256sum ~/.pkg-cache/v3.5/fetched-v14.21.3-win-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
