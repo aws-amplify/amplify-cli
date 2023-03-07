@@ -328,6 +328,10 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-linux-x64.zip
+            mkdir -p ~/.pkg-cache/v3.5/
+            unzip node14-linux-x64.zip -d ~/.pkg-cache/v3.5/
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-linux-x64 ~/.pkg-cache/v3.5/fetched-v14.21.3-linux-x64
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-linux-x64.sha256sum ~/.pkg-cache/v3.5/fetched-v14.21.3-linux-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -352,6 +356,10 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-macos-x64.zip
+            mkdir -p ~/.pkg-cache/v3.5/
+            unzip node14-macos-x64.zip -d ~/.pkg-cache/v3.5/
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-macos-x64 ~/.pkg-cache/v3.5/fetched-v14.21.3-macos-x64
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-macos-x64.sha256sum ~/.pkg-cache/v3.5/fetched-v14.21.3-macos-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -376,6 +384,10 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-windows-x64.zip
+            mkdir -p ~/.pkg-cache/v3.5/
+            unzip node14-windows-x64.zip -d ~/.pkg-cache/v3.5/
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-windows-x64 ~/.pkg-cache/v3.5/fetched-v14.21.3-windows-x64
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-windows-x64.sha256sum ~/.pkg-cache/v3.5/fetched-v14.21.3-windows-x64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -400,6 +412,10 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             wget https://github.com/sobolk/pkg-fetch/releases/download/3.5.0-sobolk.0/node14-linux-arm64.zip
+            mkdir -p ~/.pkg-cache/v3.5/
+            unzip node14-linux-arm64.zip -d ~/.pkg-cache/v3.5/
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-linux-arm64 ~/.pkg-cache/v3.5/fetched-v14.21.3-linux-arm64
+            cp ~/.pkg-cache/v3.5/node-v14.21.3-linux-arm64.sha256sum ~/.pkg-cache/v3.5/fetched-v14.21.3-linux-arm64.sha256sum
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
