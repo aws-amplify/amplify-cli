@@ -6,7 +6,6 @@ import {
   $TSMeta,
   AmplifySupportedService,
   exitOnNextTick,
-  JSONUtilities,
   NotImplementedError,
   open,
   stateManager,
