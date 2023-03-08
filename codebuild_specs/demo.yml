@@ -23,8 +23,8 @@ artifacts:
     - '**/*'
 batch:
   fast-fail: false
-    build-list:
-      - identifier: build1
+  build-list:
+    - identifier: build1
   
 cache:
   paths:
