@@ -513,7 +513,7 @@ export class APITest {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
-      ignored: '**/build/**',
+      ignored: ['**/build/**', '**/*db-journal'],
       awaitWriteFinish: true,
     });
   }
