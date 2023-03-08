@@ -87,7 +87,10 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   canBeClonedHeadlessly(): boolean {
     const categoriesThatCannotBeCloned = [
-      AmplifyCategories.API, AmplifyCategories.AUTH, AmplifyCategories.NOTIFICATIONS, AmplifyCategories.STORAGE,
+      AmplifyCategories.API,
+      AmplifyCategories.AUTH,
+      AmplifyCategories.NOTIFICATIONS,
+      AmplifyCategories.STORAGE,
     ];
     const resourceKeys = Object.keys(this.resourceParamManagers);
     const categoryResourceNamePairs: string[][] = resourceKeys.map((key) => key.split('_'));
