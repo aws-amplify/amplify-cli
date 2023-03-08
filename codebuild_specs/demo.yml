@@ -23,6 +23,9 @@ artifacts:
     - '**/*'
 batch:
   fast-fail: false
+    build-list:
+      - identifier: build1
+  
 cache:
   paths:
     - '~/.cache/yarn/**/*'
