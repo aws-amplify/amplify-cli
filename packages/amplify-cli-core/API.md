@@ -1982,6 +1982,8 @@ export class StateManager {
     // (undocumented)
     getResourceParametersJson: (projectPath: string | undefined, category: string, resourceName: string, options?: GetOptions<$TSAny>) => $TSAny;
     // (undocumented)
+    getRootStackId: () => string;
+    // (undocumented)
     getTeamProviderInfo: (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>) => $TSTeamProviderInfo;
     // (undocumented)
     isTagFilePresent: (projectPath?: string | undefined) => boolean;
