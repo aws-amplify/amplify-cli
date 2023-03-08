@@ -2,19 +2,25 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 16
-    commands:
-      - npm install
-      - echo Install phase
+      nodejs: 14
   pre_build:
     commands:
-      - npm --version
+      - yarn production-build
+      - yarn build-tests
       - echo Pre-Build phase completed!
   build:
-    commands:
+    commands: 
+      - echo Unit tests
+      - echo Verify API extract
       - echo Build phase completed!
-batch:
-    fast-fail: true
+      - echo ${S3_BUILD_CACHE:-'undefined'}
+  post_build:
+    commands:
+      - echo Yarn cache directory
+      - yarn cache dir
 artifacts:
   files:
     - '**/*'
+cache:
+  paths:
+    - '~/.cache/yarn/**/*'
