@@ -85,7 +85,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  canBeClonedSafely(): boolean {
+  canBeClonedHeadlessly(): boolean {
     const categoriesThatCannotBeCloned = [
       AmplifyCategories.API, AmplifyCategories.AUTH, AmplifyCategories.NOTIFICATIONS, AmplifyCategories.STORAGE,
     ];
@@ -249,7 +249,7 @@ const splitResourceKey = (key: string): readonly [string, string] => {
  * Interface for environment parameter managers
  */
 export type IEnvironmentParameterManager = {
-  canBeClonedSafely: () => boolean;
+  canBeClonedHeadlessly: () => boolean;
   cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
   getMissingParameters: (

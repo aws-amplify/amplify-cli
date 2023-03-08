@@ -6,7 +6,7 @@ describe('clone env params test', () => {
   const mockEnvParamManagerCloneFn = jest.fn().mockReturnValue(Promise.resolve());
   const envParamManager = {
     instance: {
-      canBeClonedSafely: jest.fn(),
+      canBeClonedHeadlessly: jest.fn(),
       cloneEnvParamsToNewEnvParamManager: mockEnvParamManagerCloneFn,
       downloadParameters: jest.fn(),
       getMissingParameters: jest.fn(),

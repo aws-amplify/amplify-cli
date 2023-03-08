@@ -34,7 +34,7 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
     await downloadEnvParameters(context);
     const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
     if (context.exeInfo.inputParams?.yes) {
-      if (!envParamManger.canBeClonedSafely()) {
+      if (!envParamManger.canBeClonedHeadlessly()) {
         throw new AmplifyError('EnvironmentConfigurationError', {
           message: 'The source environment contains values that cannot be copied to the new environment directly. Re-run this command without the --yes flag to continue.'
         });
@@ -119,7 +119,7 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
     await downloadEnvParameters(context);
     const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
     if (context.exeInfo.inputParams?.yes) {
-      if (!envParamManger.canBeClonedSafely()) {
+      if (!envParamManger.canBeClonedHeadlessly()) {
         throw new AmplifyError('EnvironmentConfigurationError', {
           message: 'The source environment contains values that cannot be copied to the new environment directly. Re-run this command without the --yes flag to continue.'
         });
