@@ -7,6 +7,7 @@ import {
   IAmplifyResource,
   stateManager,
   ManuallyTimedCodePath,
+  LocalEnvInfo,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
@@ -49,7 +50,7 @@ export const pushResources = async (
     const allEnvs = context.amplify.getAllEnvs();
 
     if (allEnvs.findIndex((env) => env === envName) !== -1) {
-      context.exeInfo = {};
+      context.exeInfo = { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
       context.exeInfo.forcePush = false;
 
       context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {

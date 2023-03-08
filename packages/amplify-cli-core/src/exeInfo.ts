@@ -1,7 +1,7 @@
-import { $TSAny } from './types';
+import { $TSAny, $TSObject, LocalEnvInfo } from './types';
 
 export type EnvironmentInfo = {
-  existingLocalEnvInfo?: $TSAny;
+  existingLocalEnvInfo?: LocalEnvInfo;
   isNewEnv?: boolean;
   sourceEnvName?: string;
 };
@@ -26,8 +26,8 @@ export type ProjectInfo = {
   existingProjectConfig?: $TSAny;
   existingTeamProviderInfo?: $TSAny;
   isNewProject?: boolean;
-  inputParams?: $TSAny;
-  localEnvInfo?: $TSAny;
+  inputParams: $TSObject;
+  localEnvInfo: LocalEnvInfo;
   projectConfig?: $TSAny;
   serviceMeta?: $TSAny;
   teamProviderInfo?: $TSAny;
