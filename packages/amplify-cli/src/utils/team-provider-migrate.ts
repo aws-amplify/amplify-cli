@@ -3,7 +3,6 @@ import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-
 import { mergeDeploymentSecrets, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import { Context } from '../domain/context';
-import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';
 import { isYesFlagSet } from './headless-input-utils';
 
 const message = `Amplify has been upgraded to handle secrets more securely by migrating some values in ${chalk.red(
@@ -71,7 +70,7 @@ const authResourceNameHasSecrets = (): string | undefined => {
 const moveAuthSecretToDeploymentSecrets = (authResourceName: string): void => {
   const resourceParamManager = getEnvParamManager().getResourceParamManager('auth', authResourceName);
   const teamProviderSecrets = resourceParamManager.getParam(hostedUIProviderCredsField)!;
-  const rootStackId = getRootStackId();
+  const rootStackId = stateManager.getRootStackId();
   const { envName } = stateManager.getLocalEnvInfo();
 
   let secrets = stateManager.getDeploymentSecrets();

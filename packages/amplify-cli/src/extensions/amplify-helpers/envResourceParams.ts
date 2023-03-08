@@ -2,7 +2,6 @@ import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters'
 import { $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny } from 'amplify-cli-core';
 
 import _ from 'lodash';
-import { getRootStackId } from './get-root-stack-id';
 
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
@@ -18,7 +17,7 @@ export const saveEnvResourceParameters = (__: $TSContext | undefined, category: 
 
   getEnvParamManager().getResourceParamManager(category, resource).setParams(nonSecretParams);
   const deploymentSecrets = stateManager.getDeploymentSecrets();
-  const rootStackId = getRootStackId();
+  const rootStackId = stateManager.getRootStackId();
   const currentEnv = stateManager.getLocalEnvInfo().envName;
 
   if (hostedUIProviderCreds) {
@@ -64,7 +63,7 @@ const loadEnvResourceParametersFromDeploymentSecrets = (category: string, resour
   try {
     const currentEnv = stateManager.getLocalEnvInfo().envName;
     const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const rootStackId = getRootStackId();
+    const rootStackId = stateManager.getRootStackId();
     const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
@@ -95,7 +94,7 @@ export const removeResourceParameters = (context: $TSContext, category: string, 
 export const removeDeploymentSecrets = (__: $TSContext | undefined, category: string, resource: string): void => {
   const currentEnv = stateManager.getLocalEnvInfo().envName;
   const deploymentSecrets = stateManager.getDeploymentSecrets();
-  const rootStackId = getRootStackId();
+  const rootStackId = stateManager.getRootStackId();
 
   stateManager.setDeploymentSecrets(
     removeFromDeploymentSecrets({

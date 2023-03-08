@@ -1,4 +1,6 @@
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { $TSContext, AmplifyError, LocalEnvInfo, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -7,6 +9,7 @@ import { editors, editorSelection, normalizeEditor } from '../extensions/amplify
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
+import { downloadEnvParameters } from '../utils/environment-parameter-manager-helpers';
 
 /**
  * Analyzes the project
@@ -21,10 +24,22 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
   // default to that here unless different param specified
   const { frontend } = context?.parameters?.options ?? {};
   if (!frontend) {
-    context.print.warning('No frontend specified. Defaulting to android.');
+    printer.warn('No frontend specified. Defaulting to android.');
     context.exeInfo.projectConfig.frontend = 'android';
   } else {
     context.exeInfo.projectConfig.frontend = frontend;
+  }
+
+  if (context.parameters.command === 'env') {
+    await downloadEnvParameters(context);
+    const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
+    if (context.exeInfo.inputParams?.yes) {
+      if (!envParamManger.canBeClonedSafely()) {
+        throw new AmplifyError('EnvironmentConfigurationError', {
+          message: 'The source environment contains values that cannot be copied to the new environment directly. Re-run this command without the --yes flag to continue.'
+        });
+      }
+    }
   }
 };
 
@@ -33,15 +48,14 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
  * but this might indicate an unhandled edge case
  */
 export const displayConfigurationDefaults = (
-  context: $TSContext,
   defaultProjectName: string,
   defaultEnv: string | undefined,
   defaultEditorName: string,
 ): void => {
-  context.print.info('Project information');
-  context.print.info(`| Name: ${defaultProjectName}`);
-  context.print.info(`| Environment: ${defaultEnv}`);
-  context.print.info(`| Default editor: ${defaultEditorName}`);
+  printer.info('Project information');
+  printer.info(`| Name: ${defaultProjectName}`);
+  printer.info(`| Environment: ${defaultEnv}`);
+  printer.info(`| Default editor: ${defaultEditorName}`);
 };
 
 const setConfigurationDefaults = (
@@ -71,17 +85,17 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   const editorIndex = editors.findIndex((editorEntry) => editorEntry.value === defaultEditor);
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
-  context.print.success('The following configuration will be applied:');
-  context.print.info('');
+  printer.success('The following configuration will be applied:');
+  printer.info('');
 
-  displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
+  displayConfigurationDefaults(defaultProjectName, defaultEnv, defaultEditorName);
 
   const frontendPlugins = getFrontendPlugins(context);
   const defaultFrontend = getSuitableFrontend(context, frontendPlugins, projectPath);
   const frontendModule = await import(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
-  context.print.info('');
+  printer.info('');
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
     setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
@@ -95,11 +109,23 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
 export const analyzeProject = async (context: $TSContext): Promise<$TSContext> => {
   // eslint-disable-next-line spellcheck/spell-checker
   if (!context.parameters.options?.app || !context.parameters.options?.quickstart) {
-    context.print.warning('Note: It is recommended to run this command from the root of your app directory');
+    printer.warn('Note: It is recommended to run this command from the root of your app directory');
   }
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
+
+  if (context.parameters.command === 'env') {
+    await downloadEnvParameters(context);
+    const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
+    if (context.exeInfo.inputParams?.yes) {
+      if (!envParamManger.canBeClonedSafely()) {
+        throw new AmplifyError('EnvironmentConfigurationError', {
+          message: 'The source environment contains values that cannot be copied to the new environment directly. Re-run this command without the --yes flag to continue.'
+        });
+      }
+    }
+  }
 
   if (context.exeInfo.isNewProject && context.parameters.command !== 'env') {
     await displayAndSetDefaults(context, projectPath, projectName);

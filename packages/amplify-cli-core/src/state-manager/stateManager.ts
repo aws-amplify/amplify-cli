@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from '..';
+import { $TSAny, $TSMeta, $TSObject, $TSTeamProviderInfo, AmplifyFault, DeploymentSecrets, HooksConfig } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
@@ -67,6 +67,15 @@ export class StateManager {
     JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
       throwIfNotExist: false,
     }) || { appSecrets: [] };
+
+  getRootStackId = (): string => {
+    const amplifyMeta = this.getMeta();
+    const stackId = amplifyMeta?.providers?.awscloudformation?.StackId;
+    if (typeof stackId === 'string') {
+      return stackId.split('/')[2];
+    }
+    throw new AmplifyFault('RootStackNotFoundFault', { message: 'Root stack Id not found in amplify-meta.json' });
+  };
 
   getProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getTagFilePath(projectPath));
 

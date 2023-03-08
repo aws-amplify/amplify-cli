@@ -25,6 +25,7 @@ jest.mock('amplify-cli-core', () => ({
         },
       },
     }),
+    getRootStackId: jest.fn().mockReturnValue('testStackId'),
   },
   removeFromDeploymentSecrets: jest.fn(),
 }));

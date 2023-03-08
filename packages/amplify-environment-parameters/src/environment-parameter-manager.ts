@@ -1,4 +1,4 @@
-import { AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyCategories, AmplifyError, AmplifyFault, DeploymentSecrets, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -83,6 +83,46 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   hasResourceParamManager(category: string, resource: string): boolean {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
+  }
+
+  canBeClonedSafely(): boolean {
+    const categoriesThatCannotBeCloned = [
+      AmplifyCategories.API, AmplifyCategories.AUTH, AmplifyCategories.NOTIFICATIONS, AmplifyCategories.STORAGE,
+    ];
+    const resourceKeys = Object.keys(this.resourceParamManagers);
+    const categoryResourceNamePairs: string[][] = resourceKeys.map((key) => key.split('_'));
+    for (const [category, resourceName] of categoryResourceNamePairs) {
+      if (categoriesThatCannotBeCloned.includes(category)) {
+        const resourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
+        if (resourceParamManager.hasAnyParams()) {
+          return false;
+        }
+      }
+    }
+    const envSecrets = this.getEnvSecrets();
+    for (const category of categoriesThatCannotBeCloned) {
+      if (envSecrets[category]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private getEnvSecrets(): {
+    [category: string]: {
+      [resourceName: string]: {
+        [key: string]: string;
+      };
+    };
+  } {
+    const projectRootStackId = stateManager.getRootStackId();
+    const { appSecrets } = stateManager.getDeploymentSecrets();
+
+    const projectSecrets = appSecrets.find(({ rootStackId }) => rootStackId === projectRootStackId);
+    if (projectSecrets?.environments?.[this.envName]) {
+      return projectSecrets.environments[this.envName];
+    }
+    return {};
   }
 
   async cloneEnvParamsToNewEnvParamManager(destManager: IEnvironmentParameterManager): Promise<void> {
@@ -209,6 +249,7 @@ const splitResourceKey = (key: string): readonly [string, string] => {
  * Interface for environment parameter managers
  */
 export type IEnvironmentParameterManager = {
+  canBeClonedSafely: () => boolean;
   cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
   getMissingParameters: (

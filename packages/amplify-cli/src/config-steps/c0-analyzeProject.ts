@@ -22,7 +22,7 @@ export async function analyzeProject(context) {
   const { defaultEditor, envName } = context.exeInfo.localEnvInfo;
 
   context.print.info('');
-  await displayConfigurationDefaults(context, projectName, envName, defaultEditor);
+  displayConfigurationDefaults(projectName, envName, defaultEditor);
 
   const frontendPlugins = getFrontendPlugins(context);
   let frontend = context.exeInfo.projectConfig.frontend;
