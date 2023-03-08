@@ -3,26 +3,29 @@ phases:
   install:
     runtime-versions:
       nodejs: 14
-  pre_build:
     commands:
       - yarn install
+  pre_build:
+    commands:
       - yarn config set script-shell $(which bash)
-      - echo Pre-Build phase completed!
+      - echo Pre-build completed
   build:
-    commands: 
-      - yarn production-build
-      - yarn build-tests
+    commands:
+      - yarn run production-build
   post_build:
     commands:
-      - yarn test
+      - yarn lint-check
+      - yarn test-ci
+      - yarn verify-api-extract
+      - yarn verify-yarn-lock
+      - echo Post build complete
 artifacts:
   files:
     - '**/*'
 batch:
-  fast-fail: false
+  fast-fail: true
   build-list:
     - identifier: build1
-  
 cache:
   paths:
     - '~/.cache/yarn/**/*'
