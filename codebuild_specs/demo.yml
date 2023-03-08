@@ -5,19 +5,16 @@ phases:
       nodejs: 14
   pre_build:
     commands:
-      - yarn production-build
-      - yarn build-tests
+      - yarn install
+      - yarn config set script-shell $(which bash)
       - echo Pre-Build phase completed!
   build:
     commands: 
-      - echo Unit tests
-      - echo Verify API extract
-      - echo Build phase completed!
-      - echo ${S3_BUILD_CACHE:-'undefined'}
+      - yarn production-build
+      - yarn build-tests
   post_build:
     commands:
-      - echo Yarn cache directory
-      - yarn cache dir
+      - yarn test
 artifacts:
   files:
     - '**/*'
