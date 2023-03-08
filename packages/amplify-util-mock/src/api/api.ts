@@ -129,8 +129,12 @@ export class APITest {
       );
     }
 
-    await this.appSyncSimulator.stop();
-    this.resolverOverrideManager.stop();
+    if (this.appSyncSimulator) {
+      await this.appSyncSimulator.stop();
+    }
+    if (this.resolverOverrideManager) {
+      this.resolverOverrideManager.stop();
+    }
   }
 
   private async runTransformer(context, parameters = {}) {
@@ -513,7 +517,7 @@ export class APITest {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
-      ignored: '**/build/**',
+      ignored: ['**/build/**', '**/*db-journal'],
       awaitWriteFinish: true,
     });
   }
