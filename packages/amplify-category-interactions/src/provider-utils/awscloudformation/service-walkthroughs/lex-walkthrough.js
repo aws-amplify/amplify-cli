@@ -249,7 +249,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 }
 
 async function addIntent(context, resourceName, intents, parameters) {
-  let intentName = await askIntent(resourceName);
+  let intentName = await askIntent();
 
   // Checks for duplicate intent names
   while (
@@ -259,7 +259,7 @@ async function addIntent(context, resourceName, intents, parameters) {
     printer.blankLine();
     printer.info('Intent names must be unique');
     printer.blankLine();
-    intentName = await askIntent(resourceName);
+    intentName = await askIntent();
   }
 
   const utterances = await addUtterance(resourceName);
@@ -315,9 +315,8 @@ async function addIntent(context, resourceName, intents, parameters) {
   };
 }
 
-async function askIntent(resourceName) {
+async function askIntent() {
   return prompter.input('Give a unique name for the new intent:', {
-    initial: resourceName,
     validate: matchRegex(
       /^([A-Za-z]_?){1,100}$/,
       'Intent name can only contain letters and underscores, cannot be empty, and must be no longer than 100 characters',
@@ -352,7 +351,7 @@ async function addSlot(context, intentName, resourceName, parameters) {
       required: true,
       customType: false,
     };
-    slot.name = await askSlotName(resourceName);
+    slot.name = await askSlotName();
 
     // Checks for duplicate slot names
     while (
@@ -366,7 +365,7 @@ async function addSlot(context, intentName, resourceName, parameters) {
       printer.blankLine();
       printer.info('Slot names must be unique');
       printer.blankLine();
-      slot.name = await askSlotName(resourceName);
+      slot.name = await askSlotName();
     }
 
     slot.type = await getSlotType(context, newSlotTypes, parameters);
@@ -402,9 +401,8 @@ async function addSlot(context, intentName, resourceName, parameters) {
   return [slots];
 }
 
-async function askSlotName(resourceName) {
+async function askSlotName() {
   return prompter.input('Enter a name for your slot (e.g. Location)', {
-    initial: resourceName,
     validate: matchRegex(
       /^([A-Za-z]_?){1,100}$/,
       'Slot name can only contain letters, must be no longer than 100 characters, and cannot be empty',
