@@ -5,14 +5,14 @@ phases:
       nodejs: 16
     commands:
       - npm install
-      - echo "Install phase"
+      - echo Install phase
   pre_build:
     commands:
       - npm --version
-      - echo 'Pre-Build phase completed!'
+      - echo Pre-Build phase completed!
   build:
     commands:
-      - echo 'Build phase completed!'
+      - echo Build phase completed!
 batch:
     fast-fail: true
 artifacts:
