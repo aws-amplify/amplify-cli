@@ -21,6 +21,8 @@ phases:
 artifacts:
   files:
     - '**/*'
+batch:
+  fast-fail: false
 cache:
   paths:
     - '~/.cache/yarn/**/*'
