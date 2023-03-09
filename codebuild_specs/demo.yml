@@ -28,7 +28,7 @@ batch:
     - identifier: build1
       env:
         variables:
-          - NODE_OPTIONS: `--max-old-space-size=4096`
+          - NODE_OPTIONS: '--max-old-space-size=4096'
 cache:
   paths:
     - '~/.cache/yarn/**/*'
