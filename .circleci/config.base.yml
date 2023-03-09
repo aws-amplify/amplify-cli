@@ -166,7 +166,7 @@ jobs:
           name: Collect code coverage
           command: yarn coverage
     environment:
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=5120
 
   validate_cdk_version:
     <<: *linux-e2e-executor-medium
