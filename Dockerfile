@@ -16,9 +16,9 @@ RUN sudo apt-get install -y \
   lsof \
   jq \
   groff \
-  python2 \
-  python-pip \
-  libpython2-dev \
+  python3 \
+  python3-pip \
+  libpython3-dev \
   less \
   tree
 
