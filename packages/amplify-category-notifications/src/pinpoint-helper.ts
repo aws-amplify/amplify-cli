@@ -310,7 +310,7 @@ export const ensurePinpointApp = async (
   let pinpointApp: Partial<ICategoryMeta> | undefined;
   let resourceName;
   const amplifyMeta = context.exeInfo.amplifyMeta || stateManager.getMeta();
-  const envName = appEnvName || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName();
+  const envName: string = appEnvName || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName() || '';
   const pinpointAppStatus = appStatus || (await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName));
   switch (pinpointAppStatus.status) {
     case IPinpointDeploymentStatus.NO_ENV: {

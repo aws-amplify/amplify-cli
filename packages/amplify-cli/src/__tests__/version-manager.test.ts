@@ -5,6 +5,7 @@ import { UsageData } from '../domain/amplify-usageData';
 import { getLatestApiVersion, getLatestPayloadVersion } from '../domain/amplify-usageData/VersionManager';
 import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { ProjectSettings } from 'amplify-cli-core/src';
 
 describe('test version manager', () => {
   it('url version should be the latest URL', () => {
@@ -23,7 +24,7 @@ describe('test version manager', () => {
       new Error(''),
       '',
       '12311232',
-      { frontend: 'javascript', editor: 'vscode', framework: 'react' },
+      { frontend: 'javascript', editor: 'vscode', framework: 'react' } as unknown as ProjectSettings,
       {},
       {},
       usageData.getFlowReport() as IFlowReport,
