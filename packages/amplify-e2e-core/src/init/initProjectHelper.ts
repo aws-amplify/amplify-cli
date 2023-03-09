@@ -7,7 +7,6 @@ import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
-import execa from 'execa';
 
 const defaultSettings = {
   name: EOL,
