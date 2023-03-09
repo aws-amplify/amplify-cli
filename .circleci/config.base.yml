@@ -1364,4 +1364,5 @@ commands:
           command: |
             nvm install 18.15.0
             nvm use 18.15.0
-            node --version
+            nvm ls
+      - run: node --version
