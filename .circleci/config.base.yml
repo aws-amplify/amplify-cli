@@ -141,6 +141,7 @@ jobs:
             equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
             - checkout
+            - install_node18_windows
             - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
             - run:
@@ -460,6 +461,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
+            - install_node18_windows
             - attach_workspace:
                 at: ~/.
       - when:
@@ -1354,3 +1356,16 @@ commands:
               exit 1
             fi
           when: always
+  install_node18_windows:
+    description: Install Node 18 on Windows
+    steps:
+      - run: choco install wget -y
+      - run:
+          command: wget https://nodejs.org/download/release/v18.15.0/node-v18.15.0-x64.msi -P C:\Users\circleci\Downloads\
+          shell: cmd.exe
+      - run: MsiExec.exe /i C:\Users\circleci\Downloads\node-v18.15.0-x64.msi /qn
+      - run:
+          command: |
+            Start-Process powershell -verb runAs -Args "-start GeneralProfile"
+            nvm install 18.15.0
+            nvm use 18.15.0
