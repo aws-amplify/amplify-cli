@@ -3,7 +3,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { $TSAny } from 'amplify-cli-core';
 import * as fs from 'fs-extra';

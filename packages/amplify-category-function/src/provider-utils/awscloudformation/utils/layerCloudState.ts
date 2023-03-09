@@ -6,7 +6,6 @@ import { isMultiEnvLayer } from './layerHelpers';
 import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export class LayerCloudState {
   private static instances: Record<string, LayerCloudState> = {};
   private layerVersionsMetadata: LayerVersionMetadata[];
@@ -15,7 +14,6 @@ export class LayerCloudState {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   static getInstance(layerName: string): LayerCloudState {
     if (!LayerCloudState.instances[layerName]) {
       LayerCloudState.instances[layerName] = new LayerCloudState();
@@ -119,7 +117,6 @@ export class LayerCloudState {
     return this.layerVersionsMetadata;
   }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   public async getLayerVersionsFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
     return this.layerVersionsMetadata || this.loadLayerDataFromCloud(context, layerName);
   }
