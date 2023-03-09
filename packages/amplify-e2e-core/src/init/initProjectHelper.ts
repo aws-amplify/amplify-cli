@@ -494,7 +494,14 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
   });
 }
 
-export const initHeadless = async (projRoot: string, appId: string, envName: string): Promise<void> => {
-  const args = ['init', '--yes', '--appId', appId, '--envName', envName];
-  await execa(getCLIPath(), args, { cwd: projRoot });
-};
+export function initHeadless(cwd: string, envName: string, appId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['init', '--yes', '--envName', envName, '--appId', appId], { cwd, stripColors: true }).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
