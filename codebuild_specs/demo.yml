@@ -1,3 +1,4 @@
+---
 version: 0.2
 phases:
   install:
@@ -21,14 +22,14 @@ phases:
       - echo Post build complete
 artifacts:
   files:
-    - '**/*'
+    - "**/*"
 batch:
   fast-fail: true
   build-list:
     - identifier: build1
       env:
         variables:
-          - NODE_OPTIONS: '--max-old-space-size=4096'
+          - NODE_OPTIONS: --max-old-space-size=4096
 cache:
   paths:
-    - '~/.cache/yarn/**/*'
+    - ~/.cache/yarn/**/*
