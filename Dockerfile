@@ -59,7 +59,7 @@ RUN python3 --version
 
 #Install .Net
 WORKDIR /tmp
-RUN sudo apt-get install apt-transport-https ca-certificates
+RUN sudo apt-get install -y apt-transport-https ca-certificates
 RUN wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
 RUN sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
 RUN wget https://packages.microsoft.com/config/debian/9/prod.list
@@ -68,9 +68,9 @@ RUN sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
 RUN sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
 
 RUN sudo apt-get update
-RUN sudo apt-get install apt-transport-https
+RUN sudo apt-get install -y apt-transport-https
 RUN sudo apt-get update
-RUN sudo apt-get install dotnet-sdk-6.0
+RUN sudo apt-get install -y dotnet-sdk-6.0
 RUN dotnet --list-sdks
 RUN dotnet tool install -g amazon.lambda.tools
 RUN dotnet tool install -g amazon.lambda.testtool-6.0
