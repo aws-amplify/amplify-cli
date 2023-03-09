@@ -549,7 +549,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:18
+      - image: cimg/node:18.14
     steps:
       - setup_remote_docker
       - aws-ecr/build-and-push-image:

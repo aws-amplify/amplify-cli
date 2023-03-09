@@ -1,4 +1,4 @@
-FROM cimg/node:18
+FROM cimg/node:18.14
 RUN sudo npm install -g npm@7
 RUN npm -v
 WORKDIR /tmp
