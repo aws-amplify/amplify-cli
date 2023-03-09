@@ -237,7 +237,7 @@ describe('amplify help functions: ', () => {
       },
     } as unknown as $TSContext;
     runHelp(mockContext, commandsInfo);
-    expect(printer.info).toBeCalledWith('  ' + 'amplify mock <subcommand>');
+    expect(printer.info).toBeCalledWith('  ' + 'amplify mock [subcommand]');
   });
 
   it('run help subcommand (mock function)', () => {
@@ -256,6 +256,6 @@ describe('amplify help functions: ', () => {
       },
     } as unknown as $TSContext;
     runHelp(mockContext, commandsInfo);
-    expect(printer.info).toBeCalledWith('  ' + 'amplify mock function [flags]');
+    expect(printer.info).toBeCalledWith('  ' + 'amplify mock function [--event <path-to-json-file>] [--timeout <number-of-seconds>]');
   });
 });
