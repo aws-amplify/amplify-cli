@@ -1,5 +1,5 @@
 FROM cimg/node:18.14
-RUN sudo npm install -g npm@7
+RUN sudo npm install -g npm@9
 RUN npm -v
 WORKDIR /tmp
 RUN sudo apt-get update
@@ -16,7 +16,7 @@ RUN sudo apt-get install -y \
   lsof \
   jq \
   groff \
-  python \
+  python2 \
   python-pip \
   libpython-dev \
   less \
