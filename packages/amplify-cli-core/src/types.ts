@@ -66,7 +66,7 @@ export type ProjectConfig<T extends string = ''> = Pick<
   'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'
 > &
   Record<T, string>;
-export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
+export type LocalEnvInfo = Required<Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName' | 'noUpdateBackend'>>;
 export interface FlowRecorder {
   setIsHeadless: (headless: boolean) => void;
   pushHeadlessFlow: (headlessFlowDataString: string, input: CommandLineInput) => void;
@@ -78,13 +78,14 @@ export interface IUsageData extends IUsageMetricsData, FlowRecorder {}
 export type ProjectSettings = {
   frontend?: string;
   editor?: string;
-  envName?: string;
+  envName: string;
   framework?: string;
   version?: string;
   providers?: string[];
   projectPath?: string;
   defaultEditor?: string;
   frontendHandler?: unknown;
+  noUpdateBackend?: boolean;
 };
 export interface IUsageDataPayload {
   sessionUuid: string;
@@ -200,7 +201,7 @@ export type CommandLineInput = {
   plugin?: string;
   command: string;
   subCommands?: string[];
-  options?: CLIGlobalFlags & Record<string, any>;
+  options?: CLIGlobalFlags & Record<string, $TSAny>;
 };
 
 export type Plugin = {
