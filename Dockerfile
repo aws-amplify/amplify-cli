@@ -18,7 +18,7 @@ RUN sudo apt-get install -y \
   groff \
   python2 \
   python-pip \
-  libpython-dev \
+  libpython2-dev \
   less \
   tree
 
