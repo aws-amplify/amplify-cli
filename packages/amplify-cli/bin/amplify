@@ -4,6 +4,8 @@
 // this file should be a duplicate of amplify.production.template except for the CLI_ENV value
 process.env.CLI_ENV = 'development';
 
+process['noDeprecation'] = true;
+
 const startTime = Date.now();
 if (process.pkg) {
   require('../lib/utils/copy-override').copyOverride();
