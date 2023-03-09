@@ -16,6 +16,8 @@ RUN sudo apt-get install -y \
   lsof \
   jq \
   groff \
+  python2 \
+  libpython2-dev \
   python3 \
   python3-pip \
   libpython3-dev \
@@ -44,34 +46,9 @@ RUN curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
 RUN sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
 ENV PATH=${PATH}:/usr/local/go/bin
 
-# Install Python
-WORKDIR /tmp
-RUN sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
-RUN curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
-RUN sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
-WORKDIR /usr/local/Python-3.8.2
-RUN sudo ./configure
-RUN sudo make -j 4
-RUN sudo make install
-RUN sudo apt install python3-pip
-RUN pip3 install --user pipenv
-RUN python3 --version
-
 #Install .Net
-WORKDIR /tmp
-RUN sudo apt-get install -y apt-transport-https ca-certificates
-RUN wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
-RUN sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-RUN wget https://packages.microsoft.com/config/debian/9/prod.list
-RUN sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
-RUN sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
-RUN sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
-
-RUN sudo apt-get update
-RUN sudo apt-get install -y apt-transport-https
-RUN sudo apt-get update
 RUN sudo apt-get install -y dotnet-sdk-6.0
-RUN dotnet --list-sdks
+RUN sudo dotnet --list-sdks
 RUN dotnet tool install -g amazon.lambda.tools
 RUN dotnet tool install -g amazon.lambda.testtool-6.0
 ENV PATH=${PATH}:/home/circleci/.dotnet/tools
