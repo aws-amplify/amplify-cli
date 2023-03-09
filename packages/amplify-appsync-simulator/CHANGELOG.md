@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.10.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.3...@aws-amplify/amplify-appsync-simulator@2.10.0-beta.2) (2023-02-17)
+## [2.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.10.0...@aws-amplify/amplify-appsync-simulator@2.10.1) (2023-02-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
+# [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.4...@aws-amplify/amplify-appsync-simulator@2.10.0) (2023-02-27)
 
 
 ### Bug Fixes
@@ -19,23 +27,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [2.10.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.3...@aws-amplify/amplify-appsync-simulator@2.10.0-beta.1) (2023-02-15)
+## [2.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.3...@aws-amplify/amplify-appsync-simulator@2.9.4) (2023-02-16)
 
-
-### Features
-
-* implement .autoUlid for testing purposes ([#10442](https://github.com/aws-amplify/amplify-cli/issues/10442)) ([4cf061b](https://github.com/aws-amplify/amplify-cli/commit/4cf061bc6f55d6142250977c18c5acb6f1926eda))
-
-
-
-
-
-# [2.10.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.9.3...@aws-amplify/amplify-appsync-simulator@2.10.0-beta.0) (2023-02-07)
-
-
-### Features
-
-* implement .autoUlid for testing purposes ([#10442](https://github.com/aws-amplify/amplify-cli/issues/10442)) ([4cf061b](https://github.com/aws-amplify/amplify-cli/commit/4cf061bc6f55d6142250977c18c5acb6f1926eda))
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
 
 
 

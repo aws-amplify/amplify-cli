@@ -10,7 +10,7 @@ import { prompt } from 'enquirer';
 // @ts-ignore
 import * as actions from 'enquirer/lib/combos';
 import chalk from 'chalk';
-import { IFlowData } from 'amplify-cli-shared-interfaces';
+import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { isYes, isInteractiveShell } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
@@ -243,6 +243,10 @@ class AmplifyPrompter implements Prompter {
       // eslint-disable-next-line spellcheck/spell-checker
       process.once('SIGTSTP', sigTstpListener);
       ({ result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
+        // limit is not part of the TS interface but it's part of the JS API
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        limit: 10,
         // actions is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

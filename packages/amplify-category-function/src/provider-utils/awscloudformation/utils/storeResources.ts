@@ -16,6 +16,7 @@ import { isNewVersion, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { saveEnvironmentVariables } from './environmentVariablesHelper';
+import { truncateResourceNames } from './truncateResourceNames';
 
 /**
  * handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -209,6 +210,11 @@ const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters |
     ),
   }));
 
+  parameters = {
+    ...parameters,
+    ...truncateResourceNames(parameters),
+  };
+
   // this is a hack to reuse some old code
   let templateParams: $TSAny = parameters;
   if ('trigger' in parameters) {
@@ -289,7 +295,7 @@ const updateLayerCfnFile = async (context: $TSContext, parameters: LayerParamete
 
 const setParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaAndBackendConfigParams): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [categoryName, layerName], parameters);
+  _.setWith(amplifyMeta, [categoryName, layerName], parameters);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -297,7 +303,7 @@ const assignParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaA
   const amplifyMeta = stateManager.getMeta();
   const layer = _.get(amplifyMeta, [categoryName, layerName], {});
   _.assign(layer, parameters);
-  _.set(amplifyMeta, [categoryName, layerName], layer);
+  _.setWith(amplifyMeta, [categoryName, layerName], layer);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 

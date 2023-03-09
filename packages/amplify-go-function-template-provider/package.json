@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-go-function-template-provider",
-  "version": "1.4.0-beta.0",
+  "version": "1.4.0",
   "description": "Go 1.x templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -25,9 +25,11 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.9.6-beta.5"
+    "amplify-function-plugin-interface": "1.9.7"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.6"
   }
 }

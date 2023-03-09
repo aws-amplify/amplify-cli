@@ -56,7 +56,7 @@ function attachPrompt(context: $TSContext) {
       });
       return yesno;
     },
-    ask: async (questions: any) => {
+    ask: async (questions: Parameters<inquirer.PromptModule>[0]) => {
       if (Array.isArray(questions)) {
         questions = questions.map((q) => {
           // eslint-disable-next-line spellcheck/spell-checker
@@ -90,11 +90,10 @@ function attachParameters(context: $TSContext) {
     argv,
     plugin,
     command,
-    options,
+    options: options ?? {},
+    raw: argv,
+    array: subCommands,
   };
-  context.parameters.options = context.parameters.options || {};
-  context.parameters.raw = argv;
-  context.parameters.array = subCommands;
   /* tslint:disable */
   if (subCommands && subCommands.length > 0) {
     if (subCommands.length > 0) {
@@ -121,7 +120,7 @@ function attachRuntime(context: $TSContext) {
       const directory = pluginEntry.packageLocation;
       const pluginName = pluginEntry.manifest.name;
       const pluginType = pluginEntry.manifest.type;
-      const commands = pluginEntry.manifest.commands;
+      const commands = pluginEntry.manifest.commands ?? [];
       context.runtime.plugins.push({
         name,
         directory,
@@ -141,11 +140,11 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding = 'utf8'): any => {
-    const result = fs.readFileSync(targetPath, encoding);
+  read: (targetPath: string, encoding: BufferEncoding = 'utf8'): string => {
+    const result = fs.readFileSync(targetPath, { encoding });
     return result;
   },
-  write: (targetPath: string, data: any): void => {
+  write: (targetPath: string, data: string | NodeJS.ArrayBufferView): void => {
     fs.ensureFileSync(targetPath);
     fs.writeFileSync(targetPath, data, 'utf-8');
   },
@@ -261,9 +260,9 @@ function columnHeaderDivider(cliTable: CLITable.Table): string[] {
 }
 
 function findWidths(cliTable: CLITable.Table): number[] {
-  return [(cliTable as any).options.head]
+  return [cliTable.options.head]
     .concat(getRows(cliTable))
-    .reduce((colWidths, row) => row.map((str: string, i: number) => Math.max(`${str}`.length + 1, colWidths[i] || 1)), []);
+    .reduce<number[]>((colWidths, row) => row.map((str: string, i: number) => Math.max(`${str}`.length + 1, colWidths[i] || 1)), []);
 }
 
 function getRows(cliTable: CLITable.Table) {

@@ -29,6 +29,7 @@ import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigge
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from './stack-synthesizer';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -123,10 +124,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           external: true,
         },
       });
+      const projectInfo = getProjectInfo();
       try {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
+          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',
@@ -181,12 +183,12 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       const triggerPermissions: AuthTriggerPermissions[] = permissions?.map((i: string) => JSON.parse(i));
 
       // handle dependsOn data
-      const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(
+      const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers ?? {}).map(
         (i) => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
       );
       const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
       // generate trigger config
-      const keys = Object.keys(this._cliInputs.cognitoConfig.triggers);
+      const keys = Object.keys(this._cliInputs.cognitoConfig.triggers as string);
       // Auth lambda config for Triggers
       const authTriggerConnections: AuthTriggerConnection[] = [];
       keys.forEach((key) => {

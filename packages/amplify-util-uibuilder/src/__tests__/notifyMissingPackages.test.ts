@@ -1,6 +1,7 @@
 import * as printerDependency from 'amplify-prompts';
 import * as JSONUtilitiesDependency from 'amplify-cli-core';
 import { notifyMissingPackages } from '../commands/utils/notifyMissingPackages';
+import { $TSContext } from 'amplify-cli-core';
 jest.mock('amplify-prompts');
 jest.mock('amplify-cli-core');
 printerDependency.printer.info = jest.fn();
@@ -23,7 +24,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
+    notifyMissingPackages(context as unknown as $TSContext);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -39,7 +40,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
+    notifyMissingPackages(context as unknown as $TSContext);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -51,7 +52,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
+    notifyMissingPackages(context as unknown as $TSContext);
     expect(printerDependency.printer.warn).toBeCalledTimes(2);
   });
 
@@ -67,7 +68,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
+    notifyMissingPackages(context as unknown as $TSContext);
     expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 });

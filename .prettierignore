@@ -7,6 +7,7 @@ API.md
 CHANGELOG.md
 
 packages/amplify-appsync-simulator/public
+packages/amplify-cli-core/src/__tests__/testFiles/custom-policies-test/function/functionTest/custom-policies.json
 packages/amplify-cli-core/src/__tests__/testFiles/packageManager-npm/package-lock.json
 packages/amplify-cli-core/src/__tests__/testFiles/testProject-initialize-json-error/amplify/cli.json
 packages/amplify-e2e-core/dist/index.html

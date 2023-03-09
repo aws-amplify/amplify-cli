@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-cycle
-import { TEST_PROFILE_NAME, getCLIPath, nspawn as spawn } from '..';
+import { TEST_PROFILE_NAME, getAwsProviderConfig, getCLIPath, nspawn as spawn } from '..';
 
 /**
  * Interactive amplify pull
@@ -37,9 +37,19 @@ export const amplifyPull = (
     args.push('--yes');
   }
 
+  if (settings.emptyDir && settings.yesFlag) {
+    const providerJson = JSON.stringify({ awscloudformation: getAwsProviderConfig() });
+    args.push('--providers');
+    if (process.platform === 'win32') {
+      // https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parsing?view=powershell-7.3#the-stop-parsing-token
+      args.push('--%');
+    }
+    args.push(providerJson);
+  }
+
   const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
 
-  if (settings.emptyDir) {
+  if (settings.emptyDir && !settings.yesFlag) {
     chain
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
@@ -61,7 +71,7 @@ export const amplifyPull = (
       .sendCarriageReturn()
       .wait('Do you plan on modifying this backend?')
       .sendLine(settings.noUpdateBackend ? 'n' : 'y');
-  } else if (!settings.noUpdateBackend) {
+  } else if (!settings.noUpdateBackend && !settings.emptyDir) {
     chain.wait('Pre-pull status').wait('Current Environment');
   }
 
@@ -76,7 +86,10 @@ export const amplifyPull = (
   if (settings.noUpdateBackend) {
     chain.wait('Added backend environment config object to your project.').wait("Run 'amplify pull' to sync future upstream changes.");
   } else if (settings.emptyDir) {
-    chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync future upstream changes.");
+    chain.wait(/Successfully pulled backend environment .+ from the cloud\./);
+    if (!settings.yesFlag) {
+      chain.wait("Run 'amplify pull' to sync future upstream changes.");
+    }
   } else {
     chain.wait('Post-pull status').wait('Current Environment');
   }

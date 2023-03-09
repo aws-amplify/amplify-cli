@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.5.6-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.5...amplify-dynamodb-simulator@2.5.6-beta.2) (2023-02-17)
+## [2.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.7...amplify-dynamodb-simulator@2.5.8) (2023-02-28)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
+## [2.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.6...amplify-dynamodb-simulator@2.5.7) (2023-02-27)
 
 
 ### Bug Fixes
@@ -14,23 +22,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [2.5.6-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.5...amplify-dynamodb-simulator@2.5.6-beta.1) (2023-02-15)
+## [2.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.5...amplify-dynamodb-simulator@2.5.6) (2023-02-16)
 
-
-### Bug Fixes
-
-* moved opensearch, dynamodb, and storage simulator tests to e2e tests ([#11876](https://github.com/aws-amplify/amplify-cli/issues/11876)) ([116a50c](https://github.com/aws-amplify/amplify-cli/commit/116a50c3a385ebe06a9b50b5c8fbce78ab67d147))
-
-
-
-
-
-## [2.5.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.5...amplify-dynamodb-simulator@2.5.6-beta.0) (2023-02-07)
-
-
-### Bug Fixes
-
-* moved opensearch, dynamodb, and storage simulator tests to e2e tests ([#11876](https://github.com/aws-amplify/amplify-cli/issues/11876)) ([116a50c](https://github.com/aws-amplify/amplify-cli/commit/116a50c3a385ebe06a9b50b5c8fbce78ab67d147))
+**Note:** Version bump only for package amplify-dynamodb-simulator
 
 
 

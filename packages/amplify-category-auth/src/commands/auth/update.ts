@@ -3,6 +3,7 @@ import { $TSContext, AmplifyCategories, AmplifySupportedService, BannerMessage, 
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { category } from '../..';
+import { AuthContext } from '../../context';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
@@ -15,7 +16,7 @@ export const alias = ['update'];
 /**
  * entry point to update auth resource
  */
-export const run = async (context: $TSContext): Promise<string | $TSContext | undefined> => {
+export const run = async (context: AuthContext): Promise<string | $TSContext | undefined> => {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
   const meta = stateManager.getMeta();
@@ -83,7 +84,7 @@ export const run = async (context: $TSContext): Promise<string | $TSContext | un
   } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
     return undefined;
   }

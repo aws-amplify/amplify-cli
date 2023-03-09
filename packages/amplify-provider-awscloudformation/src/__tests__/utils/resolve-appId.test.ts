@@ -1,4 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
+import { resolveAppId } from '../../utils/resolve-appId';
+
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
 const contextStub = {
   exeInfo: {
@@ -18,56 +21,32 @@ describe('resolve-appId', () => {
   });
 
   it('should return AmplifyAppId if meta file exists', () => {
-    jest.mock('amplify-cli-core', () => ({
-      ...(jest.requireActual('amplify-cli-core') as {}),
-      stateManager: {
-        getMeta: () => ({
-          providers: {
-            awscloudformation: {
-              AmplifyAppId: 'TestAmplifyMetaAppId',
-            },
-          },
-        }),
-        metaFileExists: () => true,
+    stateManagerMock.getMeta = jest.fn().mockReturnValueOnce({
+      providers: {
+        awscloudformation: {
+          AmplifyAppId: 'TestAmplifyMetaAppId',
+        },
       },
-    }));
-    const { resolveAppId } = require('../../utils/resolve-appId');
+    });
+    stateManagerMock.metaFileExists = jest.fn().mockReturnValueOnce(true);
     expect(resolveAppId(contextStub)).toBe('TestAmplifyMetaAppId');
   });
 
   it('should throw an error if meta file exists but AmplifyAppId does not exist', () => {
-    jest.mock('amplify-cli-core', () => ({
-      ...(jest.requireActual('amplify-cli-core') as {}),
-      stateManager: {
-        getMeta: () => ({}),
-        metaFileExists: () => true,
-      },
-    }));
-    const { resolveAppId } = require('../../utils/resolve-appId');
+    stateManagerMock.getMeta = jest.fn().mockReturnValueOnce({});
+    stateManagerMock.metaFileExists = jest.fn().mockReturnValueOnce(true);
     expect(() => {
       resolveAppId(contextStub);
     }).toThrow('Could not find AmplifyAppId in amplify-meta.json.');
   });
 
   it('should return AmplifyAppId from context if meta file does not exist', () => {
-    jest.mock('amplify-cli-core', () => ({
-      ...(jest.requireActual('amplify-cli-core') as {}),
-      stateManager: {
-        metaFileExists: () => false,
-      },
-    }));
-    const { resolveAppId } = require('../../utils/resolve-appId');
+    stateManagerMock.metaFileExists = jest.fn().mockReturnValueOnce(false);
     expect(resolveAppId(contextStub)).toBe('TestAmplifyContextAppId');
   });
 
   it('should throw an error if meta file does not exist and context does not have appID', () => {
-    jest.mock('amplify-cli-core', () => ({
-      ...(jest.requireActual('amplify-cli-core') as {}),
-      stateManager: {
-        metaFileExists: () => false,
-      },
-    }));
-    const { resolveAppId } = require('../../utils/resolve-appId');
+    stateManagerMock.metaFileExists = jest.fn().mockReturnValueOnce(false);
     expect(() => {
       resolveAppId(emptyContextStub);
     }).toThrow('Failed to resolve appId');

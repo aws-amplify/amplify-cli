@@ -4,9 +4,19 @@ import { prompter } from 'amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import { AmplifyEvent, AmplifyEventArgs, stateManager, executeHooks, HooksMeta, PluginInfo, constants } from 'amplify-cli-core';
+import {
+  FromStartupTimedCodePaths,
+  ManuallyTimedCodePath,
+  UntilExitTimedCodePath,
+  AmplifyEvent,
+  AmplifyEventArgs,
+  stateManager,
+  executeHooks,
+  HooksMeta,
+  PluginInfo,
+  constants,
+} from 'amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import { FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command
@@ -52,9 +62,11 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
     const noDuplicateDisplayNames = new Set(displayNames).size === displayNames.length;
 
     // special handling for hosting plugins
-    const consoleHostingPlugins = pluginCandidates.filter((pluginInfo) => pluginInfo.packageName === 'amplify-console-hosting');
+    const consoleHostingPlugins = pluginCandidates.filter(
+      (pluginInfo) => pluginInfo.packageName === '@aws-amplify/amplify-console-hosting',
+    );
     if (consoleHostingPlugins.length > 0) {
-      const otherPlugins = pluginCandidates.filter((pluginInfo) => pluginInfo.packageName !== 'amplify-console-hosting');
+      const otherPlugins = pluginCandidates.filter((pluginInfo) => pluginInfo.packageName !== '@aws-amplify/amplify-console-hosting');
       // put console hosting plugin at the top
       // eslint-disable-next-line no-param-reassign
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);

@@ -1,7 +1,7 @@
 /**
  * PUBLIC API: Amplify project type
  */
-export type AmplifyProjectInfo = {
+export type AmplifyProjectInfo = Readonly<{
   envName: string;
   projectName: string;
-};
+}>;

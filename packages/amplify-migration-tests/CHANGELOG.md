@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.3...@aws-amplify/amplify-migration-tests@5.4.0-beta.3) (2023-02-23)
+
+
+### Bug Fixes
+
+* migration tests ([6f03b0a](https://github.com/aws-amplify/amplify-cli/commit/6f03b0af1cfd12e9f0e3bd96b2f660d6b1a4e03f))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+
+
+### Features
+
+* added Node package dependency detector ([#11629](https://github.com/aws-amplify/amplify-cli/issues/11629)) ([bc1bca9](https://github.com/aws-amplify/amplify-cli/commit/bc1bca947af243cab70cea484b4325da3f817198))
+* inject project info into overrides ([#12064](https://github.com/aws-amplify/amplify-cli/issues/12064)) ([9ceaefa](https://github.com/aws-amplify/amplify-cli/commit/9ceaefad4b77155b09adebecc0d7edeee5130af0))
+
+
+
+
+
 # [5.4.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.3...@aws-amplify/amplify-migration-tests@5.4.0-beta.2) (2023-02-17)
 
 
@@ -48,6 +66,30 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 * added Node package dependency detector ([#11629](https://github.com/aws-amplify/amplify-cli/issues/11629)) ([bc1bca9](https://github.com/aws-amplify/amplify-cli/commit/bc1bca947af243cab70cea484b4325da3f817198))
+
+
+
+
+
+## [5.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.5...@aws-amplify/amplify-migration-tests@5.3.6) (2023-02-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [5.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.4...@aws-amplify/amplify-migration-tests@5.3.5) (2023-02-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [5.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.3...@aws-amplify/amplify-migration-tests@5.3.4) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
 
 
 
@@ -106,61 +148,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.2.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.1...@aws-amplify/amplify-migration-tests@5.2.0-beta.3) (2022-12-13)
-
-
-### Bug Fixes
-
-* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
-
-
-
-
-
-# [5.2.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.1...@aws-amplify/amplify-migration-tests@5.2.0-beta.2) (2022-12-01)
-
-
-### Bug Fixes
-
-* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
-
-
-
-
-
-# [5.2.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0-beta.0...@aws-amplify/amplify-migration-tests@5.2.0-beta.1) (2022-11-19)
-
-**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
-
-
-
-
-
-# [5.2.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0-cdkv2.0...@aws-amplify/amplify-migration-tests@5.2.0-beta.0) (2022-11-17)
-
-**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
-
-
-
-
-
-# [5.2.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0-cdkv2.0...@aws-amplify/amplify-migration-tests@5.2.0-cdkv2.2) (2022-11-10)
-
-**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
-
-
-
-
-
-# [5.2.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0-cdkv2.0...@aws-amplify/amplify-migration-tests@5.2.0-cdkv2.1) (2022-11-10)
-
-**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
-
-
-
-
-
-# [5.2.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.1.3...@aws-amplify/amplify-migration-tests@5.2.0-cdkv2.0) (2022-11-01)
 ## [5.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.2.0...@aws-amplify/amplify-migration-tests@5.2.1) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

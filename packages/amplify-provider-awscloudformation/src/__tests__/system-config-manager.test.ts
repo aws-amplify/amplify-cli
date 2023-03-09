@@ -27,40 +27,52 @@ describe('profile tests', () => {
 
   fs_mock.existsSync.mockReturnValue(true);
 
-  it('should use credential_process defined in config file', async () => {
-    // setup
-    const awsConfigContent = `[profile fake]
-    output = json
-    region = us-fake-1
-    credential_process = fake command`;
-
-    fs_mock.readFileSync.mockReturnValue(awsConfigContent);
-
+  describe('credential process loading', () => {
     const credentialProcessFetcher = jest.fn();
+    beforeEach(() => {
+      // setup
+      const awsConfigContent = `[profile fake]
+            output = json
+            region = us-fake-1
+            credential_process = fake command`;
 
-    ProcessCredentialsMock.mockImplementation(() => ({
-      accessKeyId: 'testAccessKey',
-      secretAccessKey: 'testSecret',
-      sessionToken: 'testSessionToken',
-      expireTime: new Date(1234),
-      expired: false,
-      get: jest.fn(),
-      getPromise: credentialProcessFetcher,
-      needsRefresh: jest.fn(),
-      refresh: jest.fn(),
-      refreshPromise: jest.fn(),
-    }));
+      fs_mock.readFileSync.mockReturnValue(awsConfigContent);
 
-    // test
-    const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
+      ProcessCredentialsMock.mockImplementation(() => ({
+        accessKeyId: 'testAccessKey',
+        secretAccessKey: 'testSecret',
+        sessionToken: 'testSessionToken',
+        expireTime: new Date(1234),
+        expired: false,
+        get: jest.fn(),
+        getPromise: credentialProcessFetcher,
+        needsRefresh: jest.fn(),
+        refresh: jest.fn(),
+        refreshPromise: jest.fn(),
+      }));
+    });
+    it('should use credential_process defined in config file', async () => {
+      // test
+      const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
 
-    // expect
-    expect(credentialProcessFetcher).toHaveBeenCalled();
-    expect(profile_config).toBeDefined();
-    expect(profile_config.accessKeyId).toBe('testAccessKey');
-    expect(profile_config.secretAccessKey).toBe('testSecret');
-    expect(profile_config.sessionToken).toBe('testSessionToken');
-    expect(profile_config.expiration).toEqual(new Date(1234));
+      // expect
+      expect(credentialProcessFetcher).toHaveBeenCalled();
+      expect(profile_config).toBeDefined();
+      expect(profile_config.accessKeyId).toBe('testAccessKey');
+      expect(profile_config.secretAccessKey).toBe('testSecret');
+      expect(profile_config.sessionToken).toBe('testSessionToken');
+      expect(profile_config.expiration).toEqual(new Date(1234));
+    });
+
+    it('sets AWS_SDK_LOAD_CONFIG while ProcessCredentials executes', async () => {
+      const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
+      credentialProcessFetcher.mockImplementationOnce(() => {
+        expect(process.env.AWS_SDK_LOAD_CONFIG).toBeTruthy();
+      });
+      await getProfiledAwsConfig(context_stub, 'fake');
+      expect(credentialProcessFetcher).toBeCalled();
+      expect(process.env.AWS_SDK_LOAD_CONFIG).toStrictEqual(sdkLoadConfigOriginal);
+    });
   });
 
   it('should fail to return profiled aws credentials', async () => {

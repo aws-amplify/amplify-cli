@@ -122,7 +122,7 @@ function doesAwsConfigExists(context: $TSContext) {
   if (stateManager.localAWSInfoExists()) {
     const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
-      context.exeInfo = context.exeInfo || {};
+      context.exeInfo ??= {};
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
       context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;
@@ -617,8 +617,11 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
 
   if (awsConfigInfo?.config?.accessKeyId && awsConfigInfo?.config?.secretAccessKey) {
     // Already loaded config
-    if (!awsConfigInfo.region) {
+    if (!awsConfigInfo.region && !awsConfigInfo?.config?.region) {
       awsConfigInfo.region = resolveRegion();
+      if (typeof awsConfigInfo.config === 'object') {
+        awsConfigInfo.config.region = awsConfigInfo.region;
+      }
     }
 
     return awsConfigInfo.config;
@@ -920,7 +923,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
     context.print.error(errorMessage);
     context.print.info(`Access keys for continuous integration can be configured with headless parameters: ${chalk.green(docsUrl)}`);
-    await context.usageData.emitError(errorMessage);
+    await context.usageData.emitError(new Error(errorMessage));
     exitOnNextTick(1);
   }
 

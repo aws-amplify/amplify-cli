@@ -213,13 +213,13 @@ export abstract class ResourcePackager {
       s3Key: packagedResource.packagerParams.zipFilename,
     };
     const { CATEGORIES, S3_BUCKET } = Constants;
-    _.set(
+    _.setWith(
       this.amplifyTeamProviderInfo,
       [this.envInfo.envName, CATEGORIES, packagedResource.category, packagedResource.resourceName],
       s3Info,
     );
-    _.set(packagedResource, ['s3Bucket'], s3Info);
-    _.set(this.amplifyMeta, [packagedResource.category, packagedResource.resourceName, S3_BUCKET], s3Info);
+    _.setWith(packagedResource, ['s3Bucket'], s3Info);
+    _.setWith(this.amplifyMeta, [packagedResource.category, packagedResource.resourceName, S3_BUCKET], s3Info);
   }
 
   /**
@@ -253,7 +253,7 @@ export abstract class ResourcePackager {
             'generateContainersArtifacts',
             [this.context, resource],
           );
-          _.set(this.amplifyMeta, [resource.category, resource.resourceName, EXPOSED_CONTAINER], exposedContainer);
+          _.setWith(this.amplifyMeta, [resource.category, resource.resourceName, EXPOSED_CONTAINER], exposedContainer);
         }
         break;
 

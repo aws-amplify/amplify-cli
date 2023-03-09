@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.3.10-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.9...amplify-app@4.3.10-beta.2) (2023-02-17)
+## [4.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.11...amplify-app@4.3.12) (2023-02-28)
 
 **Note:** Version bump only for package amplify-app
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [4.3.10-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.9...amplify-app@4.3.10-beta.1) (2023-02-15)
+## [4.3.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.10...amplify-app@4.3.11) (2023-02-27)
 
 **Note:** Version bump only for package amplify-app
 
@@ -19,7 +19,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [4.3.10-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.9...amplify-app@4.3.10-beta.0) (2023-02-07)
+## [4.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.9...amplify-app@4.3.10) (2023-02-16)
 
 **Note:** Version bump only for package amplify-app
 

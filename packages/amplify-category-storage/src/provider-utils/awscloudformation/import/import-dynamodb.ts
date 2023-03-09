@@ -1,5 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyError, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import Enquirer from 'enquirer';
@@ -290,12 +290,12 @@ export const importedDynamoDBEnvInit = async (
   const dynamoDB = await providerUtils.createDynamoDBService(context);
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands?.[0] === 'pull');
+  const isEnvAdd = context.input.command === 'env' && context.input.subCommands?.[0] === 'add';
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return headlessImport(context, dynamoDB, providerName, resourceParameters, headlessParams);
+    return headlessImport(context, dynamoDB, providerName, resourceParameters, headlessParams, currentEnvSpecificParameters);
   }
 
   // If we are pulling, take the current values if present to skip unneeded service walkthrough
@@ -422,9 +422,13 @@ const headlessImport = async (
   providerName: string,
   resourceParameters: DynamoDBResourceParameters,
   headlessParams: ImportDynamoDBHeadlessParameters,
+  currentEnvSpecificParameters: DynamoDBEnvSpecificResourceParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: DynamoDBEnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
-  const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
+  const resolvedEnvParams =
+    headlessParams?.tables || headlessParams?.region
+      ? ensureHeadlessParameters(resourceParameters, headlessParams)
+      : currentEnvSpecificParameters;
 
   const amplifyMeta = stateManager.getMeta();
   const { Region } = amplifyMeta.providers[providerName];
@@ -438,16 +442,16 @@ const headlessImport = async (
 
   const answers: DynamoDBImportAnswers = {
     resourceName: resourceParameters.resourceName,
-    tableName: currentEnvSpecificParameters.tableName,
+    tableName: resolvedEnvParams.tableName,
   };
 
-  const tableExists = await dynamoDB.tableExists(currentEnvSpecificParameters.tableName);
+  const tableExists = await dynamoDB.tableExists(resolvedEnvParams.tableName);
 
   if (!tableExists) {
-    throw new Error(importMessages.TableNotFound(currentEnvSpecificParameters.tableName));
+    throw new Error(importMessages.TableNotFound(resolvedEnvParams.tableName));
   }
 
-  answers.tableDescription = await dynamoDB.getTableDetails(currentEnvSpecificParameters.tableName);
+  answers.tableDescription = await dynamoDB.getTableDetails(resolvedEnvParams.tableName);
 
   const newState = await updateStateFiles(context, questionParameters, answers, false);
 
@@ -457,7 +461,7 @@ const headlessImport = async (
   };
 };
 
-const ensureHeadlessParameters = (
+export const ensureHeadlessParameters = (
   resourceParameters: DynamoDBResourceParameters,
   headlessParams: ImportDynamoDBHeadlessParameters,
 ): DynamoDBEnvSpecificResourceParameters => {
@@ -476,15 +480,19 @@ const ensureHeadlessParameters = (
   }
 
   if (missingParams.length > 0) {
-    throw new Error(`storage headless is missing the following inputParams ${missingParams.join(', ')}`);
+    throw new AmplifyError('InputValidationError', {
+      message: `storage headless is missing the following inputParams ${missingParams.join(', ')}`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories',
+    });
   }
 
   const tableParams = Object.keys(headlessParams.tables).filter((t) => t === resourceParameters.resourceName);
 
   if (tableParams?.length !== 1) {
-    throw new Error(
-      `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`,
-    );
+    throw new AmplifyError('InputValidationError', {
+      message: `storage headless expected 1 element for resource: ${resourceParameters.resourceName}, but found: ${tableParams.length}`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#--categories',
+    });
   }
 
   const envSpecificParameters: DynamoDBEnvSpecificResourceParameters = {

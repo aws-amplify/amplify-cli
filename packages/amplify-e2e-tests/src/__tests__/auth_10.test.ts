@@ -26,7 +26,7 @@ describe('amplify update auth', () => {
 
   it('...should update backend-config.json on auth update', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     const backendConfigBefore = await getBackendConfig(projRoot);
 
     await updateAuthMFAConfiguration(projRoot, {});

@@ -62,7 +62,7 @@ export class DebugConfig {
     if (!cliJson) {
       return;
     }
-    const updatedCliJson = _.set(cliJson, [], this.debug);
+    const updatedCliJson = _.setWith(cliJson, [], this.debug);
     stateManager.setCLIJSON(rootPath, { ...updatedCliJson, debug: this.debug });
     this.dirty = false;
   }

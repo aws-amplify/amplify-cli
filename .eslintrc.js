@@ -41,6 +41,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
+    'import/no-extraneous-dependencies': 'error',
     'no-bitwise': 'warn',
     'consistent-return': 'error',
     'eol-last': ['error', 'always'],
@@ -109,6 +110,13 @@ module.exports = {
       extends: ['plugin:jest/recommended'],
       rules: {
         'spellcheck/spell-checker': 'off',
+      },
+    },
+    {
+      // Disable no-unused-vars for templates
+      files: ['packages/amplify-cli/templates/**'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
       },
     },
   ],

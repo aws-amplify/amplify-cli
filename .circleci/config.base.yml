@@ -116,6 +116,19 @@ jobs:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
+  build_tests_standalone:
+    parameters:
+      os:
+        type: executor
+        default: l_xlarge
+    executor: l_xlarge
+    steps:
+      - checkout
+      - run: yarn config set script-shell $(which bash)
+      - run: yarn install
+      - run:
+          name: Build tests
+          command: yarn build-tests
   build_windows_workspace_for_e2e:
     parameters:
       os:
@@ -174,9 +187,9 @@ jobs:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 1250
-      - run: yarn eslint --no-eslintrc --config .eslint.package.json.js "**/package.json"
-      - run: yarn prettier --check .
+      - run: yarn lint-check
+      - run: yarn lint-check-package-json
+      - run: yarn prettier-check
 
   verify-api-extract:
     <<: *linux-e2e-executor-xlarge
@@ -913,6 +926,7 @@ workflows:
             branches:
               ignore:
                 - beta
+      - build_tests_standalone
       - build_windows_workspace_for_e2e:
           filters:
             branches:
@@ -1303,7 +1317,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+                  retry runE2eTest
                 no_output_timeout: 65m
       - when:
           condition:
@@ -1316,7 +1330,11 @@ commands:
                 command: |
                   source .circleci/local_publish_helpers.sh
                   source $BASH_ENV
+                  startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+                  setNpmRegistryUrlToLocal
+                  changeNpmGlobalPath
                   amplify version
+                  cd packages/amplify-e2e-tests
                   retry runE2eTest
                 no_output_timeout: 65m
   scan_e2e_test_artifacts:

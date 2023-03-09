@@ -5,6 +5,8 @@ const path = require('path');
 const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
 const { fileLogger } = require('./utils/aws-logger');
+const { minifyAllJSONInFolderRecursively } = require('./utils/minify-json');
+
 const logger = fileLogger('upload-appsync-files');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
@@ -188,6 +190,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const s3Client = await S3.getInstance(context);
     if (!fs.existsSync(resourceBuildDir)) {
       return;
+    }
+    if (context.input.options?.minify) {
+      minifyAllJSONInFolderRecursively(resourceBuildDir);
     }
     const spinner = new ora('Uploading files.');
     spinner.start();

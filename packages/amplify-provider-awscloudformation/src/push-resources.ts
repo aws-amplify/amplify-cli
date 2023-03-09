@@ -37,6 +37,7 @@ import {
   ApiCategoryFacade,
   AmplifyError,
   AmplifyFault,
+  ManuallyTimedCodePath,
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -77,6 +78,8 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { printCdkMigrationWarning } from './print-cdk-migration-warning';
+import { minifyJSONFile } from './utils/minify-json';
+import { handleCloudFormationError } from './cloud-formation-error-handler';
 
 const logger = fileLogger('push-resources');
 
@@ -282,8 +285,8 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       context.exeInfo.forcePush ||
       rebuild
     ) {
-      context.usageData.stopCodePathTimer('pushTransform');
-      context.usageData.startCodePathTimer('pushDeployment');
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
+      context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT);
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
@@ -343,7 +346,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           handleCloudFormationError(err);
         }
       }
-      context.usageData.stopCodePathTimer('pushDeployment');
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT);
       // Cleanup the deployment-state file
       await deploymentStateManager.deleteDeploymentStateFile();
     }
@@ -640,7 +643,7 @@ const storeS3BucketInfo = (category: string, deploymentBucketName: string, envNa
   const amplifyMeta = stateManager.getMeta();
   getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
-  _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
+  _.setWith(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -770,6 +773,9 @@ export const uploadTemplateToS3 = async (
   amplifyMeta: $TSMeta,
 ): Promise<void> => {
   const cfnFile = path.parse(filePath).base;
+  if (context.input.options?.minify) {
+    minifyJSONFile(filePath);
+  }
   const s3 = await S3.getInstance(context);
 
   const s3Params = {
@@ -907,7 +913,7 @@ export const formNestedStack = async (
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
     _.assign(tpiResourceParams, metaToBeUpdated);
-    _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+    _.setWith(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
     stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
   }
 
@@ -1223,29 +1229,9 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
     layerResources.forEach((r) => {
       const layerMetaPath = [AmplifyCategories.FUNCTION, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
-      _.set(meta, layerMetaPath, previousHash);
+      _.setWith(meta, layerMetaPath, previousHash);
     });
 
     stateManager.setMeta(projectRoot, meta);
   }
-};
-
-const handleCloudFormationError = (err: Error): void => {
-  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-    return;
-  }
-
-  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
-    throw new AmplifyError(
-      'DeploymentInProgressError',
-      {
-        message: 'Deployment is already in progress.',
-        resolution: 'Wait for the other deployment to finish and try again.',
-        code: (err as $TSAny).code,
-      },
-      err,
-    );
-  }
-
-  throw err;
 };

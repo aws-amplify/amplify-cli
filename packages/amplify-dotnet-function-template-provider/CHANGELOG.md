@@ -3,34 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.4.4-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.3...amplify-dotnet-function-template-provider@2.4.4-beta.2) (2023-02-17)
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.5...amplify-dotnet-function-template-provider@2.4.6) (2023-02-28)
 
-
-### Bug Fixes
-
-* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
 
 
 
 
 
-## [2.4.4-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.3...amplify-dotnet-function-template-provider@2.4.4-beta.1) (2023-02-15)
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.4...amplify-dotnet-function-template-provider@2.4.5) (2023-02-27)
 
-
-### Bug Fixes
-
-* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
 
 
 
 
 
-## [2.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.3...amplify-dotnet-function-template-provider@2.4.4-beta.0) (2023-02-07)
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.3...amplify-dotnet-function-template-provider@2.4.4) (2023-02-16)
 
-
-### Bug Fixes
-
-* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
 
 
 

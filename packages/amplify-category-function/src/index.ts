@@ -188,7 +188,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       const s3Bucket = _.get(currentAmplifyMeta, [categoryName, resourceName, 's3Bucket'], undefined);
       if (s3Bucket) {
         resourceParamManager.setParams(s3Bucket);
-        _.set(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
+        _.setWith(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
       }
 
       // if the function has secrets, set the appId key in team-provider-info

@@ -111,7 +111,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
 
           // Mobile hub migrated resources does not have an assigned provider
           if (resource.mobileHubMigrated === true) {
-            _.set(amplifyMeta, [category, resourceName], resource);
+            _.setWith(amplifyMeta, [category, resourceName], resource);
             hasMigratedResources = true;
           }
         });

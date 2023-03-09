@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# 3.5.0-beta.2 (2023-02-17)
+# 3.5.0 (2023-02-27)
 
 
 ### Bug Fixes
@@ -87,28 +87,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Reverts
 
 * "fix: remove app client secret as best practice" ([#5992](https://github.com/aws-amplify/amplify-cli/issues/5992)) ([d7d7fcf](https://github.com/aws-amplify/amplify-cli/commit/d7d7fcf65fb2928f5d97c2ada9fac8ebf3522ee0)), closes [#5731](https://github.com/aws-amplify/amplify-cli/issues/5731) [#5829](https://github.com/aws-amplify/amplify-cli/issues/5829)
-
-
-
-
-
-# [3.5.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@3.4.1...amplify-frontend-android@3.5.0-beta.1) (2023-02-15)
-
-
-### Features
-
-* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
-
-
-
-
-
-# [3.5.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@3.4.1...amplify-frontend-android@3.5.0-beta.0) (2023-02-07)
-
-
-### Features
-
-* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
 
 
 

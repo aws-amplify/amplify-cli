@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# 1.3.0-beta.0 (2023-02-17)
+# 1.3.0 (2023-02-27)
 
 
 ### Bug Fixes
@@ -23,22 +23,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Reverts
 
 * Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
-
-
-
-
-
-## [1.2.4-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.3...amplify-cli-logger@1.2.4-beta.1) (2023-02-15)
-
-**Note:** Version bump only for package amplify-cli-logger
-
-
-
-
-
-## [1.2.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.3...amplify-cli-logger@1.2.4-beta.0) (2023-02-07)
-
-**Note:** Version bump only for package amplify-cli-logger
 
 
 
@@ -66,14 +50,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * improved resolution message on permissions error ([#11558](https://github.com/aws-amplify/amplify-cli/issues/11558)) ([c220921](https://github.com/aws-amplify/amplify-cli/commit/c2209211cc76b1b65ac2b50391456c688f42d795))
-
-
-
-
-
-## [1.2.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.1...amplify-cli-logger@1.2.2-beta.0) (2022-12-01)
-
-**Note:** Version bump only for package amplify-cli-logger
 
 
 

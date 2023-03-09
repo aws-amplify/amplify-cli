@@ -53,7 +53,7 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function removeAnalytics(cwd: string, settings: any): Promise<void> {
+export function removeAnalytics(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')

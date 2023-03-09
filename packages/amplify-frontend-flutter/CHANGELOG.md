@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# 1.4.0-beta.2 (2023-02-17)
+# 1.4.0 (2023-02-27)
 
 
 ### Bug Fixes
@@ -53,28 +53,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Reverts
 
 * Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
-
-
-
-
-
-# [1.4.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@1.3.5...amplify-frontend-flutter@1.4.0-beta.1) (2023-02-15)
-
-
-### Features
-
-* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
-
-
-
-
-
-# [1.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@1.3.5...amplify-frontend-flutter@1.4.0-beta.0) (2023-02-07)
-
-
-### Features
-
-* generate analytics/notifications customer config sections ([df75892](https://github.com/aws-amplify/amplify-cli/commit/df75892ccbead85cf56bb1e5efd3cdf6c52df0db))
 
 
 

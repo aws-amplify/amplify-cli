@@ -1,7 +1,7 @@
 import { chooseServiceMessageAdd, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { addResource } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
 
@@ -32,7 +32,7 @@ export const run = async (context: $TSContext) => {
       printer.info(error.stack);
     }
     printer.error('There was an error adding the geo resource');
-    context.usageData.emitError(error);
+    void context.usageData.emitError(error);
     process.exitCode = 1;
   }
   return undefined;

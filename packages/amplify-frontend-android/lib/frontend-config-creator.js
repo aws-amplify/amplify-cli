@@ -218,7 +218,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
       Region: projectRegion,
     };
     if (cognitoResource.output.AppClientSecret) {
-      _.set(defaultPool, 'AppClientSecret', cognitoResource.output.AppClientSecret);
+      _.setWith(defaultPool, 'AppClientSecret', cognitoResource.output.AppClientSecret);
     }
     Object.assign(cognitoConfig, {
       CognitoUserPool: {

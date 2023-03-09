@@ -11,8 +11,8 @@ import {
   HooksMeta,
   AmplifyError,
   constants,
-  CommandLineInput,
 } from 'amplify-cli-core';
+import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
@@ -101,6 +101,7 @@ export const run = async (startTime: number): Promise<void> => {
   if (!verificationResult.verified) {
     if (verificationResult.helpCommandAvailable) {
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new AmplifyError('InputValidationError', {
         message: verificationResult.message ?? 'Invalid input',
@@ -206,7 +207,7 @@ async function sigIntHandler(context: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: CommandLineInput): Promise<void> => {
+export const execute = async (input: CLIInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 
@@ -222,6 +223,7 @@ export const execute = async (input: CommandLineInput): Promise<void> => {
     if (verificationResult.helpCommandAvailable) {
       // eslint-disable-next-line no-param-reassign
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new Error(verificationResult.message);
     }

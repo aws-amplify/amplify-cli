@@ -19,8 +19,8 @@ export const removeGetUserEndpoints = (resourceName: string): void => {
     const authAction = _.get(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action');
     _.remove(unAuthAction, (action) => action === 'mobiletargeting:GetUserEndpoints');
     _.remove(authAction, (action) => action === 'mobiletargeting:GetUserEndpoints');
-    _.set(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
-    _.set(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
+    _.setWith(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
+    _.setWith(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
     JSONUtilities.writeJson(pinpointTemplateFilePath, pinpointTemplateFile);
   }
 };

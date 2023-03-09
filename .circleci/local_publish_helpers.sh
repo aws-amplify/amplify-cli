@@ -270,19 +270,12 @@ function setAwsAccountCredentials {
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
-    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-        setNpmRegistryUrlToLocal
-        changeNpmGlobalPath
-        cd $(pwd)/packages/amplify-e2e-tests
-    fi
-
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --forceExit --no-cache --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --no-cache --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --forceExit --no-cache --maxWorkers=3 $TEST_SUITE
     fi
 }
 

@@ -205,7 +205,7 @@ describe('amplify app console tests', () => {
       APPLE_PRIVATE_KEY,
     } = getSocialProviders();
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeTruthy();
     await amplifyPushAuth(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
@@ -298,7 +298,7 @@ describe('amplify app console tests', () => {
   it('test pull with auth config', async () => {
     const envName = 'dev';
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot);
     await amplifyPushAuth(projRoot);
     let teamInfo = getTeamProviderInfo(projRoot);
     expect(teamInfo).toBeDefined();

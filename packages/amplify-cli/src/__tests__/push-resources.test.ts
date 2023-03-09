@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
+import { ManuallyTimedCodePath } from 'amplify-cli-core';
 import { pushResources } from '../extensions/amplify-helpers/push-resources';
 
 jest.mock('amplify-cli-core', () => ({

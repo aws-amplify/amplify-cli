@@ -50,7 +50,7 @@ export function constructMockPluginPlatform(): PluginPlatform {
     },
   };
   const consoleHostingPluginInfo: PluginInfo = {
-    packageName: 'amplify-console-hosting',
+    packageName: '@aws-amplify/amplify-console-hosting',
     packageVersion: '1.0.0',
     packageLocation: '/root/amplify-cli/packages/amplify-console-hosting',
     manifest: {

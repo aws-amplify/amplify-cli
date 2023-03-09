@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
-const ora = require('ora');
+const { spinner } = require('amplify-cli-core');
 
 const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
@@ -16,7 +16,6 @@ function getDefaultDomainForBranch(appId, branch) {
 }
 
 async function publishFileToAmplify(appId, branchName, artifactsPath, amplifyClient) {
-  const spinner = ora();
   spinner.start(DEPLOY_ARTIFACTS_MESSAGE);
   try {
     const params = {

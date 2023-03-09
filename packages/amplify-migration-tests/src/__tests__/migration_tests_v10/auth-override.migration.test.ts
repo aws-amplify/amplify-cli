@@ -10,12 +10,12 @@ import {
   getAppId,
   getProjectMeta,
   getUserPool,
+  replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
 import * as path from 'path';
-import * as fs from 'fs-extra';
 
 describe('amplify migration test auth', () => {
   let projRoot1: string;
@@ -41,9 +41,10 @@ describe('amplify migration test auth', () => {
   });
 
   it('...should add auth with overrides and work fine on latest version', async () => {
-    await initJSProjectWithProfileV10(projRoot1, { name: 'authTest', disableAmplifyAppCreation: false });
+    const projectName = 'authTest';
+    await initJSProjectWithProfileV10(projRoot1, { name: projectName, disableAmplifyAppCreation: false });
 
-    await addAuthWithDefault(projRoot1, {});
+    await addAuthWithDefault(projRoot1);
     await amplifyPushWithoutCodegen(projRoot1);
 
     const meta = getProjectMeta(projRoot1);
@@ -55,7 +56,7 @@ describe('amplify migration test auth', () => {
     // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot1, 'amplify', 'backend', 'auth', `${authResourceName}`, 'override.ts');
     const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'overrides', 'override-auth.ts');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await amplifyPushOverride(projRoot1);
 
     const appId = getAppId(projRoot1);

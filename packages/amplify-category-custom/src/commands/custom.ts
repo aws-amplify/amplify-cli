@@ -7,6 +7,9 @@ export const name = 'update';
 export async function run(context: $TSContext) {
   if (/^win/.test(process.platform)) {
     try {
+      if (!context.parameters.first) {
+        throw new TypeError('Missing command');
+      }
       const { run } = await import(path.join('.', categoryName, context.parameters.first));
 
       return run(context);

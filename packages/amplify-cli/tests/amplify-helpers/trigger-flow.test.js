@@ -130,13 +130,11 @@ describe('TriggerFlow:', () => {
   describe('When updating a trigger...', () => {
     let spyUpdate;
     let readdirSyncSpy;
-    let unlinkSyncSpy;
     let metadataSpy;
 
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1']);
       spyUpdate = jest.spyOn(func, 'update').mockImplementation(() => Promise.resolve());
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => null);
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -680,12 +678,11 @@ describe('TriggerFlow:', () => {
 
   describe('When calling choicesFromMetadata...', () => {
     let readdirSyncSpy;
-    let readFileSync;
     let statSyncSpy;
 
     beforeEach(() => {
       statSyncSpy = jest.spyOn(fs, 'statSync').mockImplementation(() => ({ isDirectory: jest.fn() }));
-      readFileSync = jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
+      jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
     });
 

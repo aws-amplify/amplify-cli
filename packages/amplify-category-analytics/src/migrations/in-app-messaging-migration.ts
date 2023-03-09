@@ -15,6 +15,7 @@ import { analyticsPush } from '../commands/analytics';
 import { invokeAuthPush } from '../plugin-client-api-auth';
 import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
 import { getAnalyticsResources } from '../utils/analytics-helper';
+
 import {
   getNotificationsCategoryHasPinpointIfExists,
   getPinpointRegionMappings,
@@ -35,10 +36,12 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     Object.keys(analytics).forEach((resourceName) => {
       const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
       const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
-      const cfn = JSONUtilities.readJson(templateFilePath);
-      const updatedCfn = migratePinpointCFN(cfn);
-      fs.ensureDirSync(analyticsResourcePath);
-      JSONUtilities.writeJson(templateFilePath, updatedCfn);
+      if (fs.existsSync(templateFilePath)) {
+        const cfn = JSONUtilities.readJson(templateFilePath);
+        const updatedCfn = migratePinpointCFN(cfn);
+        fs.ensureDirSync(analyticsResourcePath);
+        JSONUtilities.writeJson(templateFilePath, updatedCfn);
+      }
     });
   }
 
@@ -79,6 +82,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     };
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.ANALYTICS, resource, options);
 
+    context.parameters.options = context.parameters.options ?? {};
     context.parameters.options.yes = true;
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true;

@@ -134,9 +134,9 @@ export class FeatureFlagEnvironmentProvider implements FeatureFlagValueProvider 
     }
 
     if (environment === null) {
-      _.set(featureFlags, ['project', section, property], value);
+      _.setWith(featureFlags, ['project', section, property], value);
     } else {
-      _.set(featureFlags, ['environments', environment, section, property], value);
+      _.setWith(featureFlags, ['environments', environment, section, property], value);
     }
   };
 }

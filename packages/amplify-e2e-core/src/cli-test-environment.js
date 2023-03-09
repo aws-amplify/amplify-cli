@@ -52,7 +52,7 @@ class CLIEnvironment extends NodeEnvironment {
     return super.runScript(script);
   }
 
-  handleTestEvent(event, state) {
+  handleTestEvent(event) {
     let hookName;
     let currentBlock;
     switch (event.name) {
