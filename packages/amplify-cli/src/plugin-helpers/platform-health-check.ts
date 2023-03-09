@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-description */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */

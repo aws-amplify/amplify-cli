@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import _, { uniq, pullAll } from 'lodash';
