@@ -9,6 +9,7 @@ import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { ManuallyTimedCodePath } from 'amplify-cli-core';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
+import { ProjectSettings } from 'amplify-cli-core/src/types';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
@@ -44,7 +45,7 @@ describe('test usageData', () => {
       '',
       new CommandLineInput([]),
       'accountId',
-      { editor: 'vscode', framework: 'react', frontend: 'javascript' },
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' } as unknown as ProjectSettings,
       timeStamp,
     );
     b.init(
@@ -52,7 +53,7 @@ describe('test usageData', () => {
       '',
       new CommandLineInput([]),
       'accountId',
-      { editor: 'vscode', framework: 'react', frontend: 'javascript' },
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' } as unknown as ProjectSettings,
       timeStamp,
     );
     expect(a).toEqual(b);
