@@ -1359,5 +1359,9 @@ commands:
   install_node18_windows:
     description: Install Node 18 on Windows
     steps:
-      - run: choco install nodejs-lts
-      - run: node --version
+      - run:
+          name: Install Node 18 on Windows
+          command: |
+            nvm install 18.15.0
+            nvm use 18.15.0
+            node --version
