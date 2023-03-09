@@ -51,6 +51,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
         formSchemas.entities,
         dataSchema,
         studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+        studioClient.metadata.formFeatureFlags,
       ),
     };
 
@@ -108,6 +109,13 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
         `The components ${invalidComponentNames.join(
           ', ',
         )} were synced with an older version of Amplify Studio. Please re-sync your components with Figma to get latest features and changes.`, // eslint-disable-line spellcheck/spell-checker
+      );
+    }
+
+    // TODO: remove this warning message after release + 6 weeks
+    if (hasSuccessfulForm && (dataSchema?.models || dataSchema?.nonModels)) {
+      printer.warn(
+        'For data models with relationships, Amplify forms will now automatically contain relationship fields. This may change forms in your application. Please verify that all forms in your application are working as expected.',
       );
     }
 
