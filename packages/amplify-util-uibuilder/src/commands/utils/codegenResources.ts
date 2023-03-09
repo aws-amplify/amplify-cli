@@ -12,6 +12,7 @@ import {
   getGenericFromDataStore,
   StudioForm,
   StudioSchema,
+  FormFeatureFlags,
 } from '@aws-amplify/codegen-ui';
 import {
   AmplifyRenderer,
@@ -95,11 +96,16 @@ export const createUiBuilderTheme = (
 /**
  * Writes form file to the work space
  */
-export const createUiBuilderForm = (context: $TSContext, schema: StudioForm, dataSchema?: GenericDataSchema): StudioForm => {
+export const createUiBuilderForm = (
+  context: $TSContext,
+  schema: StudioForm,
+  dataSchema?: GenericDataSchema,
+  formFeatureFlags?: FormFeatureFlags,
+): StudioForm => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
     (form: StudioForm) =>
-      new AmplifyFormRenderer(form, dataSchema, config) as unknown as StudioTemplateRenderer<
+      new AmplifyFormRenderer(form, dataSchema, config, formFeatureFlags) as unknown as StudioTemplateRenderer<
         unknown,
         StudioForm,
         FrameworkOutputManager<unknown>,
