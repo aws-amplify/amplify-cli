@@ -401,7 +401,6 @@ export const migrate = (__: $TSContext, projectPath: string, resourceName: strin
   JSONUtilities.writeJson(cfnFilePath, newCfn);
 };
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const updateCFNFileForResourcePermissions = (
   resourceDirPath: string,
   functionParameters: Partial<FunctionParameters>,

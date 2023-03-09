@@ -28,7 +28,7 @@ module.exports = {
       module: true,
     },
   },
-  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'prefer-arrow'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],

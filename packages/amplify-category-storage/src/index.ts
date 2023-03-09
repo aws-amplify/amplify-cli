@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-description */
 import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {

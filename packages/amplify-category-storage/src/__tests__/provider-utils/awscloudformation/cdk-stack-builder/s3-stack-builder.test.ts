@@ -116,7 +116,7 @@ describe('Test S3 transform generates correct CFN template', () => {
   });
 });
 
-// eslint-disable-next-line jest/no-export, jsdoc/require-jsdoc
+// eslint-disable-next-line jest/no-export
 export class S3MockDataBuilder {
   static mockBucketName = 'mock-stack-builder-bucket-name-99'; // s3 bucket naming rules allows alphanumeric and hyphens
   static mockResourceName = 'mockResourceName';
@@ -170,7 +170,7 @@ export class S3MockDataBuilder {
     /* noop */
   }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc, @typescript-eslint/explicit-function-return-type
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   static getMockGetAllResourcesNoExistingLambdas() {
     return [{ service: 'Cognito', serviceType: 'managed' }];
   }
