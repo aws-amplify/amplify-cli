@@ -71,7 +71,6 @@ RUN sudo apt-get update
 RUN sudo apt-get install apt-transport-https
 RUN sudo apt-get update
 RUN sudo apt-get install dotnet-sdk-6.0
-RUN dotnet --version
 RUN dotnet --list-sdks
 RUN dotnet tool install -g amazon.lambda.tools
 RUN dotnet tool install -g amazon.lambda.testtool-6.0
