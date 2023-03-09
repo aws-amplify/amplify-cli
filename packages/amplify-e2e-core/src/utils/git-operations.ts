@@ -24,6 +24,7 @@ export const gitCleanFdx = async (cwd: string): Promise<void> => {
   await execa('git', ['clean', '-fdx'], { cwd });
 };
 
+// It is important to note the difference between -fdx and -fdX
 export const gitCleanFdX = async (cwd: string): Promise<void> => {
   await execa('git', ['clean', '-fdX'], { cwd });
 };
