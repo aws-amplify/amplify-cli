@@ -124,7 +124,6 @@
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^27.0.0",
-    "eslint-plugin-jsdoc": "^37.9.6",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-package-json-dependencies": "^1.0.17",
     "eslint-plugin-prefer-arrow": "^1.2.3",

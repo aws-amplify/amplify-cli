@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable no-return-await */
 import {
   config,
