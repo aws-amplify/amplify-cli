@@ -1360,5 +1360,13 @@ commands:
     description: Install Node 18 on Windows
     steps:
       - run: nvm version
+      - run:
+          name: Install Node 18
+          command: |
+            nvm install 18.15.0
+            nvm use 18.15.0
+            nvm ls
       - run: node --version
       - run: npm --version
+      - run: npm install -g yarn
+      - run: yarn --version
