@@ -4,6 +4,9 @@ const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const amplifyConfigHelper = require('./amplify-config-helper');
+const aws = require('aws-sdk');
+
+const identity = new aws.CognitoIdentityServiceProvider();
 
 const AMPLIFY_RESERVED_EXPORT_KEYS = [
   // cognito
@@ -177,7 +180,7 @@ function generateAWSConfigFile(context, configOutput) {
   }
 }
 
-function getCognitoConfig(cognitoResources, projectRegion) {
+async function getCognitoConfig(cognitoResources, projectRegion) {
   // There can only be one cognito instance
 
   const cognitoResource = cognitoResources[0];
@@ -203,9 +206,17 @@ function getCognitoConfig(cognitoResources, projectRegion) {
       AppClientId: cognitoResource.output.AppClientID,
       Region: projectRegion,
     };
-    if (cognitoResource.output.AppClientSecret) {
-      _.setWith(defaultPool, 'AppClientSecret', cognitoResource.output.AppClientSecret);
+
+    const appClientSecretRes = await identity.describeUserPoolClient({
+      ClientId: cognitoResource.output.AppClientID,
+      UserPoolId: cognitoResource.output.UserPoolId,
+    }).promise();
+    const appClientSecret = appClientSecretRes.UserPoolClient.ClientSecret;
+
+    if (appClientSecret) {
+      defaultPool.AppClientSecret = appClientSecret;
     }
+
     Object.assign(cognitoConfig, {
       CognitoUserPool: {
         Default: defaultPool,
