@@ -16,7 +16,7 @@ parameters:
 executors:
   w_medium: &windows-e2e-executor-medium
     machine:
-      image: 'windows-server-2022-gui:current'
+      image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.medium'
       shell: bash.exe
     working_directory: ~/repo
@@ -26,7 +26,7 @@ executors:
 
   w_xlarge: &windows-e2e-executor-xlarge
     machine:
-      image: 'windows-server-2022-gui:current'
+      image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.xlarge'
       shell: bash.exe
     working_directory: ~/repo
