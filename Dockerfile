@@ -70,11 +70,9 @@ RUN sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
 RUN sudo apt-get update
 RUN sudo apt-get install apt-transport-https
 RUN sudo apt-get update
-RUN sudo apt-get install dotnet-sdk-3.1
 RUN sudo apt-get install dotnet-sdk-6.0
 RUN dotnet --version
 RUN dotnet --list-sdks
 RUN dotnet tool install -g amazon.lambda.tools
-RUN dotnet tool install -g amazon.lambda.testtool-3.1
 RUN dotnet tool install -g amazon.lambda.testtool-6.0
 ENV PATH=${PATH}:/home/circleci/.dotnet/tools
