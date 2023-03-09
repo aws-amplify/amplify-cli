@@ -1369,3 +1369,4 @@ commands:
             Start-Process powershell -verb runAs -Args "-start GeneralProfile"
             nvm install 18.15.0
             nvm use 18.15.0
+      - run: node --version
