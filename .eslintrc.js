@@ -75,6 +75,14 @@ module.exports = {
         minLength: 4,
       },
     ],
+    'no-restricted-properties': [
+      2,
+      {
+        object: '_',
+        property: 'set',
+        message: 'Using _.set() has unintended side effects. Please use _.setWith() instead',
+      },
+    ],
   },
   overrides: [
     {
