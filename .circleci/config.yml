@@ -549,7 +549,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/node:12
+      - image: cimg/node:18
     steps:
       - setup_remote_docker
       - aws-ecr/build-and-push-image:
@@ -560,8 +560,8 @@ jobs:
           checkout: true
           create-repo: false
           dockerfile: Dockerfile
-          repo: amplify-cli-e2e-base-image-repo-public
-          tag: "latest,${CIRCLE_SHA1}"
+          repo: amplify-cli-e2e-base-image-node18-repo-public
+          tag: "latest,${CIRCLE_SHA1},node18"
 
 workflows:
   build_and_push_image:
@@ -572,3 +572,4 @@ workflows:
             branches:
               only:
                 - e2e-image-build
+                - e2e-image-build-vnext

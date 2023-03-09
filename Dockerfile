@@ -1,4 +1,4 @@
-FROM circleci/node:14
+FROM cimg/node:18
 RUN sudo npm install -g npm@7
 RUN npm -v
 WORKDIR /tmp
