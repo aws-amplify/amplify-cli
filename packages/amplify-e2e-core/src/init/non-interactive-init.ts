@@ -28,6 +28,31 @@ export const nonInteractiveInitAttach = async (
   await execa(getCLIPath(), args, { cwd: projRoot });
 };
 
+
+/**
+ * Executes a non-interactive init to create a new Project
+ */
+export const headlessInit = async (
+  projRoot: string,
+  amplifyInitConfig: AmplifyInitConfig,
+  frontendConfig: AmplifyFrontend,
+  awsProviderConfig: AwsProviderConfig | AwsProviderGeneralConfig,
+): Promise<void> => {
+  const args = [
+    'init',
+    '--amplify',
+    JSON.stringify(amplifyInitConfig),
+    '--frontend',
+    JSON.stringify(frontendConfig),
+    '--providers',
+    JSON.stringify({
+      awscloudformation: awsProviderConfig,
+    }),
+    '--yes',
+  ];
+  await execa(getCLIPath(true), args, { cwd: projRoot });
+};
+
 /**
  * Executes a non-interactive init to migrate a local project to an existing cloud environment with forcePush flag
  */
@@ -65,12 +90,36 @@ export const getAmplifyInitConfig = (projectName: string, envName: string): Ampl
 });
 
 /**
+ * Returns an frontend Config object of passed frontend type
+ */
+
+export const getAmplifyFrontend = () : AmplifyFrontend => ({
+  frontend:    'javascript',
+  framework:   'react',
+  config:   getJavascriptConfig(),
+});
+
+const getJavascriptConfig = (): JavaScriptConfig => ({
+    BuildCommand:   'npm run build',
+    DistributionDir:   'testDist',
+    SourceDir:  'src',
+    StartCommand:  'npm run start'
+});
+
+/**
  * Returns a default AwsProviderConfig
  */
 export const getAwsProviderConfig = (): AwsProviderConfig => ({
   configLevel: 'project',
   useProfile: true,
   profileName: TEST_PROFILE_NAME,
+});
+
+/**
+ * Returns a general AwsProviderConfig
+ */
+export const getAwsProviderGeneralConfig = (): AwsProviderGeneralConfig => ({
+  configLevel: 'general',
 });
 
 /**
@@ -81,4 +130,21 @@ export type AmplifyInitConfig = {
   envName: string;
   defaultEditor: string;
   frontend?: string;
+};
+
+type JavaScriptConfig = {
+  SourceDir :string;
+  DistributionDir : string;
+  BuildCommand : string;
+  StartCommand : string;
+}
+
+type AmplifyFrontend = {
+  frontend: string;
+  framework: string;
+  config: JavaScriptConfig;
+}
+
+export type AwsProviderGeneralConfig = {
+  configLevel: string;
 };
