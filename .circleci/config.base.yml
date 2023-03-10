@@ -1180,13 +1180,10 @@ workflows:
             - e2e-auth-credentials
             - cleanup-resources
             - e2e-test-context
-          # filters:
-          #   branches:
-          #     only:
-          #       - dev
-          #       - /run-e2e-with-rc\/.*/
-          #       - /tagged-release\/.*/
-          #       - /run-e2e\/.*/
+          filters:
+            branches:
+              ignore:
+                - beta
           requires:
             - upload_pkg_binaries
       - amplify_console_integration_tests:
