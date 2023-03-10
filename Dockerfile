@@ -21,6 +21,8 @@ RUN sudo apt-get install -y \
   nano
 
 # Install NodeJS tools
+RUN mkdir /home/circleci/.npm-global
+RUN mkdir /home/circleci/.npm-global/lib
 RUN sudo npm install -g create-react-app
 
 # Install Python
