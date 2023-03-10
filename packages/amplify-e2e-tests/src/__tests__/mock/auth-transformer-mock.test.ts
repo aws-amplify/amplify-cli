@@ -9,16 +9,22 @@ import {
 describe('Test auth transformer with mock', () => {
   const projName = 'authmock'
   let projRoot: string;
+  let executionContext;
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projName);
     await initJSProjectWithProfile(projRoot, { name: projName });
     await addApiWithAllAuthModes(projRoot, { transformerVersion: 2 });
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
-    await amplifyMock(projRoot);
+    executionContext = amplifyMock(projRoot);
   });
 
   afterEach(async () => {
+    await executionContext.sendCtrlC().runAsync();
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
+  });
+
+  it('Should execute a simple list query against mock server', async () => {
+
   });
 });
