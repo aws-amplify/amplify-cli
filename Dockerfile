@@ -20,6 +20,9 @@ RUN sudo apt-get install -y \
   tree \
   nano
 
+# Install NodeJS tools
+RUN npm install -g create-react-app
+
 # Install Python
 RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
 RUN sudo sudo apt-get update
