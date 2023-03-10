@@ -21,10 +21,13 @@ RUN sudo apt-get install -y \
   nano
 
 # Install Python
+RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
+RUN sudo sudo apt-get update
 RUN sudo apt-get install -y \
   python2 \
   libpython2-dev \
-  python3 \
+  python3.8 \
+  python3.8-distutils \
   python3-pip \
   libpython3-dev
 RUN pip3 install --user pipenv
