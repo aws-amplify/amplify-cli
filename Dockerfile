@@ -21,7 +21,7 @@ RUN sudo apt-get install -y \
   nano
 
 # Install NodeJS tools
-RUN npm install -g create-react-app
+RUN sudo npm install -g create-react-app
 
 # Install Python
 RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
