@@ -95,10 +95,6 @@
       "medianRuntime": 11
     },
     {
-      "test": "src/__tests__/migration_tests_v10/dotnet_runtime_update_migration.test.ts",
-      "medianRuntime": 11
-    },
-    {
       "test": "src/__tests__/migration_tests/overrides/auth-migration-e.test.ts",
       "medianRuntime": 11
     },
