@@ -16,14 +16,20 @@ RUN sudo apt-get install -y \
   lsof \
   jq \
   groff \
+  less \
+  tree \
+  nano
+
+# Install Python
+RUN sudo apt-get install -y \
   python2 \
   libpython2-dev \
   python3 \
   python3-pip \
-  libpython3-dev \
-  less \
-  tree
+  libpython3-dev
+RUN pip3 install --user pipenv
 
+# Install AWS CLI
 RUN sudo pip install awscli
 
 # Install Java
