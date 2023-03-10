@@ -1373,3 +1373,5 @@ commands:
             npm --version
             npm install -g yarn
             yarn --version
+            npm install -g create-react-app
+            npx create-react-app --version
