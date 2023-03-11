@@ -17,7 +17,7 @@ batch:
     - identifier: validate_packages
       buildspec: validate_packages.yml
       depend-on:
-        - prepare-build
+        - prepare_build
 cache:
   paths:
     - ~/.cache/yarn/**/*
