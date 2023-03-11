@@ -48,6 +48,12 @@ export const saveAll = async (serviceUploadHandler?: ServiceUploadHandler): Prom
  * Class for interfacing with environment-specific parameters
  */
 class EnvironmentParameterManager implements IEnvironmentParameterManager {
+  private categoriesThatCannotBeCloned = [
+    AmplifyCategories.API,
+    AmplifyCategories.AUTH,
+    AmplifyCategories.NOTIFICATIONS,
+    AmplifyCategories.STORAGE,
+  ];
   private resourceParamManagers: Record<string, ResourceParameterManager> = {};
   constructor(private readonly envName: string, private readonly parameterMapController: IBackendParametersController) {}
   /**
@@ -85,52 +91,61 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  canBeClonedHeadlessly(): boolean {
-    const categoriesThatCannotBeCloned = [
-      AmplifyCategories.API,
-      AmplifyCategories.AUTH,
-      AmplifyCategories.NOTIFICATIONS,
-      AmplifyCategories.STORAGE,
-    ];
+  canBeClonedHeadlessly(): { result: true } | { result: false, reason: string } {
+    const categoryResourcePairsContainingUnclonableParams: [string, string][] = [];
+    const categoryResourcePairsContainingUnclonableSecrets: [string, string][] = [];
+
+    // Check for parameters that cannot be cloned automatically
     const resourceKeys = Object.keys(this.resourceParamManagers);
-    const categoryResourceNamePairs: string[][] = resourceKeys.map((key) => key.split('_'));
+    const categoryResourceNamePairs: (readonly [string, string])[] = resourceKeys
+      .map((key) => splitResourceKey(key));
     for (const [category, resourceName] of categoryResourceNamePairs) {
-      if (categoriesThatCannotBeCloned.includes(category)) {
+      if (this.categoriesThatCannotBeCloned.includes(category) && this.hasResourceParamManager(category, resourceName)) {
         const resourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
         if (resourceParamManager.hasAnyParams()) {
-          return false;
+          categoryResourcePairsContainingUnclonableParams.push([category, resourceName]);
         }
       }
     }
+
+    // Check for secrets that cannot be cloned automatically
     const envSecrets = this.getEnvSecrets();
-    for (const category of categoriesThatCannotBeCloned) {
+    for (const category of this.categoriesThatCannotBeCloned) {
       if (envSecrets[category]) {
-        return false;
+        for (const resourceName of Object.keys(envSecrets[category])) {
+          categoryResourcePairsContainingUnclonableSecrets.push([category, resourceName]);
+        }
       }
     }
-    return true;
-  }
 
-  private getEnvSecrets(): {
-    [category: string]: {
-      [resourceName: string]: {
-        [key: string]: string;
-      };
-    };
-  } {
-    const projectRootStackId = stateManager.getRootStackId();
-    const { appSecrets } = stateManager.getDeploymentSecrets();
-
-    const projectSecrets = appSecrets.find(({ rootStackId }) => rootStackId === projectRootStackId);
-    if (projectSecrets?.environments?.[this.envName]) {
-      return projectSecrets.environments[this.envName];
+    if (categoryResourcePairsContainingUnclonableParams.length === 0 && categoryResourcePairsContainingUnclonableSecrets.length === 0) {
+      return { result: true };
     }
-    return {};
+
+    // Construct error message
+    let reason = `The "${this.envName}" environment contains values that cannot be copied to the new environment directly.\n`;
+    if (categoryResourcePairsContainingUnclonableParams.length > 0) {
+      reason += '\nThe following resources contain parameters that could not be cloned:';
+      for (const [category, resourceName] of categoryResourcePairsContainingUnclonableParams) {
+        reason += `\n  ${category} ${resourceName}`;
+      }
+    }
+
+    if (categoryResourcePairsContainingUnclonableSecrets.length > 0) {
+      reason += '\nThe following resources contain secrets that could not be cloned:';
+      for (const [category, resourceName] of categoryResourcePairsContainingUnclonableSecrets) {
+        reason += `\n  ${category} ${resourceName}`;
+      }
+    }
+
+    reason += '\n\nRe-run this command without the --yes flag to continue.';
+
+    return { result: false, reason };
   }
 
   async cloneEnvParamsToNewEnvParamManager(destManager: IEnvironmentParameterManager): Promise<void> {
     const resourceKeys = Object.keys(this.resourceParamManagers);
-    const categoryResourceNamePairs: string[][] = resourceKeys.map((key) => key.split('_'));
+    const categoryResourceNamePairs: (readonly [string, string])[] = resourceKeys.map((key) => splitResourceKey(key));
     categoryResourceNamePairs.forEach(([category, resourceName]) => {
       const srcResourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
       const allSrcParams: Record<string, string> = srcResourceParamManager.getAllParams();
@@ -232,6 +247,17 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
   }
 
+  private getEnvSecrets(): Record<Category, Record<ResourceName, Record<string, string>>> {
+    const projectRootStackId = stateManager.getRootStackId();
+    const { appSecrets } = stateManager.getDeploymentSecrets();
+
+    const projectSecrets = appSecrets.find(({ rootStackId }) => rootStackId === projectRootStackId);
+    if (projectSecrets?.environments?.[this.envName]) {
+      return projectSecrets.environments[this.envName];
+    }
+    return {};
+  }
+
   private serializeTPICategories(): Record<string, unknown> {
     return Object.entries(this.resourceParamManagers).reduce((acc, [resourceKey, resourceParams]) => {
       _.setWith(acc, splitResourceKey(resourceKey), resourceParams.getAllParams(), Object);
@@ -252,7 +278,7 @@ const splitResourceKey = (key: string): readonly [string, string] => {
  * Interface for environment parameter managers
  */
 export type IEnvironmentParameterManager = {
-  canBeClonedHeadlessly: () => boolean;
+  canBeClonedHeadlessly: () => { result: true } | { result: false, reason: string };
   cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
   getMissingParameters: (
@@ -283,3 +309,6 @@ type ResourceParameter = {
   resourceName: string;
   parameterName: string;
 };
+
+type Category = string;
+type ResourceName = string;

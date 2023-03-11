@@ -30,18 +30,7 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
     context.exeInfo.projectConfig.frontend = frontend;
   }
 
-  if (context.parameters.command === 'env') {
-    await downloadEnvParameters(context);
-    const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
-    if (context.exeInfo.inputParams?.yes) {
-      if (!envParamManger.canBeClonedHeadlessly()) {
-        throw new AmplifyError('EnvironmentConfigurationError', {
-          message:
-            'The source environment contains values that cannot be copied to the new environment directly. Re-run this command without the --yes flag to continue.',
-        });
-      }
-    }
-  }
+  return envAddValidation(context);
 };
 
 /**
@@ -87,7 +76,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
   printer.success('The following configuration will be applied:');
-  printer.info('');
+  printer.blankLine();
 
   displayConfigurationDefaults(defaultProjectName, defaultEnv, defaultEditorName);
 
@@ -96,7 +85,7 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   const frontendModule = await import(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
-  printer.info('');
+  printer.blankLine();
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
     setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
@@ -116,18 +105,7 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
 
-  if (context.parameters.command === 'env') {
-    await downloadEnvParameters(context);
-    const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
-    if (context.exeInfo.inputParams?.yes) {
-      if (!envParamManger.canBeClonedHeadlessly()) {
-        throw new AmplifyError('EnvironmentConfigurationError', {
-          message:
-            'The source environment contains values that cannot be copied to the new environment directly. Re-run this command without the --yes flag to continue.',
-        });
-      }
-    }
-  }
+  await envAddValidation(context);
 
   if (context.exeInfo.isNewProject && context.parameters.command !== 'env') {
     await displayAndSetDefaults(context, projectPath, projectName);
@@ -161,6 +139,21 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
 
   return context;
 };
+
+const envAddValidation = async (context: $TSContext): Promise<void> => {
+  if (context?.parameters?.command === 'env') {
+    await downloadEnvParameters(context);
+    const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
+    if (context.exeInfo.inputParams?.yes) {
+      const isClonable = envParamManger.canBeClonedHeadlessly();
+      if (!isClonable.result) {
+        throw new AmplifyError('EnvironmentConfigurationError', {
+          message: isClonable.reason,
+        });
+      }
+    }
+  }
+}
 
 const setProjectConfig = (context: $TSContext, projectName: string): void => {
   context.exeInfo.isNewProject = isNewProject(context);
