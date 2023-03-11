@@ -1,0 +1,23 @@
+---
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - yarn install
+artifacts:
+  files:
+    - '**/*'
+batch:
+  fast-fail: true
+  build-graph:
+    - identifier: prepare-build
+      buildspec: prepare-build.yml
+    - identifier: validate-packages
+      buildspec: validate-packages.yml
+      depend-on:
+        - prepare-build
+cache:
+  paths:
+    - ~/.cache/yarn/**/*

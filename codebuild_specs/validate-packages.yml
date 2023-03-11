@@ -1,0 +1,12 @@
+version: 0.2
+batch:
+  fast-fail: false
+  build-list:
+phases:
+  post_build:
+    commands:
+      - yarn lint-check
+      - yarn test-ci
+      - yarn verify-api-extract
+      - yarn verify-yarn-lock
+      - echo Post build complete

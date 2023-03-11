@@ -1,0 +1,13 @@
+---
+version: 0.2
+phases:
+  set-shell:
+    commands:
+      - yarn config set script-shell $(which bash)
+      - echo setting shell complete
+  build:
+    commands:
+      - yarn run production-build
+  build-tests:
+    commands:
+      - yarn build-tests
