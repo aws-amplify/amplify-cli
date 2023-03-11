@@ -13,9 +13,9 @@ batch:
   fast-fail: true
   build-graph:
     - identifier: prepare_build
-      buildspec: prepare_build.yml
+      buildspec: codebuild_specs/prepare_build.yml
     - identifier: validate_packages
-      buildspec: validate_packages.yml
+      buildspec: codebuild_specs/validate_packages.yml
       depend-on:
         - prepare_build
 cache:
