@@ -12,10 +12,10 @@ artifacts:
 batch:
   fast-fail: true
   build-graph:
-    - identifier: prepare-build
-      buildspec: prepare-build.yml
-    - identifier: validate-packages
-      buildspec: validate-packages.yml
+    - identifier: prepare_build
+      buildspec: prepare_build.yml
+    - identifier: validate_packages
+      buildspec: validate_packages.yml
       depend-on:
         - prepare-build
 cache:
