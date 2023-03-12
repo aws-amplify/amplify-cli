@@ -659,7 +659,7 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests using general prpfile
+          name: Run tests using general profile
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
@@ -964,7 +964,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
       - lint:
           requires:
             - build
@@ -986,6 +985,7 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+                - /run-e2e\/.*/
       - verify-yarn-lock:
           requires:
             - build
@@ -1002,6 +1002,7 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+                - /run-e2e\/.*/
       - validate_cdk_version:
           requires:
             - build
@@ -1014,6 +1015,7 @@ workflows:
                 - beta
                 - release
                 - /tagged-release-without-e2e-tests\/.*/
+                - /run-e2e\/.*/
       - integration_test:
           context:
             - e2e-test-context
@@ -1023,7 +1025,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - build
       - publish_to_local_registry:
@@ -1101,7 +1102,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
             - build_windows_workspace_for_e2e
@@ -1116,7 +1116,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_v6:
@@ -1130,7 +1129,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_v5:
@@ -1144,7 +1142,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_non_multi_env_layers:
@@ -1158,7 +1155,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_multi_env_layers:
@@ -1172,7 +1168,6 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
-                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_general_config_tests:
