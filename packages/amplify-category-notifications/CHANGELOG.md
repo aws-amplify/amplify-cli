@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.1...@aws-amplify/amplify-category-notifications@2.24.2) (2023-03-13)
+
+
+### Bug Fixes
+
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+
+
+
+
+
 ## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.0...@aws-amplify/amplify-category-notifications@2.24.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-notifications

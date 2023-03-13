@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "4.0.0-beta.8",
+  "version": "4.0.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "^2.1.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "amplify-prompts": "2.6.4",
+    "amplify-prompts": "2.6.5",
     "aws-cdk-lib": "~2.53.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
