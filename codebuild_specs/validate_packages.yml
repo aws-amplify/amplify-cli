@@ -1,7 +1,7 @@
 version: 0.2
-artifacts:
-  files:
-    - '**/*'
+cache:
+  paths:
+    - ~/.cache
 # batch:
 #   fast-fail: false
 #   build-list:
