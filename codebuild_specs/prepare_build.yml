@@ -17,6 +17,7 @@ phases:
   post_build:
     commands:
       - ls
+      - ls ~/.cache
 cache:
   paths:
     - ~/.cache/yarn
