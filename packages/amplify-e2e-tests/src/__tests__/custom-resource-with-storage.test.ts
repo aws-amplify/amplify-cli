@@ -33,8 +33,8 @@ describe('adding custom resources test', () => {
   });
 
   it('verify export custom storage types', async () => {
-    await addAuthWithDefault(projRoot, {});
-    await addS3WithGuestAccess(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addS3WithGuestAccess(projRoot);
     const appId = getAppId(projRoot);
     const cdkResourceName = `custom${uuid().split('-')[0]}`;
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
