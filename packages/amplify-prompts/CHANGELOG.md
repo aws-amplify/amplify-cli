@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.4...amplify-prompts@2.6.5) (2023-03-13)
+
+
+### Bug Fixes
+
+* limit the prompter list display options to 10 entries ([#12110](https://github.com/aws-amplify/amplify-cli/issues/12110)) ([53f7b4b](https://github.com/aws-amplify/amplify-cli/commit/53f7b4b57234e472c82e5913f2c0c7b72e8a8af5))
+* merge conflicts and linting ([bdd9f42](https://github.com/aws-amplify/amplify-cli/commit/bdd9f420303872c14db80e38e91c03b627503801))
+* reverting 5 commits to dev branch ([c54da9e](https://github.com/aws-amplify/amplify-cli/commit/c54da9eb69031bd665d50b6cd2dd8d3833c778bc))
+
+
+
+
+
 ## [2.6.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.3...amplify-prompts@2.6.4) (2023-02-27)
 
 **Note:** Version bump only for package amplify-prompts
