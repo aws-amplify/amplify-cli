@@ -19,7 +19,12 @@ export const getEnvParamManager: (envName?: string) => IEnvironmentParameterMana
 
 // @public (undocumented)
 export type IEnvironmentParameterManager = {
-    canBeClonedHeadlessly: () => boolean;
+    canBeClonedHeadlessly: () => {
+        result: true;
+    } | {
+        result: false;
+        reason: string;
+    };
     cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
     downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
     getMissingParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<{
