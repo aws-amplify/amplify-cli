@@ -13,7 +13,6 @@ phases:
   build:
     commands:
       - yarn run production-build
-      - yarn build-tests
   post_build:
     commands:
       - ls
