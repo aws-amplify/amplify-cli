@@ -1,5 +1,5 @@
 // normalize command line arguments, allow verb / noun place switch
-import { constants, PluginPlatform, pathManager, stateManager } from 'amplify-cli-core';
+import { constants, PluginPlatform, pathManager, stateManager, commandsInfo } from 'amplify-cli-core';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
@@ -84,6 +84,21 @@ function preserveHelpInformation(input: CLIInput): CLIInput {
       subCommands.unshift(input.plugin);
     }
   }
+
+  if (input.command == 'status' && input.options) {
+    const statusSubcommands = commandsInfo
+      .find((commandInfo) => commandInfo.command == 'status')
+      ?.subCommands.map((subCommandInfo) => subCommandInfo.subCommand);
+    const potentialStatusSubcommands: Array<string> = statusSubcommands ? statusSubcommands : [];
+    const optionKeys = Object.keys(input.options);
+    for (const potentialSubcommand of potentialStatusSubcommands) {
+      if (optionKeys.includes(potentialSubcommand)) {
+        subCommands.push(potentialSubcommand);
+        break;
+      }
+    }
+  }
+
   if (input.options) {
     input.options[constants.HELP] = true;
     delete input.options[constants.HELP_SHORT];
