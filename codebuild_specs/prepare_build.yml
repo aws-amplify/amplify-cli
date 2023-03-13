@@ -19,7 +19,8 @@ phases:
       - yarn build-tests
   post_build:
     commands:
-      -
+      - ls
 cache:
   paths:
-    - ~/.cache/yarn/**/*
+    - ~/.cache
+    - ~/.ssh
