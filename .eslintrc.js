@@ -28,7 +28,7 @@ module.exports = {
       module: true,
     },
   },
-  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'prefer-arrow'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -73,6 +73,14 @@ module.exports = {
           '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
         ],
         minLength: 4,
+      },
+    ],
+    'no-restricted-properties': [
+      2,
+      {
+        object: '_',
+        property: 'set',
+        message: 'Using _.set() has unintended side effects. Please use _.setWith() instead',
       },
     ],
   },

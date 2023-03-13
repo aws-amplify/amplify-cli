@@ -1,7 +1,6 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-/* eslint-disable jsdoc/require-jsdoc */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';

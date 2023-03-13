@@ -6,7 +6,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-await */
 /* eslint-disable consistent-return */
-/* eslint-disable jsdoc/require-description */
 /* eslint-disable no-continue */
 /* eslint-disable max-len */
 /* eslint-disable spellcheck/spell-checker */
