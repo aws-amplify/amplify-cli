@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.6.0 (2023-03-13)
+
+
+### Bug Fixes
+
+* reverting changes to dev ([#12039](https://github.com/aws-amplify/amplify-cli/issues/12039)) ([69f5987](https://github.com/aws-amplify/amplify-cli/commit/69f598731e6461bcb40e7507f6ade82640ee280b))
+
+
+
+## 10.7.3 (2023-02-15)
+
+
+
+## 10.7.2 (2023-02-10)
+
+
+### Bug Fixes
+
+* automatic lint fixes ([#11636](https://github.com/aws-amplify/amplify-cli/issues/11636)) ([0e7f70b](https://github.com/aws-amplify/amplify-cli/commit/0e7f70befbe72d17dfb11f5fed1c8609a13d4a97))
+* bump API plugin version to update legacy rds transformers ([705d65c](https://github.com/aws-amplify/amplify-cli/commit/705d65cb3385543a37e276ae1e05a707d98cdd5c))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+# 10.6.0 (2022-12-10)
+
+
+
+## 10.4.1 (2022-11-11)
+
+
+
+# 10.2.0 (2022-09-21)
+
+
+
+# 10.0.0-rc.0 (2022-08-24)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+# 8.5.0 (2022-06-10)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fixed api to reference stack name and deployment bucket ([#8145](https://github.com/aws-amplify/amplify-cli/issues/8145)) ([4c7493a](https://github.com/aws-amplify/amplify-cli/commit/4c7493ac34fa89cab0c80e5c674bbeb102891a64))
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+### Features
+
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* detect changes in dockerfile ([#6495](https://github.com/aws-amplify/amplify-cli/issues/6495)) ([2333dec](https://github.com/aws-amplify/amplify-cli/commit/2333decdd61c2a5421a7030723f20d05f3c00269)), closes [#6359](https://github.com/aws-amplify/amplify-cli/issues/6359)
+* use consistent commonjs syntax when exporting members in js files ([#6405](https://github.com/aws-amplify/amplify-cli/issues/6405)) ([80fbd13](https://github.com/aws-amplify/amplify-cli/commit/80fbd13b43b77ea1b4d55d17fa849bef5bc38d45))
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+# 4.39.0 (2020-12-10)
+
+
+### Bug Fixes
+
+* containers - don't wait for pipeline on hosting ([#6137](https://github.com/aws-amplify/amplify-cli/issues/6137)) ([c75d694](https://github.com/aws-amplify/amplify-cli/commit/c75d69436104cb974684b0ed48c743294f70d556))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
 ## [2.5.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.13...amplify-container-hosting@2.5.14) (2023-02-28)
 
 **Note:** Version bump only for package amplify-container-hosting

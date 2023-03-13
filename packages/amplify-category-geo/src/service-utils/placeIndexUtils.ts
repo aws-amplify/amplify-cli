@@ -26,7 +26,7 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
 
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
@@ -55,7 +55,7 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });

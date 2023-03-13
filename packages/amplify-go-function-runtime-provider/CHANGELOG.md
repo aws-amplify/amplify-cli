@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.12...amplify-go-function-runtime-provider@2.3.13) (2023-03-13)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
 ## [2.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.11...amplify-go-function-runtime-provider@2.3.12) (2023-02-28)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

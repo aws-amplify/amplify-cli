@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.8.1...@aws-amplify/amplify-frontend-javascript@3.9.0) (2023-03-13)
+
+
+### Features
+
+* removes xr plugin ([#11901](https://github.com/aws-amplify/amplify-cli/issues/11901)) ([7f268f7](https://github.com/aws-amplify/amplify-cli/commit/7f268f7ee974ca776cf72a540dcf5cb5f615f04e))
+
+
+
+
+
 ## [3.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.8.0...@aws-amplify/amplify-frontend-javascript@3.8.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript

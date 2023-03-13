@@ -26,7 +26,7 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
@@ -54,7 +54,7 @@ export const modifyMapResource = async (context: $TSContext, parameters: MapPara
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });

@@ -30,7 +30,7 @@ describe('amplify auth with trigger', () => {
 
   it('add auth with trigger, push, update auth, push, verify trigger attachment', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);

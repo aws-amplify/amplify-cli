@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.1...@aws-amplify/amplify-e2e-core@4.8.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* headless pull with imported resources ([#12063](https://github.com/aws-amplify/amplify-cli/issues/12063)) ([898e570](https://github.com/aws-amplify/amplify-cli/commit/898e570b4078f9134cc39c74e2191165679029ec))
+* iterative rollback e2e tests ([#11991](https://github.com/aws-amplify/amplify-cli/issues/11991)) ([448fcb3](https://github.com/aws-amplify/amplify-cli/commit/448fcb3720f42852634bf0e1bc54f56dd8df9779))
+* migration tests ([6f03b0a](https://github.com/aws-amplify/amplify-cli/commit/6f03b0af1cfd12e9f0e3bd96b2f660d6b1a4e03f))
+* post-process cfn files for minification, consolidating concern of minification a bit ([#12072](https://github.com/aws-amplify/amplify-cli/issues/12072)) ([8297993](https://github.com/aws-amplify/amplify-cli/commit/829799390f5b41c73b2fc251148919794394ceed))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+
+
+### Features
+
+* inject project info into overrides ([#12064](https://github.com/aws-amplify/amplify-cli/issues/12064)) ([9ceaefa](https://github.com/aws-amplify/amplify-cli/commit/9ceaefad4b77155b09adebecc0d7edeee5130af0))
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
 ## [4.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.0...@aws-amplify/amplify-e2e-core@4.7.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

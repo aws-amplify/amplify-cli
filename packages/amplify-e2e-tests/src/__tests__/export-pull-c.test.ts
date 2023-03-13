@@ -66,7 +66,7 @@ describe('amplify export pull c', () => {
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await addDEVHosting(projRoot);
     await addS3StorageWithIdpAuth(projRoot);
-    await addConvert(projRoot, {});
+    await addConvert(projRoot);
     if (frontend === 'flutter') {
       await amplifyPushWithoutCodegen(projRoot);
     } else {

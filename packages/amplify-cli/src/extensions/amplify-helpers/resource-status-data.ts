@@ -12,7 +12,7 @@ import { removeGetUserEndpoints } from './remove-pinpoint-policy';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
 import { capitalize, IResourceDiffCollection } from './resource-status-diff';
-import { getHashForRootStack, isRootStackModifiedSinceLastPush } from './root-stack-status';
+import { isRootStackModifiedSinceLastPush } from './root-stack-status';
 
 /**
  * Resources separated by their states Created, Updated, Deleted, Synced and all (merged)
@@ -190,7 +190,7 @@ export const getResourceStatus = async (
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   // if not equal there is a root stack update
-  const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+  const rootStackUpdated = await isRootStackModifiedSinceLastPush();
 
   return {
     resourcesToBeCreated,

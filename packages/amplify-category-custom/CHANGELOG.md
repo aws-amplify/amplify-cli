@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.6...@aws-amplify/amplify-category-custom@3.0.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* fixes custom resources e2e ([#11295](https://github.com/aws-amplify/amplify-cli/issues/11295)) ([d051dcd](https://github.com/aws-amplify/amplify-cli/commit/d051dcdbdc782892e96d560fc75478e261bb3fe3))
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* upgrade e2e tests for cdkv2 ([#11282](https://github.com/aws-amplify/amplify-cli/issues/11282)) ([ddf66f2](https://github.com/aws-amplify/amplify-cli/commit/ddf66f20aed847d36e4cac60b7030be295a716c6))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [3.0.0-beta.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.6.3...@aws-amplify/amplify-category-custom@3.0.0-beta.8) (2023-02-23)
 
 

@@ -1,7 +1,6 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable import/no-cycle */
 import * as os from 'os';
 import * as path from 'path';

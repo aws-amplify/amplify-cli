@@ -26,7 +26,7 @@ describe('amplify add auth...', () => {
       disableAmplifyAppCreation: false,
       name: 'authtest',
     });
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot);
     await amplifyPushAuth(projRoot);
     const appId = getAppId(projRoot);
     const projRootPullAuth = await createNewProjectDir('authPullTest');

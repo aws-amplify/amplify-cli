@@ -30,7 +30,7 @@ describe('transformer model searchable migration test', () => {
     await initJSProjectWithProfile(projRoot, {
       name: projectName,
     });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
   });
 
   afterEach(async () => {

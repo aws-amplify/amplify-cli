@@ -180,7 +180,7 @@ export class WebsocketSubscriptionServer {
       switch (message.type) {
         case MESSAGE_TYPES.GQL_CONNECTION_INIT:
           if (isSubscriptionConnectionInitMessage(message)) {
-            return this.onConnectionInit(connectionContext, message);
+            return this.onConnectionInit(connectionContext);
           }
           break;
         case MESSAGE_TYPES.GQL_START:
@@ -227,7 +227,7 @@ export class WebsocketSubscriptionServer {
     }, this.options.keepAlive) as any;
   };
 
-  private onConnectionInit = (connectionContext: ConnectionContext, message: GQLMessageConnectionInit): void => {
+  private onConnectionInit = (connectionContext: ConnectionContext): void => {
     connectionContext.isConnectionInitialized = true;
     const response: GQLMessageConnectionAck = {
       type: MESSAGE_TYPES.GQL_CONNECTION_ACK,

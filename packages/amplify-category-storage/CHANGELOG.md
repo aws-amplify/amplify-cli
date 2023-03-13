@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.4...@aws-amplify/amplify-category-storage@5.0.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* headless pull with imported resources ([#12063](https://github.com/aws-amplify/amplify-cli/issues/12063)) ([898e570](https://github.com/aws-amplify/amplify-cli/commit/898e570b4078f9134cc39c74e2191165679029ec))
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* inject project info into overrides ([#12064](https://github.com/aws-amplify/amplify-cli/issues/12064)) ([9ceaefa](https://github.com/aws-amplify/amplify-cli/commit/9ceaefad4b77155b09adebecc0d7edeee5130af0))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [5.0.0-beta.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.7.1...@aws-amplify/amplify-category-storage@5.0.0-beta.6) (2023-02-23)
 
 

@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.18.1...amplify-e2e-tests@4.0.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* fixes custom resources e2e ([#11295](https://github.com/aws-amplify/amplify-cli/issues/11295)) ([d051dcd](https://github.com/aws-amplify/amplify-cli/commit/d051dcdbdc782892e96d560fc75478e261bb3fe3))
+* headless pull with imported resources ([#12063](https://github.com/aws-amplify/amplify-cli/issues/12063)) ([898e570](https://github.com/aws-amplify/amplify-cli/commit/898e570b4078f9134cc39c74e2191165679029ec))
+* post-process cfn files for minification, consolidating concern of minification a bit ([#12072](https://github.com/aws-amplify/amplify-cli/issues/12072)) ([8297993](https://github.com/aws-amplify/amplify-cli/commit/829799390f5b41c73b2fc251148919794394ceed))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+* upgrade e2e tests for cdkv2 ([#11282](https://github.com/aws-amplify/amplify-cli/issues/11282)) ([ddf66f2](https://github.com/aws-amplify/amplify-cli/commit/ddf66f20aed847d36e4cac60b7030be295a716c6))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* inject project info into overrides ([#12064](https://github.com/aws-amplify/amplify-cli/issues/12064)) ([9ceaefa](https://github.com/aws-amplify/amplify-cli/commit/9ceaefad4b77155b09adebecc0d7edeee5130af0))
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [4.0.0-beta.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.17.1...amplify-e2e-tests@4.0.0-beta.8) (2023-02-23)
 
 

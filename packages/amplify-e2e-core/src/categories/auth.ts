@@ -33,7 +33,7 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
-export const addAuthWithDefault = async (cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> => {
+export const addAuthWithDefault = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
   return spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
     .wait('Do you want to use the default authentication')
     .sendCarriageReturn()
@@ -79,7 +79,7 @@ export function removeAuthWithDefault(cwd: string, testingWithLatestCodebase = f
   });
 }
 
-export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthWithGroupTrigger(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -498,7 +498,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Prom
   });
 }
 
-export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthWithRecaptchaTrigger(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -626,7 +626,7 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
   });
 }
 
-export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Promise<void> {
+export function addAuthWithDefaultSocial_v4_30(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } =
       getSocialProviders(true);
@@ -681,7 +681,7 @@ export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Prom
   });
 }
 
-export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<void> {
+export function addAuthWithDefaultSocial(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
       FACEBOOK_APP_ID,
@@ -758,7 +758,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
   });
 }
 
-export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
+export function addAuthUserPoolOnly(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
       FACEBOOK_APP_ID,
@@ -985,7 +985,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
 }
 
 // creates 2 groups: Admins, Users
-export function addAuthWithGroupsAndAdminAPI(cwd: string, settings?: any): Promise<void> {
+export function addAuthWithGroupsAndAdminAPI(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration')
@@ -1767,7 +1767,7 @@ export function updateAuthMFAConfiguration(projectDir: string, settings: any = {
     .runAsync();
 }
 
-export function updateAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
+export function updateAuthWithGroupTrigger(cwd: string): Promise<void> {
   return spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
     .wait('What do you want to do?')
     .send(KEY_DOWN_ARROW)

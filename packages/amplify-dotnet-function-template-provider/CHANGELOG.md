@@ -3,6 +3,101 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.5.0 (2023-03-13)
+
+
+### Bug Fixes
+
+* reverting changes to dev ([#12039](https://github.com/aws-amplify/amplify-cli/issues/12039)) ([69f5987](https://github.com/aws-amplify/amplify-cli/commit/69f598731e6461bcb40e7507f6ade82640ee280b))
+
+
+
+## 10.7.3 (2023-02-15)
+
+
+### Bug Fixes
+
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([c61bfb8](https://github.com/aws-amplify/amplify-cli/commit/c61bfb8aa9336617a845b411074ca7b00a0f1be5))
+* dotnet lambda templates compilation issues ([#11562](https://github.com/aws-amplify/amplify-cli/issues/11562)) ([2b81f92](https://github.com/aws-amplify/amplify-cli/commit/2b81f92bb5d53b4da1705c47fdf8035c26be3caa))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+
+
+### Features
+
+* use .NET 6 in lambdas ([#11569](https://github.com/aws-amplify/amplify-cli/issues/11569)) ([7739102](https://github.com/aws-amplify/amplify-cli/commit/77391028df753d39b0a3ec0a96fc9169bd00f7ce))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+# 10.2.0 (2022-09-21)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+# 8.5.0 (2022-06-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+# 4.37.0 (2020-11-27)
+
+
+
+# 4.32.0-alpha.0 (2020-10-27)
+
+
+### Bug Fixes
+
+* [#5354](https://github.com/aws-amplify/amplify-cli/issues/5354) .net core lambda project file naming ([#5414](https://github.com/aws-amplify/amplify-cli/issues/5414)) ([c0f1953](https://github.com/aws-amplify/amplify-cli/commit/c0f1953acaca33eb0228e1528eb5ac4eb183ff6d))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* **amplify-dotnet-function-runtime-provider:** remove extra child dir ([#3884](https://github.com/aws-amplify/amplify-cli/issues/3884)) ([6038560](https://github.com/aws-amplify/amplify-cli/commit/6038560167ebc70a3dea190550e800ca663c120c))
+* **amplify-dotnet-function-template-provider:** added .gitignore file ([#3965](https://github.com/aws-amplify/amplify-cli/issues/3965)) ([d93acff](https://github.com/aws-amplify/amplify-cli/commit/d93acff5f29163e8d40b6ac1d85d3df33b7c69b1))
+* **amplify-dotnet-function-template-provider:** ddb/kinesis templates ([#4044](https://github.com/aws-amplify/amplify-cli/issues/4044)) ([9301cb5](https://github.com/aws-amplify/amplify-cli/commit/9301cb573218ff091e8a7b347bb3c3f0e4ff6471))
+* **amplify-dotnet-function-template-provider:** serverless returns app/json ([#3953](https://github.com/aws-amplify/amplify-cli/issues/3953)) ([37dbd36](https://github.com/aws-amplify/amplify-cli/commit/37dbd36998b3473eb6205846696ae7fca04ba8a2))
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* e2e regressions from previous pr ([#5438](https://github.com/aws-amplify/amplify-cli/issues/5438)) ([398d98b](https://github.com/aws-amplify/amplify-cli/commit/398d98b6a57c41f5172d6b56e9a834cfd28b891b))
+* move py test event to src/event.json ([#3851](https://github.com/aws-amplify/amplify-cli/issues/3851)) ([1c4a0cb](https://github.com/aws-amplify/amplify-cli/commit/1c4a0cb5022869fc6aa3c358e9a4c8935fec2b54))
+
+
+### Features
+
+* **amplify-dotnet-function-runtime-provider:** added dotnet CRUD ([#3931](https://github.com/aws-amplify/amplify-cli/issues/3931)) ([f589366](https://github.com/aws-amplify/amplify-cli/commit/f5893668ddadfc5b72a250502be78356ad65f7f9))
+* changes to use .NET global tools ([#4079](https://github.com/aws-amplify/amplify-cli/issues/4079)) ([7c8802e](https://github.com/aws-amplify/amplify-cli/commit/7c8802eea55fcd86bad1f2e3f347193c62b68c40))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+
+
+
+
+
 ## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.4.5...amplify-dotnet-function-template-provider@2.4.6) (2023-02-28)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider
