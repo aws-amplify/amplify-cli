@@ -21,5 +21,4 @@ phases:
       - ls ~/.ssh
 cache:
   paths:
-    - /root/.cache/**/*
-    - /root/.ssh/**/*
+    - ~/.cache/**/*

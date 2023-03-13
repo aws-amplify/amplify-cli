@@ -1,8 +1,7 @@
 version: 0.2
 cache:
   paths:
-    - /root/.cache/**/*
-    - /root/.ssh/**/*
+    - ~/.cache/**/*
 phases:
   post_build:
     commands:
