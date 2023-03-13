@@ -1,10 +1,7 @@
 version: 0.2
 cache:
   paths:
-    - ~/.cache
-# batch:
-#   fast-fail: false
-#   build-list:
+    - ~/.cache/yarn
 phases:
   post_build:
     commands:
