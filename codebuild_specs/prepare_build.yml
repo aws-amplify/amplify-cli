@@ -1,13 +1,22 @@
 ---
 version: 0.2
+artifacts:
+  files:
+    - '**/*'
 phases:
-  set-shell:
+  install:
+    runtime-versions:
+      nodejs: 14
     commands:
-      - yarn config set script-shell $(which bash)
-      - echo setting shell complete
+      - yarn install
+  pre_build:
   build:
     commands:
       - yarn run production-build
-  build-tests:
-    commands:
       - yarn build-tests
+  post_build:
+    commands:
+      -
+cache:
+  paths:
+    - ~/.cache/yarn/**/*
