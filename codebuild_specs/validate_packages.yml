@@ -3,6 +3,9 @@ cache:
   paths:
     - ~/.cache/**/*
 phases:
+  pre_build:
+    commands:
+      - ls ~/.cache
   post_build:
     commands:
       - yarn lint-check
