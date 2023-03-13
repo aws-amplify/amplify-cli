@@ -5,7 +5,6 @@ cache:
 phases:
   post_build:
     commands:
-      - cd packages/amplify-e2e-tests && yarn clean-e2e-resources
       - yarn lint-check
       - cd packages/amplify-util-mock && yarn e2e
       - yarn test-ci
