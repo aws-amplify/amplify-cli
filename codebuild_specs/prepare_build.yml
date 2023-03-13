@@ -19,6 +19,12 @@ phases:
       - ls
       - ls ~/.cache
       - ls ~/.ssh
+      - ls ~/.
+      - ls ~
+      - ls .
+      - ls /root
 cache:
   paths:
-    - ~/.cache/**/*
+    - '~/.cache/**/*'
+    - '~/.repo/'
+    - '**/*'
