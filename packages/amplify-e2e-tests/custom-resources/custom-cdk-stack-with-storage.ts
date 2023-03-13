@@ -1,4 +1,5 @@
-import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+// extraneous by design - this file is used in a project created by e2e tests, not by e2e tests directly
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
@@ -7,7 +8,7 @@ import { Construct } from 'constructs';
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class cdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     new cdk.CfnParameter(this, 'env', {
