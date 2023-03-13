@@ -1,12 +1,11 @@
 version: 0.2
 cache:
   paths:
-    - ~/.cache/yarn
+    - /root/yarn/**/*
+    - build/**/*
 phases:
   post_build:
     commands:
-      - ls
-      - cd ~/.cache/yarn
       - yarn lint-check
       - yarn test-ci
       - yarn verify-api-extract
