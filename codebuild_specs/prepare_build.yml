@@ -10,6 +10,8 @@ phases:
     commands:
       - yarn install
   pre_build:
+    commands:
+      - echo running prebuild
   build:
     commands:
       - yarn run production-build
