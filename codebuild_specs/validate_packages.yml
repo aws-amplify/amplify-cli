@@ -1,7 +1,7 @@
 version: 0.2
 cache:
   paths:
-    - /root/yarn/**/*
+    - /root/.yarn/**/*
     - build/**/*
 phases:
   post_build:
