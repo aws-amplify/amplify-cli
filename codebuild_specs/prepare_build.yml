@@ -18,7 +18,8 @@ phases:
     commands:
       - ls
       - ls ~/.cache
+      - ls ~/.ssh
 cache:
   paths:
-    - ~/.cache/yarn
+    - ~/.cache/yarn/**/*
     - ~/.ssh
