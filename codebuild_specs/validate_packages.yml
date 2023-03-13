@@ -1,7 +1,10 @@
 version: 0.2
-batch:
-  fast-fail: false
-  build-list:
+artifacts:
+  files:
+    - '**/*'
+# batch:
+#   fast-fail: false
+#   build-list:
 phases:
   post_build:
     commands:

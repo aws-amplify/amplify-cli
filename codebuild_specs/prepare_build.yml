@@ -8,6 +8,7 @@ phases:
     runtime-versions:
       nodejs: 14
     commands:
+      - yarn config set script-shell $(which bash)
       - yarn install
   pre_build:
     commands:
