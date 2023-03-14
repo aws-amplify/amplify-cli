@@ -10,9 +10,13 @@ phases:
   pre_build:
     commands:
       - echo running prebuild
+      - npm config -g set prefer-offline true
+      - npm config -g set cache /root/.npm
+      - npm config get cache
   build:
     commands:
-      - yarn run production-build
+      - npm install
+      - npm run production-build
   post_build:
     commands:
       - ls
@@ -24,5 +28,4 @@ phases:
       - ls /root
 cache:
   paths:
-    - '/root/.yarn-cache/**/*'
-    - 'node_modules/**/*'
+    - /root/.npm/**/*

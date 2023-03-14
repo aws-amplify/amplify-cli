@@ -1,8 +1,8 @@
 version: 0.2
 cache:
   paths:
-    - '/root/.yarn-cache/**/*'
-    - 'node_modules/**/*'
+    - /root/.npm/**/*
+
 phases:
   pre_build:
     commands:
@@ -13,9 +13,9 @@ phases:
       - ls ~/.cache
   post_build:
     commands:
-      - yarn lint-check
+      - npm run lint-check
       - cd packages/amplify-util-mock && yarn e2e
-      - yarn test-ci
-      - yarn verify-api-extract
-      - yarn verify-yarn-lock
+      - npm run test-ci
+      - npm run verify-api-extract
+      - npm run verify-yarn-lock
       - echo Post build complete
