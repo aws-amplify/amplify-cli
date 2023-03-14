@@ -174,3 +174,67 @@ describe('getMissingParameters', () => {
     expect(await envParamManager.getMissingParameters([{ category: 'auth', resourceName: 'mockAuth', service: 'Cognito' }])).toEqual([]);
   });
 });
+
+describe('canBeClonedHeadlessly', () => {
+  stateManagerMock.getRootStackId.mockReturnValue('mockRootStackId');
+
+  it('returns true if no environment specific parameters are present', async () => {
+    stateManagerMock.getDeploymentSecrets.mockReturnValue({ appSecrets: [{ rootStackId: 'mockRootStackId', environments: {} }]});
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    expect(envParamManager.canBeClonedHeadlessly()).toEqual({ result: true });
+  });
+
+  it('returns true if only function parameters and secrets are present', async () => {
+    stateManagerMock.getDeploymentSecrets.mockReturnValue({ appSecrets: [{ rootStackId: 'mockRootStackId', environments: {} }]});
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
+    funcParamManager.setParam('mockParam', 'mockValue');
+    stateManagerMock.getDeploymentSecrets.mockReturnValue({ appSecrets: [{ rootStackId: 'mockRootStackId', environments: {
+      testEnv: {
+        function: {
+          mockFunctionResource: {
+            fakeSecret: 'fakeSecretValue'
+          }
+        }
+      }
+    } }]});
+    expect(envParamManager.canBeClonedHeadlessly()).toEqual({ result: true });
+  });
+
+  it('returns false if environment specific parameters are present', async () => {
+    stateManagerMock.getDeploymentSecrets.mockReturnValue({ appSecrets: [{ rootStackId: 'mockRootStackId', environments: {} }]});
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const authParamManager = envParamManager.getResourceParamManager('auth', 'authName');
+    authParamManager.setParam('mockParam', 'mockValue');
+
+    const reason = `The "testEnv" environment contains values that cannot be copied to the new environment directly.
+
+The following resources contain parameters that could not be cloned:
+  auth authName
+
+Re-run this command without the --yes flag to continue.`;
+
+    expect(envParamManager.canBeClonedHeadlessly()).toEqual({ result: false, reason });
+    authParamManager.deleteParam('mockParam');
+  });
+
+  it('returns false if environment specific secrets are present', async () => {
+    stateManagerMock.getDeploymentSecrets.mockReturnValue({ appSecrets: [{ rootStackId: 'mockRootStackId', environments: {
+      testEnv: {
+        auth: {
+          mockAuthResource: {
+            mockSecret: 'mockSecretValue'
+          }
+        }
+      }
+    } }]});
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const reason = `The "testEnv" environment contains values that cannot be copied to the new environment directly.
+
+The following resources contain secrets that could not be cloned:
+  auth mockAuthResource
+
+Re-run this command without the --yes flag to continue.`;
+    expect(envParamManager.canBeClonedHeadlessly()).toEqual({ result: false, reason });
+  });
+});
