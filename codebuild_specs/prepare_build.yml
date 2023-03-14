@@ -10,8 +10,8 @@ phases:
   pre_build:
     commands:
       - echo running prebuild
-      - yarn config -g set prefer-offline true
-      - yarn config -g set cache /root/.yarn
+      - yarn config set prefer-offline true -g
+      - yarn config set cache /root/.yarn -g
       - yarn config get cache
   build:
     commands:
@@ -25,6 +25,7 @@ phases:
       - ls ~
       - ls .
       - ls /root
+      - ls ~/.cache/yarn
 cache:
   paths:
     - ~/.cache/yarn/**/*
