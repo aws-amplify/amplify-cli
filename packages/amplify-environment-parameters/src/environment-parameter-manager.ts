@@ -92,8 +92,8 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
   }
 
   canBeClonedHeadlessly(): { result: true } | { result: false, reason: string } {
-    const categoryResourcePairsContainingUnclonableParams: [string, string][] = [];
-    const categoryResourcePairsContainingUnclonableSecrets: [string, string][] = [];
+    const categoryResourcePairsWithUniqueEnvParams: [string, string][] = [];
+    const categoryResourcePairsWithUniqueEnvSecrets: [string, string][] = [];
 
     // Check for parameters that cannot be cloned automatically
     const resourceKeys = Object.keys(this.resourceParamManagers);
@@ -103,7 +103,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       if (this.categoriesThatCannotBeCloned.includes(category) && this.hasResourceParamManager(category, resourceName)) {
         const resourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
         if (resourceParamManager.hasAnyParams()) {
-          categoryResourcePairsContainingUnclonableParams.push([category, resourceName]);
+          categoryResourcePairsWithUniqueEnvParams.push([category, resourceName]);
         }
       }
     }
@@ -113,27 +113,27 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     for (const category of this.categoriesThatCannotBeCloned) {
       if (envSecrets[category]) {
         for (const resourceName of Object.keys(envSecrets[category])) {
-          categoryResourcePairsContainingUnclonableSecrets.push([category, resourceName]);
+          categoryResourcePairsWithUniqueEnvSecrets.push([category, resourceName]);
         }
       }
     }
 
-    if (categoryResourcePairsContainingUnclonableParams.length === 0 && categoryResourcePairsContainingUnclonableSecrets.length === 0) {
+    if (categoryResourcePairsWithUniqueEnvParams.length === 0 && categoryResourcePairsWithUniqueEnvSecrets.length === 0) {
       return { result: true };
     }
 
     // Construct error message
     let reason = `The "${this.envName}" environment contains values that cannot be copied to the new environment directly.\n`;
-    if (categoryResourcePairsContainingUnclonableParams.length > 0) {
+    if (categoryResourcePairsWithUniqueEnvParams.length > 0) {
       reason += '\nThe following resources contain parameters that could not be cloned:';
-      for (const [category, resourceName] of categoryResourcePairsContainingUnclonableParams) {
+      for (const [category, resourceName] of categoryResourcePairsWithUniqueEnvParams) {
         reason += `\n  ${category} ${resourceName}`;
       }
     }
 
-    if (categoryResourcePairsContainingUnclonableSecrets.length > 0) {
+    if (categoryResourcePairsWithUniqueEnvSecrets.length > 0) {
       reason += '\nThe following resources contain secrets that could not be cloned:';
-      for (const [category, resourceName] of categoryResourcePairsContainingUnclonableSecrets) {
+      for (const [category, resourceName] of categoryResourcePairsWithUniqueEnvSecrets) {
         reason += `\n  ${category} ${resourceName}`;
       }
     }

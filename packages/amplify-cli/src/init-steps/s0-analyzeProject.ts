@@ -145,10 +145,10 @@ const envAddValidation = async (context: $TSContext): Promise<void> => {
     await downloadEnvParameters(context);
     const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
     if (context.exeInfo.inputParams?.yes) {
-      const isClonable = envParamManger.canBeClonedHeadlessly();
-      if (!isClonable.result) {
+      const canEnvBeClonedHeadlessly = envParamManger.canBeClonedHeadlessly();
+      if (!canEnvBeClonedHeadlessly.result) {
         throw new AmplifyError('EnvironmentConfigurationError', {
-          message: isClonable.reason,
+          message: canEnvBeClonedHeadlessly.reason,
         });
       }
     }
