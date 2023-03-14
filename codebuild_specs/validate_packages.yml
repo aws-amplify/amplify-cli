@@ -2,8 +2,8 @@ version: 0.2
 cache:
   paths:
     - '~/.cache/**/*'
-    - '~/.repo/'
-    - '**/*'
+    - '~/.ssh/'
+    - '.'
 phases:
   pre_build:
     commands:

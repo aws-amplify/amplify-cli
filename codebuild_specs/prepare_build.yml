@@ -25,5 +25,5 @@ phases:
 cache:
   paths:
     - '~/.cache/**/*'
-    - '~/.repo/'
-    - '**/*'
+    - '~/.ssh/'
+    - '.'
