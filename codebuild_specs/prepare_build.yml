@@ -15,7 +15,7 @@ phases:
       - npm config get cache
   build:
     commands:
-      - npm production-build
+      - npm run production-build
   post_build:
     commands:
       - ls
