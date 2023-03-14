@@ -7,7 +7,7 @@ import {
   rebuildApi,
   getProjectMeta,
   updateApiSchema,
-  deleteProject
+  deleteProject,
 } from '@aws-amplify/amplify-e2e-core';
 import { testTableAfterRebuildApi, testTableBeforeRebuildApi } from '../rebuild-test-helpers';
 
