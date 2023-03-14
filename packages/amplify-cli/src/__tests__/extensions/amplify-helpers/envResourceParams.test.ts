@@ -10,6 +10,7 @@ import {
 
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core', () => ({
+  ...jest.requireActual('amplify-cli-core'),
   pathManager: { getTeamProviderInfoFilePath: jest.fn() },
   stateManager: {
     getTeamProviderInfo: jest.fn(),
