@@ -462,6 +462,9 @@ jobs:
           steps:
             - attach_workspace:
                 at: ~/.
+            - run:
+                name: Git enable long paths
+                command: git config --global core.longpaths true
       - when:
           condition:
             or:

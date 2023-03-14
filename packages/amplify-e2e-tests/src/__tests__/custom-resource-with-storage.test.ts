@@ -36,7 +36,7 @@ describe('adding custom resources test', () => {
     await addAuthWithDefault(projRoot);
     await addS3WithGuestAccess(projRoot);
     const appId = getAppId(projRoot);
-    const cdkResourceName = `custom${uuid().split('-')[0]}`;
+    const cdkResourceName = `c${uuid().split('-')[0]}`;
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', projectName, 'custom-cdk-stack-with-storage.ts');
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
