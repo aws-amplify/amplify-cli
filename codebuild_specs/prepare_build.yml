@@ -6,13 +6,11 @@ phases:
       nodejs: 14
     commands:
       - yarn config set script-shell $(which bash)
-      - yarn
   pre_build:
     commands:
       - echo running prebuild
-      - yarn config set prefer-offline true -g
-      - yarn config set cache /root/.yarn -g
-      - yarn config get cache
+      - yarn config set cache-folder /root/.yarn-cache -g
+      - yarn install --frozen-lockfile
   build:
     commands:
       # - yarn production-build
@@ -24,8 +22,8 @@ phases:
       - ls ~/.
       - ls ~
       - ls .
-      - ls /root
-      - ls ~/.cache/yarn
 cache:
   paths:
-    - ~/.cache/yarn/**/*
+    - '/root/.yarn-cache/**/*'
+    - 'node_modules/**/*'
+    - 'packages/**/node_modules/**/*'
