@@ -39,7 +39,7 @@
     "amplify-codegen": "^3.4.0",
     "amplify-prompts": "2.6.5",
     "archiver": "^5.3.0",
-    "aws-cdk-lib": "~2.53.0",
+    "aws-cdk-lib": "~2.68.0",
     "aws-sdk": "^2.1233.0",
     "bottleneck": "2.19.5",
     "chalk": "^4.1.1",
