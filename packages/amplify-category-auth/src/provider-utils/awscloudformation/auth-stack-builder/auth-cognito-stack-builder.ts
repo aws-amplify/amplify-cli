@@ -62,8 +62,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   customMessageConfirmationBucket?: s3.CfnBucket | undefined;
   snsRole: iam.CfnRole | undefined;
   userPool: cognito.CfnUserPool | undefined;
-  userPoolClientWeb: cognito.CfnUserPoolClient | undefined;
-  userPoolClient: cognito.CfnUserPoolClient | undefined;
+  userPoolClientWeb: cognito.CfnUserPoolClient;
+  userPoolClient: cognito.CfnUserPoolClient;
   identityPool: cognito.CfnIdentityPool | undefined;
   identityPoolRoleMap: cognito.CfnIdentityPoolRoleAttachment | undefined;
   lambdaConfigPermissions?: Record<string, lambda.CfnPermission>;
@@ -553,18 +553,43 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') {
         this.identityPool.node.addDependency(this.userPoolClientInputs!.node!.defaultChild!);
       }
+
       /**
        *  # Created to map Auth and Unauth roles to the identity pool
           # Depends on Identity Pool for ID ref
        */
+
       this.identityPoolRoleMap = new cognito.CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoleMap', {
         identityPoolId: cdk.Fn.ref('IdentityPool'),
         roles: {
           unauthenticated: cdk.Fn.ref('unauthRoleArn'),
           authenticated: cdk.Fn.ref('authRoleArn'),
         },
+        roleMappings: {
+          'UserPoolClientRoleMapping': {
+            identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${client}', {
+              region: cdk.Fn.ref('AWS::Region'),
+              userPool: cdk.Fn.ref('UserPool'),
+              client: cdk.Fn.ref('UserPoolClient'),
+            }),
+            ambiguousRoleResolution: 'AuthenticatedRole',
+            type: 'Token'
+          },
+          'UserPoolWebClientRoleMapping': {
+            identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${webClient}', {
+              region: cdk.Fn.ref('AWS::Region'),
+              userPool: cdk.Fn.ref('UserPool'),
+              webClient: cdk.Fn.ref('UserPoolClientWeb'),
+            }),
+            ambiguousRoleResolution: 'AuthenticatedRole',
+            type: 'Token'
+          }
+        }
       });
+
       this.identityPoolRoleMap.addDependsOn(this.identityPool);
+      this.identityPoolRoleMap.addDependsOn(this.userPoolClient);
+      this.identityPoolRoleMap.addDependsOn(this.userPoolClientWeb);
     }
   };
 
