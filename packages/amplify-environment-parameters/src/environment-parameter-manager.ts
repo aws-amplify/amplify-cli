@@ -251,9 +251,11 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     const projectRootStackId = stateManager.getRootStackId();
     const { appSecrets } = stateManager.getDeploymentSecrets();
 
-    const projectSecrets = appSecrets.find(({ rootStackId }) => rootStackId === projectRootStackId);
-    if (projectSecrets?.environments?.[this.envName]) {
-      return projectSecrets.environments[this.envName];
+    if (Array.isArray(appSecrets)) {
+      const projectSecrets = appSecrets.find(({ rootStackId }) => rootStackId === projectRootStackId);
+      if (projectSecrets?.environments?.[this.envName]) {
+        return projectSecrets.environments[this.envName];
+      }
     }
     return {};
   }
