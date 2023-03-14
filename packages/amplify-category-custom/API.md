@@ -6,7 +6,7 @@
 
 import { $TSAny } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { IAmplifyResource } from 'amplify-cli-core';
 
 // Warning: (ae-forgotten-export) The symbol "AmplifyDependentResourceDefinition" needs to be exported by the entry point index.d.ts

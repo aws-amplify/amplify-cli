@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.4.0 (2023-02-27)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* adding JSON stringify to example python function ([#6493](https://github.com/aws-amplify/amplify-cli/issues/6493)) ([a6584e2](https://github.com/aws-amplify/amplify-cli/commit/a6584e2920764be10108a799d93222e3c3397ef1)), closes [/github.com/aws-amplify/amplify-js/issues/6390#issuecomment-740757548](https://github.com//github.com/aws-amplify/amplify-js/issues/6390/issues/issuecomment-740757548)
+
+
+
+## 4.44.2 (2021-02-26)
+
+
+### Bug Fixes
+
+* add src files to python venv when mocking ([#6454](https://github.com/aws-amplify/amplify-cli/issues/6454)) ([4653062](https://github.com/aws-amplify/amplify-cli/commit/465306278fd1d7452beab96a4b97ca53f3885664))
+* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* enables cors support for lambda proxy integrations for python ([#6477](https://github.com/aws-amplify/amplify-cli/issues/6477)) ([44d1ce3](https://github.com/aws-amplify/amplify-cli/commit/44d1ce34786b6d1161d48332d7d026414a126c89))
+* move py test event to src/event.json ([#3851](https://github.com/aws-amplify/amplify-cli/issues/3851)) ([1c4a0cb](https://github.com/aws-amplify/amplify-cli/commit/1c4a0cb5022869fc6aa3c358e9a4c8935fec2b54))
+
+
+### Features
+
+* **amplify-python-runtime-provider:** implement python runtime provider ([#3787](https://github.com/aws-amplify/amplify-cli/issues/3787)) ([8996cb1](https://github.com/aws-amplify/amplify-cli/commit/8996cb11015873f1236340680694188fd17c0f2e))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+
+
+
+
+
 ## [1.3.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.16...amplify-python-function-template-provider@1.3.17) (2023-01-03)
 
 **Note:** Version bump only for package amplify-python-function-template-provider

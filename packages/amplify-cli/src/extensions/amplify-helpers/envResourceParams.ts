@@ -72,7 +72,7 @@ const loadEnvResourceParametersFromDeploymentSecrets = (category: string, resour
     const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
     // set empty default if no hostedUIProviderCreds found
     if (parameters && parameters.hostedUI) {
-      return _.set({}, hostedUIProviderCredsField, '[]');
+      return _.setWith({}, hostedUIProviderCredsField, '[]');
     }
   } catch (e) {
     // swallow error

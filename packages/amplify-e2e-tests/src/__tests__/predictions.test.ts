@@ -25,9 +25,9 @@ describe('amplify add predictions', () => {
 
   it('init a project with convert subcategory translate text', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addConvert(projRoot, {});
-    await addInterpret(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addConvert(projRoot);
+    await addInterpret(projRoot);
     await amplifyPushAuth(projRoot);
     const awsExports: any = getAWSExports(projRoot).default;
     const { sourceLanguage, targetLanguage } = awsExports.predictions.convert.translateText.defaults;
@@ -39,8 +39,8 @@ describe('amplify add predictions', () => {
 
   it('init a project with identify sub category identifyEntities with collection config', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addIdentifyCollection(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addIdentifyCollection(projRoot);
     await amplifyPushAuth(projRoot);
     const awsExports: any = getAWSExports(projRoot).default;
     const { collectionId: collectionID, maxEntities: maxFaces } = awsExports.predictions.identify.identifyEntities.defaults;

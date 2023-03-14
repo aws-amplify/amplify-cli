@@ -6,7 +6,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-await */
 /* eslint-disable consistent-return */
-/* eslint-disable jsdoc/require-description */
 /* eslint-disable no-continue */
 /* eslint-disable max-len */
 /* eslint-disable spellcheck/spell-checker */
@@ -77,7 +76,9 @@ import { prePushTemplateDescriptionHandler } from './template-description-utils'
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
+import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
+import { handleCloudFormationError } from './cloud-formation-error-handler';
 
 const logger = fileLogger('push-resources');
 
@@ -204,6 +205,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     );
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
+
+    // print cdk migration warning
+    await printCdkMigrationWarning(context);
 
     // Removed api transformation to generate resources before starting deploy/
 
@@ -638,7 +642,7 @@ const storeS3BucketInfo = (category: string, deploymentBucketName: string, envNa
   const amplifyMeta = stateManager.getMeta();
   getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
-  _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
+  _.setWith(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -908,7 +912,7 @@ export const formNestedStack = async (
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
     _.assign(tpiResourceParams, metaToBeUpdated);
-    _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+    _.setWith(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
     stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
   }
 
@@ -1224,29 +1228,9 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
     layerResources.forEach((r) => {
       const layerMetaPath = [AmplifyCategories.FUNCTION, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
-      _.set(meta, layerMetaPath, previousHash);
+      _.setWith(meta, layerMetaPath, previousHash);
     });
 
     stateManager.setMeta(projectRoot, meta);
   }
-};
-
-const handleCloudFormationError = (err: Error): void => {
-  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-    return;
-  }
-
-  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
-    throw new AmplifyError(
-      'DeploymentInProgressError',
-      {
-        message: 'Deployment is already in progress.',
-        resolution: 'Wait for the other deployment to finish and try again.',
-        code: (err as $TSAny).code,
-      },
-      err,
-    );
-  }
-
-  throw err;
 };

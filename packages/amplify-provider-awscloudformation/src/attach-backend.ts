@@ -91,7 +91,7 @@ export const run = async (context): Promise<void> => {
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
-  _.set(context, ['exeInfo', 'teamProviderInfo', backendEnv.environmentName], currentAmplifyMeta.providers);
+  _.setWith(context, ['exeInfo', 'teamProviderInfo', backendEnv.environmentName], currentAmplifyMeta.providers);
 };
 
 async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {

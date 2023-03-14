@@ -132,21 +132,23 @@ export async function init(amplifyServiceParams) {
       }
     } catch (e) {
       if (e.code === 'LimitExceededException') {
-        // Do nothing
-      } else if (
-        e.code === 'BadRequestException' &&
-        e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
-      ) {
-        // Do nothing
-      } else {
-        throw new AmplifyFault(
-          'ProjectInitFault',
+        throw new AmplifyError(
+          'ProjectInitError',
           {
-            message: e.message,
+            message: 'You have reached the Amplify App limit for this account and region',
+            resolution:
+              'Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify',
           },
           e,
         );
       }
+      throw new AmplifyFault(
+        'ProjectInitFault',
+        {
+          message: e.message,
+        },
+        e,
+      );
     }
   }
 
@@ -283,7 +285,7 @@ export async function postPushCheck(context) {
   if (searchAmplifyServiceResult.backendEnvExists) {
     amplifyAppId = searchAmplifyServiceResult.amplifyAppId; // eslint-disable-line
   } else {
-    // TODO reimplement this check using service calls instead of team-provider-info.json
+    // TODO re-implement this check using service calls instead of team-provider-info.json
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const envList = Object.keys(teamProviderInfo);
 

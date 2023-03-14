@@ -1,5 +1,6 @@
 /* eslint-disable import/no-cycle */
-import * as toolkitExtensions from './toolkit-extensions';
+import * as ExeInfo from './exeInfo';
+export { ExeInfo };
 export * from './banner-message';
 export * from './category-interfaces';
 export * from './cfnUtilities';
@@ -15,6 +16,7 @@ export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './errors';
 export * from './exitOnNextTick';
+import * as toolkitExtensions from './toolkit-extensions';
 export { toolkitExtensions };
 export * from './feature-flags';
 export * from './hooks';
@@ -43,3 +45,4 @@ export * from './context/plugin-manifest';
 export * from './context/plugin-verification-result';
 export * from './constants';
 export * from './help';
+export * from './amplify-node-pkg-detector';

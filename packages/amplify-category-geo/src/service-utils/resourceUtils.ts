@@ -178,7 +178,7 @@ export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
   return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
 };
 
-export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
+export const getAuthResourceName = async (): Promise<string> => {
   const authMeta = stateManager.getMeta()?.[authCategoryName];
   const cognitoResources = authMeta ? Object.keys(authMeta).filter((authResource) => authMeta[authResource].service === 'Cognito') : [];
   if (cognitoResources.length === 0) {

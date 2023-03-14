@@ -1,7 +1,18 @@
 import sequential from 'promise-sequential';
-import { ManuallyTimedCodePath, stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault, spinner } from 'amplify-cli-core';
+import {
+  ManuallyTimedCodePath,
+  stateManager,
+  $TSAny,
+  $TSMeta,
+  $TSContext,
+  AmplifyFault,
+  constants,
+  spinner,
+  LocalEnvInfo,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
+
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 
 /**
@@ -23,6 +34,18 @@ export const initializeEnv = async (
     amplifyMeta.providers.awscloudformation = teamProviderInfo?.[currentEnv]?.awscloudformation;
 
     const envParamManager = (await ensureEnvParamManager(currentEnv)).instance;
+    const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
+    const CloudFormationProviderName = constants.DEFAULT_PROVIDER;
+    if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
+      const downloadHandler: ServiceDownloadHandler = await context.amplify.invokePluginMethod(
+        context,
+        CloudFormationProviderName,
+        undefined,
+        'getEnvParametersDownloadHandler',
+        [context],
+      );
+      await envParamManager.downloadParameters(downloadHandler);
+    }
 
     if (!context.exeInfo.restoreBackend) {
       mergeBackendConfigIntoAmplifyMeta(projectPath, amplifyMeta);
@@ -108,7 +131,7 @@ export const initializeEnv = async (
 
     const projectDetails = context.amplify.getProjectDetails();
 
-    context.exeInfo = context.exeInfo || {};
+    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     Object.assign(context.exeInfo, projectDetails);
 
     try {

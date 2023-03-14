@@ -4,12 +4,13 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import opn from 'open';
 import { Ora } from 'ora';
 import { Template as Template_2 } from 'cloudform-types';
@@ -24,7 +25,7 @@ export type $TSContext = {
     migrationInfo: MigrationInfo;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
-    exeInfo: $TSAny;
+    exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
     input: CommandLineInput;
     parameters: ContextParameters;
     usageData: IUsageData;
@@ -145,7 +146,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'UserInputError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'ProjectBuildCommandError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'UnsupportedLockFileTypeError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError' | 'UserInputError';
 
 // @public (undocumented)
 export enum AmplifyEvent {
@@ -253,7 +254,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AmplifyBackupFault' | 'AnalyticsCategoryFault' | 'AuthCategoryFault' | 'BackendDeleteFault' | 'BackendPullFault' | 'ConfigurationFault' | 'ConfigurationFault' | 'DeploymentFault' | 'DeploymentStateUploadFault' | 'MockProcessFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelInAppMessagingFault' | 'NotificationsChannelSmsFault' | 'NotImplementedFault' | 'PluginNotLoadedFault' | 'ProjectDeleteFault' | 'ProjectInitFault' | 'PullBackendFault' | 'PushResourcesFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'ZipExtractFault';
+export type AmplifyFaultType = 'AmplifyBackupFault' | 'AnalyticsCategoryFault' | 'AuthCategoryFault' | 'BackendDeleteFault' | 'BackendPullFault' | 'ConfigurationFault' | 'ConfigurationFault' | 'DeploymentFault' | 'DeploymentStateUploadFault' | 'FileNotFoundFault' | 'LockFileNotFoundFault' | 'LockFileParsingFault' | 'MockProcessFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelInAppMessagingFault' | 'NotificationsChannelSmsFault' | 'NotImplementedFault' | 'ParameterDownloadFault' | 'ParameterUploadFault' | 'PluginNotLoadedFault' | 'ProjectDeleteFault' | 'ParametersDeleteFault' | 'ProjectInitFault' | 'PullBackendFault' | 'PushResourcesFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'ZipExtractFault';
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -270,6 +271,18 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
     // (undocumented)
     envName: string;
 }
+
+// @public (undocumented)
+export class AmplifyNodePkgDetector {
+    constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
+    // (undocumented)
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+}
+
+// @public (undocumented)
+export type AmplifyNodePkgDetectorProps = {
+    projectRoot: string;
+};
 
 // @public (undocumented)
 export interface AmplifyPostEnvAddEventData {
@@ -294,21 +307,21 @@ export interface AmplifyProjectConfig {
 // @public (undocumented)
 export interface AmplifyStackTemplate {
     // (undocumented)
-    addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
+    addCfnCondition: (props: cdk.CfnConditionProps, logicalId: string) => void;
     // (undocumented)
-    addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
+    addCfnMapping: (props: cdk.CfnMappingProps, logicalId: string) => void;
     // (undocumented)
-    addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
+    addCfnOutput: (props: cdk.CfnOutputProps, logicalId: string) => void;
     // (undocumented)
-    addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
+    addCfnParameter: (props: cdk.CfnParameterProps, logicalId: string) => void;
     // (undocumented)
-    getCfnCondition(logicalId: string): cdk.CfnCondition;
+    getCfnCondition: (logicalId: string) => cdk.CfnCondition;
     // (undocumented)
-    getCfnMapping(logicalId: string): cdk.CfnMapping;
+    getCfnMapping: (logicalId: string) => cdk.CfnMapping;
     // (undocumented)
-    getCfnOutput(logicalId: string): cdk.CfnOutput;
+    getCfnOutput: (logicalId: string) => cdk.CfnOutput;
     // (undocumented)
-    getCfnParameter(logicalId: string): cdk.CfnParameter;
+    getCfnParameter: (logicalId: string) => cdk.CfnParameter;
 }
 
 // @public (undocumented)
@@ -336,7 +349,7 @@ export class ApiCategoryFacade {
     // (undocumented)
     static getTransformerVersion(context: $TSContext): Promise<number>;
     // (undocumented)
-    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | DeploymentResources_2 | undefined>;
+    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | undefined>;
 }
 
 // @public (undocumented)
@@ -545,7 +558,7 @@ export type CommandLineInput = {
     plugin?: string;
     command: string;
     subCommands?: string[];
-    options?: CLIGlobalFlags & Record<string, any>;
+    options?: CLIGlobalFlags & Record<string, $TSAny>;
 };
 
 // @public (undocumented)
@@ -575,6 +588,7 @@ export const constants: {
     CODEGEN: string;
     AMPLIFY: string;
     DOT_AMPLIFY_DIR_NAME: string;
+    DEFAULT_PROVIDER: string;
     AMPLIFY_PREFIX: string;
     LOCAL_NODE_MODULES: string;
     PARENT_DIRECTORY: string;
@@ -762,8 +776,24 @@ export enum DeploymentStepStatus {
 }
 
 // @public (undocumented)
+export type DetectedDependency = {
+    packageName?: string;
+    dependentPackage?: {
+        name: string;
+        version: string;
+    };
+};
+
+// @public (undocumented)
 export class DiagnoseReportUploadError extends Error {
 }
+
+// @public (undocumented)
+type EnvironmentInfo = {
+    existingLocalEnvInfo?: LocalEnvInfo;
+    isNewEnv?: boolean;
+    sourceEnvName?: string;
+};
 
 // @public (undocumented)
 export class EnvVarFormatError extends Error {
@@ -784,6 +814,16 @@ export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+
+declare namespace ExeInfo {
+    export {
+        EnvironmentInfo,
+        InputParameters,
+        PinpointInfo,
+        ProjectInfo
+    }
+}
+export { ExeInfo }
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -1042,7 +1082,7 @@ export class HooksMeta {
 }
 
 // @public (undocumented)
-export type HooksNoun = 'notifications' | 'analytics' | 'api' | 'auth' | 'function' | 'hosting' | 'interactions' | 'predictions' | 'storage' | 'xr' | 'codegen' | 'env';
+export type HooksNoun = 'notifications' | 'analytics' | 'api' | 'auth' | 'function' | 'hosting' | 'interactions' | 'predictions' | 'storage' | 'codegen' | 'env';
 
 // @public (undocumented)
 export type HooksVerb = 'add' | 'update' | 'remove' | 'push' | 'pull' | 'publish' | 'delete' | 'checkout' | 'list' | 'get' | 'mock' | 'build' | 'status' | 'import' | 'gqlcompile' | 'addgraphqldatasource' | 'statements' | 'types';
@@ -1094,8 +1134,8 @@ export type IAuthResource = IAmplifyResource;
 // @public (undocumented)
 export type IContextFilesystem = {
     remove: (targetPath: string) => void;
-    read: (targetPath: string, encoding?: string) => $TSAny;
-    write: (targetPath: string, data: unknown) => void;
+    read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
+    write: (targetPath: string, data: string | NodeJS.ArrayBufferView) => void;
     exists: (targetPath: string) => boolean;
     isFile: (targetPath: string) => boolean;
     path: (...pathParts: string[]) => string;
@@ -1212,6 +1252,13 @@ export interface INotificationsResourceMeta {
 
 // @public (undocumented)
 export type InputOptions = Record<string, string | boolean>;
+
+// @public (undocumented)
+type InputParameters = {
+    forcePush?: boolean;
+    iterativeRollback?: boolean;
+    restoreBackend?: boolean;
+};
 
 // @public (undocumented)
 export class InvalidSubCommandError extends Error {
@@ -1391,7 +1438,7 @@ export class JSONUtilities {
     static stringify: (data: unknown, options?: {
         minify?: boolean;
         orderedKeys?: boolean;
-    }) => string | undefined;
+    }) => string;
     // (undocumented)
     static writeJson: (fileName: string, data: unknown, options?: {
         mode?: number;
@@ -1407,7 +1454,7 @@ export type LocalAwsInfo = {
 };
 
 // @public (undocumented)
-export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
+export type LocalEnvInfo = Required<Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName' | 'noUpdateBackend'>>;
 
 // @public (undocumented)
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
@@ -1519,10 +1566,11 @@ export type PackageManager = {
     packageManager: PackageManagerType;
     lockFile: string;
     executable: string;
+    yarnrcPath?: string;
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export type PackageManagerType = 'yarn' | 'npm' | 'yarn2';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
@@ -1579,6 +1627,7 @@ export const PathConstants: {
     ExportManifestJsonFilename: string;
     ExportTagsJsonFileName: string;
     ExportCategoryStackMappingJsonFilename: string;
+    OverrideFileName: string;
 };
 
 // @public (undocumented)
@@ -1659,6 +1708,8 @@ export class PathManager {
     // (undocumented)
     getResourceInputsJsonFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
+    getResourceOverrideFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
+    // (undocumented)
     getResourceParametersFilePath: (projectPath: string | undefined, category: string, resourceName: string) => string;
     // (undocumented)
     getRootOverrideDirPath: (projectPath: string) => string;
@@ -1672,6 +1723,13 @@ export class PathManager {
 
 // @public (undocumented)
 export const pathManager: PathManager;
+
+// @public (undocumented)
+type PinpointInfo = {
+    pinpointApp?: $TSAny;
+    pinpointClient?: $TSAny;
+    pinpointInputParams?: $TSAny;
+};
 
 // @public (undocumented)
 type Plugin_2 = {
@@ -1815,19 +1873,36 @@ export { print_2 as print }
 export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
 
 // @public (undocumented)
+type ProjectInfo = {
+    amplifyMeta?: $TSAny;
+    awsConfigInfo?: $TSAny;
+    backendConfig?: $TSAny;
+    existingLocalAwsInfo?: $TSAny;
+    existingProjectConfig?: $TSAny;
+    existingTeamProviderInfo?: $TSAny;
+    isNewProject?: boolean;
+    inputParams: $TSObject;
+    localEnvInfo: LocalEnvInfo;
+    projectConfig?: $TSAny;
+    serviceMeta?: $TSAny;
+    teamProviderInfo?: $TSAny;
+};
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
 
 // @public (undocumented)
 export type ProjectSettings = {
     frontend?: string;
     editor?: string;
-    envName?: string;
+    envName: string;
     framework?: string;
     version?: string;
     providers?: string[];
     projectPath?: string;
     defaultEditor?: string;
     frontendHandler?: unknown;
+    noUpdateBackend?: boolean;
 };
 
 // @public (undocumented)
@@ -2246,7 +2321,7 @@ export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
-// src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
+// src/types.ts:18:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

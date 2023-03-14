@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { stateManager, open, $TSContext, $TSObject, AmplifyError } from 'amplify-cli-core';
@@ -120,7 +119,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         resource.lastPushTimeStamp = new Date();
       }
 
-      _.set(meta, [category, service, 'lastPushTimeStamp'], cloudTimestamp);
+      _.setWith(meta, [category, service, 'lastPushTimeStamp'], cloudTimestamp);
       stateManager.setMeta(undefined, meta);
     }
 

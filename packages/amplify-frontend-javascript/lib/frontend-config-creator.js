@@ -2,7 +2,6 @@
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable jsdoc/require-jsdoc */
 const path = require('path');
 const Module = require('module');
 const fs = require('fs-extra');
@@ -65,9 +64,6 @@ const AMPLIFY_RESERVED_EXPORT_KEYS = [
   // lex
   'aws_bots',
   'aws_bots_config',
-
-  // Sumerian
-  'XR',
 
   // Predictions
   'predictions',
@@ -211,9 +207,6 @@ function getAWSExportsObject(resources) {
         break;
       case 'Lex':
         Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
-        break;
-      case 'Sumerian':
-        Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
         break;
       // predictions config generation
       case 'Translate':
@@ -668,23 +661,6 @@ function getLexConfig(lexResources) {
   return {
     aws_bots: 'enable',
     aws_bots_config: config,
-  };
-}
-
-function getSumerianConfig(sumerianResources) {
-  const scenes = {};
-  sumerianResources.forEach((r) => {
-    const { resourceName, output } = r;
-    delete output.service;
-
-    scenes[resourceName] = {
-      sceneConfig: output,
-    };
-  });
-  return {
-    XR: {
-      scenes,
-    },
   };
 }
 

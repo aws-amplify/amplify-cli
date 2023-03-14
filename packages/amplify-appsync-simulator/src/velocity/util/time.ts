@@ -24,7 +24,7 @@ const parseTimestamp = (dateTime: string, format?: string, timezone?: string): m
 };
 
 export const time = () => ({
-  nowISO8601(t): string {
+  nowISO8601(): string {
     return moment().toISOString();
   },
   nowEpochSeconds(): number {

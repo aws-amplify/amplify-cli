@@ -1,7 +1,6 @@
 import { Fn, IAM, Template } from 'cloudform-types';
 import { pathManager, stateManager } from './state-manager';
 import Ajv from 'ajv';
-import { EOL } from 'os';
 import * as _ from 'lodash';
 import { formatter, printer } from 'amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
@@ -191,7 +190,7 @@ function applyCustomPolicyToLambda(generatedCustomPolicies: CustomIAMPolicies, c
     Roles: [Fn.Ref('LambdaExecutionRole')],
   });
   policy.dependsOn('LambdaExecutionRole');
-  _.set(cfnTemplate, ['Resources', 'CustomLambdaExecutionPolicy'], policy);
+  _.setWith(cfnTemplate, ['Resources', 'CustomLambdaExecutionPolicy'], policy);
 
   return cfnTemplate;
 }
@@ -210,6 +209,6 @@ function applyCustomPolicyToElasticContainers(generatedCustomPolicies: CustomIAM
     PolicyName: 'CustomExecutionPolicyForContainer',
     Roles: [Fn.Ref(taskRoleArn[0])],
   });
-  _.set(cfnTemplate, ['Resources', 'CustomExecutionPolicyForContainer'], policy);
+  _.setWith(cfnTemplate, ['Resources', 'CustomExecutionPolicyForContainer'], policy);
   return cfnTemplate;
 }

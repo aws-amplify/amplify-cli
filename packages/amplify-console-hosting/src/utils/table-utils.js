@@ -1,9 +1,8 @@
 const clientFactory = require('./client-factory');
-const ora = require('ora');
 const Table = require('cli-table3');
+const { spinner } = require('amplify-cli-core');
 
 async function generateTableContentForApp(context, appId) {
-  const spinner = ora();
   spinner.start('Fetching AWS Amplify Console domains');
   const amplifyClient = await clientFactory.getAmplifyClient(context);
   const domainMap = {};

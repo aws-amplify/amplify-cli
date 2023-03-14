@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { isWindowsPlatform, JSONUtilities } from 'amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,
@@ -67,8 +67,11 @@ describe('adding custom resources test', () => {
     await buildCustomResources(projRoot);
 
     // check if latest @aws-amplify/cli-extensibility-helper works
-    useLatestExtensibilityHelper(projRoot, cdkResourceName);
-    await buildCustomResources(projRoot);
+    // skip on Windows, we don't start local registry there
+    if (!isWindowsPlatform()) {
+      useLatestExtensibilityHelper(projRoot, cdkResourceName);
+      await buildCustomResources(projRoot);
+    }
 
     await amplifyPushAuth(projRoot);
 
@@ -94,8 +97,7 @@ describe('adding custom resources test', () => {
     expect(customResourceSNSArn).toBeDefined();
 
     // Add custom CFN and add dependency of custom CDK resource on the custom CFN
-
-    await addCFNCustomResource(projRoot, { name: cfnResourceName });
+    await addCFNCustomResource(projRoot, { name: cfnResourceName, promptForCategorySelection: true });
 
     const customCFNFilePath = path.join(
       projRoot,

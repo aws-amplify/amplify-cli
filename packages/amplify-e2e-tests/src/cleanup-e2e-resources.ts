@@ -15,13 +15,17 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
   'us-west-2',
   'eu-west-2',
+  'eu-west-3',
   'eu-central-1',
   'ap-northeast-1',
+  'ap-northeast-2',
   'ap-southeast-1',
   'ap-southeast-2',
 ];
 
-// Limits are efforced per region
+const AWS_REGIONS_TO_RUN_TESTS_PINPOINT = AWS_REGIONS_TO_RUN_TESTS.filter((region) => region !== 'eu-west-3');
+
+// Limits are enforced per region
 // we collect resources from each region & then delete as an entire batch
 const DELETE_LIMITS = {
   PER_REGION: {
@@ -74,6 +78,12 @@ type S3BucketInfo = {
   createTime: Date;
 };
 
+type UserPoolInfo = {
+  name: string;
+  region: string;
+  userPoolId: string;
+};
+
 type PinpointAppInfo = {
   id: string;
   name: string;
@@ -107,6 +117,7 @@ type ReportEntry = {
   roles: Record<string, IamRoleInfo>;
   pinpointApps: Record<string, PinpointAppInfo>;
   appSyncApis: Record<string, AppSyncApiInfo>;
+  userPools: Record<string, UserPoolInfo>;
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -130,6 +141,7 @@ const PINPOINT_TEST_REGEX = /integtest/;
 const APPSYNC_TEST_REGEX = /integtest/;
 const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
+const USER_POOL_TEST_REGEX = /integtest|amplify_backend_manager/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
 /*
@@ -162,6 +174,11 @@ const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
   return isTestResource && isStale(resource.CreateDate);
+};
+
+const testUserPoolStalenessFilter = (resource: aws.CognitoIdentityServiceProvider.UserPoolDescriptionType): boolean => {
+  const isTestResource = resource.Name.match(USER_POOL_TEST_REGEX);
+  return isTestResource && isStale(resource.CreationDate);
 };
 
 const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolean => {
@@ -225,6 +242,13 @@ const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: st
   } while (nextToken);
 
   return apps;
+};
+
+const getOrphanUserPools = async (account: AWSAccountInfo, region: string): Promise<UserPoolInfo[]> => {
+  const cognitoClient = new aws.CognitoIdentityServiceProvider(getAWSConfig(account, region));
+  const userPools = await cognitoClient.listUserPools({ MaxResults: 60 }).promise();
+  const staleUserPools = userPools.UserPools.filter(testUserPoolStalenessFilter);
+  return staleUserPools.map((it) => ({ name: it.Name, userPoolId: it.Id, region }));
 };
 
 /**
@@ -485,6 +509,7 @@ const mergeResourcesByCCIJob = (
   orphanIamRoles: IamRoleInfo[],
   orphanPinpointApplications: PinpointAppInfo[],
   orphanAppSyncApis: AppSyncApiInfo[],
+  orphanUserPools: UserPoolInfo[],
 ): Record<string, ReportEntry> => {
   const result: Record<string, ReportEntry> = {};
 
@@ -574,6 +599,18 @@ const mergeResourcesByCCIJob = (
       ...val,
       jobId: key,
       appSyncApis: src,
+    }),
+  );
+
+  _.mergeWith(
+    result,
+    {
+      [ORPHAN]: orphanUserPools,
+    },
+    (val, src, key) => ({
+      ...val,
+      jobId: key,
+      userPools: src,
     }),
   );
 
@@ -712,6 +749,30 @@ const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, a
   }
 };
 
+const deleteUserPools = async (account: AWSAccountInfo, accountIndex: number, userPools: UserPoolInfo[]): Promise<void> => {
+  await Promise.all(userPools.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map((userPool) => deleteUserPool(account, accountIndex, userPool)));
+};
+
+const deleteUserPool = async (account: AWSAccountInfo, accountIndex: number, userPool: UserPoolInfo): Promise<void> => {
+  const { name, region, userPoolId } = userPool;
+  try {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting UserPool ${name}`);
+    const cognitoClient = new aws.CognitoIdentityServiceProvider(getAWSConfig(account, region));
+    const userPoolDetails = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
+    if (userPoolDetails.UserPool.Domain) {
+      await cognitoClient
+        .deleteUserPoolDomain({
+          UserPoolId: userPoolId,
+          Domain: userPoolDetails.UserPool.Domain,
+        })
+        .promise();
+    }
+    await cognitoClient.deleteUserPool({ UserPoolId: userPoolId }).promise();
+  } catch (e) {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting UserPool ${name} failed with error ${e.message}`);
+  }
+};
+
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
   await Promise.all(stacks.slice(0, DELETE_LIMITS.PER_BATCH.CFN_STACK).map((stack) => deleteCfnStack(account, accountIndex, stack)));
 };
@@ -781,6 +842,11 @@ const deleteResources = async (
         `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`,
       );
       await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
+    }
+
+    if (resources.userPools) {
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.userPools.length} userPools on ACCOUNT[${accountIndex}]`);
+      await deleteUserPools(account, accountIndex, Object.values(resources.userPools));
     }
   }
 };
@@ -881,10 +947,13 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
-  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanPinpointApplications(account, region));
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
+    getOrphanPinpointApplications(account, region),
+  );
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
   const orphanAppSyncApisPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanAppSyncApis(account, region));
+  const orphanUserPoolsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanUserPools(account, region));
 
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
@@ -893,6 +962,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanIamRoles = await orphanIamRolesPromise;
   const orphanPinpointApplications = (await Promise.all(orphanPinpointApplicationsPromise)).flat();
   const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
+  const orphanUserPools = (await Promise.all(orphanUserPoolsPromise)).flat();
 
   const allResources = mergeResourcesByCCIJob(
     apps,
@@ -902,11 +972,12 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     orphanIamRoles,
     orphanPinpointApplications,
     orphanAppSyncApis,
+    orphanUserPools,
   );
   // cleanup resources that are <unknown> but that are definitely amplify resources
   // this includes apps with names that include "test" or stacks that include both "amplify" & "test"
-  const testApps = allResources['<unknown>'].amplifyApps?.filter((a) => a.name.toLocaleLowerCase().includes('test'));
-  const testStacks = allResources['<unknown>'].stacks?.filter(
+  const testApps = allResources['<unknown>']?.amplifyApps?.filter((a) => a.name.toLocaleLowerCase().includes('test'));
+  const testStacks = allResources['<unknown>']?.stacks?.filter(
     (s) => s.stackName.toLocaleLowerCase().includes('test') && s.stackName.toLocaleLowerCase().includes('amplify'),
   );
   const orphanedResources = allResources['<orphan>'];

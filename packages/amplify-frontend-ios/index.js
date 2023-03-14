@@ -29,11 +29,11 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function displayFrontendDefaults(context, projectPath) {
+function displayFrontendDefaults(context) {
   return configManager.displayFrontendDefaults(context);
 }
 
-function setFrontendDefaults(context, projectPath) {
+function setFrontendDefaults(context) {
   return configManager.setFrontendDefaults(context);
 }
 

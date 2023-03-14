@@ -47,7 +47,7 @@ export class UsageData implements IUsageData {
     this.sessionUuid = uuid();
     this.url = getUrl();
     this.input = new CLIInput([]);
-    this.projectSettings = {};
+    this.projectSettings = {} as unknown as ProjectSettings;
     this.inputOptions = {};
   }
 

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
@@ -17,7 +16,7 @@ import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
  */
 export const createMapWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
   // get the map name
-  parameters = merge(parameters, await mapNameWalkthrough(context));
+  parameters = merge(parameters, await mapNameWalkthrough());
 
   // get the access
   parameters = merge(parameters, await resourceAccessWalkthrough(context, parameters, ServiceName.Map));
@@ -36,7 +35,7 @@ export const createMapWalkthrough = async (context: $TSContext, parameters: Part
   return parameters;
 };
 
-export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParameters>> => {
+export const mapNameWalkthrough = async (): Promise<Partial<MapParameters>> => {
   let mapName;
   while (!mapName) {
     const [shortId] = uuid().split('-');

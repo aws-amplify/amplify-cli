@@ -28,7 +28,6 @@ const DEFAULT_COLUMN_SEP_SPACING = 2;
 const DEFAULT_INDENT_SPACING = 2;
 const DEFAULT_COLUMN_SEP = SPACE.repeat(DEFAULT_COLUMN_SEP_SPACING);
 const DEFAULT_INDENT = SPACE.repeat(DEFAULT_INDENT_SPACING);
-const MAX_LINE_LENGTH = 80;
 
 const USAGE = 'USAGE';
 const DESCRIPTION = 'DESCRIPTION';
@@ -50,7 +49,7 @@ const printHeaderText = (text: string) => printer.info(chalk.blue.bold(text));
 const printBodyText = (text: string) => printer.info(text);
 const printCategoryMessage = () => {
   printBodyText(DEFAULT_INDENT + 'Where <category> is one of: notifications, api, auth, custom, storage,');
-  printBodyText(DEFAULT_INDENT + 'analytics, function, geo, hosting, interactions, predictions, xr (deprecated)');
+  printBodyText(DEFAULT_INDENT + 'analytics, function, geo, hosting, interactions, predictions');
   printer.blankLine();
 };
 
@@ -126,7 +125,7 @@ function printColumns(rowsArray: Array<[string, string]>, minColumnSeparatingSpa
   });
 }
 
-function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, defaultNumTabs = 1, extraTabLengthThreshold = 5) {
+function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>) {
   TAG_LINE.forEach((line) => printBodyText(line));
   printer.blankLine();
 
@@ -151,16 +150,10 @@ function printGenericHelp(context: $TSContext, commandsInfo: Array<CommandInfo>,
   printer.blankLine();
 }
 
-function printCommandSpecificHelp(
-  context: $TSContext,
-  commandsInfo: Array<CommandInfo>,
-  commandName: string,
-  defaultNumTabs = 1,
-  extraTabLengthThreshold = 5,
-) {
+function printCommandSpecificHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, commandName: string) {
   const command = lookUpCommand(commandsInfo, commandName);
   if (command === undefined) {
-    printGenericHelp(context, commandsInfo, defaultNumTabs, extraTabLengthThreshold);
+    printGenericHelp(context, commandsInfo);
     return;
   }
 
@@ -201,22 +194,15 @@ function printCommandSpecificHelp(
   printer.blankLine();
 }
 
-function printSubcommandSpecificHelp(
-  context: $TSContext,
-  commandsInfo: Array<CommandInfo>,
-  commandName: string,
-  subcommandName: string,
-  defaultNumTabs = 1,
-  extraTabLengthThreshold = 5,
-) {
+function printSubcommandSpecificHelp(context: $TSContext, commandsInfo: Array<CommandInfo>, commandName: string, subcommandName: string) {
   const subCommand = lookUpSubcommand(commandsInfo, commandName, subcommandName);
   if (subCommand === undefined) {
     const command = lookUpCommand(commandsInfo, commandName);
     if (command === undefined) {
-      printGenericHelp(context, commandsInfo, defaultNumTabs, extraTabLengthThreshold);
+      printGenericHelp(context, commandsInfo);
       return;
     } else {
-      printCommandSpecificHelp(context, commandsInfo, command.command, defaultNumTabs, extraTabLengthThreshold);
+      printCommandSpecificHelp(context, commandsInfo, command.command);
       return;
     }
   }

@@ -2,7 +2,17 @@
 /* eslint-disable func-style */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSContext, $TSObject, AmplifyError, JSONUtilities, pathManager, stateManager, Tag, Template } from 'amplify-cli-core';
+import {
+  $TSContext,
+  $TSObject,
+  AmplifyError,
+  JSONUtilities,
+  LocalEnvInfo,
+  pathManager,
+  stateManager,
+  Tag,
+  Template,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
@@ -24,6 +34,7 @@ import { configurePermissionsBoundaryForInit } from './permissions-boundary/perm
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { fileLogger } from './utils/aws-logger';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 const logger = fileLogger('initializer');
 
@@ -41,7 +52,7 @@ type ParamType = {
 export const run = async (context: $TSContext): Promise<void> => {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
-    context.exeInfo = context.exeInfo || {};
+    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
     /* eslint-disable-next-line spellcheck/spell-checker */
@@ -102,7 +113,8 @@ export const run = async (context: $TSContext): Promise<void> => {
               external: true,
             },
           });
-          await sandboxNode.run(overrideCode).override(configuration);
+          const projectInfo = getProjectInfo();
+          await sandboxNode.run(overrideCode).override(configuration, projectInfo);
         }
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
@@ -213,14 +225,14 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 };
 
 const setCloudFormationOutputInContext = (context: $TSContext, cfnOutput: $TSObject): void => {
-  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+  _.setWith(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
   const { envName } = context.exeInfo.localEnvInfo;
   if (envName) {
     const providerInfo = _.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]);
     if (providerInfo) {
       _.merge(providerInfo, cfnOutput);
     } else {
-      _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+      _.setWith(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
     }
   }
 };

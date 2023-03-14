@@ -208,6 +208,6 @@ const migrateAmplifyProjectFiles = (layerName: string, latestLegacyHash: string)
     meta[categoryName][layerName][layerVersionMapKey] = undefined;
   }
 
-  _.set(meta, [categoryName, layerName, versionHash], latestLegacyHash);
+  _.setWith(meta, [categoryName, layerName, versionHash], latestLegacyHash);
   stateManager.setMeta(projectRoot, meta);
 };
