@@ -5,17 +5,17 @@ phases:
     runtime-versions:
       nodejs: 14
     commands:
-      - npm config set script-shell $(which bash)
-      - npm install
+      - yarn config set script-shell $(which bash)
+      - yarn
   pre_build:
     commands:
       - echo running prebuild
-      - npm config -g set prefer-offline true
-      - npm config -g set cache /root/.npm
-      - npm config get cache
+      - yarn config -g set prefer-offline true
+      - yarn config -g set cache /root/.yarn
+      - yarn config get cache
   build:
     commands:
-      - npm run production-build
+      # - yarn production-build
   post_build:
     commands:
       - ls
@@ -27,4 +27,4 @@ phases:
       - ls /root
 cache:
   paths:
-    - /root/.npm/**/*
+    - ~/.cache/yarn/**/*
