@@ -132,6 +132,7 @@ export type AmplifyErrorType =
 | 'LambdaLayerDeleteError'
 | 'MigrationError'
 | 'MissingAmplifyMetaFileError'
+| 'MissingExpectedParameterError'
 | 'MissingOverridesInstallationRequirementsError'
 | 'MockProcessError'
 | 'ModelgenError'
@@ -164,6 +165,7 @@ export type AmplifyErrorType =
 | 'StackStateError'
 | 'TransformerContractError'
 | 'UnknownDirectiveError'
+| 'UnsupportedLockFileTypeError'
 | 'UserInputError';
 
 /**
