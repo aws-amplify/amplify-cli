@@ -13,6 +13,8 @@ phases:
       - ls .
       - ls /root
       - ls ~/.cache
+      - ls node_modules/
+      - ls /root/.yarn-cache/**/*
   post_build:
     commands:
       - yarn lint-check

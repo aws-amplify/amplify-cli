@@ -13,7 +13,7 @@ phases:
       - yarn install --frozen-lockfile
   build:
     commands:
-      # - yarn production-build
+      - yarn production-build
   post_build:
     commands:
       - ls
