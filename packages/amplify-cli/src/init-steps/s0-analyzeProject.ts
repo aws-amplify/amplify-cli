@@ -153,7 +153,7 @@ const envAddValidation = async (context: $TSContext): Promise<void> => {
       }
     }
   }
-}
+};
 
 const setProjectConfig = (context: $TSContext, projectName: string): void => {
   context.exeInfo.isNewProject = isNewProject(context);
