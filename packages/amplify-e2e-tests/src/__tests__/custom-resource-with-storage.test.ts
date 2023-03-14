@@ -8,7 +8,6 @@ import {
   initJSProjectWithProfile,
   gitInit,
   gitCleanFdX,
-  gitSetLongPaths,
   initHeadless,
   getAppId,
   addAuthWithDefault,
@@ -25,7 +24,6 @@ describe('adding custom resources test', () => {
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
-    await gitSetLongPaths(projRoot);
     await gitInit(projRoot);
   });
 
