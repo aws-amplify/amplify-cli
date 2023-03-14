@@ -31,6 +31,10 @@ export const gitCleanFdX = async (cwd: string): Promise<void> => {
   await execa('git', ['clean', '-fdX'], { cwd });
 };
 
+export const gitSetLongPaths = async (cwd: string): Promise<void> => {
+  await execa('git', ['config', '--global', 'core.longpaths', 'true'], { cwd });
+};
+
 /**
  * Returns a list of files that have unstaged changes in the specified directory
  */
