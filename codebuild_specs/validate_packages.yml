@@ -13,9 +13,9 @@ phases:
       - ls ~/.cache
   post_build:
     commands:
-      - npm run lint-check
+      - npm lint-check
       - cd packages/amplify-util-mock && yarn e2e
-      - npm run test-ci
-      - npm run verify-api-extract
-      - npm run verify-yarn-lock
+      - npm test-ci
+      - npm verify-api-extract
+      - npm verify-yarn-lock
       - echo Post build complete
