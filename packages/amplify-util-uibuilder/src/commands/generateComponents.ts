@@ -18,6 +18,13 @@ import {
   deleteDetachedForms,
 } from './utils';
 
+// This date is arbitrary for now and will be modified once we update the SDK
+const removeWarningDate = new Date('06-01-2023');
+
+export const shouldPrintWarning = (): boolean => {
+  return new Date() < removeWarningDate;
+};
+
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
  */
@@ -112,8 +119,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       );
     }
 
-    // TODO: remove this warning message after release + 6 weeks
-    if (hasSuccessfulForm && (dataSchema?.models || dataSchema?.nonModels)) {
+    if (hasSuccessfulForm && shouldPrintWarning()) {
       printer.warn(
         'For data models with relationships, Amplify forms will now automatically contain relationship fields. This may change forms in your application. Please verify that all forms in your application are working as expected.',
       );

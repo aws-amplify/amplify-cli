@@ -1,6 +1,7 @@
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import * as printerDependency from 'amplify-prompts';
 import * as utils from '../commands/utils';
-import { run } from '../commands/generateComponents';
+import { run, shouldPrintWarning } from '../commands/generateComponents';
 
 jest.mock('../commands/utils');
 jest.mock('amplify-cli-core');
@@ -10,6 +11,7 @@ const utilsMock = utils as any;
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
 utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue({});
+printerDependency.printer.warn = jest.fn();
 
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
@@ -69,6 +71,10 @@ describe('can generate components', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         }),
       }),
@@ -89,5 +95,6 @@ describe('can generate components', () => {
     expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
     expect(utilsMock.deleteDetachedForms).toBeCalledTimes(1);
+    expect(printerDependency.printer.warn).toBeCalledTimes(+shouldPrintWarning());
   });
 });
