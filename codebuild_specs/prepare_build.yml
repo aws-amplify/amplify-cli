@@ -5,8 +5,8 @@ phases:
     runtime-versions:
       nodejs: 14
     commands:
-      - yarn config set script-shell $(which bash)
-      - yarn install
+      - npm config set script-shell $(which bash)
+      - npm install
   pre_build:
     commands:
       - echo running prebuild
@@ -15,8 +15,7 @@ phases:
       - npm config get cache
   build:
     commands:
-      - npm install
-      - npm run production-build
+      - npm production-build
   post_build:
     commands:
       - ls
