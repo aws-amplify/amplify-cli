@@ -24,6 +24,5 @@ phases:
       - ls /root
 cache:
   paths:
-    - '~/.cache/**/*'
-    - '~/.ssh/'
-    - '.'
+    - '/root/.yarn-cache/**/*'
+    - 'node_modules/**/*'

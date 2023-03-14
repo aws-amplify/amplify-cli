@@ -1,9 +1,8 @@
 version: 0.2
 cache:
   paths:
-    - '~/.cache/**/*'
-    - '~/.ssh/'
-    - '.'
+    - '/root/.yarn-cache/**/*'
+    - 'node_modules/**/*'
 phases:
   pre_build:
     commands:
