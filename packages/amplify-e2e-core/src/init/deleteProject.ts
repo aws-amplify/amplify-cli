@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from '..';
 import { getBackendAmplifyMeta } from '../utils';
+import { $TSAny } from 'amplify-cli-core';
 
 /**
  * Runs `amplify delete`
@@ -8,7 +9,7 @@ import { getBackendAmplifyMeta } from '../utils';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const deleteProject = async (
   cwd: string,
-  profileConfig?: any,
+  profileConfig?: $TSAny,
   usingLatestCodebase = false,
   noOutputTimeout: number = 1000 * 60 * 20,
 ): Promise<void> => {
