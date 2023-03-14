@@ -4,6 +4,7 @@ import {
   config,
   DynamoDB,
   S3,
+  CognitoIdentity,
   CognitoIdentityServiceProvider,
   Lambda,
   LexModelBuildingService,
@@ -138,6 +139,16 @@ export const getUserPool = async (userpoolId, region) => {
   let res;
   try {
     res = await new CognitoIdentityServiceProvider().describeUserPool({ UserPoolId: userpoolId }).promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return res;
+};
+
+export const getIdentityPoolRoles = async (identityPoolId: string) => {
+  let res;
+  try {
+    res = await new CognitoIdentity().getIdentityPoolRoles({ IdentityPoolId: identityPoolId }).promise();
   } catch (e) {
     console.log(e);
   }
