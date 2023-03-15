@@ -48,7 +48,7 @@ export const saveAll = async (serviceUploadHandler?: ServiceUploadHandler): Prom
  * Class for interfacing with environment-specific parameters
  */
 class EnvironmentParameterManager implements IEnvironmentParameterManager {
-  private categoriesThatCannotBeCloned = [
+  private categoriesThatCannotBeClonedAutomatically = [
     AmplifyCategories.API,
     AmplifyCategories.AUTH,
     AmplifyCategories.NOTIFICATIONS,
@@ -99,7 +99,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     const resourceKeys = Object.keys(this.resourceParamManagers);
     const categoryResourceNamePairs: (readonly [string, string])[] = resourceKeys.map((key) => splitResourceKey(key));
     for (const [category, resourceName] of categoryResourceNamePairs) {
-      if (this.categoriesThatCannotBeCloned.includes(category) && this.hasResourceParamManager(category, resourceName)) {
+      if (this.categoriesThatCannotBeClonedAutomatically.includes(category) && this.hasResourceParamManager(category, resourceName)) {
         const resourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
         if (resourceParamManager.hasAnyParams()) {
           categoryResourcePairsWithUniqueEnvParams.push([category, resourceName]);
@@ -109,7 +109,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
     // Check for secrets that cannot be cloned automatically
     const envSecrets = this.getEnvSecrets();
-    for (const category of this.categoriesThatCannotBeCloned) {
+    for (const category of this.categoriesThatCannotBeClonedAutomatically) {
       if (envSecrets[category]) {
         for (const resourceName of Object.keys(envSecrets[category])) {
           categoryResourcePairsWithUniqueEnvSecrets.push([category, resourceName]);

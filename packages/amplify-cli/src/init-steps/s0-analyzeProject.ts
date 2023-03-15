@@ -30,7 +30,7 @@ export const analyzeProjectHeadless = async (context: $TSContext): Promise<void>
     context.exeInfo.projectConfig.frontend = frontend;
   }
 
-  return envAddValidation(context);
+  return validateEnvOnAdd(context);
 };
 
 /**
@@ -105,7 +105,7 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
 
-  await envAddValidation(context);
+  await validateEnvOnAdd(context);
 
   if (context.exeInfo.isNewProject && context.parameters.command !== 'env') {
     await displayAndSetDefaults(context, projectPath, projectName);
@@ -140,7 +140,7 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
   return context;
 };
 
-const envAddValidation = async (context: $TSContext): Promise<void> => {
+const validateEnvOnAdd = async (context: $TSContext): Promise<void> => {
   if (context?.parameters?.command === 'env') {
     await downloadEnvParameters(context);
     const envParamManger = getEnvParamManager(context.exeInfo.sourceEnvName);
