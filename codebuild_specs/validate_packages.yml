@@ -1,20 +1,9 @@
 version: 0.2
 cache:
   paths:
-    - '/root/.yarn-cache/**/*'
-    - 'node_modules/**/*'
-    - 'packages/**/node_modules/**/*'
+    - '/root/.cache/yarn/**/*'
 
 phases:
-  pre_build:
-    commands:
-      - ls ~/.
-      - ls ~
-      - ls .
-      - ls /root
-      - ls ~/.cache
-      - ls node_modules/
-      - ls /root/.yarn-cache/**/*
   post_build:
     commands:
       - yarn lint-check
