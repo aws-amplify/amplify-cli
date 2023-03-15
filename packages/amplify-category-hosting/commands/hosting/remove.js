@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const { prompter } = require('amplify-prompts');
+const { prompter } = require('@aws-amplify/amplify-prompts');
 
 const subcommand = 'remove';
 const category = 'hosting';
