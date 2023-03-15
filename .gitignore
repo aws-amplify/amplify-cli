@@ -59,6 +59,7 @@ packages/amplify-migration-tests/lib
 packages/amplify-headless-interface/lib
 packages/amplify-provider-awscloudformation/lib
 packages/amplify-prompts/lib
+packages/amplify-prompts-vNext/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib
