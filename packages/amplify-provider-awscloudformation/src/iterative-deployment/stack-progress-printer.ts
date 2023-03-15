@@ -1,4 +1,4 @@
-import { MultiProgressBar } from 'amplify-prompts';
+import { MultiProgressBar } from '@aws-amplify/amplify-prompts';
 import type { StackEvent, StackEvents } from 'aws-sdk/clients/cloudformation';
 import chalk from 'chalk';
 import columnify from 'columnify';

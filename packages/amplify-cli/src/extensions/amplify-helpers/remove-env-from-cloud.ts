@@ -1,5 +1,5 @@
 import { $TSAny, AmplifyFault } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getProjectConfig } from './get-project-config';
 import { getAllCategoryPluginInfo } from './get-all-category-pluginInfos';
 import { getProviderPlugins } from './get-provider-plugins';

@@ -1,4 +1,4 @@
-import { MultiProgressBar } from 'amplify-prompts';
+import { MultiProgressBar } from '@aws-amplify/amplify-prompts';
 import {
   createProgressBarFormatter,
   createItemFormatter,

@@ -12,7 +12,7 @@ import {
   AmplifyError,
   AmplifyFault,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeAnalyticsAPICreateResource, invokeAnalyticsAPIGetResources, invokeAnalyticsPush } from './plugin-client-api-analytics';
 
 import * as authHelper from './auth-helper';

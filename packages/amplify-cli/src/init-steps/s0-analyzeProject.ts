@@ -1,6 +1,6 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext, AmplifyError, LocalEnvInfo, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';

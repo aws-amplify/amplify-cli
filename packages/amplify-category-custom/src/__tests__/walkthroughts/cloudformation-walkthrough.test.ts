@@ -1,5 +1,5 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { customResourceNameQuestion } from '../../utils/common-questions';
 import { addCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
 

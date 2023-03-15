@@ -1,5 +1,5 @@
 import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { messages } from '../assets/string-maps';
 
 /**

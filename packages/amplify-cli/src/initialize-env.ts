@@ -1,6 +1,6 @@
+import { printer } from '@aws-amplify/amplify-prompts';
 import sequential from 'promise-sequential';
 import { $TSAny, $TSMeta, $TSContext, ManuallyTimedCodePath, stateManager, AmplifyFault, LocalEnvInfo, spinner } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { downloadEnvParameters } from './utils/environment-parameter-manager-helpers';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';

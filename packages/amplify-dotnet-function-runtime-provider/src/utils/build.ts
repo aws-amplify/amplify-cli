@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import * as execa from 'execa';
 import { BuildRequest, BuildResult, BuildType } from 'amplify-function-plugin-interface';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { dotnetcore31, executableName } from '../constants';
 
 export const build = async ({ srcRoot, lastBuildTimeStamp, buildType, runtime }: BuildRequest): Promise<BuildResult> => {

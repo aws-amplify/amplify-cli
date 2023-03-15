@@ -6,7 +6,7 @@ import * as systemConfigManager from './system-config-manager';
 import obfuscationUtil from './utility-obfuscate';
 
 import awsRegions from './aws-regions.js';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * setup new user entry point

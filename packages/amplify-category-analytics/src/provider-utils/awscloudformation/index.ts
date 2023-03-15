@@ -4,7 +4,7 @@
 /* eslint-disable spellcheck/spell-checker */
 
 import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * Add Analytics resource walkthrough

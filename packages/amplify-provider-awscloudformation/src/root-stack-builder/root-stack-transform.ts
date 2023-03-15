@@ -10,7 +10,7 @@ import {
   Template,
   writeCFNTemplate,
 } from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
+import { formatter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';

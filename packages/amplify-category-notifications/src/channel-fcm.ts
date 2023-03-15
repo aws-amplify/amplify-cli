@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, AmplifyError, AmplifyFault } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';

@@ -1,5 +1,5 @@
 import { createDefaultCustomPoliciesFile, generateCustomPoliciesInTemplate } from '../customPoliciesUtils';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { JSONUtilities } from '..';
 import { pathManager, PathConstants, stateManager } from '../state-manager';
 import path from 'path';

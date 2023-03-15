@@ -1,5 +1,5 @@
 import { stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as remove from '../../commands/auth/remove';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 
