@@ -1,6 +1,6 @@
-set -e
+set -eu
 
-cachedir = $HOME/.s3buildcache
+cachedir=$HOME/.s3buildcache
 
 # creates directory only if it doesn't exist already
 mkdir -p $cachedir
