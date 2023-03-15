@@ -91,14 +91,13 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  canBeClonedHeadlessly(): { result: true } | { result: false, reason: string } {
+  canBeClonedHeadlessly(): { result: true } | { result: false; reason: string } {
     const categoryResourcePairsWithUniqueEnvParams: [string, string][] = [];
     const categoryResourcePairsWithUniqueEnvSecrets: [string, string][] = [];
 
     // Check for parameters that cannot be cloned automatically
     const resourceKeys = Object.keys(this.resourceParamManagers);
-    const categoryResourceNamePairs: (readonly [string, string])[] = resourceKeys
-      .map((key) => splitResourceKey(key));
+    const categoryResourceNamePairs: (readonly [string, string])[] = resourceKeys.map((key) => splitResourceKey(key));
     for (const [category, resourceName] of categoryResourceNamePairs) {
       if (this.categoriesThatCannotBeCloned.includes(category) && this.hasResourceParamManager(category, resourceName)) {
         const resourceParamManager: ResourceParameterManager = this.getResourceParamManager(category, resourceName);
@@ -280,7 +279,7 @@ const splitResourceKey = (key: string): readonly [string, string] => {
  * Interface for environment parameter managers
  */
 export type IEnvironmentParameterManager = {
-  canBeClonedHeadlessly: () => { result: true } | { result: false, reason: string };
+  canBeClonedHeadlessly: () => { result: true } | { result: false; reason: string };
   cloneEnvParamsToNewEnvParamManager: (destManager: IEnvironmentParameterManager) => Promise<void>;
   downloadParameters: (downloadHandler: ServiceDownloadHandler) => Promise<void>;
   getMissingParameters: (
