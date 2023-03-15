@@ -4,6 +4,7 @@ cachedir=$HOME/.s3buildcache
 mkdir -p $cachedir
 
 if [[ "${S3_BUILD_CACHE:-}" = "" ]]; then
+    echo "Something failed, S3_BUILD_CACHE PHASE"
     exit 0
 fi
 

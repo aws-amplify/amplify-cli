@@ -14,7 +14,7 @@ phases:
       - yarn install --frozen-lockfile
   build:
     commands:
-      - yarn production-build
+      # - yarn production-build
   post_build:
     commands:
       - ls
@@ -24,7 +24,7 @@ phases:
       - ls ~
       - ls .
       - /bin/bash ./codebuild_specs/cache-store.sh
-      - ls /root/myCache
+
 cache:
   paths:
     - '/root/.yarn-cache/**/*'
