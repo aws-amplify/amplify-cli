@@ -31,6 +31,7 @@
     "@aws-amplify/amplify-headless-interface": "1.17.1",
     "@aws-amplify/amplify-util-headless-input": "1.9.10",
     "@aws-amplify/amplify-util-import": "2.4.0",
+    "@aws-amplify/amplify-prompts": "2.6.5",
     "@aws-amplify/cli-extensibility-helper": "3.0.0",
     "amplify-cli-core": "4.0.0",
     "amplify-prompts": "2.6.5",

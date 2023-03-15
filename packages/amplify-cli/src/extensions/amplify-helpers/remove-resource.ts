@@ -6,7 +6,7 @@ import {
   ResourceDoesNotExistError,
   stateManager,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
 import { removeResourceParameters } from './envResourceParams';

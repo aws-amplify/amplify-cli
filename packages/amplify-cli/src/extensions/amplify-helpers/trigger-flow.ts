@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';

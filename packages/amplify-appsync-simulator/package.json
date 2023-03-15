@@ -30,11 +30,11 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@aws-amplify/amplify-prompts": "2.6.5",
     "@aws-amplify/amplify-velocity-template": "1.4.9",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
     "amplify-cli-core": "4.0.0",
-    "amplify-prompts": "2.6.5",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",

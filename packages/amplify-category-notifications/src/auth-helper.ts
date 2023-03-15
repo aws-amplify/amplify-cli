@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import os from 'os';
 

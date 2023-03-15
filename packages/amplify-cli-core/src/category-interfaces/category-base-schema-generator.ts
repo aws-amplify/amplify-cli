@@ -7,7 +7,7 @@ import { getProgramFromFiles, buildGenerator, PartialArgs } from 'typescript-jso
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import Ajv from 'ajv';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSAny, $TSContext, JSONUtilities } from '..';
 
 // Interface types are expected to be exported as "typeName" in the file

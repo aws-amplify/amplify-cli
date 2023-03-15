@@ -1,7 +1,7 @@
 import { executeAmplifyHeadlessCommand } from '../../../src';
 import { ImportAuthRequest } from '@aws-amplify/amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-prompts', () => ({

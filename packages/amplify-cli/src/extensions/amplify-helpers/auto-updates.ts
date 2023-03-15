@@ -1,4 +1,4 @@
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { detectCognitoAttributesRequireVerificationBeforeUpdateDiff } from './update-tracked-files';
 
 /**

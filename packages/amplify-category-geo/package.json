@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-headless-interface": "1.17.1",
+    "@aws-amplify/amplify-prompts": "2.6.5",
     "@aws-amplify/amplify-util-headless-input": "1.9.10",
     "ajv": "^6.12.6",
     "amplify-cli-core": "4.0.0",

@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import { matchRegex, alphanumeric, and, maxLength, minLength, printer, prompter } from 'amplify-prompts';
+import { matchRegex, alphanumeric, and, maxLength, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   getRoleAccessDefaultValues,
   S3AccessType,

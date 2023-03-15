@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { StudioSchema } from '@aws-amplify/codegen-ui';
 import ora from 'ora';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
 import { AmplifyStudioClient } from '../clients';
 import {

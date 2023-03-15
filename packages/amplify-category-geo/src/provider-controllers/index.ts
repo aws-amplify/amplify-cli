@@ -1,5 +1,5 @@
 import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from '@aws-amplify/amplify-util-headless-input';
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { provider, ServiceName } from '../service-utils/constants';

@@ -25,7 +25,7 @@ import {
   ReactUtilsStudioTemplateRenderer,
   ReactThemeStudioTemplateRendererOptions,
 } from '@aws-amplify/codegen-ui-react';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { AmplifyStudioClient } from '../../clients';

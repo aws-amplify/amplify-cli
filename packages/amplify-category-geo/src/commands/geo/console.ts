@@ -3,7 +3,7 @@ import { openConsole } from '../../provider-controllers';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
 import { provider } from '../../service-utils/constants';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const name = 'console';
 

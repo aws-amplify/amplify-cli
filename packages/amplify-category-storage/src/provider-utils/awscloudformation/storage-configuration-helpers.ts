@@ -13,7 +13,7 @@ import {
   RemoveStorageRequest,
   UpdateStorageRequest,
 } from '@aws-amplify/amplify-headless-interface';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { v4 as uuid } from 'uuid';
 import { S3UserInputTriggerFunctionParams } from '../..';
 import { authCategoryName, categoryName } from '../../constants';
