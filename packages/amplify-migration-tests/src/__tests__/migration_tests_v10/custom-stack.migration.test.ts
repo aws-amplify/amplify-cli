@@ -32,12 +32,18 @@ describe('adding custom resources migration test', () => {
   it('add/update CDK and CFN custom resources', async () => {
     const cdkResourceName = `custom${uuid().split('-')[0]}`;
     const cfnResourceName = `custom${uuid().split('-')[0]}`;
+    const cfnResourceNameWithV10 = `custom${uuid().split('-')[0]}`;
 
     await initJSProjectWithProfileV10(projRoot, { name: 'customMigration', disableAmplifyAppCreation: false });
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
 
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
+    await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10, promptForCategorySelection: false });
+    const srcCFNCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cfn-stack.json');
+    // adding a resource to custom cfn stack
+    const destCFNCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cfnResourceNameWithV10,`${cfnResourceNameWithV10}-cloudformation-template.json`);
+    fs.copyFileSync(srcCFNCustomResourceFilePath, destCFNCustomResourceFilePath);
 
     // this is where we will write our custom cdk stack logic to
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
