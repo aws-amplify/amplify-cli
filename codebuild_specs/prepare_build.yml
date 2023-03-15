@@ -23,6 +23,8 @@ phases:
       - ls ~/.
       - ls ~
       - ls .
+      - /bin/bash ./scripts/cache-store.sh
+      - ls /root/myCache
 cache:
   paths:
     - '/root/.yarn-cache/**/*'
