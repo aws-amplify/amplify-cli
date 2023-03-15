@@ -172,7 +172,7 @@ class CloudFormation {
       )
       .filter(
         (stack) =>
-          (this.eventMap['eventToCategories'] && this.eventMap['eventToCategories'].has(stack.LogicalResourceId)) ||
+          (this.eventMap.logicalResourceNames && this.eventMap.logicalResourceNames.includes(stack.LogicalResourceId)) ||
           (this.eventMap['rootResources'] && this.eventMap['rootResources'].some((resource) => resource.key === stack.LogicalResourceId)),
       )
       .filter((stack) => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
@@ -245,6 +245,7 @@ class CloudFormation {
       showEvents(_.uniqBy(newEvents, 'EventId'));
     }
 
+    CFNLOG = CFNLOG.concat(_.uniqBy(newEvents, 'EventId').reverse());
     this.stackEvents = [...allShownEvents, ...newEvents];
   }
 
@@ -704,7 +705,6 @@ function showEvents(events) {
       columns: COLUMNS,
       showHeaders: false,
     });
-    CFNLOG = CFNLOG.concat(events);
     console.log(formattedEvents);
   }
 }
