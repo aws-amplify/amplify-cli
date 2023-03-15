@@ -17,14 +17,7 @@ phases:
       # - yarn production-build
   post_build:
     commands:
-      - ls
-      - ls ~/.cache
-      - ls ~/.ssh
-      - ls ~/.
-      - ls ~
-      - ls .
       - /bin/bash ./codebuild_specs/cache-store.sh
-
 cache:
   paths:
     - '/root/.yarn-cache/**/*'
