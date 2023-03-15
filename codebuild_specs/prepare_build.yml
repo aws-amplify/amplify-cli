@@ -5,7 +5,9 @@ phases:
     runtime-versions:
       nodejs: 14
     commands:
+      - ls /root/.yarn-cache
       - yarn config set script-shell $(which bash)
+      - yarn
   pre_build:
     commands:
       - /bin/bash ./codebuild_specs/cache-load.sh

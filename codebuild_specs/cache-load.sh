@@ -15,6 +15,6 @@ if ! aws s3 ls /root/myCache/ > /dev/null; then
     exit 0
 fi
 
-if ! (cd $cachedir && aws s3 cp /root/myCache/ - | tar xzv); then
+if ! (cd $cachedir && aws s3 cp /root/myCache/ . | tar xzv); then
     echo "🧳⚠️  Something went wrong fetching the cache. Continuing anyway."
 fi
