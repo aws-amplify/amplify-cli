@@ -18,7 +18,7 @@ import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 
 describe('adding custom resources test', () => {
-  const projectName = 'custom-resources';
+  const projectName = 'cusres';
   let projRoot: string;
   const envName = 'dev';
   beforeEach(async () => {
@@ -38,7 +38,7 @@ describe('adding custom resources test', () => {
     const appId = getAppId(projRoot);
     const cdkResourceName = `c${uuid().split('-')[0]}`;
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
-    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', projectName, 'custom-cdk-stack-with-storage.ts');
+    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack-with-storage.ts');
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
     await buildCustomResources(projRoot);
