@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.6...@aws-amplify/amplify-migration-tests@5.4.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* migration tests ([6f03b0a](https://github.com/aws-amplify/amplify-cli/commit/6f03b0af1cfd12e9f0e3bd96b2f660d6b1a4e03f))
+* snapshot and prompt for custom test ([2ff2b5d](https://github.com/aws-amplify/amplify-cli/commit/2ff2b5da15bf3fa097d03b14e24d128ac6ea64df))
+
+
+### Features
+
+* added Node package dependency detector ([#11629](https://github.com/aws-amplify/amplify-cli/issues/11629)) ([bc1bca9](https://github.com/aws-amplify/amplify-cli/commit/bc1bca947af243cab70cea484b4325da3f817198))
+* inject project info into overrides ([#12064](https://github.com/aws-amplify/amplify-cli/issues/12064)) ([9ceaefa](https://github.com/aws-amplify/amplify-cli/commit/9ceaefad4b77155b09adebecc0d7edeee5130af0))
+
+
+
+
+
 # [5.4.0-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.3.3...@aws-amplify/amplify-migration-tests@5.4.0-beta.3) (2023-02-23)
 
 
