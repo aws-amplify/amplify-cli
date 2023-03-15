@@ -30,11 +30,11 @@
   "dependencies": {
     "@aws-amplify/amplify-environment-parameters": "1.4.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
+    "@aws-amplify/amplify-prompts": "2.6.5",
     "@aws-amplify/amplify-util-import": "2.4.0",
     "@aws-amplify/cli-extensibility-helper": "3.0.0",
     "amplify-cli-core": "4.0.0",
     "amplify-headless-interface": "1.17.1",
-    "amplify-prompts": "2.6.5",
     "amplify-util-headless-input": "1.9.10",
     "aws-cdk-lib": "~2.53.0",
     "aws-sdk": "^2.1233.0",

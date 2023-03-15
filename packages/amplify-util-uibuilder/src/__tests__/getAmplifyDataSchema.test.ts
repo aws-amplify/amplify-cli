@@ -1,6 +1,6 @@
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { AmplifyCategories, AmplifySupportedService, FeatureFlags } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
-import { printer } from 'amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
+import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { mocked } from 'ts-jest/utils';
 import { AmplifyStudioClient } from '../clients';
 import { getAmplifyDataSchema } from '../commands/utils';

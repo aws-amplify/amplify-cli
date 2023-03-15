@@ -17,7 +17,7 @@ import {
   invokeS3RegisterAdminTrigger,
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
-import { byValue, prompter, alphanumeric, between } from 'amplify-prompts';
+import { byValue, prompter, alphanumeric, between } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from 'amplify-cli-core';
 
 const path = require('path');

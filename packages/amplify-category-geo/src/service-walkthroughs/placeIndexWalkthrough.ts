@@ -7,7 +7,7 @@ import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
-import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
+import { printer, formatter, prompter, alphanumeric } from '@aws-amplify/amplify-prompts';
 
 const searchServiceFriendlyName = getServiceFriendlyName(ServiceName.PlaceIndex);
 /**

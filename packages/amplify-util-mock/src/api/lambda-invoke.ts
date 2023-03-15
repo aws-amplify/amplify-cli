@@ -3,7 +3,7 @@ import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { InvokerOptions, timeConstrainedInvoker } from '../func';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { LambdaTrigger, LambdaTriggerConfig } from '../utils/lambda/find-lambda-triggers';
 
 /**

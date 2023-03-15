@@ -1,4 +1,4 @@
-const { prompter } = require('amplify-prompts');
+const { prompter } = require('@aws-amplify/amplify-prompts');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');

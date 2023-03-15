@@ -1,6 +1,6 @@
 import { $TSObject, $TSContext } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { printCdkMigrationWarning } from '../print-cdk-migration-warning';
 
 const detectAffectedDirectDependenciesMock = jest.fn();

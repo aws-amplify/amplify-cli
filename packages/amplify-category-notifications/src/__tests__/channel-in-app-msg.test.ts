@@ -8,7 +8,7 @@ import {
 } from 'amplify-cli-core';
 import ora from 'ora';
 
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as channel from '../channel-in-app-msg';
 import * as ChannelCfg from '../notifications-backend-cfg-channel-api';
 import * as Meta from '../notifications-amplify-meta-api';
