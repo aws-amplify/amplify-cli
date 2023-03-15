@@ -102,7 +102,7 @@ describe('CloudFormation', () => {
       ];
 
       const eventMap = {
-        logicalResourceNames: []
+        logicalResourceNames: [],
       };
       eventMap.logicalResourceNames.push('testLogicalResourceId1');
       const cfn = await new CloudFormation();
