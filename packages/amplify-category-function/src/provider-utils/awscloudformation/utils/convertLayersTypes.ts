@@ -1,4 +1,4 @@
-import { ExternalLayer, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
+import { ExternalLayer, LambdaLayer, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { convertProjectLayer } from './layerArnConverter';
 const externalLayer = 'ExternalLayer';
 const projectLayer = 'ProjectLayer';

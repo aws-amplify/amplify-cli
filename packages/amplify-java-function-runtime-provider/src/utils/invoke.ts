@@ -1,6 +1,6 @@
 import execa from 'execa';
 import path from 'path';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageName, relativeShimJarPath } from './constants';
 import { pathManager } from 'amplify-cli-core';
 

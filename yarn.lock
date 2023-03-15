@@ -9105,6 +9105,11 @@ amplify-codegen@^3.4.0:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-function-plugin-interface@1.9.7:
+  version "1.9.7"
+  resolved "https://registry.npmjs.org/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.9.7.tgz#cd872a8c619f5b50661e7ca073fa59feaed12b28"
+  integrity sha512-CMch7pWKtnEP8Y0OC8CTJ0vJSoT82yshG2e7dffkoxk29n7aeHgirMUFKgQ+MUFEXYsU+G5zJ4iksU/VtVQJ4w==
+
 ansi-align@^3.0.0, ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"

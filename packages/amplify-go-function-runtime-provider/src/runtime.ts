@@ -5,7 +5,7 @@ import {
   BuildRequest,
   BuildResult,
   BuildType,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';

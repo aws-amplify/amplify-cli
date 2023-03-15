@@ -1,4 +1,4 @@
-import { PackageRequest, PackageResult, ZipEntry } from 'amplify-function-plugin-interface';
+import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import * as path from 'path';

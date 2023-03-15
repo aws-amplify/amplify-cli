@@ -1,4 +1,4 @@
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
+import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
 import { execAsStringPromise, getPythonBinaryName } from './pyUtils';
 import { coerce, lt } from 'semver';
 

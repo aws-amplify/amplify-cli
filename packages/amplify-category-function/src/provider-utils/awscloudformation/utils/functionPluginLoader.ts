@@ -8,7 +8,7 @@ import {
   FunctionRuntimeLifecycleManager,
   RuntimeContributionRequest,
   TemplateContributionRequest,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';

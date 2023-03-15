@@ -2,7 +2,7 @@ import {
   convertProjectLayersToExternalLayers,
   convertExternalLayersToProjectLayers,
 } from '../../../../provider-utils/awscloudformation/utils/convertLayersTypes';
-import { LambdaLayer } from 'amplify-function-plugin-interface';
+import { LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { convertProjectLayer } from '../../../../provider-utils/awscloudformation/utils/layerArnConverter';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 

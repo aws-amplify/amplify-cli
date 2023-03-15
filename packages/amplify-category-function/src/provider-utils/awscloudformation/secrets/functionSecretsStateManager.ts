@@ -1,5 +1,5 @@
 import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
-import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
+import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
