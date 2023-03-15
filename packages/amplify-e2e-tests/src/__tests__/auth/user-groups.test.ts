@@ -44,9 +44,7 @@ describe('user group tests', () => {
           UserPoolId,
         } = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output;
 
-        const userPool = await getUserPool(UserPoolId, region); // test fails without user pool call
-        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId);
-
+        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
         const roleMapKeyWebClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientIDWeb}`;
 
