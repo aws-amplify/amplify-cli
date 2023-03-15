@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import execa from 'execa';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { dotnetcore31, executableName } from '../constants';
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {

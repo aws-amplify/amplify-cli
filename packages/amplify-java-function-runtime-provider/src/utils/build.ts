@@ -3,7 +3,7 @@ import * as execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
 import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
-import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import { pathManager } from 'amplify-cli-core';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
