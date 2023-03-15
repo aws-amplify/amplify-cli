@@ -8,6 +8,7 @@ phases:
       - yarn config set script-shell $(which bash)
   pre_build:
     commands:
+      - /bin/bash ./codebuild_specs/cache-load.sh
       - echo running prebuild
       - yarn config set cache-folder /root/.yarn-cache -g
       - yarn install --frozen-lockfile
