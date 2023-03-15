@@ -126,14 +126,21 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     if (categoryResourcePairsWithUniqueEnvParams.length > 0) {
       reason += '\nThe following resources contain parameters that could not be cloned:';
       for (const [category, resourceName] of categoryResourcePairsWithUniqueEnvParams) {
-        reason += `\n  ${category} ${resourceName}`;
+        reason += `\n ${category} ${resourceName}`;
+        const resourceManager = this.getResourceParamManager(category, resourceName);
+        for (const paramName of Object.keys(resourceManager.getAllParams())) {
+          reason += `\n - ${paramName}`;
+        }
       }
     }
 
     if (categoryResourcePairsWithUniqueEnvSecrets.length > 0) {
       reason += '\nThe following resources contain secrets that could not be cloned:';
       for (const [category, resourceName] of categoryResourcePairsWithUniqueEnvSecrets) {
-        reason += `\n  ${category} ${resourceName}`;
+        reason += `\n ${category} ${resourceName}`;
+        for (const secretName of Object.keys(envSecrets[category][resourceName])) {
+          reason += `\n - ${secretName}`;
+        }
       }
     }
 

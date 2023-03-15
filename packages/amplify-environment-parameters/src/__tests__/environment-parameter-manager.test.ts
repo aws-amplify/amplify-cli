@@ -217,7 +217,8 @@ describe('canBeClonedHeadlessly', () => {
     const reason = `The "testEnv" environment contains values that cannot be copied to the new environment directly.
 
 The following resources contain parameters that could not be cloned:
-  auth authName
+ auth authName
+ - mockParam
 
 Re-run this command without the --yes flag to continue.`;
 
@@ -246,7 +247,8 @@ Re-run this command without the --yes flag to continue.`;
     const reason = `The "testEnv" environment contains values that cannot be copied to the new environment directly.
 
 The following resources contain secrets that could not be cloned:
-  auth mockAuthResource
+ auth mockAuthResource
+ - mockSecret
 
 Re-run this command without the --yes flag to continue.`;
     expect(envParamManager.canBeClonedHeadlessly()).toEqual({ result: false, reason });
