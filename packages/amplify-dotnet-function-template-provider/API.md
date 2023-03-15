@@ -4,7 +4,7 @@
 
 ```ts
 
-import { FunctionTemplateContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionTemplateContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 
 // @public (undocumented)
 export const functionTemplateContributorFactory: FunctionTemplateContributorFactory;

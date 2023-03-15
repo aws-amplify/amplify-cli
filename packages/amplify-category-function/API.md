@@ -7,8 +7,8 @@
 import { $TSAny } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { $TSObject } from 'amplify-cli-core';
-import { BuildType } from 'amplify-function-plugin-interface';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { ResourceTuple } from 'amplify-cli-core';
 
 // @public (undocumented)
