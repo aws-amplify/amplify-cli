@@ -42,7 +42,14 @@ describe('adding custom resources migration test', () => {
     await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10, promptForCategorySelection: false });
     const srcCFNCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cfn-stack.json');
     // adding a resource to custom cfn stack
-    const destCFNCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cfnResourceNameWithV10,`${cfnResourceNameWithV10}-cloudformation-template.json`);
+    const destCFNCustomResourceFilePath = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'custom',
+      cfnResourceNameWithV10,
+      `${cfnResourceNameWithV10}-cloudformation-template.json`,
+    );
     fs.copyFileSync(srcCFNCustomResourceFilePath, destCFNCustomResourceFilePath);
 
     // this is where we will write our custom cdk stack logic to
