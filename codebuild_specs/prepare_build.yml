@@ -13,6 +13,9 @@ phases:
       # - echo running prebuild
       # - yarn config set cache-folder /root/.yarn-cache -g
       # - yarn install --frozen-lockfile
+      - ls /root/.cache/yarn
+      - ls node_modules
+      - ./
       - yarn lint-check
   build:
     commands:
