@@ -21,6 +21,6 @@ phases:
       # - /bin/bash ./codebuild_specs/cache-store.sh
 cache:
   paths:
-    - '/root/.yarn-cache/**/*'
+    - '/root/.cache/yarn/**/*'
     - 'node_modules/**/*'
     - 'packages/**/node_modules/**/*'
