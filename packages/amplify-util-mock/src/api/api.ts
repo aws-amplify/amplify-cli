@@ -32,7 +32,7 @@ import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';

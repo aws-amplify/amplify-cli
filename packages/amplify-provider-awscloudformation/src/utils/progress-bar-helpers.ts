@@ -1,4 +1,4 @@
-import { ItemPayload, ProgressPayload } from 'amplify-prompts';
+import { ItemPayload, ProgressPayload } from '@aws-amplify/amplify-prompts';
 import columnify from 'columnify';
 
 const COLUMNIFY_WIDTH = 30;

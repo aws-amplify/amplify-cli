@@ -10,7 +10,7 @@ import {
   spinner,
   LocalEnvInfo,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';

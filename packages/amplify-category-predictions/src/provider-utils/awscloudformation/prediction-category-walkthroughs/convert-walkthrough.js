@@ -2,7 +2,7 @@ import convertAssets from '../assets/convertQuestions';
 import getAllDefaults from '../default-values/convert-defaults';
 import regionMapper from '../assets/regionMapping';
 import { enableGuestAuth } from './enable-guest-auth';
-import { prompter, byValue } from 'amplify-prompts';
+import { prompter, byValue } from '@aws-amplify/amplify-prompts';
 
 const path = require('path');
 const fs = require('fs-extra');

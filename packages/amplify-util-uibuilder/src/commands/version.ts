@@ -1,4 +1,4 @@
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import path from 'path';
 
 /**

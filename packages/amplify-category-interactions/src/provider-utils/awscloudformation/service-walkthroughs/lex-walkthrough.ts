@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, $TSMeta, AmplifyError, AmplifyFault } from 'amplify-cli-core';
-import { alphanumeric, and, between, matchRegex, maxLength, minLength, printer, prompter } from 'amplify-prompts';
+import { alphanumeric, and, between, matchRegex, maxLength, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import { JSONUtilities } from 'amplify-cli-core';

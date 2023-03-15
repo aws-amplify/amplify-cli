@@ -1,4 +1,4 @@
-import * as printerDependency from 'amplify-prompts';
+import * as printerDependency from '@aws-amplify/amplify-prompts';
 import * as JSONUtilitiesDependency from 'amplify-cli-core';
 import { notifyMissingPackages } from '../commands/utils/notifyMissingPackages';
 import { $TSContext } from 'amplify-cli-core';

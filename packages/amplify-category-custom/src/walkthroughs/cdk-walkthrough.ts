@@ -1,5 +1,5 @@
 import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { buildCustomResources } from '../utils/build-custom-resources';

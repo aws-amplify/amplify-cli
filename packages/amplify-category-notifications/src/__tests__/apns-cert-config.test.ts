@@ -1,4 +1,4 @@
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as apnsCertConfig from '../apns-cert-config';
 import * as p12decoder from '../apns-cert-p12decoder';
 import { ICertificateInfo } from '../apns-cert-p12decoder';

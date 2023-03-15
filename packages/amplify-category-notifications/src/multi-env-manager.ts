@@ -9,7 +9,7 @@ import {
   AmplifyError,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as authHelper from './auth-helper';
 import {
   ensurePinpointApp,

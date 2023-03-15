@@ -1,5 +1,5 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDb-walkthrough';

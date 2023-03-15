@@ -1,5 +1,5 @@
 import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 /**
  * Command to transform CFN with overrides

@@ -7,7 +7,7 @@ import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../s
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { AccessType } from '../service-utils/resourceParams';
-import { printer, prompter, alphanumeric, byValues, and, minLength, maxLength, Validator } from 'amplify-prompts';
+import { printer, prompter, alphanumeric, byValues, and, minLength, maxLength, Validator } from '@aws-amplify/amplify-prompts';
 
 const geofencingServiceFriendlyName = getServiceFriendlyName(ServiceName.GeofenceCollection);
 /**

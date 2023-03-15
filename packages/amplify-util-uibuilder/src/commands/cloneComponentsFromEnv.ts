@@ -1,4 +1,4 @@
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
 import { extractArgs } from './utils';
 import { AmplifyStudioClient } from '../clients';

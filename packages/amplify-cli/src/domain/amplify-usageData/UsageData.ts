@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { ICommandInput, IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';

@@ -1,5 +1,5 @@
 import { stateManager, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
 import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
