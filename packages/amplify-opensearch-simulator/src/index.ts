@@ -19,7 +19,7 @@ import {
   pathManager,
   AmplifyError,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 // default port that opensearch chooses
 const basePort = 9200;

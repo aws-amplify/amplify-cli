@@ -1,4 +1,4 @@
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * Display warning all channels have been enabled

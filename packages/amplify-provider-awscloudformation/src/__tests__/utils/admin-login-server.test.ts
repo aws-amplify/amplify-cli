@@ -1,5 +1,5 @@
 import { AdminLoginServer } from '../../utils/admin-login-server';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const useMock = jest.fn();
 const postMock = jest.fn(async () => {});

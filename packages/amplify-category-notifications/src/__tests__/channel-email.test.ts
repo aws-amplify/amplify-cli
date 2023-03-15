@@ -1,4 +1,4 @@
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as channelEmail from '../channel-email';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
 import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';

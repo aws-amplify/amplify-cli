@@ -3,7 +3,7 @@ import ora from 'ora';
 import fs from 'fs-extra';
 import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
 
-import { byValue, printer, prompter } from 'amplify-prompts';
+import { byValue, printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
 import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';

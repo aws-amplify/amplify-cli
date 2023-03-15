@@ -23,7 +23,7 @@ import { Constants } from './constants';
 import { ResourcePackager } from './resource-packager';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
 import { S3 } from '../aws-utils/aws-s3';
 import { downloadZip } from '../zip-util';

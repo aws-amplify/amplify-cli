@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { run as runHelp } from './notifications/help';
 
 export const name = 'notifications';

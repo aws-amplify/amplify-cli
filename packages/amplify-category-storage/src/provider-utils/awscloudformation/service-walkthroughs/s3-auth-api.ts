@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { AmplifyCategories } from 'amplify-cli-core';
 import os from 'os';
 

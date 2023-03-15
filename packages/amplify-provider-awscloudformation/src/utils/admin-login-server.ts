@@ -8,7 +8,7 @@ import http from 'http';
 import * as jose from 'jose';
 import _ from 'lodash';
 
-import { Printer } from 'amplify-prompts';
+import { Printer } from '@aws-amplify/amplify-prompts';
 import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 /**

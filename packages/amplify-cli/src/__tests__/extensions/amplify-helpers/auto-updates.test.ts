@@ -1,4 +1,4 @@
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { showBuildDirChangesMessage } from '../../../extensions/amplify-helpers/auto-updates';
 

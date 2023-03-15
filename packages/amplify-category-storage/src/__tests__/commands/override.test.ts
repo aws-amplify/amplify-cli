@@ -1,6 +1,6 @@
 import { $TSContext, $TSObject, stateManager, generateOverrideSkeleton, pathManager, AmplifySupportedService } from 'amplify-cli-core';
 import { run } from '../../commands/storage/override';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import path from 'path';
 import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { S3InputState } from '../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';

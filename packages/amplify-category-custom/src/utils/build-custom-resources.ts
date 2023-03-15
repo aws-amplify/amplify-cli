@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, AmplifyError, getPackageManager, JSONUtilities, pathManager, ResourceTuple } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import ora from 'ora';

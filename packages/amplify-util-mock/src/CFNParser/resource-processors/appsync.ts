@@ -2,7 +2,7 @@ import { parseValue } from '../field-parser';
 import { CloudFormationProcessedResourceResult } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 import { isWindowsPlatform } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export function dynamoDBResourceHandler(resourceName, resource) {
   const tableName = resourceName;

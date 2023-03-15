@@ -1,6 +1,6 @@
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 import { AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   constructor(private _config) {}

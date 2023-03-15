@@ -8,7 +8,7 @@ import columnify from 'columnify';
 import * as _ from 'lodash';
 import os from 'os';
 import { v4 } from 'uuid';
-import { prompter, printer } from 'amplify-prompts';
+import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { collectFiles } from './helpers/collect-files';
 import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
