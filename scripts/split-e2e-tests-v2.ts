@@ -108,6 +108,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/api_3.test.ts',
     'src/__tests__/api_5.test.ts',
     'src/__tests__/custom_policies_container.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/delete.test.ts',
     'src/__tests__/diagnose.test.ts',
