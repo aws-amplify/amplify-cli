@@ -1,9 +1,9 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import { buildResource } from './utils/build';
 import { packageResource } from './utils/package';
 import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
 import { invokeResource } from './utils/invoke';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
+import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
 import path from 'path';
 import { relativeShimSrcPath } from './utils/constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';

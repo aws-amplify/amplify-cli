@@ -1,5 +1,5 @@
 import { stateManager } from 'amplify-cli-core';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { updateamplifyMetaAfterBuild } from '../../../extensions/amplify-helpers/update-amplify-meta';
 
 jest.mock('amplify-cli-core');

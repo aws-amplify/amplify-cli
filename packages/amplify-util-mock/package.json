@@ -55,6 +55,7 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
+    "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
     "@aws-amplify/graphql-auth-transformer": "^2.1.1",
     "@aws-amplify/graphql-default-value-transformer": "^1.1.1",
     "@aws-amplify/graphql-function-transformer": "^1.1.1",
@@ -73,7 +74,6 @@
     "@types/node": "^12.12.6",
     "@types/semver": "^7.1.0",
     "@types/which": "^1.3.2",
-    "amplify-function-plugin-interface": "1.9.7",
     "amplify-nodejs-function-runtime-provider": "2.3.13",
     "aws-appsync": "^4.1.4",
     "aws-sdk": "^2.1233.0",

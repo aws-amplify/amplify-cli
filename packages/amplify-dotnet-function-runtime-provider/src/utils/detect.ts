@@ -1,4 +1,4 @@
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
+import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import which from 'which';
 import { currentSupportedVersion, dotnetcore31, executableName } from '../constants';
