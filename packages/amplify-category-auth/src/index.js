@@ -7,7 +7,11 @@ const _ = require('lodash');
 const path = require('path');
 const sequential = require('promise-sequential');
 
-const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
+const {
+  validateAddAuthRequest,
+  validateUpdateAuthRequest,
+  validateImportAuthRequest,
+} = require('@aws-amplify/amplify-util-headless-input');
 const { stateManager, AmplifySupportedService, JSONUtilities } = require('amplify-cli-core');
 const { printer } = require('amplify-prompts');
 const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');

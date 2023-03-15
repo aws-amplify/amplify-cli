@@ -1,5 +1,5 @@
 {
-  "name": "amplify-velocity-template",
+  "name": "@aws-amplify/amplify-velocity-template",
   "version": "1.4.9",
   "description": "Velocity Template Language(VTL) for JavaScript",
   "repository": {
@@ -16,6 +16,9 @@
     "aws",
     "velocity template"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "velocity": "bin/velocity"
   },
