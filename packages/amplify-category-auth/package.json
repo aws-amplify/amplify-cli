@@ -36,7 +36,7 @@
     "@aws-amplify/cli-extensibility-helper": "3.0.0",
     "amplify-cli-core": "4.0.0",
     "amplify-function-plugin-interface": "1.9.7",
-    "aws-cdk-lib": "~2.53.0",
+    "aws-cdk-lib": "~2.68.0",
     "aws-sdk": "^2.1233.0",
     "axios": "^0.26.0",
     "chalk": "^4.1.1",
