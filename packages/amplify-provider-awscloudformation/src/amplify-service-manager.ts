@@ -142,6 +142,14 @@ export async function init(amplifyServiceParams) {
           e,
         );
       }
+      if(context?.exeInfo?.awsConfigInfo?.configLevel === 'general' && e.code === 'ConfigError') {
+        throw new AmplifyError('ConfigurationError',{
+          code: e.code,
+          message: e.message,
+          resolution: 'https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html'
+        })
+      };
+      // default fault
       throw new AmplifyFault(
         'ProjectInitFault',
         {
