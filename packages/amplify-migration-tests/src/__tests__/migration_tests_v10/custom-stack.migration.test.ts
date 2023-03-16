@@ -39,7 +39,7 @@ describe('adding custom resources migration test', () => {
     expect(appId).toBeDefined();
 
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
-    await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10 });
+    await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10, promptForCategorySelection: true });
     const srcCFNCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cfn-stack.json');
     // adding a resource to custom cfn stack
     const destCFNCustomResourceFilePath = path.join(
