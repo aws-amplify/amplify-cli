@@ -27,9 +27,9 @@ describe('user group tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  describe('amplify add auth', () => {
-    describe('adding a user pool group', () => {
-      it('assigns authenticated roles for users added to user group', async () => {
+  describe('... amplify add auth', () => {
+    describe('... adding a user pool group', () => {
+      it('... assigns authenticated roles for users added to user group', async () => {
         await initJSProjectWithProfile(projRoot, defaultsSettings);
         await addAuthWithDefault(projRoot);
         await updateAuthAddUserGroups(projRoot, ['mygroup']);
