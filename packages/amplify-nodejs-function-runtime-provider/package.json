@@ -27,8 +27,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
     "@aws-amplify/amplify-cli-core": "4.0.0",
+    "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
     "execa": "^5.1.1",
     "exit": "^0.1.2",
     "fs-extra": "^8.1.0",

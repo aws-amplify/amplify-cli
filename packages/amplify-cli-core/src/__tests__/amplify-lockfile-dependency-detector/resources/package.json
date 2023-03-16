@@ -12,8 +12,8 @@
   ],
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "^2.0.0",
-    "@aws-amplify/cli-extensibility-helper": "^2.0.0",
     "@aws-amplify/amplify-cli-core": "^2.0.0",
+    "@aws-amplify/cli-extensibility-helper": "^2.0.0",
     "fs-extra": "^8.1.0"
   },
   "peerDependencies": {

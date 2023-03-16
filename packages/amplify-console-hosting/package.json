@@ -7,8 +7,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.0",
     "@aws-amplify/amplify-cli-core": "4.0.0",
+    "@aws-amplify/amplify-environment-parameters": "1.4.0",
     "archiver": "^5.3.0",
     "chalk": "^4.1.1",
     "cli-table3": "^0.6.0",

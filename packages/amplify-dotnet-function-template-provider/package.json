@@ -25,8 +25,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
     "@aws-amplify/amplify-cli-core": "4.0.0",
+    "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
     "graphql-transformer-core": "^8.0.1"
   },
   "devDependencies": {
