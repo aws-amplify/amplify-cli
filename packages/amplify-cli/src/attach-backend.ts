@@ -1,5 +1,5 @@
 import { $TSContext, AmplifyError, AmplifyFault, FeatureFlags, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { postPullCodegen } from './amplify-service-helper';

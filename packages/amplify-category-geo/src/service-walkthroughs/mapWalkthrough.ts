@@ -7,7 +7,7 @@ import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/m
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
-import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
+import { printer, formatter, prompter, alphanumeric } from '@aws-amplify/amplify-prompts';
 
 /**
  * Starting point for CLI walkthrough that creates a map resource

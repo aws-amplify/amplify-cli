@@ -1,5 +1,5 @@
 import { $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageLayer } from '../../../../provider-utils/awscloudformation/utils/packageLayer';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';

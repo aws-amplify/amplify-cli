@@ -3,7 +3,7 @@ import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
 import { $TSContext } from 'amplify-cli-core';
 import { updateResource } from '../../provider-controllers';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const name = 'update';
 

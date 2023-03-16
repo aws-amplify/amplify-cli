@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as inquirer from 'inquirer';
 import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;

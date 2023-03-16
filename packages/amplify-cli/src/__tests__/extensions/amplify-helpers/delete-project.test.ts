@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { $TSAny } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
 
 jest.mock('amplify-prompts');

@@ -9,7 +9,7 @@ import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
 import { getGeofenceCollectionIamPolicies } from './geofenceCollectionUtils';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten

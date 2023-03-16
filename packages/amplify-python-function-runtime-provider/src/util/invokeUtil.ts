@@ -1,5 +1,5 @@
 // responsible for interacting with the python shim that invokes the customer lambda function
-import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import path from 'path';
 import { pathManager } from 'amplify-cli-core';

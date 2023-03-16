@@ -2,7 +2,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'add';
 const category = 'analytics';

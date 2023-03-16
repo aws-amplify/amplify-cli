@@ -2,7 +2,7 @@ import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import type { CreateComponentData, Component, Theme, Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
 
