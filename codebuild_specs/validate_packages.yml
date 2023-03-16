@@ -1,9 +1,18 @@
 version: 0.2
+phases:
+  install:
+  pre_build:
+    commands:
+      - cat cache-sample.txt
+  build:
+    commands:
+      # - yarn run production-build
+  post_build:
+    commands:
+      # - /bin/bash ./codebuild_specs/cache-store.sh
 cache:
   paths:
     - cache-sample.txt
-
-phases:
-  post_build:
-    commands:
-      - cat cache-sample.txt
+artifacts:
+  files:
+    - cache-sample.txt

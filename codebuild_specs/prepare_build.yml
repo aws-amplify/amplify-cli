@@ -8,7 +8,7 @@ phases:
   pre_build:
     commands:
       - touch cache-sample.txt
-      - echo "cache saved" > cache-sample.txt
+      - echo "cache savedv2" > cache-sample.txt
   build:
     commands:
       # - yarn run production-build
