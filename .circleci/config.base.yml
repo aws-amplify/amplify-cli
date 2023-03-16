@@ -492,6 +492,8 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    environment:
+      NODE_OPTIONS: --max-old-space-size=4096 --openssl-legacy-provider
 
   amplify_migration_tests_v5:
     parameters:
