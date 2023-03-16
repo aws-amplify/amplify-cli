@@ -24,7 +24,7 @@ export function parseUrl(request, route: string) {
 
   // changing file path by removing invalid file path characters for windows
   if (process.platform === 'win32') {
-    request.params.path = request.params.path.replace(/[<>:"|?*]/g, (match, capture) => '%' + Buffer.from(match, 'utf8').toString('hex'));
+    request.params.path = request.params.path.replace(/[<>:"|?*]/g, (match) => '%' + Buffer.from(match, 'utf8').toString('hex'));
   }
 
   if (request.method === 'GET') {
@@ -61,7 +61,7 @@ export function stripChunkSignature(buf: Buffer) {
     if (m.index === regex.lastIndex) {
       regex.lastIndex++;
     }
-    m.forEach((match, groupIndex, index) => {
+    m.forEach((match) => {
       offset.push(Buffer.from(match).byteLength);
       const temp = match.split(';')[0];
       chunk_size.push(parseInt(temp, 16));

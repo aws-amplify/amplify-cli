@@ -88,7 +88,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
       },
       'nodejs',
     );
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const {
@@ -119,7 +119,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
       },
       'nodejs',
     );
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await updateFunction(
       projRoot,
       {
@@ -162,7 +162,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
       },
       'nodejs',
     );
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await updateFunction(
       projRoot,
       {

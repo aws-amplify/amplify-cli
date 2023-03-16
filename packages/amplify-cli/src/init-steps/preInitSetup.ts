@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, getPackageManager, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, getPackageManager, LocalEnvInfo, pathManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
@@ -102,7 +102,7 @@ const setLocalEnvDefaults = async (context: $TSContext): Promise<void> => {
     projectPath,
     defaultEditor,
     envName,
-  };
+  } as unknown as LocalEnvInfo;
 
   context.exeInfo.inputParams.amplify.envName = envName;
 

@@ -1,5 +1,5 @@
 import { $TSContext, $TSObject, stateManager, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { category } from './constants';
 import * as addCommand from './commands/geo/add';
 import * as updateCommand from './commands/geo/update';

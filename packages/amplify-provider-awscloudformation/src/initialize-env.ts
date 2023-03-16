@@ -23,6 +23,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
+import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 
 const logger = fileLogger('initialize-env');
 
@@ -126,5 +127,6 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     }
   }
   await buildOverridesEnabledResources(context);
+  await generateDependentResourcesType();
   return context;
 }

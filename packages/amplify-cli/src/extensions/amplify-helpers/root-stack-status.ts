@@ -14,7 +14,7 @@ export function getHashForRootStack(dirPath, files?: string[]) {
   return hashElement(dirPath, options).then((result) => result.hash);
 }
 
-export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
+export async function isRootStackModifiedSinceLastPush(): Promise<boolean> {
   try {
     const projectPath = pathManager.findProjectRoot();
     const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath!);

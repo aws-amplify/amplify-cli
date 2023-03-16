@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@7.0.1...@aws-amplify/amplify-provider-awscloudformation@8.0.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* block init if amplify app creation fails ([#10839](https://github.com/aws-amplify/amplify-cli/issues/10839)) ([86550c3](https://github.com/aws-amplify/amplify-cli/commit/86550c38f88cc9fcb6398348090db0608bbdd255))
+* force ProcessCredentials to prefer config file ([#12139](https://github.com/aws-amplify/amplify-cli/issues/12139)) ([d582f63](https://github.com/aws-amplify/amplify-cli/commit/d582f636d2b9a73b59e43db0c2120d6c0ba281f3))
+* handle fault for function stack not found in stack resources ([#12084](https://github.com/aws-amplify/amplify-cli/issues/12084)) ([8447cab](https://github.com/aws-amplify/amplify-cli/commit/8447cabbf2c587346d8db27a1dd54179a69f609e))
+* handle fault for function stack not found in stack resources ([#12096](https://github.com/aws-amplify/amplify-cli/issues/12096)) ([f03d170](https://github.com/aws-amplify/amplify-cli/commit/f03d170ae01d42a934f7b1392762f4d231ab687a))
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* post-process cfn files for minification, consolidating concern of minification a bit ([#12072](https://github.com/aws-amplify/amplify-cli/issues/12072)) ([8297993](https://github.com/aws-amplify/amplify-cli/commit/829799390f5b41c73b2fc251148919794394ceed))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* use configured region when manually configuring credentials ([#12125](https://github.com/aws-amplify/amplify-cli/issues/12125)) ([fff5c13](https://github.com/aws-amplify/amplify-cli/commit/fff5c1391a6c2c6035f3465bb6d0cbe8beeba231))
+* use regionalized sts calls for admin login ([#12054](https://github.com/aws-amplify/amplify-cli/issues/12054)) ([73eb14a](https://github.com/aws-amplify/amplify-cli/commit/73eb14a42a1dda2608ba65f84ea629fa417ec8e6))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* added Node package dependency detector ([#11629](https://github.com/aws-amplify/amplify-cli/issues/11629)) ([bc1bca9](https://github.com/aws-amplify/amplify-cli/commit/bc1bca947af243cab70cea484b4325da3f817198))
+* inject project info into overrides ([#12064](https://github.com/aws-amplify/amplify-cli/issues/12064)) ([9ceaefa](https://github.com/aws-amplify/amplify-cli/commit/9ceaefad4b77155b09adebecc0d7edeee5130af0))
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 ## [7.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@7.0.0...@aws-amplify/amplify-provider-awscloudformation@7.0.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation

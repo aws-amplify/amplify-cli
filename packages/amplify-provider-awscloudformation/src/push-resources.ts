@@ -6,7 +6,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-await */
 /* eslint-disable consistent-return */
-/* eslint-disable jsdoc/require-description */
 /* eslint-disable no-continue */
 /* eslint-disable max-len */
 /* eslint-disable spellcheck/spell-checker */
@@ -41,7 +40,7 @@ import {
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';

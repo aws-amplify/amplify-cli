@@ -1,5 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { categoryName } from '../../constants';
 
 export const name = 'update'; // subcommand

@@ -1,6 +1,6 @@
 import ora from 'ora';
 import { FeatureFlags, stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';

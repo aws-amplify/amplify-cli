@@ -1,6 +1,6 @@
 import { ApiCategoryFacade, BannerMessage, stateManager } from 'amplify-cli-core';
 import { AWSError } from 'aws-sdk';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { SNS } from '../aws-utils/aws-sns';
 import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
 

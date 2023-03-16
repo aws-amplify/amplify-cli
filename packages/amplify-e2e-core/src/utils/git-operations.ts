@@ -24,6 +24,13 @@ export const gitCleanFdx = async (cwd: string): Promise<void> => {
   await execa('git', ['clean', '-fdx'], { cwd });
 };
 
+// It is important to note the difference between -fdx and -fdX
+// -fdx removes all untracked files
+// -fdX removes all untracked files that are not ignored by git
+export const gitCleanFdX = async (cwd: string): Promise<void> => {
+  await execa('git', ['clean', '-fdX'], { cwd });
+};
+
 /**
  * Returns a list of files that have unstaged changes in the specified directory
  */

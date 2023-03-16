@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
-import { ICommandInput, IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { CLIInput } from '../command-input';
-import { IUsageData, IUsageDataPayload } from 'amplify-cli-core';
+import { IUsageData, IUsageDataPayload, ProjectSettings } from 'amplify-cli-core';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
 
@@ -28,7 +28,7 @@ export class NoUsageData implements IUsageData, IFlowData {
       error,
       state,
       '',
-      {},
+      {} as unknown as ProjectSettings,
       {},
       {},
       {
@@ -49,7 +49,7 @@ export class NoUsageData implements IUsageData, IFlowData {
   /**
    *  Noop implementation of calculatePushNormalizationFactor
    */
-  calculatePushNormalizationFactor(__events: { StackId: string; PhysicalResourceId: string }[], __stackId: string): void {
+  calculatePushNormalizationFactor(): void {
     /* noop */
   }
 
@@ -105,14 +105,14 @@ export class NoUsageData implements IUsageData, IFlowData {
   /**
    * Noop function
    */
-  pushInteractiveFlow = (__prompt: string, __input: unknown): void => {
+  pushInteractiveFlow = (): void => {
     /* noop */
   };
 
   /**
    * Noop function
    */
-  pushHeadlessFlow = (__headlessFlowDataString: string, __input: ICommandInput): void => {
+  pushHeadlessFlow = (): void => {
     /* noop */
   };
 
@@ -120,7 +120,7 @@ export class NoUsageData implements IUsageData, IFlowData {
    * Noop function to set isHeadless flag in flowLogger
    * @param __headless unused
    */
-  setIsHeadless = (__headless: boolean): void => {
+  setIsHeadless = (): void => {
     /* noop */
   };
 

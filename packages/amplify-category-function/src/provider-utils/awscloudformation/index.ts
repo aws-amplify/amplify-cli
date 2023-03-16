@@ -1,8 +1,6 @@
 import {
   $TSAny,
   $TSContext,
-  AmplifyCategories,
-  AmplifySupportedService,
   JSONUtilities,
   open,
   PathConstants,

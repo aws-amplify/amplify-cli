@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable object-shorthand */
 
-import { alphanumeric } from 'amplify-prompts';
+import { alphanumeric } from '@aws-amplify/amplify-prompts';
 
 function interpretAccess(options) {
   return {

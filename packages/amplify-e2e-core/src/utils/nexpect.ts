@@ -31,7 +31,6 @@ const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   : 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
-const { LOG_DUMP_FILE } = process.env;
 
 // https://notes.burke.libbey.me/ansi-escape-codes/
 export const KEY_UP_ARROW = '\x1b[A';
@@ -131,7 +130,7 @@ function chain(context: Context): ExecutionContext {
     },
     resumeRecording: (): ExecutionContext => {
       const _resumeRecording: ExecutionStep = {
-        fn: (data) => {
+        fn: () => {
           context.process.resumeRecording();
           return true;
         },

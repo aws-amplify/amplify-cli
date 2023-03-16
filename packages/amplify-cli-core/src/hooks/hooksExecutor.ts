@@ -2,9 +2,8 @@ import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import execa from 'execa';
-import _ from 'lodash';
 import { EOL } from 'os';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getLogger } from '../logger/index';
 import { HooksMeta } from './hooksMeta';
 import { skipHooks } from './skipHooks';
@@ -79,7 +78,7 @@ const execHelper = async (
 
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
-    // adding default if options arent defined
+    // adding default if options aren't defined
     const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
     const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
       cwd: projectRoot,
@@ -109,7 +108,7 @@ const execHelper = async (
     printer.error('exiting Amplify process...');
     printer.blankLine();
     logger.error('hook script exited with error', err);
-    // exit code is 76 indicating Amplify exited because user hook script exited with a non zero status
+    // exit code is 76 indicating Amplify exited because user hook script exited with a non-zero status
     process.exit(76);
   }
   printer.info(`----- 🪝 ${execFileMeta.baseName} execution end -----`);

@@ -167,7 +167,7 @@ export function updateDDBWithTriggerMigration(cwd: string, settings: any): Promi
   });
 }
 
-export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
+export function updateSimpleDDBwithGSI(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -210,7 +210,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
   });
 }
 
-export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
+export function addSimpleDDBwithGSI(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -302,7 +302,7 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
       'NoSQL Database',
     ]);
 
-    const addColumn = (name, type) => {
+    const addColumn = (name) => {
       chain.wait('What would you like to name this column').sendLine(name);
 
       chain.wait('Choose the data type').sendCarriageReturn(); // Always selects string
@@ -314,22 +314,22 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
 
     chain.wait('Provide a friendly name').sendLine(settings.resourceName).wait('Provide table name').sendLine(settings.tableName);
 
-    addColumn('pk', 'string');
+    addColumn('pk');
     addAnotherColumn();
 
-    addColumn('sk', 'string');
+    addColumn('sk');
     addAnotherColumn();
 
-    addColumn('gsi-pk', 'string');
+    addColumn('gsi-pk');
     addAnotherColumn();
 
-    addColumn('gsi-sk', 'string');
+    addColumn('gsi-sk');
     addAnotherColumn();
 
-    addColumn('title', 'string');
+    addColumn('title');
     addAnotherColumn();
 
-    addColumn('description', 'string');
+    addColumn('description');
 
     chain.wait('Would you like to add another column').sendConfirmNo();
 
@@ -367,7 +367,7 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
   });
 }
 
-export function addS3(cwd: string, settings: any): Promise<void> {
+export function addS3(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -394,7 +394,7 @@ export function addS3(cwd: string, settings: any): Promise<void> {
 }
 
 // Adds auth and S3 to test case where user adds storage without adding auth first
-export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Promise<void> {
+export function addS3AndAuthWithAuthOnlyAccess(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -429,7 +429,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
   });
 }
 
-export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> {
+export function addS3WithGuestAccess(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -495,7 +495,7 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
   });
 }
 
-export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
+export function addS3WithTrigger(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -525,7 +525,7 @@ export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
+export function updateS3AddTrigger(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')

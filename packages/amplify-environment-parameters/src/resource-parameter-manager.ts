@@ -6,7 +6,6 @@
 export class ResourceParameterManager {
   private params: Record<string, string> = {};
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   getParam(name: string): string | undefined {
     return this.params[name];
   }
@@ -33,7 +32,6 @@ export class ResourceParameterManager {
     });
   }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   deleteParam(name: string): void {
     delete this.params[name];
   }

@@ -12,7 +12,7 @@ import {
   AmplifyError,
   AmplifyFault,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeAnalyticsAPICreateResource, invokeAnalyticsAPIGetResources, invokeAnalyticsPush } from './plugin-client-api-analytics';
 
 import * as authHelper from './auth-helper';
@@ -310,7 +310,7 @@ export const ensurePinpointApp = async (
   let pinpointApp: Partial<ICategoryMeta> | undefined;
   let resourceName;
   const amplifyMeta = context.exeInfo.amplifyMeta || stateManager.getMeta();
-  const envName = appEnvName || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName();
+  const envName: string = appEnvName || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName() || '';
   const pinpointAppStatus = appStatus || (await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName));
   switch (pinpointAppStatus.status) {
     case IPinpointDeploymentStatus.NO_ENV: {

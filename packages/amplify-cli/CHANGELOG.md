@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.8.1...@aws-amplify/cli-internal@11.0.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* correctly handle spawned process errors ([#12081](https://github.com/aws-amplify/amplify-cli/issues/12081)) ([ba4bcf8](https://github.com/aws-amplify/amplify-cli/commit/ba4bcf8a901e62bae991cc9aa23894017283f9fd))
+* do not route to plugin when command is invalid ([#12132](https://github.com/aws-amplify/amplify-cli/issues/12132)) ([4490c7e](https://github.com/aws-amplify/amplify-cli/commit/4490c7e24060d68568ce36813c51b2a98465953c))
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* merge conflicts and linting ([bdd9f42](https://github.com/aws-amplify/amplify-cli/commit/bdd9f420303872c14db80e38e91c03b627503801))
+* remove unnecessary update of pluginDirectories with 'packaged-node-modules' ([#12119](https://github.com/aws-amplify/amplify-cli/issues/12119)) ([3c4f3e0](https://github.com/aws-amplify/amplify-cli/commit/3c4f3e078b2baabaca6ac2b00fe1f1d001eebf23))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+* reverting 5 commits to dev branch ([c54da9e](https://github.com/aws-amplify/amplify-cli/commit/c54da9eb69031bd665d50b6cd2dd8d3833c778bc))
+* reverting changes to dev ([#12039](https://github.com/aws-amplify/amplify-cli/issues/12039)) ([69f5987](https://github.com/aws-amplify/amplify-cli/commit/69f598731e6461bcb40e7507f6ade82640ee280b))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### Features
+
+* migrate CLI to CDK v2 ([#10988](https://github.com/aws-amplify/amplify-cli/issues/10988)) ([7fd3bc1](https://github.com/aws-amplify/amplify-cli/commit/7fd3bc1cb18a1e6efe0b5abc938debcfc1445e13)), closes [#11230](https://github.com/aws-amplify/amplify-cli/issues/11230)
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+* removes xr plugin ([#11901](https://github.com/aws-amplify/amplify-cli/issues/11901)) ([7f268f7](https://github.com/aws-amplify/amplify-cli/commit/7f268f7ee974ca776cf72a540dcf5cb5f615f04e))
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [11.0.0-beta.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.7.2...@aws-amplify/cli-internal@11.0.0-beta.8) (2023-02-23)
 
 

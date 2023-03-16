@@ -6,12 +6,11 @@ import {
   $TSMeta,
   AmplifySupportedService,
   exitOnNextTick,
-  JSONUtilities,
   NotImplementedError,
   open,
   stateManager,
 } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import _ from 'lodash';
 import { categoryName } from '../../constants';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
@@ -164,10 +163,8 @@ const isInHeadlessMode = (context: $TSContext) => {
 };
 
 const getHeadlessParams = (context: $TSContext) => {
-  const { inputParams } = context.exeInfo;
   try {
-    // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSONUtilities.parse(inputParams) : inputParams;
+    const { categories = {} } = context.exeInfo.inputParams;
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);

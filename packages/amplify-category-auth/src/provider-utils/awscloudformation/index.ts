@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { stateManager, open, $TSContext, $TSObject, AmplifyError } from 'amplify-cli-core';

@@ -1,4 +1,4 @@
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as p8decoder from '../apns-cert-p8decoder';
 import * as apnsKeyConfig from '../apns-key-config';
 

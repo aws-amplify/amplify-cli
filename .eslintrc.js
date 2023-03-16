@@ -28,7 +28,7 @@ module.exports = {
       module: true,
     },
   },
-  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'prefer-arrow'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -75,6 +75,14 @@ module.exports = {
         minLength: 4,
       },
     ],
+    'no-restricted-properties': [
+      2,
+      {
+        object: '_',
+        property: 'set',
+        message: 'Using _.set() has unintended side effects. Please use _.setWith() instead',
+      },
+    ],
   },
   overrides: [
     {
@@ -110,6 +118,13 @@ module.exports = {
       extends: ['plugin:jest/recommended'],
       rules: {
         'spellcheck/spell-checker': 'off',
+      },
+    },
+    {
+      // Disable no-unused-vars for templates
+      files: ['packages/amplify-cli/templates/**'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
       },
     },
   ],

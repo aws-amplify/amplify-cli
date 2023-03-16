@@ -75,7 +75,7 @@ describe('zero config auth', () => {
 
   it('...should init a project and add auth with defaults with overrides', async () => {
     await initJSProjectWithProfile(projRoot, defaultSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);

@@ -9,7 +9,7 @@ import {
   getAuthDirectiveRules,
 } from '@aws-amplify/graphql-auth-transformer';
 import { parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode } from 'graphql';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlags } from 'amplify-cli-core';
 

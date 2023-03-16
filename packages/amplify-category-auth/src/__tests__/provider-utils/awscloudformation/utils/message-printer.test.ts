@@ -1,6 +1,6 @@
 import { printSMSSandboxWarning } from '../../../../provider-utils/awscloudformation/utils/message-printer';
 import { BannerMessage } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
 jest.mock('amplify-cli-core');
 

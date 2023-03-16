@@ -24,7 +24,7 @@ describe('transformer predictions migration test', () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot);
   });
 
   afterEach(async () => {

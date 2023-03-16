@@ -120,20 +120,6 @@ const connectionOnCustomPrimaryKey = /* GraphQL */ `
   }
 `;
 
-const namedHasManyBelongsToConnection = /* GraphQL */ `
-  type PostConnection @model @auth(rules: [{ allow: public }]) {
-    id: ID!
-    title: String!
-    comments: [CommentConnection] @connection(name: "PostComments")
-  }
-
-  type CommentConnection @model {
-    id: ID!
-    content: String!
-    post: PostConnection @connection(name: "PostComments")
-  }
-`;
-
 const renameTimestampFields = /* GraphQL */ `
   type Post @model(timestamps: { createdAt: "made", updatedAt: "updated" }) {
     id: ID!

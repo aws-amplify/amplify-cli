@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { IStackSynthesizer, ISynthesisSession } from 'aws-cdk-lib';
+import { IStackSynthesizer } from 'aws-cdk-lib';
 import { AmplifyError, AmplifyFault, JSONUtilities } from 'amplify-cli-core';
 import { Construct } from 'constructs';
 
@@ -134,7 +134,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   /**
    * add Function for Custom Resource in Root stack
    */
-  public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());
+  public renderCloudFormationTemplate = (): string => JSONUtilities.stringify(this._toCloudFormation());
 }
 
 /**
@@ -149,7 +149,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn parameter to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+  addCfnParameter(): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
@@ -166,7 +166,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn mapping to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+  addCfnMapping(): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
@@ -176,7 +176,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn condition to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+  addCfnCondition(): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
@@ -186,13 +186,13 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn resource to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+  addCfnResource(): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
 
-  public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());
+  public renderCloudFormationTemplate = (): string => JSONUtilities.stringify(this._toCloudFormation());
 }
 
 // force major version bump for cdk v2

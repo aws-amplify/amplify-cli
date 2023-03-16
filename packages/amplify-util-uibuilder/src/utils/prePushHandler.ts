@@ -1,5 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import AmplifyUIBuilder from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyStudioClient } from '../clients';
 import { isFormDetachedFromModel, isFormSchemaCustomized, shouldRenderComponents } from '../commands/utils';

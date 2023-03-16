@@ -571,7 +571,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   /**
    *  add Function for Custom Resource in Root stack
    */
-  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
+  public renderCloudFormationTemplate = (): string => JSONUtilities.stringify(this._toCloudFormation())!;
 
   /**
    * creates userpool client custom resource

@@ -29,7 +29,7 @@ export const initEnv: (context: $TSContext) => Promise<void>;
 export const migrate: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
-export const notificationsAPIGetAvailableChannelNames: (__context: $TSContext) => Promise<string[]>;
+export const notificationsAPIGetAvailableChannelNames: () => Promise<string[]>;
 
 // @public (undocumented)
 export const notificationsPluginAPIGetResource: (context: $TSContext) => Promise<INotificationsResource | undefined>;

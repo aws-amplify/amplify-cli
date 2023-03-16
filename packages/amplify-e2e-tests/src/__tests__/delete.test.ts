@@ -84,8 +84,8 @@ describe('amplify delete', () => {
 
   it('should delete bucket', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addS3(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);

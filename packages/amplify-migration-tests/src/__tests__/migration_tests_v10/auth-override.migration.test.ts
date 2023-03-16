@@ -44,7 +44,7 @@ describe('amplify migration test auth', () => {
     const projectName = 'authTest';
     await initJSProjectWithProfileV10(projRoot1, { name: projectName, disableAmplifyAppCreation: false });
 
-    await addAuthWithDefault(projRoot1, {});
+    await addAuthWithDefault(projRoot1);
     await amplifyPushWithoutCodegen(projRoot1);
 
     const meta = getProjectMeta(projRoot1);

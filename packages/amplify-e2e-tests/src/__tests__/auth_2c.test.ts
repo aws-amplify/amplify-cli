@@ -30,7 +30,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithGroupTrigger(projRoot, {});
+    await addAuthWithGroupTrigger(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 

@@ -66,7 +66,7 @@ describe('amplify add/update storage(S3) headlessly', () => {
     };
 
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await addHeadlessStorage(projRoot, addStorageRequest as AddStorageRequest);
     await amplifyPushAuth(projRoot);
     await validateS3Bucket(projRoot);

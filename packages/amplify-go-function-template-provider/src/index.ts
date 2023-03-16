@@ -2,7 +2,7 @@ import { FunctionTemplateContributorFactory } from 'amplify-function-plugin-inte
 
 import { provideHelloWorld } from './providers/helloWorldProvider';
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = (context) => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = () => {
   return {
     contribute: (request) => {
       switch (request.selection) {

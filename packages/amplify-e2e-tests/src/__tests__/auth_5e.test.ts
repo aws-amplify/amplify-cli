@@ -52,7 +52,7 @@ describe('headless auth e', () => {
     };
 
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await updateHeadlessAuth(projRoot, updateAuthRequest, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

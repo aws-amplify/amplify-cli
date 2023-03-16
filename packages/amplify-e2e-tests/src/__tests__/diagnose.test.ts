@@ -44,7 +44,7 @@ describe('amplify diagnose --send-report', () => {
   it('...should send zips and verify files', async () => {
     await initJSProjectWithProfile(projectRoot, defaultsSettings);
     await addApiWithoutSchema(projectRoot, { transformerVersion: 2 });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await addS3StorageWithAuthOnly(projectRoot);
     const pathToZip = await diagnoseSendReport(projectRoot);
     expect(fs.existsSync(pathToZip)).toBeTruthy();

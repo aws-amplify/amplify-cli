@@ -1,6 +1,6 @@
 /* eslint-disable no-multi-str */
 import chalk from 'chalk';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 
 const categoryChoices = [
   {

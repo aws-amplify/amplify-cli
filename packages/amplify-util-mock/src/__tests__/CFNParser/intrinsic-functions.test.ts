@@ -88,21 +88,21 @@ describe('intrinsic-functions', () => {
     };
     it('should get attribute value from parsed resources', () => {
       const node = ['FooResource', 'prop1'];
-      expect(cfnGetAtt(node, cfnContext, () => {})).toEqual('prop1 value');
+      expect(cfnGetAtt(node, cfnContext)).toEqual('prop1 value');
     });
 
     it('should throw error if resource is missing in the context', () => {
       const node = ['MissingResource', 'prop1'];
-      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+      expect(() => cfnGetAtt(node, cfnContext)).toThrow();
     });
 
     it('should throw if the property is missing in the resource', () => {
       const node = ['FooResource', 'missing-prop'];
-      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+      expect(() => cfnGetAtt(node, cfnContext)).toThrow();
     });
     it('should throw if the property is exposed in cfnExposedAttribute but missing in the result', () => {
       const node = ['FooResource', 'prop2'];
-      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+      expect(() => cfnGetAtt(node, cfnContext)).toThrow();
     });
   });
 
@@ -376,11 +376,11 @@ describe('intrinsic-functions', () => {
     };
 
     it('should return condition value', () => {
-      expect(cfnCondition('bar', cfnContext, () => {})).toBeFalsy();
-      expect(cfnCondition('foo', cfnContext, () => {})).toBeTruthy();
+      expect(cfnCondition('bar', cfnContext)).toBeFalsy();
+      expect(cfnCondition('foo', cfnContext)).toBeTruthy();
     });
     it('should throw if the condition is missing', () => {
-      expect(() => cfnCondition('missing-condition', cfnContext, () => {})).toThrow();
+      expect(() => cfnCondition('missing-condition', cfnContext)).toThrow();
     });
   });
 });

@@ -27,7 +27,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaults', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);

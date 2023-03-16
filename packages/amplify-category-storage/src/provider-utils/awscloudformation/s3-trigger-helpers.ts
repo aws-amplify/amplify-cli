@@ -1,6 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import _ from 'lodash';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { categoryName, functionCategoryName } from '../../constants';

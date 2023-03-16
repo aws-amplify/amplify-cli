@@ -1,4 +1,4 @@
-import { $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
@@ -136,7 +136,10 @@ describe('amplify init:', () => {
 
   describe('init:initFrontend', () => {
     it('should use current project config if it is not a new project', async () => {
-      await initFrontend({ ...mockContext, exeInfo: { isNewProject: false } });
+      await initFrontend({
+        ...mockContext,
+        exeInfo: { isNewProject: false, inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo },
+      });
       expect(mockGetProjectConfig).toBeCalled();
     });
   });
@@ -145,13 +148,15 @@ describe('amplify init:', () => {
     it('should scaffold a new project', async () => {
       const projectName = 'projectName';
       const frontend = 'ios';
-      const context = {
+      const context: $TSContext = {
         ...mockContext,
         exeInfo: {
           projectConfig: {
             projectName,
             frontend,
           },
+          inputParams: {},
+          localEnvInfo: {} as unknown as LocalEnvInfo,
         },
       };
       const cwd = 'currentDir';

@@ -1,23 +1,8 @@
-import { addCircleCITags, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { getCLIPath } from '../util';
-import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
-import { EOL } from 'os';
+import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE } from './constants';
 
-const defaultSettings = {
-  name: EOL,
-  envName: ORIGINAL_ENV,
-  editor: EOL,
-  appType: EOL,
-  framework: EOL,
-  srcDir: EOL,
-  distDir: EOL,
-  buildCmd: EOL,
-  startCmd: EOL,
-  useProfile: EOL,
-  profileName: EOL,
-};
-
-export const deleteProject = async (cwd: string, deleteDeploymentBucket = true): Promise<void> => {
+export const deleteProject = async (cwd: string): Promise<void> => {
   const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
   return spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
     .wait('Are you sure you want to continue?')
