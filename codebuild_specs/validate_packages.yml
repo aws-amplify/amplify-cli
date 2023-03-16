@@ -1,0 +1,9 @@
+version: 0.2
+cache:
+  paths:
+    - cache-sample.txt
+
+phases:
+  post_build:
+    commands:
+      - cat cache-sample.txt

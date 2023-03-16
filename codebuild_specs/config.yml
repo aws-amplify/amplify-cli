@@ -1,0 +1,15 @@
+version: 0.2
+batch:
+  fast-fail: true
+  build-graph:
+    - identifier: prepare_build
+      buildspec: codebuild_specs/prepare_build.yml
+      debug-session: true
+      env:
+        variables:
+          IS_AMPLIFY_CI: true
+    - identifier: validate_packages
+      buildspec: codebuild_specs/validate_packages.yml
+      debug-session: true
+      depend-on:
+        - prepare_build

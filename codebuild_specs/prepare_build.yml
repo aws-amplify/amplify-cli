@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - yarn config set script-shell $(which bash)
+  pre_build:
+    commands:
+      - touch cache-sample.txt
+      - echo "cache saved" > cache-sample.txt
+  build:
+    commands:
+      # - yarn run production-build
+  post_build:
+    commands:
+      # - /bin/bash ./codebuild_specs/cache-store.sh
+cache:
+  paths:
+    - cache-sample.txt
