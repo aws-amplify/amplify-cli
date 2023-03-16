@@ -1,6 +1,6 @@
 // Some convenience types for the existing service walkthrough logic
 
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface';
 import { CognitoConfiguration } from './awsCognito-user-input-types';
 

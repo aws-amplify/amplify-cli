@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
 import { ServiceName } from '../service-utils/constants';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';

@@ -9,7 +9,7 @@ import {
   CategoryInputState,
   FeatureFlags,
   $TSContext,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';

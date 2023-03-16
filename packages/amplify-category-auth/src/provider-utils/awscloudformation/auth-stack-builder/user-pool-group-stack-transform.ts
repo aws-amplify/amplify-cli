@@ -12,7 +12,7 @@ import {
   pathManager,
   Template,
   writeCFNTemplate,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { formatter } from '@aws-amplify/amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';

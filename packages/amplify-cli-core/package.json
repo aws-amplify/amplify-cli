@@ -7,6 +7,9 @@
     "url": "https://github.com/aws-amplify/amplify-cli.git",
     "directory": "packages/amplify-cli-core"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",

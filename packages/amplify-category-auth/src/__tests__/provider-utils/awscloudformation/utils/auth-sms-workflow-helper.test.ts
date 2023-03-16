@@ -1,4 +1,4 @@
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { CognitoConfiguration } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
 FeatureFlags.getBoolean = () => false;
 import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
