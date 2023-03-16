@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run as runRemove } from '../../../commands/analytics/remove';
 import { checkResourceInUseByNotifications } from '../../../plugin-client-api-notifications';
 

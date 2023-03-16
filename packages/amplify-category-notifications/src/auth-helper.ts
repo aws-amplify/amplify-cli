@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import os from 'os';

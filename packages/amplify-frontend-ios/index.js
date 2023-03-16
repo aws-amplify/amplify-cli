@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { FeatureFlags, pathManager, JSONUtilities } = require('amplify-cli-core');
+const { FeatureFlags, pathManager, JSONUtilities } = require('@aws-amplify/amplify-cli-core');
 const { importConfig, importModels } = require('./lib/amplify-xcode');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');

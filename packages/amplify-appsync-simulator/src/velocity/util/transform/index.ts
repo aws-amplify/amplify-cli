@@ -1,7 +1,7 @@
 import { generateFilterExpression } from './dynamodb-filter';
 import ElasticsearchHelper from '../elasticsearch-helper';
-import { $TSObject } from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 
 export const transformUtils = {
   toDynamoDBConditionExpression: (condition) => {

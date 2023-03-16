@@ -2,7 +2,7 @@ import execa from 'execa';
 import path from 'path';
 import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageName, relativeShimJarPath } from './constants';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 export const invokeResource = async (request: InvocationRequest, context: any) => {
   const [handlerClassName, handlerMethodName] = request.handler.split('::');

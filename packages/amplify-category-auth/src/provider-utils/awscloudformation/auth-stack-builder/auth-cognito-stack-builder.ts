@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { Construct } from 'constructs';

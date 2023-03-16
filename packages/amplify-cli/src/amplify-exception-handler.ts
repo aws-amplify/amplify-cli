@@ -1,4 +1,4 @@
-import { $TSAny, AmplifyException, AmplifyFaultType, AmplifyFault, executeHooks, HooksMeta, isWindowsPlatform } from 'amplify-cli-core';
+import { $TSAny, AmplifyException, AmplifyFaultType, AmplifyFault, executeHooks, HooksMeta, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { AmplifyPrinter, printer } from '@aws-amplify/amplify-prompts';
 import { reportError } from './commands/diagnose';

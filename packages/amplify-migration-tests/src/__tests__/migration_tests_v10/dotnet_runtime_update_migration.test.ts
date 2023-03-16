@@ -12,7 +12,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
-import { AmplifyCategories, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { AmplifyCategories, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * These tests check that functions created with .NET Core 3.1 templates keep working after we drop support to create them.

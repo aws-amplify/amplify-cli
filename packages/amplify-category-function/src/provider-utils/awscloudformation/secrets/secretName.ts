@@ -5,7 +5,7 @@
  * WARNING: be extremely careful changing anything about how secrets are named in SSM! (AKA you should probably never change this).
  * This format is standardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
  */
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import * as path from 'path';
 

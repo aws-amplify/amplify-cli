@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
 
@@ -20,8 +20,8 @@ jest.mock('../../../extensions/amplify-helpers/get-frontend-plugins', () => ({
 jest.mock('../../../../__mocks__/faked-plugin', () => ({
   deleteConfig: jest.fn(),
 }));
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSAny),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as $TSAny),
   FeatureFlags: {
     isInitialized: jest.fn().mockReturnValue(true),
     removeFeatureFlagConfiguration: jest.fn().mockResolvedValue(true),

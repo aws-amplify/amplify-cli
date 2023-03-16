@@ -24,7 +24,11 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
+    "amplify-cli-core": "4.0.0",
     "@aws-amplify/amplify-cli-logger": "1.3.0",
     "@aws-amplify/amplify-prompts": "2.6.5",
     "@aws-amplify/graphql-transformer-interfaces": "^2.1.1",

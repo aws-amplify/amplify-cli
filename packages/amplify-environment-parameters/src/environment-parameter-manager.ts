@@ -1,4 +1,4 @@
-import { AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';

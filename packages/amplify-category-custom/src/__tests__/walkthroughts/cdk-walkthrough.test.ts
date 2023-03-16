@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { buildCustomResources } from '../../utils/build-custom-resources';
@@ -8,7 +8,7 @@ import { addCDKWalkthrough } from '../../walkthroughs/cdk-walkthrough';
 jest.mock('../../utils/common-questions');
 jest.mock('../../utils/build-custom-resources');
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('amplify-prompts');
 
 jest.mock('fs-extra', () => ({

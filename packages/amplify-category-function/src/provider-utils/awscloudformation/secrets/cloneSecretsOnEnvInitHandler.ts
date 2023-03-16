@@ -1,4 +1,4 @@
-import { $TSContext, ResourceName, stateManager } from 'amplify-cli-core';
+import { $TSContext, ResourceName, stateManager } from '@aws-amplify/amplify-cli-core';
 import { SecretDeltas } from '@aws-amplify/amplify-function-plugin-interface';
 import { categoryName } from '../../../constants';
 import { cloneEnvWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';

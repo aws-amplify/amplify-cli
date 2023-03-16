@@ -15,7 +15,7 @@ import {
   HooksMeta,
   PluginInfo,
   constants,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
 /**

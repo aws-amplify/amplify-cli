@@ -1,5 +1,5 @@
-import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';ify-prompts';
 import { category } from '../../constants';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils/placeIndexParams';
@@ -7,7 +7,7 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('amplify-prompts');
 
 describe('Search walkthrough works as expected', () => {

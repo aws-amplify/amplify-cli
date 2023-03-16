@@ -1,4 +1,11 @@
-import { AmplifyCategories, AmplifySupportedService, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  AmplifyCategories,
+  AmplifySupportedService,
+  pathManager,
+  readCFNTemplate,
+  stateManager,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
 /**

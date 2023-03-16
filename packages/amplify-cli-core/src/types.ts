@@ -289,7 +289,7 @@ export type IContextPrint = {
 };
 
 /**
- * Use stateManager from amplify-cli-core instead
+ * Use stateManager from @aws-amplify/amplify-cli-core instead
  * @deprecated
  */
 export type IContextFilesystem = {
@@ -477,7 +477,7 @@ interface AmplifyToolkit {
   getProjectDetails: () => $TSAny;
 
   /**
-   * Use stateManager.getMeta() from amplify-cli-core
+   * Use stateManager.getMeta() from @aws-amplify/amplify-cli-core
    * @deprecated
    */
   getProjectMeta: () => $TSMeta;
@@ -510,7 +510,7 @@ interface AmplifyToolkit {
   storeCurrentCloudBackend: (context: $TSContext) => $TSAny;
 
   /**
-   * use stateManager or JSONUtilities from amplify-cli-core
+   * use stateManager or JSONUtilities from @aws-amplify/amplify-cli-core
    * @deprecated
    */
   readJsonFile: (fileName: string) => $TSAny;

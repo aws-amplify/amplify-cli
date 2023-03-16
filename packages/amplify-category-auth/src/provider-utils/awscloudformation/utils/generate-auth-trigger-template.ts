@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSAny, AmplifyFault, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, AmplifyFault, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';

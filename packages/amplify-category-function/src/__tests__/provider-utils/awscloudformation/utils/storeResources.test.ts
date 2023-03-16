@@ -1,8 +1,8 @@
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { saveMutableState } from '../../../../provider-utils/awscloudformation/utils/storeResources';
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),

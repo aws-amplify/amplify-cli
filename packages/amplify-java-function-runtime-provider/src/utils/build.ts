@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
   const resourceDir = join(request.srcRoot);

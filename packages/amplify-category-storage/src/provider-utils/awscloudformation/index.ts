@@ -9,7 +9,7 @@ import {
   NotImplementedError,
   open,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import _ from 'lodash';
 import { categoryName } from '../../constants';

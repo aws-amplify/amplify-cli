@@ -28,7 +28,7 @@
   "dependencies": {
     "@aws-amplify/amplify-e2e-core": "4.8.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
-    "amplify-cli-core": "4.0.0",
+    "@aws-amplify/amplify-cli-core": "4.0.0",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",

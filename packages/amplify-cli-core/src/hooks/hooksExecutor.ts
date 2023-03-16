@@ -11,7 +11,7 @@ import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
 import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { pathManager, stateManager } from '../state-manager';
 
-const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
+const logger = getLogger('@aws-amplify/amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 /**
  *  runtime for hooks

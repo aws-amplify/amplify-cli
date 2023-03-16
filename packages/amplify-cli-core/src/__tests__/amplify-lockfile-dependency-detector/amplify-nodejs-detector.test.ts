@@ -65,7 +65,7 @@ describe('parsing yarn lock files', () => {
             "name": "@aws-cdk/core",
             "version": "1.172.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
         Object {
           "dependentPackage": Object {
@@ -91,7 +91,7 @@ describe('parsing yarn lock files', () => {
       ]
     `);
   });
-  it('correctly detect dependencies for amplify-cli-core', async () => {
+  it('correctly detect dependencies for @aws-amplify/amplify-cli-core', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
       executable: 'yarn',
       lockFile: 'yarn-test.lock',
@@ -101,28 +101,28 @@ describe('parsing yarn lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('@aws-amplify/amplify-cli-core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "3.4.0",
           },
           "packageName": "@aws-amplify/amplify-category-custom",
         },
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "3.4.0",
           },
           "packageName": "@aws-amplify/cli-extensibility-helper",
         },
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "3.4.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
       ]
     `);
@@ -152,7 +152,7 @@ describe('parsing yarn lock files', () => {
             "name": "fs-extra",
             "version": "9.1.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
         Object {
           "dependentPackage": Object {
@@ -241,7 +241,7 @@ describe('parsing package lock files', () => {
             "name": "@aws-cdk/core",
             "version": "1.172.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
         Object {
           "dependentPackage": Object {
@@ -290,7 +290,7 @@ describe('parsing package lock files', () => {
       ]
     `);
   });
-  it('correctly detect dependencies for amplify-cli-core', async () => {
+  it('correctly detect dependencies for @aws-amplify/amplify-cli-core', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
       executable: 'npm',
       lockFile: 'package-lock-test.json',
@@ -300,28 +300,28 @@ describe('parsing package lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('@aws-amplify/amplify-cli-core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "2.12.0",
           },
           "packageName": "@aws-amplify/amplify-category-custom",
         },
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "2.12.0",
           },
           "packageName": "@aws-amplify/cli-extensibility-helper",
         },
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "2.12.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
       ]
     `);
@@ -351,7 +351,7 @@ describe('parsing package lock files', () => {
             "name": "fs-extra",
             "version": "8.1.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
         Object {
           "dependentPackage": Object {
@@ -427,7 +427,7 @@ describe('parsing yarn2 lock files', () => {
             "name": "@aws-cdk/core",
             "version": "1.172.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
         Object {
           "dependentPackage": Object {
@@ -454,7 +454,7 @@ describe('parsing yarn2 lock files', () => {
     `);
   });
 
-  it('correctly detect dependencies for amplify-cli-core', async () => {
+  it('correctly detect dependencies for @aws-amplify/amplify-cli-core', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
       executable: 'yarn',
       lockFile: 'yarn-2-test.lock',
@@ -465,28 +465,28 @@ describe('parsing yarn2 lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
+    expect(dec.detectAffectedDirectDependencies('@aws-amplify/amplify-cli-core')).toMatchInlineSnapshot(`
       Array [
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "3.5.0",
           },
           "packageName": "@aws-amplify/amplify-category-custom",
         },
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "3.5.0",
           },
           "packageName": "@aws-amplify/cli-extensibility-helper",
         },
         Object {
           "dependentPackage": Object {
-            "name": "amplify-cli-core",
+            "name": "@aws-amplify/amplify-cli-core",
             "version": "3.5.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
       ]
     `);
@@ -516,7 +516,7 @@ describe('parsing yarn2 lock files', () => {
             "name": "fs-extra",
             "version": "9.1.0",
           },
-          "packageName": "amplify-cli-core",
+          "packageName": "@aws-amplify/amplify-cli-core",
         },
         Object {
           "dependentPackage": Object {

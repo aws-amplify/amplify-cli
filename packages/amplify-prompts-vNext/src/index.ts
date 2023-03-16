@@ -1,1 +1,1 @@
-export * from 'amplify-prompts';
+export * from '@aws-amplify/amplify-prompts';

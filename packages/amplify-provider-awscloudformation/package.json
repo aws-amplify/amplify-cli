@@ -36,7 +36,7 @@
     "@aws-amplify/cli-extensibility-helper": "3.0.0",
     "@aws-amplify/graphql-transformer-core": "^1.1.1",
     "@aws-amplify/graphql-transformer-interfaces": "^2.1.1",
-    "amplify-cli-core": "4.0.0",
+    "@aws-amplify/amplify-cli-core": "4.0.0",
     "amplify-codegen": "^3.4.0",
     "archiver": "^5.3.0",
     "aws-cdk-lib": "~2.68.0",

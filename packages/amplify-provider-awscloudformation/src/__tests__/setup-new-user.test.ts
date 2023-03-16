@@ -1,4 +1,4 @@
-import { $TSContext, open } from 'amplify-cli-core';
+import { $TSContext, open } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { run } from '../setup-new-user';
 
@@ -16,7 +16,7 @@ const context_stub = {
   },
 } as unknown as jest.Mocked<$TSContext>;
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),
 }));
 jest.mock('inquirer', () => ({

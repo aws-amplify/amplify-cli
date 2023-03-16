@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault, PathConstants, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, PathConstants, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import glob from 'glob';

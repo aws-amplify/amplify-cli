@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, $TSObject } from 'amplify-cli-core';
+import { $TSContext, stateManager, $TSObject } from '@aws-amplify/amplify-cli-core';
 import { removeResource } from '../../../provider-controllers';
 import { ServiceName } from '../../../service-utils/constants';
 import { run } from '../../../commands/geo/remove';
@@ -11,7 +11,7 @@ mockRemoveResource.mockImplementation((context: $TSContext, service: string): Pr
   });
 });
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../provider-controllers');
 
 describe('remove command tests', () => {

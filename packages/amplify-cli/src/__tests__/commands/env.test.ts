@@ -1,9 +1,9 @@
 describe('amplify env: ', () => {
   const mockExit = jest.fn();
-  jest.mock('amplify-cli-core', () => ({
+  jest.mock('@aws-amplify/amplify-cli-core', () => ({
     exitOnNextTick: mockExit,
     pathManager: { getAmplifyMetaFilePath: jest.fn().mockReturnValue('test_file_does_not_exist') },
-    constants: jest.requireActual('amplify-cli-core').constants,
+    constants: jest.requireActual('@aws-amplify/amplify-cli-core').constants,
   }));
   const { run: runEnvCmd } = require('../../commands/env');
   const { run: runAddEnvCmd } = require('../../commands/env/add');

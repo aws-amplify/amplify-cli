@@ -24,7 +24,7 @@ class AmplifyPrompter implements Prompter {
   stopWatch: Stopwatch;
   constructor(private readonly prompter: typeof prompt = prompt, private readonly print: typeof printer = printer) {
     // construct a shim on top of enquirer to throw an error if it is called when stdin is non-interactive
-    // enquirer does not export its PromptOptions type and this package does not depend on amplify-cli-core so using 'any' as the input type
+    // enquirer does not export its PromptOptions type and this package does not depend on @aws-amplify/amplify-cli-core so using 'any' as the input type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prompterShim = ((opts: any) => {
       if (isInteractiveShell) {

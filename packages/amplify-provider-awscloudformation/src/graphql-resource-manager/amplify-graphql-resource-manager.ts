@@ -1,4 +1,12 @@
-import { $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  JSONUtilities,
+  pathManager,
+} from '@aws-amplify/amplify-cli-core';
 import { DynamoDB, Template } from 'cloudform-types';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,

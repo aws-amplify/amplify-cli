@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { invokeTrigger } from '../../api/lambda-invoke';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { loadLambdaConfig } from '../../utils/lambda/load-lambda-config';

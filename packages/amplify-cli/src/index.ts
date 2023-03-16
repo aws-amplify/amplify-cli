@@ -11,7 +11,7 @@ import {
   HooksMeta,
   AmplifyError,
   constants,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';

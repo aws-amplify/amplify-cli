@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { getMapStyleComponents, MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
@@ -7,7 +7,7 @@ import { getCurrentMapParameters, getMapFriendlyNames } from '../../service-util
 import { getCurrentPlaceIndexParameters } from '../../service-utils/placeIndexUtils';
 import { getCurrentGeofenceCollectionParameters } from '../../service-utils/geofenceCollectionUtils';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 describe('Test resource utility functions', () => {
   const map1Params = {

@@ -1,7 +1,7 @@
-import { $TSAny, $TSContext, stateManager, IPluginPlatform, CommandLineInput } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager, IPluginPlatform, CommandLineInput } from '@aws-amplify/amplify-cli-core';
 import * as _ from 'lodash';
 import { init } from './app-config';
-import { attachExtensions, ProjectSettings } from 'amplify-cli-core';
+import { attachExtensions, ProjectSettings } from '@aws-amplify/amplify-cli-core';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
 import { Context } from './domain/context';
 

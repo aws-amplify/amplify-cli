@@ -1,14 +1,14 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { start } from '../../func';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as inquirer from 'inquirer';
 
 jest.mock('../../utils/lambda/load-lambda-config', () => ({
   loadLambdaConfig: jest.fn(() => ({ handler: 'index.testHandle' })),
 }));
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
   },

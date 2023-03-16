@@ -1,12 +1,12 @@
 import sequential from 'promise-sequential';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv, isMockable } from '..';
 import { getLocalFunctionSecretNames } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { getAppId, secretsPathAmplifyAppIdKey } from '../provider-utils/awscloudformation/secrets/secretName';
 
 jest.mock('promise-sequential');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 jest.mock('../provider-utils/awscloudformation/secrets/functionSecretsStateManager');
 jest.mock('../provider-utils/awscloudformation/secrets/secretName');

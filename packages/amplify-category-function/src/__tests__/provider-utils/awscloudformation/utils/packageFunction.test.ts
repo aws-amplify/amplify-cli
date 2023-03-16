@@ -1,11 +1,11 @@
 import { getRuntimeManager } from '../../../../provider-utils/awscloudformation/utils/functionPluginLoader';
-import { $TSContext, getFolderSize, pathManager } from 'amplify-cli-core';
+import { $TSContext, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
 import { packageFunction } from '../../../../provider-utils/awscloudformation/utils/packageFunction';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 import { zipPackage } from '../../../../provider-utils/awscloudformation/utils/zipResource';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/zipResource');
 

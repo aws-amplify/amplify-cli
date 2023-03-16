@@ -1,11 +1,11 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   updateBackendConfigAfterResourceAdd,
   updateBackendConfigAfterResourceUpdate,
   updateBackendConfigAfterResourceRemove,
 } from '../../../extensions/amplify-helpers/update-backend-config';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 

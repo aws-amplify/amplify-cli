@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories, AmplifySupportedService, CLISubCommandType, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, CLISubCommandType, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyS3ResourceStackTransform } from '../cdk-stack-builder/s3-stack-transform';
 import { S3UserInputs, S3UserInputTriggerFunctionParams } from '../service-walkthrough-types/s3-user-input-types';
 import { S3InputState } from './s3-user-input-state';

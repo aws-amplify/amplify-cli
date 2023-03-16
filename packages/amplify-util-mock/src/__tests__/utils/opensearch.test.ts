@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { querySearchable } from '../../utils/opensearch';
 import fetch, { Response } from 'node-fetch';
 

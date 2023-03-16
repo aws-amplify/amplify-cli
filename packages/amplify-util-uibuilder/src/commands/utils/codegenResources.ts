@@ -26,7 +26,7 @@ import {
   ReactThemeStudioTemplateRendererOptions,
 } from '@aws-amplify/codegen-ui-react';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { ModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 

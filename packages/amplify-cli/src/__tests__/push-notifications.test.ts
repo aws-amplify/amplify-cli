@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,

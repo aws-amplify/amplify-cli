@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
-import { FeatureFlags, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { FeatureFlags, $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';ify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
 import { getPluginInstance } from './get-plugin-instance';

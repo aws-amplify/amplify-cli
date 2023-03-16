@@ -5,7 +5,7 @@ import * as s3Cdk from 'aws-cdk-lib/aws-s3';
 import { HttpMethods } from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   defaultS3UserInputs,
   GroupAccessType,

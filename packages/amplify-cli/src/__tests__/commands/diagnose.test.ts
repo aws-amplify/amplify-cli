@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
-import { pathManager, stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { WriteStream } from 'fs-extra';
 import fetch from 'node-fetch';
@@ -10,7 +10,7 @@ import { run } from '../../commands/diagnose';
 import { Context } from '../../domain/context';
 
 jest.mock('uuid');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../commands/helpers/collect-files');
 jest.mock('../../commands/helpers/encryption-helpers', () => ({
   createHashedIdentifier: jest.fn().mockReturnValue({

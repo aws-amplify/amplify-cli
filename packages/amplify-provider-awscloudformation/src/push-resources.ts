@@ -37,7 +37,7 @@ import {
   AmplifyError,
   AmplifyFault,
   ManuallyTimedCodePath,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';

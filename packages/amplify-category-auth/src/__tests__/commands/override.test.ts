@@ -1,5 +1,5 @@
 import { run } from '../../commands/auth/override';
-import { $TSContext, generateOverrideSkeleton } from 'amplify-cli-core';
+import { $TSContext, generateOverrideSkeleton } from '@aws-amplify/amplify-cli-core';
 import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
 
@@ -19,8 +19,8 @@ jest.mock('amplify-prompts', () => ({
   },
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   stateManager: {
     getMeta: jest
       .fn()

@@ -2357,7 +2357,7 @@ Co-authored-by: Akshay Upadhyay <akz@amazon.com>
 ### Features
 
 * storage import ([#5893](https://github.com/aws-amplify/amplify-cli/issues/5893)) ([ad7b028](https://github.com/aws-amplify/amplify-cli/commit/ad7b028330bcee64d5124be7f27a8494dc8e9400))
-* **amplify-cli-core:** visually hide "immutable files" for VSCode users ([#5321](https://github.com/aws-amplify/amplify-cli/issues/5321)) ([01d4cdb](https://github.com/aws-amplify/amplify-cli/commit/01d4cdb2265fa74a169ff7ba12551b69709f129d))
+* **@aws-amplify/amplify-cli-core:** visually hide "immutable files" for VSCode users ([#5321](https://github.com/aws-amplify/amplify-cli/issues/5321)) ([01d4cdb](https://github.com/aws-amplify/amplify-cli/commit/01d4cdb2265fa74a169ff7ba12551b69709f129d))
 * ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
 * add amplify-app command ([#2761](https://github.com/aws-amplify/amplify-cli/issues/2761)) ([c46cdd4](https://github.com/aws-amplify/amplify-cli/commit/c46cdd421bce40d7995b3e75f0ea7f4f646d2308))
 * add check for extra command line args provided with amplify delete ([#4576](https://github.com/aws-amplify/amplify-cli/issues/4576)) ([48b27b7](https://github.com/aws-amplify/amplify-cli/commit/48b27b79698b33ee62a01df2ad00b701f79029d8)), closes [#4115](https://github.com/aws-amplify/amplify-cli/issues/4115)
@@ -2476,7 +2476,7 @@ group rules are owner will be an optional arg
 ### Features
 
 * add env to retain amplify app ([#5714](https://github.com/aws-amplify/amplify-cli/issues/5714)) ([d3b4948](https://github.com/aws-amplify/amplify-cli/commit/d3b4948b39f2c1e0f4d7674aceda313f31cb189e))
-* **amplify-cli-core:** visually hide "immutable files" for VSCode users ([#5321](https://github.com/aws-amplify/amplify-cli/issues/5321)) ([01d4cdb](https://github.com/aws-amplify/amplify-cli/commit/01d4cdb2265fa74a169ff7ba12551b69709f129d))
+* **@aws-amplify/amplify-cli-core:** visually hide "immutable files" for VSCode users ([#5321](https://github.com/aws-amplify/amplify-cli/issues/5321)) ([01d4cdb](https://github.com/aws-amplify/amplify-cli/commit/01d4cdb2265fa74a169ff7ba12551b69709f129d))
 
 
 

@@ -1,4 +1,4 @@
-import { isWindowsPlatform, JSONUtilities } from 'amplify-cli-core';
+import { isWindowsPlatform, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,

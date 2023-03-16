@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories, IAnalyticsResource, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, IAnalyticsResource, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,

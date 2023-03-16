@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import { PluginPlatform, PluginInfo, AmplifyEvent, constants, print } from 'amplify-cli-core';
+import { PluginPlatform, PluginInfo, AmplifyEvent, constants, print } from '@aws-amplify/amplify-cli-core';
 import { readPluginsJsonFile, writePluginsJsonFile } from './plugin-helpers/access-plugins-file';
 import {
   scanPluginPlatform,

@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.9.7",
-    "amplify-cli-core": "4.0.0",
+    "@aws-amplify/amplify-cli-core": "4.0.0",
     "execa": "^5.1.1",
     "glob": "^7.2.0",
     "ini": "^1.3.5",

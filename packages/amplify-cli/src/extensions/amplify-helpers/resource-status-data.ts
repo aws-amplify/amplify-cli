@@ -3,7 +3,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-cycle */
 import { hashLayerResource, ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
-import { $TSAny, pathManager, projectNotInitializedError, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
+import { $TSAny, pathManager, projectNotInitializedError, stateManager, ViewResourceTableParams } from '@aws-amplify/amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import _ from 'lodash';

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { invokeTrigger } from '../../api/lambda-invoke';
 import { isMockable } from '@aws-amplify/amplify-category-function';
 import * as lambdaTriggerHandlers from '../../api/lambda-trigger-handler';

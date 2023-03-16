@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import { constants, PluginPlatform } from 'amplify-cli-core';
+import { constants, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';

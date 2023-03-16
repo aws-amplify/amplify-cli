@@ -2,7 +2,7 @@ import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
 import fs from 'fs-extra';
 import { join } from 'path';
 import * as openpgp from 'openpgp';
-import cliCore from 'amplify-cli-core';
+import cliCore from '@aws-amplify/amplify-cli-core';
 import { v4 } from 'uuid';
 import execa from 'execa';
 
@@ -11,8 +11,8 @@ jest.setTimeout(90 * 1000);
 const execaMock = execa as jest.MockedFunction<typeof execa>;
 (execaMock as any).mockImplementation(async () => ({ stdout: 'mock-process-output' }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('mock-path-to-lib'),
   },

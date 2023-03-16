@@ -1,6 +1,6 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 import path from 'path';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 export const addCDKCustomResource = async (cwd: string, settings: any): Promise<void> => {
   await spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })

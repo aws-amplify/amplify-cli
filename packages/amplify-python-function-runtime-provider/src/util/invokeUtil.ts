@@ -2,7 +2,7 @@
 import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import path from 'path';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { packageName, relativeShimPath } from '../constants';
 import { getPythonBinaryName } from './pyUtils';
 
