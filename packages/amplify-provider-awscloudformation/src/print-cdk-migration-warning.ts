@@ -65,7 +65,9 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToS
 const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
   let customResourcesWarningObject;
   const customResourceImpactedFiles = [];
-  const customCategoryResources = resourcesToBuild.filter((resource) => resource.category === AmplifyCategories.CUSTOM);
+  const customCategoryResources = resourcesToBuild.filter(
+    (resource) => resource.category === AmplifyCategories.CUSTOM && resource.service !== 'customCloudformation',
+  );
   customCategoryResources.forEach((resource) => {
     const targetDir = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
