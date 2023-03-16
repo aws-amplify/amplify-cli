@@ -39,7 +39,7 @@ describe('adding custom resources migration test', () => {
     expect(appId).toBeDefined();
 
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
-    await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10, promptForCategorySelection: false });
+    await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10});
     const srcCFNCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cfn-stack.json');
     // adding a resource to custom cfn stack
     const destCFNCustomResourceFilePath = path.join(
@@ -119,7 +119,7 @@ describe('adding custom resources migration test', () => {
       await amplifyPushAuth(projRoot2, usingLatestCode);
 
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN
-      await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCategorySelection: false }, usingLatestCode);
+      await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCategorySelection: true }, usingLatestCode);
       const customCFNFilePath = path.join(
         projRoot2,
         'amplify',
