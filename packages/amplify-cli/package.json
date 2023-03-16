@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "11.0.0",
+  "version": "11.0.1-rc.99683bd8a.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -58,10 +58,10 @@
     "@aws-amplify/amplify-frontend-javascript": "3.9.0",
     "@aws-amplify/amplify-go-function-template-provider": "1.4.0",
     "@aws-amplify/amplify-nodejs-function-template-provider": "2.7.2",
-    "@aws-amplify/amplify-provider-awscloudformation": "8.0.0",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.0.1-rc.99683bd8a.0",
     "@aws-amplify/amplify-python-function-template-provider": "1.4.0",
     "@aws-amplify/amplify-util-import": "2.4.0",
-    "@aws-amplify/amplify-util-mock": "5.0.2",
+    "@aws-amplify/amplify-util-mock": "5.0.3-rc.99683bd8a.0",
     "@aws-amplify/amplify-util-uibuilder": "1.6.11",
     "@aws-amplify/graphql-auth-transformer": "^2.1.0",
     "@aws-cdk/cloudformation-diff": "~2.53.0",
