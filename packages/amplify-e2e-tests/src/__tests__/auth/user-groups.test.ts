@@ -6,7 +6,6 @@ import {
   deleteProjectDir,
   getIdentityPoolRoles,
   getProjectMeta,
-  getUserPool,
   initJSProjectWithProfile,
   updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
