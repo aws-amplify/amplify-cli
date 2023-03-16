@@ -821,7 +821,7 @@ const createResourceObject = (
 const getCategoryResources = (file: string, resourceDir: string) => {
   const cloudFormationJsonPath = path.join(resourceDir, file);
   const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
-  const categoryResources = Object.keys(cfnTemplate.Resources);
+  const categoryResources = cfnTemplate.Resources ? Object.keys(cfnTemplate.Resources) : [];
   return categoryResources;
 };
 
