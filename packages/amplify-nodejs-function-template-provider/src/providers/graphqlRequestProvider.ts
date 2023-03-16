@@ -1,4 +1,4 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import { AmplifySupportedService, exitOnNextTick, $TSContext } from 'amplify-cli-core';

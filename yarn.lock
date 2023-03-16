@@ -141,7 +141,7 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.4.0":
+"@aws-amplify/appsync-modelgen-plugin@2.4.0", "@aws-amplify/appsync-modelgen-plugin@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.0.tgz#0448d2d5938f7fa411ff34bb5b525e17f050bf30"
   integrity sha512-cOXsQ9qcvc7q31riKJL7kYYQFpriFws6rAO2GG7xRwT+0Dqn5LACSAgPHXBMx8vXI4nQcEYZ/EtxTchD845U6Q==
@@ -176,21 +176,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@2.8.0":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.8.0.tgz#49b70919f74016914968cf7f58e657462d199a7d"
-  integrity sha512-EF/l35yk0ilXnp4VtqUekHbAbNXT5tOvfqUznOy1h2uniAf99Z+tRZYG4HGLzFfpraUB8psumXs3C/p3FVDMaA==
+"@aws-amplify/codegen-ui-react@2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.9.0.tgz#195127505651675ee836297bdeb73f5efdf994b6"
+  integrity sha512-p/1/S72zKbwLKu7oX5FpAgQS4dEze9188PgXxB/ulyppyCAtWSdO+slZk8l8MIyuBI5pt5cUFuW6qd1de71oVw==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.8.0"
+    "@aws-amplify/codegen-ui" "2.9.0"
     "@typescript/vfs" "~1.3.5"
     typescript "<=4.5.0"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.8.0":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui/-/codegen-ui-2.8.0.tgz#7cfde751d67b029371b5f708802160b2bf3257a1"
-  integrity sha512-3I+k2hWJeVwHVGiexvZqwScpt9o8sMD7WZ/svpCo2/byvs83bYj4VJRly7Hj0n+QqkJWHDxECs4b27lIb1E8YA==
+"@aws-amplify/codegen-ui@2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui/-/codegen-ui-2.9.0.tgz#2e3eb27f8095fa9c4965185d1012c3ce17b2a132"
+  integrity sha512-vxaG9H5mCuI1U7b8ibFbPfYnmoheowuFMQQXU3ZydGl60gh2cWtSdFNtrNOImu9f8J1GS1p47u9B8d+DUzpaXQ==
   dependencies:
     change-case "^4.1.2"
     yup "^0.32.11"

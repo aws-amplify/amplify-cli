@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import glob from 'glob';
 import execa from 'execa';
 

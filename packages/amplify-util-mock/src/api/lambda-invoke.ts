@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
-import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from 'amplify-function-plugin-interface';
+import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { InvokerOptions, timeConstrainedInvoker } from '../func';
 import { printer } from '@aws-amplify/amplify-prompts';

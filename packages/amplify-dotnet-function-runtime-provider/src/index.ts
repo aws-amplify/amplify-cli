@@ -1,4 +1,4 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import { dotnet6 } from './constants';
 import { detectDotNet } from './utils/detect';
 import { build } from './utils/build';
