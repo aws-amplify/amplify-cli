@@ -7,6 +7,9 @@
     "url": "https://github.com/aws-amplify/amplify-cli.git",
     "directory": "packages/amplify-cli-core"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -17,8 +20,6 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --logHeapUsage",
-    "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",

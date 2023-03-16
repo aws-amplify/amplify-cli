@@ -1,6 +1,6 @@
 import path from 'path';
 import { generateOverrideSkeleton, $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer, prompter } from '@aws-amplify/mplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 

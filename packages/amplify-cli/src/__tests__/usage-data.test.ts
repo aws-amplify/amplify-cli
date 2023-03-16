@@ -9,7 +9,7 @@ import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { ManuallyTimedCodePath } from '@aws-amplify/amplify-cli-core';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
-import { ProjectSettings } from '@aws-amplify/amplify-cli-core/src/types';
+import { ProjectSettings } from 'amplify-cli-core/src/types';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
