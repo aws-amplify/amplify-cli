@@ -39,7 +39,7 @@ fs_mock.lstatSync.mockImplementation((_path, _options) => {
 const fsSpy = jest.spyOn(fs_mock, 'existsSync');
 
 describe('test getCfnFiles', () => {
-  it.only('does return API category stack from the build directory', async () => {
+  it('does return API category stack from the build directory', async () => {
     // The build path generated have files, so should be returned.
     fs_mock.existsSync.mockReturnValue(true);
     glob_mock.sync.mockImplementationOnce(() => [...dummyCFNFiles]);
@@ -51,7 +51,7 @@ describe('test getCfnFiles', () => {
     expect(cfnFiles).toEqual(dummyCFNFiles);
   });
 
-  it.only('does return API category stack from the build directory along with all nested stacks', async () => {
+  it('does return API category stack from the build directory along with all nested stacks', async () => {
     // The build path generated have files, so should be returned.
     fs_mock.existsSync.mockReturnValue(true);
 
