@@ -46,6 +46,7 @@ RUN curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x
 RUN tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
 RUN sudo mv jdk-11.0.2 /usr/local
 ENV PATH=${PATH}:/usr/local/jdk-11.0.2/bin
+RUN rm openjdk-11.0.2_linux-x64_bin.tar.gz
 
 # Install Gradle
 WORKDIR /tmp
@@ -53,12 +54,14 @@ RUN wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
 RUN sudo unzip -d /opt/gradle /tmp/gradle-*.zip
 ENV GRADLE_HOME=/opt/gradle/gradle-6.3
 ENV PATH=${PATH}:/opt/gradle/gradle-6.3/bin
+RUN rm /tmp/gradle-*.zip
 
 # Install Go
 WORKDIR /tmp
 RUN curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
 RUN sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
 ENV PATH=${PATH}:/usr/local/go/bin
+RUN rm go1.14.1.linux-amd64.tar.gz
 
 #Install .Net
 RUN sudo apt-get install -y dotnet-sdk-6.0
