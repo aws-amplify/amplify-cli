@@ -732,7 +732,15 @@ export function nspawn(command: string | string[], params: string[] = [], option
     command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   }
 
-  let childEnv;
+  let childEnv: Record<string, string> = Object.entries(process.env).reduce((acc, [key, value]) => {
+    if (key.startsWith('AMPLIFY_E2E_')) {
+      const trimmedKey = key.replace('AMPLIFY_E2E_', '');
+      return { ...acc, [trimmedKey]: value };
+    }
+    return acc;
+  }, {});
+  console.log('########### CHILD ENV ###########', JSON.stringify(childEnv, null, 2));
+
   let pushEnv;
 
   // For push operations in E2E we have to explicitly disable the Amplify Console App creation
@@ -749,6 +757,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   // to be able to disable CI detection we do need to pass in a childEnv
   if (options.env || pushEnv || options.disableCIDetection === true) {
     childEnv = {
+      ...childEnv,
       ...process.env,
       ...pushEnv,
       ...options.env,
