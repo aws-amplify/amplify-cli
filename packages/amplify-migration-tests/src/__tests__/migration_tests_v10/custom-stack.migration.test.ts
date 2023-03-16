@@ -25,7 +25,7 @@ describe('adding custom resources migration test', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, null, true);
     deleteProjectDir(projRoot);
   });
 
