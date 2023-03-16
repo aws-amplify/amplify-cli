@@ -1,18 +1,23 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { AmplifyCategories, AmplifySupportedService, FeatureFlags } from '@aws-amplify/amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { mocked } from 'ts-jest/utils';
 import { getAmplifyDataSchema } from '../commands/utils';
 
 jest.mock('@aws-amplify/amplify-prompts');
 
-jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
-  stateManager: {
-    getMeta: jest.fn(() => ({
-      [AmplifyCategories.API]: {
-        MyResourceName: {
-          service: AmplifySupportedService.APPSYNC,
+const printerMock = mocked(printer);
+
+const sampleIntrospectionSchema = {
+  version: 1,
+  models: {
+    Blog: {
+      name: 'Blog',
+      fields: {
+        id: {
+          name: 'id',
+          isArray: false,
+          type: 'ID',
+          isRequired: true,
+          attributes: [],
         },
       },
       syncable: true,
