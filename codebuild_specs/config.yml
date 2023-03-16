@@ -1,4 +1,11 @@
 version: 0.2
+env:
+  shell: bash
+  imagePullCredentialsType: SERVICE_ROLE
+  variables:
+    AMPLIFY_DIR: '/home/circleci/repo/out'
+    AMPLIFY_PATH: '/home/circleci/repo/out/amplify-pkg-linux-x64'
+
 batch:
   fast-fail: true
   build-graph:
@@ -6,10 +13,14 @@ batch:
       buildspec: codebuild_specs/prepare_build.yml
       debug-session: true
       env:
+        compute-type: BUILD_GENERAL1_LARGE
         variables:
           IS_AMPLIFY_CI: true
     - identifier: validate_packages
       buildspec: codebuild_specs/validate_packages.yml
       debug-session: true
+      env:
+        variables:
+          EXAMPLE_SAMPLE: 'test'
       depend-on:
         - prepare_build
