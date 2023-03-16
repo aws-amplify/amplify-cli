@@ -105,7 +105,7 @@ describe('print migration warning tests', () => {
       {
         category: 'custom',
         resourceName: 'someResource2',
-        service: 'mockService2',
+        service: 'customCDK',
       },
     ];
 
@@ -126,6 +126,31 @@ describe('print migration warning tests', () => {
       Follow this guide: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html
       "
     `);
+  });
+
+  it('no migration message when there are only custom CFN resources', async () => {
+    const resourcesToBeCreated = [
+      {
+        category: 'auth',
+        resourceName: 'someResource',
+        service: 'Cognito',
+      },
+    ];
+    const resourcesToBeUpdated = [
+      {
+        category: 'custom',
+        resourceName: 'someResource3',
+        service: 'customCloudformation',
+      },
+    ];
+
+    const allResources = [...resourcesToBeCreated, ...resourcesToBeUpdated];
+    mockContext.amplify.getResourceStatus.mockResolvedValue({ allResources });
+    detectAffectedDirectDependenciesMock.mockReturnValue(inputPayload);
+    fsMock.existsSync.mockReturnValue(false);
+    printerMock.warn.mockReturnValue(undefined);
+    await printCdkMigrationWarning(mockContext as unknown as $TSContext);
+    expect(printerMock.warn).not.toBeCalled();
   });
 
   it('migration message when there are only overrides', async () => {
