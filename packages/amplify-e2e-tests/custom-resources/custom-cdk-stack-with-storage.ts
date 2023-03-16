@@ -26,7 +26,6 @@ export class cdkStack extends cdk.Stack {
 
     /* Example 2: Adding IAM role to the custom stack */
     const role = new iam.Role(this, 'CustomRole', {
-      roleName: cdk.Fn.join('-', ['custom-cdk-generated-custom-role-test', cdk.Fn.ref('env')]), // For name uniqueness
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
