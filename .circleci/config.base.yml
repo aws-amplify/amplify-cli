@@ -1191,10 +1191,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries_linux
-            - build_pkg_binaries_macos
-            - build_pkg_binaries_win
-            - build_pkg_binaries_arm
+            - upload_pkg_binaries
       - amplify_console_integration_tests:
           context:
             - e2e-auth-credentials
