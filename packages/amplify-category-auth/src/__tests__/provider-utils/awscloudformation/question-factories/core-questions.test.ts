@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { Input, parseInputs } from '../../../../provider-utils/awscloudformation/question-factories/core-questions';
 import defaults from '../../../../provider-utils/awscloudformation/assets/cognito-defaults';
 import maps from '../../../../provider-utils/awscloudformation/assets/string-maps';

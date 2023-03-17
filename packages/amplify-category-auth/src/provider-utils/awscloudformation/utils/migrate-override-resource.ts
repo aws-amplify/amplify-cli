@@ -1,4 +1,11 @@
-import { $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSObject,
+  AmplifyCategories,
+  projectNotInitializedError,
+  AmplifyError,
+  JSONUtilities,
+  pathManager,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';

@@ -4,10 +4,10 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { AmplifyCategoryTransform } from 'amplify-cli-core';
-import { Template } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategoryTransform } from '@aws-amplify/amplify-cli-core';
+import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export function add(context: any, skipNextSteps?: boolean): Promise<any>;

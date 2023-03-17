@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { category } from './constants';
 import * as addCommand from './commands/geo/add';
