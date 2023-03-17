@@ -10,34 +10,34 @@ env:
   # secrets-manager:
   #   S3_ACCESS_KEY: "secretname" # s3_access_key in secret manager
 
-phases:
-  install:
-    runtime-versions:
-      nodejs: 14
-    commands:
-      - source shared-scripts.sh
-  build:
-    commands:
-      - _buildLinux
-      # - _publishToLocalRegistry
-      # - _buildBinaries
-      # - _uploadPkgBinaries
-      # - _runE2ETestsLinux
-# batch:
-#   fast-fail: true
-#   build-graph:
-#     - identifier: prepare_build
-#       buildspec: codebuild_specs/prepare_build.yml
-#       debug-session: true
-#       env:
-#         compute-type: BUILD_GENERAL1_LARGE
-#         variables:
-#           IS_AMPLIFY_CI: true
-#     - identifier: validate_packages
-#       buildspec: codebuild_specs/validate_packages.yml
-#       debug-session: true
-#       env:
-#         variables:
-#           EXAMPLE_SAMPLE: 'test'
-#       depend-on:
-#         - prepare_build
+# phases:
+#   install:
+#     runtime-versions:
+#       nodejs: 14
+#     commands:
+#       - source shared-scripts.sh
+#   build:
+#     commands:
+#       - _buildLinux
+# - _publishToLocalRegistry
+# - _buildBinaries
+# - _uploadPkgBinaries
+# - _runE2ETestsLinux
+batch:
+  fast-fail: true
+  build-graph:
+    - identifier: prepare_build
+      buildspec: codebuild_specs/prepare_build.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          IS_AMPLIFY_CI: true
+    - identifier: validate_packages
+      buildspec: codebuild_specs/validate_packages.yml
+      debug-session: true
+      env:
+        variables:
+          EXAMPLE_SAMPLE: 'test'
+      depend-on:
+        - prepare_build

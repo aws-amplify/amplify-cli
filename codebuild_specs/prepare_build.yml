@@ -1,17 +1,11 @@
 version: 0.2
 phases:
-  install:
-    runtime-versions:
-      nodejs: 14
-    commands:
-      - yarn config set script-shell $(which bash)
   pre_build:
     commands:
-      - touch cache-sample.txt
-      - echo "cache savedv2" > cache-sample.txt
+      - source shared-scripts.sh
   build:
     commands:
-      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME --recursive
+      - _buildLinux
   post_build:
     commands:
-      # - /bin/bash ./codebuild_specs/cache-store.sh
+      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME --recursive
