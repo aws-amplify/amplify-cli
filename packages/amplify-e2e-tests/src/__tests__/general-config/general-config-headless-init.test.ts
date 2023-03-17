@@ -5,13 +5,7 @@
  */
 
 import {
-  createNewProjectDir,
-  deleteProject,
-  deleteProjectDir,
-  getAmplifyInitConfig, getAwsProviderConfig, nonInteractiveInitAttach,
-  getAmplifyFrontend,
-  headlessInit,
-  getAwsProviderGeneralConfig
+  createNewProjectDir, deleteProject, deleteProjectDir, getAmplifyFrontend, getAmplifyInitConfig, getAwsProviderGeneralConfig, headlessInit
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('attach amplify to git-cloned project', () => {
