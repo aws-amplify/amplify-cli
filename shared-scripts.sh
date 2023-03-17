@@ -2,7 +2,7 @@
 
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
-function storeCache {
+storeCache() {
     localPath="$1"
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
     echo "writing cache to $s3Path"
@@ -13,7 +13,7 @@ function storeCache {
     echo "done writing cache"
     cd $CODEBUILD_SRC_DIR
 }
-function loadCache {
+loadCache() {
     localPath="$1"
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
     echo "loading cache from $s3Path"
@@ -31,11 +31,11 @@ function loadCache {
     echo "done loading cache"
     cd $CODEBUILD_SRC_DIR
 }
-function _setShell {
+_setShell() {
     echo "Setting Shell"
     yarn config set script-shell $(which bash)
 }
-function _buildLinux {
+_buildLinux() {
     _setShell()
     echo "Linux Build"
     # yarn run production-build
@@ -43,13 +43,13 @@ function _buildLinux {
     storeCache $CODEBUILD_SRC_DIR
     storeCache $HOME/.cache
 }
-function _buildWindows {
+_buildWindows() {
     _setShell()
     echo "Windows Build"
     yarn run production-build
     # copy [repo, .cache, and .ssh to s3]
 }
-function _test {
+_test() {
     echo "Run Test"
     # aws s3 cp s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/repo $CODEBUILD_SRC_DIR/repo
     # download [repo, .cache from s3]
@@ -57,29 +57,29 @@ function _test {
     echo "collecting coverage"
     yarn coverage
 }
-function _validateCDKVersion {
+_validateCDKVersion() {
     echo "Validate CDK Version"
     # download [repo, .cache from s3]
     yarn ts-node .circleci/validate_cdk_version.ts
 }
-function _lint {
+_lint() {
     # download [repo, .cache from s3]
     echo "Linting"
     yarn lint-check
     yarn lint-check-package-json
     yarn prettier-check
 }
-function _verifyAPIExtract {
+_verifyAPIExtract() {
     # download [repo, .cache from s3]
     echo "Verify API Extract"
     yarn verify-api-extract
 }
-function _verifyYarnLock {
+_verifyYarnLock() {
     # download [repo, .cache from s3]
     echo "Verify Yarn Lock"
     yarn verify-yarn-lock
 }
-function _verifyVersionsMatch {
+_verifyVersionsMatch() {
     # download [repo, .cache, verdaccio-cache from s3]
     echo "Verify Versions Match"
     source .circleci/local_publish_helpers.sh
@@ -88,13 +88,13 @@ function _verifyVersionsMatch {
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
 }
-function _mockE2ETests {
+_mockE2ETests() {
     # download [repo, .cache from s3]
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-util-mock/
     yarn e2e
 }
-function _publishToLocalRegistry {
+_publishToLocalRegistry() {
     # download [repo, .cache from s3]
     echo "Publish To Local Registry"
     source .circleci/local_publish_helpers.sh
@@ -113,14 +113,14 @@ function _publishToLocalRegistry {
     node scripts/echo-current-cli-version.js > .amplify-pkg-version
     # copy [verdaccio-cache, changelog, pkgtag to s3]
 }
-function _uploadPkgBinaries {
+_uploadPkgBinaries() {
     # download [repo, pkg-binaries, from s3]
     echo "Consolidate binaries cache and upload"
     source .circleci/local_publish_helpers.sh
     uploadPkgCli
     # copy [repo/out to s3]
 }
-function _buildBinaries {
+_buildBinaries() {
     # download [repo, yarn, verdaccio from s3]
     echo "Start verdaccio and package CLI"
     source .circleci/local_publish_helpers.sh
@@ -135,7 +135,7 @@ function _buildBinaries {
     unsetNpmRegistryUrl
     # copy [repo/out to s3]
 }
-function _runE2ETestsLinux {
+_runE2ETestsLinux() {
     source .circleci/local_publish_helpers.sh
     source $BASH_ENV
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
