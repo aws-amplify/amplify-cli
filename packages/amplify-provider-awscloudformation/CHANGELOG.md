@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.0...@aws-amplify/amplify-provider-awscloudformation@8.0.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* stops cdk v1 warning for non cdk custom resource ([#12241](https://github.com/aws-amplify/amplify-cli/issues/12241)) ([#12249](https://github.com/aws-amplify/amplify-cli/issues/12249)) ([99683bd](https://github.com/aws-amplify/amplify-cli/commit/99683bd8a565c52b5cf68760bab9d08c7bbf5cc0))
+
+
+
+
+
 # [8.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@7.0.1...@aws-amplify/amplify-provider-awscloudformation@8.0.0) (2023-03-13)
 
 
