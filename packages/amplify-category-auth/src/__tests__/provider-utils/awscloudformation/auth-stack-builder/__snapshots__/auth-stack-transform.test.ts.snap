@@ -261,7 +261,6 @@ Object {
         "IdentityPoolId": Object {
           "Ref": "IdentityPool",
         },
-        "RoleMappings": Object {},
         "Roles": Object {
           "authenticated": Object {
             "Ref": "authRoleArn",
