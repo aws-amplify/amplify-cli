@@ -1385,15 +1385,8 @@ export function updateAuthAddUserGroupsAfterPull(
       .sendCarriageReturn()
       .wait('Sort the user pool groups in order of preference')
       .sendCarriageReturn()
-      .wait('"amplify publish" will build all your local backend and frontend resources');
-
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .runAsync();
   });
 }
 
