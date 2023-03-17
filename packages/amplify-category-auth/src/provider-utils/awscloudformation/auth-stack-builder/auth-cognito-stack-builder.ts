@@ -62,8 +62,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   customMessageConfirmationBucket?: s3.CfnBucket | undefined;
   snsRole: iam.CfnRole | undefined;
   userPool: cognito.CfnUserPool | undefined;
-  userPoolClientWeb: cognito.CfnUserPoolClient;
-  userPoolClient: cognito.CfnUserPoolClient;
+  userPoolClientWeb: cognito.CfnUserPoolClient | undefined;
+  userPoolClient: cognito.CfnUserPoolClient | undefined;
   identityPool: cognito.CfnIdentityPool | undefined;
   identityPoolRoleMap: cognito.CfnIdentityPoolRoleAttachment | undefined;
   lambdaConfigPermissions?: Record<string, lambda.CfnPermission>;
@@ -559,13 +559,17 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           # Depends on Identity Pool for ID ref
        */
 
-      this.identityPoolRoleMap = new cognito.CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoleMap', {
+      const identityPoolRoleMapParams = {
         identityPoolId: cdk.Fn.ref('IdentityPool'),
         roles: {
           unauthenticated: cdk.Fn.ref('unauthRoleArn'),
           authenticated: cdk.Fn.ref('authRoleArn'),
         },
-        roleMappings: {
+        roleMappings: {},
+      };
+
+      if (props.userPoolGroups) {
+        identityPoolRoleMapParams.roleMappings = {
           'UserPoolClientRoleMapping': {
             identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${client}', {
               region: cdk.Fn.ref('AWS::Region'),
@@ -584,12 +588,20 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             ambiguousRoleResolution: 'AuthenticatedRole',
             type: 'Token'
           }
-        }
-      });
+        };
+      }
+
+      this.identityPoolRoleMap = new cognito.CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoleMap', identityPoolRoleMapParams);
 
       this.identityPoolRoleMap.addDependsOn(this.identityPool);
-      this.identityPoolRoleMap.addDependsOn(this.userPoolClient);
-      this.identityPoolRoleMap.addDependsOn(this.userPoolClientWeb);
+
+      if (this.userPoolClient) {
+        this.identityPoolRoleMap.addDependsOn(this.userPoolClient);
+      }
+
+      if (this.userPoolClientWeb) {
+        this.identityPoolRoleMap.addDependsOn(this.userPoolClientWeb);
+      }
     }
   };
 

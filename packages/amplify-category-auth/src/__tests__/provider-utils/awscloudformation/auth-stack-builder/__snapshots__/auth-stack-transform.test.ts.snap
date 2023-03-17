@@ -256,11 +256,14 @@ Object {
     "IdentityPoolRoleMap": Object {
       "DependsOn": Array [
         "IdentityPool",
+        "UserPoolClient",
+        "UserPoolClientWeb",
       ],
       "Properties": Object {
         "IdentityPoolId": Object {
           "Ref": "IdentityPool",
         },
+        "RoleMappings": Object {},
         "Roles": Object {
           "authenticated": Object {
             "Ref": "authRoleArn",
@@ -1538,10 +1541,54 @@ exports.handler = (event, context, callback) => {
     "IdentityPoolRoleMap": Object {
       "DependsOn": Array [
         "IdentityPool",
+        "UserPoolClient",
+        "UserPoolClientWeb",
       ],
       "Properties": Object {
         "IdentityPoolId": Object {
           "Ref": "IdentityPool",
+        },
+        "RoleMappings": Object {
+          "UserPoolClientRoleMapping": Object {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": Object {
+              "Fn::Sub": Array [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}",
+                Object {
+                  "client": Object {
+                    "Ref": "UserPoolClient",
+                  },
+                  "region": Object {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": Object {
+                    "Ref": "UserPool",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
+          "UserPoolWebClientRoleMapping": Object {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": Object {
+              "Fn::Sub": Array [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}",
+                Object {
+                  "region": Object {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": Object {
+                    "Ref": "UserPool",
+                  },
+                  "webClient": Object {
+                    "Ref": "UserPoolClientWeb",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
         },
         "Roles": Object {
           "authenticated": Object {
