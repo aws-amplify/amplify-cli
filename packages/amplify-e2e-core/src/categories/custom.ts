@@ -26,6 +26,9 @@ export const addCFNCustomResource = async (cwd: string, settings: any, testingWi
   if (settings.promptForCategorySelection) {
     chain.wait('Select the categories you want this custom resource to have access to').sendCtrlA().sendCarriageReturn();
   }
+  if (settings.promptForCustomResourcesSelection) {
+    chain.wait('Select the one you would like your custom resource to access').sendCtrlA().sendCarriageReturn();
+  }
   await chain.wait('Do you want to edit the CloudFormation stack now?').sendNo().sendEof().runAsync();
 };
 
