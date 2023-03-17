@@ -595,12 +595,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       this.identityPoolRoleMap.addDependsOn(this.identityPool);
 
-      if (this.userPoolClient) {
-        this.identityPoolRoleMap.addDependsOn(this.userPoolClient);
-      }
+      if (props.userPoolGroups) {
+        if (this.userPoolClient) {
+          this.identityPoolRoleMap.addDependsOn(this.userPoolClient);
+        }
 
-      if (this.userPoolClientWeb) {
-        this.identityPoolRoleMap.addDependsOn(this.userPoolClientWeb);
+        if (this.userPoolClientWeb) {
+          this.identityPoolRoleMap.addDependsOn(this.userPoolClientWeb);
+        }
       }
     }
   };
