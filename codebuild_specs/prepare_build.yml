@@ -7,6 +7,6 @@ phases:
       - source ./shared-scripts.sh && test
       - source ./shared-scripts.sh && _buildLinux
 
-cache:
-  paths:
+artifacts:
+  files:
     - 'shared-scripts.sh'
