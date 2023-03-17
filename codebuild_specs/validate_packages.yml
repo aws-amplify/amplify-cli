@@ -3,16 +3,9 @@ phases:
   install:
   pre_build:
     commands:
-      - cat cache-sample.txt
+      - echo "listing files"
+      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME --recursive
+      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME/$CODEBUILD_BATCH_BUILD_IDENTIFIER --recursive
   build:
     commands:
-      # - yarn run production-build
-  post_build:
-    commands:
-      # - /bin/bash ./codebuild_specs/cache-store.sh
-cache:
-  paths:
-    - cache-sample.txt
-artifacts:
-  files:
-    - cache-sample.txt
+      - echo "test"
