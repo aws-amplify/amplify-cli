@@ -1,9 +1,7 @@
 version: 0.2
+env:
+  shell: bash
 phases:
-  pre_build:
-    commands:
-      - echo "listing files"
-      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME --recursive
   build:
     commands:
-      - echo "test"
+      - source ./shared-scripts.sh && _test

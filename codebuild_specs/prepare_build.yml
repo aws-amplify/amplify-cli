@@ -6,6 +6,3 @@ phases:
     commands:
       - source ./shared-scripts.sh && test
       - source ./shared-scripts.sh && _buildLinux
-  post_build:
-    commands:
-      - aws s3 ls s3://$CACHE_BUCKET_NAME --recursive

@@ -57,8 +57,10 @@ function _buildWindows {
 }
 function _test {
     echo Run Test
-    # aws s3 cp s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/repo $CODEBUILD_SRC_DIR/repo
     # download [repo, .cache from s3]
+    loadCache $CODEBUILD_SRC_DIR
+    loadCache $HOME/.cache
+    # run tests
     yarn test-ci
     echo collecting coverage
     yarn coverage
