@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, open, $TSContext, $TSObject, AmplifyError } from 'amplify-cli-core';
+import { stateManager, open, $TSContext, $TSObject, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';

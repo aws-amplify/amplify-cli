@@ -1,5 +1,5 @@
 const path = require('path');
-const { FeatureFlags } = require('amplify-cli-core');
+const { FeatureFlags } = require('@aws-amplify/amplify-cli-core');
 
 const triggerAssetRoot = path.resolve(path.join(__dirname, '../../../../provider-utils/awscloudformation/triggers'));
 

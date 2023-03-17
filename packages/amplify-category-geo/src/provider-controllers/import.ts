@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs-extra';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';

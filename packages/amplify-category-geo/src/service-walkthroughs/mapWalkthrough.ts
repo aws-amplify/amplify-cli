@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
