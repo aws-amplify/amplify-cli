@@ -646,36 +646,6 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
-  amplify_general_config_tests:
-    parameters:
-      os:
-        type: executor
-        default: l_large
-    executor: << parameters.os >>
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Run tests using general profile
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            cd packages/amplify-e2e-tests
-            retry yarn run general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
-          no_output_timeout: 90m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: ~/repo/packages/amplify-e2e-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-    working_directory: ~/repo
-
   amplify_console_integration_tests:
     parameters:
       os:
@@ -967,6 +937,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
       - lint:
           requires:
             - build
@@ -988,7 +959,6 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-                - /run-e2e\/.*/
       - verify-yarn-lock:
           requires:
             - build
@@ -1005,7 +975,6 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-                - /run-e2e\/.*/
       - validate_cdk_version:
           requires:
             - build
@@ -1018,7 +987,6 @@ workflows:
                 - beta
                 - release
                 - /tagged-release-without-e2e-tests\/.*/
-                - /run-e2e\/.*/
       - integration_test:
           context:
             - e2e-test-context
@@ -1028,6 +996,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - build
       - publish_to_local_registry:
@@ -1105,6 +1074,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
             - build_windows_workspace_for_e2e
@@ -1119,6 +1089,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_v6:
@@ -1132,6 +1103,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_v5:
@@ -1145,6 +1117,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_non_multi_env_layers:
@@ -1158,6 +1131,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_migration_tests_multi_env_layers:
@@ -1171,6 +1145,7 @@ workflows:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - amplify_general_config_tests:
