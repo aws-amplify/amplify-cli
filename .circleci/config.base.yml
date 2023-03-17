@@ -1185,8 +1185,11 @@ workflows:
             - e2e-test-context
           filters:
             branches:
-              ignore:
-                - beta
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - build_pkg_binaries_linux
             - build_pkg_binaries_macos
