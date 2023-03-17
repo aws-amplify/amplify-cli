@@ -2,7 +2,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - source ./shared-scripts.sh
+      - . ./shared-scripts.sh
       - _buildLinux
   post_build:
     commands:
