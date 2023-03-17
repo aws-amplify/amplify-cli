@@ -4,8 +4,7 @@ env:
 phases:
   build:
     commands:
-      - . ./shared-scripts.sh
-      - _buildLinux
+      - source ./shared-scripts.sh && _buildLinux
   post_build:
     commands:
-      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME --recursive
+      - aws s3 ls s3://$CACHE_BUCKET_NAME --recursive
