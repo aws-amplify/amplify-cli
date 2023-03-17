@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.2-rc.fec295851.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.1...@aws-amplify/amplify-provider-awscloudformation@8.0.2-rc.fec295851.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* generate model introspection regardless of studio ([#12257](https://github.com/aws-amplify/amplify-cli/issues/12257)) ([fec2958](https://github.com/aws-amplify/amplify-cli/commit/fec2958513228e60b3f58d456f60677c738ae25c))
+
+
+
+
+
 ## [8.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.0...@aws-amplify/amplify-provider-awscloudformation@8.0.1) (2023-03-17)
 
 
