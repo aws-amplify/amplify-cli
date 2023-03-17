@@ -3,8 +3,8 @@
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
 function storeCache {
-    local localPath="$1"
-    local s3Path="s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/$localPath"
+    localPath="$1"
+    s3Path="s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/$localPath"
     echo "writing cache to $s3Path"
     # zip contents and upload to s3
     if ! (cd $localPath && tar czv . | aws s3 cp - $s3Path); then
@@ -14,8 +14,8 @@ function storeCache {
     cd $CODEBUILD_SRC_DIR
 }
 function loadCache {
-    local localPath="$1"
-    local s3Path="s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/$localPath"
+    localPath="$1"
+    s3Path="s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/$localPath"
     echo "loading cache from $s3Path"
     # create directory if it doesn't exist yet
     mkdir -p $localPath
