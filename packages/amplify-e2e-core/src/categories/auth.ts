@@ -1344,8 +1344,9 @@ export function updateAuthAddUserGroupsAfterPull(
   projectDir: string,
   groupNames: string[],
   settings?: {
-    testingWithLatestCodebase: boolean,
-  }): Promise<void> {
+    testingWithLatestCodebase: boolean;
+  },
+): Promise<void> {
   if (groupNames.length == 0) {
     return undefined;
   }

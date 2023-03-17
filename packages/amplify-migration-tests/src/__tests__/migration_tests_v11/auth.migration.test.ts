@@ -43,14 +43,9 @@ describe('v11: amplify migration test auth', () => {
 
       const meta = getProjectMeta(projRoot1);
       const region = meta.providers.awscloudformation.Region;
-      const {
-        AppClientID,
-        AppClientIDWeb,
-        IdentityPoolId,
-        UserPoolId,
-      } = Object.keys(meta.auth).map((key) => meta.auth[key])
-        .find((auth) => auth.service === 'Cognito')
-        .output;
+      const { AppClientID, AppClientIDWeb, IdentityPoolId, UserPoolId } = Object.keys(meta.auth)
+        .map((key) => meta.auth[key])
+        .find((auth) => auth.service === 'Cognito').output;
 
       const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
       const roleMapKeyWebClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientIDWeb}`;
@@ -74,7 +69,9 @@ describe('v11: amplify migration test auth', () => {
 
         expect(identityPoolRolesAfter.RoleMappings[roleMapKeyClientId].AmbiguousRoleResolution).toEqual(roleMapKeyClientIdAmbigousRoleRes);
         expect(identityPoolRolesAfter.RoleMappings[roleMapKeyClientId].Type).toEqual(roleMapKeyClientIdType);
-        expect(identityPoolRolesAfter.RoleMappings[roleMapKeyWebClientId].AmbiguousRoleResolution).toEqual(roleMapKeyWebClientIdAmbigousRoleRes);
+        expect(identityPoolRolesAfter.RoleMappings[roleMapKeyWebClientId].AmbiguousRoleResolution).toEqual(
+          roleMapKeyWebClientIdAmbigousRoleRes,
+        );
         expect(identityPoolRolesAfter.RoleMappings[roleMapKeyWebClientId].Type).toEqual(roleMapKeyWebClientIdType);
 
         expect(identityPoolRolesAfter.RoleMappings[roleMapKeyClientId].AmbiguousRoleResolution).toEqual('AuthenticatedRole');

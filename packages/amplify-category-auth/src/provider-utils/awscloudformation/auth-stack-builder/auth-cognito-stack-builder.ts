@@ -570,24 +570,24 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       if (props.userPoolGroups) {
         identityPoolRoleMapParams.roleMappings = {
-          'UserPoolClientRoleMapping': {
+          UserPoolClientRoleMapping: {
             identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${client}', {
               region: cdk.Fn.ref('AWS::Region'),
               userPool: cdk.Fn.ref('UserPool'),
               client: cdk.Fn.ref('UserPoolClient'),
             }),
             ambiguousRoleResolution: 'AuthenticatedRole',
-            type: 'Token'
+            type: 'Token',
           },
-          'UserPoolWebClientRoleMapping': {
+          UserPoolWebClientRoleMapping: {
             identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${webClient}', {
               region: cdk.Fn.ref('AWS::Region'),
               userPool: cdk.Fn.ref('UserPool'),
               webClient: cdk.Fn.ref('UserPoolClientWeb'),
             }),
             ambiguousRoleResolution: 'AuthenticatedRole',
-            type: 'Token'
-          }
+            type: 'Token',
+          },
         };
       }
 
