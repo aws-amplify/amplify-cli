@@ -6,6 +6,11 @@
   "scripts": {
     "split-e2e-tests": "yarn ts-node --transpile-only ./split-e2e-tests.ts"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

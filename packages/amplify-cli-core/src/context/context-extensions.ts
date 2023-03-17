@@ -140,11 +140,11 @@ const contextFileSystem = {
   remove: (targetPath: string): void => {
     fs.removeSync(targetPath);
   },
-  read: (targetPath: string, encoding = 'utf8'): string => {
-    const result = fs.readFileSync(targetPath, encoding);
+  read: (targetPath: string, encoding: BufferEncoding = 'utf8'): string => {
+    const result = fs.readFileSync(targetPath, { encoding });
     return result;
   },
-  write: (targetPath: string, data: unknown): void => {
+  write: (targetPath: string, data: string | NodeJS.ArrayBufferView): void => {
     fs.ensureFileSync(targetPath);
     fs.writeFileSync(targetPath, data, 'utf-8');
   },

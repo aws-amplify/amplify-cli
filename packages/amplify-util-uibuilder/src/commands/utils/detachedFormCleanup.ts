@@ -1,7 +1,7 @@
 import { StudioForm, StudioSchema } from '@aws-amplify/codegen-ui';
 import { Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyStudioClient } from '../../clients';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import asyncPool from 'tiny-async-pool';
 
 /**

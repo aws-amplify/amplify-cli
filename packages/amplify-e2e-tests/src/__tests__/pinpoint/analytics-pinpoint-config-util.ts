@@ -38,7 +38,7 @@ export const runPinpointConfigTest = async (
     deleteProjectDir(secondRoot);
   }
 
-  await removeAnalytics(projectRoot, {});
+  await removeAnalytics(projectRoot);
   await amplifyPushAuth(projectRoot);
   validate(projectRoot, false);
 };

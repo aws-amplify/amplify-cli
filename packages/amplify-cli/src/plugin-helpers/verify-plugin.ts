@@ -76,7 +76,7 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
     if (pluginNameValidationResult.isValid) {
       context.manifest = manifest;
 
-      let result = verifyCommands(context);
+      let result = verifyCommands();
 
       result = result.verified ? await verifyEventHandlers(context) : result;
       result.manifest = manifest;
@@ -90,7 +90,7 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
   }
 }
 
-function verifyCommands(context: VerificationContext): PluginVerificationResult {
+function verifyCommands(): PluginVerificationResult {
   //   let isVerified = true;
   //   if (manifest.commands && manifest.commands.length > 0) {
   //     isVerified = pluginModule.hasOwnProperty(constants.EXECUTE_AMPLIFY_COMMAND) &&
@@ -105,7 +105,7 @@ function verifyCommands(context: VerificationContext): PluginVerificationResult 
   //             PluginVerificationError.MissingExecuteAmplifyCommandMethod,
   //         );
 
-  // verification should be on the plugin type and if it implement all the required METHODS;
+  // verification should be on the plugin type and if it implements all the required METHODS;
   return new PluginVerificationResult(true);
 }
 

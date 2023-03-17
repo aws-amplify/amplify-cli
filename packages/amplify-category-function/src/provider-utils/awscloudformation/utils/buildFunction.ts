@@ -1,5 +1,5 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
-import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { categoryName } from '../../../constants';
 
 export const buildFunction = async (

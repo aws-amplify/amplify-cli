@@ -1,4 +1,4 @@
-import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, AmplifyError, LocalEnvInfo } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { prompt } from 'inquirer';
@@ -122,7 +122,7 @@ function doesAwsConfigExists(context: $TSContext) {
   if (stateManager.localAWSInfoExists()) {
     const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
-      context.exeInfo = context.exeInfo || {};
+      context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
       context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;

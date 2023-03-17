@@ -12,7 +12,7 @@ import {
   IAmplifyResource,
   ResourceDoesNotExistError,
 } from 'amplify-cli-core';
-import { alphanumeric, printer, prompter, integer } from 'amplify-prompts';
+import { alphanumeric, printer, prompter, integer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
 import path from 'path';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough

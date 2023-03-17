@@ -1,10 +1,10 @@
-import { FunctionTemplateParameters, TemplateContributionRequest } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { templateRoot } from '../utils/constants';
 import path from 'path';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
-export async function provideHelloWorld(request: TemplateContributionRequest): Promise<FunctionTemplateParameters> {
+export async function provideHelloWorld(): Promise<FunctionTemplateParameters> {
   const files = [
     'hello-world/build.gradle.ejs',
     'hello-world/LambdaRequestHandler.java.ejs',

@@ -30,7 +30,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 

@@ -126,7 +126,7 @@ describe('dotnet function tests', () => {
   });
 
   it('add dotnet ddb trigger function and and mock locally', async () => {
-    await addSimpleDDBwithGSI(projRoot, {});
+    await addSimpleDDBwithGSI(projRoot);
     await addFunction(
       projRoot,
       {

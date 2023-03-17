@@ -4,7 +4,7 @@
 
 ```ts
 
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 
 // @public (undocumented)
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory;

@@ -70,7 +70,7 @@ describe('dynamodb import', () => {
     ogSettings = createDynamoDBSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
+    await addAuthWithDefault(ogProjectRoot);
     await addDynamoDBWithGSIWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -81,7 +81,7 @@ describe('dynamodb import', () => {
     dummyOGSettings = createDynamoDBSettings(dummyOGProjectSettings.name, dummyOGShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
+    await addAuthWithDefault(dummyOGProjectRoot);
     await addDynamoDBWithGSIWithSettings(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });
@@ -113,7 +113,7 @@ describe('dynamodb import', () => {
 
   it('status should reflect correct values for imported dynamodb table', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
     let projectDetails = getDynamoDBProjectDetails(projectRoot);
@@ -142,7 +142,7 @@ describe('dynamodb import', () => {
 
   it('imported dynamodb table with function and crud on storage should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
     const functionName = randomizedFunctionName('ddbimpfunc');
@@ -211,7 +211,7 @@ describe('dynamodb import', () => {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
     const functionName = randomizedFunctionName('ddbimpfunc');

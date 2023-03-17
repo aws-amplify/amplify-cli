@@ -17,7 +17,7 @@ import {
   invokeS3RegisterAdminTrigger,
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
-import { byValue, prompter, alphanumeric, between } from 'amplify-prompts';
+import { byValue, prompter, alphanumeric, between } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from 'amplify-cli-core';
 
 const path = require('path');
@@ -187,7 +187,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
       }
     } else {
       //create S3 bucket
-      s3Resource = await addS3ForIdentity(context, answers.access, undefined, predictionsResourceName);
+      s3Resource = await addS3ForIdentity(context, answers.access, undefined);
       //create admin lambda and register with s3 as trigger
       const s3UserInputs = await createAndRegisterAdminLambdaS3Trigger(
         context,
@@ -520,7 +520,7 @@ function resourceAlreadyExists(context, identifyType) {
   return type;
 }
 
-async function addS3ForIdentity(context, storageAccess, bucketName, predictionsResourceName) {
+async function addS3ForIdentity(context, storageAccess, bucketName) {
   const defaultValuesSrc = `${__dirname}/../default-values/${s3defaultValuesFilename}`;
   const { getAllAuthDefaultPerm, getAllAuthAndGuestDefaultPerm } = require(defaultValuesSrc);
   let s3UserInputs = await invokeS3GetAllDefaults(context, storageAccess); //build the predictions specific s3 bucket

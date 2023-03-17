@@ -325,7 +325,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = async (cwd: string, settings: any): Promise<void> => {
+export const functionBuild = async (cwd: string): Promise<void> => {
   return spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
     .wait('Are you sure you want to continue building the resources?')
     .sendYes()
@@ -353,7 +353,7 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
-export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext, cwd: string, settings: any): void => {
+export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext): void => {
   chain.wait('Choose a DynamoDB data source option');
   singleSelect(chain, 'Create a new DynamoDB table', [
     'Use DynamoDB table configured in the current Amplify project',

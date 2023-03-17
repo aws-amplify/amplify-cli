@@ -7,14 +7,8 @@ import {
   ResourceDoesNotExistError,
   stateManager,
 } from 'amplify-cli-core';
-import {
-  AddStorageRequest,
-  CrudOperation,
-  ImportStorageRequest,
-  RemoveStorageRequest,
-  UpdateStorageRequest,
-} from 'amplify-headless-interface';
-import { printer } from 'amplify-prompts';
+import { AddStorageRequest, ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest } from 'amplify-headless-interface';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { v4 as uuid } from 'uuid';
 import { S3UserInputTriggerFunctionParams } from '../..';
 import { authCategoryName, categoryName } from '../../constants';
@@ -112,7 +106,7 @@ export async function headlessUpdateStorage(context: $TSContext, storageRequest:
       throw error;
     }
 
-    await updateS3StorageArtifacts(context, storageRequest, storageResource);
+    await updateS3StorageArtifacts(context, storageRequest);
   } else if (storageRequest.serviceModification.serviceName === ServiceName.DynamoDB) {
     const error = new Error('Headless support for DynamoDB resources is not yet implemented.');
     await context.usageData.emitError(error);
@@ -221,7 +215,7 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
   }
 }
 
-async function updateS3StorageArtifacts(context: $TSContext, updateStorageRequest: UpdateStorageRequest, _storageResource: $TSAny) {
+async function updateS3StorageArtifacts(context: $TSContext, updateStorageRequest: UpdateStorageRequest) {
   const lambdaConfig = updateStorageRequest.serviceModification.lambdaTrigger;
   const storageInput: S3UserInputs = await buildS3UserInputFromHeadlessUpdateStorageRequest(context, updateStorageRequest);
   const allowUnauthenticatedIdentities = storageInput.guestAccess && storageInput.guestAccess.length > 0;

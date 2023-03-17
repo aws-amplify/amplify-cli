@@ -44,7 +44,7 @@ describe('amplify auth migration b', () => {
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);
     const authResourceName = Object.keys(meta.auth).filter((resourceName) => meta.auth[resourceName].service === 'Cognito')[0];

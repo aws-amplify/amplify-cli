@@ -23,7 +23,7 @@ app.get('/password', (req, res, next) => {
 });
 
 // Error middleware must be defined last
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.message);
   if (!err.statusCode) err.statusCode = 500; // If err has no specified error code, set error code to 'Internal Server Error (500)'
   res.status(err.statusCode).json({ message: err.message }).end();

@@ -51,7 +51,7 @@ function templateReplace(template: string, args: any = {}) {
   });
 }
 
-export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext, processValue) {
+export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::GetAtt expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
@@ -199,7 +199,7 @@ export function cfnImportValue(valNode, { params, conditions, resources, exports
   return exports[key] ?? importModelTableResolver(key, params.env);
 }
 
-export function cfnCondition(valNode, { conditions }: CloudFormationParseContext, processValue) {
+export function cfnCondition(valNode, { conditions }: CloudFormationParseContext) {
   if (typeof valNode !== 'string') {
     throw new Error(`Condition should be a string value, instead got ${JSON.stringify(valNode)}`);
   }

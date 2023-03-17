@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { print } from './print';
 import { CLOUD_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ViewResourceTableParams } from 'amplify-cli-core';

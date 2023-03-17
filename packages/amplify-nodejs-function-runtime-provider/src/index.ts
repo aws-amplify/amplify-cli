@@ -1,4 +1,4 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import { buildResource } from './utils/legacyBuild';
 import { packageResource } from './utils/legacyPackage';
 import { invoke } from './utils/invoke';

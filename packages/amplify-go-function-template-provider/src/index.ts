@@ -1,8 +1,8 @@
-import { FunctionTemplateContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionTemplateContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 
 import { provideHelloWorld } from './providers/helloWorldProvider';
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = (context) => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = () => {
   return {
     contribute: (request) => {
       switch (request.selection) {

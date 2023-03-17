@@ -31,6 +31,10 @@
       "inputs": ["default", "^production"],
       "dependsOn": ["^build"]
     },
+    "build-tests": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build", "^build"]
+    },
     "prepare": {
       "inputs": ["default", "^default"],
       "dependsOn": ["^prepare"]

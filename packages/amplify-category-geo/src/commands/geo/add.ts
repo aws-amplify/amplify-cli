@@ -1,9 +1,9 @@
 import { chooseServiceMessageAdd, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { addResource } from '../../provider-controllers';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const name = 'add';
 

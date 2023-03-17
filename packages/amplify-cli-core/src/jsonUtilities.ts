@@ -73,7 +73,7 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    const writeFileOptions: { encoding: string; mode?: number } = { encoding: 'utf8', mode: options?.mode };
+    const writeFileOptions: { encoding: BufferEncoding; mode?: number } = { encoding: 'utf8', mode: options?.mode };
     if (mergedOptions.secureFile) {
       writeFileOptions.mode = 0o600;
     }
@@ -124,7 +124,7 @@ export class JSONUtilities {
       minify?: boolean;
       orderedKeys?: boolean; // if true, will print object keys in alphabetical order
     },
-  ): string | undefined => {
+  ): string => {
     if (!data) {
       throw new Error("'data' argument missing");
     }

@@ -2,9 +2,9 @@ import { parseValue } from '../field-parser';
 import { CloudFormationProcessedResourceResult } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 import { isWindowsPlatform } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
-export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
+export function dynamoDBResourceHandler(resourceName, resource) {
   const tableName = resourceName;
   const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map((gsi) => {
     const p = { ...gsi };
@@ -149,11 +149,7 @@ export type AppSyncAPIKeyProcessedResource = CloudFormationProcessedResourceResu
   ApiKey: string;
   Ref: string;
 };
-export function appSyncAPIKeyResourceHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-): AppSyncAPIKeyProcessedResource {
+export function appSyncAPIKeyResourceHandler(): AppSyncAPIKeyProcessedResource {
   // eslint-disable-next-line spellcheck/spell-checker
   const value = 'da2-fakeApiId123456';
   // eslint-disable-next-line spellcheck/spell-checker

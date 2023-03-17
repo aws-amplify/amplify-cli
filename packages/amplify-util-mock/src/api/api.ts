@@ -32,7 +32,7 @@ import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -129,8 +129,12 @@ export class APITest {
       );
     }
 
-    await this.appSyncSimulator.stop();
-    this.resolverOverrideManager.stop();
+    if (this.appSyncSimulator) {
+      await this.appSyncSimulator.stop();
+    }
+    if (this.resolverOverrideManager) {
+      this.resolverOverrideManager.stop();
+    }
   }
 
   private async runTransformer(context, parameters = {}) {
@@ -234,7 +238,6 @@ export class APITest {
   }
 
   private async ensureDDBTables(config) {
-    const tables = config.tables.map((t) => t.Properties);
     return await createAndUpdateTable(this.ddbClient, config);
   }
 
@@ -369,11 +372,9 @@ export class APITest {
   private async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
     const { api: apis = {} } = currentMeta;
-    let appSyncApi = null;
     let name = null;
     Object.entries(apis).some((entry: any) => {
       if (entry[1].service === 'AppSync' && entry[1].providerPlugin === 'awscloudformation') {
-        appSyncApi = entry[1];
         name = entry[0];
         return true;
       }
@@ -516,7 +517,7 @@ export class APITest {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
-      ignored: '**/build/**',
+      ignored: ['**/build/**', '**/*db-journal'],
       awaitWriteFinish: true,
     });
   }

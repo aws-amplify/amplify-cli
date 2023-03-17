@@ -1,9 +1,9 @@
-import { FunctionTemplateContributorFactory, FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { FunctionTemplateContributorFactory, FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import fs from 'fs-extra';
 
 const pathToTemplateFiles = `${__dirname}/../resources/hello-world`;
 
-export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = (context) => {
+export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = () => {
   return {
     contribute: (request) => {
       const selection = request.selection;

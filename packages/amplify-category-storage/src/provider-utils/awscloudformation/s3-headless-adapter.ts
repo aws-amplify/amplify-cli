@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import {
   AddS3ServiceConfiguration,
   AddStorageRequest,

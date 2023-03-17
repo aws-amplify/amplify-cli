@@ -23,7 +23,7 @@ import { getTemplateMappings } from '../provider-controllers';
  * creates amplify geofence collection resource
  */
 export const createGeofenceCollectionResource = async (context: $TSContext, parameters: GeofenceCollectionParameters): Promise<void> => {
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const geofenceCollectionStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', {
@@ -53,7 +53,7 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
  * modify amplify geofence resource
  */
 export const modifyGeofenceCollectionResource = async (context: $TSContext, parameters: GeofenceCollectionParameters): Promise<void> => {
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const geofenceCollectionStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', {

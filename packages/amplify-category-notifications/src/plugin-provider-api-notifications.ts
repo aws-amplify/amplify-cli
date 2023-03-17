@@ -79,7 +79,6 @@ export const notificationsAPIRemoveApp = async (context: $TSContext): Promise<$T
 
 /**
  * Returns all the allowed channels for the Notifications App.
- * @param _context amplify cli context
  * @returns Names of all available notifications channels
  */
-export const notificationsAPIGetAvailableChannelNames = async (__context: $TSContext): Promise<string[]> => getAvailableChannels();
+export const notificationsAPIGetAvailableChannelNames = async (): Promise<string[]> => getAvailableChannels();

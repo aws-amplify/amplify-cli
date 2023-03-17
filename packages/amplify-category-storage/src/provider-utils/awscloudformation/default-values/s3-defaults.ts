@@ -17,5 +17,3 @@ export const getAllDefaults = (project: $TSAny, shortId: string): S3UserInputs =
 
   return defaults;
 };
-
-type Project = { projectConfig: { projectName: string } };

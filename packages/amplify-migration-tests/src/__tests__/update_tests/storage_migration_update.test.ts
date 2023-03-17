@@ -110,7 +110,7 @@ describe('amplify add/update storage(S3)', () => {
   it('init a project and add s3 bucket & update with new trigger', async () => {
     // init, add storage and push with local cli
     await initJSProjectWithProfileV4_52_0(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await addS3StorageWithAuthOnly(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     // update and push with new codebase

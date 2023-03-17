@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interface';
+import { FunctionParameters, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
@@ -401,7 +401,6 @@ export const migrate = (__: $TSContext, projectPath: string, resourceName: strin
   JSONUtilities.writeJson(cfnFilePath, newCfn);
 };
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const updateCFNFileForResourcePermissions = (
   resourceDirPath: string,
   functionParameters: Partial<FunctionParameters>,

@@ -2,7 +2,6 @@
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable jsdoc/require-jsdoc */
 const path = require('path');
 const Module = require('module');
 const fs = require('fs-extra');

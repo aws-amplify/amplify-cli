@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
-import GeoJSONSchema from '@aws-amplify/amplify-category-geo/schema/GeoJSONSchema.json';
+import GeoJSONSchema from './schema/GeoJSONSchema.json';
 import { v4 as uuid } from 'uuid';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { FeatureCollection, IdentifierOption } from './importParams';
 
 const MAX_VERTICES_NUM_PER_POLYGON = 1000;

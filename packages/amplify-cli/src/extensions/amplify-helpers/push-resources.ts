@@ -7,10 +7,11 @@ import {
   IAmplifyResource,
   stateManager,
   ManuallyTimedCodePath,
+  LocalEnvInfo,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from './get-env-info';
@@ -49,7 +50,7 @@ export const pushResources = async (
     const allEnvs = context.amplify.getAllEnvs();
 
     if (allEnvs.findIndex((env) => env === envName) !== -1) {
-      context.exeInfo = {};
+      context.exeInfo = { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
       context.exeInfo.forcePush = false;
 
       context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
@@ -167,6 +168,7 @@ export const pushResources = async (
           'PushResourcesFault',
           {
             message: err.message,
+            details: err.details,
             link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             resolution: isAuthError
               ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.'

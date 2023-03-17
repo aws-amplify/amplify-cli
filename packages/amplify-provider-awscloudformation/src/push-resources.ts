@@ -6,7 +6,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-await */
 /* eslint-disable consistent-return */
-/* eslint-disable jsdoc/require-description */
 /* eslint-disable no-continue */
 /* eslint-disable max-len */
 /* eslint-disable spellcheck/spell-checker */
@@ -41,7 +40,7 @@ import {
 } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -79,6 +78,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
+import { handleCloudFormationError } from './cloud-formation-error-handler';
 
 const logger = fileLogger('push-resources');
 
@@ -1233,24 +1233,4 @@ const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
 
     stateManager.setMeta(projectRoot, meta);
   }
-};
-
-const handleCloudFormationError = (err: Error): void => {
-  if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
-    return;
-  }
-
-  if (err?.name === 'ValidationError' && (err?.message ?? '').includes('_IN_PROGRESS state and can not be updated.')) {
-    throw new AmplifyError(
-      'DeploymentInProgressError',
-      {
-        message: 'Deployment is already in progress.',
-        resolution: 'Wait for the other deployment to finish and try again.',
-        code: (err as $TSAny).code,
-      },
-      err,
-    );
-  }
-
-  throw err;
 };

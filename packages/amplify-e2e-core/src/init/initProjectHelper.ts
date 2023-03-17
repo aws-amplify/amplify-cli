@@ -1,7 +1,6 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-/* eslint-disable jsdoc/require-jsdoc */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
@@ -491,4 +490,8 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
         }
       });
   });
+}
+
+export function initHeadless(cwd: string, envName: string, appId: string): Promise<void> {
+  return spawn(getCLIPath(), ['init', '--yes', '--envName', envName, '--appId', appId], { cwd, stripColors: true }).runAsync();
 }

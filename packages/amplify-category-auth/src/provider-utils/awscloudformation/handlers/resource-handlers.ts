@@ -1,5 +1,5 @@
 import { $TSAny, $TSObject, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
 import { authProviders } from '../assets/string-maps';
@@ -170,7 +170,7 @@ export const getUpdateAuthHandler = (context: AuthContext) => async (request: Se
     }
 
     await getPostUpdateAuthMetaUpdater(context)(cognitoCLIInputs.cognitoConfig.resourceName);
-    await getPostUpdateAuthMessagePrinter(context.print)(cognitoCLIInputs.cognitoConfig.resourceName);
+    await getPostUpdateAuthMessagePrinter()(cognitoCLIInputs.cognitoConfig.resourceName);
 
     if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning();

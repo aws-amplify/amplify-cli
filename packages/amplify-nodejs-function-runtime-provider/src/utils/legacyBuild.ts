@@ -1,5 +1,5 @@
 import { $TSObject, getPackageManager, JSONUtilities } from 'amplify-cli-core';
-import { BuildRequest, BuildResult, BuildType } from 'amplify-function-plugin-interface';
+import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import glob from 'glob';

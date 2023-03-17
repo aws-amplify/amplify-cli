@@ -1,5 +1,5 @@
 import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { run } from '../../commands/custom/update';
 import { CDK_SERVICE_NAME, CFN_SERVICE_NAME } from '../../utils/constants';
 import { updateCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';

@@ -45,6 +45,7 @@ module.exports = {
     '<rootDir>/packages/amplify-provider-awscloudformation',
     '<rootDir>/packages/amplify-storage-simulator',
     '<rootDir>/packages/amplify-util-mock',
+    '<rootDir>/scripts',
     // '<rootDir>/packages/amplify-velocity-template', // todo: enable after migration to Jest
   ],
 };

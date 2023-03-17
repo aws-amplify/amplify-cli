@@ -1,3 +1,31 @@
+export type LexSlotType = {
+  slotType: string;
+  slotTypeDescription?: string;
+  slotValues?: string[];
+  customType?: boolean;
+};
+
+export type LexSlot = {
+  name: string;
+  type: string;
+  prompt: string;
+  required: boolean;
+  customType: boolean;
+};
+
+export type LexSample = {
+  cancelMessage: string;
+  confirmationQuestion: string;
+  slots: LexSlot[];
+  utterances: string[];
+  intentName: string;
+  newSlotTypes: LexSlotType[];
+};
+
+export type LexSamples = {
+  [key: string]: LexSample[];
+};
+
 export const servicesMetadata = {
   Lex: {
     samples: {
@@ -131,7 +159,7 @@ export const servicesMetadata = {
             {
               slotType: 'FlowerTypes',
               slotTypeDescription: 'Types of flowers to pick up',
-              slotValues: ['tulips', 'lillies', 'roses'],
+              slotValues: ['tulips', 'lilies', 'roses'],
             },
           ],
         },
@@ -174,7 +202,7 @@ export const servicesMetadata = {
           ],
         },
       ],
-    },
+    } as LexSamples,
     defaultValuesFilename: 'lex-defaults.js',
     serviceWalkthroughFilename: 'lex-walkthrough.js',
     cfnFilename: 'lex-cloudformation-template.json.ejs',

@@ -72,7 +72,7 @@ describe('s3 import', () => {
     ogSettings = createStorageSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
+    await addAuthWithDefault(ogProjectRoot);
     await addS3StorageWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -83,7 +83,7 @@ describe('s3 import', () => {
     dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
+    await addAuthWithDefault(dummyOGProjectRoot);
     await addS3StorageWithSettings(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });
@@ -115,7 +115,7 @@ describe('s3 import', () => {
 
   it('status should reflect correct values for imported storage', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importS3(projectRoot, ogSettings.bucketName);
 
     let projectDetails = getStorageProjectDetails(projectRoot);
@@ -144,7 +144,7 @@ describe('s3 import', () => {
 
   it('imported storage with function and crud on storage should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importS3(projectRoot, ogSettings.bucketName);
 
     const functionName = randomizedFunctionName('s3impfunc');
@@ -204,7 +204,7 @@ describe('s3 import', () => {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importS3(projectRoot, ogSettings.bucketName);
 
     const functionName = randomizedFunctionName('s3impfunc');

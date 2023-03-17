@@ -145,7 +145,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   }
 
   // add Function for Custom Resource in Root stack
-  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  public renderCloudFormationTemplate = (): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
   generateUserPoolGroupResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
     props.groups.forEach((group) => {
@@ -393,5 +393,5 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
     throw new Error('Method not implemented.');
   }
 
-  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
+  public renderCloudFormationTemplate = (): string => JSONUtilities.stringify(this._toCloudFormation())!;
 }

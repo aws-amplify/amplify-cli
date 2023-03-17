@@ -1,4 +1,4 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { templateRoot } from '../utils/constants';
 import path from 'path';
 import { askEventSourceQuestions } from '../utils/eventSourceWalkthrough';

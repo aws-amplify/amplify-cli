@@ -2,7 +2,17 @@
 /* eslint-disable func-style */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSContext, $TSObject, AmplifyError, JSONUtilities, pathManager, stateManager, Tag, Template } from 'amplify-cli-core';
+import {
+  $TSContext,
+  $TSObject,
+  AmplifyError,
+  JSONUtilities,
+  LocalEnvInfo,
+  pathManager,
+  stateManager,
+  Tag,
+  Template,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
@@ -42,7 +52,7 @@ type ParamType = {
 export const run = async (context: $TSContext): Promise<void> => {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
-    context.exeInfo = context.exeInfo || {};
+    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
     /* eslint-disable-next-line spellcheck/spell-checker */

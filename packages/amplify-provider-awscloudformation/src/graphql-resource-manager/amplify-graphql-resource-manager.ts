@@ -243,7 +243,7 @@ export class GraphQLResourceManager {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private gsiManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject): any => {
+  private gsiManagement = (diffs: DiffChanges, currentState: DiffableProject, nextState: DiffableProject): any => {
     const gsiChanges = _.filter(diffs, (diff) => diff.path.includes('GlobalSecondaryIndexes'));
 
     const tableWithGSIChanges = _.uniqBy(gsiChanges, (diff) => diff.path?.slice(0, 3).join('/')).map((gsiChange) => {

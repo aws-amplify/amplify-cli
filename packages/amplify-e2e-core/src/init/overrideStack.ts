@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 // eslint-disable-next-line import/no-cycle
 import { nspawn as spawn, getCLIPath } from '..';
 

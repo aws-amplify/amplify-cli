@@ -1,5 +1,5 @@
 import { $TSContext, CommandInfo, runHelp, commandsInfo, lookUpCommand, lookUpSubcommand, parseHelpCommands } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 describe('amplify help functions: ', () => {
   printer.info = jest.fn();
@@ -237,7 +237,7 @@ describe('amplify help functions: ', () => {
       },
     } as unknown as $TSContext;
     runHelp(mockContext, commandsInfo);
-    expect(printer.info).toBeCalledWith('  ' + 'amplify mock <subcommand>');
+    expect(printer.info).toBeCalledWith('  ' + 'amplify mock [subcommand]');
   });
 
   it('run help subcommand (mock function)', () => {
@@ -256,6 +256,6 @@ describe('amplify help functions: ', () => {
       },
     } as unknown as $TSContext;
     runHelp(mockContext, commandsInfo);
-    expect(printer.info).toBeCalledWith('  ' + 'amplify mock function [flags]');
+    expect(printer.info).toBeCalledWith('  ' + 'amplify mock function [--event <path-to-json-file>] [--timeout <number-of-seconds>]');
   });
 });

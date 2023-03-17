@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import { matchRegex, alphanumeric, and, maxLength, minLength, printer, prompter } from 'amplify-prompts';
+import { matchRegex, alphanumeric, and, maxLength, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   getRoleAccessDefaultValues,
   S3AccessType,
@@ -88,7 +88,7 @@ export async function askResourceNameQuestion(context: $TSContext, defaultValues
   return resourceName;
 }
 
-export async function askBucketNameQuestion(context: $TSContext, defaultValues: S3UserInputs, resourceName: string): Promise<string> {
+export async function askBucketNameQuestion(context: $TSContext, defaultValues: S3UserInputs): Promise<string> {
   const message = 'Provide bucket name:';
   const onErrorMsg =
     'Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character';
@@ -233,11 +233,7 @@ export async function askGroupPermissionQuestion(groupName: string, context: $TS
   return permissions;
 }
 
-export async function askUserPoolGroupSelectionUntilPermissionSelected(
-  userPoolGroupList: string[],
-  context: $TSContext,
-  userInput: S3UserInputs,
-): Promise<string> {
+export async function askUserPoolGroupSelectionUntilPermissionSelected(userPoolGroupList: string[]): Promise<string> {
   let permissionSelected = 'Auth/Guest Users';
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     do {
@@ -270,7 +266,7 @@ export async function askGroupOrIndividualAccessFlow(
 ): Promise<S3UserInputs> {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     //Ask S3 walkthrough questions - UserPool Group selection questions
-    const permissionSelected = await askUserPoolGroupSelectionUntilPermissionSelected(userPoolGroupList, context, cliInputs);
+    const permissionSelected = await askUserPoolGroupSelectionUntilPermissionSelected(userPoolGroupList);
 
     if (permissionSelected === UserPermissionTypeOptions.BOTH || permissionSelected === UserPermissionTypeOptions.AUTH_GUEST_USERS) {
       //Build userInputs for S3 Auth/Guest users

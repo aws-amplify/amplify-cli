@@ -16,7 +16,7 @@ import {
 } from 'amplify-cli-core';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   invokeAnalyticsResourceToggleNotificationChannel,
   invokeAnalyticsPinpointHasInAppMessagingPolicy,
@@ -70,13 +70,8 @@ export const configure = async (context: $TSContext): Promise<IChannelAPIRespons
 
 /**
  * Inline enable for In-App-Messaging channel
- * @param __context amplify cli context
- * @param __pinpointAppStatus Pinpoint app status
  */
-const invokeInlineEnableInAppMessagingChannel = (
-  __context: $TSContext,
-  __pinpointAppStatus: IPinpointAppStatus,
-): IPluginCapabilityAPIResponse => {
+const invokeInlineEnableInAppMessagingChannel = (): IPluginCapabilityAPIResponse => {
   throw new AmplifyFault('ConfigurationFault', {
     message: 'Inline enable not supported for In-App Messaging channel.',
     details:
@@ -102,7 +97,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
     const enableInAppMsgAPIResponse =
       pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM ||
       !(await invokeAnalyticsPinpointHasInAppMessagingPolicy(context))
-        ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
+        ? invokeInlineEnableInAppMessagingChannel()
         : await invokeAnalyticsResourceToggleNotificationChannel(
             context,
             AmplifySupportedService.PINPOINT,

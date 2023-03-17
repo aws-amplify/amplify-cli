@@ -1,4 +1,4 @@
-import { FunctionTemplateContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionTemplateContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 
 import { provideHelloWorld } from './providers/helloWorldProvider';
 import { provideCrud } from './providers/crudProvider';

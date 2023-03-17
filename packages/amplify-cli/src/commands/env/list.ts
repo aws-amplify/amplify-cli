@@ -1,5 +1,5 @@
 import { JSONUtilities } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
 
 /**

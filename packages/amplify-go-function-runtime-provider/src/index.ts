@@ -1,4 +1,4 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import { checkDependencies, packageResource, buildResource } from './runtime';
 import { localInvoke } from './localinvoke';
 import { relativeShimSrcPath } from './constants';
@@ -20,7 +20,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         },
       });
     },
-    checkDependencies: (runtimeValue) => checkDependencies(runtimeValue),
+    checkDependencies: () => checkDependencies(),
     package: (request) => packageResource(request, context),
     build: buildResource,
     invoke: (request) => localInvoke(request, context),

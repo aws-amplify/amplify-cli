@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
@@ -23,7 +25,7 @@ export type $TSContext = {
     migrationInfo: MigrationInfo;
     projectHasMobileHubResources: boolean;
     prompt: $TSAny;
-    exeInfo: $TSAny;
+    exeInfo: EnvironmentInfo & InputParameters & PinpointInfo & ProjectInfo;
     input: CommandLineInput;
     parameters: ContextParameters;
     usageData: IUsageData;
@@ -118,7 +120,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidOverrideError' | 'InvalidStackError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'UnsupportedLockFileTypeError' | 'MockProcessError' | 'SearchableMockUnsupportedPlatformError' | 'SearchableMockUnavailablePortError' | 'SearchableMockProcessError' | 'UserInputError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
 
 // @public (undocumented)
 export enum AmplifyEvent {
@@ -226,7 +228,7 @@ export class AmplifyFault extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyFaultType = 'AmplifyBackupFault' | 'AnalyticsCategoryFault' | 'AuthCategoryFault' | 'BackendDeleteFault' | 'BackendPullFault' | 'ConfigurationFault' | 'ConfigurationFault' | 'DeploymentFault' | 'DeploymentStateUploadFault' | 'LockFileNotFoundFault' | 'LockFileParsingFault' | 'MockProcessFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelInAppMessagingFault' | 'NotificationsChannelSmsFault' | 'NotImplementedFault' | 'ParameterDownloadFault' | 'ParameterUploadFault' | 'PluginNotLoadedFault' | 'ProjectDeleteFault' | 'ParametersDeleteFault' | 'ProjectInitFault' | 'PullBackendFault' | 'PushResourcesFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'ZipExtractFault';
+export type AmplifyFaultType = 'AmplifyBackupFault' | 'AnalyticsCategoryFault' | 'AuthCategoryFault' | 'BackendDeleteFault' | 'BackendPullFault' | 'ConfigurationFault' | 'ConfigurationFault' | 'DeploymentFault' | 'DeploymentStateUploadFault' | 'FileNotFoundFault' | 'LockFileNotFoundFault' | 'LockFileParsingFault' | 'MockProcessFault' | 'NotificationsChannelAPNSFault' | 'NotificationsChannelEmailFault' | 'NotificationsChannelFCMFault' | 'NotificationsChannelInAppMessagingFault' | 'NotificationsChannelSmsFault' | 'NotImplementedFault' | 'ParameterDownloadFault' | 'ParameterUploadFault' | 'PluginNotLoadedFault' | 'ProjectDeleteFault' | 'ParametersDeleteFault' | 'ProjectInitFault' | 'PullBackendFault' | 'PushResourcesFault' | 'ResourceExportFault' | 'ResourceNotFoundFault' | 'ResourceNotReadyFault' | 'ResourceRemoveFault' | 'RootStackNotFoundFault' | 'ServiceCallFault' | 'SnsSandboxModeCheckFault' | 'TimeoutFault' | 'TriggerUploadFault' | 'UnexpectedS3Fault' | 'UnknownFault' | 'UnknownNodeJSFault' | 'ZipExtractFault';
 
 // @public (undocumented)
 export enum AmplifyFrontend {
@@ -527,7 +529,7 @@ export type CommandLineInput = {
     plugin?: string;
     command: string;
     subCommands?: string[];
-    options?: CLIGlobalFlags & Record<string, any>;
+    options?: CLIGlobalFlags & Record<string, $TSAny>;
 };
 
 // @public (undocumented)
@@ -749,6 +751,13 @@ export class DiagnoseReportUploadError extends Error {
 }
 
 // @public (undocumented)
+type EnvironmentInfo = {
+    existingLocalEnvInfo?: LocalEnvInfo;
+    isNewEnv?: boolean;
+    sourceEnvName?: string;
+};
+
+// @public (undocumented)
 export class EnvVarFormatError extends Error {
     constructor(variableName: string);
 }
@@ -767,6 +776,16 @@ export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+
+declare namespace ExeInfo {
+    export {
+        EnvironmentInfo,
+        InputParameters,
+        PinpointInfo,
+        ProjectInfo
+    }
+}
+export { ExeInfo }
 
 // @public (undocumented)
 export const exitOnNextTick: (code: number) => void;
@@ -1014,8 +1033,8 @@ export type IAuthResource = IAmplifyResource;
 // @public (undocumented)
 export type IContextFilesystem = {
     remove: (targetPath: string) => void;
-    read: (targetPath: string, encoding?: string) => $TSAny;
-    write: (targetPath: string, data: unknown) => void;
+    read: (targetPath: string, encoding?: BufferEncoding) => $TSAny;
+    write: (targetPath: string, data: string | NodeJS.ArrayBufferView) => void;
     exists: (targetPath: string) => boolean;
     isFile: (targetPath: string) => boolean;
     path: (...pathParts: string[]) => string;
@@ -1132,6 +1151,13 @@ export interface INotificationsResourceMeta {
 
 // @public (undocumented)
 export type InputOptions = Record<string, string | boolean>;
+
+// @public (undocumented)
+type InputParameters = {
+    forcePush?: boolean;
+    iterativeRollback?: boolean;
+    restoreBackend?: boolean;
+};
 
 // @public (undocumented)
 export class InvalidSubCommandError extends Error {
@@ -1308,7 +1334,7 @@ export class JSONUtilities {
     static stringify: (data: unknown, options?: {
         minify?: boolean;
         orderedKeys?: boolean;
-    }) => string | undefined;
+    }) => string;
     // (undocumented)
     static writeJson: (fileName: string, data: unknown, options?: {
         mode?: number;
@@ -1324,7 +1350,7 @@ export type LocalAwsInfo = {
 };
 
 // @public (undocumented)
-export type LocalEnvInfo = Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName'>;
+export type LocalEnvInfo = Required<Pick<ProjectSettings, 'projectPath' | 'defaultEditor' | 'envName' | 'noUpdateBackend'>>;
 
 // @public (undocumented)
 export function lookUpCommand(commandsInfo: Array<CommandInfo>, commandName: string): CommandInfo | undefined;
@@ -1595,6 +1621,13 @@ export class PathManager {
 export const pathManager: PathManager;
 
 // @public (undocumented)
+type PinpointInfo = {
+    pinpointApp?: $TSAny;
+    pinpointClient?: $TSAny;
+    pinpointInputParams?: $TSAny;
+};
+
+// @public (undocumented)
 type Plugin_2 = {
     name: string;
     directory: string;
@@ -1736,19 +1769,36 @@ export { print_2 as print }
 export type ProjectConfig<T extends string = ''> = Pick<ProjectSettings, 'frontend' | 'version' | 'providers' | 'projectPath' | 'defaultEditor' | 'frontendHandler'> & Record<T, string>;
 
 // @public (undocumented)
+type ProjectInfo = {
+    amplifyMeta?: $TSAny;
+    awsConfigInfo?: $TSAny;
+    backendConfig?: $TSAny;
+    existingLocalAwsInfo?: $TSAny;
+    existingProjectConfig?: $TSAny;
+    existingTeamProviderInfo?: $TSAny;
+    isNewProject?: boolean;
+    inputParams: $TSObject;
+    localEnvInfo: LocalEnvInfo;
+    projectConfig?: $TSAny;
+    serviceMeta?: $TSAny;
+    teamProviderInfo?: $TSAny;
+};
+
+// @public (undocumented)
 export const projectNotInitializedError: () => AmplifyError;
 
 // @public (undocumented)
 export type ProjectSettings = {
     frontend?: string;
     editor?: string;
-    envName?: string;
+    envName: string;
     framework?: string;
     version?: string;
     providers?: string[];
     projectPath?: string;
     defaultEditor?: string;
     frontendHandler?: unknown;
+    noUpdateBackend?: boolean;
 };
 
 // @public (undocumented)
@@ -2140,7 +2190,7 @@ export function yellow(message: string): void;
 
 // Warnings were encountered during analysis:
 //
-// src/types.ts:17:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
+// src/types.ts:18:3 - (ae-forgotten-export) The symbol "AmplifyToolkit" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

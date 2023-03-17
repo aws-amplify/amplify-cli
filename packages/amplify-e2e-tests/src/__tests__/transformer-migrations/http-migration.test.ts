@@ -20,7 +20,7 @@ describe('transformer @http migration test', () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
   });
 
   afterEach(async () => {

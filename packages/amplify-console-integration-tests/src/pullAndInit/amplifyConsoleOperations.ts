@@ -14,7 +14,7 @@ export function getConfiguredCFNClient() {
 }
 
 //delete all existing amplify console projects
-export async function deleteAllAmplifyProjects(amplifyClient?: any) {
+export async function deleteAllAmplifyProjects(amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -24,7 +24,7 @@ export async function deleteAllAmplifyProjects(amplifyClient?: any) {
   } while (token);
 }
 
-export async function deleteAmplifyStack(stackName: string, cfnClient?: any) {
+export async function deleteAmplifyStack(stackName: string, cfnClient?: CloudFormation) {
   if (!cfnClient) cfnClient = getConfiguredCFNClient();
   try {
     await cfnClient.deleteStack({ StackName: stackName }).promise();
@@ -61,7 +61,7 @@ export function generateBackendEnvParams(appId: string, projectName: string, env
   return { appId, envName, stackName, deploymentBucketName };
 }
 
-export async function createConsoleApp(projectName: string, amplifyClient?: any) {
+export async function createConsoleApp(projectName: string, amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -74,7 +74,7 @@ export async function createConsoleApp(projectName: string, amplifyClient?: any)
   return createAppResponse.app.appId;
 }
 
-export async function deleteConsoleApp(appId: string, amplifyClient?: any) {
+export async function deleteConsoleApp(appId: string, amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -88,7 +88,7 @@ export async function deleteConsoleApp(appId: string, amplifyClient?: any) {
   }
 }
 
-export async function createBackendEnvironment(backendParams: any, amplifyClient?: any) {
+export async function createBackendEnvironment(backendParams: any, amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }

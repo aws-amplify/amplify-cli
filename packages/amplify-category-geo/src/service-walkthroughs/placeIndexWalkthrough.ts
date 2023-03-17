@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { merge } from '../service-utils/resourceUtils';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/placeIndexParams';
@@ -8,7 +7,7 @@ import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
-import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
+import { printer, formatter, prompter, alphanumeric } from '@aws-amplify/amplify-prompts';
 
 const searchServiceFriendlyName = getServiceFriendlyName(ServiceName.PlaceIndex);
 /**
@@ -21,7 +20,7 @@ export const createPlaceIndexWalkthrough = async (
   parameters: Partial<PlaceIndexParameters>,
 ): Promise<Partial<PlaceIndexParameters>> => {
   // get the place index name
-  parameters = merge(parameters, await placeIndexNameWalkthrough(context));
+  parameters = merge(parameters, await placeIndexNameWalkthrough());
 
   // get the access
   parameters = merge(parameters, await resourceAccessWalkthrough(context, parameters, ServiceName.PlaceIndex));
@@ -40,7 +39,7 @@ export const createPlaceIndexWalkthrough = async (
   return parameters;
 };
 
-export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<PlaceIndexParameters>> => {
+export const placeIndexNameWalkthrough = async (): Promise<Partial<PlaceIndexParameters>> => {
   let indexName;
   while (!indexName) {
     const [shortId] = uuid().split('-');

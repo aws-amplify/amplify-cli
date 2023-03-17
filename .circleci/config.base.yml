@@ -116,6 +116,19 @@ jobs:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
+  build_tests_standalone:
+    parameters:
+      os:
+        type: executor
+        default: l_xlarge
+    executor: l_xlarge
+    steps:
+      - checkout
+      - run: yarn config set script-shell $(which bash)
+      - run: yarn install
+      - run:
+          name: Build tests
+          command: yarn build-tests
   build_windows_workspace_for_e2e:
     parameters:
       os:
@@ -449,6 +462,9 @@ jobs:
           steps:
             - attach_workspace:
                 at: ~/.
+            - run:
+                name: Git enable long paths
+                command: git config --global core.longpaths true
       - when:
           condition:
             or:
@@ -913,6 +929,7 @@ workflows:
             branches:
               ignore:
                 - beta
+      - build_tests_standalone
       - build_windows_workspace_for_e2e:
           filters:
             branches:
@@ -1303,7 +1320,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+                  retry runE2eTest
                 no_output_timeout: 65m
       - when:
           condition:
@@ -1320,6 +1337,7 @@ commands:
                   setNpmRegistryUrlToLocal
                   changeNpmGlobalPath
                   amplify version
+                  cd packages/amplify-e2e-tests
                   retry runE2eTest
                 no_output_timeout: 65m
   scan_e2e_test_artifacts:

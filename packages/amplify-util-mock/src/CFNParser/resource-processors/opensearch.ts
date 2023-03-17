@@ -1,11 +1,6 @@
-import { CloudFormationParseContext } from '../types';
-import { CloudFormationResource, ProcessedOpenSearchDomain } from '../stack/types';
+import { ProcessedOpenSearchDomain } from '../stack/types';
 
-export const openSearchDomainHandler = (
-  resourceName: string,
-  resource: CloudFormationResource,
-  cfnContext: CloudFormationParseContext,
-): ProcessedOpenSearchDomain => {
+export const openSearchDomainHandler = (resourceName: string): ProcessedOpenSearchDomain => {
   return {
     cfnExposedAttributes: { Arn: 'arn', DomainArn: 'arn', DomainEndpoint: 'endpoint' },
     arn: `arn:aws:es:{aws-region}:{aws-account-number}:domain/${resourceName}`,

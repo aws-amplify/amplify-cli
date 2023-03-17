@@ -2,7 +2,7 @@
  * This module contains utility functions for dealing with the SecretDeltas object
  */
 
-import { removeSecret, retainSecret, SecretDelta, SecretDeltas } from 'amplify-function-plugin-interface';
+import { removeSecret, retainSecret, SecretDelta, SecretDeltas } from '@aws-amplify/amplify-function-plugin-interface';
 
 /**
  * Determines if the SecretDeltas have any existing secrets (aka they are not marked for removal)

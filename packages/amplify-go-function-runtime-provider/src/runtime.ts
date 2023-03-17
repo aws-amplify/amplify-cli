@@ -5,7 +5,7 @@ import {
   BuildRequest,
   BuildResult,
   BuildType,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
@@ -126,7 +126,7 @@ export const getGoVersion = (): SemVer => {
   throw new Error(`Invalid version string: ${versionOutput}`);
 };
 
-export const checkDependencies = async (_runtimeValue: string): Promise<CheckDependenciesResult> => {
+export const checkDependencies = async (): Promise<CheckDependenciesResult> => {
   // Check if go is in the path
   executablePath = which.sync(executableName, {
     nothrow: true,

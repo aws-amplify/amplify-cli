@@ -25,10 +25,10 @@ import {
   ReactUtilsStudioTemplateRenderer,
   ReactThemeStudioTemplateRendererOptions,
 } from '@aws-amplify/codegen-ui-react';
-import { printer } from 'amplify-prompts';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from 'amplify-cli-core';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
-import { AmplifyStudioClient } from '../../clients';
+import { ModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 
 const config = {
   module: ModuleKind.ES2020,
@@ -203,26 +203,17 @@ export const generateAmplifyUiBuilderUtilFile = (context: $TSContext, { hasForms
  * If models are available, they will be populated in the models field of the returned object.
  * If they're not available, it will return undefined
  */
-export const getAmplifyDataSchema = async (studioClient: AmplifyStudioClient): Promise<GenericDataSchema | undefined> => {
-  if (!studioClient.isGraphQLSupported) {
-    return undefined;
-  }
+export const getAmplifyDataSchema = async (context: $TSContext): Promise<GenericDataSchema | undefined> => {
   try {
-    const meta = stateManager.getMeta();
-    const resourceName = Object.entries(meta[AmplifyCategories.API]).find(
-      ([, value]) => (value as { service: string }).service === AmplifySupportedService.APPSYNC,
-    )?.[0];
-    if (resourceName) {
-      const model = await studioClient.getModels(resourceName);
-      if (model) {
-        const source = model.replace(model.substring(0, model.indexOf(`{`) - 1), ``).replace(/;/g, ``);
-        return getGenericFromDataStore(JSON.parse(source));
-      }
+    const localSchema = await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'getModelIntrospection', [context]);
+
+    if (!localSchema) {
+      printer.debug('Local schema not found');
+      return undefined;
     }
-    printer.debug(`Provided ResourceName: ${resourceName} did not yield Models.`);
-    return undefined;
-  } catch (error) {
-    printer.debug(error.toString());
+    return getGenericFromDataStore(localSchema as ModelIntrospectionSchema);
+  } catch (e) {
+    printer.debug(e.toString());
     return undefined;
   }
 };

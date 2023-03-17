@@ -43,5 +43,8 @@
     "semver": "^7.3.5",
     "xcode": "^2.1.0",
     "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1"
   }
 }
