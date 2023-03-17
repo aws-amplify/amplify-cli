@@ -2,24 +2,27 @@
 
 # set exit on error to true
 set -e
-
+function test {
+    localPath="$1"
+    echo hi $1
+}
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
 function storeCache {
     localPath="$1"
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
-    echo "writing cache to $s3Path"
+    echo writing cache to $s3Path
     # zip contents and upload to s3
     if ! (cd $localPath && tar czv . | aws s3 cp - $s3Path); then
-        echo "Something went wrong storing the cache."
+        echo Something went wrong storing the cache.
     fi
-    echo "done writing cache"
+    echo done writing cache
     cd $CODEBUILD_SRC_DIR
 }
 function loadCache {
     localPath="$1"
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
-    echo "loading cache from $s3Path"
+    echo loading cache from $s3Path
     # create directory if it doesn't exist yet
     mkdir -p $localPath
     # check if cache exists in s3
@@ -31,16 +34,16 @@ function loadCache {
     if ! (cd $localPath && aws s3 cp $s3Path - | tar xzv); then
         echo "Something went wrong fetching the cache. Continuing anyway."
     fi
-    echo "done loading cache"
+    echo done loading cache
     cd $CODEBUILD_SRC_DIR
 }
 function _setShell {
-    echo "Setting Shell"
+    echo Setting Shell
     yarn config set script-shell $(which bash)
 }
 function _buildLinux {
     _setShell()
-    echo "Linux Build"
+    echo Linux Build
     # yarn run production-build
     # copy [repo, .cache, and .ssh to s3]
     storeCache $CODEBUILD_SRC_DIR
@@ -48,33 +51,33 @@ function _buildLinux {
 }
 function _buildWindows {
     _setShell()
-    echo "Windows Build"
+    echo Windows Build
     yarn run production-build
     # copy [repo, .cache, and .ssh to s3]
 }
 function _test {
-    echo "Run Test"
+    echo Run Test
     # aws s3 cp s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/repo $CODEBUILD_SRC_DIR/repo
     # download [repo, .cache from s3]
     yarn test-ci
-    echo "collecting coverage"
+    echo collecting coverage
     yarn coverage
 }
 function _validateCDKVersion {
-    echo "Validate CDK Version"
+    echo Validate CDK Version
     # download [repo, .cache from s3]
     yarn ts-node .circleci/validate_cdk_version.ts
 }
 function _lint {
     # download [repo, .cache from s3]
-    echo "Linting"
+    echo Linting
     yarn lint-check
     yarn lint-check-package-json
     yarn prettier-check
 }
 function _verifyAPIExtract {
     # download [repo, .cache from s3]
-    echo "Verify API Extract"
+    echo Verify API Extract
     yarn verify-api-extract
 }
 function _verifyYarnLock {
@@ -84,7 +87,7 @@ function _verifyYarnLock {
 }
 function _verifyVersionsMatch {
     # download [repo, .cache, verdaccio-cache from s3]
-    echo "Verify Versions Match"
+    echo Verify Versions Match
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
@@ -107,25 +110,25 @@ function _publishToLocalRegistry {
     ./.circleci/publish.sh
     unsetNpmRegistryUrl
 
-    echo "Generate Change Log"
+    echo Generate Change Log
     git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
     
-    echo "Save new amplify Github tag"
+    echo Save new amplify Github tag
     node scripts/echo-current-cli-version.js > .amplify-pkg-version
     # copy [verdaccio-cache, changelog, pkgtag to s3]
 }
 function _uploadPkgBinaries {
     # download [repo, pkg-binaries, from s3]
-    echo "Consolidate binaries cache and upload"
+    echo Consolidate binaries cache and upload
     source .circleci/local_publish_helpers.sh
     uploadPkgCli
     # copy [repo/out to s3]
 }
 function _buildBinaries {
     # download [repo, yarn, verdaccio from s3]
-    echo "Start verdaccio and package CLI"
+    echo Start verdaccio and package CLI
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal

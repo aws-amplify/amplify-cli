@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - source ./shared-scripts.sh && test
       - source ./shared-scripts.sh && _buildLinux
   post_build:
     commands:
