@@ -327,6 +327,7 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            putNodeBinaryInPkgCache $(echo $linux_x64_14_binary_filename)
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -350,6 +351,8 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            putNodeBinaryInPkgCache $(echo $linux_x64_14_binary_filename)
+            putNodeBinaryInPkgCache $(echo $mac_x64_14_binary_filename)
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -373,6 +376,8 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            putNodeBinaryInPkgCache $(echo $linux_x64_14_binary_filename)
+            putNodeBinaryInPkgCache $(echo $win_x64_14_binary_filename)
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -396,6 +401,7 @@ jobs:
           name: Start verdaccio and package CLI
           command: |
             source .circleci/local_publish_helpers.sh
+            putNodeBinaryInPkgCache $(echo $linux_arm_14_binary_filename)
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
@@ -1023,15 +1029,23 @@ workflows:
             - build_pkg_binaries_win
             - build_pkg_binaries_arm
       - build_pkg_binaries_linux:
+          context:
+            - amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - build_pkg_binaries_macos:
+          context:
+            - amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - build_pkg_binaries_win:
+          context:
+            - amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - build_pkg_binaries_arm:
+          context:
+            - amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - verify_pkg_binaries:

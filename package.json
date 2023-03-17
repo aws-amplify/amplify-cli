@@ -157,6 +157,7 @@
     "**/jake/async": "^2.6.4",
     "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
-    "**/undici": "^5.8.0"
+    "**/undici": "^5.8.0",
+    "**/pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#0dad1a7d9406041a892aadf2a568693887a1d231"
   }
 }

@@ -3,6 +3,19 @@
 custom_registry_url=http://localhost:4873
 default_verdaccio_package=verdaccio@5.1.2
 
+# hard coding for now. these will not change frequently so it's not worth auomating
+export binaries_tag="v3.4"
+export linux_arm_14_binary_filename="node-v14.21.3-linux-arm64"
+export linux_x64_14_binary_filename="node-v14.21.3-linux-x64"
+export win_arm_14_binary_filename="node-v14.21.3-win-arm64"
+export win_x64_14_binary_filename="node-v14.21.3-win-x64"
+export mac_x64_14_binary_filename="node-v14.21.3-macos-x64"
+export linux_arm_18_binary_filename="node-v18.15.0-linux-arm64"
+export linux_x64_18_binary_filename="node-v18.15.0-linux-x64"
+export win_arm_18_binary_filename="node-v18.15.0-win-arm64"
+export win_x64_18_binary_filename="node-v18.15.0-win-x64"
+export mac_x64_18_binary_filename="node-v18.15.0-macos-x64"
+
 function startLocalRegistry {
     # Start local registry
     tmp_registry_log=$(mktemp)
@@ -293,4 +306,13 @@ function checkPackageVersionsInLocalNpmRegistry {
     else
         echo "Versions matched."
     fi
+}
+
+function putNodeBinaryInPkgCache {
+    binary_filename=$1
+    aws configure --profile=pkg-binaries=fetcher set aws_access_key_id $PKG_AWS_ACCESS_KEY
+    aws configure --profile=pkg-binaries=fetcher set aws_secret_access_key $PKG_AWS_SECRET_ACCESS_KEY
+    aws configure --profile=pkg-binaries=fetcher set aws_session_token $PKG_AWS_SESSION_TOKEN
+    fetched_binary_filename=${$(echo $binary_filename)/node/fetched} # substitute node for fetched
+    aws --profile=pkg-binaries=fetcher s3 cp s3://amplify-cli-pkg-fetch-nodejs-binaries/$(echo $binaries_tag)/$(echo $binary_filename) ~/.pkg-cache/$(echo $binaries_tag)/$(echo fetched_binary_filename)
 }
