@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { App } from 'aws-cdk-lib';
 import { GeofenceCollectionParameters } from './geofenceCollectionParams';

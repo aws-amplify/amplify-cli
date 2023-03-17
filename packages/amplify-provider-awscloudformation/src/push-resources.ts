@@ -87,6 +87,7 @@ const ApiServiceNameElasticContainer = 'ElasticContainer';
 
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
+const nestedStackTemplateGlobPattern = 'stacks/*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 export const defaultRootStackFileName = 'rootStackTemplate.json';
 export const rootStackFileName = 'root-cloudformation-stack.json';
@@ -700,7 +701,7 @@ const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
 /**
  *
  */
-export const getCfnFiles = (category: string, resourceName: string, options?: glob.IOptions) => {
+export const getCfnFiles = (category: string, resourceName: string, includeAllNestedStacks = false, options?: glob.IOptions) => {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
@@ -716,6 +717,16 @@ export const getCfnFiles = (category: string, resourceName: string, options?: gl
       ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
       ...options,
     });
+
+    if (includeAllNestedStacks) {
+      cfnFiles.push(
+        ...glob.sync(nestedStackTemplateGlobPattern, {
+          cwd: resourceBuildDir,
+          ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
+          ...options,
+        }),
+      );
+    }
 
     if (cfnFiles.length > 0) {
       return {
@@ -810,7 +821,7 @@ const createResourceObject = (
 const getCategoryResources = (file: string, resourceDir: string) => {
   const cloudFormationJsonPath = path.join(resourceDir, file);
   const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
-  const categoryResources = Object.keys(cfnTemplate.Resources);
+  const categoryResources = cfnTemplate.Resources ? Object.keys(cfnTemplate.Resources) : [];
   return categoryResources;
 };
 
@@ -821,6 +832,7 @@ type EventMap = {
   rootResources: { key: string; category: string }[];
   eventToCategories: Map<string, string>;
   categories: { name: string; size: number }[];
+  logicalResourceNames: string[];
 };
 
 /**
@@ -841,6 +853,7 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
   eventMap.rootResources = [];
   eventMap.eventToCategories = new Map();
   eventMap.categories = [];
+  eventMap.logicalResourceNames = [];
 
   // Type script throws an error unless I explicitly convert to string
   const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map((item) => `${item}`);
@@ -857,9 +870,10 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
   return eventMap;
 };
 
+// Retrieve cfn template files and build eventMap that is later used for showing deployment progress and error reporting
 const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, updatedResources: string[]) => {
-  // Getting corresponding cfn template files
-  const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
+  // Build part of eventMap that is used for showing event progress. Only uses first level nested stacks to keep the console uncluttered.
+  const { resourceDir, cfnFiles } = getCfnFiles(category, resource, false);
   cfnFiles.forEach((file) => {
     const categoryResources = getCategoryResources(file, resourceDir);
     // Mapping Resource events to categories.
@@ -869,6 +883,14 @@ const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, 
     if (updatedResources.includes(category)) {
       eventMap.categories.push({ name: `${category}-${resource}`, size: categoryResources.length });
     }
+  });
+
+  // Build part of EventMap that is used for error reporting. Get all resources from all nested stacks.
+  const { cfnFiles: allCfnFiles } = getCfnFiles(category, resource, true);
+  allCfnFiles.forEach((file) => {
+    const categoryResources = getCategoryResources(file, resourceDir);
+    // Adding all the resources
+    categoryResources.forEach((res) => eventMap.logicalResourceNames.push(res));
   });
 };
 

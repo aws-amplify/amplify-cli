@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { UserPoolGroupMetadata } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { updateUserPoolGroups } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
 import { createAdminAuthFunction } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { projectHasAuth } from '../../provider-utils/awscloudformation/utils/project-has-auth';
 import { getSupportedServices } from '../../provider-utils/supported-services';
 import * as path from 'path';

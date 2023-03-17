@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getSupportedServices } from '../../supported-services';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { ProviderUtils } from '../import/types';

@@ -80,7 +80,7 @@ export class PackageLockParser {
             this.dependenciesMap[packageName] = {};
             this.dependenciesMap[dependency][packageName] = lockFileDependenciesMap.dependencies[dependency];
           }
-          this.dfs(dependency, lockFileDependenciesMap, packageName);
+          this.dfs(dependency, lockFileDependenciesMap, packageName, new Set<string>());
         }
       }
     }
@@ -90,7 +90,11 @@ export class PackageLockParser {
   /**
    * traverses dependency tree
    */
-  private dfs = (dependency: string, lockFileDependenciesMap: PackageLock, dependencyToSearch: string): void => {
+  private dfs = (dependency: string, lockFileDependenciesMap: PackageLock, dependencyToSearch: string, visited: Set<string>): void => {
+    if (visited.has(dependency)) {
+      return;
+    }
+    visited.add(dependency);
     if (lockFileDependenciesMap.dependencies !== undefined) {
       const dependencyObj = lockFileDependenciesMap.dependencies[dependency];
       if (dependencyObj !== undefined && dependencyObj.requires !== undefined) {
@@ -103,7 +107,7 @@ export class PackageLockParser {
             return;
           }
           if (_.isEmpty(this.dependenciesMap[nestedDependency]?.[dependencyToSearch])) {
-            this.dfs(nestedDependency, lockFileDependenciesMap, dependencyToSearch);
+            this.dfs(nestedDependency, lockFileDependenciesMap, dependencyToSearch, visited);
           }
         }
       }

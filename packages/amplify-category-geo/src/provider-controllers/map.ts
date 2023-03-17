@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
 import { GeoServiceConfiguration, GeoServiceModification } from '@aws-amplify/amplify-headless-interface';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { createMapResource, modifyMapResource, getCurrentMapParameters } from '../service-utils/mapUtils';
 import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
