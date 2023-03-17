@@ -256,8 +256,6 @@ Object {
     "IdentityPoolRoleMap": Object {
       "DependsOn": Array [
         "IdentityPool",
-        "UserPoolClient",
-        "UserPoolClientWeb",
       ],
       "Properties": Object {
         "IdentityPoolId": Object {
