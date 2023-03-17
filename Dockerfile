@@ -25,6 +25,9 @@ RUN mkdir /home/circleci/.npm-global
 RUN mkdir /home/circleci/.npm-global/lib
 RUN sudo npm install -g create-react-app
 
+# Install Cypress dependencies
+RUN sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+
 # Install Python
 RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
 RUN sudo sudo apt-get update
