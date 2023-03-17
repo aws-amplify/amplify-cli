@@ -11,7 +11,8 @@ phases:
       - echo "cache savedv2" > cache-sample.txt
   build:
     commands:
-      # - yarn run production-build
+      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME --recursive
+      - aws s3 ls s3://$ARTIFACT_BUCKET_NAME/$CODEBUILD_BATCH_BUILD_IDENTIFIER --recursive
   post_build:
     commands:
       # - /bin/bash ./codebuild_specs/cache-store.sh

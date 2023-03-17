@@ -1,6 +1,5 @@
 version: 0.2
 phases:
-  install:
   pre_build:
     commands:
       - echo "listing files"
