@@ -3,7 +3,6 @@
 function storeCache {
     local localPath="$1"
     local s3Path="s3://$CODEBUILD_BUCKET/$CODEBUILD_BATCH_BUILD_IDENTIFIER/$localPath"
-    echo get_abs_filename
     echo "writing cache to $s3Path"
     # zip contents and upload to s3
     if ! (cd $localPath && tar czv . | aws s3 cp - $s3Path); then
@@ -37,7 +36,7 @@ function _setShell {
 function _buildLinux {
     _setShell()
     echo "Linux Build"
-    yarn run production-build
+    # yarn run production-build
     # copy [repo, .cache, and .ssh to s3]
     storeCache $CODEBUILD_SRC_DIR
     storeCache $HOME/.cache
