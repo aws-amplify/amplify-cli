@@ -28,7 +28,6 @@ export const nonInteractiveInitAttach = async (
   await execa(getCLIPath(), args, { cwd: projRoot });
 };
 
-
 /**
  * Executes a non-interactive init to create a new Project
  */
@@ -93,17 +92,17 @@ export const getAmplifyInitConfig = (projectName: string, envName: string): Ampl
  * Returns an frontend Config object of passed frontend type
  */
 
-export const getAmplifyFrontend = () : AmplifyFrontend => ({
-  frontend:    'javascript',
-  framework:   'react',
-  config:   getJavascriptConfig(),
+export const getAmplifyFrontend = (): AmplifyFrontend => ({
+  frontend: 'javascript',
+  framework: 'react',
+  config: getJavascriptConfig(),
 });
 
 const getJavascriptConfig = (): JavaScriptConfig => ({
-    BuildCommand:   'npm run build',
-    DistributionDir:   'testDist',
-    SourceDir:  'src',
-    StartCommand:  'npm run start'
+  BuildCommand: 'npm run build',
+  DistributionDir: 'testDist',
+  SourceDir: 'src',
+  StartCommand: 'npm run start',
 });
 
 /**
@@ -133,17 +132,17 @@ export type AmplifyInitConfig = {
 };
 
 type JavaScriptConfig = {
-  SourceDir :string;
-  DistributionDir : string;
-  BuildCommand : string;
-  StartCommand : string;
-}
+  SourceDir: string;
+  DistributionDir: string;
+  BuildCommand: string;
+  StartCommand: string;
+};
 
 type AmplifyFrontend = {
   frontend: string;
   framework: string;
   config: JavaScriptConfig;
-}
+};
 
 export type AwsProviderGeneralConfig = {
   configLevel: string;

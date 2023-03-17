@@ -5,7 +5,13 @@
  */
 
 import {
-  createNewProjectDir, deleteProject, deleteProjectDir, getAmplifyFrontend, getAmplifyInitConfig, getAwsProviderGeneralConfig, headlessInit
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getAmplifyFrontend,
+  getAmplifyInitConfig,
+  getAwsProviderGeneralConfig,
+  headlessInit,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('attach amplify to git-cloned project', () => {
@@ -23,7 +29,7 @@ describe('attach amplify to git-cloned project', () => {
 
   test('headless init works with general profile', async () => {
     // execute headless init
-    const awsProviderConfig =  getAwsProviderGeneralConfig();
+    const awsProviderConfig = getAwsProviderGeneralConfig();
     const javascriptFrontendConfig = getAmplifyFrontend();
     await headlessInit(projRoot, getAmplifyInitConfig(projectName, envName), javascriptFrontendConfig, awsProviderConfig);
   });
