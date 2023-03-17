@@ -1340,7 +1340,7 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   });
 }
 
-export function updateAuthAddUserGroupsAfterPull(
+export async function updateAuthAddUserGroupsAfterPull(
   projectDir: string,
   groupNames: string[],
   settings?: {
@@ -1351,43 +1351,41 @@ export function updateAuthAddUserGroupsAfterPull(
     return undefined;
   }
   const testingWithLatestCodebase = settings?.testingWithLatestCodebase || false;
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
 
-    chain
-      .wait('What do you want to do?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Select any user pool groups you want to delete:')
-      .sendCarriageReturn()
-      .wait('Do you want to add another User Pool Group')
-      .sendConfirmYes()
-      .wait('Provide a name for your user pool group')
-      .send(groupNames[0])
-      .sendCarriageReturn();
+  chain
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Select any user pool groups you want to delete:')
+    .sendCarriageReturn()
+    .wait('Do you want to add another User Pool Group')
+    .sendConfirmYes()
+    .wait('Provide a name for your user pool group')
+    .send(groupNames[0])
+    .sendCarriageReturn();
 
-    if (groupNames.length > 1) {
-      let index = 1;
-      while (index < groupNames.length) {
-        chain
-          .wait('Do you want to add another User Pool Group')
-          .sendConfirmYes()
-          .wait('Provide a name for your user pool group')
-          .send(groupNames[index++])
-          .sendCarriageReturn();
-      }
+  if (groupNames.length > 1) {
+    let index = 1;
+    while (index < groupNames.length) {
+      chain
+        .wait('Do you want to add another User Pool Group')
+        .sendConfirmYes()
+        .wait('Provide a name for your user pool group')
+        .send(groupNames[index++])
+        .sendCarriageReturn();
     }
+  }
 
-    chain
-      .wait('Do you want to add another User Pool Group')
-      .sendCarriageReturn()
-      .wait('Sort the user pool groups in order of preference')
-      .sendCarriageReturn()
-      .wait('"amplify publish" will build all your local backend and frontend resources')
-      .runAsync();
-  });
+  return await chain
+    .wait('Do you want to add another User Pool Group')
+    .sendCarriageReturn()
+    .wait('Sort the user pool groups in order of preference')
+    .sendCarriageReturn()
+    .wait('"amplify publish" will build all your local backend and frontend resources')
+    .runAsync();
 }
 
 export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserPoolOnlyWithOAuthSettings): Promise<void> {
