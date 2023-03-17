@@ -6,3 +6,7 @@ phases:
     commands:
       - source ./shared-scripts.sh && test
       - source ./shared-scripts.sh && _buildLinux
+
+cache:
+  paths:
+    - 'shared-scripts.sh'
