@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.0...@aws-amplify/amplify-e2e-core@4.8.1-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+
+
+
+
+
 # [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.1...@aws-amplify/amplify-e2e-core@4.8.0) (2023-03-13)
 
 

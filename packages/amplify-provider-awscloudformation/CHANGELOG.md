@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.3-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.2...@aws-amplify/amplify-provider-awscloudformation@8.0.3-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* bucket already exists error handling ([#12109](https://github.com/aws-amplify/amplify-cli/issues/12109)) ([e4cb68f](https://github.com/aws-amplify/amplify-cli/commit/e4cb68f2bde32459e4b33f833878a2c1c1b3088a))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+* Show cfn failure error details from api-category nested stack failures ([#12236](https://github.com/aws-amplify/amplify-cli/issues/12236)) ([dee004e](https://github.com/aws-amplify/amplify-cli/commit/dee004e9075dfc97cdaca7c7c004106b7c67922c))
+* stops cdk v1 warning for non cdk custom resource ([#12241](https://github.com/aws-amplify/amplify-cli/issues/12241)) ([6a3d08c](https://github.com/aws-amplify/amplify-cli/commit/6a3d08cc368383a14da9b261e1b9d2be444c44a9))
+
+
+
+
+
 ## [8.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.1...@aws-amplify/amplify-provider-awscloudformation@8.0.2) (2023-03-17)
 
 

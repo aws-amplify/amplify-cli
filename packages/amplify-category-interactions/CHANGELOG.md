@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.3-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.0.2...@aws-amplify/amplify-category-interactions@5.0.3-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+* remove default value from interactions intent and slot ([#12106](https://github.com/aws-amplify/amplify-cli/issues/12106)) ([05d748a](https://github.com/aws-amplify/amplify-cli/commit/05d748a9e1b5b1b9ef9b47bc07b7546b3ce06ae4))
+
+
+
+
+
 ## [5.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.0.1...@aws-amplify/amplify-category-interactions@5.0.2) (2023-03-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-interactions

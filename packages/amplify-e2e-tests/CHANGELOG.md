@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0...amplify-e2e-tests@4.0.1-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* broken build ([#12220](https://github.com/aws-amplify/amplify-cli/issues/12220)) ([8dad1f3](https://github.com/aws-amplify/amplify-cli/commit/8dad1f3386ddc74f1956da429c1f905ba3dcb4b3))
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* fix failing custom storage e2e test ([#12222](https://github.com/aws-amplify/amplify-cli/issues/12222)) ([b2ee7b6](https://github.com/aws-amplify/amplify-cli/commit/b2ee7b645f15f85d1f4e6e238c62c163e35d2f58))
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+* windows test failing on long paths ([#12229](https://github.com/aws-amplify/amplify-cli/issues/12229)) ([ddd9295](https://github.com/aws-amplify/amplify-cli/commit/ddd9295e2e084860c7d8b83487b36c5047865321))
+* windows test failing on long paths (typo in test) ([#12238](https://github.com/aws-amplify/amplify-cli/issues/12238)) ([b2a768a](https://github.com/aws-amplify/amplify-cli/commit/b2a768ae1a84bd2dc4cd8011d88226534aa45bf2))
+
+
+
+
+
 # [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.18.1...amplify-e2e-tests@4.0.0) (2023-03-13)
 
 

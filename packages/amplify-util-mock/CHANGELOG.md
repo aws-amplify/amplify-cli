@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.5-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.4...@aws-amplify/amplify-util-mock@5.0.5-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* shows the proper mock error when no appsync api exists ([#11976](https://github.com/aws-amplify/amplify-cli/issues/11976)) ([17a67c9](https://github.com/aws-amplify/amplify-cli/commit/17a67c9eb87d76baab2c5805da043ea46e2de4ac))
+* **util-mock:** fix chokidar.watch choking on mock db-journal ([#11658](https://github.com/aws-amplify/amplify-cli/issues/11658)) ([4aaab53](https://github.com/aws-amplify/amplify-cli/commit/4aaab5323cb276318c4950e4ea620212721ece62))
+
+
+
+
+
 ## [5.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.3...@aws-amplify/amplify-util-mock@5.0.4) (2023-03-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

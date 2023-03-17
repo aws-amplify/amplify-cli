@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.2-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.4.1...@aws-amplify/amplify-migration-tests@5.4.2-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* stops cdk v1 warning for non cdk custom resource ([#12241](https://github.com/aws-amplify/amplify-cli/issues/12241)) ([6a3d08c](https://github.com/aws-amplify/amplify-cli/commit/6a3d08cc368383a14da9b261e1b9d2be444c44a9))
+
+
+
+
+
 ## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.4.0...@aws-amplify/amplify-migration-tests@5.4.1) (2023-03-17)
 
 
