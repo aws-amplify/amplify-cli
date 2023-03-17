@@ -35,6 +35,11 @@ RUN sudo apt-get install -y \
   python3.8-distutils \
   python3-pip \
   libpython3-dev
+
+RUN sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
+RUN python3 --version
+RUN pip3 --version
+RUN which python3
 RUN pip3 install --user pipenv
 
 # Install AWS CLI
