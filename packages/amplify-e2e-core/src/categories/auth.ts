@@ -1340,7 +1340,12 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   });
 }
 
-export function updateAuthAddUserGroupsAfterPull(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
+export function updateAuthAddUserGroupsAfterPull(
+  projectDir: string,
+  groupNames: string[],
+  settings?: {
+    testingWithLatestCodebase: boolean,
+  }): Promise<void> {
   if (groupNames.length == 0) {
     return undefined;
   }

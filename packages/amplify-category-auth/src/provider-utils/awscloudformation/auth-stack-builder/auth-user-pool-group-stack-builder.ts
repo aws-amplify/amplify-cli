@@ -1,11 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import * as fs from 'fs-extra';
 import { Construct } from 'constructs';
 // eslint-disable-next-line import/no-cycle
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
