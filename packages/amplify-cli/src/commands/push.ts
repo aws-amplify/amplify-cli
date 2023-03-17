@@ -11,7 +11,7 @@ import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-
 /**
  * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
  */
-const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
+export const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
@@ -46,7 +46,7 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
 /**
  * Updates tracked files for auto updates in the build directory that will not be detected for 'amplify push'
  */
-const updateTrackedFiles = async (): Promise<void> => {
+export const updateTrackedFiles = async (): Promise<void> => {
   await updateCognitoTrackedFiles();
 };
 
@@ -61,7 +61,12 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
   if (context.parameters.options?.force) {
     context.exeInfo.forcePush = true;
   }
-  await syncCurrentCloudBackend(context);
+
+  // force flag ignores project status check
+  if (!context.exeInfo.forcePush) {
+    await syncCurrentCloudBackend(context);
+  }
+
   await updateTrackedFiles();
   return context.amplify.pushResources(context);
 };
