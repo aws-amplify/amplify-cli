@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
 function storeCache {
