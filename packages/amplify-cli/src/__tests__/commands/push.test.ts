@@ -24,6 +24,10 @@ describe('amplify push:', () => {
     },
   };
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('push run method should exist', () => {
     expect(pushCommandModule.run).toBeDefined();
   });
