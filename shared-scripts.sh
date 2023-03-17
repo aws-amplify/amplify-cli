@@ -13,7 +13,7 @@ function storeCache {
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
     echo writing cache to $s3Path
     # zip contents and upload to s3
-    if ! (cd $localPath && tar czv . | aws s3 cp - $s3Path); then
+    if ! (cd $localPath && tar cz . | aws s3 cp - $s3Path); then
         echo Something went wrong storing the cache.
     fi
     echo done writing cache
@@ -31,7 +31,7 @@ function loadCache {
         exit 0
     fi
     # load cache and unzip it
-    if ! (cd $localPath && aws s3 cp $s3Path - | tar xzv); then
+    if ! (cd $localPath && aws s3 cp $s3Path - | tar xz); then
         echo "Something went wrong fetching the cache. Continuing anyway."
     fi
     echo done loading cache
@@ -45,7 +45,7 @@ function _buildLinux {
     _setShell
     echo Linux Build
     # yarn run production-build
-    # copy [repo, .cache, and .ssh to s3]
+    # copy [repo, ~/.cache, and .ssh to s3]
     storeCache $CODEBUILD_SRC_DIR
     storeCache $HOME/.cache
 }
