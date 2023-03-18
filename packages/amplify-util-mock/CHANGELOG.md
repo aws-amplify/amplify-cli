@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2-node18.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.1...@aws-amplify/amplify-util-mock@5.0.2-node18.0) (2023-03-18)
+
+
+### Bug Fixes
+
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* shows the proper mock error when no appsync api exists ([#11976](https://github.com/aws-amplify/amplify-cli/issues/11976)) ([17a67c9](https://github.com/aws-amplify/amplify-cli/commit/17a67c9eb87d76baab2c5805da043ea46e2de4ac))
+* **util-mock:** fix chokidar.watch choking on mock db-journal ([#11658](https://github.com/aws-amplify/amplify-cli/issues/11658)) ([4aaab53](https://github.com/aws-amplify/amplify-cli/commit/4aaab5323cb276318c4950e4ea620212721ece62))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.0...@aws-amplify/amplify-util-mock@5.0.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

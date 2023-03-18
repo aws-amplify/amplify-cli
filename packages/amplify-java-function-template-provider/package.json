@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-function-template-provider",
-  "version": "1.5.16",
+  "version": "1.5.17-node18.0",
   "description": "JAVA templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2-node18.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.0.1...@aws-amplify/amplify-category-predictions@5.0.2-node18.0) (2023-03-18)
+
+
+### Bug Fixes
+
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.0.0...@aws-amplify/amplify-category-predictions@5.0.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-predictions

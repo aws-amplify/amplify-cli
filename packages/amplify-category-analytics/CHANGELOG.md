@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2-node18.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.1...@aws-amplify/amplify-category-analytics@5.0.2-node18.0) (2023-03-18)
+
+
+### Bug Fixes
+
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+* prevent analytics/notifications migration if there is not a pinpoint app added ([#12135](https://github.com/aws-amplify/amplify-cli/issues/12135)) ([3eb074a](https://github.com/aws-amplify/amplify-cli/commit/3eb074a1870bede1a75f8002cbc2f76b0b7de434))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.0...@aws-amplify/amplify-category-analytics@5.0.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-analytics
