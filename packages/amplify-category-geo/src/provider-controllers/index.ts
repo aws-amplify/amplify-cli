@@ -8,7 +8,7 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
+import { validateAddGeoRequest, validateUpdateGeoRequest } from '@aws-amplify/amplify-util-headless-input';
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { provider, ServiceName } from '../service-utils/constants';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';

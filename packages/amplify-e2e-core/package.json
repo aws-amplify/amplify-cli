@@ -22,8 +22,8 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
+    "@aws-amplify/amplify-headless-interface": "1.17.1",
     "amplify-cli-core": "4.0.0",
-    "amplify-headless-interface": "1.17.1",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
