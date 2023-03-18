@@ -33,6 +33,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
+  'src/__tests__/studio-modelgen.test.ts',
 ];
 /**
  * Most Windows tests only run on 'dev', except for this list of smoke tests.
