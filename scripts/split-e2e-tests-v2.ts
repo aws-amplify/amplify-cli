@@ -7,7 +7,6 @@ const RUN_SOLO = [
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/env-3.test.ts',
-  'src/__tests__/feature-flags.test.ts',
   'src/__tests__/geo-add-e.test.ts',
   'src/__tests__/geo-add-f.test.ts',
   'src/__tests__/geo-remove-1.test.ts',

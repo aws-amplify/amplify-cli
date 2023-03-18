@@ -1,5 +1,4 @@
 import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -44,30 +43,26 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     },
   };
   const originalStdoutWrite = process.stdout.write;
+  let tempStdoutWrite: fs.WriteStream = null;
   try {
     // overwrite project config with config that forces codegen to output js to a temp location
     stateManager.setProjectConfig(undefined, forceJSCodegenProjectConfig);
 
     // generateModels and generateModelIntrospection print confusing and duplicate output when executing these codegen paths
     // so pipe stdout to a file and then reset it at the end to suppress this output
-    printer.warn('WARN1');
     await fs.ensureDir(absoluteTempOutputDir);
-    printer.warn('WARN2 ' + absoluteTempOutputDir);
-    const tempStdoutWrite = fs.createWriteStream(path.join(absoluteTempOutputDir, 'temp-console-log.txt'));
-    printer.warn('WARN3');
+    tempStdoutWrite = fs.createWriteStream(path.join(absoluteTempOutputDir, 'temp-console-log.txt'));
     process.stdout.write = tempStdoutWrite.write.bind(tempStdoutWrite);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/models.js#L60
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
 
-    printer.warn('WARN4');
     // generateModelIntrospection expects --output-dir option to be set
     _.setWith(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
 
-    printer.warn('WARN5');
     const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
     const localSchemaJsPath = path.join(absoluteTempOutputDir, 'models', 'schema.js');
     const localModelIntrospectionPath = path.join(absoluteTempOutputDir, 'model-introspection.json');
@@ -82,16 +77,22 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     };
     // ==================== DO NOT MODIFY THIS MAP UNLESS YOU ARE 100% SURE OF THE IMPLICATIONS ====================
 
-    printer.warn('WARN6');
     await uploadCMSArtifacts(await S3.getInstance(context), cmsArtifactLocalToS3KeyMap);
-    printer.warn('WARN7');
   } finally {
-    printer.warn('WARN8');
     stateManager.setProjectConfig(undefined, originalProjectConfig);
-    printer.warn('WARN9');
     process.stdout.write = originalStdoutWrite;
+    if (tempStdoutWrite) {
+      await new Promise((resolve, reject) => {
+        tempStdoutWrite.close((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(null);
+          }
+        });
+      });
+    }
     await fs.remove(absoluteTempOutputDir);
-    printer.warn('WARN10');
   }
 };
 
