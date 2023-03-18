@@ -72,6 +72,8 @@ const WINDOWS_SMOKE_TESTS = [
   'src/__tests__/env-1.test.ts',
   // export and pull
   'src/__tests__/export-pull-a.test.ts',
+  // feature flags
+  'src/__tests__/feature-flags.test.ts',
   // functions
   'src/__tests__/function_10.test.ts',
   // notifications with function permissions
