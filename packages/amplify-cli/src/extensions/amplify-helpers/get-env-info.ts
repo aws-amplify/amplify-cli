@@ -1,5 +1,3 @@
-import { StackEvent } from 'aws-sdk/clients/cloudformation';
-import { Message } from './../../../../amplify-cli-core/lib/banner-message/index.d';
 import { $TSAny, AmplifyError, stateManager } from 'amplify-cli-core';
 
 /**
