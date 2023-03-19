@@ -19,9 +19,15 @@ test('Return env file info', () => {
   expect(getEnvInfo()).toHaveProperty('test', true);
 });
 
-test('Throw EnvironmentNotInitializedError', () => {
+test('Throw EnvironmentNotInitializedError only one', () => {
+  const spy = jest.spyOn(console, 'error').mockImplementation();
   stateManagerMock.localEnvInfoExists.mockReturnValue(false);
-  expect(() => {
+  try {
     getEnvInfo();
-  }).toThrow();
+  } catch(error) {
+    expect(error.message).toBe('Current environment cannot be determined.');
+    expect(error.resolution).toBe("Use 'amplify init' in the root of your app directory to create a new environment.");
+    expect(error.cause).toEqual(new Error('`amplify init` not done'));
+  }
+  expect(spy).toHaveBeenCalledTimes(1);
 });

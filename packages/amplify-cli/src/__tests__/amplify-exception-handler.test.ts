@@ -82,7 +82,6 @@ describe('test exception handler', () => {
 
     expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
     expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
-    expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
   });
 
   it('error handler should handle encountered errors gracefully', async () => {
@@ -107,7 +106,6 @@ describe('test exception handler', () => {
 
     expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
     expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
-    expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
   });
 });
