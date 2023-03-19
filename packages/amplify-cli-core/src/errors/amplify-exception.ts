@@ -10,6 +10,7 @@ export abstract class AmplifyException extends Error {
   public readonly details?: string;
   public readonly link?: string;
   public readonly code?: string;
+  public readonly cause?: Error;
 
   /**
    * You should use AmplifyError or AmplifyFault to throw an exception.
@@ -44,10 +45,11 @@ export abstract class AmplifyException extends Error {
     this.resolution = options.resolution;
     this.code = options.code;
     this.link = options.link ?? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url;
+    this.cause = options.cause;
   }
 
   toObject = (): object => {
-    const { name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack } = this;
+    const { name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack, cause } = this;
 
     return {
       errorName,
@@ -55,6 +57,7 @@ export abstract class AmplifyException extends Error {
       errorDetails,
       resolution,
       link,
+      cause,
       ...(process.argv.includes('--debug') ? { stack } : {}),
     };
   };
@@ -73,6 +76,7 @@ export type AmplifyExceptionOptions = {
   details?: string;
   resolution?: string;
   link?: string;
+  cause?: Error;
 
   // CloudFormation or NodeJS error codes
   code?: string;

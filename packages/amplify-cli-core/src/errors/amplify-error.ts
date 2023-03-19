@@ -20,5 +20,6 @@ export class AmplifyError extends AmplifyException {
    */
   constructor(name: AmplifyErrorType, options: AmplifyExceptionOptions, downstreamException?: Error) {
     super(name, 'ERROR', options, downstreamException);
+    this.stack = undefined;
   }
 }
