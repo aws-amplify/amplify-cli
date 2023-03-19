@@ -176,21 +176,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@2.9.0":
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.9.0.tgz#195127505651675ee836297bdeb73f5efdf994b6"
-  integrity sha512-p/1/S72zKbwLKu7oX5FpAgQS4dEze9188PgXxB/ulyppyCAtWSdO+slZk8l8MIyuBI5pt5cUFuW6qd1de71oVw==
+"@aws-amplify/codegen-ui-react@2.10.0":
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.10.0.tgz#fc2a584a36b5f274c24223b5a0cc99f85acf9e14"
+  integrity sha512-AjjgFhp7I7B3iofTKk1TnO23haahjjOQLq4N90JqKxThMEsufld2sBZGXFOqNh5Jowhy5eDmKFuogO8JixK/Gw==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.9.0"
+    "@aws-amplify/codegen-ui" "2.10.0"
     "@typescript/vfs" "~1.3.5"
     typescript "<=4.5.0"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.9.0":
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui/-/codegen-ui-2.9.0.tgz#2e3eb27f8095fa9c4965185d1012c3ce17b2a132"
-  integrity sha512-vxaG9H5mCuI1U7b8ibFbPfYnmoheowuFMQQXU3ZydGl60gh2cWtSdFNtrNOImu9f8J1GS1p47u9B8d+DUzpaXQ==
+"@aws-amplify/codegen-ui@2.10.0":
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/codegen-ui/-/codegen-ui-2.10.0.tgz#fc80bfb056dd4dcfc9ce6172e1958a9f2fb4bfbc"
+  integrity sha512-3Cp1wvGgzxi5QFOKjGOTwhyfRNVLhJgkNzMBDAUPXUPKAwYFwhOHDVaPHOFhejHPyISje4fQXO1VlzxrD6PVVA==
   dependencies:
     change-case "^4.1.2"
     yup "^0.32.11"
