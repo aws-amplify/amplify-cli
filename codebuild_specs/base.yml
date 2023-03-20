@@ -67,3 +67,10 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+    - identifier: run-e2e-tests
+      buildspec: codebuild_specs/run-e2e-tests.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_pkg_binaries_linux

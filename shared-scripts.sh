@@ -225,6 +225,7 @@ function _runE2ETestsLinux {
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
+    #should just fail here..
     cd packages/amplify-e2e-tests
     retry runE2eTest
 }
