@@ -8,7 +8,7 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { copySync, ensureDirSync, existsSync } from 'fs-extra';
 import { get } from 'lodash';

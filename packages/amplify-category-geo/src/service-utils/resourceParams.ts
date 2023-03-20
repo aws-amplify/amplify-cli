@@ -1,4 +1,4 @@
-import { ProviderContext } from 'amplify-cli-core';
+import { ProviderContext } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Parameters common to geo resources
