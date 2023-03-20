@@ -11,14 +11,14 @@ phases:
   pre_build:
     commands:
       - source ./shared_scripts.sh && _setShell
-      - yarn test
   build:
     commands:
-      - yarn production-build
       - yarn build-tests
+      - yarn production-build
       # Save cache after these are build in post build step
   post_build:
     commands:
+      - yarn test
       # - source ./shared_scripts.sh && storeCache
 cache:
   paths:
