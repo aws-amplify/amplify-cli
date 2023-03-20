@@ -1,5 +1,7 @@
 ---
 version: 0.2
+env:
+  shell: bash
 phases:
   install:
     runtime-versions:
@@ -7,8 +9,8 @@ phases:
     commands:
   pre_build:
     commands:
-      # - source ./shared_scripts.sh && _setShell
-      - yarn test
+      - source ./shared_scripts.sh && _setShell
+      - yarn
   build:
     commands:
       - yarn production-build
