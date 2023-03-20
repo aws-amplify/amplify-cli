@@ -1,5 +1,5 @@
-import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { category } from '../../constants';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { GeofenceCollectionParameters } from '../../service-utils/geofenceCollectionParams';

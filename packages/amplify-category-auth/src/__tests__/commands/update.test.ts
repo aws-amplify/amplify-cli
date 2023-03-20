@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as update from '../../commands/auth/update';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { AuthContext } from '../../context';

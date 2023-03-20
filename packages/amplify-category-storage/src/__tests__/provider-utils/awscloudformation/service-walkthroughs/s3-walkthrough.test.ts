@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, AmplifySupportedService, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as uuid from 'uuid';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
 import {

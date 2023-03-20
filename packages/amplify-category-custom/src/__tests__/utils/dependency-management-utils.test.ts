@@ -1,6 +1,6 @@
 import { $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import { glob } from 'glob';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as cdk from 'aws-cdk-lib';
 import {

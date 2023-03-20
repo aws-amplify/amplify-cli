@@ -1,5 +1,5 @@
 import { $TSContext, CommandInfo, runHelp, commandsInfo, lookUpCommand, lookUpSubcommand, parseHelpCommands } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 describe('amplify help functions: ', () => {
   printer.info = jest.fn();

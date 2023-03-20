@@ -1,5 +1,5 @@
 import { AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
+import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { reportError } from '../commands/diagnose';
 import { Context } from '../domain/context';
 import { init, handleException, handleUnhandledRejection } from '../amplify-exception-handler';

@@ -62,7 +62,7 @@ describe('CloudFormation', () => {
   });
 
   describe('filterFailedStackEvents', () => {
-    test('that it does not filter stack events that are in eventToCategories map', async () => {
+    test('that it does not filter stack events that are in logicalResourceNames list', async () => {
       const eventsWithFailure = [
         {
           StackId: 'testStackId1',
@@ -79,17 +79,15 @@ describe('CloudFormation', () => {
       ];
 
       const eventMap = {
-        rootResources: [],
-        eventToCategories: new Map(),
-        categories: [],
+        logicalResourceNames: [],
       };
-      // Only testLogicalResourceId1 is in the eventToCategories Map
-      eventMap.eventToCategories.set('testLogicalResourceId1', 'testLogicalResourceId1-value');
+      // Only testLogicalResourceId1 is in the logicalResourceNames list
+      eventMap.logicalResourceNames.push('testLogicalResourceId1');
       const cfn = await new CloudFormation();
       cfn.eventMap = eventMap;
       const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
 
-      // Only testStackId1 event should be returned since that's the only one in eventToCategories map
+      // Only testStackId1 event should be returned since that's the only one in logicalResourceNames list
       expect(filteredEvents).toEqual(eventsWithFailure.filter((e) => e.StackId == 'testStackId1'));
     });
 
@@ -104,11 +102,9 @@ describe('CloudFormation', () => {
       ];
 
       const eventMap = {
-        rootResources: [],
-        eventToCategories: new Map(),
-        categories: [],
+        logicalResourceNames: [],
       };
-      eventMap.eventToCategories.set('testLogicalResourceId1', 'testLogicalResourceId1-value');
+      eventMap.logicalResourceNames.push('testLogicalResourceId1');
       const cfn = await new CloudFormation();
       cfn.eventMap = eventMap;
       const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);

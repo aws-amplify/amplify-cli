@@ -1,4 +1,4 @@
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { AuthContext } from '../../../context';
 import { immutableAttributes, safeDefaults } from '../constants';

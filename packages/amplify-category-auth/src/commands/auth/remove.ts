@@ -1,5 +1,5 @@
-import { $TSContext, $TSMeta, AmplifyCategories, AmplifyError, AmplifySupportedService, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, $TSMeta, AmplifyCategories, AmplifyError, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 

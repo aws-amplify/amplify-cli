@@ -1,5 +1,5 @@
 import { $TSContext, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'update';
 const category = 'analytics';

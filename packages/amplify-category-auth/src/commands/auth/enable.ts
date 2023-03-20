@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { projectHasAuth } from '../../provider-utils/awscloudformation/utils/project-has-auth';
 import { getSupportedServices } from '../../provider-utils/supported-services';

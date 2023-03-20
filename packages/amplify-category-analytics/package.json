@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-environment-parameters": "1.4.0",
+    "@aws-amplify/amplify-prompts": "2.6.5",
     "amplify-cli-core": "4.0.0",
-    "amplify-prompts": "2.6.5",
     "fs-extra": "^8.1.0",
     "uuid": "^8.3.2"
   },

@@ -17,7 +17,7 @@ import {
 } from 'amplify-headless-interface';
 import { isEmpty, merge } from 'lodash';
 import { pascalCase } from 'change-case';
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import {

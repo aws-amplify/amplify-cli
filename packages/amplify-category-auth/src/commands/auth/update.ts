@@ -1,6 +1,13 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, BannerMessage, FeatureFlags, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import {
+  $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
+  BannerMessage,
+  FeatureFlags,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import _ from 'lodash';
 import { category } from '../..';
 import { AuthContext } from '../../context';

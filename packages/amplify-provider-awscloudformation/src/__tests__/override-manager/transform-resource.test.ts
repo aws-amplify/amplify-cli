@@ -1,5 +1,5 @@
 import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { transformResourceWithOverrides } from '../../override-manager/transform-resource';
 import CustomOverridePlugin from './mock-plugin/custom-override-plugin';
