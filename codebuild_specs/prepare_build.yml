@@ -11,18 +11,18 @@ phases:
   pre_build:
     commands:
       - source ./shared_scripts.sh && _setShell
-  build:
-    commands:
-      - yarn build-tests
-      - yarn production-build
-      # Save cache after these are build in post build step
-  post_build:
-    commands:
-      - yarn test
-      - source ./shared_scripts.sh && _buildLinux
+      - source ./shared_scripts.sh && _test
+  # build:
+  #   commands:
+  #     - yarn build-tests
+  #     - yarn production-build
+  #     # Save cache after these are build in post build step
+  # post_build:
+  #   commands:
+  #     - yarn test
+  #     - source ./shared_scripts.sh && _buildLinux
 cache:
   paths:
     # - '/root/.cache/yarn/**/*'
     # - 'node_modules/**/*'
     # - 'packages/**/node_modules/**/*'
-   
