@@ -7,8 +7,8 @@ phases:
     commands:
   pre_build:
     commands:
-      - source ./shared_scripts.sh && _setShell
-      - yarn
+      # - source ./shared_scripts.sh && _setShell
+      - yarn test
   build:
     commands:
       - yarn production-build
