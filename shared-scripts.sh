@@ -8,9 +8,12 @@ function test {
 }
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
+
+# storeCache <local path> <cache location>
 function storeCache {
     localPath="$1"
-    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
+    alias="$2"
+    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo writing cache to $s3Path
     # zip contents and upload to s3
     if ! (cd $localPath && tar cz . | aws s3 cp - $s3Path); then
@@ -19,9 +22,11 @@ function storeCache {
     echo done writing cache
     cd $CODEBUILD_SRC_DIR
 }
+# loadCache <cache location> <local path>
 function loadCache {
-    localPath="$1"
-    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
+    alias="$1"
+    localPath="$2"
+    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo loading cache from $s3Path
     # create directory if it doesn't exist yet
     mkdir -p $localPath
@@ -44,10 +49,10 @@ function _setShell {
 function _buildLinux {
     _setShell
     echo Linux Build
-    # yarn run production-build
+    yarn run production-build
     # copy [repo, ~/.cache, and .ssh to s3]
-    storeCache $CODEBUILD_SRC_DIR
-    storeCache $HOME/.cache
+    storeCache $CODEBUILD_SRC_DIR repo
+    storeCache $HOME/.cache .cache
 }
 function _buildWindows {
     _setShell
@@ -58,8 +63,8 @@ function _buildWindows {
 function _test {
     echo Run Test
     # download [repo, .cache from s3]
-    loadCache $CODEBUILD_SRC_DIR
-    loadCache $HOME/.cache
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
     # run tests
     yarn test-ci
     echo collecting coverage
