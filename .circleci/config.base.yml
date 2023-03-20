@@ -1029,23 +1029,19 @@ workflows:
             - build_pkg_binaries_win
             - build_pkg_binaries_arm
       - build_pkg_binaries_linux:
-          context:
-            - amplify-pkg-fetch-node-binaries
+          context: amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - build_pkg_binaries_macos:
-          context:
-            - amplify-pkg-fetch-node-binaries
+          context: amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - build_pkg_binaries_win:
-          context:
-            - amplify-pkg-fetch-node-binaries
+          context: amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - build_pkg_binaries_arm:
-          context:
-            - amplify-pkg-fetch-node-binaries
+          context: amplify-pkg-fetch-node-binaries
           requires:
             - publish_to_local_registry
       - verify_pkg_binaries:
