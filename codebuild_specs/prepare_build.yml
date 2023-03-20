@@ -11,6 +11,7 @@ phases:
   pre_build:
     commands:
       - source ./shared_scripts.sh && _setShell
+      - echo $CODEBUILD_BUILD_ID
   build:
     commands:
       - yarn build-tests
