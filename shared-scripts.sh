@@ -2,10 +2,7 @@
 
 # set exit on error to true
 set -e
-function test {
-    localPath="$1"
-    echo hi $1
-}
+
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
 
