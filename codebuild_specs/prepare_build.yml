@@ -10,7 +10,7 @@ phases:
       - yarn
   pre_build:
     commands:
-      - source ./shared_scripts.sh && _setShell
+      - source ./shared-scripts.sh && _setShell
 
   build:
     commands:
@@ -20,12 +20,7 @@ phases:
   post_build:
     commands:
       - yarn test
-      - source ./shared_scripts.sh && _buildLinux
-cache:
-  paths:
-    # - '/root/.cache/yarn/**/*'
-    # - 'node_modules/**/*'
-    # - 'packages/**/node_modules/**/*'
+      - source ./shared-scripts.sh && _buildLinux
 artifacts:
   files:
-    - './shared-scripts.sh'
+    - 'shared-scripts.sh'
