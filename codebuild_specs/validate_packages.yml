@@ -5,16 +5,4 @@ env:
 phases:
   install:
     commands:
-      - source ./shared_scripts.sh && _buildLinux
-      - source ./shared_scripts.sh && _loadCache
-
-  pre_build:
-    commands:
-  post_build:
-    commands:
-      - yarn lint-check
-      - cd packages/amplify-util-mock && npm e2e
-      - yarn test-ci
-      - yarn verify-api-extract
-      - yarn verify-yarn-lock
-      - echo Post build complete
+      - source ./shared_scripts.sh && _test

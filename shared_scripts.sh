@@ -62,8 +62,8 @@ function _buildWindows {
 function _test {
     echo Run Test
     # download [repo, .cache from s3]
-    loadCache $CODEBUILD_SRC_DIR
-    loadCache $HOME/.cache
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
     # run tests
     yarn test-ci
     echo collecting coverage
@@ -147,6 +147,7 @@ function _buildBinaries {
     unsetNpmRegistryUrl
     # copy [repo/out to s3]
 }
+
 function _runE2ETestsLinux {
     source .circleci/local_publish_helpers.sh
     source $BASH_ENV
