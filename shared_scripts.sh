@@ -46,7 +46,10 @@ function _buildLinux {
     echo Linux Build
     # yarn run production-build
     # copy [repo, ~/.cache, and .ssh to s3]
-    storeCache $CODEBUILD_SRC_DIR
+
+    #last 11 characters amplify-cli
+    truncatedPath= ${CODEBUILD_SRC_DIR:(-11)}
+    storeCache $truncatedPath
     storeCache $HOME/.cache
 }
 function _buildWindows {
