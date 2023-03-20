@@ -30,9 +30,6 @@ import {
   ResourceParameters,
 } from './types';
 
-// Currently the CLI only supports the output generation of these providers
-const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
-
 /**
  * Entry point for importing auth
  */
@@ -631,11 +628,11 @@ const appClientsOAuthPropertiesMatching = async (
     };
   }
 
-  const filteredProviders = appClientWeb.SupportedIdentityProviders!.filter((p) => supportedIdentityProviders.includes(p));
+  //const filteredProviders = appClientWeb.SupportedIdentityProviders!.filter((p) => supportedIdentityProviders.includes(p));
 
   return {
     isValid: true,
-    oauthProviders: filteredProviders || [],
+    oauthProviders: appClientWeb.SupportedIdentityProviders || [],
     oauthProperties: {
       callbackURLs: appClientWeb.CallbackURLs,
       logoutURLs: appClientWeb.LogoutURLs,
