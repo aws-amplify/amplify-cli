@@ -19,7 +19,7 @@ phases:
   post_build:
     commands:
       - yarn test
-      # - source ./shared_scripts.sh && storeCache
+      - source ./shared_scripts.sh && storeCache
 cache:
   paths:
     # - '/root/.cache/yarn/**/*'
