@@ -43,6 +43,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     },
   };
   const originalStdoutWrite = process.stdout.write;
+  let tempStdoutWrite: fs.WriteStream = null;
   try {
     // overwrite project config with config that forces codegen to output js to a temp location
     stateManager.setProjectConfig(undefined, forceJSCodegenProjectConfig);
@@ -50,7 +51,9 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     // generateModels and generateModelIntrospection print confusing and duplicate output when executing these codegen paths
     // so pipe stdout to a file and then reset it at the end to suppress this output
     await fs.ensureDir(absoluteTempOutputDir);
-    const tempStdoutWrite = fs.createWriteStream(path.join(absoluteTempOutputDir, 'temp-console-log.txt'));
+    const tempLogFilePath = path.join(absoluteTempOutputDir, 'temp-console-log.txt');
+    await fs.ensureFile(tempLogFilePath);
+    tempStdoutWrite = fs.createWriteStream(tempLogFilePath);
     process.stdout.write = tempStdoutWrite.write.bind(tempStdoutWrite);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/models.js#L60
@@ -80,6 +83,17 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   } finally {
     stateManager.setProjectConfig(undefined, originalProjectConfig);
     process.stdout.write = originalStdoutWrite;
+    if (tempStdoutWrite) {
+      await new Promise((resolve, reject) => {
+        tempStdoutWrite.close((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(null);
+          }
+        });
+      });
+    }
     await fs.remove(absoluteTempOutputDir);
   }
 };
