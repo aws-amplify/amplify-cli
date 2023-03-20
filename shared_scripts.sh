@@ -10,7 +10,7 @@ function test {
 # which allows us to share caches with jobs in the same batch
 function storeCache {
     localPath="$1"
-    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$localPath"
+    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$CODEBUILD_BUILD_ID"
     echo writing cache to $s3Path
     # zip contents and upload to s3
     if ! (cd $localPath && tar cz . | aws s3 cp - $s3Path); then
