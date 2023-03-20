@@ -5,24 +5,18 @@ phases:
     runtime-versions:
       nodejs: 14
     commands:
-      - yarn config set script-shell $(which bash)
   pre_build:
     commands:
-      # - yarn
-      # - /bin/bash ./codebuild_specs/cache-load.sh
-      # - echo running prebuild
-      # - yarn config set cache-folder /root/.yarn-cache -g
-      # - yarn install --frozen-lockfile
-      - ls /root/.cache/yarn
-      - ls node_modules
-      - ./
-      - yarn lint-check
+      - source ./shared_scripts.sh && _setShell
+      - yarn
   build:
     commands:
-      # - yarn production-build
+      - yarn production-build
+      - yarn build-tests
+      # Save cache after these are build in post build step
   post_build:
     commands:
-      # - /bin/bash ./codebuild_specs/cache-store.sh
+      # - source ./shared_scripts.sh && storeCache
 cache:
   paths:
     - '/root/.cache/yarn/**/*'

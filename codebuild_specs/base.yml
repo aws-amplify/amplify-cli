@@ -5,7 +5,13 @@ batch:
   build-graph:
     - identifier: prepare_build
       buildspec: codebuild_specs/prepare_build.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          IS_AMPLIFY_CI: true
     - identifier: validate_packages
       buildspec: codebuild_specs/validate_packages.yml
+      debug-session: true
       depend-on:
         - prepare_build
