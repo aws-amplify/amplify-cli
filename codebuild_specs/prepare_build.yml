@@ -10,7 +10,7 @@ phases:
   pre_build:
     commands:
       - source ./shared_scripts.sh && _setShell
-      - yarn
+      - yarn test
   build:
     commands:
       - yarn production-build
@@ -21,6 +21,6 @@ phases:
       # - source ./shared_scripts.sh && storeCache
 cache:
   paths:
-    - '/root/.cache/yarn/**/*'
-    - 'node_modules/**/*'
-    - 'packages/**/node_modules/**/*'
+    # - '/root/.cache/yarn/**/*'
+    # - 'node_modules/**/*'
+    # - 'packages/**/node_modules/**/*'
