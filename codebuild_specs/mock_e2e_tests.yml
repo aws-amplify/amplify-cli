@@ -4,4 +4,4 @@ env:
 phases:
   build:
     commands:
-      - source ./shared-scripts.sh && _lint
+      - source ./shared-scripts.sh && _mockE2ETests
