@@ -28,4 +28,4 @@ cache:
     # - 'packages/**/node_modules/**/*'
 artifacts:
   files:
-    - 'shared-scripts.sh'
+    - './shared-scripts.sh'
