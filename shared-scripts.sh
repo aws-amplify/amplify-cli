@@ -219,6 +219,15 @@ function _buildBinaries {
     storeCache $CODEBUILD_SRC_DIR/out repo-out
 }
 function _runE2ETestsLinux {
+    echo RUN E2E Tests
+    
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    loadCache verdaccio-cache $HOME/verdaccio-cache
+    loadCache repo-out $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+
     source .circleci/local_publish_helpers.sh
     source $BASH_ENV
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
