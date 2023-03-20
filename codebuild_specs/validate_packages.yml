@@ -1,9 +1,15 @@
 version: 0.2
-cache:
-  paths:
-    - '/root/.cache/yarn/**/*'
+env:
+  shell: bash
 
 phases:
+  install:
+    commands:
+      - source ./shared_scripts.sh && _buildLinux
+      - source ./shared_scripts.sh && _loadCache
+
+  pre_build:
+    commands:
   post_build:
     commands:
       - yarn lint-check
