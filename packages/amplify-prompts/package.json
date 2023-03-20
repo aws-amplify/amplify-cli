@@ -3,6 +3,7 @@
   "version": "2.6.5",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },

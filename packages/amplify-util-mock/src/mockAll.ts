@@ -1,6 +1,10 @@
 import { start as startAppSyncServer } from './api';
 import { start as startS3Server } from './storage';
+import { start as startLambdaServer } from './func';
+
 import { ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
+import { prompter } from '@aws-amplify/amplify-prompts';
+
 const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
 
 export async function mockAllCategories(context: any) {
@@ -31,13 +35,25 @@ export async function mockAllCategories(context: any) {
       }
     }
     // Run the mock servers
+    const selectedMockableResources = await prompter.pick<'many', string>(
+      'Select the category',
+      mockableResources.map((r) => r.service).filter((value, index, self) => self.indexOf(value) === index),
+      {
+        returnSize: 'many',
+      },
+    );
+
     const serverPromises = [];
-    if (mockableResources.find((r) => r.service === 'AppSync')) {
+    if (selectedMockableResources.find((service) => service === 'Lambda')) {
+      await startLambdaServer(context);
+    }
+    if (selectedMockableResources.find((service) => service === 'AppSync')) {
       serverPromises.push(startAppSyncServer(context));
     }
-    if (mockableResources.find((r) => r.service === 'S3')) {
+    if (selectedMockableResources.find((service) => service === 'S3')) {
       serverPromises.push(startS3Server(context));
     }
+
     await Promise.all(serverPromises);
   } else {
     context.print.info('No resource in project can be mocked locally.');
