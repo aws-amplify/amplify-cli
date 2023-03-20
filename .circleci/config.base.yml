@@ -662,7 +662,7 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests using general prpfile
+          name: Run tests using general profile
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath

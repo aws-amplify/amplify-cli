@@ -24,6 +24,7 @@ import {
   nonInteractiveInitAttach,
   nonInteractivePullAttach,
 } from '@aws-amplify/amplify-e2e-core';
+import { getAwsProviderGeneralConfig } from '@aws-amplify/amplify-e2e-core/src/init/non-interactive-init';
 import { S3 } from 'aws-sdk';
 import { getShortId, importS3 } from '../import-helpers';
 
@@ -76,7 +77,7 @@ describe('attach amplify to git-cloned project', () => {
         region: importBucketRegion,
       },
     };
-    await nonInteractiveInitAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig);
+    await nonInteractiveInitAttach(projRoot, getAmplifyInitConfig(projectName, envName), getAwsProviderConfig(), categoriesConfig);
     await buildOverrides(projRoot);
 
     // expect no file changes
