@@ -3,8 +3,9 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import Template from 'cloudform-types/types/template';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { Construct } from 'constructs';
@@ -18,6 +19,9 @@ import {
 } from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
+
+const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
+const { readJson } = JSONUtilities;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
@@ -79,6 +83,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
   hostedUICustomResourceInputs?: cdk.CustomResource;
+  hostedUIDomainResource?: cognito.CfnUserPoolDomain | undefined;
   // custom resource HostedUI Provider
   hostedUIProvidersCustomResource?: lambda.CfnFunction;
   hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
@@ -483,7 +488,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       this.createUserPoolClientCustomResource(props);
       if (props.hostedUIDomainName) {
-        this.createHostedUICustomResource();
+        this.createHostedUIDomainResource(props);
       }
       if (props.hostedUIProviderMeta) {
         this.createHostedUIProviderCustomResource();
@@ -802,6 +807,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
+
     this.hostedUIProvidersCustomResourcePolicy.addDependsOn(this.hostedUIProvidersCustomResource);
 
     // userPool Client Log policy
@@ -854,7 +860,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       timeout: 300,
     });
 
-    this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs!.node!.defaultChild!);
+    if (this.hostedUICustomResourceInputs) {
+      this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs!.node!.defaultChild!);
+    }
+
     this.oAuthCustomResource.node.addDependency(this.hostedUIProvidersCustomResourceInputs!.node!.defaultChild!);
 
     // userPool client lambda policy
@@ -1248,5 +1257,29 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         roles: [cdk.Fn.join('', [`${props.resourceName}${permission.trigger}`, '-', cdk.Fn.ref('env')])],
       });
     });
+  };
+
+  createHostedUIDomainResource = (props: CognitoStackOptions) => {
+    if (!props.hostedUIDomainName) {
+      return;
+    }
+
+    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
+    const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath);
+    const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUICustomResource?.Type === 'AWS::Lambda::Function';
+    const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.HostedUICustomResource?.Type === 'AWS::Cognito::UserPoolDomain';
+
+    if (lambdaCalloutCreatedInCloud && !userPoolDomainCreatedInCloud) {
+      this.createHostedUICustomResource();
+    }
+
+    this.hostedUIDomainResource = new cognito.CfnUserPoolDomain(this, 'HostedUIDomainResource', {
+      domain: props.hostedUIDomainName,
+      userPoolId: cdk.Fn.ref('UserPool'),
+    });
+
+    if (this.hostedUICustomResource) {
+      this.hostedUIDomainResource.addDependency(this.hostedUICustomResource);
+    }
   };
 }
