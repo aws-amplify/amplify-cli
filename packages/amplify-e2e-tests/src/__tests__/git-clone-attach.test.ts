@@ -25,7 +25,6 @@ import {
   nonInteractiveInitAttach,
   nonInteractivePullAttach,
 } from '@aws-amplify/amplify-e2e-core';
-import { getAwsProviderGeneralConfig } from '@aws-amplify/amplify-e2e-core/src/init/non-interactive-init';
 import { S3 } from 'aws-sdk';
 import { getShortId, importS3 } from '../import-helpers';
 
