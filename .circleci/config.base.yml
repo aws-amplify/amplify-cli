@@ -674,7 +674,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-    working_directory: ~/rep
+    working_directory: ~/repo
 
   amplify_console_integration_tests:
     parameters:
