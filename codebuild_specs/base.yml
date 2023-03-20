@@ -13,5 +13,8 @@ batch:
     - identifier: validate_packages
       buildspec: codebuild_specs/validate_packages.yml
       debug-session: true
+      env:
+        variables:
+          EXAMPLE_SAMPLE: 'test'
       depend-on:
         - prepare_build

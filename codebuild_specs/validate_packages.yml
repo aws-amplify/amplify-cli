@@ -1,8 +1,7 @@
 version: 0.2
 env:
   shell: bash
-
 phases:
-  install:
+  build:
     commands:
-      - source ./shared_scripts.sh && _test
+      - source ./shared-scripts.sh && _test
