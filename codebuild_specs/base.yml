@@ -10,34 +10,60 @@ env:
   # secrets-manager:
   #   S3_ACCESS_KEY: "secretname" # s3_access_key in secret manager
 
-# phases:
-#   install:
-#     runtime-versions:
-#       nodejs: 14
-#     commands:
-#       - source shared-scripts.sh
-#   build:
-#     commands:
-#       - _buildLinux
-# - _publishToLocalRegistry
-# - _buildBinaries
-# - _uploadPkgBinaries
-# - _runE2ETestsLinux
 batch:
   fast-fail: true
   build-graph:
-    - identifier: prepare_build
-      buildspec: codebuild_specs/prepare_build.yml
+    - identifier: build
+      buildspec: codebuild_specs/build.yml
       debug-session: true
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           IS_AMPLIFY_CI: true
-    - identifier: validate_packages
-      buildspec: codebuild_specs/validate_packages.yml
+    - identifier: test
+      buildspec: codebuild_specs/test.yml
       debug-session: true
       env:
+        compute-type: BUILD_GENERAL1_LARGE
         variables:
           EXAMPLE_SAMPLE: 'test'
       depend-on:
-        - prepare_build
+        - build
+    - identifier: validate-cdk-version
+      buildspec: codebuild_specs/validate-cdk-version.yml
+      debug-session: true
+      depend-on:
+        - build
+    - identifier: verify-api-extract
+      buildspec: codebuild_specs/verify-api-extract.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build
+    - identifier: verify-yarn-lock
+      buildspec: codebuild_specs/verify-yarn-lock.yml
+      debug-session: true
+      depend-on:
+        - build
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build
+    - identifier: build_pkg_binaries_linux
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
+    - identifier: verify-versions-match
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry

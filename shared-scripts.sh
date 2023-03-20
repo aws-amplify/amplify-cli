@@ -19,6 +19,18 @@ function storeCache {
     echo done writing cache
     cd $CODEBUILD_SRC_DIR
 }
+function storeCacheFile {
+    localFilePath="$1"
+    alias="$2"
+    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
+    echo writing cache to $s3Path
+    # zip contents and upload to s3
+    if ! (aws s3 cp $localFilePath $s3Path); then
+        echo Something went wrong storing the cache.
+    fi
+    echo done writing cache
+    cd $CODEBUILD_SRC_DIR
+}
 # loadCache <cache location> <local path>
 function loadCache {
     alias="$1"
@@ -39,6 +51,28 @@ function loadCache {
     echo done loading cache
     cd $CODEBUILD_SRC_DIR
 }
+function loadCacheFile {
+    alias="$1"
+    localFilePath="$2"
+    s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
+    echo loading cache file from $s3Path
+    # check if cache file exists in s3
+    if ! aws s3 ls $s3Path > /dev/null; then
+        echo "Cache file not found."
+        exit 0
+    fi
+    # load cache file
+    if ! (aws s3 cp $s3Path $localFilePath); then
+        echo "Something went wrong fetching the cache file. Continuing anyway."
+    fi
+    echo done loading cache
+    cd $CODEBUILD_SRC_DIR
+}
+
+
+
+
+
 function _setShell {
     echo Setting Shell
     yarn config set script-shell $(which bash)
@@ -56,8 +90,10 @@ function _buildWindows {
     echo Windows Build
     yarn run production-build
     # copy [repo, .cache, and .ssh to s3]
+    storeCache $CODEBUILD_SRC_DIR repo-windows
+    storeCache $HOME/.cache .cache-windows
 }
-function _test {
+function _testLinux {
     echo Run Test
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
@@ -70,28 +106,46 @@ function _test {
 function _validateCDKVersion {
     echo Validate CDK Version
     # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
     yarn ts-node .circleci/validate_cdk_version.ts
 }
 function _lint {
-    # download [repo, .cache from s3]
     echo Linting
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     yarn lint-check
     yarn lint-check-package-json
     yarn prettier-check
 }
 function _verifyAPIExtract {
-    # download [repo, .cache from s3]
     echo Verify API Extract
+
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     yarn verify-api-extract
 }
 function _verifyYarnLock {
-    # download [repo, .cache from s3]
     echo "Verify Yarn Lock"
+
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    
     yarn verify-yarn-lock
 }
 function _verifyVersionsMatch {
-    # download [repo, .cache, verdaccio-cache from s3]
     echo Verify Versions Match
+
+    # download [repo, .cache, verdaccio-cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    loadCache verdaccio-cache $HOME/verdaccio-cache
+    
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
@@ -100,13 +154,20 @@ function _verifyVersionsMatch {
 }
 function _mockE2ETests {
     # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-util-mock/
     yarn e2e
 }
 function _publishToLocalRegistry {
-    # download [repo, .cache from s3]
     echo "Publish To Local Registry"
+    
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
@@ -121,7 +182,11 @@ function _publishToLocalRegistry {
     
     echo Save new amplify Github tag
     node scripts/echo-current-cli-version.js > .amplify-pkg-version
+    
     # copy [verdaccio-cache, changelog, pkgtag to s3]
+    storeCache $HOME/verdaccio-cache verdaccio-cache
+    storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
+    storeCacheFile $CODEBUILD_SRC_DIR/.amplify-pkg-version .amplify-pkg-version
 }
 function _uploadPkgBinaries {
     # download [repo, pkg-binaries, from s3]
@@ -131,8 +196,14 @@ function _uploadPkgBinaries {
     # copy [repo/out to s3]
 }
 function _buildBinaries {
-    # download [repo, yarn, verdaccio from s3]
     echo Start verdaccio and package CLI
+    # download [repo, yarn, verdaccio from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    loadCache verdaccio-cache $HOME/verdaccio-cache
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
@@ -143,7 +214,9 @@ function _buildBinaries {
     # generatePkgCli arm
     
     unsetNpmRegistryUrl
+
     # copy [repo/out to s3]
+    storeCache $CODEBUILD_SRC_DIR/out repo-out
 }
 function _runE2ETestsLinux {
     source .circleci/local_publish_helpers.sh
