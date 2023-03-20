@@ -29,11 +29,11 @@ batch:
           EXAMPLE_SAMPLE: 'test'
       depend-on:
         - build_linux
-    # - identifier: validate-cdk-version
-    #   buildspec: codebuild_specs/validate-cdk-version.yml
-    #   debug-session: true
-    #   depend-on:
-    #     - build_linux
+    - identifier: validate-cdk-version
+      buildspec: codebuild_specs/validate-cdk-version.yml
+      debug-session: true
+      depend-on:
+        - build_linux
     # - identifier: verify-api-extract
     #   buildspec: codebuild_specs/verify-api-extract.yml
     #   debug-session: true
