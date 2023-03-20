@@ -1,5 +1,5 @@
 import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 import { customResourceNameQuestion } from '../../utils/common-questions';

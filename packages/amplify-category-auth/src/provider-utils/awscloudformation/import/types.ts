@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,

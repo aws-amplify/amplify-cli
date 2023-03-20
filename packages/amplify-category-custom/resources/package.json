@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "^3.0.0-beta.0",
-    "aws-cdk-lib": "~2.53.0",
+    "@aws-amplify/cli-extensibility-helper": "^3.0.0",
+    "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5"
   },
   "devDependencies": {

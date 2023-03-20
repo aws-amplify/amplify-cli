@@ -1,7 +1,7 @@
 import { exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import { initializeEnv } from './initialize-env';
 import { postPullCodegen } from './amplify-service-helper';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * pull backend from the cloud

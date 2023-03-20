@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, $TSObject } from 'amplify-cli-core';
+import { $TSContext, stateManager, $TSObject } from '@aws-amplify/amplify-cli-core';
 import { removeResource } from '../../../provider-controllers';
 import { ServiceName } from '../../../service-utils/constants';
 import { run } from '../../../commands/geo/remove';

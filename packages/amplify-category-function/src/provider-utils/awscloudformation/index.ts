@@ -9,7 +9,12 @@ import {
   stateManager,
   writeCFNTemplate,
 } from 'amplify-cli-core';
-import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, LambdaLayer } from 'amplify-function-plugin-interface';
+import {
+  FunctionParameters,
+  FunctionTemplate,
+  FunctionTriggerParameters,
+  LambdaLayer,
+} from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';

@@ -3,7 +3,7 @@
 import inquirer from 'inquirer';
 import { uniq, flatten } from 'lodash';
 import chalk, { Chalk } from 'chalk';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { AuthContext, CognitoConfiguration } from '../../../context';
 
 /**

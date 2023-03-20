@@ -33,6 +33,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
+  'src/__tests__/studio-modelgen.test.ts',
 ];
 /**
  * Most Windows tests only run on 'dev', except for this list of smoke tests.
@@ -108,6 +109,10 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/api_3.test.ts',
     'src/__tests__/api_5.test.ts',
     'src/__tests__/custom_policies_container.test.ts',
+    // TODO: this is required to jump over breaking change between 2.53 and 2.68 of CDK.
+    // Remove exclusion for both custom resource tests after we ship new extensibility helper.
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/delete.test.ts',
     'src/__tests__/diagnose.test.ts',

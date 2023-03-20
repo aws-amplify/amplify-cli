@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-android@3.5.0...@aws-amplify/amplify-frontend-android@3.5.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+
+
+
+
+
 # 3.5.0 (2023-02-27)
 
 
