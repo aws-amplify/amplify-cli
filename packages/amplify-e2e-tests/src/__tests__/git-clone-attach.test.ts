@@ -13,6 +13,7 @@ import {
   deleteProjectDir,
   getAmplifyInitConfig,
   getAmplifyPullConfig,
+  getAwsProviderConfig,
   getProjectConfig,
   getSocialProviders,
   getTeamProviderInfo,
