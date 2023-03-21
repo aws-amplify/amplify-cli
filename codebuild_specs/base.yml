@@ -36,3 +36,21 @@ batch:
           IS_AMPLIFY_CI: true
       depend-on:
         - prepare_build
+    - identifier: validate_cdk_version
+      buildspec: codebuild_specs/validate_cdk_version.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          IS_AMPLIFY_CI: true
+      depend-on:
+        - prepare_build
+    - identifier: verify_api_extract
+      buildspec: codebuild_specs/verify_api_extract.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          IS_AMPLIFY_CI: true
+      depend-on:
+        - prepare_build

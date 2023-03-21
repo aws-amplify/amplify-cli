@@ -71,6 +71,8 @@ function _testLinux {
 function _validateCDKVersion {
     echo Validate CDK Version
     # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
     yarn ts-node .circleci/validate_cdk_version.ts
 }
 function _lint {
@@ -84,8 +86,12 @@ function _lint {
     yarn prettier-check
 }
 function _verifyAPIExtract {
-    # download [repo, .cache from s3]
     echo Verify API Extract
+
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     yarn verify-api-extract
 }
 function _verifyYarnLock {
