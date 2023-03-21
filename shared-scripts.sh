@@ -172,7 +172,7 @@ function _publishToLocalRegistry {
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     export LOCAL_PUBLISH_TO_LATEST=true
-    ./.circleci/publish.sh
+    ./.circleci/publish-codebuild.sh
     unsetNpmRegistryUrl
 
     echo Generate Change Log
