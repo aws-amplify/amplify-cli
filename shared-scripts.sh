@@ -95,8 +95,11 @@ function _verifyAPIExtract {
     yarn verify-api-extract
 }
 function _verifyYarnLock {
+    echo Verify yarn lock 
     # download [repo, .cache from s3]
-    echo "Verify Yarn Lock"
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     yarn verify-yarn-lock
 }
 function _verifyVersionsMatch {
@@ -168,4 +171,12 @@ function _runE2ETestsLinux {
     amplify version
     cd packages/amplify-e2e-tests
     retry runE2eTest
+}
+
+function cleanupE2EResources {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
+    cd packages/amplify-e2e-tests
+    yarn clean-e2e-resources
 }
