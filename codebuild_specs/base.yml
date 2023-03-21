@@ -1,7 +1,7 @@
 ---
 version: 0.2
 batch:
-  fast-fail: true
+  fast-fail: false
   build-graph:
     - identifier: prepare_build
       buildspec: codebuild_specs/prepare_build.yml
