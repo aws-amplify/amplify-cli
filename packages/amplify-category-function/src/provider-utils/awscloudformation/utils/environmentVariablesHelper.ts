@@ -172,7 +172,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext): Prom
   const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
   const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
   await ensureEnvParamManager(currentEnvName);
-  const functionNames = Object.keys(stateManager.getBackendConfig()?.function);
+  const functionNames = Object.keys(stateManager.getBackendConfig()?.function || {});
   if (functionNames.length === 0) {
     return;
   }
