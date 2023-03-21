@@ -33,7 +33,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
-  'src/__tests__/studio-modelgen.test.ts',
+  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
 /**
  * Most Windows tests only run on 'dev', except for this list of smoke tests.
@@ -155,7 +155,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
   ],
 };
-const MAX_WORKERS = 3;
+const MAX_WORKERS = 4;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
   region: string;
