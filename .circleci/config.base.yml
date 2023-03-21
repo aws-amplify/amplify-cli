@@ -59,6 +59,14 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+  l_small: &linux-e2e-executor-small
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: small
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 
 defaults: &defaults
   working_directory: ~/repo
@@ -897,7 +905,7 @@ jobs:
               --data '{"branch":"'$CIRCLE_BRANCH'","parameters":{"e2e_workflow_cleanup":true,"setup":false,"e2e_workflow_cleanup_workflow_id":"'$CIRCLE_WORKFLOW_ID'"}}'
 
   wait_for_all:
-    <<: *linux-e2e-executor-medium
+    <<: *linux-e2e-executor-small
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
