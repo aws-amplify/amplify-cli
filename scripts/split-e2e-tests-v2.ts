@@ -155,7 +155,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
   ],
 };
-const MAX_WORKERS = 3;
+const MAX_WORKERS = 4;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
   region: string;
