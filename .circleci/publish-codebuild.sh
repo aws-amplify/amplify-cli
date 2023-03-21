@@ -95,7 +95,7 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
     force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
   fi
   # create release commit and release tags
-  npx lerna version --preid=rc.$CODEBUILD_RESOLVED_SOURCE_VERSION --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
+  git checkout codebuild-poc && npx lerna version --preid=rc.$CODEBUILD_RESOLVED_SOURCE_VERSION --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
 
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
