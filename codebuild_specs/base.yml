@@ -16,7 +16,8 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           IS_AMPLIFY_CI: true
-      depend-on: prepare_build
+      depend-on:
+        - prepare_build
     - identifier: test
       buildspec: codebuild_specs/test.yml
       debug-session: true
@@ -24,7 +25,8 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           IS_AMPLIFY_CI: true
-      depend-on: prepare_build
+      depend-on:
+        - prepare_build
     - identifier: lint
       buildspec: codebuild_specs/lint.yml
       debug-session: true
