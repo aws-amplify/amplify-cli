@@ -14,6 +14,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
+import { verifyExpectedEnvParams } from './utils/verify-expected-env-params';
 
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
@@ -157,6 +158,7 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush) {
+      await verifyExpectedEnvParams(context);
       for (const provider of context.exeInfo.projectConfig.providers) {
         const providerModule = await import(providerPlugins[provider]);
 

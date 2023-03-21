@@ -180,11 +180,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
    * Throw an error if expected parameters are missing
    */
   async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[]): Promise<void> {
-    const missingParameterNames = await this.getMissingParameters(resourceFilterList);
+    const missingParameters = await this.getMissingParameters(resourceFilterList);
 
-    if (missingParameterNames.length > 0) {
+    if (missingParameters.length > 0) {
+      const parameterNamesString = missingParameters.map((param) => param.parameterName).join(', ');
+      const plural = missingParameters.length > 1 ? 's' : '';
       throw new AmplifyError('MissingExpectedParameterError', {
-        message: `Expected parameter${missingParameterNames.length === 1 ? '' : 's'} ${missingParameterNames.join(', ')}`,
+        message: `Expected parameter${plural} ${parameterNamesString}`,
+        resolution: `Run 'amplify push' in interactive mode to specify the missing value${plural}`,
       });
     }
   }
