@@ -1,26 +1,11 @@
----
 version: 0.2
 env:
   shell: bash
 phases:
-  install:
-    runtime-versions:
-      nodejs: 14
-    commands:
-      - yarn
-  pre_build:
-    commands:
-      - source ./shared-scripts.sh && _setShell
-
   build:
     commands:
-      - yarn build-tests
-      - yarn production-build
-      # Save cache after these are build in post build step
-  post_build:
-    commands:
-      - yarn test
       - source ./shared-scripts.sh && _buildLinux
+
 artifacts:
   files:
     - 'shared-scripts.sh'

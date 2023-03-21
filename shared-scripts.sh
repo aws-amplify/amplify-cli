@@ -52,14 +52,13 @@ function _buildLinux {
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
-
 function _buildWindows {
     _setShell
     echo Windows Build
     yarn run production-build
     # copy [repo, .cache, and .ssh to s3]
 }
-function _test {
+function _testLinux {
     echo Run Test
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
@@ -75,8 +74,11 @@ function _validateCDKVersion {
     yarn ts-node .circleci/validate_cdk_version.ts
 }
 function _lint {
-    # download [repo, .cache from s3]
     echo Linting
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     yarn lint-check
     yarn lint-check-package-json
     yarn prettier-check
@@ -102,6 +104,9 @@ function _verifyVersionsMatch {
 }
 function _mockE2ETests {
     # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-util-mock/
     yarn e2e
