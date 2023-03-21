@@ -147,7 +147,7 @@ function _verifyVersionsMatch {
     loadCache verdaccio-cache $HOME/verdaccio-cache
     
     source .circleci/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
@@ -169,7 +169,7 @@ function _publishToLocalRegistry {
     loadCache .cache $HOME/.cache
 
     source .circleci/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     export LOCAL_PUBLISH_TO_LATEST=true
     ./.circleci/publish-codebuild.sh
@@ -205,7 +205,7 @@ function _buildBinaries {
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
     source .circleci/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     generatePkgCli linux
@@ -230,7 +230,7 @@ function _runE2ETestsLinux {
 
     source .circleci/local_publish_helpers.sh
     source $BASH_ENV
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
