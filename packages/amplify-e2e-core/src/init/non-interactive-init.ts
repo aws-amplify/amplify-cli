@@ -9,8 +9,8 @@ import { CategoriesConfig, AwsProviderConfig } from './headless-types';
 export const nonInteractiveInitAttach = async (
   projRoot: string,
   amplifyInitConfig: AmplifyInitConfig,
+  awsProviderConfig: AwsProviderConfig | AwsProviderGeneralConfig,
   categoriesConfig?: CategoriesConfig,
-  awsProviderConfig = getAwsProviderConfig(),
 ): Promise<void> => {
   const args = [
     'init',
@@ -67,10 +67,23 @@ export const getAmplifyInitConfig = (projectName: string, envName: string): Ampl
 /**
  * Returns a default AwsProviderConfig
  */
-export const getAwsProviderConfig = (): AwsProviderConfig => ({
-  configLevel: 'project',
-  useProfile: true,
-  profileName: TEST_PROFILE_NAME,
+export const getAwsProviderConfig = (profileType?: string): AwsProviderConfig | AwsProviderGeneralConfig => {
+  if (profileType === 'general') {
+    return getAwsProviderGeneralConfig();
+  } else {
+    return {
+      configLevel: 'project',
+      useProfile: true,
+      profileName: TEST_PROFILE_NAME,
+    };
+  }
+};
+
+/**
+ * Returns a general AwsProviderConfig
+ */
+export const getAwsProviderGeneralConfig = (): AwsProviderGeneralConfig => ({
+  configLevel: 'general',
 });
 
 /**
@@ -81,4 +94,8 @@ export type AmplifyInitConfig = {
   envName: string;
   defaultEditor: string;
   frontend?: string;
+};
+
+export type AwsProviderGeneralConfig = {
+  configLevel: string;
 };
