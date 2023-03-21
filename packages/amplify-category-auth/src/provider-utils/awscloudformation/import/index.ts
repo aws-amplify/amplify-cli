@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
@@ -29,6 +29,7 @@ import {
   ProviderUtils,
   ResourceParameters,
 } from './types';
+import { projectHasAuth } from '../utils/project-has-auth';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
@@ -960,7 +961,7 @@ export const importedAuthEnvInit = async (
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
   isInHeadlessMode: boolean,
   headlessParams: ImportAuthHeadlessParameters,
-): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; cleanupRequired?: boolean, envSpecificParameters?: EnvSpecificResourceParameters }> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -1093,14 +1094,22 @@ export const importedAuthEnvInit = async (
     answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      context.print.error(
-        importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
-      );
-
-      error.stack = undefined;
+      // check if cleanup needed if resources is imported in the App
+      if(projectHasAuth(context, false)){
+        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, {headless: true});
+        return {
+          succeeded: false,
+          cleanupRequired: true,
+        };
+      }
+      else{
+        context.print.error(
+          importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
+        );
+        error.stack = undefined;
+        throw error;
+      }
     }
-
-    throw error;
   }
 
   const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, currentEnvSpecificParameters.userPoolId);
@@ -1182,7 +1191,7 @@ export const importedAuthEnvInit = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool.MfaConfiguration !== 'OFF') {
+  if (answers.userPool?.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
       answers.mfaConfiguration = await cognito.getUserPoolMfaConfig(answers.userPoolId!);
@@ -1218,7 +1227,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; cleanupRequired?: boolean, envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1253,6 +1262,13 @@ export const headlessImport = async (
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
+      if(projectHasAuth(context, false)){
+        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, {headless: true});
+        return {
+          succeeded: false,
+          cleanupRequired: true
+        };
+      }
       throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));
     }
 

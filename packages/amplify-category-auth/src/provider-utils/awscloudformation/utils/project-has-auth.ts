@@ -6,20 +6,22 @@ import { messages } from '../assets/string-maps';
  * Checks if auth already exists in the project and prints a warning if so.
  * Returns true if auth already exists, false otherwise
  */
-export const projectHasAuth = (context: $TSContext): boolean => {
+export const projectHasAuth = (context: $TSContext, showWarning = true): boolean => {
   const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
   const existingAuthResources: [string, $TSObject][] = Object.entries(meta?.auth || {});
 
   if (existingAuthResources.length > 0) {
-    if (checkAuthIsImported(existingAuthResources)) {
-      // determine which command will make the help message useful, defaults to 'import'
-      const commandVerb = context?.input?.command && context.input.command !== 'update' ? context.input.command : 'import';
-      printer.warn(
-        'Auth has already been imported to this project and cannot be modified from the CLI. ' +
-          `To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify ${commandVerb} auth".`,
-      );
-    } else {
-      printer.warn(messages.authExists);
+    if(showWarning){
+      if (checkAuthIsImported(existingAuthResources)) {
+        // determine which command will make the help message useful, defaults to 'import'
+        const commandVerb = context?.input?.command && context.input.command !== 'update' ? context.input.command : 'import';
+        printer.warn(
+          'Auth has already been imported to this project and cannot be modified from the CLI. ' +
+            `To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify ${commandVerb} auth".`,
+        );
+      } else {
+        printer.warn(messages.authExists);
+      }
     }
     return true;
   }
