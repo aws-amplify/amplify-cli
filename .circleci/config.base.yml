@@ -1373,6 +1373,6 @@ commands:
           name: Install Node 14
           command: |
             nvm version
-            nvm install 14.18.0
-            nvm use 14.18.0
+            nvm install 14.18
+            nvm use 14.18
             nvm ls
