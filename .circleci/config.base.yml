@@ -464,6 +464,9 @@ jobs:
             - install_node18_windows
             - attach_workspace:
                 at: ~/.
+            - run:
+                name: Git enable long paths
+                command: git config --global core.longpaths true
       - when:
           condition:
             or:

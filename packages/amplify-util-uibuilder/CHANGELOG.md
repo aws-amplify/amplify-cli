@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.10...@aws-amplify/amplify-util-uibuilder@1.6.11) (2023-03-13)
+
+
+### Bug Fixes
+
+* improved typing for $TSContext ([#11962](https://github.com/aws-amplify/amplify-cli/issues/11962)) ([3e2ff00](https://github.com/aws-amplify/amplify-cli/commit/3e2ff00cce8079974394c98b4a843f2246cee7dd))
+
+
+
+
+
 ## [1.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.9...@aws-amplify/amplify-util-uibuilder@1.6.10) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

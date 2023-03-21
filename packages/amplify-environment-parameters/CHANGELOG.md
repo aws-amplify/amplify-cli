@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.6...@aws-amplify/amplify-environment-parameters@1.4.0) (2023-03-13)
+
+
+### Features
+
+* parameter store integration for env parameters ([#12016](https://github.com/aws-amplify/amplify-cli/issues/12016)) ([3112646](https://github.com/aws-amplify/amplify-cli/commit/311264610080810947a49e7ec85e21b28c010c6e))
+
+
+
+
+
 # [1.4.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.3.3...@aws-amplify/amplify-environment-parameters@1.4.0-beta.2) (2023-02-23)
 
 

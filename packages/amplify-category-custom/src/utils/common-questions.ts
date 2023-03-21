@@ -1,4 +1,4 @@
-import { alphanumeric, prompter } from 'amplify-prompts';
+import { alphanumeric, prompter } from '@aws-amplify/amplify-prompts';
 import { v4 as uuid } from 'uuid';
 import { customDeploymentOptions } from '../utils/constants';
 

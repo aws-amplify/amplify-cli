@@ -1,13 +1,9 @@
 import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import AmplifyUIBuilder from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyStudioClient } from '../clients';
 import { isFormDetachedFromModel, isFormSchemaCustomized, shouldRenderComponents } from '../commands/utils';
-
-// TODO: replace this type when amplify-codegen package export official types
-type Schema = {
-  models: Record<string, unknown>;
-};
+import { ModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 
 /**
  * Handles showing a warning for detached forms pre-push.
@@ -22,7 +18,7 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
       Promise<{
         entities: AmplifyUIBuilder.Form[];
       }>,
-      Promise<Schema>,
+      Promise<ModelIntrospectionSchema>,
     ]
   >([studioClient.listForms(), context.amplify.invokePluginMethod(context, 'codegen', undefined, 'getModelIntrospection', [context])]);
 
@@ -33,7 +29,7 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
   printDetachedFormsWarning(formSchemas, localSchema);
 };
 
-const printDetachedFormsWarning = (formSchemas: { entities: AmplifyUIBuilder.Form[] }, localSchema: Schema): void => {
+const printDetachedFormsWarning = (formSchemas: { entities: AmplifyUIBuilder.Form[] }, localSchema: ModelIntrospectionSchema): void => {
   const modelNames = new Set(Object.keys(localSchema.models));
   const detachedCustomForms: string[] = [];
 

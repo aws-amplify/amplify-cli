@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { adminLoginFlow } from '../admin-login';
-import { AmplifySpinner } from 'amplify-prompts';
+import { AmplifySpinner } from '@aws-amplify/amplify-prompts';
 
 jest.mock('amplify-cli-core', () => {
   return {

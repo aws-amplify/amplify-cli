@@ -1,4 +1,4 @@
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';

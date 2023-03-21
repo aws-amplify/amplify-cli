@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { configureSmsOption } from './configure-sms';
 

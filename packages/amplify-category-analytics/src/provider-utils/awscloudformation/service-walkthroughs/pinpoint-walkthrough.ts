@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
 import { $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories, $TSAny, JSONUtilities } from 'amplify-cli-core';
-import { alphanumeric, printer, prompter } from 'amplify-prompts';
+import { alphanumeric, printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough

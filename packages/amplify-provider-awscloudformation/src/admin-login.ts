@@ -2,7 +2,7 @@ import util from 'util';
 import readline from 'readline';
 import { Writable } from 'stream';
 import { $TSContext, AmplifyError, AMPLIFY_DOCS_URL, open } from 'amplify-cli-core';
-import { printer, AmplifySpinner } from 'amplify-prompts';
+import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import { adminVerifyUrl, adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers'; // eslint-disable-line
 import { AdminLoginServer } from './utils/admin-login-server';
 import { AdminAuthPayload } from './utils/auth-types';

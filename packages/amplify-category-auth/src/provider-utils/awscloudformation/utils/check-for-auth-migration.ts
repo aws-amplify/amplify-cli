@@ -1,5 +1,5 @@
-import { $TSContext, AmplifyCategories, getMigrateResourceMessageForOverride } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, AmplifyCategories, getMigrateResourceMessageForOverride } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { generateAuthStackTemplate } from './generate-auth-stack-template';
 import { migrateResourceToSupportOverride } from './migrate-override-resource';

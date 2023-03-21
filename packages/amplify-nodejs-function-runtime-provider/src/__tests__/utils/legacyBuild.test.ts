@@ -2,7 +2,7 @@ import glob from 'glob';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import { buildResource } from '../../../src/utils/legacyBuild';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 
 jest.mock('glob');
 jest.mock('fs-extra');

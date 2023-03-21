@@ -4,7 +4,7 @@ import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { loadLambdaConfig } from '../../utils/lambda/load-lambda-config';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { timeConstrainedInvoker } from '../../func';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 jest.mock('amplify-prompts');
 

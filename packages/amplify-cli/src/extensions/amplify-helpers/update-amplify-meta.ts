@@ -3,7 +3,7 @@
 import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { buildTypeKeyMap, ServiceName } from '@aws-amplify/amplify-category-function';
 import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';

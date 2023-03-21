@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import type { S3 } from 'aws-sdk';
 import { createReadStream, readdirSync, existsSync } from 'fs-extra';
 import mime from 'mime-types';

@@ -1,5 +1,5 @@
 import { $TSContext, $TSAny } from '../types';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 
 export type CommandFlagInfo = {

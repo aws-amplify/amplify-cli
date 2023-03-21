@@ -3,6 +3,109 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.5.0 (2023-03-13)
+
+
+### Bug Fixes
+
+* @typescript-eslint/no-floating-promises ([#11665](https://github.com/aws-amplify/amplify-cli/issues/11665)) ([6c64717](https://github.com/aws-amplify/amplify-cli/commit/6c647177a3518d777677757bebc01f18b71552e3))
+* manual lint fixes ([#11638](https://github.com/aws-amplify/amplify-cli/issues/11638)) ([2294cf8](https://github.com/aws-amplify/amplify-cli/commit/2294cf8bf1ec2d6d58251649871e6e9617c49b23))
+* reverting changes to dev ([#12039](https://github.com/aws-amplify/amplify-cli/issues/12039)) ([69f5987](https://github.com/aws-amplify/amplify-cli/commit/69f598731e6461bcb40e7507f6ade82640ee280b))
+
+
+### Features
+
+* revamp help command ([#11667](https://github.com/aws-amplify/amplify-cli/issues/11667)) ([9977127](https://github.com/aws-amplify/amplify-cli/commit/9977127c619ba353bce0590ce04bc8b3e4b6c5f2))
+
+
+### Reverts
+
+* Revert "chore: fixing main to dev merge conflicts (#11696)" ([00fec46](https://github.com/aws-amplify/amplify-cli/commit/00fec4608096390b5ae2563b5c69453cd48bfa45)), closes [#11696](https://github.com/aws-amplify/amplify-cli/issues/11696)
+
+
+
+# 10.2.0 (2022-09-21)
+
+
+### Bug Fixes
+
+* refactor bugs caught by console integ tests ([#10896](https://github.com/aws-amplify/amplify-cli/issues/10896)) ([33c800b](https://github.com/aws-amplify/amplify-cli/commit/33c800b0046c3df97de0daad780c09fef4b5eb2c))
+
+
+
+## 7.6.23 (2022-03-07)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* [#8254](https://github.com/aws-amplify/amplify-cli/issues/8254) invalid url is shown for branches with dash ([#8260](https://github.com/aws-amplify/amplify-cli/issues/8260)) ([e768597](https://github.com/aws-amplify/amplify-cli/commit/e768597741ad9fcc1ba80e67f30004e161585728))
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+# 4.37.0 (2020-11-27)
+
+
+
+# 4.32.0-alpha.0 (2020-10-27)
+
+
+### Bug Fixes
+
+* **amplify-console-hosting:** added a null check for prefix on domain ([#4809](https://github.com/aws-amplify/amplify-cli/issues/4809)) ([3b6acbb](https://github.com/aws-amplify/amplify-cli/commit/3b6acbb92009147c3c25ba8f5cd3f2b13445541e))
+* **amplify-console-hosting:** fix the cicd hosting serve ([#5126](https://github.com/aws-amplify/amplify-cli/issues/5126)) ([2a61f47](https://github.com/aws-amplify/amplify-cli/commit/2a61f47b369fc767436ed2182f6708e4c7b728b8)), closes [#5080](https://github.com/aws-amplify/amplify-cli/issues/5080)
+* **amplify-console-hosting:** printout more informative message ([#4148](https://github.com/aws-amplify/amplify-cli/issues/4148)) ([627a935](https://github.com/aws-amplify/amplify-cli/commit/627a93580587d7d132b8bfa8a58e88c9e90f0a16)), closes [#4086](https://github.com/aws-amplify/amplify-cli/issues/4086)
+* **amplify-frontend-javascript:** use execa for spawning child process ([#5150](https://github.com/aws-amplify/amplify-cli/issues/5150)) ([28b1832](https://github.com/aws-amplify/amplify-cli/commit/28b183272eb26afe3f38fe27e909405b277ef534)), closes [#4626](https://github.com/aws-amplify/amplify-cli/issues/4626)
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+* makes hosting plugin version same with CLI ([#3626](https://github.com/aws-amplify/amplify-cli/issues/3626)) ([184f8fe](https://github.com/aws-amplify/amplify-cli/commit/184f8fe709c954cd45522d12dd405fecd7306eb4))
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+### Features
+
+* amplify console hosting plugin ([#3525](https://github.com/aws-amplify/amplify-cli/issues/3525)) ([2c84b71](https://github.com/aws-amplify/amplify-cli/commit/2c84b71687a0ebcdeb92ebe462c8cf4eab8c9e3c))
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([a755863](https://github.com/aws-amplify/amplify-cli/commit/a7558637fbb791dc22e0a91ae16f1b96fe4e99df))
+
+
+
+
+
 ## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.4.3...amplify-console-hosting@2.4.4) (2023-02-28)
 
 **Note:** Version bump only for package amplify-console-hosting
