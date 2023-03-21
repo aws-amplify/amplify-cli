@@ -468,6 +468,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
+            - install_node14_windows
             - attach_workspace:
                 at: ~/.
             - run:
@@ -1365,3 +1366,13 @@ commands:
               exit 1
             fi
           when: always
+  install_node14_windows:
+    description: Install Node 14 on Windows
+    steps:
+      - run:
+          name: Install Node 14
+          command: |
+            nvm version
+            nvm install 14.18.0
+            nvm use 14.18.0
+            nvm ls
