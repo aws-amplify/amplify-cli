@@ -35,7 +35,7 @@ executors:
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
   l_xlarge: &linux-e2e-executor-xlarge
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:pkg-fetch
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: xlarge
     environment:
@@ -44,7 +44,7 @@ executors:
   # If you update this name, make sure to update it in split-e2e-tests.ts as well
   l_large: &linux-e2e-executor-large
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:pkg-fetch
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -53,7 +53,7 @@ executors:
   # If you update this name, make sure to update it in split-e2e-tests.ts as well
   l_medium: &linux-e2e-executor-medium
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:pkg-fetch
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: medium
     environment:
