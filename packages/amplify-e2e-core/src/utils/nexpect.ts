@@ -785,5 +785,8 @@ export function nspawn(command: string | string[], params: string[] = [], option
     },
   };
 
+  const firstTwoParams = (params ?? []).slice(0, 2).join(' ');
+  console.log(`Executing ${context.command} ${firstTwoParams}`);
+
   return chain(context);
 }
