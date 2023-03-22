@@ -9,7 +9,8 @@ function startLocalRegistry {
     echo "Registry output file: $tmp_registry_log"
     (cd && nohup npx ${VERDACCIO_PACKAGE:-$default_verdaccio_package} -c $1 &>$tmp_registry_log &)
     # Wait for Verdaccio to boot
-    grep -q 'http address' <(tail -f $tmp_registry_log)
+    sleep 60
+    # grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
 function uploadPkgCli {

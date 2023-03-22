@@ -168,7 +168,7 @@ function _publishToLocalRegistry {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source ./shared-scripts.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     export LOCAL_PUBLISH_TO_LATEST=true
     ./.circleci/publish-codebuild.sh
