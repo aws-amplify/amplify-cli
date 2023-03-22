@@ -53,6 +53,8 @@ export class Recorder {
     if (this.exitCode !== undefined) {
       throw new Error('Already executed. Please start a new instance');
     }
+    const commandWithTwoFirstArguments = [this.cmd].concat(this.args.slice(0, 2)).join(' ');
+    console.log(`Executing ${commandWithTwoFirstArguments} ...`);
     this.childProcess = pty.spawn(this.cmd, this.args, {
       name: 'xterm-color',
       cols: this.cols,
