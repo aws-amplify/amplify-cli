@@ -1,9 +1,7 @@
 import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
-import { isDataStoreEnabled } from 'graphql-transformer-core';
 import { adminModelgen } from '../admin-modelgen';
 import { S3 } from '../aws-utils/aws-s3';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
 
 jest.mock('fs-extra');
 jest.mock('../aws-utils/aws-s3');
@@ -14,8 +12,6 @@ jest.mock('../utils/admin-helpers');
 const fsMock = fs as jest.Mocked<typeof fs>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-const isDataStoreEnabledMock = isDataStoreEnabled as jest.MockedFunction<typeof isDataStoreEnabled>;
-const isAmplifyAdminAppMock = isAmplifyAdminApp as jest.MockedFunction<typeof isAmplifyAdminApp>;
 
 const originalProjectConfig = 'original project config';
 
@@ -30,11 +26,12 @@ stateManagerMock.getMeta.mockReturnValue({
 pathManagerMock.findProjectRoot.mockReturnValue('mock/project/root');
 pathManagerMock.getBackendDirPath.mockReturnValue('mock/backend/dir/path');
 pathManagerMock.getResourceDirectoryPath.mockReturnValue('mock/resource/dir/path');
-isAmplifyAdminAppMock.mockResolvedValue({ isAdminApp: true, region: 'test', userPoolID: 'test' });
-isDataStoreEnabledMock.mockResolvedValue(true);
 fsMock.createWriteStream.mockReturnValue({
   write: {
     bind: jest.fn(),
+  },
+  close: (cb: Function) => {
+    cb();
   },
 } as unknown as fs.WriteStream);
 fsMock.createReadStream.mockImplementation((filePath) => `mock body of ${filePath}` as unknown as fs.ReadStream);

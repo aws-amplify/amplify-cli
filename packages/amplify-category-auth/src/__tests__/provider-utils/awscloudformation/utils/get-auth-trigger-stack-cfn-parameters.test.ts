@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
 import { getAuthTriggerStackCfnParameters } from '../../../../provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters';

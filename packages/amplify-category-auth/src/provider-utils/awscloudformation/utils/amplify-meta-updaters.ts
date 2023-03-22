@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { hostedUIProviders } from '../assets/string-maps';
 import { AuthParameters } from '../import/types';
 

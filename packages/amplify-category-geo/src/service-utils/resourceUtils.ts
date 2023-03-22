@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';

@@ -1,4 +1,4 @@
-import { $TSAny, $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';

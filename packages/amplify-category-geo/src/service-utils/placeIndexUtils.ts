@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { App } from 'aws-cdk-lib';
 import { PlaceIndexParameters } from './placeIndexParams';
 import { parametersFileName, provider, ServiceName } from './constants';

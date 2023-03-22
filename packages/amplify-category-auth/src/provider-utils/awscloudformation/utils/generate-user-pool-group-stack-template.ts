@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Template } from 'cloudform-types';
 import { AmplifyUserPoolGroupTransform } from '../auth-stack-builder/user-pool-group-stack-transform';
 

@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
