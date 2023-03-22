@@ -1,7 +1,14 @@
 version: 0.2
 env:
   shell: bash
+  variables:
+    CLI_REGION: us-east-1
+    TEST_SUITE: src/__tests__/auth_2b.test.ts
+    AMPLIFY_DIR: $CODEBUILD_SRC_DIR/out
+    AMPLIFY_PATH: $CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
 phases:
   build:
     commands:
+      - echo $AMPLIFY_DIR
+      - echo $AMPLIFY_PATH
       - source ./shared-scripts.sh && _runE2ETestsLinux
