@@ -287,7 +287,8 @@ orbs:
                             <<parameters.path>> \
                             --build-arg PKG_AWS_ACCESS_KEY=$PKG_AWS_ACCESS_KEY \
                             --build-arg PKG_AWS_SECRET_ACCESS_KEY=$PKG_AWS_SECRET_ACCESS_KEY \
-                            --build-arg PKG_AWS_SESSION_TOKEN=$PKG_AWS_SESSION_TOKEN
+                            --build-arg PKG_AWS_SESSION_TOKEN=$PKG_AWS_SESSION_TOKEN \
+                            --build-arg AWS_REGION=$AWS_REGION
                         fi
                     name: Build docker image
                     no_output_timeout: <<parameters.no-output-timeout>>
