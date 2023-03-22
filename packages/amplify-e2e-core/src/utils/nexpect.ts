@@ -739,7 +739,6 @@ export function nspawn(command: string | string[], params: string[] = [], option
     }
     return acc;
   }, {});
-  console.log('########### CHILD ENV ###########', JSON.stringify(childEnv, null, 2));
 
   let pushEnv;
 
