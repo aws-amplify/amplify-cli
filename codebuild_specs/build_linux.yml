@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - echo $BRANCH
       - echo "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
       - source ./shared-scripts.sh && _buildLinux
 
