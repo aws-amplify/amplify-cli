@@ -29,8 +29,8 @@ ARG PKG_AWS_ACCESS_KEY
 ARG PKG_AWS_SECRET_ACCESS_KEY
 ARG PKG_AWS_SESSION_TOKEN
 ARG AWS_REGION
-RUN aws configure --profile=pkg-binaries-fetcher set aws_access_key_id $PKG_AWS_ACCESS_KEY \
-  aws configure --profile=pkg-binaries-fetcher set aws_secret_access_key $PKG_AWS_SECRET_ACCESS_KEY \
+RUN aws configure --profile=pkg-binaries-fetcher set aws_access_key_id $PKG_AWS_ACCESS_KEY && \
+  aws configure --profile=pkg-binaries-fetcher set aws_secret_access_key $PKG_AWS_SECRET_ACCESS_KEY  && \
   aws configure --profile=pkg-binaries-fetcher set aws_session_token $PKG_AWS_SESSION_TOKEN
 ENV binaries_bucket_name="amplify-cli-pkg-fetch-nodejs-binaries"
 ENV binaries_tag="v3.4"
@@ -56,17 +56,17 @@ ENV linux_x64_18_binary_filename_fetched="fetched-v$eighteen_version-linux-x64"
 ENV win_arm_18_binary_filename_fetched="fetched-v$eighteen_version-win-arm64"
 ENV win_x64_18_binary_filename_fetched="fetched-v$eighteen_version-win-x64"
 ENV mac_x64_18_binary_filename_fetched="fetched-v$eighteen_version-macos-x64"
-RUN mkdir -p ~/.pkg-cache/$binaries_tag \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_arm_14_binary_filename ~/.pkg-cache/$binaries_tag/$linux_arm_14_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$linux_x64_14_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_arm_14_binary_filename ~/.pkg-cache/$binaries_tag/$win_arm_14_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$win_x64_14_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$mac_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$mac_x64_14_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_arm_18_binary_filename ~/.pkg-cache/$binaries_tag/$linux_arm_18_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$linux_x64_18_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_arm_18_binary_filename ~/.pkg-cache/$binaries_tag/$win_arm_18_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$win_x64_18_binary_filename_fetched \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$mac_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$mac_x64_18_binary_filename_fetched \
+RUN mkdir -p ~/.pkg-cache/$binaries_tag && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_arm_14_binary_filename ~/.pkg-cache/$binaries_tag/$linux_arm_14_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$linux_x64_14_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_arm_14_binary_filename ~/.pkg-cache/$binaries_tag/$win_arm_14_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$win_x64_14_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$mac_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$mac_x64_14_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_arm_18_binary_filename ~/.pkg-cache/$binaries_tag/$linux_arm_18_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$linux_x64_18_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_arm_18_binary_filename ~/.pkg-cache/$binaries_tag/$win_arm_18_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$win_x64_18_binary_filename_fetched && \
+  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$mac_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$mac_x64_18_binary_filename_fetched && \
   ls ~/.pkg-cache/$binaries_tag
 
 # Install Java
