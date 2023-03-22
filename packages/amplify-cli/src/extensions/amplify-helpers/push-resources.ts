@@ -162,18 +162,3 @@ const providersPush = async (
     }),
   );
 };
-
-/**
- * Delegates storeCurrentCloudBackend to all providers (just aws cfn provider)
- */
-export const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
-  const { providers } = getProjectConfig();
-  const providerPlugins = getProviderPlugins(context);
-
-  await Promise.all(
-    providers.map(async (provider: string) => {
-      const providerModule = await import(providerPlugins[provider]);
-      return providerModule.storeCurrentCloudBackend(context);
-    }),
-  );
-};
