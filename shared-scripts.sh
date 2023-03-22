@@ -169,7 +169,7 @@ function _publishToLocalRegistry {
     loadCache .cache $HOME/.cache
 
     source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    setNpmRegistryUrlToLocal
+    source ./.circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal
     export LOCAL_PUBLISH_TO_LATEST=true
     ./.circleci/publish-codebuild.sh
     unsetNpmRegistryUrl
@@ -182,6 +182,12 @@ function _publishToLocalRegistry {
     echo Save new amplify Github tag
     node scripts/echo-current-cli-version.js > .amplify-pkg-version
     
+    echo LS HOME
+    ls $HOME
+
+    echo LS REPO
+    ls $CODEBUILD_SRC_DIR
+
     # copy [verdaccio-cache, changelog, pkgtag to s3]
     storeCache $HOME/verdaccio-cache verdaccio-cache
     storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
@@ -199,7 +205,7 @@ function _buildBinaries {
     # download [repo, yarn, verdaccio from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    loadCache verdaccio-cache $HOME/verdaccio-cache
+    # loadCache verdaccio-cache $HOME/verdaccio-cache
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
@@ -222,7 +228,7 @@ function _runE2ETestsLinux {
     
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    loadCache verdaccio-cache $HOME/verdaccio-cache
+    # loadCache verdaccio-cache $HOME/verdaccio-cache
     loadCache repo-out $CODEBUILD_SRC_DIR/out
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
