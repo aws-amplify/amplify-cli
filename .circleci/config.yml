@@ -565,7 +565,7 @@ jobs:
           create-repo: false
           dockerfile: Dockerfile
           repo: amplify-cli-e2e-base-image-repo-public
-          tag: "pkg-fetch,${CIRCLE_SHA1}"
+          tag: "latest,${CIRCLE_SHA1}"
 
 workflows:
   build_and_push_image:
@@ -578,4 +578,3 @@ workflows:
             branches:
               only:
                 - e2e-image-build
-                - e2e-image-build-pkg-fetch
