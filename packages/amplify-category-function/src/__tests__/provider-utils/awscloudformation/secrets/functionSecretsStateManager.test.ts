@@ -21,6 +21,9 @@ const SSMClientWrapperMock = mocked(SSMClientWrapper);
 const getFunctionSecretPrefixMock = mocked(getFunctionSecretPrefix);
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
 
+const amplifyErrorMockImpl = { name: 'TestError' } as unknown as AmplifyError;
+AmplifyErrorMock.mockImplementation(() => amplifyErrorMockImpl);
+
 stateManagerMock.getLocalEnvInfo.mockReturnValue({
   envName: 'testTest',
 });
@@ -40,16 +43,26 @@ SSMClientWrapperMock.getInstance.mockResolvedValue({
 
 const getLocalFunctionSecretNamesSpy = jest.spyOn(stateManagerModule, 'getLocalFunctionSecretNames');
 
-describe('syncSecretDeltas', () => {
-  const contextStub = {
-    parameters: {
-      command: 'update',
+const contextStub = {
+  parameters: {
+    command: 'update',
+  },
+  input: {
+    options: {
+      yes: true,
     },
-  } as unknown as $TSContext;
-  beforeEach(jest.clearAllMocks);
+  },
+} as unknown as $TSContext;
+let functionSecretsStateManager: FunctionSecretsStateManager;
 
+beforeAll(async () => {
+  functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(contextStub);
+});
+
+beforeEach(() => jest.clearAllMocks());
+
+describe('syncSecretDeltas', () => {
   it('sets Amplify AppID in team-provider-info if secrets are present', async () => {
-    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(contextStub);
     await functionSecretsStateManager.syncSecretDeltas({ TEST_SECRET: { operation: 'retain' } }, 'testFuncName');
     expect(getEnvParamManager('testTest').getResourceParamManager('function', 'testFuncName').getAllParams()).toEqual({
       secretsPathAmplifyAppId: 'testAppId',
@@ -57,33 +70,19 @@ describe('syncSecretDeltas', () => {
   });
 
   it('removes Amplify AppId from team-provider-info if secrets are not present', async () => {
-    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(contextStub);
     await functionSecretsStateManager.syncSecretDeltas({ TEST_SECRET: { operation: 'remove' } }, 'testFuncName');
     expect(getEnvParamManager('testTest').getResourceParamManager('function', 'testFuncName').getAllParams()).toEqual({});
   });
 });
 
 describe('ensureNewLocalSecretsSyncedToCloud', () => {
-  const contextStub = {
-    input: {
-      options: {
-        yes: true,
-      },
-    },
-    parameters: {
-      command: 'update',
-    },
-  } as unknown as $TSContext;
-  beforeEach(jest.clearAllMocks);
   it('throws AmplifyError if secrets are missing and not in interactive mode', async () => {
     const funcName = 'testFunc';
     const secretPrefix = 'testPrefix';
     getFunctionSecretPrefixMock.mockReturnValue(secretPrefix);
-    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(contextStub);
-
     getLocalFunctionSecretNamesSpy.mockReturnValue(['secret1', 'secret2']);
     getSecretNamesByPathMock.mockResolvedValue(['secret2'].map((sec) => `${secretPrefix}${sec}`));
 
-    await expect(functionSecretsStateManager.ensureNewLocalSecretsSyncedToCloud(funcName)).rejects.toBeInstanceOf(AmplifyError);
+    await expect(functionSecretsStateManager.ensureNewLocalSecretsSyncedToCloud(funcName)).rejects.toStrictEqual(amplifyErrorMockImpl);
   });
 });
