@@ -30,6 +30,9 @@ fsMock.createWriteStream.mockReturnValue({
   write: {
     bind: jest.fn(),
   },
+  close: (cb: Function) => {
+    cb();
+  },
 } as unknown as fs.WriteStream);
 fsMock.createReadStream.mockImplementation((filePath) => `mock body of ${filePath}` as unknown as fs.ReadStream);
 
