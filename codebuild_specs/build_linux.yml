@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - echo "${CODEBUILD_SOURCE_VERSION#branch/*}"
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:
