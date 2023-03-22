@@ -961,7 +961,12 @@ export const importedAuthEnvInit = async (
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
   isInHeadlessMode: boolean,
   headlessParams: ImportAuthHeadlessParameters,
-): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; cleanupRequired?: boolean, envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{
+  doServiceWalkthrough?: boolean;
+  succeeded?: boolean;
+  cleanupRequired?: boolean;
+  envSpecificParameters?: EnvSpecificResourceParameters;
+}> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -1095,14 +1100,13 @@ export const importedAuthEnvInit = async (
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
       // check if cleanup needed if resources is imported in the App
-      if(projectHasAuth(context, false)){
-        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, {headless: true});
+      if (projectHasAuth(context, false)) {
+        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
         return {
           succeeded: false,
           cleanupRequired: true,
         };
-      }
-      else{
+      } else {
         context.print.error(
           importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
         );
@@ -1227,7 +1231,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; cleanupRequired?: boolean, envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; cleanupRequired?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1262,11 +1266,11 @@ export const headlessImport = async (
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      if(projectHasAuth(context, false)){
-        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, {headless: true});
+      if (projectHasAuth(context, false)) {
+        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
         return {
           succeeded: false,
-          cleanupRequired: true
+          cleanupRequired: true,
         };
       }
       throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));

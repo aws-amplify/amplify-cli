@@ -96,7 +96,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       envSpecificParametersResult = envSpecificParameters;
     } else {
       // succeeded === false | undefined
-      if(cleanupRequired) {
+      if (cleanupRequired) {
         // returning undefined as nothing to pass here
         return envSpecificParametersResult;
       }

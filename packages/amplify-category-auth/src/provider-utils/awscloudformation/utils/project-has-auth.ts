@@ -11,7 +11,7 @@ export const projectHasAuth = (context: $TSContext, showWarning = true): boolean
   const existingAuthResources: [string, $TSObject][] = Object.entries(meta?.auth || {});
 
   if (existingAuthResources.length > 0) {
-    if(showWarning){
+    if (showWarning) {
       if (checkAuthIsImported(existingAuthResources)) {
         // determine which command will make the help message useful, defaults to 'import'
         const commandVerb = context?.input?.command && context.input.command !== 'update' ? context.input.command : 'import';
