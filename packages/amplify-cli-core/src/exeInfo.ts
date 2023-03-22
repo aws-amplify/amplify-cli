@@ -18,17 +18,6 @@ export type PinpointInfo = {
   pinpointInputParams?: $TSAny;
 };
 
-// "providers": [
-//   "awscloudformation"
-// ],
-// "projectName": "app2test",
-// "version": "3.1",
-// "frontend": "flutter",
-// "flutter": {
-//   "config": {
-//     "ResDir": "./lib/"
-//   }
-// }
 export type FrameworkConfig = {
   SourceDir: string;
   BuildCommand: string;
