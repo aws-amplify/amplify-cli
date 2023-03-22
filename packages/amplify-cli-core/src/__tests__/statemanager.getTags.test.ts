@@ -1,3 +1,4 @@
+import { ExeInfo } from '..';
 import { stateManager } from '../state-manager';
 import { Tag } from '../tags';
 describe('getTags', () => {
@@ -14,7 +15,7 @@ describe('getTags', () => {
   const mockConfig = {
     projectConfig: {
       projectName: 'foo',
-    },
+    } as unknown as ExeInfo.ProjectConfig,
     localEnvInfo: {
       envName: 'bar',
     },

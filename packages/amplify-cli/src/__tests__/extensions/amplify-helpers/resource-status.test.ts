@@ -1,5 +1,5 @@
 import { hashLayerResource } from '@aws-amplify/amplify-category-function';
-import { AmplifyException, stateManager } from 'amplify-cli-core';
+import { AmplifyException, ExeInfo, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
@@ -85,7 +85,7 @@ jest.mock('@aws-amplify/amplify-category-function', () => ({
   hashLayerResource: jest.fn(),
 }));
 
-const mockProjectConfig = {
+const mockProjectConfig: ExeInfo.ProjectConfig = {
   projectName: 'mockProjectName',
   version: '2.0',
   frontend: 'javascript',
@@ -96,10 +96,10 @@ const mockProjectConfig = {
       DistributionDir: 'dist',
       BuildCommand: 'npm run-script build',
       StartCommand: 'npm run-script start',
-    },
+    } as unknown as ExeInfo.FrameworkConfig,
   },
   providers: ['awscloudformation'],
-};
+} as unknown as ExeInfo.ProjectConfig;
 
 describe('resource-status', () => {
   beforeEach(() => {

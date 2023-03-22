@@ -18,17 +18,55 @@ export type PinpointInfo = {
   pinpointInputParams?: $TSAny;
 };
 
+// "providers": [
+//   "awscloudformation"
+// ],
+// "projectName": "app2test",
+// "version": "3.1",
+// "frontend": "flutter",
+// "flutter": {
+//   "config": {
+//     "ResDir": "./lib/"
+//   }
+// }
+export type FrameworkConfig = {
+  SourceDir: string;
+  BuildCommand: string;
+  ServerlessContainers: boolean;
+  DistributionDir: string;
+  StartCommand: string;
+};
+
+export type ProjectFramework = {
+  framework: string;
+  config: FrameworkConfig;
+};
+
+export type FrontendFrameworks = 'javascript' | 'android' | 'ios' | 'flutter';
+
+export type ProjectConfig = {
+  providers: string[];
+  projectName: string;
+  projectPath: string;
+  version: string;
+  frontend: FrontendFrameworks;
+  javascript?: ProjectFramework;
+  flutter?: ProjectFramework;
+  android?: ProjectFramework;
+  ios?: ProjectFramework;
+};
+
 export type ProjectInfo = {
   amplifyMeta?: $TSAny;
   awsConfigInfo?: $TSAny;
   backendConfig?: $TSAny;
   existingLocalAwsInfo?: $TSAny;
-  existingProjectConfig?: $TSAny;
+  existingProjectConfig: ProjectConfig;
   existingTeamProviderInfo?: $TSAny;
   isNewProject?: boolean;
   inputParams: $TSObject;
   localEnvInfo: LocalEnvInfo;
-  projectConfig?: $TSAny;
+  projectConfig: ProjectConfig;
   serviceMeta?: $TSAny;
   teamProviderInfo?: $TSAny;
 };

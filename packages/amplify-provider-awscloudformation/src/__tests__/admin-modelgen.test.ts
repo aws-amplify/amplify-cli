@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager, ExeInfo } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { adminModelgen } from '../admin-modelgen';
 import { S3 } from '../aws-utils/aws-s3';
@@ -13,7 +13,9 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 
-const originalProjectConfig = 'original project config';
+const originalProjectConfig = {
+  projectName: 'original project config',
+} as unknown as ExeInfo.ProjectConfig;
 
 stateManagerMock.getProjectConfig.mockReturnValue(originalProjectConfig);
 stateManagerMock.getMeta.mockReturnValue({

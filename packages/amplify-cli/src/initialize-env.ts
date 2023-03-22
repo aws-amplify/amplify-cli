@@ -9,6 +9,7 @@ import {
   constants,
   spinner,
   LocalEnvInfo,
+  ExeInfo,
 } from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
@@ -131,7 +132,12 @@ export const initializeEnv = async (
 
     const projectDetails = context.amplify.getProjectDetails();
 
-    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
+    context.exeInfo ??= {
+      inputParams: {},
+      localEnvInfo: {} as unknown as LocalEnvInfo,
+      projectConfig: {} as unknown as ExeInfo.ProjectConfig,
+      existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
+    };
     Object.assign(context.exeInfo, projectDetails);
 
     try {

@@ -1,4 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { FrontendFrameworks } from 'amplify-cli-core/src/exeInfo';
 import * as inquirer from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
@@ -50,8 +51,8 @@ export const getSuitableFrontend = (context: $TSContext, frontendPlugins: $TSAny
   return suitableFrontend;
 };
 
-const getFrontendHandler = async (context: $TSContext, frontendPlugins: $TSAny, suitableFrontend: string): Promise<string> => {
-  let frontend;
+const getFrontendHandler = async (context: $TSContext, frontendPlugins: $TSAny, suitableFrontend: string): Promise<FrontendFrameworks> => {
+  let frontend: string | undefined;
   const frontendPluginList = Object.keys(frontendPlugins);
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify.frontend) {
@@ -74,5 +75,5 @@ const getFrontendHandler = async (context: $TSContext, frontendPlugins: $TSAny, 
     frontend = answer.selectedFrontendHandler;
   }
 
-  return frontend;
+  return frontend as FrontendFrameworks;
 };

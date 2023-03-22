@@ -427,12 +427,10 @@ export const getResourcesToBeUpdated = async (
           }
 
           if (categoryName === 'hosting' && currentAmplifyMeta[categoryName][resource].service === 'ElasticContainer') {
-            const {
-              frontend,
-              [frontend]: {
-                config: { SourceDir },
-              },
-            } = stateManager.getProjectConfig();
+            const projectConfig = stateManager.getProjectConfig();
+            const frontend = projectConfig.frontend;
+            const SourceDir: string = projectConfig[frontend]?.config.SourceDir || '';
+
             // build absolute path for Docker file and docker-compose.yaml
             const projectRootPath = pathManager.findProjectRoot();
             if (projectRootPath) {

@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, LocalEnvInfo, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, ExeInfo, LocalEnvInfo, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -139,7 +139,7 @@ const setProjectConfig = (context: $TSContext, projectName: string): void => {
   context.exeInfo.projectConfig = {
     projectName,
     version: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
-  };
+  } as unknown as ExeInfo.ProjectConfig;
 };
 
 const setExeInfo = (context: $TSContext, projectPath: string, defaultEditor?: string, envName?: string): $TSContext => {

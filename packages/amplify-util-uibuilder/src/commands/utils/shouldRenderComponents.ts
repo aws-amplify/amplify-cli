@@ -34,7 +34,7 @@ export const shouldRenderComponents = async (context: $TSContext): Promise<boole
     return false;
   }
 
-  if (projectConfig.javascript.framework !== 'react') {
+  if (projectConfig.javascript?.framework !== 'react') {
     printer.debug('Not pulling components because this project is not configured with the "react" framework.');
     return false;
   }

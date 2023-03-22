@@ -10,6 +10,7 @@ import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
 import { CustomIAMPolicies } from '../customPoliciesUtils';
+import { ProjectConfig } from '../exeInfo';
 
 /**
  * Options available in config files
@@ -129,14 +130,19 @@ export class StateManager {
 
   projectConfigExists = (projectPath?: string): boolean => this.doesExist(pathManager.getProjectConfigFilePath, projectPath);
 
-  getProjectConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
+  getProjectConfig = (projectPath?: string, options?: GetOptions<$TSAny>): ProjectConfig => {
     const filePath = pathManager.getProjectConfigFilePath(projectPath);
     const mergedOptions = {
       throwIfNotExist: true,
       ...options,
     };
 
-    return this.getData<$TSAny>(filePath, mergedOptions);
+    const projectConfigFromFile = this.getData<ProjectConfig>(filePath, mergedOptions);
+    if (projectConfigFromFile === undefined) {
+      return {} as ProjectConfig;
+    }
+
+    return projectConfigFromFile;
   };
 
   backendConfigFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getBackendConfigFilePath, projectPath);

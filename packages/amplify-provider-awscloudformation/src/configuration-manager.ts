@@ -1,4 +1,14 @@
-import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, AmplifyError, LocalEnvInfo } from 'amplify-cli-core';
+import {
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  LocalEnvInfo,
+  ExeInfo,
+} from 'amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { prompt } from 'inquirer';
@@ -23,6 +33,7 @@ import {
   updateOrRemoveQuestion,
   retryAuthConfig,
 } from './question-flows/configuration-questions';
+import { ProjectFramework } from 'amplify-cli-core/src/exeInfo';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -99,9 +110,9 @@ export async function configure(context: $TSContext) {
 
 async function enableServerlessContainers(context: $TSContext) {
   const { frontend } = context.exeInfo.projectConfig;
-  const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
+  const config: ExeInfo.FrameworkConfig = context.exeInfo.projectConfig[frontend]?.config || ({} as unknown as ExeInfo.FrameworkConfig);
   // TODO: check for headless mode parameter to avoid the question
-  const { ServerlessContainers } = await prompt({
+  const { ServerlessContainers } = await prompt<ExeInfo.FrameworkConfig>({
     type: 'confirm',
     name: 'ServerlessContainers',
     message: 'Do you want to enable container-based deployments?',
@@ -109,7 +120,7 @@ async function enableServerlessContainers(context: $TSContext) {
   });
 
   if (!context.exeInfo.projectConfig[frontend]) {
-    context.exeInfo.projectConfig[frontend] = { config };
+    context.exeInfo.projectConfig[frontend] = { config } as ExeInfo.ProjectFramework;
   }
 
   context.exeInfo.projectConfig[frontend].config = { ...config, ServerlessContainers };
@@ -122,7 +133,12 @@ function doesAwsConfigExists(context: $TSContext) {
   if (stateManager.localAWSInfoExists()) {
     const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
-      context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
+      context.exeInfo ??= {
+        inputParams: {},
+        localEnvInfo: {} as unknown as LocalEnvInfo,
+        projectConfig: {} as unknown as ExeInfo.ProjectConfig,
+        existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
+      };
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
       context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;

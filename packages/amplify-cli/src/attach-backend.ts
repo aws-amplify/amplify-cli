@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, AmplifyFault, FeatureFlags, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, AmplifyFault, FeatureFlags, LocalEnvInfo, pathManager, ExeInfo, stateManager } from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -190,7 +190,7 @@ const prepareContext = (context: $TSContext, inputParams): void => {
   context.exeInfo = {
     isNewProject: true,
     inputParams,
-    projectConfig: {},
+    projectConfig: {} as unknown as ExeInfo.ProjectConfig,
     localEnvInfo: {
       projectPath,
     } as unknown as LocalEnvInfo,

@@ -13,6 +13,7 @@ import {
   IPluginCapabilityAPIResponse,
   $TSAny,
   AmplifyError,
+  ExeInfo,
 } from 'amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { addResource } from './provider-utils/awscloudformation/index';
@@ -160,7 +161,12 @@ export const analyticsPushYes = async (context: $TSContext): Promise<void> => {
   const exeInfoClone = { ...context?.exeInfo };
   const parametersClone = { ...context?.parameters };
   try {
-    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
+    context.exeInfo ??= {
+      inputParams: {},
+      localEnvInfo: {} as unknown as LocalEnvInfo,
+      projectConfig: {} as unknown as ExeInfo.ProjectConfig,
+      existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
+    };
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
     context.parameters = context.parameters || {};

@@ -1,4 +1,4 @@
-import { $TSContext, LocalEnvInfo } from 'amplify-cli-core';
+import { $TSContext, ExeInfo, LocalEnvInfo } from 'amplify-cli-core';
 import { constructInputParams } from '../amplify-service-helper';
 import { Context } from '../domain/context';
 import { raisePostEnvAddEvent } from '../execution-manager';
@@ -15,6 +15,8 @@ const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
     inputParams: constructInputParams(context),
     localEnvInfo: {} as unknown as LocalEnvInfo,
+    projectConfig: {} as unknown as ExeInfo.ProjectConfig,
+    existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
   };
 };
 

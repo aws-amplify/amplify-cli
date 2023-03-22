@@ -1,9 +1,10 @@
 import { getProjectDetails } from './get-project-details';
-import { JSONUtilities, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext, ExeInfo } from 'amplify-cli-core';
+import { ProjectInfo } from 'amplify-cli-core/src/exeInfo';
 
 export function constructExeInfo(context: $TSContext) {
   const projectDetails = getProjectDetails();
-  context.exeInfo = { ...projectDetails, inputParams: {} };
+  context.exeInfo = { ...projectDetails, inputParams: {} } as unknown as ProjectInfo;
 
   if (!context.parameters.options) {
     return;

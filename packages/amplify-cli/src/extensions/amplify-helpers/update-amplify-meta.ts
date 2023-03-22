@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { buildTypeKeyMap, ServiceName } from '@aws-amplify/amplify-category-function';
-import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSMeta, $TSObject, ExeInfo, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
@@ -221,12 +221,10 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promis
         let hashDir: string | undefined;
 
         if (resource.category === 'hosting' && resource.service === 'ElasticContainer') {
-          const {
-            frontend,
-            [frontend]: {
-              config: { SourceDir },
-            },
-          } = stateManager.getProjectConfig();
+          const projectConfig = stateManager.getProjectConfig();
+          const frontend = projectConfig.frontend;
+          const SourceDir: string = projectConfig[frontend]?.config.SourceDir || '';
+
           // build absolute path for Dockerfile and docker-compose.yaml
           const projectRootPath = pathManager.findProjectRoot();
           // eslint-disable-next-line max-depth

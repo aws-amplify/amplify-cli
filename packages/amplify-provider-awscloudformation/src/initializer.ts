@@ -12,6 +12,7 @@ import {
   stateManager,
   Tag,
   Template,
+  ExeInfo,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -52,7 +53,12 @@ type ParamType = {
 export const run = async (context: $TSContext): Promise<void> => {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
-    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
+    context.exeInfo ??= {
+      inputParams: {},
+      localEnvInfo: {} as unknown as LocalEnvInfo,
+      projectConfig: {} as unknown as ExeInfo.ProjectConfig,
+      existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
+    };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
     /* eslint-disable-next-line spellcheck/spell-checker */

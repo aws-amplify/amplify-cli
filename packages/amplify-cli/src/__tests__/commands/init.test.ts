@@ -1,4 +1,5 @@
-import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, ExeInfo, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
+import { ProjectConfig } from 'amplify-cli-core/src';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
@@ -31,7 +32,9 @@ describe('amplify init:', () => {
   const mockGetBackendDirPath = jest.spyOn(pathManager, 'getBackendDirPath');
   const mockGetGitIgnoreFilePath = jest.spyOn(pathManager, 'getGitIgnoreFilePath');
 
-  const mockGetProjectConfig = jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'mockProject' });
+  const mockGetProjectConfig = jest
+    .spyOn(stateManager, 'getProjectConfig')
+    .mockReturnValue({ projectName: 'mockProject' } as unknown as ExeInfo.ProjectConfig);
   const mockGetLocalEnvInfo = jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ defaultEditor: 'VSCode', envName: 'testEnv' });
   const mockGetTeamProviderInfo = jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({});
   const mockGetLocalAWSInfo = jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({});
@@ -138,7 +141,13 @@ describe('amplify init:', () => {
     it('should use current project config if it is not a new project', async () => {
       await initFrontend({
         ...mockContext,
-        exeInfo: { isNewProject: false, inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo },
+        exeInfo: {
+          isNewProject: false,
+          inputParams: {},
+          localEnvInfo: {} as unknown as LocalEnvInfo,
+          projectConfig: {} as unknown as ExeInfo.ProjectConfig,
+          existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
+        },
       });
       expect(mockGetProjectConfig).toBeCalled();
     });
@@ -154,7 +163,8 @@ describe('amplify init:', () => {
           projectConfig: {
             projectName,
             frontend,
-          },
+          } as unknown as ExeInfo.ProjectConfig,
+          existingProjectConfig: {} as unknown as ExeInfo.ProjectConfig,
           inputParams: {},
           localEnvInfo: {} as unknown as LocalEnvInfo,
         },
