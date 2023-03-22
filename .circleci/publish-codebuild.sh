@@ -95,7 +95,8 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
     force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
   fi
   # create release commit and release tags
-  git checkout codebuild-poc && npx lerna version --preid=rc.$CODEBUILD_RESOLVED_SOURCE_VERSION --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
+  git checkout "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}" && npx lerna version --preid=rc.$CODEBUILD_RESOLVED_SOURCE_VERSION --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
+
 
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
@@ -110,10 +111,10 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
   lernaPublishExitOnFailure from-package --git-head $CODEBUILD_RESOLVED_SOURCE_VERSION --yes --no-push --dist-tag rc
 
   # push release commit
-  git push origin "$CIRCLE_BRANCH"
+  git push origin "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
 
   # push release tags
   git tag --points-at HEAD | xargs git push origin
 else
-  echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules. Skipping publish"
+  echo "branch name" "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}" "did not match any branch publish rules. Skipping publish"
 fi
