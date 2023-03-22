@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../../service-utils/mapParams';
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';

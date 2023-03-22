@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getPermissionPolicies } from '../index';
 
 jest.mock('amplify-cli-core');

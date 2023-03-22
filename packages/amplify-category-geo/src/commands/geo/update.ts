@@ -1,7 +1,7 @@
 import { chooseServiceMessageUpdate, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { updateResource } from '../../provider-controllers';
 import { printer } from '@aws-amplify/amplify-prompts';
 

@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { projectHasAuth } from '../../provider-controllers/index';
 
 jest.mock('amplify-cli-core');

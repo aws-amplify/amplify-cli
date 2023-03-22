@@ -190,6 +190,7 @@ function _publishToLocalRegistry {
 
     # copy [verdaccio-cache, changelog, pkgtag to s3]
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
+
     storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
     storeCacheFile $CODEBUILD_SRC_DIR/.amplify-pkg-version .amplify-pkg-version
 }
@@ -206,6 +207,7 @@ function _buildBinaries {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
@@ -229,13 +231,14 @@ function _runE2ETestsLinux {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+
     loadCache repo-out $CODEBUILD_SRC_DIR/out
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
-    
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     # source $BASH_ENV
+
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version

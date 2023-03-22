@@ -191,6 +191,21 @@ describe('parsing yarn lock files', () => {
     });
     expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
   });
+
+  it('should handle cycle in graph with yarn 1', async () => {
+    // this test will error with stack overflow if dfs is following cycle
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'yarn',
+      lockFile: 'yarn-test-with-cycle.lock',
+      packageManager: 'yarn',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    dec.detectAffectedDirectDependencies('@aws-cdk/core');
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`Array []`);
+  });
 });
 
 describe('parsing package lock files', () => {
@@ -389,6 +404,19 @@ describe('parsing package lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
+  });
+
+  it('should handle cycle in graph with npm', async () => {
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+      executable: 'npm',
+      lockFile: 'package-lock-test-with-cycle.json',
+      packageManager: 'npm',
+    });
+    const projectRoot = path.join(__dirname, 'resources');
+    const dec = new AmplifyNodePkgDetector({
+      projectRoot,
+    });
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`Array []`);
   });
 });
 

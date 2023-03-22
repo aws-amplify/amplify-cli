@@ -26,9 +26,9 @@
     "access": "public"
   },
   "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.0.0",
     "@aws-amplify/amplify-prompts": "2.6.5",
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.0",
     "amplify-headless-interface": "1.17.1",
     "amplify-util-headless-input": "1.9.10",
     "aws-cdk-lib": "~2.68.0",

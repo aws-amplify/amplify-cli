@@ -59,6 +59,14 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+  l_small: &linux-e2e-executor-small
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: small
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 
 defaults: &defaults
   working_directory: ~/repo
@@ -515,7 +523,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -545,7 +553,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -577,7 +585,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -607,7 +615,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -637,7 +645,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -665,7 +673,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=3
+            retry yarn run console-integration --no-cache --maxWorkers=4
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
@@ -897,7 +905,7 @@ jobs:
               --data '{"branch":"'$CIRCLE_BRANCH'","parameters":{"e2e_workflow_cleanup":true,"setup":false,"e2e_workflow_cleanup_workflow_id":"'$CIRCLE_WORKFLOW_ID'"}}'
 
   wait_for_all:
-    <<: *linux-e2e-executor-medium
+    <<: *linux-e2e-executor-small
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}

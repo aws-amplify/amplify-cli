@@ -9,7 +9,7 @@ import {
   getAddAuthRequestAdaptor,
   getUpdateAuthRequestAdaptor,
 } from '../../../../provider-utils/awscloudformation/utils/auth-request-adaptors';
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 
 describe('get add auth request adaptor', () => {
   beforeEach(() => {

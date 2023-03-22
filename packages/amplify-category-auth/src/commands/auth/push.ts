@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { uploadFiles } from '../../provider-utils/awscloudformation/utils/trigger-file-uploader';
 
 export const name = 'push';

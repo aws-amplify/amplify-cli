@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { updateConfigOnEnvInit } from '../../../provider-utils/awscloudformation/index';
 
 jest.mock('@aws-amplify/amplify-environment-parameters');

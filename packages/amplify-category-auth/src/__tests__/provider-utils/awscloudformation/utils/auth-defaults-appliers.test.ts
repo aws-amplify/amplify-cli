@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { AuthContext } from '../../../../context';
 import { ServiceQuestionHeadlessResult } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { structureOAuthMetadata } from '../../../../provider-utils/awscloudformation/service-walkthroughs/auth-questions';

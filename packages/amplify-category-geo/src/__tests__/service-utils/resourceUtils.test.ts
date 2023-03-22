@@ -1,4 +1,4 @@
-import { stateManager, $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
+import { stateManager, $TSContext, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { EsriMapStyleType, MapParameters, MapStyle } from '../../service-utils/mapParams';
 import { merge, updateDefaultResource, readResourceMetaParameters } from '../../service-utils/resourceUtils';
 import { provider, ServiceName } from '../../service-utils/constants';

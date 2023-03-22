@@ -4,9 +4,9 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const executeAmplifyCommand: (context: $TSContext) => Promise<void>;
