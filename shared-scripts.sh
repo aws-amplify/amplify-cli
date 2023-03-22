@@ -233,9 +233,9 @@ function _runE2ETestsLinux {
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
-    source .circleci/local_publish_helpers.sh
-    source $BASH_ENV
-    startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    # source $BASH_ENV
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
