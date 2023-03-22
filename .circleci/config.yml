@@ -284,7 +284,11 @@ orbs:
                             <<#parameters.extra-build-args>><<parameters.extra-build-args>><</parameters.extra-build-args>> \
                             -f <<parameters.path>>/<<parameters.dockerfile>> \
                             $docker_tag_args \
-                            <<parameters.path>>
+                            <<parameters.path>> \
+                            --build-arg PKG_AWS_ACCESS_KEY=$PKG_AWS_ACCESS_KEY \
+                            --build-arg PKG_AWS_SECRET_ACCESS_KEY=$PKG_AWS_SECRET_ACCESS_KEY \
+                            --build-arg PKG_AWS_SESSION_TOKEN=$PKG_AWS_SESSION_TOKEN \
+                            --build-arg AWS_REGION=$AWS_REGION
                         fi
                     name: Build docker image
                     no_output_timeout: <<parameters.no-output-timeout>>
@@ -567,7 +571,9 @@ workflows:
   build_and_push_image:
     jobs:
       - build:
-          context: amplify-cli-ecr
+          context:
+            - amplify-cli-ecr
+            - amplify-pkg-fetch-node-binaries
           filters:
             branches:
               only:
