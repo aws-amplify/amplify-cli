@@ -307,13 +307,3 @@ function checkPackageVersionsInLocalNpmRegistry {
         echo "Versions matched."
     fi
 }
-
-function putNodeBinaryInPkgCache {
-    binary_filename=$1
-    aws configure --profile=pkg-binaries-fetcher set aws_access_key_id $PKG_AWS_ACCESS_KEY
-    aws configure --profile=pkg-binaries-fetcher set aws_secret_access_key $PKG_AWS_SECRET_ACCESS_KEY
-    aws configure --profile=pkg-binaries-fetcher set aws_session_token $PKG_AWS_SESSION_TOKEN
-    fetched_binary_filename=${$(echo $binary_filename)/node/fetched} # substitute node for fetched
-    aws --profile=pkg-binaries-fetcher s3 cp s3://amplify-cli-pkg-fetch-nodejs-binaries/$(echo $binaries_tag)/$(echo $binary_filename) ~/.pkg-cache/$(echo $binaries_tag)/$(echo fetched_binary_filename)
-    
-}
