@@ -117,7 +117,7 @@ class CloudFormation {
     // add root stack to see the new stacks
     this.readStackEvents(stackName);
     // wait for the poll queue to drain
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.pollQueue.once('empty', () => {
         const failedStacks = this.stackEvents.filter((ev) => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
 
@@ -130,7 +130,7 @@ class CloudFormation {
           });
           resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks)));
         } catch (e) {
-          Promise.reject(e);
+          reject(e);
         } finally {
           if (this.pollForEvents) {
             clearTimeout(this.pollForEvents);
@@ -404,7 +404,7 @@ class CloudFormation {
                     this.progressBar?.stop();
 
                     if (completeErr) {
-                      this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
+                      await this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
                         completeErr.details = errorDetails;
                         reject(completeErr);
                       });
@@ -568,7 +568,7 @@ class CloudFormation {
           log(err);
           reject(err);
         } else if (data.NextToken) {
-          this.listExports(data.NextToken).then((innerExports) => resolve([...data.Exports, ...innerExports]));
+          await this.listExports(data.NextToken).then((innerExports) => resolve([...data.Exports, ...innerExports]));
         } else {
           resolve(data.Exports);
         }
@@ -647,7 +647,7 @@ class CloudFormation {
             cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, (completeErr) => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
-                this.collectStackErrors(stackName).then((errorDetails) => {
+                await this.collectStackErrors(stackName).then((errorDetails) => {
                   completeErr.details = errorDetails;
                   reject(completeErr);
                 });
