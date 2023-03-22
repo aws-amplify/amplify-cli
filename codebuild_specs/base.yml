@@ -21,7 +21,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           IS_AMPLIFY_CI: true
-          BRANCH: '${CODEBUILD_WEBHOOK_TRIGGER#branch/*}'
+          BRANCH: ${CODEBUILD_WEBHOOK_TRIGGER#branch/*}
     - identifier: test
       buildspec: codebuild_specs/test.yml
       debug-session: true
