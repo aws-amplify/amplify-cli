@@ -21,7 +21,6 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           IS_AMPLIFY_CI: true
-          BRANCH: ${CODEBUILD_WEBHOOK_TRIGGER#branch/*}
     - identifier: test
       buildspec: codebuild_specs/test.yml
       debug-session: true
@@ -31,41 +30,41 @@ batch:
           EXAMPLE_SAMPLE: 'test'
       depend-on:
         - build_linux
-    # - identifier: validate_cdk_version
-    #   buildspec: codebuild_specs/validate_cdk_version.yml
-    #   debug-session: true
-    #   depend-on:
-    #     - build_linux
-    # - identifier: verify_api_extract
-    #   buildspec: codebuild_specs/verify_api_extract.yml
-    #   debug-session: true
-    #   env:
-    #     compute-type: BUILD_GENERAL1_LARGE
-    #   depend-on:
-    #     - build_linux
-    # - identifier: verify_yarn_lock
-    #   buildspec: codebuild_specs/verify_yarn_lock.yml
-    #   debug-session: true
-    #   depend-on:
-    #     - build_linux
-    # - identifier: publish_to_local_registry
-    #   buildspec: codebuild_specs/publish_to_local_registry.yml
-    #   debug-session: true
-    #   env:
-    #     compute-type: BUILD_GENERAL1_LARGE
-    #   depend-on:
-    #     - build_linux
-    # - identifier: build_pkg_binaries_linux
-    #   buildspec: codebuild_specs/build_pkg_binaries_linux.yml
-    #   debug-session: true
-    #   env:
-    #     compute-type: BUILD_GENERAL1_LARGE
-    #   depend-on:
-    #     - publish_to_local_registry
-    # - identifier: run_e2e_tests
-    #   buildspec: codebuild_specs/run_e2e_tests.yml
-    #   debug-session: true
-    #   env:
-    #     compute-type: BUILD_GENERAL1_LARGE
-    #   depend-on:
-    #     - build_pkg_binaries_linux
+    - identifier: validate_cdk_version
+      buildspec: codebuild_specs/validate_cdk_version.yml
+      debug-session: true
+      depend-on:
+        - build_linux
+    - identifier: verify_api_extract
+      buildspec: codebuild_specs/verify_api_extract.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: verify_yarn_lock
+      buildspec: codebuild_specs/verify_yarn_lock.yml
+      debug-session: true
+      depend-on:
+        - build_linux
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: build_pkg_binaries_linux
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
+    - identifier: run_e2e_tests
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      debug-session: true
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_pkg_binaries_linux
