@@ -183,13 +183,13 @@ function _publishToLocalRegistry {
     node scripts/echo-current-cli-version.js > .amplify-pkg-version
     
     echo LS HOME
-    ls $HOME
+    ls $CODEBUILD_SRC_DIR/..
 
     echo LS REPO
     ls $CODEBUILD_SRC_DIR
 
     # copy [verdaccio-cache, changelog, pkgtag to s3]
-    storeCache $HOME/verdaccio-cache verdaccio-cache
+    storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
     storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
     storeCacheFile $CODEBUILD_SRC_DIR/.amplify-pkg-version .amplify-pkg-version
 }
@@ -205,7 +205,7 @@ function _buildBinaries {
     # download [repo, yarn, verdaccio from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    # loadCache verdaccio-cache $HOME/verdaccio-cache
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
@@ -228,7 +228,7 @@ function _runE2ETestsLinux {
     
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    # loadCache verdaccio-cache $HOME/verdaccio-cache
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache repo-out $CODEBUILD_SRC_DIR/out
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
