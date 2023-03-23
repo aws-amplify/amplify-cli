@@ -34,7 +34,7 @@ export class S3Service implements IS3Service {
       // If the return object has no keys then it means successful empty object was returned.
       return Object.keys(response).length === 0;
     } catch (error) {
-      // workaround for aws-sdk bug causing headBucket for a opt-in region bucket to throw if s3 client is initialized with a different region
+      // workaround for S3 service bug causing headBucket for a opt-in region bucket to respond with BadRequest if s3 client is initialized with a different region
       if (error.region !== s3Client.config.region && error.code === 'BadRequest') {
         return this.checkIfBucketExists(bucketName, new S3({ ...s3Client.config?.credentials, region: error.region }));
       }
