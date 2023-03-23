@@ -23,29 +23,23 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 describe('attach amplify to git-cloned project', () => {
   const envName = 'test';
   let projRoot: string;
-  beforeEach(async () => {
+  beforeAll(async () => {
     projRoot = await createNewProjectDir('clone-test');
-    console.log('before init');
     await initJSProjectWithProfileV10(projRoot, { envName, disableAmplifyAppCreation: false });
-    console.log('before add auth');
     await addAuthUserPoolOnly(projRoot);
-    console.log('before push');
     await amplifyPushAuthV5V6(projRoot);
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
   });
 
-  afterEach(async () => {
-    console.log('after delete');
+  beforeAll(async () => {
     await deleteProject(projRoot, undefined, true);
-    console.log('after delete dir');
     deleteProjectDir(projRoot);
   });
 
   test('headless init and forcePush when triggers are added', async () => {
     // checks amplify hosting forcePush on existing projects with v10.5.1
     const { projectName } = getProjectConfig(projRoot);
-    console.log('before first check');
     assertLambdaexecutionRoleArns(projRoot, false);
     await gitCleanFdx(projRoot);
     const socialProviders = getSocialProviders();
@@ -61,7 +55,6 @@ describe('attach amplify to git-cloned project', () => {
         loginwithamazonAppSecretUserPool: socialProviders.AMAZON_APP_SECRET,
       },
     };
-    console.log('before init force push');
     await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig, true);
     assertLambdaexecutionRoleArns(projRoot, true);
   });

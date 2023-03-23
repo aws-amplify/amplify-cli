@@ -34,12 +34,6 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
-  const result = getCLIPathInternal(testingWithLatestCodebase);
-  console.log(`using CLI path: ${result}`);
-  return result;
-}
-
-function getCLIPathInternal(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
       return process.env.AMPLIFY_PATH;
