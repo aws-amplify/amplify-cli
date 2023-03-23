@@ -2,6 +2,7 @@ import { existsSync, createWriteStream } from 'fs-extra';
 import { InvokeOptions } from './invoke';
 import path from 'path';
 import exit from 'exit';
+import { AmplifyError } from 'amplify-cli-core';
 
 process.on('message', (options: InvokeOptions) => {
   const parentPipe = createWriteStream('', { fd: 3 });
@@ -29,14 +30,14 @@ const invokeFunction = async (options: InvokeOptions) => {
   if (options.packageFolder) {
     const p = path.resolve(options.packageFolder);
     if (!existsSync(p)) {
-      throw new Error(`Lambda package folder ${options.packageFolder} does not exist`);
+      throw new AmplifyError('LambdaFunctionInvokeError', { message: `Lambda package folder ${options.packageFolder} does not exist` });
     }
     process.chdir(p);
   } else {
-    throw new Error(`Invalid lambda invoke request. No package folder specified.`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Invalid lambda invoke request. No package folder specified.` });
   }
   if (!options.handler) {
-    throw new Error('Invalid lambda invoke request. No handler specified.');
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Invalid lambda invoke request. No handler specified.` });
   }
 
   const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
@@ -82,10 +83,12 @@ const loadHandler = async (root: string, handler: string): Promise<Function> => 
     const handlerFuncName = handlerParts.ext.replace('.', '');
     const handlerFunc = handler?.[handlerFuncName];
     if (typeof handlerFunc !== 'function') {
-      throw new Error(`Lambda handler ${handlerParts.name} has no exported function named ${handlerFuncName}`);
+      throw new AmplifyError('LambdaFunctionInvokeError', {
+        message: `Lambda handler ${handlerParts.name} has no exported function named ${handlerFuncName}`,
+      });
     }
     return handlerFunc;
   } catch (err) {
-    throw new Error(`Could not load lambda handler function due to ${err}`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Could not load lambda handler function due to ${err}` }, err);
   }
 };

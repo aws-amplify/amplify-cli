@@ -197,7 +197,7 @@ const providersPush = async (
     providers.map(async (provider: string) => {
       const providerModule = await import(providerPlugins[provider]);
       const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-      return providerModule.pushResources(context, resourceDefinition, rebuild);
+      return await providerModule.pushResources(context, resourceDefinition, rebuild);
     }),
   );
 };

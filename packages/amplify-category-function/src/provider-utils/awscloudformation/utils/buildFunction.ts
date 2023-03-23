@@ -1,6 +1,7 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
 import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { categoryName } from '../../../constants';
+import { AmplifyError } from 'amplify-cli-core';
 
 export const buildFunction = async (
   context: $TSContext,
@@ -16,7 +17,7 @@ export const buildFunction = async (
   const depCheck = await runtimePlugin.checkDependencies(breadcrumbs.functionRuntime);
   if (!depCheck.hasRequiredDependencies) {
     context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
-    throw new Error(`Missing required dependencies to package ${resourceName}`);
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `Missing required dependencies to package ${resourceName}` });
   }
 
   const prevBuildTime = lastBuildTimestamp ? new Date(lastBuildTimestamp) : undefined;
@@ -25,7 +26,7 @@ export const buildFunction = async (
   let rebuilt = false;
   if (breadcrumbs.scripts && breadcrumbs.scripts.build) {
     // TODO
-    throw new Error('Executing custom build scripts is not yet implemented');
+    throw new AmplifyError('NotImplementedError', { message: 'Executing custom build scripts is not yet implemented' });
   } else {
     const buildRequest: BuildRequest = {
       buildType,
