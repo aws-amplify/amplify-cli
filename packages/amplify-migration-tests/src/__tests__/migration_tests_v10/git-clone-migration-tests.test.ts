@@ -23,7 +23,7 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 describe('attach amplify to git-cloned project', () => {
   const envName = 'test';
   let projRoot: string;
-  beforeAll(async () => {
+  beforeEach(async () => {
     projRoot = await createNewProjectDir('clone-test');
     await initJSProjectWithProfileV10(projRoot, { envName, disableAmplifyAppCreation: false });
     await addAuthUserPoolOnly(projRoot);
@@ -32,7 +32,7 @@ describe('attach amplify to git-cloned project', () => {
     await gitCommitAll(projRoot);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
