@@ -29,7 +29,7 @@ export const cdkV1PrepareAppShim = (root: IConstruct): void => {
 
     for (const target of targetCfnResources) {
       for (const source of sourceCfnResources) {
-        source.addDependsOn(target);
+        source.addDependency(target);
       }
     }
   }
