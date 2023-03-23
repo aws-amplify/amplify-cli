@@ -62,6 +62,7 @@ export class S3Service implements IS3Service {
     return response.LocationConstraint;
   }
 }
+
 const handleS3Error = (error: { code: string; message: string }): boolean => {
   if (error.code === 'NotFound') {
     return false;
