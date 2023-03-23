@@ -132,6 +132,7 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
+      - run: yarn config set registry https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
       - run: yarn install
       - run:
