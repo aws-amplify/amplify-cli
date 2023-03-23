@@ -34,11 +34,13 @@
   "dependencies": {
     "axios": "^0.26.0",
     "rimraf": "^3.0.2",
-    "tar-stream": "^2.2.0"
+    "tar-stream": "^2.2.0",
+    "which-pm-runs": "^1.1.0"
   },
   "devDependencies": {
     "@aws-amplify/cli-internal": "11.0.0",
     "@types/tar": "^6.1.1",
+    "@types/which-pm-runs": "^1.0.0",
     "rimraf": "^3.0.2"
   }
 }
