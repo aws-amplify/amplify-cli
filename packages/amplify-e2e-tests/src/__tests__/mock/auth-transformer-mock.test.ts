@@ -5,7 +5,7 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
-import {GraphQLClient} from '../../../../amplify-util-mock/src/__e2e__/utils';
+import { GraphQLClient } from '@aws-amplify/amplify-util-mock';
 
 
 describe('Test auth transformer with mock', () => {
