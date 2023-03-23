@@ -1274,7 +1274,11 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
 
     this.hostedUIDomainResource = new cognito.CfnUserPoolDomain(this, 'HostedUIDomainResource', {
-      domain: props.hostedUIDomainName,
+      domain: cdk.Fn.conditionIf(
+        'ShouldNotCreateEnvResources',
+        cdk.Fn.ref('hostedUIDomainName'),
+        cdk.Fn.join('-', [cdk.Fn.ref('hostedUIDomainName'), cdk.Fn.ref('env')]),
+      ).toString(),
       userPoolId: cdk.Fn.ref('UserPool'),
     });
 

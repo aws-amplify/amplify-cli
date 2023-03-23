@@ -1,5 +1,4 @@
 import {
-  addAuthWithGroups,
   addAuthWithSignInSignOutUrl,
   amplifyPull,
   amplifyPushAuth,
@@ -10,15 +9,20 @@ import {
   getUserPool,
   getProjectMeta,
   initJSProjectWithProfile,
-  updateAuthSignInSignOutUrl,
+  updateAuthSignInSignOutUrlAfterPull,
   addAuthWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import Template from 'cloudform-types/types/template';
 
 const oauthSettings = {
   signinUrl: 'https://danielle.lol/',
   signoutUrl: 'https://danielle.lol/',
 };
+
+const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
+const { readJson } = JSONUtilities;
 
 describe('v11: hosted UI migration', () => {
   let projRoot1: string;
@@ -51,6 +55,8 @@ describe('v11: hosted UI migration', () => {
       const meta = getProjectMeta(projRoot1);
       const appId = getAppId(projRoot1);
       const region = meta.providers.awscloudformation.Region;
+      const authName = Object.keys(meta.auth)
+        .find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
       const { HostedUIDomain, UserPoolId } = Object.keys(meta.auth)
         .map((key) => meta.auth[key])
         .find((auth) => auth.service === 'Cognito').output;
@@ -62,18 +68,63 @@ describe('v11: hosted UI migration', () => {
       expect(HostedUIDomain).toEqual(userPoolRes1.UserPool.Domain);
 
       try {
+        let oauthUpdateSettings = {
+          ...oauthSettings,
+          updateSigninUrl: 'https://example.url/',
+          updateSignoutUrl: 'https://example.url/',
+          testingWithLatestCodebase: true,
+        };
+
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-        await updateAuthSignInSignOutUrl(projRoot2, { testingWithLatestCodebase: true });
+        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes2 = await getUserPool(UserPoolId, region);
+        const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', authName);
+        let authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 
         expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes2.UserPool.Domain);
 
-        // check that lambda is changed
-        // update
-        // push
-        // check that lambda is gone and user pool domain still exists
+        expect(authCfnTemplate.Resources.HostedUICustomResource.Properties.Code.ZipFile)
+          .toEqual(`const response = require('cfn-response');
+const aws = require('aws-sdk');
+const identity = new aws.CognitoIdentityServiceProvider();
+exports.handler = (event, context, callback) => {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+
+  let deleteUserPoolDomain = (domainName) => {
+    let params = { Domain: domainName, UserPoolId: userPoolId };
+    return identity.deleteUserPoolDomain(params).promise();
+  };
+
+  deleteUserPoolDomain(inputDomainName)
+    .then(() => {
+      response.send(event, context, response.SUCCESS, {});
+    })
+    .catch((err) => {
+      console.log(err);
+      response.send(event, context, response.FAILED, { err });
+    });
+};`);
+
+        oauthUpdateSettings = {
+          ...oauthUpdateSettings,
+          signinUrl: 'https://example.url/',
+          signoutUrl: 'https://example.url/',
+          updateSigninUrl: 'https://example.url/',
+          updateSignoutUrl: 'https://example.url/',
+          testingWithLatestCodebase: true,
+        };
+
+        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
+        await amplifyPushAuth(projRoot2, true);
+
+        const userPoolRes3 = await getUserPool(UserPoolId, region);
+        authCfnTemplate = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+
+        expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes3.UserPool.Domain);
+        expect(authCfnTemplate.Resources.HostedUICustomResource).toBeUndefined();
       } finally {
         deleteProjectDir(projRoot2);
       }
@@ -108,14 +159,17 @@ describe('v11: hosted UI migration', () => {
         };
 
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-        await updateAuthSignInSignOutUrl(projRoot2, oauthUpdateSettings);
+        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes2 = await getUserPool(UserPoolId, region);
+        const authName = Object.keys(meta.auth)
+        .find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
+        const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', authName);
+        const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 
         expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes2.UserPool.Domain);
-
-        // check that lambda not created
+        expect(authCfnTemplate.Resources.HostedUICustomResource).toBeUndefined();
       } finally {
         deleteProjectDir(projRoot2);
       }
