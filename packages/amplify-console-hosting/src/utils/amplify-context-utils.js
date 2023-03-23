@@ -1,5 +1,3 @@
-// disabling eslint until this file is migrated to TS
-/* eslint-disable */
 const constants = require('../constants/plugin-constants');
 const pathManager = require('../utils/path-manager');
 const fs = require('fs-extra');
@@ -48,4 +46,3 @@ module.exports = {
   getRegionForCurrEnv,
   getMetaInfo,
 };
-/* eslint-enable */

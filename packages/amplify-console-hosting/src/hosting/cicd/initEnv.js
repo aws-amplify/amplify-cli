@@ -1,4 +1,3 @@
-/* eslint-disable */
 const constants = require('../../constants/plugin-constants');
 const configUtils = require('../../utils/config-utils');
 const utils = require('../../utils/amplify-context-utils');
@@ -16,7 +15,7 @@ async function initEnv(context) {
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, type, constants.TYPE_CICD);
   const metaContent = utils.getMetaInfo(context);
   const { lastPushTimeStamp } = metaContent[category][resourceName];
-  configUtils.initCurrBackendMeta(context, category, resourceName, type, lastPushTimeStamp);
+  await configUtils.initCurrBackendMeta(context, category, resourceName, type, lastPushTimeStamp);
 }
 
 module.exports = {
