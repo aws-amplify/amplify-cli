@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.3) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+## [11.0.3-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.2...@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+* update error details in AmplifyFault during category push ([#12088](https://github.com/aws-amplify/amplify-cli/issues/12088)) ([85e43ae](https://github.com/aws-amplify/amplify-cli/commit/85e43ae101d95d406536b6da9b1fcad3ce9f1177))
+
+
+
+
+
 ## [11.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.1...@aws-amplify/cli-internal@11.0.2) (2023-03-17)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
