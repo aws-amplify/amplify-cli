@@ -24,7 +24,6 @@ import {
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 // eslint-disable-next-line import/no-cycle
 import { supportedServices } from './provider-utils/supported-services';
-import { preInitHandler } from './events/preInitHandler';
 
 export { categoryName as category } from './constants';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
@@ -318,9 +317,6 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
  */
 export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
   switch (args.event) {
-    case 'PreInit':
-      await preInitHandler(context);
-      break;
     case 'PrePush':
       await prePushHandler(context);
       break;
