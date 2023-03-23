@@ -336,9 +336,13 @@ export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args:
       })
       .map((plugin) => {
         const eventHandler = async (): Promise<void> => {
-          await attachContextExtensions(context, plugin);
-          const pluginModule = await import(plugin.packageLocation);
-          await pluginModule.handleAmplifyEvent(context, args);
+          try {
+            await attachContextExtensions(context, plugin);
+            const pluginModule = await import(plugin.packageLocation);
+            await pluginModule.handleAmplifyEvent(context, args);
+          } catch {
+            // do nothing
+          }
         };
         return eventHandler;
       });
