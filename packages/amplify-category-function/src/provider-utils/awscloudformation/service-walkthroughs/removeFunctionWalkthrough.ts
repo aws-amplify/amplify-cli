@@ -1,4 +1,4 @@
-import { $TSAny, stateManager, getAmplifyResourceByCategories } from 'amplify-cli-core';
+import { $TSAny, stateManager, getAmplifyResourceByCategories, AmplifyError } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { categoryName } from '../../../constants';
@@ -8,7 +8,9 @@ export async function removeResource(resourceName?: string): Promise<$TSAny> {
   const enabledCategoryResources = getEnabledResources();
 
   if (enabledCategoryResources.length === 0) {
-    throw new Error('No Lambda function resource to remove. Use "amplify add function" to create a new function.');
+    throw new AmplifyError('ResourceDoesNotExistError', {
+      message: 'No Lambda function resource to remove. Use "amplify add function" to create a new function.',
+    });
   }
 
   if (resourceName) {

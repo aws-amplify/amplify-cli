@@ -105,7 +105,7 @@ describe('invoke invalid func', () => {
 
   it('handles function does not exist', () => {
     return expect(invoke(invokeOpts('doesntExist'))).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Could not load lambda handler function due to Error: Lambda handler handlers has no exported function named doesntExist"`,
+      `"Could not load lambda handler function due to LambdaFunctionInvokeError: Lambda handler handlers has no exported function named doesntExist"`,
     );
   });
 
