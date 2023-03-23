@@ -397,7 +397,7 @@ class CloudFormation {
                     }
                     return reject(updateErr);
                   }
-                  cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+                  cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, async (completeErr) => {
                     if (self.pollForEvents) {
                       clearTimeout(self.pollForEvents);
                     }
@@ -410,7 +410,8 @@ class CloudFormation {
                       });
                     } else {
                       self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
-                      return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
+                      await self.updateamplifyMetaFileWithStackOutputs(stackName);
+                      return resolve();
                     }
                   });
                 });
@@ -563,7 +564,7 @@ class CloudFormation {
     const log = logger('listExports.cfn.listExports', [{ NextToken: nextToken }]);
     return new Promise((resolve, reject) => {
       log();
-      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, (err, data) => {
+      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, async (err, data) => {
         if (err) {
           log(err);
           reject(err);
@@ -644,7 +645,7 @@ class CloudFormation {
               console.log(`Error deleting stack ${stackName}`);
               return reject(deleteErr);
             }
-            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, (completeErr) => {
+            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, async (completeErr) => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
                 await this.collectStackErrors(stackName).then((errorDetails) => {
