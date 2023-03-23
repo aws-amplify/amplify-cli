@@ -32,10 +32,10 @@ describe('attach amplify to git-cloned project', () => {
     await gitCommitAll(projRoot);
   });
 
-  afterAll(async () => {
-    await deleteProject(projRoot, undefined, true);
-    deleteProjectDir(projRoot);
-  });
+  // afterAll(async () => {
+  //   await deleteProject(projRoot, undefined, true);
+  //   deleteProjectDir(projRoot);
+  // });
 
   test('headless init and forcePush when triggers are added', async () => {
     // checks amplify hosting forcePush on existing projects with v10.5.1
