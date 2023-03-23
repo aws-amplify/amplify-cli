@@ -15,6 +15,8 @@ import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHan
 
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { verifyExpectedEnvParams } from './utils/verify-expected-env-params';
+import { raisePrePushEvent } from './execution-manager';
+import { Context } from './domain/context';
 
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
@@ -158,6 +160,8 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush) {
+      // context has type $TSContext here but to avoid retyping all of the raise*Event functions, we're coercing to Context here
+      await raisePrePushEvent(context as unknown as Context);
       await verifyExpectedEnvParams(context);
       for (const provider of context.exeInfo.projectConfig.providers) {
         const providerModule = await import(providerPlugins[provider]);

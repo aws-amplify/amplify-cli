@@ -6,6 +6,7 @@ import { prePushHandler } from './prePushHandler';
  * Checks if the `--forcePush` option is specified and if so, invokes the function prePush handler
  */
 export const preInitHandler = async (context: $TSContext): Promise<void> => {
+  return; // noop
   if (context.parameters.options?.forcePush === true) {
     await prePushHandler(context);
   }

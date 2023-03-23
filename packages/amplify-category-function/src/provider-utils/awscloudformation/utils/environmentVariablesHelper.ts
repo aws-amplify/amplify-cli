@@ -170,7 +170,7 @@ const askForEnvironmentVariableValue = async (
  */
 export const ensureEnvironmentVariableValues = async (context: $TSContext): Promise<void> => {
   const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
-  const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
+  const currentEnvName = context?.exeInfo?.inputParams?.amplify?.envName || stateManager.getLocalEnvInfo()?.envName;
   await ensureEnvParamManager(currentEnvName);
   const functionNames = Object.keys(stateManager.getBackendConfig()?.function || {});
   if (functionNames.length === 0) {
