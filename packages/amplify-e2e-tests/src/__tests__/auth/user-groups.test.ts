@@ -36,7 +36,9 @@ describe('user group tests', () => {
 
         const meta = getProjectMeta(projRoot);
         const region = meta.providers.awscloudformation.Region;
-        const { AppClientID, AppClientIDWeb, IdentityPoolId, UserPoolId } = Object.keys(meta.auth).map((key) => meta.auth[key]).find((auth) => auth.service === 'Cognito').output;
+        const { AppClientID, AppClientIDWeb, IdentityPoolId, UserPoolId } = Object.keys(meta.auth)
+          .map((key) => meta.auth[key])
+          .find((auth) => auth.service === 'Cognito').output;
 
         const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
@@ -58,7 +60,9 @@ describe('user group tests', () => {
 
         const meta = getProjectMeta(projRoot);
         const region = meta.providers.awscloudformation.Region;
-        const { AppClientID, AppClientIDWeb, IdentityPoolId, UserPoolId } = Object.keys(meta.auth).map((key) => meta.auth[key]).find((auth) => auth.service === 'Cognito').output;
+        const { AppClientID, AppClientIDWeb, IdentityPoolId, UserPoolId } = Object.keys(meta.auth)
+          .map((key) => meta.auth[key])
+          .find((auth) => auth.service === 'Cognito').output;
 
         const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
