@@ -421,9 +421,7 @@ export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any):
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
 
   if (settings?.overrides?.category === 'auth') {
-    chain
-      .wait('A migration is needed to support latest updates on auth resources')
-      .sendConfirmYes();
+    chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
   }
 
   return chain

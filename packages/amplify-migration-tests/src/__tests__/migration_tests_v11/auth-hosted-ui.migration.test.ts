@@ -55,8 +55,7 @@ describe('v11: hosted UI migration', () => {
       const meta = getProjectMeta(projRoot1);
       const appId = getAppId(projRoot1);
       const region = meta.providers.awscloudformation.Region;
-      const authName = Object.keys(meta.auth)
-        .find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
+      const authName = Object.keys(meta.auth).find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
       const { HostedUIDomain, UserPoolId } = Object.keys(meta.auth)
         .map((key) => meta.auth[key])
         .find((auth) => auth.service === 'Cognito').output;
@@ -85,8 +84,7 @@ describe('v11: hosted UI migration', () => {
 
         expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes2.UserPool.Domain);
 
-        expect(authCfnTemplate.Resources.HostedUICustomResource.Properties.Code.ZipFile)
-          .toEqual(`const response = require('cfn-response');
+        expect(authCfnTemplate.Resources.HostedUICustomResource.Properties.Code.ZipFile).toEqual(`const response = require('cfn-response');
 const aws = require('aws-sdk');
 const identity = new aws.CognitoIdentityServiceProvider();
 exports.handler = (event, context, callback) => {
@@ -163,8 +161,7 @@ exports.handler = (event, context, callback) => {
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes2 = await getUserPool(UserPoolId, region);
-        const authName = Object.keys(meta.auth)
-        .find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
+        const authName = Object.keys(meta.auth).find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
         const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', authName);
         const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 

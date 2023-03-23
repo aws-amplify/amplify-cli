@@ -958,7 +958,27 @@ Object {
     },
     "HostedUIDomainResource": Object {
       "Properties": Object {
-        "Domain": "extauth387063394-87063394",
+        "Domain": Object {
+          "Fn::If": Array [
+            "ShouldNotCreateEnvResources",
+            Object {
+              "Ref": "hostedUIDomainName",
+            },
+            Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  Object {
+                    "Ref": "hostedUIDomainName",
+                  },
+                  Object {
+                    "Ref": "env",
+                  },
+                ],
+              ],
+            },
+          ],
+        },
         "UserPoolId": Object {
           "Ref": "UserPool",
         },
