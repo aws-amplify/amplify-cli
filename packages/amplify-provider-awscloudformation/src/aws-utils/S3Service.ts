@@ -27,19 +27,24 @@ export class S3Service implements IS3Service {
     return this.cachedBucketList;
   }
 
-  public async bucketExists(bucketName: string, s3?: S3): Promise<boolean> {
+  private async checkIfBucketExists(bucketName: string, s3?: S3): Promise<boolean> {
     const s3Client = s3 ?? this.s3;
     try {
       const response = await s3Client.headBucket({ Bucket: bucketName }).promise();
       // If the return object has no keys then it means successful empty object was returned.
       return Object.keys(response).length === 0;
     } catch (error) {
-      if (error.region !== s3Client.config.region) {
-        return this.bucketExists(bucketName, new S3({ ...s3Client.config?.credentials, region: error.region }));
+      // workaround for aws-sdk bug causing headBucket for a opt-in region bucket to throw if s3 client is initialized with a different region
+      if (error.region !== s3Client.config.region && error.code === 'BadRequest') {
+        return this.checkIfBucketExists(bucketName, new S3({ ...s3Client.config?.credentials, region: error.region }));
       }
 
       return handleS3Error(error);
     }
+  }
+
+  public async bucketExists(bucketName: string): Promise<boolean> {
+    return this.checkIfBucketExists(bucketName);
   }
 
   public async getBucketLocation(bucketName: string): Promise<string> {
