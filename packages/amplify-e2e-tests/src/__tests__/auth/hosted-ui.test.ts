@@ -20,7 +20,7 @@ const oauthSettings = {
   signoutUrl: 'https://danielle.lol/',
 };
 
-describe('user group tests', () => {
+describe('hosted ui tests', () => {
   let projRoot: string;
 
   beforeEach(async () => {
@@ -51,7 +51,9 @@ describe('user group tests', () => {
         expect(HostedUIDomain).toEqual(userPoolRes.UserPool.Domain);
       });
     });
+  });
 
+  describe('amplify update auth', () => {
     describe('...updating to add oauth', () => {
       it('...creates a user pool domain', async () => {
         await initJSProjectWithProfile(projRoot, defaultsSettings);
