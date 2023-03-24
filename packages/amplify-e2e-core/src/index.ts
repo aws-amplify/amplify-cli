@@ -12,6 +12,7 @@ import { v4 as uuid } from 'uuid';
 import { pathManager } from 'amplify-cli-core';
 import { gt } from 'semver';
 import { sleep } from '.';
+import { isCI } from './utils';
 
 export * from './diagnose';
 export * from './configure';
@@ -120,8 +121,10 @@ export async function createNewProjectDir(
 
   fs.ensureDirSync(projectDir);
 
-  const initialDelay = Math.floor(Math.random() * 180 * 1000);
-  await sleep(initialDelay);
+  if (isCI()) {
+    const initialDelay = Math.floor(Math.random() * 180 * 1000);
+    await sleep(initialDelay);
+  }
 
   console.log(projectDir);
   return projectDir;
