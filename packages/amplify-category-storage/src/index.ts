@@ -5,7 +5,7 @@ import {
   validateImportStorageRequest,
   validateRemoveStorageRequest,
   validateUpdateStorageRequest,
-} from 'amplify-util-headless-input';
+} from '@aws-amplify/amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { categoryName } from './constants';

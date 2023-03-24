@@ -16,7 +16,7 @@ import {
   getTransformConfig,
   updateHeadlessApi,
 } from '@aws-amplify/amplify-e2e-core';
-import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
+import { AddApiRequest, UpdateApiRequest } from '@aws-amplify/amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';

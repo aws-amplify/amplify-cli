@@ -12,7 +12,7 @@ import {
   getUserPool,
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
-import { UpdateAuthRequest } from 'amplify-headless-interface';
+import { UpdateAuthRequest } from '@aws-amplify/amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';

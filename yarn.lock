@@ -9085,6 +9085,19 @@ amplify-codegen@^3.4.0:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-headless-interface@1.17.1:
+  version "1.17.1"
+  resolved "https://registry.npmjs.org/amplify-headless-interface/-/amplify-headless-interface-1.17.1.tgz#37ffe7b0d51d91a3830500a6b138290dbe1244c8"
+  integrity sha512-sieL6xE4srcwqJ1LxzDrcI12uNGm9YoVi52hZUc//WbOGp5o0Qt7fmtI/zYqmiRA0tHiiL9wBwdsOnyhJ60twA==
+
+amplify-util-headless-input@1.9.10:
+  version "1.9.10"
+  resolved "https://registry.npmjs.org/amplify-util-headless-input/-/amplify-util-headless-input-1.9.10.tgz#42e49b8e54513a005f8b138d6abce21721440a33"
+  integrity sha512-9Cj091zYhfPkU81AICVlM7IyUtkwkyg+BG+8oMadrhIr5A6sKg7e6Ji0XJCfEWo5rq76FZW09ToJSnGK6RbdKw==
+  dependencies:
+    ajv "^6.12.6"
+    amplify-headless-interface "1.17.1"
+
 ansi-align@^3.0.0, ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"
