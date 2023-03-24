@@ -48,11 +48,12 @@ export const nonInteractiveInitWithForcePushAttach = async (
       awscloudformation: awsProviderConfig,
     }),
     '--forcePush',
+    '--debug',
   ];
   if (categoriesConfig) {
     args.push('--categories', JSON.stringify(categoriesConfig));
   }
-  await execa(getCLIPath(testingWithLatestCodebase), args, { cwd: projRoot });
+  await execa(getCLIPath(testingWithLatestCodebase), args, { cwd: projRoot, stdio: 'inherit' });
 };
 
 /**
