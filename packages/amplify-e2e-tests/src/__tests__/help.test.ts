@@ -5,8 +5,10 @@ import {
   deleteProjectDir,
   statusWithHelp,
   statusForCategoryWithHelp,
-  addS3AndAuthWithAuthOnlyAccess,
-  amplifyPushAuth,
+  pushWithHelp,
+  initWithHelp,
+  pullWithHelp,
+  envWithHelp,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('help happy paths', () => {
@@ -14,8 +16,6 @@ describe('help happy paths', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('help-happy-paths');
     await initJSProjectWithProfile(projRoot, {});
-    await addS3AndAuthWithAuthOnlyAccess(projRoot);
-    await amplifyPushAuth(projRoot);
   });
 
   afterAll(async () => {
@@ -24,10 +24,26 @@ describe('help happy paths', () => {
   });
 
   test('amplify status', async () => {
-    await statusWithHelp(projRoot, ['USAGE', 'amplify status [-v | --verbose]']);
+    await statusWithHelp(projRoot);
   });
 
   test('amplify status storage', async () => {
-    await statusForCategoryWithHelp(projRoot, 'storage', ['USAGE', 'amplify storage status']);
+    await statusForCategoryWithHelp(projRoot, 'storage');
+  });
+
+  test('amplify push', async () => {
+    await pushWithHelp(projRoot);
+  });
+
+  test('amplify init', async () => {
+    await initWithHelp(projRoot);
+  });
+
+  test('amplify pull', async () => {
+    await pullWithHelp(projRoot);
+  });
+
+  test('amplify env', async () => {
+    await envWithHelp(projRoot);
   });
 });
