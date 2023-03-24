@@ -208,7 +208,12 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await buildOverridesEnabledResources(context, resources);
 
     // print cdk migration warning
-    await printCdkMigrationWarning(context);
+    try{
+      await printCdkMigrationWarning(context);
+    }catch(error){
+      printer.warn(`Amplify detector failed with error ${error}`);
+      printer.warn(`To migrate to AWS CDK V2 : https://docs.amplify.aws/cli/migration/aws-cdk-migration/`);
+    }
 
     // Removed api transformation to generate resources before starting deploy/
 
