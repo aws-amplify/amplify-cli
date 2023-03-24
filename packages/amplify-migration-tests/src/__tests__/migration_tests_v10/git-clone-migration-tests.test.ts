@@ -32,7 +32,7 @@ describe('attach amplify to git-cloned project', () => {
     await gitCommitAll(projRoot);
   });
 
-  beforeAll(async () => {
+  afterAll(async () => {
     await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
