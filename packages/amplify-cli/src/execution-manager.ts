@@ -301,10 +301,7 @@ const raisePostInitEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, { event: AmplifyEvent.PostInit, data: {} });
 };
 
-/**
- * This is exported so that the init handler can call it if the --forcePush flag is specified after it does a push internally
- */
-export const raisePostPushEvent = async (context: Context): Promise<void> => {
+const raisePostPushEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, { event: AmplifyEvent.PostPush, data: {} });
 };
 
