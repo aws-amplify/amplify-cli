@@ -52,7 +52,7 @@ const mockContext = {
 describe('print migration warning tests', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('no migration message when there are no override and custom resources', async () => {
+  it('no migration message when detector failed for some reason', async () => {
     const resourcesToBeCreated = [
       {
         category: 'function',
