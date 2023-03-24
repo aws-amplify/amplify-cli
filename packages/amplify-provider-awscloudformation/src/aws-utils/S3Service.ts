@@ -1,6 +1,7 @@
 import { $TSContext, AmplifyFault } from 'amplify-cli-core';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
-import S3, { Bucket } from 'aws-sdk/clients/s3';
+import { S3 } from 'aws-sdk';
+import { Bucket } from 'aws-sdk/clients/s3';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 
 export const createS3Service = async (context: $TSContext): Promise<S3Service> => {
