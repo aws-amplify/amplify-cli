@@ -1,4 +1,4 @@
-import execa from 'execa';
+import execa, { ExecaReturnValue } from 'execa';
 // eslint-disable-next-line import/no-cycle
 import { getCLIPath, TEST_PROFILE_NAME } from '..';
 import { CategoriesConfig, AwsProviderConfig } from './headless-types';
@@ -37,7 +37,8 @@ export const nonInteractiveInitWithForcePushAttach = async (
   categoriesConfig?: CategoriesConfig,
   testingWithLatestCodebase = false,
   awsProviderConfig = getAwsProviderConfig(),
-): Promise<void> => {
+  rejectOnFailure = true,
+): Promise<ExecaReturnValue<string>> => {
   const args = [
     'init',
     '--yes',
@@ -53,7 +54,7 @@ export const nonInteractiveInitWithForcePushAttach = async (
   if (categoriesConfig) {
     args.push('--categories', JSON.stringify(categoriesConfig));
   }
-  await execa(getCLIPath(testingWithLatestCodebase), args, { cwd: projRoot });
+  return execa(getCLIPath(testingWithLatestCodebase), args, { cwd: projRoot, reject: rejectOnFailure });
 };
 
 /**

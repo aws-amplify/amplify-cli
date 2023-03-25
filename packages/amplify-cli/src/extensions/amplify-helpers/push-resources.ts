@@ -12,7 +12,7 @@ import {
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { getResources } from '../../commands/build';
+import { getChangedResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from './get-env-info';
 import { getProjectConfig } from './get-project-config';
@@ -74,7 +74,7 @@ export const pushResources = async (
 
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType();
-  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
     forceCompile: true,

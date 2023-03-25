@@ -1,13 +1,16 @@
-import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource, stateManager } from 'amplify-cli-core';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { getResources } from '../commands/build';
+import { getChangedResources, getAllResources } from '../commands/build';
 
 export const verifyExpectedEnvParams = async (context: $TSContext, category?: string, resourceName?: string) => {
-  const envParamManager = (await ensureEnvParamManager()).instance;
-  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  const envParamManager = stateManager.localEnvInfoExists()
+    ? (await ensureEnvParamManager()).instance
+    : (await ensureEnvParamManager(context?.exeInfo?.inputParams?.amplify?.envName)).instance;
+  const getResources = context?.input?.options?.forcePush === true ? getAllResources : getChangedResources;
+  const resources: IAmplifyResource[] = await getResources(context);
 
-  const parametersToCheck = resourcesToBuild.filter(({ category: c, resourceName: r }) => {
+  const parametersToCheck = resources.filter(({ category: c, resourceName: r }) => {
     // Filter based on optional parameters
     if ((category && c !== category) || (resourceName && r !== resourceName)) {
       return false;
