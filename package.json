@@ -142,7 +142,7 @@
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
-    "pkg": "^5.8.0",
+    "pkg": "^5.8.1",
     "prettier": "^2.8.4",
     "rimraf": "^3.0.0",
     "ts-jest": "^27.0.0",
@@ -158,7 +158,6 @@
     "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
     "**/undici": "^5.8.0",
-    "**/pkg/prebuild-install": "7.1.1",
     "**/pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   }
 }
