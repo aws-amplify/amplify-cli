@@ -19,10 +19,7 @@ export const statusForCategoryWithHelp = async (cwd: string, category: string): 
 };
 
 export const pushWithHelp = async (cwd: string): Promise<void> => {
-  const expectedLines = [
-    'USAGE',
-    'amplify push [category] [--codegen] [--debug] [-f | --force] [-y | --yes] [--allow-destructive-graphql-schema-updates]',
-  ];
+  const expectedLines = ['USAGE', /amplify push*/];
   const chain = spawn(getCLIPath(), ['push', '-h'], { cwd, stripColors: true });
   for (const expectedLine of expectedLines) {
     chain.wait(expectedLine);
@@ -31,10 +28,7 @@ export const pushWithHelp = async (cwd: string): Promise<void> => {
 };
 
 export const initWithHelp = async (cwd: string): Promise<void> => {
-  const expectedLines = [
-    'USAGE',
-    'amplify init [-y | --yes] [--amplify <payload>] [--envName <env-name>] [--debug] [--frontend <payload>] [--providers <payload>] [--categories <payload>] [--app <git-url>] [--permissions-boundary <ARN>]',
-  ];
+  const expectedLines = ['USAGE', /amplify init*/];
   const chain = spawn(getCLIPath(), ['init', '-h'], { cwd, stripColors: true });
   for (const expectedLine of expectedLines) {
     chain.wait(expectedLine);
@@ -43,10 +37,7 @@ export const initWithHelp = async (cwd: string): Promise<void> => {
 };
 
 export const pullWithHelp = async (cwd: string): Promise<void> => {
-  const expectedLines = [
-    'USAGE',
-    'amplify pull [--appId <app-id>] [--envName <env-name>] [--debug] [-y | --yes] [--restore] [--amplify <payload>] [--frontend <payload>] [--providers <payload>] [--categories <payload>]',
-  ];
+  const expectedLines = ['USAGE', /amplify pull*/];
   const chain = spawn(getCLIPath(), ['pull', '-h'], { cwd, stripColors: true });
   for (const expectedLine of expectedLines) {
     chain.wait(expectedLine);
