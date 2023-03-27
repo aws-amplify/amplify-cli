@@ -1,4 +1,4 @@
-import { getResources } from '../../commands/build';
+import { getChangedResources } from '../../commands/build';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { verifyExpectedEnvParams } from '../../utils/verify-expected-env-params';
@@ -8,7 +8,7 @@ jest.mock('../../commands/build');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('@aws-amplify/amplify-environment-parameters');
 
-const getResourcesMock = getResources as jest.MockedFunction<typeof getResources>;
+const getResourcesMock = getChangedResources as jest.MockedFunction<typeof getChangedResources>;
 const ensureEnvParamManagerMock = ensureEnvParamManager as jest.MockedFunction<typeof ensureEnvParamManager>;
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
@@ -24,6 +24,7 @@ ensureEnvParamManagerMock.mockResolvedValue({
     getResourceParamManager: jest.fn().mockReturnValue({
       setParam: jest.fn(),
     }),
+    downloadParameters: jest.fn(),
   } as unknown as IEnvironmentParameterManager,
 });
 
@@ -47,6 +48,9 @@ const resetContext = {
     inputParams: {
       yes: true,
     },
+  },
+  amplify: {
+    invokePluginMethod: jest.fn(),
   },
 } as unknown as $TSContext;
 

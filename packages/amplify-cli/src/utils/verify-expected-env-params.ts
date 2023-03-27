@@ -1,5 +1,5 @@
-import { $TSContext, IAmplifyResource, stateManager } from 'amplify-cli-core';
-import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
+import { $TSContext, IAmplifyResource, stateManager, constants } from 'amplify-cli-core';
+import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getChangedResources, getAllResources } from '../commands/build';
 
@@ -7,6 +7,14 @@ export const verifyExpectedEnvParams = async (context: $TSContext, category?: st
   const envParamManager = stateManager.localEnvInfoExists()
     ? (await ensureEnvParamManager()).instance
     : (await ensureEnvParamManager(context?.exeInfo?.inputParams?.amplify?.envName)).instance;
+  const downloadHandler = (await context.amplify.invokePluginMethod(
+    context,
+    constants.DEFAULT_PROVIDER,
+    undefined,
+    'getEnvParametersDownloadHandler',
+    [context],
+  )) as ServiceDownloadHandler;
+  await envParamManager.downloadParameters(downloadHandler);
   const getResources = context?.input?.options?.forcePush === true ? getAllResources : getChangedResources;
   const resources: IAmplifyResource[] = await getResources(context);
 

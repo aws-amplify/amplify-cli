@@ -17,8 +17,8 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
 };
 
 const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
-  const amplifyMeta = stateManager.getMeta();
-  const functionNames = Object.keys(amplifyMeta?.[categoryName] || {});
+  const backendConfig = stateManager.getBackendConfig();
+  const functionNames = Object.keys(backendConfig?.[categoryName] || {});
   for (const funcName of functionNames) {
     if (getLocalFunctionSecretNames(funcName).length > 0) {
       const funcSecretsManager = await FunctionSecretsStateManager.getInstance(context);

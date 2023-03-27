@@ -10,6 +10,9 @@ import {
   getProjectConfig,
   getProjectMeta,
   getTeamProviderInfo,
+  gitCleanFdx,
+  gitCommitAll,
+  gitInit,
   initJSProjectWithProfile,
   nonInteractiveInitWithForcePushAttach,
   setTeamProviderInfo,
@@ -79,5 +82,15 @@ describe('init --forcePush', () => {
 
     const tpiAfter = getTeamProviderInfo(projRoot);
     expect(tpiAfter?.[envName]?.categories?.function?.[funcName]?.fooBar).toBe('fooBar');
+  });
+
+  it('succeeds in git cloned project', async () => {
+    const { projectName } = getProjectConfig(projRoot);
+
+    await gitInit(projRoot);
+    await gitCommitAll(projRoot);
+    await gitCleanFdx(projRoot);
+
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), undefined, true);
   });
 });
