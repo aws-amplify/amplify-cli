@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import glob from 'glob';
 import * as execa from 'execa';
+import { AmplifyError } from 'amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { dotnetcore31, executableName } from '../constants';
@@ -29,14 +30,26 @@ export const build = async ({ srcRoot, lastBuildTimeStamp, buildType, runtime }:
         buildArguments.push('build', '-c', 'Debug', '-p:CopyLocalLockFileAssemblies=true');
         break;
       default:
-        throw new Error(`Unexpected buildType: [${buildType}]`);
+        throw new AmplifyError('PackagingLambdaFunctionError', { message: `Unexpected buildType: [${buildType}]` });
     }
-    const result = execa.sync(executableName, buildArguments, {
-      cwd: sourceFolder,
-    });
+    try {
+      const result = execa.sync(executableName, buildArguments, {
+        cwd: sourceFolder,
+      });
 
-    if (result.exitCode !== 0) {
-      throw new Error(`${executableName} build failed, exit code was ${result.exitCode}`);
+      if (result.exitCode !== 0) {
+        throw new AmplifyError('PackagingLambdaFunctionError', {
+          message: `${executableName} build failed, exit code was ${result.exitCode}`,
+        });
+      }
+    } catch (err) {
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        {
+          message: `${executableName} build failed, error message was ${err.message}`,
+        },
+        err,
+      );
     }
 
     return { rebuilt: true };

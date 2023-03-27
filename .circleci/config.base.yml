@@ -59,6 +59,14 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+  l_small: &linux-e2e-executor-small
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: small
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 
 defaults: &defaults
   working_directory: ~/repo
@@ -99,6 +107,7 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
+      - run: yarn config set registry https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
       - run: yarn run production-build
       - run:
@@ -124,6 +133,7 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
+      - run: yarn config set registry https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
       - run: yarn install
       - run:
@@ -140,6 +150,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
+            - install_node14_windows
             - checkout
             - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
@@ -460,6 +471,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
+            - install_node14_windows
             - attach_workspace:
                 at: ~/.
             - run:
@@ -515,7 +527,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -545,7 +557,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -577,7 +589,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -607,7 +619,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -637,13 +649,43 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: ~/repo/packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_general_config_tests:
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Run tests using general profile
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-e2e-tests
+            retry yarn run general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+          no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: ~/repo/packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
 
   amplify_console_integration_tests:
@@ -665,7 +707,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=3
+            retry yarn run console-integration --no-cache --maxWorkers=4
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
@@ -897,7 +939,7 @@ jobs:
               --data '{"branch":"'$CIRCLE_BRANCH'","parameters":{"e2e_workflow_cleanup":true,"setup":false,"e2e_workflow_cleanup_workflow_id":"'$CIRCLE_WORKFLOW_ID'"}}'
 
   wait_for_all:
-    <<: *linux-e2e-executor-medium
+    <<: *linux-e2e-executor-small
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -1148,6 +1190,20 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
+      - amplify_general_config_tests:
+          context:
+            - e2e-auth-credentials
+            - cleanup-resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - upload_pkg_binaries
       - amplify_console_integration_tests:
           context:
             - e2e-auth-credentials
@@ -1357,3 +1413,20 @@ commands:
               exit 1
             fi
           when: always
+  install_node14_windows:
+    description: Install Node 14 on Windows
+    steps:
+      - run:
+          name: Install Node 14
+          command: |
+            nvm version
+            nvm install 14.18
+            nvm use 14.18
+            nvm ls
+      - run:
+          name: Check Node, install yarn
+          command: |
+            node --version
+            npm --version
+            npm install -g yarn
+            yarn --version

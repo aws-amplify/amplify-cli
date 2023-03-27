@@ -448,7 +448,7 @@ const headlessImport = async (
   const tableExists = await dynamoDB.tableExists(resolvedEnvParams.tableName);
 
   if (!tableExists) {
-    throw new Error(importMessages.TableNotFound(resolvedEnvParams.tableName));
+    throw new AmplifyError('StorageImportError', { message: importMessages.TableNotFound(resolvedEnvParams.tableName) });
   }
 
   answers.tableDescription = await dynamoDB.getTableDetails(resolvedEnvParams.tableName);
