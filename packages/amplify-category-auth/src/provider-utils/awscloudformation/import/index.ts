@@ -1107,11 +1107,9 @@ export const importedAuthEnvInit = async (
           cleanupDone: true,
         };
       } else {
-        context.print.error(
-          importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
-        );
-        error.stack = undefined;
-        throw error;
+        throw new AmplifyError('AuthImportError', {
+          message: importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
+        });
       }
     }
   }
