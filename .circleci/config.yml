@@ -564,8 +564,8 @@ jobs:
           checkout: true
           create-repo: false
           dockerfile: Dockerfile
-          repo: amplify-cli-e2e-base-image-node18-repo-public
-          tag: "latest,${CIRCLE_SHA1},node18"
+          repo: amplify-cli-e2e-base-image-repo-public
+          tag: "node18,${CIRCLE_SHA1}"
 
 workflows:
   build_and_push_image:
