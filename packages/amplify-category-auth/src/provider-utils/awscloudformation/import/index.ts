@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
@@ -964,7 +964,7 @@ export const importedAuthEnvInit = async (
 ): Promise<{
   doServiceWalkthrough?: boolean;
   succeeded?: boolean;
-  cleanupRequired?: boolean;
+  cleanupDone?: boolean;
   envSpecificParameters?: EnvSpecificResourceParameters;
 }> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
@@ -1104,7 +1104,7 @@ export const importedAuthEnvInit = async (
         await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
         return {
           succeeded: false,
-          cleanupRequired: true,
+          cleanupDone: true,
         };
       } else {
         context.print.error(
@@ -1231,7 +1231,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; cleanupRequired?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; cleanupDone?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1270,7 +1270,7 @@ export const headlessImport = async (
         await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
         return {
           succeeded: false,
-          cleanupRequired: true,
+          cleanupDone: true,
         };
       }
       throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));

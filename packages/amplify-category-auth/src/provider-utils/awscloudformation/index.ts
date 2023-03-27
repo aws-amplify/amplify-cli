@@ -59,7 +59,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
   // cloud deployed values.
   if (resource && resource.serviceType === 'imported') {
     let envSpecificParametersResult;
-    const { doServiceWalkthrough, succeeded, cleanupRequired, envSpecificParameters } = await importedAuthEnvInit(
+    const { doServiceWalkthrough, succeeded, cleanupDone, envSpecificParameters } = await importedAuthEnvInit(
       context,
       service,
       resource,
@@ -96,7 +96,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       envSpecificParametersResult = envSpecificParameters;
     } else {
       // succeeded === false | undefined
-      if (cleanupRequired) {
+      if (cleanupDone) {
         // returning undefined as nothing to pass here
         return envSpecificParametersResult;
       }
