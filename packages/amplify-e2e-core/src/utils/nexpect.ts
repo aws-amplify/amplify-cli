@@ -11,10 +11,8 @@ import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
 import { join, parse } from 'path';
-import * as fs from 'fs-extra';
-import * as os from 'os';
 import { Recorder } from '../asciinema-recorder';
-import { generateRandomShortId, getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
+import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 
 declare global {
   /* eslint-disable @typescript-eslint/no-namespace */
