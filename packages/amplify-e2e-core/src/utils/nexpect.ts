@@ -380,15 +380,22 @@ function chain(context: Context): ExecutionContext {
     let stdout: string[] = [];
     let noOutputTimer;
 
-    let stdoutPipe: NodeJS.WriteStream;
+    let logDumpFile: fs.WriteStream;
 
     if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
-      stdoutPipe = process.stdout;
+      const logdir = join(os.tmpdir(), 'amplify_e2e_logs');
+      fs.ensureDirSync(logdir);
+      const filename = join(logdir, `amplify_e2e_log_${generateRandomShortId()}`);
+      logDumpFile = fs.createWriteStream(filename);
+      console.log(`CLI test logs at [${filename}]`);
     }
 
     const exitHandler = (code: number, signal: any) => {
       noOutputTimer.clear();
       context.process.removeOnExitHandlers(exitHandler);
+      if (logDumpFile) {
+        logDumpFile.close();
+      }
       if (code !== 0) {
         if (code === EXIT_CODE_TIMEOUT) {
           const recordings = context.process?.getRecordingFrames() || [];
@@ -540,6 +547,8 @@ function chain(context: Context): ExecutionContext {
       return undefined;
     }
 
+    const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+
     //
     // **onLine**
     //
@@ -551,11 +560,11 @@ function chain(context: Context): ExecutionContext {
     // 3. Splitting `data` into multiple lines.
     //
     function onLine(data: string | Buffer) {
-      if (stdoutPipe) {
-        stdoutPipe.write(data);
-      }
       noOutputTimer.reschedule(context.noOutputTimeout);
       data = data.toString();
+      if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
+        logDumpFile.write(`${data}${EOL}`);
+      }
 
       if (context.stripColors) {
         data = strip(data);

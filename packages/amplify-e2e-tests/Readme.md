@@ -26,25 +26,23 @@ npm run e2e src/__tests__/init.test.ts
 
 E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
 
-If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to `true` and CLI output will be piped to stdout of the test harness. This will allow you to see CLI output as if you had run the test commands directly.
+To configure the amount of time nexpect will wait for CLI responses, you can set the `AMPLIFY_TEST_TIMEOUT_SEC` environment variable. It is helpful to set this to a low value (10 seconds or so) when writing new tests so that you don't spend unnecessary time waiting for nexpect to error out on a misconfigured wait() block
 
-> Note: it is not recommended to set this option if you are running multiple tests at once. This would cause the output from multiple tests to be interleaved together.
+If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to `true` and output logs will be written to temp files. The temp file paths will be printed as the tests run and you can `cat` or `tail` the logs to see the CLI output
 
 ```sh
-env VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true yarn e2e <path/to/test/file> -t 'name of individual test'
+env VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true yarn e2e
 ```
 
 ```typescript
 import { amplifyPush, deleteProject, initJSProjectWithProfile } from '../init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
 
-describe('name of component or feature', () => {
+describe('amplify your test', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir(); // create a new project for each test
-    // initialize an Amplify Project in the directory
-    // If you are testing a specific init behavior, this step might be different, but most e2e tests initialize in this way.
-    await initJSProjectWithProfile(projRoot, { name: '<project-name>' });
+    jest.setTimeout(1000 * 60 * 60); // 1 hour timeout as pushing might be slow
   });
 
   afterEach(async () => {
@@ -52,14 +50,13 @@ describe('name of component or feature', () => {
     deleteProjectDir(projRoot); // delete the project directory
   });
 
-  it('specific behavior description', async () => {
+  it('<your test>', async () => {
+    await initJSProjectWithProfile(projRoot, { name: '<project-name>' });
     // add resources that you want to test
-    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await amplifyPush(projRoot); // Push it to the cloud
-
-    // add normal jest assertions about project state
     const { output } = getProjectMeta(projRoot).api.simplemodel;
-    expect(output).toBeDefined();
+
+    // TODO - assertion to make sure the resources are pushed. Use matcher
   });
 });
 ```
@@ -75,4 +72,4 @@ There are two scenarios when this approach can cause trouble:
 1. Locally running two or more test suites in parallel with this test included, the other tests might fail because test project can not be init'ed when the above mentioned config and credential files are missing.
 2. In the middle of execution, the test is interrupted by Ctrl+C, then the hidden config and credential files are not renamed back.
 
-So, You should NOT run multiple tests in parallel locally with the `init-special-case` test included. And, if you use Ctrl+C to interrupt the `init-special-case` test, you need to go to the `~/.aws` folder and rename the config and credential files to their original names.
+So, You should NOT run multiple tests in parallel locally with the `init-special-case` test included. And, if you use Ctrl+C to interrupt the `init-special-case` test, you need to go to the `~/.aws/c` folder and rename the config and credential files to their original names.

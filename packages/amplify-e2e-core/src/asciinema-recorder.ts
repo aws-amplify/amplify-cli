@@ -53,9 +53,6 @@ export class Recorder {
     if (this.exitCode !== undefined) {
       throw new Error('Already executed. Please start a new instance');
     }
-    if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
-      console.log(`Executing command [${this.cmd} ${this.args.join(' ')}]`);
-    }
     this.childProcess = pty.spawn(this.cmd, this.args, {
       name: 'xterm-color',
       cols: this.cols,
