@@ -14,6 +14,7 @@ import glob from 'glob';
 import path from 'path';
 import { SemVer, coerce, gte, lt } from 'semver';
 import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
+import { AmplifyError } from 'amplify-cli-core';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -28,18 +29,20 @@ export const executeCommand = (
   cwd: string | undefined = undefined,
   stdioInput: string | undefined = undefined,
 ): string => {
-  const output = execa.sync(executableName, args, {
-    stdio: streamStdio === true ? 'inherit' : 'pipe',
-    env,
-    cwd,
-    input: stdioInput,
-  });
-
-  if (output.exitCode !== 0) {
-    throw new Error(`${executableName} failed, exit code was ${output.exitCode}`);
+  try {
+    const output = execa.sync(executableName, args, {
+      stdio: streamStdio === true ? 'inherit' : 'pipe',
+      env,
+      cwd,
+      input: stdioInput,
+    });
+    if (output.exitCode !== 0) {
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `${executableName} failed, exit code was ${output.exitCode}` });
+    }
+    return output.stdout;
+  } catch (err) {
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `${executableName} failed, error message was ${err.message}` }, err);
   }
-
-  return output.stdout;
 };
 
 const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: string) => {
@@ -158,7 +161,15 @@ export const packageResource = async (request: PackageRequest, context: any): Pr
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
     const packageHash = await context.amplify.hashDir(request.srcRoot, [DIST]);
     const zipFn = process.platform.startsWith('win') ? winZip : nixZip;
-    await zipFn(request.srcRoot, request.dstFilename, context.print);
+    try {
+      await zipFn(request.srcRoot, request.dstFilename, context.print);
+    } catch (err) {
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        { message: `Packaging go function failed, error message was ${err.message}` },
+        err,
+      );
+    }
     return { packageHash };
   }
   return {};

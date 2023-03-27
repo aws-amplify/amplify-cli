@@ -182,7 +182,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       const newLambdaConfigurations = this.buildLambdaConfigFromTriggerParams(triggerLambdaFunctionParams);
       this._addNotificationsLambdaConfigurations(newLambdaConfigurations);
       this.triggerLambdaPermissions = this.createInvokeFunctionS3Permission('TriggerPermissions', this._props.triggerFunction);
-      this.s3Bucket.addDependsOn(this.triggerLambdaPermissions as lambdaCdk.CfnPermission);
+      this.s3Bucket.addDependency(this.triggerLambdaPermissions as lambdaCdk.CfnPermission);
       /**
        * Add Depends On: FUNCTION service
        * s3 Dependency on Lambda to Root Stack
@@ -201,7 +201,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
         'AdminTriggerPermissions',
         this._props.adminTriggerFunction.triggerFunction,
       );
-      this.s3Bucket.addDependsOn(this.adminTriggerLambdaPermissions);
+      this.s3Bucket.addDependency(this.adminTriggerLambdaPermissions);
 
       /**
        * Add Depends On: FUNCTION service
@@ -1008,7 +1008,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     policyL1.Properties.policyDocument.Statement = policyStatements;
     const policy = new iamCdk.CfnPolicy(this, policyDefinition.logicalId, policyL1.Properties);
     if (policyDefinition.dependsOn) {
-      policyDefinition.dependsOn.map((dependency) => policy.addDependsOn(dependency));
+      policyDefinition.dependsOn.map((dependency) => policy.addDependency(dependency));
     }
     if (policyDefinition.condition) {
       policy.cfnOptions.condition = policyDefinition.condition;
@@ -1027,7 +1027,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
     const policy = new iamCdk.CfnPolicy(this, policyDefinition.logicalId, props); // bind policy to stack
     if (policyDefinition.dependsOn) {
-      policyDefinition.dependsOn.map((dependency) => policy.addDependsOn(dependency));
+      policyDefinition.dependsOn.map((dependency) => policy.addDependency(dependency));
     }
     if (policyDefinition.condition) {
       policy.cfnOptions.condition = policyDefinition.condition;

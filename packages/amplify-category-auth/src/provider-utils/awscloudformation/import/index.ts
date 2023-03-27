@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
@@ -1231,7 +1231,9 @@ export const headlessImport = async (
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
   if (resourceParameters.region && resourceParameters.region !== Region) {
-    throw new Error(importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region));
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region),
+    });
   }
 
   // Validate the parameters, generate the missing ones and import the resource.
@@ -1253,7 +1255,9 @@ export const headlessImport = async (
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));
+      throw new AmplifyError('AuthImportError', {
+        message: importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId),
+      });
     }
 
     throw error;
@@ -1269,20 +1273,26 @@ export const headlessImport = async (
   answers.appClientWeb = questionParameters.webClients?.find((c) => c.ClientId === resolvedEnvParams.webClientId);
 
   if (!answers.appClientWeb) {
-    throw new Error(importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId));
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId),
+    });
   }
 
   answers.appClientNative = questionParameters.nativeClients?.find((c) => c.ClientId === resolvedEnvParams.nativeClientId);
 
   if (!answers.appClientNative) {
-    throw new Error(importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId));
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId),
+    });
   }
 
   // Check OAuth config matching and enabled
   const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb, answers.appClientNative, false);
 
   if (!oauthResult.isValid) {
-    throw new Error(importMessages.OAuth.PropertiesAreNotMatching);
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.OAuth.PropertiesAreNotMatching,
+    });
   }
 
   // Store the results in the answer
@@ -1299,7 +1309,9 @@ export const headlessImport = async (
     );
 
     if (identityPools?.length !== 1) {
-      throw new Error(importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!));
+      throw new AmplifyError('AuthImportError', {
+        message: importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!),
+      });
     }
 
     answers.identityPoolId = identityPools[0].identityPool.IdentityPoolId;
