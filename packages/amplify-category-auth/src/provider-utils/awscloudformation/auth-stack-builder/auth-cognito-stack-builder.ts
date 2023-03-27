@@ -567,7 +567,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       };
 
-      const addRoleMappingAttachments = props.userPoolGroups;
+      const addRoleMappingAttachments = (props.userPoolGroupList || []).length > 0;
 
       if (addRoleMappingAttachments) {
         const roleMappings = {
