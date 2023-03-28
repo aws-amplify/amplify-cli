@@ -170,9 +170,11 @@ const askForEnvironmentVariableValue = async (
  */
 export const ensureEnvironmentVariableValues = async (context: $TSContext): Promise<void> => {
   const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
-  const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
+  const currentEnvName = stateManager.localEnvInfoExists()
+    ? stateManager.getLocalEnvInfo()?.envName
+    : context?.exeInfo?.inputParams?.amplify?.envName;
   await ensureEnvParamManager(currentEnvName);
-  const functionNames = Object.keys(stateManager.getBackendConfig()?.function);
+  const functionNames = Object.keys(stateManager.getBackendConfig()?.function || {});
   if (functionNames.length === 0) {
     return;
   }
@@ -180,7 +182,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext): Prom
   const functionConfigMissingEnvVars = functionNames
     .map((funcName) => {
       const storedList = getStoredList(funcName);
-      const keyValues = getStoredKeyValue(funcName);
+      const keyValues = getStoredKeyValue(funcName, currentEnvName);
       return {
         funcName,
         existingKeyValues: keyValues,
@@ -218,7 +220,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext): Prom
       });
       keyValues[cfnName] = newValue;
     }
-    setStoredKeyValue(funcName, keyValues);
+    setStoredKeyValue(funcName, keyValues, currentEnvName);
   }
 };
 
@@ -317,6 +319,6 @@ const setStoredParameters = (resourceName: string, newParameters: $TSAny): void 
 const getStoredKeyValue = (resourceName: string, envName?: string): Record<string, string> =>
   getEnvParamManager(envName).getResourceParamManager(categoryName, resourceName).getAllParams();
 
-const setStoredKeyValue = (resourceName: string, newKeyValue: $TSAny): void => {
-  getEnvParamManager().getResourceParamManager(categoryName, resourceName).setAllParams(newKeyValue);
+const setStoredKeyValue = (resourceName: string, newKeyValue: $TSAny, envName?: string): void => {
+  getEnvParamManager(envName).getResourceParamManager(categoryName, resourceName).setAllParams(newKeyValue);
 };
