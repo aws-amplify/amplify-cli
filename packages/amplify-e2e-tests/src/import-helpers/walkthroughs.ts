@@ -100,8 +100,8 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
   });
 };
 
-export const removeImportedAuthHeadless = async (cwd: string) => {
-  const chain = spawn(getCLIPath(), ['auth', 'remove', '-y'], { cwd, stripColors: true });
+export const removeImportedAuthHeadless = async (cwd: string, authResourceName: string) => {
+  const chain = spawn(getCLIPath(), ['auth', 'remove', authResourceName, '-y'], { cwd, stripColors: true });
   await chain.runAsync();
 };
 

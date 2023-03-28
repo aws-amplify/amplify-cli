@@ -83,10 +83,10 @@ describe('import cases when userPool is deleted', () => {
       appId,
       envName: 'integtest',
       profileName,
-      useDevCLI: true,
     });
     // should succeed
-    await removeImportedAuthHeadless(projRoot2);
+    const authResourceName = projectDetails.authResourceName;
+    await removeImportedAuthHeadless(projRoot2, authResourceName);
     await amplifyPushAuth(projRoot2);
     expectNoAuthInMeta(projRoot2);
     expectLocalTeamInfoHasNoCategories(projRoot2);

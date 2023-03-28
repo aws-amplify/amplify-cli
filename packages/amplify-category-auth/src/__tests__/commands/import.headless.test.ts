@@ -178,7 +178,7 @@ describe('import auth headless', () => {
       projectConfig,
     });
 
-    stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+    stateManager_mock.getMeta = jest.fn().mockReturnValue({
       auth: {
         foo: {
           serviceType: 'imported',

@@ -59,7 +59,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
   // cloud deployed values.
   if (resource && resource.serviceType === 'imported') {
     let envSpecificParametersResult;
-    const { doServiceWalkthrough, succeeded, cleanupDone, envSpecificParameters } = await importedAuthEnvInit(
+    const { doServiceWalkthrough, succeeded, resourceRemoved, envSpecificParameters } = await importedAuthEnvInit(
       context,
       service,
       resource,
@@ -93,13 +93,12 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
       }
     } else if (succeeded) {
+      if (resourceRemoved) {
+        // returning undefined as nothing to pass here
+        return;
+      }
       envSpecificParametersResult = envSpecificParameters;
     } else {
-      // succeeded === false | undefined
-      if (cleanupDone) {
-        // returning undefined as nothing to pass here
-        return envSpecificParametersResult;
-      }
       throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
     }
 

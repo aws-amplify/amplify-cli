@@ -964,7 +964,7 @@ export const importedAuthEnvInit = async (
 ): Promise<{
   doServiceWalkthrough?: boolean;
   succeeded?: boolean;
-  cleanupDone?: boolean;
+  resourceRemoved?: boolean;
   envSpecificParameters?: EnvSpecificResourceParameters;
 }> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
@@ -1100,11 +1100,11 @@ export const importedAuthEnvInit = async (
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
       // check if cleanup needed if resources is imported in the App
-      if (projectHasAuth(context, false)) {
-        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
+      if (projectHasAuth()) {
+        //await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
         return {
-          succeeded: false,
-          cleanupDone: true,
+          succeeded: true,
+          resourceRemoved: true,
         };
       } else {
         throw new AmplifyError('AuthImportError', {
@@ -1229,7 +1229,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; cleanupDone?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; resourceRemoved?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1266,11 +1266,11 @@ export const headlessImport = async (
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      if (projectHasAuth(context, false)) {
-        await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
+      if (projectHasAuth()) {
+        //await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
         return {
-          succeeded: false,
-          cleanupDone: true,
+          succeeded: true,
+          resourceRemoved: true,
         };
       }
       throw new AmplifyError('AuthImportError', {
