@@ -1,4 +1,3 @@
-import sequential from 'promise-sequential';
 import {
   ManuallyTimedCodePath,
   stateManager,
@@ -110,7 +109,9 @@ export const initializeEnv = async (
 
     try {
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
-      await sequential(initializationTasks);
+      for (const initializationTask of initializationTasks) {
+        await initializationTask();
+      }
     } catch (e) {
       spinner.fail();
       throw new AmplifyFault(
@@ -136,7 +137,9 @@ export const initializeEnv = async (
 
     try {
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
-      await sequential(categoryInitializationTasks);
+      for (const categoryInitializationTask of categoryInitializationTasks) {
+        await categoryInitializationTask();
+      }
     } catch (e) {
       throw new AmplifyFault(
         'ProjectInitFault',
@@ -164,7 +167,9 @@ export const initializeEnv = async (
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefinition));
       }
 
-      await sequential(providerPushTasks);
+      for (const providerPushTask of providerPushTasks) {
+        await providerPushTask();
+      }
     }
 
     // Generate AWS exports/configuration file
