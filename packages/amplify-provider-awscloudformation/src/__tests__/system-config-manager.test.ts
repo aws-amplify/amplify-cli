@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import fs from 'fs-extra';
-import { ProcessCredentials } from 'aws-sdk';
+import { CredentialProviderChain, ProcessCredentials } from 'aws-sdk';
 import { getProfileCredentials, getProfiledAwsConfig } from '../system-config-manager';
 
 jest.setTimeout(15000);
@@ -13,6 +13,7 @@ const fs_mock = fs as jest.Mocked<typeof fs>;
 
 jest.mock('aws-sdk');
 const ProcessCredentialsMock = ProcessCredentials as jest.MockedClass<typeof ProcessCredentials>;
+const CredentialProviderChainMock = CredentialProviderChain as jest.MockedClass<typeof CredentialProviderChain>;
 
 const context_stub = {
   print: {
@@ -28,7 +29,15 @@ describe('profile tests', () => {
   fs_mock.existsSync.mockReturnValue(true);
 
   describe('credential process loading', () => {
-    const credentialProcessFetcher = jest.fn();
+    const mockResolvePromise = jest.fn().mockReturnValue(
+      Promise.resolve({
+        accessKeyId: 'chainTestAccessKey',
+        secretAccessKey: 'chainTestSecret',
+        sessionToken: 'chainTestSessionToken',
+        expireTime: new Date(1234),
+      }),
+    );
+
     beforeEach(() => {
       // setup
       const awsConfigContent = `[profile fake]
@@ -38,6 +47,12 @@ describe('profile tests', () => {
 
       fs_mock.readFileSync.mockReturnValue(awsConfigContent);
 
+      CredentialProviderChainMock.mockImplementation(() => ({
+        providers: [],
+        resolvePromise: mockResolvePromise,
+        resolve: jest.fn(),
+      }));
+
       ProcessCredentialsMock.mockImplementation(() => ({
         accessKeyId: 'testAccessKey',
         secretAccessKey: 'testSecret',
@@ -45,32 +60,37 @@ describe('profile tests', () => {
         expireTime: new Date(1234),
         expired: false,
         get: jest.fn(),
-        getPromise: credentialProcessFetcher,
+        getPromise: jest.fn(),
         needsRefresh: jest.fn(),
         refresh: jest.fn(),
         refreshPromise: jest.fn(),
       }));
     });
+
     it('should use credential_process defined in config file', async () => {
       // test
       const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
 
       // expect
-      expect(credentialProcessFetcher).toHaveBeenCalled();
       expect(profile_config).toBeDefined();
-      expect(profile_config.accessKeyId).toBe('testAccessKey');
-      expect(profile_config.secretAccessKey).toBe('testSecret');
-      expect(profile_config.sessionToken).toBe('testSessionToken');
+      expect(mockResolvePromise).toBeCalled();
+      expect(profile_config.accessKeyId).toBe('chainTestAccessKey');
+      expect(profile_config.secretAccessKey).toBe('chainTestSecret');
+      expect(profile_config.sessionToken).toBe('chainTestSessionToken');
       expect(profile_config.expiration).toEqual(new Date(1234));
     });
 
     it('sets AWS_SDK_LOAD_CONFIG while ProcessCredentials executes', async () => {
       const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
-      credentialProcessFetcher.mockImplementationOnce(() => {
+      mockResolvePromise.mockImplementationOnce(() => {
         expect(process.env.AWS_SDK_LOAD_CONFIG).toBeTruthy();
+
+        return Promise.resolve({
+          accessKeyId: 'chainTestAccessKey',
+        });
       });
       await getProfiledAwsConfig(context_stub, 'fake');
-      expect(credentialProcessFetcher).toBeCalled();
+      expect(mockResolvePromise).toBeCalled();
       expect(process.env.AWS_SDK_LOAD_CONFIG).toStrictEqual(sdkLoadConfigOriginal);
     });
   });
