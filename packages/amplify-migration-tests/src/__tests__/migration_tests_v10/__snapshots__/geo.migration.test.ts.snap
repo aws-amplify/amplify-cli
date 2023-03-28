@@ -56,6 +56,17 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
+[~] AWS::Cognito::IdentityPoolRoleAttachment IdentityPoolRoleMap 
+ ├─ [+] RoleMappings
+ │   └─ {\\"UserPoolClientRoleMapping\\":{\\"AmbiguousRoleResolution\\":\\"AuthenticatedRole\\",\\"IdentityProvider\\":{\\"Fn::Sub\\":[\\"cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}\\",{\\"region\\":{\\"Ref\\":\\"AWS::Region\\"},\\"userPool\\":{\\"Ref\\":\\"UserPool\\"},\\"client\\":{\\"Ref\\":\\"UserPoolClient\\"}}]},\\"Type\\":\\"Token\\"},\\"UserPoolWebClientRoleMapping\\":{\\"AmbiguousRoleResolution\\":\\"AuthenticatedRole\\",\\"IdentityProvider\\":{\\"Fn::Sub\\":[\\"cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}\\",{\\"region\\":{\\"Ref\\":\\"AWS::Region\\"},\\"userPool\\":{\\"Ref\\":\\"UserPool\\"},\\"webClient\\":{\\"Ref\\":\\"UserPoolClientWeb\\"}}]},\\"Type\\":\\"Token\\"}}
+ └─ [~] DependsOn
+     └─ @@ -1,3 +1,5 @@
+        [ ] [
+        [-]   \\"IdentityPool\\"
+        [+]   \\"IdentityPool\\",
+        [+]   \\"UserPoolClient\\",
+        [+]   \\"UserPoolClientWeb\\"
+        [ ] ]
 
 IAM Statement Changes
 ┌───┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬────────┬──────────────────────┬────────────────────────────┬───────────┐
@@ -132,6 +143,17 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
+[~] AWS::Cognito::IdentityPoolRoleAttachment IdentityPoolRoleMap 
+ ├─ [+] RoleMappings
+ │   └─ {\\"UserPoolClientRoleMapping\\":{\\"AmbiguousRoleResolution\\":\\"AuthenticatedRole\\",\\"IdentityProvider\\":{\\"Fn::Sub\\":[\\"cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}\\",{\\"region\\":{\\"Ref\\":\\"AWS::Region\\"},\\"userPool\\":{\\"Ref\\":\\"UserPool\\"},\\"client\\":{\\"Ref\\":\\"UserPoolClient\\"}}]},\\"Type\\":\\"Token\\"},\\"UserPoolWebClientRoleMapping\\":{\\"AmbiguousRoleResolution\\":\\"AuthenticatedRole\\",\\"IdentityProvider\\":{\\"Fn::Sub\\":[\\"cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}\\",{\\"region\\":{\\"Ref\\":\\"AWS::Region\\"},\\"userPool\\":{\\"Ref\\":\\"UserPool\\"},\\"webClient\\":{\\"Ref\\":\\"UserPoolClientWeb\\"}}]},\\"Type\\":\\"Token\\"}}
+ └─ [~] DependsOn
+     └─ @@ -1,3 +1,5 @@
+        [ ] [
+        [-]   \\"IdentityPool\\"
+        [+]   \\"IdentityPool\\",
+        [+]   \\"UserPoolClient\\",
+        [+]   \\"UserPoolClientWeb\\"
+        [ ] ]
 
 IAM Statement Changes
 ┌───┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬────────┬──────────────────────┬────────────────────────────┬───────────┐
