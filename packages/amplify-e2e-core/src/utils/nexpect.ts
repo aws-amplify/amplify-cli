@@ -13,6 +13,7 @@ import retimer = require('retimer');
 import { join, parse } from 'path';
 import { Recorder } from '../asciinema-recorder';
 import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
+import { getVerboseLogTarget } from './verbose-logging';
 
 declare global {
   /* eslint-disable @typescript-eslint/no-namespace */
@@ -378,15 +379,12 @@ function chain(context: Context): ExecutionContext {
     let stdout: string[] = [];
     let noOutputTimer;
 
-    let stdoutPipe: NodeJS.WriteStream;
-
-    if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
-      stdoutPipe = process.stdout;
-    }
+    const verboseLogTarget = getVerboseLogTarget();
 
     const exitHandler = (code: number, signal: any) => {
       noOutputTimer.clear();
       context.process.removeOnExitHandlers(exitHandler);
+      verboseLogTarget.end();
       if (code !== 0) {
         if (code === EXIT_CODE_TIMEOUT) {
           const recordings = context.process?.getRecordingFrames() || [];
@@ -549,11 +547,9 @@ function chain(context: Context): ExecutionContext {
     // 3. Splitting `data` into multiple lines.
     //
     function onLine(data: string | Buffer) {
-      if (stdoutPipe) {
-        stdoutPipe.write(data);
-      }
       noOutputTimer.reschedule(context.noOutputTimeout);
       data = data.toString();
+      verboseLogTarget.write(data);
 
       if (context.stripColors) {
         data = strip(data);
