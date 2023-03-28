@@ -1,4 +1,5 @@
 import {
+  addAuthWithDefault,
   addAuthWithSignInSignOutUrl,
   amplifyPull,
   amplifyPushAuth,
@@ -9,8 +10,7 @@ import {
   getUserPool,
   getProjectMeta,
   initJSProjectWithProfile,
-  updateAuthSignInSignOutUrlV11,
-  addAuthWithDefault,
+  updateAuthSignInSignOutUrlAfterPull,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
@@ -75,7 +75,7 @@ describe('v11: hosted UI migration', () => {
         };
 
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-        await updateAuthSignInSignOutUrlV11(projRoot2, oauthUpdateSettings);
+        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes2 = await getUserPool(UserPoolId, region);
@@ -115,7 +115,7 @@ exports.handler = (event, context, callback) => {
           testingWithLatestCodebase: true,
         };
 
-        await updateAuthSignInSignOutUrlV11(projRoot2, oauthUpdateSettings);
+        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes3 = await getUserPool(UserPoolId, region);
@@ -157,7 +157,7 @@ exports.handler = (event, context, callback) => {
         };
 
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-        await updateAuthSignInSignOutUrlV11(projRoot2, oauthUpdateSettings);
+        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes2 = await getUserPool(UserPoolId, region);

@@ -416,7 +416,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   });
 }
 
-export function updateAuthSignInSignOutUrlV11(cwd: string, settings: any): Promise<void> {
+export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
 
@@ -446,6 +446,74 @@ export function updateAuthSignInSignOutUrlV11(cwd: string, settings: any): Promi
     .wait('Do you want to add redirect signout URIs?')
     .sendConfirmNo()
     .sendEof()
+    .runAsync();
+}
+
+export function updateAuthSignInSignOutUrlWithAll(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+
+  if (settings?.overrides?.category === 'auth') {
+    chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+  }
+
+  return chain
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Select the authentication/authorization services that you want to use:')
+    .sendCarriageReturn()
+    .wait('Allow unauthenticated logins?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Do you want to add User Pool Groups?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Do you want to add an admin queries API?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Multifactor authentication (MFA) user login options:')
+    .sendCarriageReturn()
+    .wait('Email based user registration/forgot password:')
+    .sendCarriageReturn()
+    .wait('Specify an email verification subject:')
+    .sendCarriageReturn()
+    .wait('Specify an email verification message:')
+    .sendCarriageReturn()
+    .wait('Do you want to override the default password policy for this User Pool?')
+    .sendCarriageReturn()
+    .wait("Specify the app's refresh token expiration period (in days):")
+    .sendCarriageReturn()
+    .wait('Do you want to specify the user attributes this app can read and write?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow?')
+    .sendCarriageReturn()
+    .wait('What domain name prefix do you want to use?')
+    .sendCarriageReturn()
+    .wait('Enter your redirect signin URI:')
+    .sendLine(settings.signinUrl)
+    .wait('Do you want to add another redirect signin URI')
+    .sendConfirmNo()
+    .sendCarriageReturn()
+    .wait('Enter your redirect signout URI:')
+    .sendLine(settings.signoutUrl)
+    .sendCarriageReturn()
+    .wait('Do you want to add another redirect signout URI')
+    .sendConfirmNo()
+    .sendCarriageReturn()
+    .wait('Select the OAuth flows enabled for this project')
+    .sendCarriageReturn()
+    .wait('Select the OAuth scopes enabled for this project')
+    .sendCarriageReturn()
+    .wait('Select the social providers you want to configure for your user pool')
+    .sendCarriageReturn()
+    .wait('Which triggers do you want to enable for Cognito')
+    .sendCarriageReturn()
+    .sendCarriageReturn()
     .runAsync();
 }
 
