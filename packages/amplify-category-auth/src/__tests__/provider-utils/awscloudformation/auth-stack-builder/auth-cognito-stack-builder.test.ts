@@ -77,7 +77,7 @@ describe('generateCognitoStackResources', () => {
     cognitoStack.userPoolClientRole = new iam.CfnRole(cognitoStack, 'testRole', {
       assumeRolePolicyDocument: 'test policy document',
     });
-    cognitoStack.createHostedUICustomResource();
+    cognitoStack.deleteExistingHostedUICustomResource();
     cognitoStack.createHostedUIProviderCustomResource();
     cognitoStack.createOAuthCustomResource();
     expect(cognitoStack.oAuthCustomResource).toBeDefined();

@@ -683,7 +683,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   /**
    * Creates custom lambda to update userPool client on Cognito
    */
-  createHostedUICustomResource(): void {
+  deleteExistingHostedUICustomResource(): void {
     // lambda function
     this.hostedUICustomResource = new lambda.CfnFunction(this, 'HostedUICustomResource', {
       code: {
@@ -1270,7 +1270,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.HostedUICustomResource?.Type === 'AWS::Cognito::UserPoolDomain';
 
     if (lambdaCalloutCreatedInCloud && !userPoolDomainCreatedInCloud) {
-      this.createHostedUICustomResource();
+      this.deleteExistingHostedUICustomResource();
     }
 
     this.hostedUIDomainResource = new cognito.CfnUserPoolDomain(this, 'HostedUIDomainResource', {
