@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-dotnet-function-template-provider",
-  "version": "2.5.1",
+  "version": "2.5.2-rc.e91470326.0",
   "description": ".NET templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.10.0",
-    "amplify-cli-core": "4.0.1",
+    "amplify-cli-core": "4.0.2-rc.e91470326.0",
     "graphql-transformer-core": "^8.0.1"
   },
   "devDependencies": {

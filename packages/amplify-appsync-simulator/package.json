@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.10.3",
+  "version": "2.10.4-rc.e91470326.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "@aws-amplify/amplify-prompts": "2.6.6",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-cli-core": "4.0.1",
+    "amplify-cli-core": "4.0.2-rc.e91470326.0",
     "amplify-velocity-template": "1.4.9",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
