@@ -96,7 +96,7 @@ export const getProfiledAwsConfig = async (
       const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
       process.env.AWS_SDK_LOAD_CONFIG = '1';
       const chain = new CredentialProviderChain();
-      const processProvider = () => new ProcessCredentials({ profile: profileName, filename: configFilePath });
+      const processProvider = () => new ProcessCredentials({ profile: profileName });
       chain.providers.push(processProvider);
 
       const credentials = await chain.resolvePromise();
