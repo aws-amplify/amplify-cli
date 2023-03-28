@@ -8,7 +8,7 @@ import {
   getProjectMeta,
   getUserPool,
   initJSProjectWithProfile,
-  updateAuthSignInSignOutUrl,
+  updateAuthSignInSignOutUrlV11,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -58,7 +58,7 @@ describe('hosted ui tests', () => {
       it('...creates a user pool domain', async () => {
         await initJSProjectWithProfile(projRoot, defaultsSettings);
         await addAuthWithDefault(projRoot);
-        await updateAuthSignInSignOutUrl(projRoot, oauthSettings);
+        await updateAuthSignInSignOutUrlV11(projRoot, oauthSettings);
         await amplifyPushAuth(projRoot);
 
         const meta = getProjectMeta(projRoot);
@@ -80,7 +80,7 @@ describe('hosted ui tests', () => {
         await addAuthWithDefault(projRoot);
         await amplifyPushAuth(projRoot);
 
-        await updateAuthSignInSignOutUrl(projRoot, oauthSettings);
+        await updateAuthSignInSignOutUrlV11(projRoot, oauthSettings);
         await amplifyPushAuth(projRoot);
 
         const meta = getProjectMeta(projRoot);

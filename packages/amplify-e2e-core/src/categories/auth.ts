@@ -416,7 +416,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   });
 }
 
-export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any): Promise<void> {
+export function updateAuthSignInSignOutUrlV11(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
 
