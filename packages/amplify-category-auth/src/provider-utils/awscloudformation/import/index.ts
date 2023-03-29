@@ -7,7 +7,7 @@ import {
   UserPoolDescriptionType,
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
@@ -964,7 +964,7 @@ export const importedAuthEnvInit = async (
 ): Promise<{
   doServiceWalkthrough?: boolean;
   succeeded?: boolean;
-  resourceRemoved?: boolean;
+  resourceCleanupRequired?: boolean;
   envSpecificParameters?: EnvSpecificResourceParameters;
 }> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
@@ -1099,12 +1099,12 @@ export const importedAuthEnvInit = async (
     answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      // check if cleanup needed if resources is imported in the App
       if (projectHasAuth()) {
-        //await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
+        printer.warn(importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
+        printer.warn(`Unlink userPool: ${currentEnvSpecificParameters.userPoolName} using 'amplify remove auth'`);
         return {
           succeeded: true,
-          resourceRemoved: true,
+          resourceCleanupRequired: true,
         };
       } else {
         throw new AmplifyError('AuthImportError', {
@@ -1229,7 +1229,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; resourceRemoved?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; resourceCleanupRequired?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1267,10 +1267,11 @@ export const headlessImport = async (
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
       if (projectHasAuth()) {
-        //await context.amplify.removeResource(context, AmplifyCategories.AUTH, answers.resourceName, { headless: true });
+        // returning silently in headless calls
+        printer.debug(`The previously configured Cognito User Pool: ${resolvedEnvParams.userPoolId} cannot be found.`);
         return {
           succeeded: true,
-          resourceRemoved: true,
+          resourceCleanupRequired: true,
         };
       }
       throw new AmplifyError('AuthImportError', {
