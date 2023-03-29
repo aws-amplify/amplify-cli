@@ -110,8 +110,8 @@ exports.handler = (event, context, callback) => {
           ...oauthUpdateSettings,
           signinUrl: 'https://example.url/',
           signoutUrl: 'https://example.url/',
-          updateSigninUrl: 'https://example.url/',
-          updateSignoutUrl: 'https://example.url/',
+          updateSigninUrl: 'https://example.info/',
+          updateSignoutUrl: 'https://example.info/',
           testingWithLatestCodebase: true,
         };
 

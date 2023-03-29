@@ -416,14 +416,18 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   });
 }
 
-export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any): Promise<void> {
+export function updateAuthSignInSignOutUrlAfterPull(
+  cwd: string,
+  settings: {
+    signinUrl: string;
+    signoutUrl: string;
+    testingWithLatestCodebase: boolean;
+    updateSigninUrl: string;
+    updateSignoutUrl: string;
+  },
+): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
-
-  if (settings?.overrides?.category === 'auth') {
-    chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
-  }
-
   return chain
     .wait('What do you want to do?')
     .send(KEY_DOWN_ARROW)
@@ -433,7 +437,7 @@ export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any):
     .sendCarriageReturn()
     .wait(`Update ${settings.signinUrl}`)
     .sendCarriageReturn()
-    .send(settings.updatesigninUrl)
+    .send(settings.updateSigninUrl)
     .sendCarriageReturn()
     .wait('Do you want to add redirect signin URIs?')
     .sendConfirmNo()
@@ -441,7 +445,7 @@ export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any):
     .sendCtrlA()
     .sendCarriageReturn()
     .wait(`Update ${settings.signoutUrl}`)
-    .send(settings.updatesignoutUrl)
+    .send(settings.updateSignoutUrl)
     .sendCarriageReturn()
     .wait('Do you want to add redirect signout URIs?')
     .sendConfirmNo()
@@ -449,13 +453,12 @@ export function updateAuthSignInSignOutUrlAfterPull(cwd: string, settings: any):
     .runAsync();
 }
 
-export function updateAuthSignInSignOutUrlWithAll(cwd: string, settings: any): Promise<void> {
+export function updateAuthSignInSignOutUrlWithAll(
+  cwd: string,
+  settings: { signinUrl: string; signoutUrl: string; testingWithLatestCodebase?: boolean },
+): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
-
-  if (settings?.overrides?.category === 'auth') {
-    chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
-  }
 
   return chain
     .wait('What do you want to do?')
