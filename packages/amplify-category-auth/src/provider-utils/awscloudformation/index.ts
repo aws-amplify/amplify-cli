@@ -95,7 +95,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
     } else if (succeeded) {
       if (resourceCleanupRequired) {
         // returning undefined as auth resource cleanup required
-        return;
+        return {};
       }
       envSpecificParametersResult = envSpecificParameters;
     } else {
@@ -146,8 +146,8 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
       const missingParams: any[] = [];
       requiredParams.forEach((param: any) => {
-        if (Object.keys(mergedValues!).includes(param)) {
-          envParams[param] = mergedValues![param];
+        if (Object.keys(mergedValues).includes(param)) {
+          envParams[param] = mergedValues[param];
         } else {
           missingParams.push(param);
         }
