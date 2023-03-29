@@ -415,6 +415,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string): Promise<void> {
       .sendCarriageReturn() // Auth users only
       .wait('What kind of access do you want for Authenticated users?')
       .sendCtrlA()
+      .wait('●')
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
