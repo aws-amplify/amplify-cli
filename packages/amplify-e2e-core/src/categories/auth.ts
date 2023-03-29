@@ -509,10 +509,11 @@ export function updateAuthSignInSignOutUrlWithAll(cwd: string, settings: any): P
     .sendCarriageReturn()
     .wait('Select the OAuth scopes enabled for this project')
     .sendCarriageReturn()
-    .wait('Select the social providers you want to configure for your user pool')
+    .wait('Select the identity providers you want to configure for your user pool:')
+    .sendCarriageReturn()
+    .wait('Do you want to configure Lambda Triggers for Cognito?')
     .sendCarriageReturn()
     .wait('Which triggers do you want to enable for Cognito')
-    .sendCarriageReturn()
     .sendCarriageReturn()
     .runAsync();
 }
