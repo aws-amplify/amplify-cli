@@ -345,7 +345,9 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendSelectAll(): ExecutionContext {
-      return this.sendCtrlA().wait('●').sendCarriageReturn();
+      return this.sendCtrlA()
+        .wait(/(●|◉|✔|\(*\)|)/) // wait for re-rendering the selection before confirming.
+        .sendCarriageReturn();
     },
     sendEof(): ExecutionContext {
       const _sendEof: ExecutionStep = {
