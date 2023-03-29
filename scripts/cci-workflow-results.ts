@@ -10,7 +10,7 @@ import { getCCIClient, saveWorkflowResults, saveWorkflowResultsHTML } from './cc
  */
 const getWorkflowDataAndSummarizeResults = async () => {
   const client = getCCIClient();
-  const data = await client.getWorkflowJobs();
+  const data = await client.getWorkflowJobs(process.env.CIRCLE_WORKFLOW_ID);
   const failed = data.items.filter((i: any) => i.status === 'failed');
   const summary = [];
   for (let f of failed) {
