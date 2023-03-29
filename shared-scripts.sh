@@ -231,6 +231,7 @@ function _install_packaged_cli_linux {
     cd $CODEBUILD_SRC_DIR/out
     ln -sf amplify-pkg-linux-x64 amplify
     export PATH=$AMPLIFY_DIR:$PATH
+    cd $CODEBUILD_SRC_DIR
 }
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH
