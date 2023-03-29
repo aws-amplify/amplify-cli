@@ -25,15 +25,11 @@ export const getVerboseLogTarget = (): Writable => {
   }
 };
 
-class NoopWritable extends Writable {
-  _write() {
-    /* noop */
-  }
-}
+class NoopWritable extends Writable {}
 
 // Creating this wrapper so the caller can call stdoutWrapper.end without actually closing stdout
 class StdoutWritable extends Writable {
-  _write = process.stdout._write;
+  write = process.stdout.write;
 }
 
 // wrapper around a file write stream that strips out spinner logs before writing
@@ -52,9 +48,18 @@ class FileWritable extends Writable {
   end(...args) {
     this.writeStream.end(...args);
   }
-  _write(chunk: string, encoding: BufferEncoding, callback: (error?: Error) => void): void {
-    if (this.spinnerRegex.test(chunk) === false && strip(chunk).trim().length > 0) {
-      this.writeStream._write(`${chunk}${EOL}`, encoding, callback);
+
+  write(
+    chunk: any,
+    encodingOrCallback: BufferEncoding | ((err?: Error) => void),
+    callback?: (error: Error | null | undefined) => void,
+  ): boolean {
+    if (typeof encodingOrCallback === 'function') {
+      callback = encodingOrCallback;
     }
+    if (this.spinnerRegex.test(chunk) === false && strip(chunk).trim().length > 0) {
+      return this.writeStream.write(chunk, callback);
+    }
+    return true;
   }
 }
