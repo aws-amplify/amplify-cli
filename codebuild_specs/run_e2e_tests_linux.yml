@@ -7,7 +7,8 @@ env:
 phases:
   build:
     commands:
-      - export CODEBUILD_SOURCE_VERSION=3fd87009bf573ebc8cda120dfe0cfd7f6a134fe3
+      # you can provide a codebuild source version to use old cache and skip all other jobs :)
+      # - export CODEBUILD_SOURCE_VERSION=3fd87009bf573ebc8cda120dfe0cfd7f6a134fe3
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
