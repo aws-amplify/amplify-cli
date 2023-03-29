@@ -230,8 +230,7 @@ function _install_packaged_cli_linux {
 
     cd $CODEBUILD_SRC_DIR/out
     ln -sf amplify-pkg-linux-x64 amplify
-    echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
-    source $BASH_ENV
+    export PATH=$AMPLIFY_DIR:$PATH
 }
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH
@@ -260,7 +259,7 @@ function _runE2ETestsLinux {
     amplify version
 
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    source $BASH_ENV
+    # source $BASH_ENV
 
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
