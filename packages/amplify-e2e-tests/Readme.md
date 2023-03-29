@@ -28,7 +28,7 @@ E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/pac
 
 If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to either `stdout` or `files`. Setting to `stdout` will pipe CLI output to stdout of the test harness. Setting to `files` will create a log file for each CLI command and pipe output to the file. The created files will be printed to stdout so you can find them.
 
-> Note: it is not recommended to set this option if you are running multiple tests at once. This would cause the output from multiple tests to be interleaved together.
+> Note: it is not recommended to set this option to `stdout` if you are running multiple tests at once. This would cause the output from multiple tests to be interleaved together.
 
 ```sh
 export VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=stdout

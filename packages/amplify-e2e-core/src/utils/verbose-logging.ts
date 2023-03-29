@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { tmpdir, EOL } from 'os';
+import { tmpdir } from 'os';
 import { Writable } from 'stream';
 import { generateRandomShortId } from '.';
 import strip from 'strip-ansi';
