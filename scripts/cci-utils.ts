@@ -34,6 +34,7 @@ export const AWS_REGIONS_TO_RUN_TESTS = [
 // Some services (eg. amazon lex) are not available in all regions
 // Tests added to this list will always run in us-west-2
 export const FORCE_US_WEST_2 = [
+  'src/__tests__/custom-resource-with-storage.test.ts',
   'src/__tests__/interactions.test.ts',
   'src/__tests__/interactions-1.test.ts',
   'src/__tests__/interactions-2.test.ts',
