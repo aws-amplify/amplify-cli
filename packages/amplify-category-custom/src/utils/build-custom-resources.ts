@@ -62,6 +62,13 @@ export const generateDependentResourcesType = async (): Promise<void> => {
 const buildResource = async (resource: ResourceMeta): Promise<void> => {
   const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
 
+  if (!fs.existsSync(targetDir)) {
+    throw new AmplifyError('MissingResourceDirectoryError', {
+      message: `Could not find the directory for the resource "${resource.resourceName}"`,
+      resolution: 'Please check if the resource directory exists in the backend directory.',
+    });
+  }
+
   // generate dynamic types for Amplify resources
   await generateDependentResourcesType();
 

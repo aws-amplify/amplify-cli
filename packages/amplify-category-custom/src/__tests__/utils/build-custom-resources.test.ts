@@ -1,6 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
+import { AmplifyError } from 'amplify-cli-core';
 import execa from 'execa';
+import * as fs from 'fs-extra';
 import { buildCustomResources } from '../../utils/build-custom-resources';
+import type { $TSContext } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
@@ -34,6 +36,7 @@ jest.mock('../../utils/generate-cfn-from-cdk', () => ({
 }));
 
 jest.mock('amplify-cli-core', () => ({
+  AmplifyError: Error,
   getPackageManager: jest.fn().mockResolvedValue('npm'),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
@@ -76,5 +79,43 @@ describe('build custom resources scenarios', () => {
 
     // 2 for npm install and 2 for tsc build (1 per resource)
     expect(execa.sync).toBeCalledTimes(4);
+  });
+
+  it('should error if resource directory does not exist', async () => {
+    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
+    const error = new AmplifyError('MissingResourceDirectoryError', {
+      message: 'Could not find the directory for the resource "mockresource1"',
+    });
+    const wrapped = new AmplifyError(
+      'InvalidCustomResourceError',
+      {
+        details: error.message,
+        message: `There was an error building the custom resources`,
+        resolution: 'There may be errors in your custom resource file. If so, fix the errors and try again.',
+      },
+      error,
+    );
+
+    await expect(buildCustomResources(mockContext, 'mockresource1')).rejects.toStrictEqual(wrapped);
+  });
+
+  it('should error if tsc is not found', async () => {
+    // First call to existsSync returns true, second call returns false
+    jest.spyOn(fs, 'existsSync').mockReturnValueOnce(true).mockReturnValueOnce(false);
+    const error = new AmplifyError('MissingOverridesInstallationRequirementsError', {
+      message: 'TypeScript executable not found.',
+      resolution: 'Please add it as a dev-dependency in the package.json file for this resource.',
+    });
+    const wrapped = new AmplifyError(
+      'InvalidCustomResourceError',
+      {
+        details: error.message,
+        message: `There was an error building the custom resources`,
+        resolution: 'There may be errors in your custom resource file. If so, fix the errors and try again.',
+      },
+      error,
+    );
+
+    await expect(buildCustomResources(mockContext, 'mockresource1')).rejects.toStrictEqual(wrapped);
   });
 });
