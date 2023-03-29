@@ -146,12 +146,10 @@ export const getUserPool = async (userpoolId, region) => {
 };
 
 export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
-  config.update({ region });
-
   let res;
 
   try {
-    res = await new CognitoIdentity().getIdentityPoolRoles({ IdentityPoolId: identityPoolId }).promise();
+    res = await new CognitoIdentity({ region }).getIdentityPoolRoles({ IdentityPoolId: identityPoolId }).promise();
   } catch (e) {
     console.log(e);
   }
