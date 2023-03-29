@@ -89,7 +89,11 @@ export type ExecutionContext = {
   sendConfirmNo: () => ExecutionContext;
   sendNo: () => ExecutionContext;
   sendCtrlC: () => ExecutionContext;
+  /**
+   * @deprecated Use sendSelectAll instead.
+   */
   sendCtrlA: () => ExecutionContext;
+  sendSelectAll: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
   /**
@@ -339,6 +343,9 @@ function chain(context: Context): ExecutionContext {
       };
       context.queue.push(_send);
       return chain(context);
+    },
+    sendSelectAll(): ExecutionContext {
+      return this.sendCtrlA().wait('●').sendCarriageReturn();
     },
     sendEof(): ExecutionContext {
       const _sendEof: ExecutionStep = {
