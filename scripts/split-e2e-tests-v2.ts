@@ -104,10 +104,6 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
-    // TODO: this is required to jump over breaking change between 2.53 and 2.68 of CDK.
-    // Remove exclusion for both custom resource tests after we ship new extensibility helper.
-    'src/__tests__/custom_resources.test.ts',
-    'src/__tests__/custom-resource-with-storage.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
     'src/__tests__/env-2.test.ts',
