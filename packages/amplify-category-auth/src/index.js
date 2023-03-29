@@ -40,6 +40,7 @@ const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
 const { run: authRunPush } = require('./commands/auth/push');
 const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters');
+const { prePushHandler } = require('./events/prePushHandler');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
@@ -488,8 +489,13 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
 };
 
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`${category} handleAmplifyEvent to be implemented`);
-  context.print.info(`Received event args ${args}`);
+  switch (args.event) {
+    case 'PrePush':
+      await prePushHandler(context);
+      break;
+    default:
+      printer.info(`Event handler for ${args.event} not implemented by ${category} category`);
+  }
 }
 
 async function prePushAuthHook(context) {
