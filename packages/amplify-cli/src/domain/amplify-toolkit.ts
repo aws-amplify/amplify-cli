@@ -94,7 +94,7 @@ export class AmplifyToolkit {
     return require('../extensions/amplify-helpers/push-resources').pushResources;
   }
   get storeCurrentCloudBackend() {
-    return require('../extensions/amplify-helpers/push-resources').storeCurrentCloudBackend;
+    return require('../extensions/amplify-helpers/current-cloud-backend-utils').storeCurrentCloudBackend;
   }
   get readJsonFile() {
     return require('../extensions/amplify-helpers/read-json-file').readJsonFile;

@@ -10,13 +10,13 @@ const writeCFNTemplateMock = writeCFNTemplate as jest.MockedFunction<typeof writ
 describe('test ensureLambdaExecutionRoleOutputs function', () => {
   beforeEach(() => {
     pathManagerMock.getBackendDirPath = jest.fn().mockReturnValue('backend');
-    stateManagerMock.getMeta = jest.fn();
+    stateManagerMock.getBackendConfig = jest.fn();
   });
 
   afterEach(() => jest.resetAllMocks());
 
   it(' when no functions are present', async () => {
-    stateManagerMock.getMeta.mockReturnValue({
+    stateManagerMock.getBackendConfig.mockReturnValue({
       auth: {
         authtriggertestb3a9da62b3a9da62: {
           customAuth: false,
@@ -31,7 +31,7 @@ describe('test ensureLambdaExecutionRoleOutputs function', () => {
   });
 
   it(' when functions have no role arns in outputs', async () => {
-    stateManagerMock.getMeta.mockReturnValue({
+    stateManagerMock.getBackendConfig.mockReturnValue({
       auth: {
         authtriggertestb3a9da62b3a9da62: {
           customAuth: false,

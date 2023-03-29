@@ -5,7 +5,7 @@ import { categoryName } from '../../constants';
 import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
 import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
 import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
-
+import { AmplifyError } from 'amplify-cli-core';
 export const name = 'build';
 
 /**
@@ -31,7 +31,12 @@ export const run = async (context: $TSContext) => {
   } catch (err) {
     context.print.info(err.stack);
     context.print.error('There was an error building the function resources');
-    void context.usageData.emitError(err);
+    const amplifyError = new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `There was an error building the function resources ${err.message}` },
+      err,
+    );
+    void context.usageData.emitError(amplifyError);
     process.exitCode = 1;
   }
 };
