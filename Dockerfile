@@ -25,49 +25,11 @@ RUN sudo apt-get install -y \
 RUN sudo pip install awscli
 
 # Put Node.js PKG binaries in cache location
-ARG PKG_AWS_ACCESS_KEY
-ARG PKG_AWS_SECRET_ACCESS_KEY
-ARG PKG_AWS_SESSION_TOKEN
-ARG AWS_REGION
-RUN aws configure --profile=pkg-binaries-fetcher set aws_access_key_id $PKG_AWS_ACCESS_KEY && \
-  aws configure --profile=pkg-binaries-fetcher set aws_secret_access_key $PKG_AWS_SECRET_ACCESS_KEY  && \
-  aws configure --profile=pkg-binaries-fetcher set aws_session_token $PKG_AWS_SESSION_TOKEN
-ENV binaries_bucket_name="amplify-cli-pkg-fetch-nodejs-binaries"
-ENV binaries_tag="v3.4"
-ENV fourteen_version="14.21.3"
-ENV eighteen_version="18.15.0"
-ENV linux_arm_14_binary_filename="node-v$fourteen_version-linux-arm64"
-ENV linux_x64_14_binary_filename="node-v$fourteen_version-linux-x64"
-ENV win_arm_14_binary_filename="node-v$fourteen_version-win-arm64"
-ENV win_x64_14_binary_filename="node-v$fourteen_version-win-x64"
-ENV mac_x64_14_binary_filename="node-v$fourteen_version-macos-x64"
-ENV linux_arm_18_binary_filename="node-v$eighteen_version-linux-arm64"
-ENV linux_x64_18_binary_filename="node-v$eighteen_version-linux-x64"
-ENV win_arm_18_binary_filename="node-v$eighteen_version-win-arm64"
-ENV win_x64_18_binary_filename="node-v$eighteen_version-win-x64"
-ENV mac_x64_18_binary_filename="node-v$eighteen_version-macos-x64"
-ENV linux_arm_14_binary_filename_fetched="fetched-v$fourteen_version-linux-arm64"
-ENV linux_x64_14_binary_filename_fetched="fetched-v$fourteen_version-linux-x64"
-ENV win_arm_14_binary_filename_fetched="fetched-v$fourteen_version-win-arm64"
-ENV win_x64_14_binary_filename_fetched="fetched-v$fourteen_version-win-x64"
-ENV mac_x64_14_binary_filename_fetched="fetched-v$fourteen_version-macos-x64"
-ENV linux_arm_18_binary_filename_fetched="fetched-v$eighteen_version-linux-arm64"
-ENV linux_x64_18_binary_filename_fetched="fetched-v$eighteen_version-linux-x64"
-ENV win_arm_18_binary_filename_fetched="fetched-v$eighteen_version-win-arm64"
-ENV win_x64_18_binary_filename_fetched="fetched-v$eighteen_version-win-x64"
-ENV mac_x64_18_binary_filename_fetched="fetched-v$eighteen_version-macos-x64"
-RUN mkdir -p ~/.pkg-cache/$binaries_tag && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_arm_14_binary_filename ~/.pkg-cache/$binaries_tag/$linux_arm_14_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$linux_x64_14_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_arm_14_binary_filename ~/.pkg-cache/$binaries_tag/$win_arm_14_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$win_x64_14_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$mac_x64_14_binary_filename ~/.pkg-cache/$binaries_tag/$mac_x64_14_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_arm_18_binary_filename ~/.pkg-cache/$binaries_tag/$linux_arm_18_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$linux_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$linux_x64_18_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_arm_18_binary_filename ~/.pkg-cache/$binaries_tag/$win_arm_18_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$win_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$win_x64_18_binary_filename_fetched && \
-  aws --profile=pkg-binaries-fetcher --region $AWS_REGION s3 cp s3://$binaries_bucket_name/$binaries_tag/$mac_x64_18_binary_filename ~/.pkg-cache/$binaries_tag/$mac_x64_18_binary_filename_fetched && \
-  ls ~/.pkg-cache/$binaries_tag
+RUN mkdir -p ~/.pkg-cache
+
+ADD $CODEBUILD_SRC_DIR/pkg-cache ~/.pkg-cache
+
+RUN ls ~/.pkg-cache
 
 # Install Java
 WORKDIR /tmp
