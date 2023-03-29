@@ -3,6 +3,7 @@ import { ImportAuthRequest } from 'amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { projectHasAuth } from '../../provider-utils/awscloudformation/utils/project-has-auth';
 
 jest.mock('amplify-prompts', () => ({
   printer: {
@@ -20,6 +21,10 @@ jest.mock('amplify-cli-core', () => ({
     parse: JSON.parse,
   },
 }));
+
+jest.mock('../../provider-utils/awscloudformation/utils/project-has-auth');
+
+const projectHasAuthMock = projectHasAuth as jest.MockedFunction<typeof projectHasAuth>;
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = jest.fn().mockReturnValue({
@@ -148,6 +153,7 @@ describe('import auth headless', () => {
   });
 
   it('should process command successfully', async () => {
+    projectHasAuthMock.mockReturnValue(false);
     await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
     expect(getUserPoolDetailsMock).toBeCalledWith(USER_POOL_ID);
@@ -158,6 +164,7 @@ describe('import auth headless', () => {
   });
 
   it('should warn if auth has already been added', async () => {
+    projectHasAuthMock.mockReturnValue(true);
     getProjectDetailsMock.mockReturnValueOnce({
       projectConfig,
     });
@@ -174,11 +181,12 @@ describe('import auth headless', () => {
   });
 
   it('should warn if auth has already been imported', async () => {
+    projectHasAuthMock.mockReturnValue(true);
     getProjectDetailsMock.mockReturnValueOnce({
       projectConfig,
     });
 
-    stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+    stateManager_mock.getMeta = jest.fn().mockReturnValue({
       auth: {
         foo: {
           serviceType: 'imported',
@@ -193,7 +201,8 @@ describe('import auth headless', () => {
     );
   });
 
-  it('should throw user pool not found exception', async () => {
+  it('should throw user pool not found exception if userpool is deleted and local state is present', async () => {
+    projectHasAuthMock.mockReturnValue(false);
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
@@ -209,11 +218,25 @@ describe('import auth headless', () => {
 
       fail('should throw error');
     } catch (e) {
-      expect(e.message).toBe(`The previously configured Cognito User Pool: '' (user-pool-123) cannot be found.`);
+      expect(e.message).toMatchInlineSnapshot(`"The previously configured Cognito User Pool: '' (user-pool-123) cannot be found."`);
     }
   });
 
+  it('should warn user pool not found exception if userpool is deleted and auth local state is present', async () => {
+    projectHasAuthMock.mockReturnValueOnce(false).mockReturnValueOnce(true);
+    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+      providers: {
+        awscloudformation: {},
+      },
+    });
+    getUserPoolDetailsMock.mockRejectedValueOnce({
+      name: 'ResourceNotFoundException',
+    });
+    expect(async () => await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString)).not.toThrow();
+  });
+
   it('should throw web clients not found exception ', async () => {
+    projectHasAuthMock.mockReturnValue(false);
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
@@ -234,6 +257,7 @@ describe('import auth headless', () => {
   });
 
   it('should throw no matching identity pool found exception', async () => {
+    projectHasAuthMock.mockReturnValue(false);
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
