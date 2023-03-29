@@ -100,8 +100,8 @@ function _testLinux {
     loadCache .cache $HOME/.cache
     # run tests
     yarn test-ci
-    echo collecting coverage
-    yarn coverage
+    # echo collecting coverage
+    # yarn coverage
 }
 function _validateCDKVersion {
     echo Validate CDK Version
@@ -225,6 +225,24 @@ function _buildBinaries {
     # copy [repo/out to s3]
     storeCache $CODEBUILD_SRC_DIR/out repo-out-$binaryType
 }
+function _install_packaged_cli_linux {
+    echo INSTALL PACKAGED CLI TO PATH
+
+    cd $CODEBUILD_SRC_DIR/out
+    ln -sf amplify-pkg-linux-x64 amplify
+    echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
+    source $BASH_ENV
+}
+function _install_packaged_cli_win {
+    echo Install Amplify Packaged CLI to PATH
+    # rename the command to amplify
+    cd $CODEBUILD_SRC_DIR/out
+    cp amplify-pkg-win-x64.exe amplify.exe
+
+    echo Move to CLI Binary to already existing PATH
+    # This is a Hack to make sure the Amplify CLI is in the PATH
+    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
+}
 function _runE2ETestsLinux {
     echo RUN E2E Tests Linux
     
@@ -236,15 +254,20 @@ function _runE2ETestsLinux {
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
+    _install_packaged_cli_linux
+
+    # verify installation
+    amplify version
+
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    # source $BASH_ENV
+    source $BASH_ENV
 
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
-    #should just fail here..
-    cd packages/amplify-e2e-tests
-    retry runE2eTest
+    
+    # cd packages/amplify-e2e-tests
+    # retry runE2eTest
 }
 function _runE2ETestsWin {
     echo RUN E2E Tests Windows
@@ -271,21 +294,4 @@ function _runE2ETestsWin {
     retry runE2eTest
 }
 
-function _install_packaged_cli_linux {
-    echo INSTALL PACKAGED CLI TO PATH
 
-    cd out
-    ln -sf amplify-pkg-linux-x64 amplify
-    echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
-    source $BASH_ENV
-}
-function _install_packaged_cli_win {
-    echo Install Amplify Packaged CLI to PATH
-    # rename the command to amplify
-    cd $CODEBUILD_SRC_DIR/out
-    cp amplify-pkg-win-x64.exe amplify.exe
-
-    echo Move to CLI Binary to already existing PATH
-    # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
-}

@@ -9,8 +9,7 @@ env:
 phases:
   build:
     commands:
+      - export CODEBUILD_SOURCE_VERSION=3fd87009bf573ebc8cda120dfe0cfd7f6a134fe3
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _install_packaged_cli_linux
-      - amplify version
       - source ./shared-scripts.sh && _runE2ETestsLinux
