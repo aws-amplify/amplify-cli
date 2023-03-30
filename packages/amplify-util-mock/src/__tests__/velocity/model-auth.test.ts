@@ -1574,9 +1574,9 @@ describe('with identity claim feature flag disabled', () => {
       expect(listAuthVTLRequest.stash.authFilter).toEqual(
         expect.objectContaining({
           or: expect.arrayContaining([
-            expect.objectContaining({ child: { in: expect.arrayContaining([ownerRequest.jwt["cognito:username"]]) } }),
-            expect.objectContaining({ parent: { in: expect.arrayContaining([ownerRequest.jwt["cognito:username"]]) } })
-          ])
+            expect.objectContaining({ child: { in: expect.arrayContaining([ownerRequest.jwt['cognito:username']]) } }),
+            expect.objectContaining({ parent: { in: expect.arrayContaining([ownerRequest.jwt['cognito:username']]) } }),
+          ]),
         }),
       );
 
