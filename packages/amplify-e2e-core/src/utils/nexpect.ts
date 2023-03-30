@@ -354,7 +354,7 @@ function chain(context: Context): ExecutionContext {
               return false;
             }
           }
-          const selectionMadeIndicator = /(●|◉|✔|\(*\)|)/;
+          const selectionMadeIndicator = /(●|◉|✔|\(\*\))/;
           if (selectionMadeIndicator.test(data)) {
             _selectAll.expectation = true;
           }
@@ -506,8 +506,9 @@ function chain(context: Context): ExecutionContext {
         return false;
       }
       if (
-        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
-        -1
+        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording', '_selectAll'].indexOf(
+          currentFnName,
+        ) === -1
       ) {
         //
         // If the `currentFn` is a function, but not those set by `.sendline()` or
