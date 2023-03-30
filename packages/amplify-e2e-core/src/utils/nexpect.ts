@@ -342,35 +342,9 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     selectAll(): ExecutionContext {
-      const _selectAll: ExecutionStep = {
-        fn: (data) => {
-          // Multi-selects can re-render multiple times while
-          // making transitions. This code keeps sending Ctrl+A until
-          // it detects that transition successfully happened.
-          const selectionFooter = 'Use <space> to select';
-          if (data.includes(selectionFooter)) {
-            if (_selectAll.expectation) {
-              context.process.write(RETURN);
-              return true;
-            } else {
-              context.process.write(`${CONTROL_A}`);
-              return false;
-            }
-          }
-          const selectionMadeIndicator = /(●|◉|✔|\(\*\))/;
-          if (selectionMadeIndicator.test(data)) {
-            _selectAll.expectation = true;
-          }
-          return false;
-        },
-        name: '_selectAll',
-        shift: false,
-        description: `[selectAll]`,
-        requiresInput: true,
-        expectation: false,
-      };
-      context.queue.push(_selectAll);
-      return chain(context);
+      return this.sendCtrlA()
+        .wait(/(●|◉|✔|\(\*\))/)
+        .sendCarriageReturn();
     },
     sendEof(): ExecutionContext {
       const _sendEof: ExecutionStep = {
