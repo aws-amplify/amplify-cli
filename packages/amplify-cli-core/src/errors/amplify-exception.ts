@@ -135,6 +135,7 @@ export type AmplifyErrorType =
   | 'IterativeRollbackError'
   | 'LambdaFunctionInvokeError'
   | 'LambdaLayerDeleteError'
+  | 'LambdaLayerNotFoundError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
   | 'MissingExpectedParameterError'
