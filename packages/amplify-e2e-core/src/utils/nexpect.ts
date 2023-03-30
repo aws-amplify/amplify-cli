@@ -344,6 +344,9 @@ function chain(context: Context): ExecutionContext {
     selectAll(): ExecutionContext {
       const _selectAll: ExecutionStep = {
         fn: (data) => {
+          // Multi-selects can re-render multiple times while
+          // making transitions. This code keeps sending Ctrl+A until
+          // it detects that transition successfully happened.
           const selectionFooter = 'Use <space> to select';
           if (data.includes(selectionFooter)) {
             if (_selectAll.expectation) {
