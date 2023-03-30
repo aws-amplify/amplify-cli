@@ -28,7 +28,7 @@ RUN sudo pip install awscli
 ARG CODEBUILD_SRC_DIR
 ENV PKG_CACHE_PATH=~/pkg-cache
 RUN mkdir -p $PKG_CACHE_PATH
-ADD $CODEBUILD_SRC_DIR/pkg-cache $PKG_CACHE_PATH
+ADD pkg-cache $PKG_CACHE_PATH
 RUN ls $PKG_CACHE_PATH/*
 
 # Install Java
