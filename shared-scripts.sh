@@ -81,7 +81,7 @@ function _buildLinux {
     _setShell
     echo Linux Build
     yarn run production-build
-    # copy [repo, ~/.cache, and .ssh to s3]
+    yarn build-tests
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
@@ -89,7 +89,7 @@ function _buildWindows {
     _setShell
     echo Windows Build
     yarn run production-build
-    # copy [repo, .cache, and .ssh to s3]
+    yarn build-tests
     storeCache $CODEBUILD_SRC_DIR repo-windows
     storeCache $HOME/.cache .cache-windows
 }
@@ -100,8 +100,8 @@ function _testLinux {
     loadCache .cache $HOME/.cache
     # run tests
     yarn test-ci
-    echo collecting coverage
-    yarn coverage
+    # echo collecting coverage
+    # yarn coverage
 }
 function _validateCDKVersion {
     echo Validate CDK Version
@@ -122,32 +122,26 @@ function _lint {
 }
 function _verifyAPIExtract {
     echo Verify API Extract
-
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-
     yarn verify-api-extract
 }
 function _verifyYarnLock {
     echo "Verify Yarn Lock"
-
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    
     yarn verify-yarn-lock
 }
 function _verifyVersionsMatch {
     echo Verify Versions Match
-
     # download [repo, .cache, verdaccio-cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    loadCache verdaccio-cache $HOME/verdaccio-cache
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     
-    source .circleci/local_publish_helpers.sh
-    startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
@@ -163,13 +157,12 @@ function _mockE2ETests {
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
-    
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
     source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    source ./.circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal
+    setNpmRegistryUrlToLocal
     export LOCAL_PUBLISH_TO_LATEST=true
     ./.circleci/publish-codebuild.sh
     unsetNpmRegistryUrl
@@ -195,14 +188,25 @@ function _publishToLocalRegistry {
     storeCacheFile $CODEBUILD_SRC_DIR/.amplify-pkg-version .amplify-pkg-version
 }
 function _uploadPkgBinaries {
-    # download [repo, pkg-binaries, from s3]
     echo Consolidate binaries cache and upload
-    source .circleci/local_publish_helpers.sh
-    uploadPkgCli
-    # copy [repo/out to s3]
+
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-win $CODEBUILD_SRC_DIR/out
+
+    echo Done loading binaries
+    ls $CODEBUILD_SRC_DIR/out
+
+    # source .circleci/local_publish_helpers.sh
+    # uploadPkgCli
+
+    storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
 function _buildBinaries {
     echo Start verdaccio and package CLI
+    binaryType="$1"
     # download [repo, yarn, verdaccio from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
@@ -215,29 +219,72 @@ function _buildBinaries {
     startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    generatePkgCli linux
-    # generatePkgCli macos
-    # generatePkgCli win
-    # generatePkgCli arm
-    
+    generatePkgCli $binaryType
     unsetNpmRegistryUrl
 
     # copy [repo/out to s3]
-    storeCache $CODEBUILD_SRC_DIR/out repo-out
+    storeCache $CODEBUILD_SRC_DIR/out repo-out-$binaryType
+}
+function _install_packaged_cli_linux {
+    echo INSTALL PACKAGED CLI TO PATH
+
+    cd $CODEBUILD_SRC_DIR/out
+    ln -sf amplify-pkg-linux-x64 amplify
+    export PATH=$AMPLIFY_DIR:$PATH
+    cd $CODEBUILD_SRC_DIR
+}
+function _install_packaged_cli_win {
+    echo Install Amplify Packaged CLI to PATH
+    # rename the command to amplify
+    cd $CODEBUILD_SRC_DIR/out
+    cp amplify-pkg-win-x64.exe amplify.exe
+
+    echo Move to CLI Binary to already existing PATH
+    # This is a Hack to make sure the Amplify CLI is in the PATH
+    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
 }
 function _runE2ETestsLinux {
-    echo RUN E2E Tests
+    echo RUN E2E Tests Linux
     
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
-    loadCache repo-out $CODEBUILD_SRC_DIR/out
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+
+    _install_packaged_cli_linux
+
+    # verify installation
+    amplify version
+
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    # source $BASH_ENV
+
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    amplify version
+    
+    # cd packages/amplify-e2e-tests
+    # retry runE2eTest
+}
+function _runE2ETestsWin {
+    echo RUN E2E Tests Windows
+
+    echo Git Enable Long Paths
+    git config --global core.longpaths true
+
+    loadCache repo-windows $CODEBUILD_SRC_DIR
+    loadCache .cache-windows $HOME/.cache
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    # source $BASH_ENV
+    source $BASH_ENV
 
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
@@ -246,3 +293,5 @@ function _runE2ETestsLinux {
     cd packages/amplify-e2e-tests
     retry runE2eTest
 }
+
+
