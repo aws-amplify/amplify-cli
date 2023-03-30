@@ -1,6 +1,6 @@
 version: 0.2
 env:
-  shell: bash
+  shell: powershell.exe
   variables:
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2b.test.ts
@@ -11,4 +11,7 @@ phases:
     commands:
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
+      - cp $CODEBUILD_SRC_DIR/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
+      - source ./shared-scripts.sh && _install_packaged_cli_win
+      - amplify version
       - source ./shared-scripts.sh && _runE2ETestsLinux
