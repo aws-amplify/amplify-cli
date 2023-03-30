@@ -120,7 +120,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'CustomPoliciesFormatError' | 'DebugConfigValueNotSetError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DiagnoseReportUploadError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'ExportError' | 'FeatureFlagsValidationError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaFunctionInvokeError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'PackagingLambdaFunctionError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceCountLimitExceedError' | 'ResourceDoesNotExistError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'StorageImportError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
 
 // @public (undocumented)
 export enum AmplifyEvent {
@@ -313,7 +313,8 @@ export const AmplifySupportedService: {
 };
 
 // @public (undocumented)
-export class AngularConfigNotFoundError extends Error {
+export class AngularConfigNotFoundError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -536,7 +537,8 @@ export type CommandLineInput = {
 export const commandsInfo: Array<CommandInfo>;
 
 // @public (undocumented)
-export class ConfigurationError extends Error {
+export class ConfigurationError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -647,7 +649,8 @@ export type CustomIAMPolicy = {
 };
 
 // @public (undocumented)
-export class CustomPoliciesFormatError extends Error {
+export class CustomPoliciesFormatError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -665,7 +668,8 @@ export type DataParameter = {
 export function debug(message: string, title?: string): void;
 
 // @public (undocumented)
-export class DebugConfigValueNotSetError extends Error {
+export class DebugConfigValueNotSetError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -747,7 +751,8 @@ export type DetectedDependency = {
 };
 
 // @public (undocumented)
-export class DiagnoseReportUploadError extends Error {
+export class DiagnoseReportUploadError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -791,15 +796,18 @@ export { ExeInfo }
 export const exitOnNextTick: (code: number) => void;
 
 // @public (undocumented)
-export class ExportedStackNotFoundError extends Error {
+export class ExportedStackNotFoundError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class ExportedStackNotInValidStateError extends Error {
+export class ExportedStackNotInValidStateError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class ExportPathValidationError extends Error {
+export class ExportPathValidationError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -1160,7 +1168,8 @@ type InputParameters = {
 };
 
 // @public (undocumented)
-export class InvalidSubCommandError extends Error {
+export class InvalidSubCommandError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -1416,7 +1425,8 @@ export interface MigrationInfo {
 }
 
 // @public (undocumented)
-export class MissingParametersError extends Error {
+export class MissingParametersError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -1439,7 +1449,8 @@ export enum NotificationChannels {
 }
 
 // @public (undocumented)
-export class NotImplementedError extends Error {
+export class NotImplementedError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
@@ -1843,20 +1854,22 @@ export function red(message: string): void;
 export const removeFromDeploymentSecrets: (deploymentSecretsModifier: deploymentSecretsRemove) => DeploymentSecrets;
 
 // @public (undocumented)
-export class ResourceAlreadyExistsError extends Error {
+export class ResourceAlreadyExistsError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class ResourceCountLimitExceedError extends Error {
+export class ResourceCountLimitExceedError extends AmplifyError {
     constructor(errMessage: string);
 }
 
 // @public (undocumented)
-export class ResourceCredentialsNotFoundError extends Error {
+export class ResourceCredentialsNotFoundError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class ResourceDoesNotExistError extends Error {
+export class ResourceDoesNotExistError extends AmplifyError {
     constructor(errMessage: string);
 }
 
@@ -2119,19 +2132,23 @@ export type TypeDef = {
 export type TypeOptionFlowData = IOptionFlowHeadlessData | IOptionFlowCLIData;
 
 // @public (undocumented)
-export class UnknownArgumentError extends Error {
+export class UnknownArgumentError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class UnknownResourceTypeError extends Error {
+export class UnknownResourceTypeError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class UnrecognizedFrameworkError extends Error {
+export class UnrecognizedFrameworkError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)
-export class UnrecognizedFrontendError extends Error {
+export class UnrecognizedFrontendError extends AmplifyError {
+    constructor(errMessage?: string);
 }
 
 // @public (undocumented)

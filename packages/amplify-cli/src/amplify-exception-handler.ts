@@ -18,6 +18,7 @@ export const init = (_context: Context): void => {
  * Handle exceptions
  */
 export const handleException = async (exception: unknown): Promise<void> => {
+  process.exitCode = 1;
   let amplifyException: AmplifyException;
 
   if (exception instanceof AmplifyException) {

@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -18,19 +18,20 @@
   "private": true,
   "scripts": {
     "e2e": "npm run setup-profile && jest --verbose",
+    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.0.0",
-    "@aws-amplify/amplify-e2e-core": "4.8.0",
-    "@aws-amplify/amplify-opensearch-simulator": "1.2.2",
+    "@aws-amplify/amplify-category-auth": "3.0.1",
+    "@aws-amplify/amplify-e2e-core": "4.8.1",
+    "@aws-amplify/amplify-opensearch-simulator": "1.2.3",
     "@aws-amplify/graphql-transformer-core": "^1.1.1",
-    "amplify-cli-core": "4.0.0",
-    "amplify-dynamodb-simulator": "2.5.9",
+    "amplify-cli-core": "4.0.1",
+    "amplify-dynamodb-simulator": "2.5.10",
     "amplify-headless-interface": "1.17.1",
-    "amplify-storage-simulator": "1.7.3",
+    "amplify-storage-simulator": "1.7.4",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.68.0",

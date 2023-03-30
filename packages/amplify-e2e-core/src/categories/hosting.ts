@@ -174,7 +174,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync(getNpxPath(), ['create-react-app', '--scripts-version', '4.0.3', projectName], { cwd: projectDir });
+  spawnSync(getNpxPath(), ['create-react-app', '--scripts-version', '5.0.1', projectName], { cwd: projectDir });
 
   return projRoot;
 }
