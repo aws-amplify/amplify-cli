@@ -136,4 +136,15 @@ describe('Custom policies util test', () => {
 
     expect(template.Resources?.CustomLambdaExecutionPolicy).toBeUndefined();
   });
+  test.only('test generateCustomPoliciesInTemplate with empty action array', () => {
+    (stateManager.getCustomPolicies as jest.Mock).mockReturnValueOnce([
+      {
+        Action: undefined,
+        Resource: [],
+      },
+    ]);
+    expect(() => generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function')).toThrowError(
+      /Invalid custom IAM policies for .*?/,
+    );
+  });
 });
