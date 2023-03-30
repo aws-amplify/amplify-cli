@@ -9,7 +9,8 @@ phases:
       - ls $HOME
       - echo test11
       - echo $PKG_CACHE_PATH
-      - ls /root/*
+      - ls $HOME
+      - ls /root
       - ls /usr/local/*
       - export CODEBUILD_SOURCE_VERSION=332e8fb53050274bdaa37ca7fb8d8097eb8d03ad
       - source ./shared-scripts.sh && _buildBinaries linux
