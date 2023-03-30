@@ -26,7 +26,7 @@ RUN sudo pip install awscli
 
 # Put Node.js PKG binaries in cache location
 ARG CODEBUILD_SRC_DIR
-ENV PKG_CACHE_PATH=/opt/pkg-cache
+ENV PKG_CACHE_PATH=~/pkg-cache
 RUN mkdir -p $PKG_CACHE_PATH
 ADD $CODEBUILD_SRC_DIR/pkg-cache $PKG_CACHE_PATH
 RUN ls $PKG_CACHE_PATH/*
