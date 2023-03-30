@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.2-gfix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1...@aws-amplify/amplify-environment-parameters@1.4.2-gfix.0) (2023-03-30)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+
+
+
+
+
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

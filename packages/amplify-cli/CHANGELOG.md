@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.4-gfix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3...@aws-amplify/cli-internal@11.0.4-gfix.0) (2023-03-30)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
 ## [11.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
