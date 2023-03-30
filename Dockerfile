@@ -28,7 +28,6 @@ RUN sudo pip install awscli
 ENV PKG_CACHE_PATH=/root/pkg-cache
 ADD pkg-cache $PKG_CACHE_PATH
 RUN echo $PKG_CACHE_PATH
-RUN ls $PKG_CACHE_PATH/*
 
 # Install Java
 WORKDIR /tmp
