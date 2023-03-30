@@ -97,6 +97,7 @@ const WINDOWS_SMOKE_TESTS = [
   'src/__tests__/schema-model-e.test.ts',
   // iterative deployments
   'src/__tests__/schema-iterative-update-1.test.ts',
+  'src/__tests__/auth_12.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],

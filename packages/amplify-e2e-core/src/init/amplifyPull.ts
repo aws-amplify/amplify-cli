@@ -170,6 +170,10 @@ export const amplifyStudioHeadlessPull = (
       profileName: profileName ?? 'amplify-integ-test-user',
     },
   };
-  const args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
+  let args;
+  if(process.platform === 'win32'){
+    args = ['pull', '--%', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
+  }
+  args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
   return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true }).wait('Successfully pulled backend environment').runAsync();
 };
