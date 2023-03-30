@@ -239,7 +239,7 @@ export type ServiceUploadHandler = (key: string, value: string | number | boolea
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
 const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string) =>
-  `${stateManager.getAppID()}/${stateManager.getCurrentEnvName()}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;
+  `amplify/${stateManager.getAppID()}/${stateManager.getCurrentEnvName()}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
   `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 

@@ -158,6 +158,8 @@ export const run = async (startTime: number): Promise<void> => {
     notify({ defer: true, isGlobal: true });
   }
 
+  const isHeadlessPull = context?.input?.command === 'pull' && context?.input?.options?.yes === true;
+
   if (context.input.command === 'push') {
     const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
     const CloudFormationProviderName = 'awscloudformation';
@@ -172,6 +174,8 @@ export const run = async (startTime: number): Promise<void> => {
       );
     }
     await saveAllEnvParams(uploadHandler);
+  } else if (isHeadlessPull) {
+    // tpi and backend-config should not be modified on a headless pull
   } else {
     await saveAllEnvParams();
   }
