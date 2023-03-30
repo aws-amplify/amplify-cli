@@ -14,7 +14,7 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - echo $CODEBUILD_SRC_DIR
-      - docker build --build-arg CODEBUILD_SRC_DIR -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker build --build-arg CODEBUILD_SRC_DIR=$CODEBUILD_SRC_DIR --tag $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:
     commands:
