@@ -9,7 +9,6 @@ phases:
       - ls $HOME
       - echo test11
       - export CODEBUILD_SOURCE_VERSION=332e8fb53050274bdaa37ca7fb8d8097eb8d03ad
-      - export PKG_CACHE_PATH=$HOME/.pkg-cache
       - source ./shared-scripts.sh && _buildBinaries linux
 
 artifacts:
