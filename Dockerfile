@@ -26,7 +26,7 @@ RUN sudo pip install awscli
 
 # Put Node.js PKG binaries in cache location
 ENV PKG_CACHE_PATH=/root/pkg-cache
-ADD pkg-cache $PKG_CACHE_PATH
+COPY pkg-cache $PKG_CACHE_PATH
 RUN echo $PKG_CACHE_PATH
 
 # Install Java
