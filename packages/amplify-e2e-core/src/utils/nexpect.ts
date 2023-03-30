@@ -342,9 +342,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     selectAll(): ExecutionContext {
-      return this.sendCtrlA()
-        .wait(/(●|◉|✔|\(\*\))/)
-        .sendCarriageReturn();
+      return this.delay(1000).sendCtrlA().delay(1000).sendCarriageReturn();
     },
     sendEof(): ExecutionContext {
       const _sendEof: ExecutionStep = {
@@ -363,12 +361,8 @@ function chain(context: Context): ExecutionContext {
     delay(milliseconds: number): ExecutionContext {
       const _delay: ExecutionStep = {
         fn: () => {
-          const startCallback = Date.now();
-
-          while (Date.now() - startCallback < milliseconds) {
-            // empty
-          }
-
+          // wait synchronously without burning CPU (which could affect process we wait for).
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
           return true;
         },
         shift: true,
