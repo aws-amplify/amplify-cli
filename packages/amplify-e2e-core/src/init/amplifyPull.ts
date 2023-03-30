@@ -174,6 +174,8 @@ export const amplifyStudioHeadlessPull = (
   if(process.platform === 'win32'){
     args = ['pull', '--%', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
   }
-  args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
+  else{
+    args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
+  }
   return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true }).wait('Successfully pulled backend environment').runAsync();
 };
