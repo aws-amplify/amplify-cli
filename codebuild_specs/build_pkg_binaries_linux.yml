@@ -5,6 +5,7 @@ phases:
   build:
     commands:
       - ls $CODEBUILD_SRC_DIR
+      - ls $CODEBUILD_SRC_DIR/..
       - ls $HOME
       - ls ~
       - export CODEBUILD_SOURCE_VERSION=332e8fb53050274bdaa37ca7fb8d8097eb8d03ad
