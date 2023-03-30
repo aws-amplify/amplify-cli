@@ -9,6 +9,7 @@ phases:
       - echo $PKG_BINARY_CACHE_BUCKET_NAME
       - mkdir pkg-cache
       - aws s3 sync s3://$PKG_BINARY_CACHE_BUCKET_NAME pkg-cache
+      - ls
       - /bin/bash ./scripts.sh
       - ls pkg-cache/*
       - echo Build started on `date`
