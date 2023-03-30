@@ -8,12 +8,12 @@ phases:
   build:
     commands:
       - echo $PKG_BINARY_CACHE_BUCKET_NAME
-      - mkdir pkg-cache
+      - mkdir $CODEBUILD_SRC_DIR/pkg-cache
       - aws s3 sync s3://$PKG_BINARY_CACHE_BUCKET_NAME $CODEBUILD_SRC_DIR/pkg-cache
-      - ls $CODEBUILD_SRC_DIR/pkg-cache
+      - ls $CODEBUILD_SRC_DIR/pkg-cache/*
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG . --build-arg CODEBUILD_SRC_DIR=$CODEBUILD_SRC_DIR
+      - docker build -t --build-arg CODEBUILD_SRC_DIR=$CODEBUILD_SRC_DIR $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:
     commands:
