@@ -89,11 +89,8 @@ export type ExecutionContext = {
   sendConfirmNo: () => ExecutionContext;
   sendNo: () => ExecutionContext;
   sendCtrlC: () => ExecutionContext;
-  /**
-   * @deprecated Use sendSelectAll instead.
-   */
   sendCtrlA: () => ExecutionContext;
-  sendSelectAll: () => ExecutionContext;
+  selectAll: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
   /**
@@ -344,11 +341,33 @@ function chain(context: Context): ExecutionContext {
       context.queue.push(_send);
       return chain(context);
     },
-    sendSelectAll(): ExecutionContext {
-      return this.wait(/[❯>]/)
-        .sendCtrlA()
-        .wait(/(●|◉|✔|\(*\)|)/) // wait for re-rendering the selection before confirming.
-        .sendCarriageReturn();
+    selectAll(): ExecutionContext {
+      const _selectAll: ExecutionStep = {
+        fn: (data) => {
+          const selectionFooter = 'Use <space> to select';
+          if (data.includes(selectionFooter)) {
+            if (_selectAll.expectation) {
+              context.process.write(RETURN);
+              return true;
+            } else {
+              context.process.write(`${CONTROL_A}`);
+              return false;
+            }
+          }
+          const selectionMadeIndicator = /(●|◉|✔|\(*\)|)/;
+          if (selectionMadeIndicator.test(data)) {
+            _selectAll.expectation = true;
+          }
+          return false;
+        },
+        name: '_selectAll',
+        shift: false,
+        description: `[selectAll]`,
+        requiresInput: true,
+        expectation: false,
+      };
+      context.queue.push(_selectAll);
+      return chain(context);
     },
     sendEof(): ExecutionContext {
       const _sendEof: ExecutionStep = {
@@ -550,6 +569,10 @@ function chain(context: Context): ExecutionContext {
         //
         if (currentFn(data)) {
           // Evaluate the next function if it does not need input
+          if (!shift) {
+            // if current step has not been shifted yet shift it.
+            context.queue.shift();
+          }
           const nextFn = context.queue[0];
           if (nextFn && !nextFn.requiresInput) evalContext(data);
         }
