@@ -1,0 +1,16 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    CLI_REGION: us-east-1
+    TEST_SUITE: src/__tests__/auth_2b.test.ts
+phases:
+  build:
+    commands:
+      # you can provide a codebuild source version to use old cache and skip all other jobs :)
+      # - export CODEBUILD_SOURCE_VERSION=3fd87009bf573ebc8cda120dfe0cfd7f6a134fe3
+      - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
+      - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
+      - echo $AMPLIFY_DIR
+      - echo $AMPLIFY_PATH
+      - source ./shared-scripts.sh && _runE2ETestsLinux
