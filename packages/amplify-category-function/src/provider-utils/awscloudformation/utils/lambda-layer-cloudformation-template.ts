@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from 'amplify-cli-core';
 import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
@@ -30,7 +30,12 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     layerCloudState.latestVersionLogicalId = logicalName;
     versionList.unshift({ LogicalName: logicalName, legacyLayer: false });
   } else {
-    logicalName = _.first(versionList).LogicalName;
+    logicalName = _.first(versionList)?.LogicalName;
+    if (!logicalName) {
+      throw new AmplifyError('LambdaLayerNotFoundError', {
+        message: 'The Lambda Layer could not be found. Has it been deleted?',
+      });
+    }
   }
 
   const outputObj = {

@@ -1,4 +1,4 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyError, pathManager, stateManager } from 'amplify-cli-core';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { generateLayerCfnObj } from '../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template';
 import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
@@ -104,6 +104,10 @@ describe('test layer CFN generation functions', () => {
     validateParameters(layerCfn);
     validateOutput(layerCfn);
     expect(Object.keys(layerCfn.Resources).length).toBe(2); // 1 LayerVersion, 1 LayerVersionPermission
+  });
+
+  it('should throw an error when the logical name is not found', () => {
+    expect(() => generateLayerCfnObj(false, parameters_stub, [])).toThrow(AmplifyError);
   });
 
   it('should generate the expected CFN for an existing LL resource and new version', () => {
