@@ -681,10 +681,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   * Creates custom lambda to update userPool client on Cognito
+   * Updates the custom lambda to delete existing userPool domain
    */
   deleteExistingHostedUICustomResource(): void {
-    // lambda function
     this.hostedUICustomResource = new lambda.CfnFunction(this, 'HostedUICustomResource', {
       code: {
         zipFile: fs.readFileSync(hostedUILambdaFilePath, 'utf-8'),
@@ -698,7 +697,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
     // userPool client lambda policy
     /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
+     *  # Sets userpool policy for the role that executes the Userpool Client Lambda
         # Depends on UserPool for Arn
         # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
      */
@@ -709,7 +708,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:CreateUserPoolDomain', 'cognito-idp:DescribeUserPool', 'cognito-idp:DeleteUserPoolDomain'],
+            Action: ['cognito-idp:DeleteUserPoolDomain'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
           {
@@ -861,7 +860,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
 
     if (this.hostedUICustomResourceInputs) {
-      this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs!.node!.defaultChild!);
+      this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs.node!.defaultChild!);
     }
 
     this.oAuthCustomResource.node.addDependency(this.hostedUIProvidersCustomResourceInputs!.node!.defaultChild!);
