@@ -26,9 +26,8 @@ RUN sudo pip install awscli
 
 # Put Node.js PKG binaries in cache location
 RUN mkdir -p ~/.pkg-cache
-
+ARG CODEBUILD_SRC_DIR
 ADD $CODEBUILD_SRC_DIR/pkg-cache ~/.pkg-cache
-
 RUN ls ~/.pkg-cache
 
 # Install Java
