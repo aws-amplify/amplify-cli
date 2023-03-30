@@ -46,7 +46,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^8.0.3",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "^8.0.1",
+    "graphql-transformer-core": "^8.0.2",
     "isomorphic-fetch": "^3.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
