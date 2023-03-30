@@ -120,6 +120,7 @@ export type AmplifyErrorType =
   | 'EnvironmentNotInitializedError'
   | 'ExportError'
   | 'FeatureFlagsValidationError'
+  | 'FileSystemPermissionsError'
   | 'FrameworkNotSupportedError'
   | 'FunctionTooLargeError'
   | 'GraphQLError'
