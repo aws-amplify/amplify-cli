@@ -9,7 +9,7 @@ phases:
       - echo $PKG_CACHE_PATH
       - ls $PKG_CACHE_PATH
       - ls /usr/local/*
-      - export CODEBUILD_SOURCE_VERSION=332e8fb53050274bdaa37ca7fb8d8097eb8d03ad
+      # - export CODEBUILD_SOURCE_VERSION=332e8fb53050274bdaa37ca7fb8d8097eb8d03ad
       - source ./shared-scripts.sh && _buildBinaries linux
 
 artifacts:

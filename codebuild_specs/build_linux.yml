@@ -4,6 +4,9 @@ env:
 phases:
   build:
     commands:
+      - node -v
+      - npm -v
+      - yarn -v
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:
