@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - export COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | md5sum | cut -c 1-7)
-      - export IMAGE_TAGTEST=\${COMMIT_HASH:=latest}
+      - export IMAGE_TAGTEST=${COMMIT_HASH:=latest}
       - echo $IMAGE_TAGTEST
       - export IMAGE_TAG=${CODEBUILD_WEBHOOK_TRIGGER#branch/codebuild-image/*}
       - echo $IMAGE_TAG
