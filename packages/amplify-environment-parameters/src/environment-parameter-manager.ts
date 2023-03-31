@@ -179,14 +179,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
   /**
    * Throw an error if expected parameters are missing
    */
-  async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[]): Promise<void> {
+  async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[], appId?: string, envName?: string): Promise<void> {
     const missingParameters = await this.getMissingParameters(resourceFilterList);
 
     if (missingParameters.length > 0) {
       const missingParameterNames = missingParameters.map((param) => param.parameterName);
 
       const missingFullPaths = missingParameters.map(({ resourceName, categoryName, parameterName }) =>
-        getFullParameterStorePath(categoryName, resourceName, parameterName),
+        getFullParameterStorePath(categoryName, resourceName, parameterName, appId, envName),
       );
 
       const resolution =
@@ -195,7 +195,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
         `${missingFullPaths.join('\n')}\n`;
       throw new AmplifyError('EnvironmentConfigurationError', {
         message: `This environment is missing some parameter values.`,
-        details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'does' : 'do'} not have values.`,
+        details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'do' : 'does'} not have values.`,
         resolution,
         link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
       });
@@ -232,14 +232,18 @@ export type IEnvironmentParameterManager = {
   init: () => Promise<void>;
   removeResourceParamManager: (category: string, resource: string) => void;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-  verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<void>;
+  verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[], appId?: string, envName?: string) => Promise<void>;
 };
 
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
-const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string) =>
-  `amplify/${stateManager.getAppID()}/${stateManager.getCurrentEnvName()}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;
+const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string, appId?: string, envName?: string) =>
+  `/amplify/${appId || stateManager.getAppID()}/${envName || stateManager.getCurrentEnvName()}/${getParameterStoreKey(
+    categoryName,
+    resourceName,
+    paramName,
+  )}`;
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
   `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 

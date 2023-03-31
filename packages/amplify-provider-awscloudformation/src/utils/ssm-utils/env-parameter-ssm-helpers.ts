@@ -72,7 +72,7 @@ export const getEnvParametersDownloadHandler = async (
         resolve({});
       });
   }
-  const envName = stateManager.getCurrentEnvName();
+  const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
   const { client } = await SSM.getInstance(context);
   return downloadParametersFromParameterStore(appId, envName, client);
 };
@@ -86,8 +86,8 @@ const downloadParametersFromParameterStore = (
     if (keys.length === 0) {
       return {};
     }
+    const keyPaths = keys.map((key) => `/amplify/${appId}/${envName}/${key}`);
     try {
-      const keyPaths = keys.map((key) => `/amplify/${appId}/${envName}/${key}`);
       const sdkPromises = convertKeyPathsToSdkPromises(ssmClient, keyPaths);
       const results = await executeSdkPromisesWithExponentialBackOff<SSMType.GetParametersResult>(sdkPromises);
       return results.reduce((acc, { Parameters }) => {
@@ -101,7 +101,7 @@ const downloadParametersFromParameterStore = (
       throw new AmplifyFault(
         'ParameterDownloadFault',
         {
-          message: `Failed to download the following parameters from ParameterStore:\n  ${keys.join('\n  ')}`,
+          message: `Failed to download the following parameters from ParameterStore:\n  ${keyPaths.join('\n  ')}`,
         },
         e,
       );

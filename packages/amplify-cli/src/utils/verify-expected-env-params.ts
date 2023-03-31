@@ -2,6 +2,7 @@ import { $TSContext, IAmplifyResource, stateManager, constants } from 'amplify-c
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getChangedResources, getAllResources } from '../commands/build';
+import { resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 
 export const verifyExpectedEnvParams = async (context: $TSContext, category?: string, resourceName?: string) => {
   const envParamManager = stateManager.localEnvInfoExists()
@@ -27,7 +28,9 @@ export const verifyExpectedEnvParams = async (context: $TSContext, category?: st
   });
 
   if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
-    await envParamManager.verifyExpectedEnvParameters(parametersToCheck);
+    const appId = resolveAppId(context);
+    const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
+    await envParamManager.verifyExpectedEnvParameters(parametersToCheck, appId, envName);
   } else {
     const missingParameters = await envParamManager.getMissingParameters(parametersToCheck);
     if (missingParameters.length > 0) {
