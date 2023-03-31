@@ -97,11 +97,10 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
     .wait('Provide a name for the Geofence Collection:')
     .sendLine(config.resourceName)
     .wait('Select one or more cognito groups to give access:')
-    .sendCtrlA()
-    .sendCarriageReturn();
+    .selectAll();
 
   for (const groupName of groupNames) {
-    chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`).sendCtrlA().sendCarriageReturn();
+    chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`).selectAll();
   }
 
   if (config.isAdditional === true) {
