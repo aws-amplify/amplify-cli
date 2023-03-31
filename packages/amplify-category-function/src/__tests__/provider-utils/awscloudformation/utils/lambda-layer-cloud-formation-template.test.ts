@@ -107,7 +107,13 @@ describe('test layer CFN generation functions', () => {
   });
 
   it('should throw an error when the logical name is not found', () => {
-    expect(() => generateLayerCfnObj(false, parameters_stub, [])).toThrow(AmplifyError);
+    try {
+      generateLayerCfnObj(false, parameters_stub, []);
+    } catch (e) {
+      expect(AmplifyError).toHaveBeenCalledWith('LambdaLayerNotFoundError', {
+        message: 'No versions were found for the Lambda Layer. Were they deleted?',
+      });
+    }
   });
 
   it('should generate the expected CFN for an existing LL resource and new version', () => {
