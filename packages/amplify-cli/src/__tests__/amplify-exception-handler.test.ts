@@ -15,7 +15,7 @@ jest.mock('../commands/diagnose', () => ({
 
 const processExit = jest.spyOn(process, 'exit').mockImplementation((__code?: number) => undefined as never);
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('test exception handler', () => {
   const emitErrorMock = jest.fn();

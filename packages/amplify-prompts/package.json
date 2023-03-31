@@ -1,5 +1,5 @@
 {
-  "name": "amplify-prompts",
+  "name": "@aws-amplify/amplify-prompts",
   "version": "2.6.6",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",

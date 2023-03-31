@@ -4,7 +4,7 @@ import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from 
 import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChannelAPIResponse => ({

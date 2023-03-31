@@ -9,7 +9,7 @@ import {
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
 
 jest.mock('@aws-amplify/amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform');
 
@@ -118,7 +118,7 @@ describe('update ddb walkthrough tests', () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
-    jest.mock('amplify-prompts');
+    jest.mock('@aws-amplify/amplify-prompts');
     mockContext = {
       amplify: {
         getProjectDetails: () => {

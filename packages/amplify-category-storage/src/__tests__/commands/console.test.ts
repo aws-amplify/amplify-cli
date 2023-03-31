@@ -5,7 +5,7 @@ import * as providerController from '../../provider-utils/awscloudformation/inde
 
 jest.mock('../../provider-utils/awscloudformation/index');
 jest.mock('@aws-amplify/amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const providerControllerMock = providerController as jest.Mocked<typeof providerController>;
 const getMetaMock = stateManager.getMeta as jest.MockedFunction<typeof stateManager.getMeta>;

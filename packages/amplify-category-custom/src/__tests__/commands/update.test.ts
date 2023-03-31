@@ -6,7 +6,7 @@ import { updateCloudFormationWalkthrough } from '../../walkthroughs/cloudformati
 
 jest.mock('../../walkthroughs/cloudformation-walkthrough');
 jest.mock('@aws-amplify/amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 let mockAmplifyMeta = {
   custom: {

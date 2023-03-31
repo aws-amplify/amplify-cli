@@ -11,7 +11,7 @@ import {
 } from '../../utils/dependency-management-utils';
 
 jest.mock('@aws-amplify/amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('glob');
 jest.mock('fs-extra');
 
