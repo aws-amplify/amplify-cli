@@ -1,15 +1,16 @@
 import {
   addApiWithAllAuthModes,
   amplifyMock,
-  createNewProjectDir, deleteProject, deleteProjectDir,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
   initJSProjectWithProfile,
   updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
 import { GraphQLClient } from '@aws-amplify/amplify-util-mock';
 
-
 describe('Test auth transformer with mock', () => {
-  const projName = 'authmock'
+  const projName = 'authmock';
   const apiKey = 'da-fake-api-key';
   const endpoint = 'http://localhost:20002';
   let projRoot: string;
