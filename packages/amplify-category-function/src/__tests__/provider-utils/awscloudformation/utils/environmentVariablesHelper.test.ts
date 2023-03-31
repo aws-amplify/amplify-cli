@@ -2,9 +2,8 @@ import { stateManager, JSONUtilities, $TSContext, pathManager } from '@aws-ampli
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as envVarHelper from '../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper';
 import * as uuid from 'uuid';
-
-jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('uuid');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;

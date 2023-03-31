@@ -5,8 +5,8 @@ import { CDK_SERVICE_NAME, CFN_SERVICE_NAME } from '../../utils/constants';
 import { updateCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
 
 jest.mock('../../walkthroughs/cloudformation-walkthrough');
-jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 let mockAmplifyMeta = {
   custom: {

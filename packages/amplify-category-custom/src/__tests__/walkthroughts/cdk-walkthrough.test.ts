@@ -8,8 +8,8 @@ import { addCDKWalkthrough } from '../../walkthroughs/cdk-walkthrough';
 jest.mock('../../utils/common-questions');
 jest.mock('../../utils/build-custom-resources');
 
-jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn().mockReturnValue('mockCode'),

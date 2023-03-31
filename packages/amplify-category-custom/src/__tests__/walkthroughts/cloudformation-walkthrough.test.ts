@@ -6,9 +6,8 @@ import { addCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-
 jest.mock('../../utils/common-questions');
 jest.mock('../../utils/build-custom-resources');
 jest.mock('../../utils/dependency-management-utils');
-
-jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn().mockReturnValue('mockCode'),

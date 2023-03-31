@@ -12,8 +12,8 @@ import path from 'path';
 import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { S3InputState } from '../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 
-jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('path');
 jest.mock('../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 jest.mock('../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform');
