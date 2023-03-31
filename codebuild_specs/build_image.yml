@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - export IMAGE_TAG=${CODEBUILD_WEBHOOK_TRIGGER#branch/codebuild-image/*}
-      - export IMAGE_TAGTEST=${CUSTOM_TAG:=IMAGE_TAG}
+      - export IMAGE_TAGTEST=${CUSTOM_TAG:=$IMAGE_TAG}
       - echo $IMAGE_TAGTEST
       # - echo $PKG_BINARY_CACHE_BUCKET_NAME
       # - mkdir pkg-cache
