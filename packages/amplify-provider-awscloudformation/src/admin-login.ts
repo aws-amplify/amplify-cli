@@ -138,7 +138,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
   }
 };
 
-const closeReadline = (rl: readline.Interface): void => {
+export const closeReadline = (rl: readline.Interface): void => {
   (rl as $TSAny).terminal = false;
   rl.close();
 };
