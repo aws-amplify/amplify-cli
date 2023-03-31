@@ -6,7 +6,7 @@ import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from 
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
 const apiKey = 'ApiKey-abc123';
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 class NoErrorThrownError extends Error {}

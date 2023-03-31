@@ -1,4 +1,4 @@
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 import { printer } from '@aws-amplify/amplify-prompts';
 import { run } from '../commands/help';
 printer.info = jest.fn();

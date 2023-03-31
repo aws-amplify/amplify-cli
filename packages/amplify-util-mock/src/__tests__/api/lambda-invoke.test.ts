@@ -6,7 +6,7 @@ import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { timeConstrainedInvoker } from '../../func';
 import { printer } from '@aws-amplify/amplify-prompts';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('../../utils/lambda/load-lambda-config', () => ({
   loadLambdaConfig: jest.fn(),

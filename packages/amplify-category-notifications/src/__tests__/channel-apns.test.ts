@@ -11,7 +11,7 @@ import { ChannelType } from '../notifications-backend-cfg-channel-api';
 const channelName = 'APNS';
 jest.mock('../apns-key-config');
 jest.mock('../apns-cert-config');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 class NoErrorThrownError extends Error {}

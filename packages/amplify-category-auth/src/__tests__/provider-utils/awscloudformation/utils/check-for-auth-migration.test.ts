@@ -8,7 +8,7 @@ jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth
 
 jest.mock('fs-extra');
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   printer: {
     warn: jest.fn(),
     debug: jest.fn(),

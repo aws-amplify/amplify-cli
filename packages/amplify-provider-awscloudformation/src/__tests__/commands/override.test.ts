@@ -9,7 +9,7 @@ jest.mock('amplify-cli-core', () => ({
   generateOverrideSkeleton: jest.fn(),
 }));
 jest.mock('@aws-amplify/amplify-provider-awscloudformation');
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   printer: {
     info: jest.fn(),
   },

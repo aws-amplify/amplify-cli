@@ -4,7 +4,7 @@ import { $TSAny } from 'amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 const printerMock = printer as jest.Mocked<typeof printer>;
 printerMock.success = jest.fn();
