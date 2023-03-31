@@ -59,7 +59,7 @@ describe('should notify when packages are missing', () => {
   it('notifies for partial missing dependencies', async () => {
     JSONUtilitiesDependency.JSONUtilities.readJson = jest.fn().mockImplementation(() => ({
       projectPath: __dirname,
-      dependencies: { '@aws-amplify/ui-react': '4.2.0' },
+      dependencies: { '@aws-amplify/ui-react': '4.4.2' },
     }));
     const context = {
       input: {
