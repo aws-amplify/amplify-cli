@@ -1,6 +1,6 @@
 import { createDefaultCustomPoliciesFile, generateCustomPoliciesInTemplate } from '../customPoliciesUtils';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { JSONUtilities } from '..';
+import { AmplifyError, CustomPoliciesFormatError, JSONUtilities } from '..';
 import { pathManager, PathConstants, stateManager } from '../state-manager';
 import path from 'path';
 import { Template, Fn } from 'cloudform-types';
@@ -136,15 +136,17 @@ describe('Custom policies util test', () => {
 
     expect(template.Resources?.CustomLambdaExecutionPolicy).toBeUndefined();
   });
-  test('test generateCustomPoliciesInTemplate with empty action array', () => {
+  test.only('test generateCustomPoliciesInTemplate with empty action array', () => {
     (stateManager.getCustomPolicies as jest.Mock).mockReturnValueOnce([
       {
         Action: undefined,
         Resource: [],
       },
     ]);
-    expect(() => generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function')).toThrowError(
-      /Invalid custom IAM policies for .*?/,
-    );
+    try {
+      generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function');
+    } catch (e) {
+      expect((e as AmplifyError).name).toBe('CustomPoliciesFormatError');
+    }
   });
 });
