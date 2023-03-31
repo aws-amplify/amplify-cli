@@ -612,7 +612,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.userPoolClientLambda.addDependency(this.userPoolClientRole);
@@ -686,7 +686,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
@@ -767,7 +767,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
@@ -850,7 +850,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
 
@@ -984,7 +984,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('MFALambdaRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.mfaLambda.addDependency(this.mfaLambdaRole);
@@ -1127,7 +1127,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('OpenIdLambdaRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.openIdLambda.addDependency(this.openIdLambdaRole);

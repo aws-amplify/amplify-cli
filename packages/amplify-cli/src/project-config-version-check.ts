@@ -10,8 +10,8 @@ import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate } from 'am
 import Resource from 'cloudform-types/types/resource';
 import Lambda from 'cloudform-types/types/lambda';
 
-const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
-const lambdaRuntimeVersion = 'nodejs16.x';
+const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x', 'nodejs14.x', 'nodejs16.x'];
+const lambdaRuntimeVersion = 'nodejs18.x';
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
   const { constants } = context.amplify;

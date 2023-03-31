@@ -32,7 +32,7 @@ const parameters_stub: LayerParameters = {
     {
       name: 'NodeJS',
       value: 'nodejs',
-      cloudTemplateValues: ['nodejs16.x'],
+      cloudTemplateValues: ['nodejs18.x'],
     },
   ],
 };
@@ -86,7 +86,7 @@ describe('test layer CFN generation functions', () => {
   });
 
   const fakeLayerCfnMeta: LayerVersionCfnMetadata = {
-    CompatibleRuntimes: ['nodejs16.x'],
+    CompatibleRuntimes: ['nodejs18.x'],
     Description: 'description',
     LayerVersionArn: 'fakeArn:1',
     LogicalName: 'fakeLayer12345',

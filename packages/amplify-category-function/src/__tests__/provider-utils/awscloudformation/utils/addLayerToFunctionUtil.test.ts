@@ -65,7 +65,7 @@ getLayerRuntimes_mock.mockImplementation(() => {
       name: 'NodeJs',
       value: 'nodejs',
       layerExecutablePath: 'nodejs/node_modules',
-      cloudTemplateValue: 'nodejs16.x',
+      cloudTemplateValue: 'nodejs18.x',
     },
   ];
 });
@@ -75,7 +75,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LayerVersionArn: 'fakeArn1',
     Description: '',
     CreatedDate: '',
-    CompatibleRuntimes: ['nodejs16.x'],
+    CompatibleRuntimes: ['nodejs18.x'],
     LicenseInfo: '',
     permissions: [],
     LogicalName: 'myLayer',
@@ -88,7 +88,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LayerVersionArn: 'fakeArn2',
     Description: '',
     CreatedDate: '',
-    CompatibleRuntimes: ['nodejs16.x'],
+    CompatibleRuntimes: ['nodejs18.x'],
     LicenseInfo: '',
     permissions: [],
     legacyLayer: false,
