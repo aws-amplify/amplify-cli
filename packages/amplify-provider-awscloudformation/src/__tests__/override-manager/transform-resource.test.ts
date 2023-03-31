@@ -5,7 +5,7 @@ import { transformResourceWithOverrides } from '../../override-manager/transform
 import CustomOverridePlugin from './mock-plugin/custom-override-plugin';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('./mock-plugin/custom-override-plugin');
 
 const mockContext: $TSContext = {
