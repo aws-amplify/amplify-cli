@@ -178,28 +178,16 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   /**
    * Throw an error if expected parameters are missing
+   *
+   * If parameters are missing and appId and envName are specified, a specific error recovery message will be included
+   * Otherwise, a more generic error is thrown
    */
   async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[], appId?: string, envName?: string): Promise<void> {
     const missingParameters = await this.getMissingParameters(resourceFilterList);
-
-    if (missingParameters.length > 0) {
-      const missingParameterNames = missingParameters.map((param) => param.parameterName);
-
-      const missingFullPaths = missingParameters.map(({ resourceName, categoryName, parameterName }) =>
-        getFullParameterStorePath(categoryName, resourceName, parameterName, appId, envName),
-      );
-
-      const resolution =
-        `Run 'amplify push' interactively to specify values.\n` +
-        `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
-        `${missingFullPaths.join('\n')}\n`;
-      throw new AmplifyError('EnvironmentConfigurationError', {
-        message: `This environment is missing some parameter values.`,
-        details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'do' : 'does'} not have values.`,
-        resolution,
-        link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
-      });
+    if (missingParameters.length === 0) {
+      return;
     }
+    throw getMissingParametersError(missingParameters, appId, envName);
   }
 
   private serializeTPICategories(): Record<string, unknown> {
@@ -238,12 +226,8 @@ export type IEnvironmentParameterManager = {
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
-const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string, appId?: string, envName?: string) =>
-  `/amplify/${appId || stateManager.getAppID()}/${envName || stateManager.getCurrentEnvName()}/${getParameterStoreKey(
-    categoryName,
-    resourceName,
-    paramName,
-  )}`;
+const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string, appId: string, envName: string) =>
+  `/amplify/${appId}/${envName}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
   `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 
@@ -257,4 +241,47 @@ type ResourceParameter = {
   categoryName: string;
   resourceName: string;
   parameterName: string;
+};
+
+const getMissingParametersError = (
+  missingParameters: ResourceParameter[],
+  appId: string | undefined,
+  envName: string | undefined,
+): AmplifyError => {
+  if (appId === undefined) {
+    return new AmplifyError('EnvironmentConfigurationError', {
+      message: `This environment is missing some parameter values.`,
+      details: `[${missingParameters}] ${missingParameters.length > 1 ? 'do' : 'does'} not have values.`,
+      resolution: `Amplify AppId could not be determined for fetching missing parameters. Make sure your project is initialized using "amplify init"`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#amplify-init-parameters',
+    });
+  }
+
+  if (envName === undefined) {
+    return new AmplifyError('EnvironmentConfigurationError', {
+      message: `This environment is missing some parameter values.`,
+      details: `[${missingParameters}] ${missingParameters.length > 1 ? 'do' : 'does'} not have values.`,
+      resolution: `A current environment name could not be determined for fetching missing parameters. Make sure your project is initialized using "amplify init"`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#amplify-init-parameters',
+    });
+  }
+
+  // appId and envName are specified so we can provide a specific error message
+
+  const missingParameterNames = missingParameters.map((param) => param.parameterName);
+
+  const missingFullPaths = missingParameters.map(({ resourceName, categoryName, parameterName }) =>
+    getFullParameterStorePath(categoryName, resourceName, parameterName, appId, envName),
+  );
+
+  const resolution =
+    `Run 'amplify push' interactively to specify values.\n` +
+    `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
+    `${missingFullPaths.join('\n')}\n`;
+  return new AmplifyError('EnvironmentConfigurationError', {
+    message: `This environment is missing some parameter values.`,
+    details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'do' : 'does'} not have values.`,
+    resolution,
+    link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
+  });
 };

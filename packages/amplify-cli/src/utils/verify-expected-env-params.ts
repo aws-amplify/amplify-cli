@@ -28,7 +28,14 @@ export const verifyExpectedEnvParams = async (context: $TSContext, category?: st
   });
 
   if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
-    const appId = resolveAppId(context);
+    let appId: string | undefined = undefined;
+    try {
+      appId = resolveAppId(context);
+    } catch {
+      // If AppId can't be resolved, this only affects the error message of verifyExpectedEnvParameters in the case that parameters are
+      // actually missing. So we let appId be undefined here and verifyExpectedEnvParameters will print a different error message based
+      // on the information available to it
+    }
     const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
     await envParamManager.verifyExpectedEnvParameters(parametersToCheck, appId, envName);
   } else {
