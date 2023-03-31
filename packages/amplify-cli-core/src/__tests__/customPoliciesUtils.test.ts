@@ -1,6 +1,6 @@
 import { createDefaultCustomPoliciesFile, generateCustomPoliciesInTemplate } from '../customPoliciesUtils';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { AmplifyError, CustomPoliciesFormatError, JSONUtilities } from '..';
+import { AmplifyError, JSONUtilities } from '..';
 import { pathManager, PathConstants, stateManager } from '../state-manager';
 import path from 'path';
 import { Template, Fn } from 'cloudform-types';
