@@ -140,6 +140,7 @@ export type AmplifyErrorType =
   | 'MissingAmplifyMetaFileError'
   | 'MissingExpectedParameterError'
   | 'MissingOverridesInstallationRequirementsError'
+  | 'MissingResourceDirectoryError'
   | 'MockProcessError'
   | 'ModelgenError'
   | 'NestedProjectInitError'
