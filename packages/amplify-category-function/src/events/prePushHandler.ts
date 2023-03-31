@@ -1,3 +1,4 @@
+import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext, stateManager } from 'amplify-cli-core';
 import { categoryName } from '../constants';
 import {
@@ -11,8 +12,21 @@ import { ensureEnvironmentVariableValues } from '../provider-utils/awscloudforma
  * prePush Handler event for function category
  */
 export const prePushHandler = async (context: $TSContext): Promise<void> => {
-  await ensureEnvironmentVariableValues(context);
-  await ensureFunctionSecrets(context);
+  // if appId and envName can be resolved, proceed with checking env vars and secrets
+  const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
+  // get appId from amplify-meta or fallback to input params
+  const appId: string | undefined =
+    (stateManager.getMeta(undefined, { throwIfNotExist: false }) || {})?.providers?.awscloudformation?.AmplifyAppId ||
+    context?.exeInfo?.inputParams?.amplify?.appId;
+  if (envName && appId) {
+    await ensureEnvironmentVariableValues(context);
+    await ensureFunctionSecrets(context);
+  } else {
+    printer.warn(
+      'Could not resolve either appId, environment name or both. Skipping environment check for function secrets and environment variables',
+    );
+  }
+
   await ensureLambdaExecutionRoleOutputs();
 };
 
