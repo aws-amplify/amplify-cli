@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
 import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -105,9 +105,16 @@ export class FunctionSecretsStateManager {
       return;
     }
     if (!this.isInteractive()) {
-      throw new Error(
-        `The following secrets in ${functionName} do not have values: [${addedSecrets}]\nRun 'amplify push' interactively to specify values.`,
-      );
+      const resolution =
+        `Run 'amplify push' interactively to specify values.\n` +
+        `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
+        `${addedSecrets.map((secretName) => getFullyQualifiedSecretName(secretName, functionName)).join('\n')}\n`;
+      throw new AmplifyError('EnvironmentConfigurationError', {
+        message: `Function ${functionName} is missing secret values in this environment.`,
+        details: `[${addedSecrets}] ${addedSecrets.length > 1 ? 'does' : 'do'} not have values.`,
+        resolution,
+        link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
+      });
     }
     const delta = await prePushMissingSecretsWalkthrough(functionName, addedSecrets);
     await this.syncSecretDeltas(delta, functionName);

@@ -180,11 +180,24 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
    * Throw an error if expected parameters are missing
    */
   async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[]): Promise<void> {
-    const missingParameterNames = await this.getMissingParameters(resourceFilterList);
+    const missingParameters = await this.getMissingParameters(resourceFilterList);
 
-    if (missingParameterNames.length > 0) {
-      throw new AmplifyError('MissingExpectedParameterError', {
-        message: `Expected parameter${missingParameterNames.length === 1 ? '' : 's'} ${missingParameterNames.join(', ')}`,
+    if (missingParameters.length > 0) {
+      const missingParameterNames = missingParameters.map((param) => param.parameterName);
+
+      const missingFullPaths = missingParameters.map(({ resourceName, categoryName, parameterName }) =>
+        getFullParameterStorePath(categoryName, resourceName, parameterName),
+      );
+
+      const resolution =
+        `Run 'amplify push' interactively to specify values.\n` +
+        `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
+        `${missingFullPaths.join('\n')}\n`;
+      throw new AmplifyError('EnvironmentConfigurationError', {
+        message: `This environment is missing some parameter values.`,
+        details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'does' : 'do'} not have values.`,
+        resolution,
+        link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
       });
     }
   }
@@ -225,6 +238,8 @@ export type IEnvironmentParameterManager = {
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
+const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string) =>
+  `${stateManager.getAppID()}/${stateManager.getCurrentEnvName()}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
   `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 
