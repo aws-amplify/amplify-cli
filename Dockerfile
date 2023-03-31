@@ -43,6 +43,11 @@ RUN set -ex \
 
 ENV LC_CTYPE="C.UTF-8"
 
+# Put Node.js PKG binaries in cache location
+ENV PKG_CACHE_PATH=/root/pkg-cache
+COPY pkg-cache $PKG_CACHE_PATH
+RUN echo $PKG_CACHE_PATH
+
 RUN useradd codebuild-user
 
 #=======================End of layer: core  =================
