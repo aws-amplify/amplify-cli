@@ -6,11 +6,9 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
-      - export COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | md5sum | cut -c 1-7)
-      - export IMAGE_TAGTEST=${COMMIT_HASH:=latest}
-      - echo $IMAGE_TAGTEST
       - export IMAGE_TAG=${CODEBUILD_WEBHOOK_TRIGGER#branch/codebuild-image/*}
-      - echo $IMAGE_TAG
+      - export IMAGE_TAGTEST=${CUSTOM_TAG:=IMAGE_TAG}
+      - echo $IMAGE_TAGTEST
       # - echo $PKG_BINARY_CACHE_BUCKET_NAME
       # - mkdir pkg-cache
       # - aws s3 sync s3://$PKG_BINARY_CACHE_BUCKET_NAME pkg-cache
