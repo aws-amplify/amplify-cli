@@ -55,34 +55,33 @@ const uploadParameterToParameterStore = (
   };
 };
 
+type PrimitiveRecord = Record<string, string | number | boolean>;
+
+type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
+
 /**
  * Higher order function for downloading CloudFormation parameters from the service
  */
-export const getEnvParametersDownloadHandler = async (
-  context: $TSContext,
-): Promise<(keys: string[]) => Promise<Record<string, string | number | boolean>>> => {
+export const getEnvParametersDownloadHandler = async (context: $TSContext): Promise<DownloadHandler> => {
   let appId: string;
   try {
     appId = resolveAppId(context);
   } catch {
-    printer.warn('Failed to resolve AppId, skipping parameter download.');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return (__: string[]) =>
-      new Promise((resolve) => {
-        resolve({});
-      });
+    printer.warn('Failed to resolve AppId. Skipping parameter download.');
+    // return a noop function
+    return async () => ({});
   }
   const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
+  if (!envName) {
+    printer.warn('Failed to resolve environment name. Skipping parameter download.');
+    return async () => ({});
+  }
   const { client } = await SSM.getInstance(context);
   return downloadParametersFromParameterStore(appId, envName, client);
 };
 
-const downloadParametersFromParameterStore = (
-  appId: string,
-  envName: string,
-  ssmClient: SSMType,
-): ((keys: string[]) => Promise<Record<string, string | number | boolean>>) => {
-  return async (keys: string[]): Promise<Record<string, string | number | boolean>> => {
+const downloadParametersFromParameterStore = (appId: string, envName: string, ssmClient: SSMType): DownloadHandler => {
+  return async (keys: string[]): Promise<PrimitiveRecord> => {
     if (keys.length === 0) {
       return {};
     }
@@ -96,7 +95,7 @@ const downloadParametersFromParameterStore = (
           acc[key] = JSON.parse(param.Value);
         });
         return acc;
-      }, {} as Record<string, string | number | boolean>);
+      }, {} as PrimitiveRecord);
     } catch (e) {
       throw new AmplifyFault(
         'ParameterDownloadFault',
