@@ -6,7 +6,7 @@ import { prompter } from '@aws-amplify/amplify-prompts';
 
 const path = require('path');
 const fs = require('fs-extra');
-const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('@aws-amplify/amplify-cli-core');
 // Predictions Info
 const category = 'predictions';
 const parametersFileName = 'parameters.json';
