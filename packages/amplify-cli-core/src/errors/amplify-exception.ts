@@ -98,6 +98,7 @@ export type AmplifyErrorType =
   | 'AmplifyStudioLoginError'
   | 'AmplifyStudioNotEnabledError'
   | 'ApiCategorySchemaNotFoundError'
+  | 'ApiNotFound'
   | 'AuthImportError'
   | 'BackendConfigValidationError'
   | 'BucketAlreadyExistsError'

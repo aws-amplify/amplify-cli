@@ -81,6 +81,12 @@ export class GraphQLResourceManager {
     const apiStack = await cfn
       .describeStackResources({ StackName: StackId, LogicalResourceId: gqlResource.providerMetadata.logicalId })
       .promise();
+    if (!apiStack.StackResources?.length) {
+      throw new AmplifyError('ApiNotFound', {
+        message: 'The specified API was not found.',
+        resolution: 'This error is likely the result of an API being deleted from the AppSync console outside of Amplify.',
+      });
+    }
     return new GraphQLResourceManager({
       cfnClient: cfn,
       resourceMeta: { ...gqlResource, stackId: apiStack.StackResources[0].PhysicalResourceId },
