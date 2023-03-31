@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.6-rc.e9e0d157d.0...@aws-amplify/amplify-prompts@2.6.10) (2023-04-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-prompts
+
+
+
+
+
+## [2.6.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.6-rc.e9e0d157d.0...@aws-amplify/amplify-prompts@2.6.9) (2023-04-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-prompts
+
+
+
+
+
+## [2.6.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.6-rc.e9e0d157d.0...@aws-amplify/amplify-prompts@2.6.8) (2023-03-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-prompts
+
+
+
+
+
+## [2.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.6-rc.e9e0d157d.0...@aws-amplify/amplify-prompts@2.6.7) (2023-03-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-prompts
+
+
+
+
+
 ## [2.6.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.6-rc.e9e0d157d.0...@aws-amplify/amplify-prompts@2.6.6) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-prompts
