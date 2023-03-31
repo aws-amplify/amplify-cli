@@ -1,9 +1,8 @@
 version: 0.2
 env:
   shell: bash
-  variables:
-    NODE_OPTIONS: --max-old-space-size=8096
 phases:
   build:
     commands:
+      - export NODE_OPTIONS=--max-old-space-size=8096
       - source ./shared-scripts.sh && _testLinux
