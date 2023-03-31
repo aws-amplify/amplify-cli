@@ -248,10 +248,12 @@ const getMissingParametersError = (
   appId: string | undefined,
   envName: string | undefined,
 ): AmplifyError => {
+  const message = `This environment is missing some parameter values.`;
+  const missingNames = missingParameters.map((param) => param.parameterName);
   if (appId === undefined) {
     return new AmplifyError('EnvironmentConfigurationError', {
-      message: `This environment is missing some parameter values.`,
-      details: `[${missingParameters}] ${missingParameters.length > 1 ? 'do' : 'does'} not have values.`,
+      message,
+      details: `[${missingNames}] ${missingNames.length > 1 ? 'do' : 'does'} not have values.`,
       resolution: `Amplify AppId could not be determined for fetching missing parameters. Make sure your project is initialized using "amplify init"`,
       link: 'https://docs.amplify.aws/cli/usage/headless/#amplify-init-parameters',
     });
@@ -259,8 +261,8 @@ const getMissingParametersError = (
 
   if (envName === undefined) {
     return new AmplifyError('EnvironmentConfigurationError', {
-      message: `This environment is missing some parameter values.`,
-      details: `[${missingParameters}] ${missingParameters.length > 1 ? 'do' : 'does'} not have values.`,
+      message,
+      details: `[${missingNames}] ${missingNames.length > 1 ? 'do' : 'does'} not have values.`,
       resolution: `A current environment name could not be determined for fetching missing parameters. Make sure your project is initialized using "amplify init"`,
       link: 'https://docs.amplify.aws/cli/usage/headless/#amplify-init-parameters',
     });
@@ -279,7 +281,7 @@ const getMissingParametersError = (
     `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
     `${missingFullPaths.join('\n')}\n`;
   return new AmplifyError('EnvironmentConfigurationError', {
-    message: `This environment is missing some parameter values.`,
+    message,
     details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'do' : 'does'} not have values.`,
     resolution,
     link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
