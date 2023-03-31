@@ -55,9 +55,9 @@ const uploadParameterToParameterStore = (
   };
 };
 
-type PrimitiveRecord = Record<string, string | number | boolean>;
-
-type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
+// some utility types for the functions below
+export type PrimitiveRecord = Record<string, string | number | boolean>;
+export type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
 
 /**
  * Higher order function for downloading CloudFormation parameters from the service
