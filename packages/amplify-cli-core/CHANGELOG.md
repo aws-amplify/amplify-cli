@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.3-gfix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1...amplify-cli-core@4.0.3-gfix.0) (2023-03-31)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
 ## [4.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.2) (2023-03-31)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.0.2",
+  "version": "4.0.3-gfix.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,14 +24,14 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.0.2",
-    "@aws-amplify/amplify-e2e-core": "4.8.2",
-    "@aws-amplify/amplify-opensearch-simulator": "1.2.4",
+    "@aws-amplify/amplify-category-auth": "3.0.3-gfix.0",
+    "@aws-amplify/amplify-e2e-core": "4.8.3-gfix.0",
+    "@aws-amplify/amplify-opensearch-simulator": "1.2.5-gfix.0",
     "@aws-amplify/graphql-transformer-core": "^1.1.1",
-    "amplify-cli-core": "4.0.2",
-    "amplify-dynamodb-simulator": "2.5.11",
-    "amplify-headless-interface": "1.17.2",
-    "amplify-storage-simulator": "1.7.5",
+    "amplify-cli-core": "4.0.3-gfix.0",
+    "amplify-dynamodb-simulator": "2.5.12-gfix.0",
+    "amplify-headless-interface": "1.17.3-gfix.0",
+    "amplify-storage-simulator": "1.7.6-gfix.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.68.0",
