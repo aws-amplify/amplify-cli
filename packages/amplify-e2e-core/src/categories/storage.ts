@@ -414,7 +414,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string): Promise<void> {
       .wait('Who should have access')
       .sendCarriageReturn() // Auth users only
       .wait('What kind of access do you want for Authenticated users?')
-      .sendSelectAll()
+      .selectAll()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
       .sendEof()
@@ -441,9 +441,9 @@ export function addS3WithGuestAccess(cwd: string): Promise<void> {
       .sendKeyDown()
       .sendCarriageReturn() // Auth and guest users
       .wait('What kind of access do you want for Authenticated users?')
-      .sendSelectAll()
+      .selectAll()
       .wait('What kind of access do you want for Guest users?')
-      .sendSelectAll()
+      .selectAll()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
       .sendEof()
@@ -471,11 +471,11 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
       .sendKeyDown()
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
-      .sendSelectAll() // select all groups
+      .selectAll() // select all groups
       .wait(`What kind of access do you want for ${settings?.userGroup1 ?? 'Admins'} users`) // for <UserGroup1> users?
-      .sendSelectAll() // Select all permissions
+      .selectAll() // Select all permissions
       .wait(`What kind of access do you want for ${settings?.userGroup2 ?? 'Users'} users`) // for <UserGroup2> users?
-      .sendSelectAll() // Select all permissions
+      .selectAll() // Select all permissions
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
       .sendEof()
@@ -662,9 +662,9 @@ export function addS3Storage(projectDir: string): Promise<void> {
       .send(' ') //Auth and guest
       .sendCarriageReturn()
       .wait('What kind of access do you want for Authenticated users?') //Auth
-      .sendSelectAll()
+      .selectAll()
       .wait('What kind of access do you want for Guest users?') //Guest
-      .sendSelectAll()
+      .selectAll()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
       .sendConfirmNo()
       .run((err: Error) => {
@@ -690,7 +690,7 @@ export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
       .wait('Who should have access:')
       .sendCarriageReturn() //Auth users only
       .wait('What kind of access do you want for Authenticated users?') //Auth
-      .sendSelectAll()
+      .selectAll()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
       .sendConfirmNo()
       .run((err: Error) => {
@@ -737,9 +737,9 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
 
     chain.wait('Who should have access:').sendKeyDown().send(' ').sendCarriageReturn();
 
-    chain.wait('What kind of access do you want for Authenticated users?').sendSelectAll();
+    chain.wait('What kind of access do you want for Authenticated users?').selectAll();
 
-    chain.wait('What kind of access do you want for Guest users?').sendSelectAll();
+    chain.wait('What kind of access do you want for Guest users?').selectAll();
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 

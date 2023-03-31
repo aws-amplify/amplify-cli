@@ -531,14 +531,14 @@ function protectAPI(settings: RestAPISettings, chain: ExecutionContext) {
         .sendKeyDown()
         .sendCarriageReturn() // Authenticated and Guest users
         .wait('What permissions do you want to grant to Authenticated users')
-        .sendSelectAll() // CRUD permissions for authenticated users
+        .selectAll() // CRUD permissions for authenticated users
         .wait('What permissions do you want to grant to Guest users')
-        .sendSelectAll(); // CRUD permissions for guest users
+        .selectAll(); // CRUD permissions for guest users
     } else {
       chain
         .sendCarriageReturn() // Authenticated users only
         .wait('What permissions do you want to grant to Authenticated users')
-        .sendSelectAll(); // CRUD permissions
+        .selectAll(); // CRUD permissions
     }
   } else {
     chain.sendNo();

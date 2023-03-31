@@ -89,11 +89,8 @@ export type ExecutionContext = {
   sendConfirmNo: () => ExecutionContext;
   sendNo: () => ExecutionContext;
   sendCtrlC: () => ExecutionContext;
-  /**
-   * @deprecated Use sendSelectAll instead.
-   */
   sendCtrlA: () => ExecutionContext;
-  sendSelectAll: () => ExecutionContext;
+  selectAll: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
   /**
@@ -344,11 +341,14 @@ function chain(context: Context): ExecutionContext {
       context.queue.push(_send);
       return chain(context);
     },
-    sendSelectAll(): ExecutionContext {
-      return this.wait('○')
-        .sendCtrlA()
-        .wait(/(●|◉|✔|\(*\)|)/) // wait for re-rendering the selection before confirming.
-        .sendCarriageReturn();
+    selectAll(): ExecutionContext {
+      /*
+        Delays are added because multi-select re-renders when making transitions.
+        Sending Ctrl+A or confirmation while prompter state settles might not be reflected on the CLI side.
+        Delays are arbitrary. The alternative of tracking prompt transitions would be much more complicated
+        given variety of rendering styles, but should be pursued if this solution stops working.
+      */
+      return this.delay(1000).sendCtrlA().delay(1000).sendCarriageReturn();
     },
     sendEof(): ExecutionContext {
       const _sendEof: ExecutionStep = {
@@ -367,12 +367,17 @@ function chain(context: Context): ExecutionContext {
     delay(milliseconds: number): ExecutionContext {
       const _delay: ExecutionStep = {
         fn: () => {
-          const startCallback = Date.now();
-
-          while (Date.now() - startCallback < milliseconds) {
-            // empty
-          }
-
+          /*
+            Code below is workaround for lack of synchronous sleep() in JS.
+            It has nothing to do with atomicity nor with buffers. It's just using these
+            built-in APIs to wait synchronously. I.e. it waits number of milliseconds for
+            byte transition in the buffer that never happens.
+            This replaced active spin-lock that was here before
+            and was burning 100% CPU while waiting that led to spawned CLI starvation.
+            If this way of delaying becomes insufficient then this module should
+            be refactored and implement fully asynchronous input handlers.
+          */
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
           return true;
         },
         shift: true,
