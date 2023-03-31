@@ -7,6 +7,7 @@ phases:
       - node -v
       - npm -v
       - yarn -v
+      - codebuild-breakpoint
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:
