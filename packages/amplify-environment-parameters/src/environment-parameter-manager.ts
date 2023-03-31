@@ -1,4 +1,4 @@
-import { AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyCategories, AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -166,6 +166,10 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
         resourceFilterList &&
         !resourceFilterList.some(({ category, resourceName: resource }) => categoryName === category && resource === resourceName)
       ) {
+        return;
+      }
+      // filter out functions that have a missing deploymentBucketName and/or s3Key. These values will be regenerated on the next push
+      if (categoryName === AmplifyCategories.FUNCTION && (parameterName === 'deploymentBucketName' || parameterName === 's3Key')) {
         return;
       }
       if (!allEnvParams.has(`${categoryName}_${resourceName}_${parameterName}`)) {
