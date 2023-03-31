@@ -1,7 +1,7 @@
 import { getExistingTableColumnNames } from '../../../provider-utils/awscloudformation/cfn-template-utils';
-import { pathManager, readCFNTemplate } from 'amplify-cli-core';
+import { pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;

@@ -11,7 +11,7 @@ import {
   $TSMeta,
   AmplifyError,
   AmplifyFault,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeAnalyticsAPICreateResource, invokeAnalyticsAPIGetResources, invokeAnalyticsPush } from './plugin-client-api-analytics';
 

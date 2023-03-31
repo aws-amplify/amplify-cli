@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories, AmplifyError, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { IChannelAPIResponse } from '../../channel-types';

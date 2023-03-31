@@ -1,11 +1,11 @@
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { run } from '../../commands/custom/update';
 import { CDK_SERVICE_NAME, CFN_SERVICE_NAME } from '../../utils/constants';
 import { updateCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
 
 jest.mock('../../walkthroughs/cloudformation-walkthrough');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('amplify-prompts');
 
 let mockAmplifyMeta = {

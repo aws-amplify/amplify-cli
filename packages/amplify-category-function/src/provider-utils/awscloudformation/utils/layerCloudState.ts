@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 import ora from 'ora';
 import { LayerCfnLogicalNamePrefix } from './constants';
 // eslint-disable-next-line import/no-cycle

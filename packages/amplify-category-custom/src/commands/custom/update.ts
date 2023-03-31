@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { updateCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
 import { categoryName, cdkFileName, CDK_SERVICE_NAME, CFN_SERVICE_NAME } from '../../utils/constants';

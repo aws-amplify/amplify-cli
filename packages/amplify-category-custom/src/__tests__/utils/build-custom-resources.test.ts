@@ -1,8 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import execa from 'execa';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('amplify-prompts');
 jest.mock('../../utils/dependency-management-utils');
 jest.mock('../../utils/generate-cfn-from-cdk');
@@ -33,7 +33,7 @@ jest.mock('../../utils/generate-cfn-from-cdk', () => ({
   generateCloudFormationFromCDK: jest.fn(),
 }));
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   getPackageManager: jest.fn().mockResolvedValue('npm'),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
