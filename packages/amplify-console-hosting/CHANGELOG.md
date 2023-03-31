@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.6](https://github.com/edwardfoyle/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.1-rc.e9e0d157d.0...@aws-amplify/amplify-console-hosting@2.5.6) (2023-04-03)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/edwardfoyle/amplify-cli/issues/12293)) ([0aba514](https://github.com/edwardfoyle/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+
+
+
+
+
+## [2.5.5](https://github.com/edwardfoyle/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.1-rc.e9e0d157d.0...@aws-amplify/amplify-console-hosting@2.5.5) (2023-04-03)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/edwardfoyle/amplify-cli/issues/12293)) ([0aba514](https://github.com/edwardfoyle/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+
+
+
+
+
+## [2.5.4](https://github.com/edwardfoyle/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.1-rc.e9e0d157d.0...@aws-amplify/amplify-console-hosting@2.5.4) (2023-04-01)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/edwardfoyle/amplify-cli/issues/12293)) ([0aba514](https://github.com/edwardfoyle/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+
+
+
+
+
+## [2.5.3](https://github.com/edwardfoyle/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.1-rc.e9e0d157d.0...@aws-amplify/amplify-console-hosting@2.5.3) (2023-03-31)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/edwardfoyle/amplify-cli/issues/12293)) ([0aba514](https://github.com/edwardfoyle/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+
+
+
+
+
+## [2.5.2](https://github.com/edwardfoyle/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.1-rc.e9e0d157d.0...@aws-amplify/amplify-console-hosting@2.5.2) (2023-03-31)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/edwardfoyle/amplify-cli/issues/12293)) ([0aba514](https://github.com/edwardfoyle/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+
+
+
+
+
 ## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.1-rc.e9e0d157d.0...@aws-amplify/amplify-console-hosting@2.5.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-hosting

@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.6) (2023-04-03)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* e2e test and save tpi file ([fe92465](https://github.com/aws-amplify/amplify-cli/commit/fe92465e1471f9f25a349812805f474eec8c7994))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* filter out s3Key and deploymentBucket from missing params ([a528e9d](https://github.com/aws-amplify/amplify-cli/commit/a528e9de450e425a6863c9a0cc0affa91d3e3939))
+* only clear params if uploader specified ([3a99f19](https://github.com/aws-amplify/amplify-cli/commit/3a99f19d5e460e7ad1c071d662e978646095823c))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+
+
+
+
+
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.5) (2023-04-03)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* e2e test and save tpi file ([fe92465](https://github.com/aws-amplify/amplify-cli/commit/fe92465e1471f9f25a349812805f474eec8c7994))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* filter out s3Key and deploymentBucket from missing params ([a528e9d](https://github.com/aws-amplify/amplify-cli/commit/a528e9de450e425a6863c9a0cc0affa91d3e3939))
+* only clear params if uploader specified ([3a99f19](https://github.com/aws-amplify/amplify-cli/commit/3a99f19d5e460e7ad1c071d662e978646095823c))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+
+
+
+
+
+## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.4) (2023-04-01)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* e2e test and save tpi file ([af69027](https://github.com/aws-amplify/amplify-cli/commit/af690273e6e1149a8da7618776f291d34d088f81))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* filter out s3Key and deploymentBucket from missing params ([a528e9d](https://github.com/aws-amplify/amplify-cli/commit/a528e9de450e425a6863c9a0cc0affa91d3e3939))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+
+
+
+
+
+## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.3) (2023-03-31)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* filter out s3Key and deploymentBucket from missing params ([a528e9d](https://github.com/aws-amplify/amplify-cli/commit/a528e9de450e425a6863c9a0cc0affa91d3e3939))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+
+
+
+
+
+## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.2) (2023-03-31)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+
+
+
+
+
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

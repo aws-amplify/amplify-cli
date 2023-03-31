@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.8) (2023-04-03)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* e2e test and save tpi file ([fe92465](https://github.com/aws-amplify/amplify-cli/commit/fe92465e1471f9f25a349812805f474eec8c7994))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
+## [11.0.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.7) (2023-04-03)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* e2e test and save tpi file ([fe92465](https://github.com/aws-amplify/amplify-cli/commit/fe92465e1471f9f25a349812805f474eec8c7994))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
+## [11.0.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.6) (2023-04-01)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* e2e test and save tpi file ([af69027](https://github.com/aws-amplify/amplify-cli/commit/af690273e6e1149a8da7618776f291d34d088f81))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
+## [11.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.5) (2023-03-31)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* dont fatal on missing appId ([4ae3e22](https://github.com/aws-amplify/amplify-cli/commit/4ae3e2295220391e9593f64cc0b8e262c36ff07f))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
+## [11.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.4) (2023-03-31)
+
+
+### Bug Fixes
+
+* do not update params on headless pull ([94ae3a2](https://github.com/aws-amplify/amplify-cli/commit/94ae3a20d445385a52a23e3a7e87cad4faad2c64))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
 ## [11.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
