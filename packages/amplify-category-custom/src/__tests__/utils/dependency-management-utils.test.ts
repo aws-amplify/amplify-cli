@@ -12,6 +12,7 @@ import {
 
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('@aws-amplify/amplify-cli-core');
+
 jest.mock('glob');
 jest.mock('fs-extra');
 

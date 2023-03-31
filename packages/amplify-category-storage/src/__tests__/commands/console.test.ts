@@ -7,6 +7,7 @@ jest.mock('../../provider-utils/awscloudformation/index');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('@aws-amplify/amplify-cli-core');
 
+
 const providerControllerMock = providerController as jest.Mocked<typeof providerController>;
 const getMetaMock = stateManager.getMeta as jest.MockedFunction<typeof stateManager.getMeta>;
 const printerMock = printer as jest.Mocked<Printer>;
