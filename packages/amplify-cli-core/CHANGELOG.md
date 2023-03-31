@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.7) (2023-04-03)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.6) (2023-04-03)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
+## [4.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.5) (2023-04-03)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.4) (2023-04-01)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.3) (2023-03-31)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.2) (2023-03-31)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1-rc.e9e0d157d.0...amplify-cli-core@4.0.1) (2023-03-23)
 
 **Note:** Version bump only for package amplify-cli-core

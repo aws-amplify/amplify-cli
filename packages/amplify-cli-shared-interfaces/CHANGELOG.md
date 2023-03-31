@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.6) (2023-04-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
+
+
+
+
+
+## [1.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.5) (2023-04-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
+
+
+
+
+
+## [1.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.4) (2023-04-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
+
+
+
+
+
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.3) (2023-04-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
+
+
+
+
+
+## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.2) (2023-03-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
+
+
+
+
+
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.1) (2023-03-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
+
+
+
+
+
 # 1.2.0 (2023-03-13)
 
 

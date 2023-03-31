@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-e2e-core",
-  "version": "4.8.1",
+  "version": "4.8.7",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.1",
-    "amplify-headless-interface": "1.17.1",
+    "amplify-cli-core": "4.0.7",
+    "amplify-headless-interface": "1.17.7",
     "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
