@@ -1,0 +1,59 @@
+version: 0.1
+
+runtimes:
+  java:
+    versions:
+      corretto17:
+        commands:
+          - echo "Installing Java version 17 ..."
+
+          - export JAVA_HOME="$JAVA_17_HOME"
+
+          - export JRE_HOME="$JRE_17_HOME"
+
+          - export JDK_HOME="$JDK_17_HOME"
+
+          - |-
+            for tool_path in "$JAVA_HOME"/bin/*;
+             do tool=`basename "$tool_path"`;
+              if [ $tool != 'java-rmi.cgi' ];
+              then
+               update-alternatives --list "$tool" | grep -q "$tool_path" \
+                && update-alternatives --set "$tool" "$tool_path";
+              fi;
+            done
+  golang:
+    versions:
+      1.18:
+        commands:
+          - echo "Installing Go version 1.18 ..."
+          - goenv global  $GOLANG_18_VERSION
+  python:
+    versions:
+      3.8:
+        commands:
+          - echo "Installing Python version 3.8 ..."
+          - pyenv global  $PYTHON_38_VERSION
+  php:
+    versions:
+      8.1:
+        commands:
+          - echo "Installing PHP version 8.1 ..."
+          - phpenv global $PHP_81_VERSION
+  ruby:
+    versions:
+      3.1:
+        commands:
+          - echo "Installing Ruby version 3.1 ..."
+          - rbenv global $RUBY_31_VERSION
+  nodejs:
+    versions:
+      18:
+        commands:
+          - echo "Installing Node.js version 18 ..."
+          - n $NODE_18_VERSION
+  dotnet:
+    versions:
+      6.0:
+        commands:
+          - echo "Installing .NET version 6.0 ..."

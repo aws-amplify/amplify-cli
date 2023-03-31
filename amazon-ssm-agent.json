@@ -1,0 +1,45 @@
+{
+    "Profile":{
+        "ShareCreds" : true,
+        "ShareProfile" : ""
+    },
+    "Mds": {
+        "CommandWorkersLimit" : 5,
+        "StopTimeoutMillis" : 20000,
+        "Endpoint": "",
+        "CommandRetryLimit": 15
+    },
+    "Ssm": {
+        "Endpoint": "",
+        "HealthFrequencyMinutes": 5,
+        "CustomInventoryDefaultLocation" : "",
+        "AssociationLogsRetentionDurationHours" : 24,
+        "RunCommandLogsRetentionDurationHours" : 336,
+        "SessionLogsRetentionDurationHours" : 336
+    },
+    "Mgs": {
+        "Region": "",
+        "Endpoint": "",
+        "StopTimeoutMillis" : 20000,
+        "SessionWorkersLimit" : 1000
+    },
+    "Agent": {
+        "Region": "",
+        "OrchestrationRootDir": "",
+        "ContainerMode": true
+    },
+    "Os": {
+        "Lang": "en-US",
+        "Name": "",
+        "Version": "1"
+    },
+    "S3": {
+        "Endpoint": "",
+        "Region": "",
+        "LogBucket":"",
+        "LogKey":""
+    },
+    "Kms": {
+        "Endpoint": ""
+    }
+}
