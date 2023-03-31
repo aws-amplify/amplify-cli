@@ -5,10 +5,11 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { projectHasAuth } from '../../provider-utils/awscloudformation/utils/project-has-auth';
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   printer: {
     info: jest.fn(),
     warn: jest.fn(),
+    debug: jest.fn(),
   },
 }));
 

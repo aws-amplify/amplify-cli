@@ -7,7 +7,7 @@ jest.mock('../attach-backend-steps/a20-analyzeProject');
 jest.mock('../attach-backend-steps/a30-initFrontend');
 jest.mock('../attach-backend-steps/a40-generateFiles');
 jest.mock('../initialize-env');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('amplify-cli-core');
 jest.mock('fs-extra');
