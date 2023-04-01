@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-core",
-  "version": "4.0.4",
+  "version": "4.0.5-gfix.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "4.0.4"
+    "amplify-cli-core": "4.0.5-gfix.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.0"

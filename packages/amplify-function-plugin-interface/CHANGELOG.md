@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.4-gfix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.10.0...@aws-amplify/amplify-function-plugin-interface@1.10.4-gfix.0) (2023-04-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-function-plugin-interface
+
+
+
+
+
 ## [1.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.10.0-rc.e9e0d157d.0...@aws-amplify/amplify-function-plugin-interface@1.10.3) (2023-04-01)
 
 **Note:** Version bump only for package @aws-amplify/amplify-function-plugin-interface
