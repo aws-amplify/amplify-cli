@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.3-rc.e9e0d157d.0...@aws-amplify/amplify-provider-awscloudformation@8.0.6) (2023-04-01)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/aws-amplify/amplify-cli/issues/12293)) ([0aba514](https://github.com/aws-amplify/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([33f9b34](https://github.com/aws-amplify/amplify-cli/commit/33f9b3415ce73d5318bb065f3e970daa90b8b8f1))
+* generate model introspection regardless of studio and datastore ([#12258](https://github.com/aws-amplify/amplify-cli/issues/12258)) ([8056b01](https://github.com/aws-amplify/amplify-cli/commit/8056b01ac144268797ff40e734a04fd7b665872f))
+* handle bucket exists check for s3 buckets in opt in regions ([#12298](https://github.com/aws-amplify/amplify-cli/issues/12298)) ([6facd28](https://github.com/aws-amplify/amplify-cli/commit/6facd282dbbdd2b6d6d880267f0dfcaeb34ba03a))
+* modelgen failure on windows ([#12263](https://github.com/aws-amplify/amplify-cli/issues/12263)) ([c0e683f](https://github.com/aws-amplify/amplify-cli/commit/c0e683f38ca47fd97b62448fdbd9d761cbc32cb4))
+* plumb appId and envName from args to relevant places ([2f12046](https://github.com/aws-amplify/amplify-cli/commit/2f120460e08f8c8ba7ab5a508826e6fdc0f3b509))
+* skip param download if env name missing ([041e016](https://github.com/aws-amplify/amplify-cli/commit/041e0165eaf7a23a2be5f8c9e0e6e68c72ea1ea3))
+* source temp aws creds and ec2 instance credentials  using general level config ([#12181](https://github.com/aws-amplify/amplify-cli/issues/12181)) ([68d267c](https://github.com/aws-amplify/amplify-cli/commit/68d267cef06da727f06839498202091cfba283a0))
+* sso login ([#12325](https://github.com/aws-amplify/amplify-cli/issues/12325)) ([915e48b](https://github.com/aws-amplify/amplify-cli/commit/915e48b10ef29a6b862e51a26d30d8517b6e9de3))
+* throws a warning for detector ([#12307](https://github.com/aws-amplify/amplify-cli/issues/12307)) ([166418c](https://github.com/aws-amplify/amplify-cli/commit/166418c28cb1adf3eda7d9d9de3a913a3238004b))
+
+
+
+
+
 ## [8.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.3-rc.e9e0d157d.0...@aws-amplify/amplify-provider-awscloudformation@8.0.5) (2023-03-31)
 
 
