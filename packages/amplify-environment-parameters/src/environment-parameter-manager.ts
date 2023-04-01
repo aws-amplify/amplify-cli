@@ -119,9 +119,10 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       return;
     }
 
-    if (!serviceUploadHandler) {
-      return;
-    }
+    // TODO see if this works
+    // if (!serviceUploadHandler) {
+    //   return;
+    // }
 
     // update param mapping
     this.parameterMapController.removeAllParameters();
