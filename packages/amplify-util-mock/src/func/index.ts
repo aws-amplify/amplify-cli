@@ -55,7 +55,7 @@ export async function start(context: $TSContext): Promise<void> {
       printer.success('Result:');
       printer.info(typeof result === 'undefined' ? '' : stringResult);
     } catch (err) {
-      printer.error(`${name} failed with the following error:`);
+      printer.error(`${resourceName} failed with the following error:`);
       printer.info(err);
     } finally {
       printer.info('Finished execution.');
@@ -103,7 +103,6 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
   let promptForEvent = true;
   if (eventName) {
     const validatorOutput = eventNameValidator(eventName);
-    console.log(validatorOutput);
     const isValid = typeof validatorOutput !== 'string';
     if (!isValid) {
       printer.warn(validatorOutput as string);

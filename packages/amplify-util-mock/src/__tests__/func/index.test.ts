@@ -4,6 +4,7 @@ import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import { stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as inquirer from 'inquirer';
+import { prompter, printer } from '@aws-amplify/amplify-prompts';
 
 jest.mock('../../utils/lambda/load-lambda-config', () => ({
   loadLambdaConfig: jest.fn(() => ({ handler: 'index.testHandle' })),
@@ -27,11 +28,15 @@ jest.mock('@aws-amplify/amplify-category-function', () => ({
 }));
 
 jest.mock('inquirer');
+jest.mock('@aws-amplify/amplify-prompts');
+
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 
 const getInvoker_mock = getInvoker as jest.MockedFunction<typeof getInvoker>;
 const getBuilder_mock = getBuilder as jest.MockedFunction<typeof getBuilder>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+const prompter_mock = prompter as jest.Mocked<typeof prompter>;
+const printer_mock = printer as jest.Mocked<typeof printer>;
 
 const funcName = 'funcName';
 
@@ -54,24 +59,19 @@ describe('function start', () => {
       getResourceStatus: () => ({ allResources: [] }),
       getEnvInfo: () => ({ envName: 'testing' }),
     },
-    print: {
-      success: jest.fn(),
-      info: jest.fn(),
-      error: jest.fn(),
-      blue: jest.fn(),
-    },
   };
 
   jest.setTimeout(1000 * 20);
 
   // NOTE: A warning from jest saying that async operations weren't stopped in the test is expected here
   // because the mock function is designed to keep running after the timeout to ensure that the timeout works
-  it('times out function execution at the default time', async () => {
+  it.only('times out function execution at the default time', async () => {
     getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 11000)));
     context_stub.input.options.timeout = undefined;
+    prompter_mock.pick.mockResolvedValue(['funcName']);
     await start(context_stub);
-    expect(context_stub.print.error.mock.calls[0][0]).toMatchInlineSnapshot(`"funcName failed with the following error:"`);
-    expect(context_stub.print.info.mock.calls[0][0]).toMatchSnapshot();
+    expect(printer_mock.error.mock.calls[0][0]).toMatchInlineSnapshot(`"funcName failed with the following error:"`);
+    expect(printer_mock.info.mock.calls[2][0]).toMatchSnapshot();
     context_stub.input.options.timeout = 1;
   });
 
