@@ -8,7 +8,7 @@ import {
   stateManager,
   readCFNTemplate,
   writeCFNTemplate,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import * as path from 'path';
 import { analyticsPush } from '../commands/analytics';
