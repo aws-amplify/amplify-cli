@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 jest.mock('../../commands/init');
 jest.mock('amplify-cli-core');
 import { run as runEnvCmd } from '../../commands/env';

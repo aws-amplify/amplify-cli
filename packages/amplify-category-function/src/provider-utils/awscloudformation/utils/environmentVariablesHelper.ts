@@ -198,7 +198,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext, appId
   // there are some missing env vars
 
   if (yesFlagSet) {
-    throw getMissingEnvVarsError(functionConfigMissingEnvVars, appId, currentEnvName);
+    throw createMissingEnvVarsError(functionConfigMissingEnvVars, appId, currentEnvName);
   }
 
   printer.info('Some Lambda function environment variables are missing values in this Amplify environment.');
@@ -322,7 +322,7 @@ type MissingEnvVarsConfig = {
   }[];
 }[];
 
-const getMissingEnvVarsError = (
+const createMissingEnvVarsError = (
   missingVars: MissingEnvVarsConfig,
   appId: string | undefined,
   envName: string | undefined,

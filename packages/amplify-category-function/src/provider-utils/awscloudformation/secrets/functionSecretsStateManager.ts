@@ -109,7 +109,7 @@ export class FunctionSecretsStateManager {
       const inputAppId = this.context?.exeInfo?.inputParams?.amplify?.appId;
       const resolution =
         `Run 'amplify push' interactively to specify values.\n` +
-        `Alternatively, manually add SecureString values in SSM ParameterStore for the following parameter names:\n\n` +
+        `Alternatively, manually add SecureString values in SSM Parameter Store for the following parameter names:\n\n` +
         `${addedSecrets.map((secretName) => getFullyQualifiedSecretName(secretName, functionName, inputEnvName, inputAppId)).join('\n')}\n`;
       throw new AmplifyError('EnvironmentConfigurationError', {
         message: `Function ${functionName} is missing secret values in this environment.`,
