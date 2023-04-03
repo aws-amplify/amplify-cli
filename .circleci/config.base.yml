@@ -135,7 +135,7 @@ jobs:
       - checkout
       - run: yarn config set registry https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
-      - run: yarn install
+      - run: yarn install --network-concurrency 1
       - run:
           name: Build tests
           command: yarn build-tests
@@ -150,7 +150,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
-            - install_node18_windows
+            - install_node_windows
             - checkout
             - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
@@ -471,7 +471,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
-            - install_node18_windows
+            - install_node_windows
             - attach_workspace:
                 at: ~/.
             - run:
@@ -1413,7 +1413,7 @@ commands:
               exit 1
             fi
           when: always
-  install_node18_windows:
+  install_node_windows:
     description: Install Node 18 on Windows
     steps:
       - run:
