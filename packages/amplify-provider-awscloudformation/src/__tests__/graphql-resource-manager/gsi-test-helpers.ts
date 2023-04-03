@@ -1,4 +1,4 @@
-import { DynamoDB } from 'cloudform';
+import { DynamoDB } from 'cloudform-types';
 import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
 
 export type GSIDefinition = {
