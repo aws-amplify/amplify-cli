@@ -1,4 +1,11 @@
-import { AmplifyCategories, AmplifySupportedService, exitOnNextTick, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  AmplifyCategories,
+  AmplifySupportedService,
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import {
   addTextractPolicies,
   generateLambdaAccessForRekognition,
@@ -18,7 +25,7 @@ import {
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
 import { byValue, prompter, alphanumeric, between } from '@aws-amplify/amplify-prompts';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 const path = require('path');
 const fs = require('fs-extra');
