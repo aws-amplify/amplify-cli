@@ -1420,8 +1420,8 @@ commands:
           name: Install Node 18
           command: |
             nvm version
-            nvm install 18.15
-            nvm use 18.15
+            nvm install 18.15.0
+            nvm use 18.15.0
             nvm ls
       - run:
           name: Check Node, install yarn
