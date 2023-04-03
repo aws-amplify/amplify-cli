@@ -149,7 +149,7 @@ describe('verifyExpectedEnvParameters', () => {
 describe('getMissingParameters', () => {
   it('returns an empty array when nothing is missing', async () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
-    await envParamManager.save();
+    await envParamManager.save(jest.fn());
     expect(await envParamManager.getMissingParameters()).toEqual([]);
   });
 
