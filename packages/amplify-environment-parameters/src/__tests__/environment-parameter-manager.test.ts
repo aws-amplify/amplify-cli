@@ -86,7 +86,7 @@ describe('save', () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
     const resourceParamManager = envParamManager.getResourceParamManager('function', 'funcName');
     resourceParamManager.setParam('testParam', 'testValue');
-    await envParamManager.save(jest.fn());
+    await envParamManager.save();
     expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "parameters": Object {
@@ -116,7 +116,7 @@ describe('verifyExpectedEnvParameters', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
 
     funcParamManager.setParam('missingParam', 'missingValue');
-    await envParamManager.save(jest.fn());
+    await envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
     let error = undefined;
@@ -158,7 +158,7 @@ describe('getMissingParameters', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
 
     funcParamManager.setParam('missingParam', 'missingValue');
-    await envParamManager.save(jest.fn());
+    await envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
     expect(await envParamManager.getMissingParameters()).toEqual([
