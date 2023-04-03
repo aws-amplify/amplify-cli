@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { execSync } from 'child_process';
-import { $TSAny, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Certificate Info
