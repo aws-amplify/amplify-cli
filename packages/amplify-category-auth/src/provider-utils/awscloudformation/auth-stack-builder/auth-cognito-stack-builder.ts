@@ -424,7 +424,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (configureSMS) {
-        this.userPool.addDependsOn(this.snsRole!);
+        this.userPool.addDependency(this.snsRole!);
       }
 
       // updating Lambda Config when FF is (break circular dependency : false)
@@ -464,7 +464,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.userPoolClientWeb.writeAttributes = this._cfnParameterMap.get('userpoolClientWriteAttributes')?.valueAsList;
       }
       this.userPoolClientWeb.refreshTokenValidity = cdk.Fn.ref('userpoolClientRefreshTokenValidity') as unknown as number;
-      this.userPoolClientWeb.addDependsOn(this.userPool);
+      this.userPoolClientWeb.addDependency(this.userPool);
 
       this.userPoolClient = new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
         userPoolId: cdk.Fn.ref('UserPool'),
@@ -479,7 +479,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
       this.userPoolClient.refreshTokenValidity = cdk.Fn.ref('userpoolClientRefreshTokenValidity') as unknown as number;
       this.userPoolClient.generateSecret = cdk.Fn.ref('userpoolClientGenerateSecret') as unknown as boolean;
-      this.userPoolClient.addDependsOn(this.userPool);
+      this.userPoolClient.addDependency(this.userPool);
 
       this.createUserPoolClientCustomResource(props);
       if (props.hostedUIDomainName) {
@@ -564,7 +564,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           authenticated: cdk.Fn.ref('authRoleArn'),
         },
       });
-      this.identityPoolRoleMap.addDependsOn(this.identityPool);
+      this.identityPoolRoleMap.addDependency(this.identityPool);
     }
   };
 
@@ -603,7 +603,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         ],
       },
     });
-    this.userPoolClientRole.addDependsOn(this.userPoolClient!);
+    this.userPoolClientRole.addDependency(this.userPoolClient!);
 
     // lambda function
     this.userPoolClientLambda = new lambda.CfnFunction(this, 'UserPoolClientLambda', {
@@ -615,7 +615,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.userPoolClientLambda.addDependsOn(this.userPoolClientRole);
+    this.userPoolClientLambda.addDependency(this.userPoolClientRole);
 
     // userPool client lambda policy
     /**
@@ -638,7 +638,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.userPoolClientLambdaPolicy.addDependsOn(this.userPoolClientLambda);
+    this.userPoolClientLambdaPolicy.addDependency(this.userPoolClientLambda);
 
     // userPool Client Log policy
 
@@ -661,7 +661,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.userPoolClientLogPolicy.addDependsOn(this.userPoolClientLambdaPolicy);
+    this.userPoolClientLogPolicy.addDependency(this.userPoolClientLambdaPolicy);
 
     // userPoolClient Custom Resource
     this.userPoolClientInputs = new cdk.CustomResource(this, 'UserPoolClientInputs', {
@@ -689,7 +689,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUICustomResource.addDependsOn(this.userPoolClientRole!);
+    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
 
     // userPool client lambda policy
     /**
@@ -716,7 +716,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.hostedUICustomResourcePolicy.addDependsOn(this.hostedUICustomResource);
+    this.hostedUICustomResourcePolicy.addDependency(this.hostedUICustomResource);
 
     // userPool Client Log policy
 
@@ -738,7 +738,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.hostedUICustomResourceLogPolicy.addDependsOn(this.hostedUICustomResourcePolicy);
+    this.hostedUICustomResourceLogPolicy.addDependency(this.hostedUICustomResourcePolicy);
 
     // userPoolClient Custom Resource
     this.hostedUICustomResourceInputs = new cdk.CustomResource(this, 'HostedUICustomResourceInputs', {
@@ -770,7 +770,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUIProvidersCustomResource.addDependsOn(this.userPoolClientRole!);
+    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
 
     // userPool client lambda policy
     /**
@@ -802,7 +802,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.hostedUIProvidersCustomResourcePolicy.addDependsOn(this.hostedUIProvidersCustomResource);
+    this.hostedUIProvidersCustomResourcePolicy.addDependency(this.hostedUIProvidersCustomResource);
 
     // userPool Client Log policy
 
@@ -824,7 +824,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.hostedUIProvidersCustomResourceLogPolicy.addDependsOn(this.hostedUIProvidersCustomResourcePolicy);
+    this.hostedUIProvidersCustomResourceLogPolicy.addDependency(this.hostedUIProvidersCustomResourcePolicy);
 
     // userPoolClient Custom Resource
     this.hostedUIProvidersCustomResourceInputs = new cdk.CustomResource(this, 'HostedUIProvidersCustomResourceInputs', {
@@ -877,7 +877,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.oAuthCustomResourcePolicy.addDependsOn(this.oAuthCustomResource);
+    this.oAuthCustomResourcePolicy.addDependency(this.oAuthCustomResource);
 
     // Oauth Log policy
 
@@ -899,7 +899,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.oAuthCustomResourceLogPolicy.addDependsOn(this.oAuthCustomResourcePolicy);
+    this.oAuthCustomResourceLogPolicy.addDependency(this.oAuthCustomResourcePolicy);
 
     // oAuth Custom Resource
     this.oAuthCustomResourceInputs = new cdk.CustomResource(this, 'OAuthCustomResourceInputs', {
@@ -972,7 +972,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       ],
     });
-    this.mfaLambdaRole.addDependsOn(this.snsRole!);
+    this.mfaLambdaRole.addDependency(this.snsRole!);
     // lambda function
     /**
      *   Lambda which sets MFA config values
@@ -987,7 +987,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.mfaLambda.addDependsOn(this.mfaLambdaRole);
+    this.mfaLambda.addDependency(this.mfaLambdaRole);
 
     // MFA lambda policy
     /**
@@ -1015,7 +1015,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         ).toString(),
       ],
     });
-    this.mfaLambdaPolicy.addDependsOn(this.mfaLambda);
+    this.mfaLambdaPolicy.addDependency(this.mfaLambda);
 
     // mfa Log policy
 
@@ -1043,7 +1043,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         ).toString(),
       ],
     });
-    this.mfaLogPolicy.addDependsOn(this.mfaLambdaPolicy);
+    this.mfaLogPolicy.addDependency(this.mfaLambdaPolicy);
 
     // mfa Custom Resource
     /**
@@ -1130,7 +1130,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.openIdLambda.addDependsOn(this.openIdLambdaRole);
+    this.openIdLambda.addDependency(this.openIdLambdaRole);
 
     // OPenId lambda policy
     /**
@@ -1168,7 +1168,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         ).toString(),
       ],
     });
-    this.openIdLambdaIAMPolicy.addDependsOn(this.openIdLambda);
+    this.openIdLambdaIAMPolicy.addDependency(this.openIdLambda);
 
     // openId Log policy
     /**
@@ -1201,7 +1201,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         ).toString(),
       ],
     });
-    this.openIdLogPolicy.addDependsOn(this.openIdLambdaIAMPolicy);
+    this.openIdLogPolicy.addDependency(this.openIdLambdaIAMPolicy);
 
     // openId Custom Resource
     /**

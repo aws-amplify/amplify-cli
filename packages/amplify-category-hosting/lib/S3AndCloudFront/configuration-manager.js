@@ -1,6 +1,6 @@
 const moment = require('moment');
 const validateBucketName = require('./helpers/validate-bucket-name');
-const { prompter, byValue } = require('amplify-prompts');
+const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const configurables = {
   Website: './helpers/configure-Website',

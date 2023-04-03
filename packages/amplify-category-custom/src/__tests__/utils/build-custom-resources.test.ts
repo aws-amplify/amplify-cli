@@ -3,7 +3,7 @@ import execa from 'execa';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../utils/dependency-management-utils');
 jest.mock('../../utils/generate-cfn-from-cdk');
 jest.mock('execa');

@@ -2,10 +2,19 @@ import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import glob from 'glob';
 import execa from 'execa';
+import { AmplifyError } from 'amplify-cli-core';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
-    await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' }); // making virtual env in project folder
+    try {
+      await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' }); // making virtual env in project folder
+    } catch (err) {
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        { message: `Failed to install dependencies in ${params.srcRoot}: ${err}` },
+        err,
+      );
+    }
     return { rebuilt: true };
   }
   return { rebuilt: false };

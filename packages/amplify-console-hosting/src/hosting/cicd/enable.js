@@ -1,5 +1,3 @@
-// TODO disable lint until file is converted to TS
-/* eslint-disable */
 const { open } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const utils = require('../../utils/amplify-context-utils');

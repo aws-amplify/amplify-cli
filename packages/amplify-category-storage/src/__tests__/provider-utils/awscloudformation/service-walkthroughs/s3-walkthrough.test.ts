@@ -17,7 +17,7 @@ import { MigrationParams, S3InputState } from '../../../../provider-utils/awsclo
 import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-walkthrough';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state');
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api');
