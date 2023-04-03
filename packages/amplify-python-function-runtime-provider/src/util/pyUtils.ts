@@ -4,7 +4,7 @@ import { ExecOptions } from 'child_process';
 import execa from 'execa';
 import * as which from 'which';
 import { parse } from 'ini';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 // Gets the pipenv dir where this function's dependencies are located
 export async function getPipenvDir(srcRoot: string): Promise<string> {
