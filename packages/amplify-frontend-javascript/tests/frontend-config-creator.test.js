@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const configCreator = require('../lib/frontend-config-creator');
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const mapServiceName = 'Map';
 const placeIndexServiceName = 'PlaceIndex';

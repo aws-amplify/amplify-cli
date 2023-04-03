@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import glob from 'glob';
 import * as execa from 'execa';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { dotnetcore31, executableName } from '../constants';

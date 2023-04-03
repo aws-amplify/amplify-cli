@@ -2,7 +2,7 @@ import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function
 import { checkDependencies, packageResource, buildResource } from './runtime';
 import { localInvoke } from './localinvoke';
 import { relativeShimSrcPath } from './constants';
-import { GetPackageAssetPaths } from 'amplify-cli-core';
+import { GetPackageAssetPaths } from '@aws-amplify/amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context) => {
   return {
