@@ -1,0 +1,1 @@
+{"version":3,"file":"list-categories.js","sourceRoot":"","sources":["../../../src/extensions/amplify-helpers/list-categories.ts"],"names":[],"mappings":";;;AAAA,SAAgB,cAAc,CAAC,OAAO;IACpC,MAAM,mBAAmB,GAAG,MAAM,CAAC,IAAI,CAAC,OAAO,CAAC,OAAO,CAAC,wBAAwB,CAAC,OAAO,CAAC,CAAC,CAAC;IAC3F,OAAO,mBAAmB,CAAC,IAAI,CAAC,IAAI,CAAC,CAAC;AACxC,CAAC;AAHD,wCAGC"}

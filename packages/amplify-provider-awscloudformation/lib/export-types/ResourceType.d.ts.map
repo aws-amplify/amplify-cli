@@ -1,0 +1,1 @@
+{"version":3,"file":"ResourceType.d.ts","sourceRoot":"","sources":["../../src/export-types/ResourceType.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,YAAY,GAAG;IACzB,QAAQ,EAAE,MAAM,CAAC;IACjB,OAAO,EAAE,MAAM,CAAC;IAChB,YAAY,EAAE,MAAM,CAAC;IACrB,KAAK,EAAE,OAAO,CAAC;CAChB,CAAC"}

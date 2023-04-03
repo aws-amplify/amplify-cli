@@ -1,0 +1,1 @@
+{"version":3,"file":"environment-info.d.ts","sourceRoot":"","sources":["../../src/network/environment-info.ts"],"names":[],"mappings":"AAOA,KAAK,+BAA+B,GAAG;IACrC,SAAS,EAAE,MAAM,CAAC;IAClB,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;IAChB,UAAU,EAAE,MAAM,CAAC;IACnB,YAAY,EAAE,MAAM,CAAC;CACtB,CAAC;AAKF,wBAAsB,yBAAyB,CAAC,OAAO,KAAA,EAAE,MAAM,EAAE,+BAA+B;;;;GA6I/F"}

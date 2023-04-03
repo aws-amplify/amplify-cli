@@ -1,0 +1,1 @@
+{"version":3,"file":"StateMachine.d.ts","sourceRoot":"","sources":["../../src/amplify-state-manager/StateMachine.ts"],"names":[],"mappings":"AAAA,qBAAa,YAAY;IACvB,MAAM,EAAE,KAAK,CAAC,MAAM,CAAC,CAAC;gBACV,MAAM,EAAE,KAAK,CAAC,MAAM,CAAC;CAGlC"}

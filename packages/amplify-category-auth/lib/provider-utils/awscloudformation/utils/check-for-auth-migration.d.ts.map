@@ -1,0 +1,1 @@
+{"version":3,"file":"check-for-auth-migration.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/utils/check-for-auth-migration.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAA2D,MAAM,+BAA+B,CAAC;AASpH,eAAO,MAAM,0BAA0B,YAAmB,UAAU,YAAY,MAAM,YAAY,OAAO,KAAG,QAAQ,OAAO,CAyB1H,CAAC"}

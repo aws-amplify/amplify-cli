@@ -1,0 +1,1 @@
+{"version":3,"file":"collect-files.d.ts","sourceRoot":"","sources":["../../../src/commands/helpers/collect-files.ts"],"names":[],"mappings":"AAkCA,eAAO,MAAM,YAAY,cACZ;IAAE,QAAQ,EAAE,MAAM,CAAC;IAAC,YAAY,EAAE,MAAM,CAAC;IAAC,OAAO,EAAE,MAAM,CAAA;CAAE,EAAE,YAC9D,MAAM,KACf;IAAE,QAAQ,EAAE,MAAM,CAAC;IAAC,MAAM,EAAE,OAAO,CAAA;CAAE,EAgEvC,CAAC"}

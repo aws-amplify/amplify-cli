@@ -1,0 +1,17 @@
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
+export declare function setupUser(userPoolId: string, username: string, password: string, groupName?: string): Promise<void>;
+export declare function addUserToGroup(cognitoClient: CognitoIdentityServiceProvider, userPoolId: string, username: string, groupName?: string): Promise<void>;
+export declare function getConfiguredCognitoClient(): CognitoIdentityServiceProvider;
+export declare function getConfiguredAppsyncClientCognitoAuth(url: string, region: string, user: any): any;
+export declare function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any): any;
+export declare function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string, apiKey: string): any;
+export declare function getConfiguredAppsyncClientIAMAuth(url: string, region: string): any;
+export declare function signInUser(username: string, password: string): Promise<any>;
+export declare function configureAmplify(projectDir: string): any;
+export declare function getAWSExports(projectDir: string): any;
+export declare function getUserPoolId(projectDir: string): string;
+export declare function getCognitoResourceName(projectDir: string): string;
+export declare function getApiKey(projectDir: string): string;
+export declare function authenticateUser(username: string, tempPassword: string, password: string): Promise<void>;
+export declare function getUserPoolIssUrl(projectDir: string): string;
+export declare function getAppClientIDWeb(projectDir: string): any;

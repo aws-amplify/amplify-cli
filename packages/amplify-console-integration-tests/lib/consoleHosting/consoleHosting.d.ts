@@ -1,0 +1,13 @@
+export declare const deleteProject: (cwd: string) => Promise<void>;
+export declare function addEnvironment(cwd: string, settings: any): Promise<void>;
+export declare function addManualHosting(cwd: string): Promise<void>;
+export declare function addCICDHostingWithoutFrontend(cwd: string): Promise<void>;
+export declare const amplifyPublish: (cwd: string) => Promise<void>;
+export declare function amplifyConfigure(cwd: string): Promise<void>;
+export declare function amplifyServe(cwd: string): Promise<void>;
+export declare function amplifyStatus(cwd: string, expectedStatus: string): Promise<void>;
+export declare const amplifyPush: (cwd: string) => Promise<void>;
+export declare function removeHosting(cwd: string): Promise<void>;
+export declare function removeNonExistingHosting(cwd: string): Promise<void>;
+export declare function removeHostingEnabledInConsole(cwd: string): Promise<void>;
+export declare function checkoutEnv(cwd: string, env: string): Promise<void>;

@@ -1,0 +1,1 @@
+{"version":3,"file":"get-project-details.d.ts","sourceRoot":"","sources":["../../../src/extensions/amplify-helpers/get-project-details.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAgB,MAAM,kBAAkB,CAAC;AAMxD,MAAM,WAAW,sBAAsB;IACrC,aAAa,EAAE,MAAM,CAAC;IACtB,WAAW,EAAE,MAAM,CAAC;IACpB,YAAY,EAAE,MAAM,CAAC;IACrB,aAAa,EAAE,MAAM,CAAC;CACvB;AAKD,eAAO,MAAM,iBAAiB,QAAO,sBAsBpC,CAAC"}

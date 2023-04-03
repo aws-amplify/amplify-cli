@@ -1,0 +1,1 @@
+{"version":3,"file":"integer.d.ts","sourceRoot":"","sources":["../../../src/velocity/value-mapper/integer.ts"],"names":[],"mappings":"AAAA,qBAAa,WAAW;IACtB,KAAK,EAAE,MAAM,CAAC;gBAEF,GAAG,EAAE,MAAM;IAIvB,OAAO,IAAI,MAAM;IAIjB,QAAQ,CAAC,GAAG,EAAE,GAAG,EAAE,KAAK,GAAE,GAAQ,GAAG,WAAW;IAIhD,MAAM,IAAI,MAAM;IAIhB,QAAQ,IAAI,MAAM;CAGnB"}

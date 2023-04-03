@@ -1,0 +1,21 @@
+declare const defaultSettings: {
+    name: string;
+    envName: string;
+    editor: string;
+    appType: string;
+    framework: string;
+    srcDir: string;
+    distDir: string;
+    buildCmd: string;
+    startCmd: string;
+    useProfile: string;
+    profileName: string;
+    region: string;
+    local: boolean;
+    disableAmplifyAppCreation: boolean;
+    disableCIDetection: boolean;
+    providerConfig: any;
+    permissionsBoundaryArn: any;
+};
+export declare function initJSProjectWithProfileV10(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void>;
+export {};

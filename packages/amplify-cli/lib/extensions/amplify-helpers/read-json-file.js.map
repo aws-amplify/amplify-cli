@@ -1,0 +1,1 @@
+{"version":3,"file":"read-json-file.js","sourceRoot":"","sources":["../../../src/extensions/amplify-helpers/read-json-file.ts"],"names":[],"mappings":";;;AACA,uDAAyD;AAEzD,SAAgB,YAAY,CAAC,YAAY,EAAE,QAAQ,GAAG,MAAM,EAAE,YAAY,GAAG,IAAI;IAC/E,OAAO,gCAAa,CAAC,QAAQ,CAAC,YAAY,EAAE;QAC1C,eAAe,EAAE,YAAY;KAC9B,CAAC,CAAC;AACL,CAAC;AAJD,oCAIC"}

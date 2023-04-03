@@ -1,0 +1,18 @@
+export declare const schema = "\n# owner identity not stored on objects\ntype Post @model @auth(rules: [{ allow: owner, operations: [read] }]) {\n  id: ID!\n  title: String!\n}\n\n##auth/owner4";
+export declare const mutation = "\nmutation CreatePost(\n    $input: CreatePostInput!\n    $condition: ModelPostConditionInput\n  ) {\n    createPost(input: $input, condition: $condition) {\n      id\n      title\n      createdAt\n      updatedAt\n    }\n}";
+export declare const input_mutation: {
+    input: {
+        id: string;
+        title: string;
+    };
+};
+export declare const expected_result_mutation: {
+    data: {
+        createPost: {
+            id: string;
+            title: string;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};

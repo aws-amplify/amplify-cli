@@ -1,0 +1,3 @@
+import { $TSObject } from 'amplify-cli-core';
+export declare const pagedAWSCall: <TAPIResult, TData, TNextToken, TParams = $TSObject>(action: (params: TParams, nextToken?: TNextToken) => Promise<TAPIResult>, params: TParams, accessor: (result?: TAPIResult) => TData[], getNextToken: (serviceResponse: TAPIResult, result: TData[]) => Promise<TNextToken>) => Promise<TData[]>;
+//# sourceMappingURL=paged-call.d.ts.map

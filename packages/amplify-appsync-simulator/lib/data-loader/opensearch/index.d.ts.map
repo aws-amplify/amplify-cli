@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/data-loader/opensearch/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iCAAiC,EAAE,MAAM,IAAI,CAAC;AAIvD,qBAAa,oBAAqB,YAAW,iCAAiC;IAChE,OAAO,CAAC,OAAO;gBAAP,OAAO,KAAA;IAErB,IAAI,CAAC,OAAO,KAAA;CAkBnB"}

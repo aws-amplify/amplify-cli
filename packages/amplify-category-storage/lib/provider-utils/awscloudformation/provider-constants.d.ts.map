@@ -1,0 +1,1 @@
+{"version":3,"file":"provider-constants.d.ts","sourceRoot":"","sources":["../../../src/provider-utils/awscloudformation/provider-constants.ts"],"names":[],"mappings":"AAAA,oBAAY,WAAW;IACrB,EAAE,OAAO;IACT,QAAQ,aAAa;CACtB;AAED,eAAO,MAAM,qBAAqB,wBAAwB,CAAC;AAC3D,eAAO,MAAM,mBAAmB;;;CAG/B,CAAC;AAGF,eAAO,MAAM,iCAAiC,WAAW,CAAC;AAE1D,eAAO,MAAM,YAAY,sBAAsB,CAAC"}

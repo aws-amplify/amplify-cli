@@ -1,0 +1,1 @@
+{"version":3,"file":"cfn-pre-processor.d.ts","sourceRoot":"","sources":["../../src/pre-push-cfn-processor/cfn-pre-processor.ts"],"names":[],"mappings":"AAcA,eAAO,MAAM,qBAAqB,aAAoB,MAAM,YAAY;IAAE,MAAM,CAAC,EAAE,OAAO,CAAA;CAAE,KAAG,QAAQ,MAAM,CAU5G,CAAC;AAUF,eAAO,MAAM,gCAAgC,iBAC7B,MAAM,WACX,MAAM,WACN,MAAM,YACL,MAAM,YACN;IAAE,MAAM,CAAC,EAAE,OAAO,CAAA;CAAE,KAC7B,QAAQ,IAAI,CAUd,CAAC"}

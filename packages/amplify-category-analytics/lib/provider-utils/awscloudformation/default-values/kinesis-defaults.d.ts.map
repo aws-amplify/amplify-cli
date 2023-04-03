@@ -1,0 +1,1 @@
+{"version":3,"file":"kinesis-defaults.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/default-values/kinesis-defaults.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,OAAO,EAAE,MAAM,EAAE,MAAM,+BAA+B,CAAC;AAWhE,eAAO,MAAM,cAAc,YAAa;IAAE,WAAW,EAAE,OAAO,CAAC;IAAC,aAAa,EAAE;QAAE,WAAW,EAAE,MAAM,CAAA;KAAE,CAAA;CAAE,KAAG,OAAO,MAAM,EAAE,MAAM,CAsB/H,CAAC"}

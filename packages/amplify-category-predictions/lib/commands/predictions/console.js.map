@@ -1,0 +1,1 @@
+{"version":3,"file":"console.js","sourceRoot":"","sources":["../../../src/commands/predictions/console.js"],"names":[],"mappings":"AAAA,MAAM,UAAU,GAAG,SAAS,CAAC;AAC7B,MAAM,WAAW,GAAG,OAAO,CAAC,aAAa,CAAC,CAAC;AAE3C,MAAM,CAAC,OAAO,GAAG;IACf,IAAI,EAAE,UAAU;IAChB,GAAG,EAAE,KAAK,EAAE,OAAO,EAAE,EAAE;QACrB,MAAM,WAAW,CAAC,OAAO,CAAC,OAAO,CAAC,CAAC;IACrC,CAAC;CACF,CAAC"}

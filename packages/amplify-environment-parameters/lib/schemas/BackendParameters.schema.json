@@ -1,0 +1,44 @@
+{
+  "$ref": "#/definitions/BackendParameters",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "BackendParameters": {
+      "additionalProperties": {
+        "$ref": "#/definitions/ParameterConfig"
+      },
+      "description": "Defines the shape of the mapping stored in `backend-config.json` to map ParameterStore parameters to corresponding project resources\n\nIf you rename this type, you'll need to update the generate-schemas script in package.json to reference the new name",
+      "type": "object"
+    },
+    "ParameterConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "usedBy": {
+          "items": {
+            "$ref": "#/definitions/ResourceTuple"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "usedBy"
+      ],
+      "type": "object"
+    },
+    "ResourceTuple": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "resourceName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "resourceName"
+      ],
+      "type": "object"
+    }
+  }
+}

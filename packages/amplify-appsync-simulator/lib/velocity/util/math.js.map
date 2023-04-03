@@ -1,0 +1,1 @@
+{"version":3,"file":"math.js","sourceRoot":"","sources":["../../../src/velocity/util/math.ts"],"names":[],"mappings":";;;AAAA,mCAAgC;AAEnB,QAAA,IAAI,GAAG;IAClB,QAAQ,EAAE,IAAI,CAAC,KAAK;IACpB,MAAM,EAAE,IAAI,CAAC,GAAG;IAChB,MAAM,EAAE,IAAI,CAAC,GAAG;IAChB,YAAY,EAAE,IAAI,CAAC,MAAM;IACzB,iBAAiB,EAAE,eAAM;CAC1B,CAAC"}

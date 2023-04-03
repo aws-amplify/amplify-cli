@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="59" failures="0" errors="0" time="23.27">
+  <testsuite name="src/__tests__/syncAmplifyUiComponents.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:06:53" time="14.439" tests="22">
+    <testcase classname="should sync amplify ui builder components pulls components from aws-sdk and passes them to createUiBuilderComponent" name="should sync amplify ui builder components pulls components from aws-sdk and passes them to createUiBuilderComponent" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components does not throw an error when createUiBuilderComponent fails" name="should sync amplify ui builder components does not throw an error when createUiBuilderComponent fails" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components does not throw an error when createUiBuilderThemes fails" name="should sync amplify ui builder components does not throw an error when createUiBuilderThemes fails" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can getAmplifyUIBuilderService" name="should sync amplify ui builder components can getAmplifyUIBuilderService" time="0.007" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can list components" name="should sync amplify ui builder components can list components" time="0.002" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can list themes" name="should sync amplify ui builder components can list themes" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can list forms" name="should sync amplify ui builder components can list forms" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can getAppId" name="should sync amplify ui builder components can getAppId" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can getEnvName" name="should sync amplify ui builder components can getEnvName" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can resolveAppId" name="should sync amplify ui builder components can resolveAppId" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can throw on getAppId" name="should sync amplify ui builder components can throw on getAppId" time="0.017" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can generate ui builder components" name="should sync amplify ui builder components can generate ui builder components" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can handle failed generation generate ui builder components" name="should sync amplify ui builder components can handle failed generation generate ui builder components" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can generate ui builder themes" name="should sync amplify ui builder components can generate ui builder themes" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can handle failed generation generate ui builder themes" name="should sync amplify ui builder components can handle failed generation generate ui builder themes" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can generate ui builder default theme when no themes are passed" name="should sync amplify ui builder components can generate ui builder default theme when no themes are passed" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can handle failed generation generate ui builder default theme when no themes are passed" name="should sync amplify ui builder components can handle failed generation generate ui builder default theme when no themes are passed" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can generate ui builder forms" name="should sync amplify ui builder components can generate ui builder forms" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can handle failed generation generate ui builder forms" name="should sync amplify ui builder components can handle failed generation generate ui builder forms" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components can generate uibuilder forms from data schema if autogenerate true" name="should sync amplify ui builder components can generate uibuilder forms from data schema if autogenerate true" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components should not autogenerate forms for join tables or unsupported models" name="should sync amplify ui builder components should not autogenerate forms for join tables or unsupported models" time="0" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify ui builder components does not generate uibuilder forms from data schema if autogenerate false" name="should sync amplify ui builder components does not generate uibuilder forms from data schema if autogenerate false" time="0.001" file="src/__tests__/syncAmplifyUiComponents.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/handleEvents.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:07" time="1.257" tests="2">
+    <testcase classname="can handle events handles postPull" name="can handle events handles postPull" time="0.002" file="src/__tests__/handleEvents.test.ts">
+    </testcase>
+    <testcase classname="can handle events handles postPush" name="can handle events handles postPush" time="0" file="src/__tests__/handleEvents.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/getAmplifyDataSchema.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:08" time="1.072" tests="3">
+    <testcase classname="should sync amplify backend models should get generic schema from introspection schema" name="should sync amplify backend models should get generic schema from introspection schema" time="0.001" file="src/__tests__/getAmplifyDataSchema.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify backend models should handle schema not found" name="should sync amplify backend models should handle schema not found" time="0" file="src/__tests__/getAmplifyDataSchema.test.ts">
+    </testcase>
+    <testcase classname="should sync amplify backend models should handle error" name="should sync amplify backend models should handle error" time="0" file="src/__tests__/getAmplifyDataSchema.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/prePushHandler.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:10" time="1.035" tests="2">
+    <testcase classname="handlePrePush runs handlePrePush" name="handlePrePush runs handlePrePush" time="0.004" file="src/__tests__/prePushHandler.test.ts">
+    </testcase>
+    <testcase classname="handlePrePush runs handlePrePush without schema" name="handlePrePush runs handlePrePush without schema" time="0.001" file="src/__tests__/prePushHandler.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/generateComponents.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:11" time="0.927" tests="1">
+    <testcase classname="can generate components runs generateComponents" name="can generate components runs generateComponents" time="0.003" file="src/__tests__/generateComponents.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/notifyMissingPackages.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:12" time="0.833" tests="4">
+    <testcase classname="should notify when packages are missing skips notification if localEnv path cannot be determined" name="should notify when packages are missing skips notification if localEnv path cannot be determined" time="0.001" file="src/__tests__/notifyMissingPackages.test.ts">
+    </testcase>
+    <testcase classname="should notify when packages are missing skips notification if package.json cannot be determined" name="should notify when packages are missing skips notification if package.json cannot be determined" time="0" file="src/__tests__/notifyMissingPackages.test.ts">
+    </testcase>
+    <testcase classname="should notify when packages are missing notifies for all missing dependencies" name="should notify when packages are missing notifies for all missing dependencies" time="0" file="src/__tests__/notifyMissingPackages.test.ts">
+    </testcase>
+    <testcase classname="should notify when packages are missing notifies for partial missing dependencies" name="should notify when packages are missing notifies for partial missing dependencies" time="0.002" file="src/__tests__/notifyMissingPackages.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/cloneComponentsFromEnv.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:12" time="0.971" tests="1">
+    <testcase classname="can clone components to new environment clones components to a new env" name="can clone components to new environment clones components to a new env" time="0.003" file="src/__tests__/cloneComponentsFromEnv.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/detachedFormCleanup.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:13" time="0.855" tests="8">
+    <testcase classname="detachedFormCleanup isStudioForm should return true" name="detachedFormCleanup isStudioForm should return true" time="0.001" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup isStudioForm should return false" name="detachedFormCleanup isStudioForm should return false" time="0" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup isFormSchemaCustomized should return false" name="detachedFormCleanup isFormSchemaCustomized should return false" time="0" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup isFormSchemaCustomized should return true" name="detachedFormCleanup isFormSchemaCustomized should return true" time="0.001" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup isFormDetachedFromModel should return true for a DataStore form with detached model" name="detachedFormCleanup isFormDetachedFromModel should return true for a DataStore form with detached model" time="0" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup isFormDetachedFromModel should return false for a Custom form" name="detachedFormCleanup isFormDetachedFromModel should return false for a Custom form" time="0" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup isFormDetachedFromModel should return false for a DataStore form with an attached model" name="detachedFormCleanup isFormDetachedFromModel should return false for a DataStore form with an attached model" time="0" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+    <testcase classname="detachedFormCleanup should delete detached forms" name="detachedFormCleanup should delete detached forms" time="0.001" file="src/__tests__/detachedFormCleanup.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/shouldRenderComponents.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:14" time="0.641" tests="5">
+    <testcase classname="should render components works with a valid config" name="should render components works with a valid config" time="0" file="src/__tests__/shouldRenderComponents.test.ts">
+    </testcase>
+    <testcase classname="should render components doesn&apos;t work if --no-codegen flag is set" name="should render components doesn&apos;t work if --no-codegen flag is set" time="0" file="src/__tests__/shouldRenderComponents.test.ts">
+    </testcase>
+    <testcase classname="should render components doesn&apos;t work if provider is not awscloudformation" name="should render components doesn&apos;t work if provider is not awscloudformation" time="0.001" file="src/__tests__/shouldRenderComponents.test.ts">
+    </testcase>
+    <testcase classname="should render components should return false if frontend is ios" name="should render components should return false if frontend is ios" time="0" file="src/__tests__/shouldRenderComponents.test.ts">
+    </testcase>
+    <testcase classname="should render components should return false if frontend is vue" name="should render components should return false if frontend is vue" time="0" file="src/__tests__/shouldRenderComponents.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/createUiBuilderComponent.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:15" time="0.53" tests="9">
+    <testcase classname="can create a ui builder component calls the renderManager" name="can create a ui builder component calls the renderManager" time="0" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component calls the renderManager for themes" name="can create a ui builder component calls the renderManager for themes" time="0.001" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component calls the renderManager for default theme" name="can create a ui builder component calls the renderManager for default theme" time="0" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component calls the renderManager for forms" name="can create a ui builder component calls the renderManager for forms" time="0" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component calls the renderManager for index file" name="can create a ui builder component calls the renderManager for index file" time="0.001" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component does not call renderSchemaToTemplate for index file if no schema" name="can create a ui builder component does not call renderSchemaToTemplate for index file if no schema" time="0" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component calls the renderManager for utils file w/ validation, formatter, and fetchByPath helpers if there is a form" name="can create a ui builder component calls the renderManager for utils file w/ validation, formatter, and fetchByPath helpers if there is a form" time="0" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component calls the renderManager for utils file w/ formatter helper if there is a view" name="can create a ui builder component calls the renderManager for utils file w/ formatter helper if there is a view" time="0.001" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+    <testcase classname="can create a ui builder component should not call the renderManager for utils file if there is neither form nor views" name="can create a ui builder component should not call the renderManager for utils file if there is neither form nor views" time="0" file="src/__tests__/createUiBuilderComponent.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/version.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:15" time="0.046" tests="1">
+    <testcase classname="can run version script runs version script" name="can run version script runs version script" time="0.002" file="src/__tests__/version.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/help.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:16" time="0.046" tests="1">
+    <testcase classname="can run help script runs help script" name="can run help script runs help script" time="0" file="src/__tests__/help.test.ts">
+    </testcase>
+  </testsuite>
+</testsuites>

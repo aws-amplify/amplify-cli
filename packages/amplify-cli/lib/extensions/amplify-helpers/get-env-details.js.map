@@ -1,0 +1,1 @@
+{"version":3,"file":"get-env-details.js","sourceRoot":"","sources":["../../../src/extensions/amplify-helpers/get-env-details.ts"],"names":[],"mappings":";;;AAAA,uDAAwD;AAKjD,MAAM,aAAa,GAAG,GAAW,EAAE;IACxC,MAAM,gBAAgB,GAAG,+BAAY,CAAC,mBAAmB,CAAC,SAAS,EAAE;QACnE,eAAe,EAAE,KAAK;QACtB,OAAO,EAAE,EAAE;KACZ,CAAC,CAAC;IAEH,OAAO,gBAAgB,CAAC;AAC1B,CAAC,CAAC;AAPW,QAAA,aAAa,iBAOxB"}

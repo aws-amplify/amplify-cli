@@ -1,0 +1,1 @@
+{"version":3,"file":"getAppId.js","sourceRoot":"","sources":["../../src/utils/getAppId.ts"],"names":[],"mappings":";;;AAAA,+CAAsD;AAEtD;;GAEG;AACI,MAAM,QAAQ,GAAG,CAAC,QAAgB,EAAU,EAAE;IACnD,MAAM,IAAI,GAAG,IAAA,mCAAqB,EAAC,QAAQ,CAAC,CAAC;IAC7C,OAAO,IAAI,CAAC,SAAS,CAAC,iBAAiB,CAAC,YAAY,CAAC;AACvD,CAAC,CAAC;AAHW,QAAA,QAAQ,YAGnB"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"upload-auth-trigger-template.d.ts","sourceRoot":"","sources":["../../src/utils/upload-auth-trigger-template.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAwE,MAAM,kBAAkB,CAAC;AAOpH,eAAO,MAAM,qBAAqB,8CAA8C,CAAC;AACjF,eAAO,MAAM,kBAAkB,iCAAiC,CAAC;AAMjE,eAAO,MAAM,yBAAyB,YAAmB,UAAU,KAAG,QAAQ;IAAE,sBAAsB,EAAE,MAAM,GAAG,SAAS,CAAA;CAAE,CA0C3H,CAAC"}

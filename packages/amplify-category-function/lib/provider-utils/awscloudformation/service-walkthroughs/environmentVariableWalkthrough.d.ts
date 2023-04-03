@@ -1,0 +1,2 @@
+export declare const askEnvironmentVariableQuestions: (resourceName: string, environmentVariables?: Record<string, string>, skipWalkthrough?: boolean) => Promise<Record<string, unknown>>;
+//# sourceMappingURL=environmentVariableWalkthrough.d.ts.map

@@ -1,0 +1,40 @@
+import { GraphQLSchema } from 'graphql';
+import { VelocityTemplate } from './velocity';
+import { AmplifyAppSyncSimulatorDataLoader } from './data-loader';
+export { addDataLoader, removeDataLoader } from './data-loader';
+import { PubSub } from 'graphql-subscriptions';
+import { AmplifySimulatorFunction } from './resolvers/function';
+import { AppSyncSimulatorServerConfig, AmplifyAppSyncSimulatorConfig, AmplifyAppSyncAPIConfig } from './type-definition';
+export { AppSyncGraphQLExecutionContext, JWTToken, IAMToken } from './utils';
+export * from './type-definition';
+export * from './velocity';
+export declare class AmplifyAppSyncSimulator {
+    private resolvers;
+    private dataSources;
+    private functions;
+    private mappingTemplates;
+    private _serverConfig;
+    private _pubsub;
+    private rawSchema;
+    private _schema;
+    private _server;
+    private _config;
+    private _appSyncConfig;
+    constructor(serverConfig?: AppSyncSimulatorServerConfig);
+    reload(config: AmplifyAppSyncSimulatorConfig): void;
+    init(config: AmplifyAppSyncSimulatorConfig): void;
+    start(): Promise<void>;
+    stop(): Promise<void>;
+    getMappingTemplate(path: string): VelocityTemplate;
+    getDataLoader(sourceName: string): AmplifyAppSyncSimulatorDataLoader;
+    getFunction(functionName: string): AmplifySimulatorFunction;
+    getResolver(typeName: any, fieldName: any): any;
+    clearData(): Promise<object>;
+    get schema(): GraphQLSchema;
+    get pubsub(): PubSub;
+    asyncIterator(trigger: string): AsyncIterator<any>;
+    get url(): string;
+    get config(): AmplifyAppSyncSimulatorConfig;
+    get appSyncConfig(): AmplifyAppSyncAPIConfig;
+}
+//# sourceMappingURL=index.d.ts.map

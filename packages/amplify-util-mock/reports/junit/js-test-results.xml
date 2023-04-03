@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="122" failures="0" errors="0" time="44.69">
+  <testsuite name="src/__tests__/func/index.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:05" time="23.45" tests="7">
+    <testcase classname="function start times out function execution at the default time" name="function start times out function execution at the default time" time="10.005" file="src/__tests__/func/index.test.ts">
+    </testcase>
+    <testcase classname="function start times out function execution at the specified time" name="function start times out function execution at the specified time" time="1" file="src/__tests__/func/index.test.ts">
+    </testcase>
+    <testcase classname="function start triggers a dev build before invoking" name="function start triggers a dev build before invoking" time="0" file="src/__tests__/func/index.test.ts">
+    </testcase>
+    <testcase classname="function start mocks function name specified in command line params" name="function start mocks function name specified in command line params" time="0.011" file="src/__tests__/func/index.test.ts">
+    </testcase>
+    <testcase classname="function start mocks function if only one function in the project" name="function start mocks function if only one function in the project" time="0.012" file="src/__tests__/func/index.test.ts">
+    </testcase>
+    <testcase classname="function start prompts for function name if none specified and project has multiple functions" name="function start prompts for function name if none specified and project has multiple functions" time="0.012" file="src/__tests__/func/index.test.ts">
+    </testcase>
+    <testcase classname="function start handles no options specified" name="function start handles no options specified" time="0" file="src/__tests__/func/index.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/velocity/model-auth.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:28" time="5.3" tests="24">
+    <testcase classname="@model owner mutation checks implicit owner with default owner field" name="@model owner mutation checks implicit owner with default owner field" time="0.245" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model owner mutation checks implicit owner with custom field" name="@model owner mutation checks implicit owner with custom field" time="0.114" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model owner mutation checks explicit owner with default field" name="@model owner mutation checks explicit owner with default field" time="0.103" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model owner mutation checks explicit owner with custom field" name="@model owner mutation checks explicit owner with custom field" time="0.104" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model owner mutation checks explicit owner using a custom list field" name="@model owner mutation checks explicit owner using a custom list field" time="0.098" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model operations explicit operations where create/delete restricted" name="@model operations explicit operations where create/delete restricted" time="0.109" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model operations owner restricts create/read and group restricts read/update/delete" name="@model operations owner restricts create/read and group restricts read/update/delete" time="0.097" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model operations explicit operations where update restricted" name="@model operations explicit operations where update restricted" time="0.111" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model field auth object level group auth + field level owner auth" name="@model field auth object level group auth + field level owner auth" time="0.098" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model field auth should allow setting name to null field" name="@model field auth should allow setting name to null field" time="0.084" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model field auth should allow owner to update" name="@model field auth should allow owner to update" time="0.077" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="@model @primaryIndex @index auth listX operations" name="@model @primaryIndex @index auth listX operations" time="0.07" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model owner mutation checks implicit owner with default owner field" name="with identity claim feature flag disabled @model owner mutation checks implicit owner with default owner field" time="0.078" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model owner mutation checks implicit owner with custom field" name="with identity claim feature flag disabled @model owner mutation checks implicit owner with custom field" time="0.069" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model owner mutation checks explicit owner with default field" name="with identity claim feature flag disabled @model owner mutation checks explicit owner with default field" time="0.073" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model owner mutation checks explicit owner with custom field" name="with identity claim feature flag disabled @model owner mutation checks explicit owner with custom field" time="0.075" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model owner mutation checks explicit owner using a custom list field" name="with identity claim feature flag disabled @model owner mutation checks explicit owner using a custom list field" time="0.069" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model operations explicit operations where create/delete restricted" name="with identity claim feature flag disabled @model operations explicit operations where create/delete restricted" time="0.08" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model operations owner restricts create/read and group restricts read/update/delete" name="with identity claim feature flag disabled @model operations owner restricts create/read and group restricts read/update/delete" time="0.075" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model operations explicit operations where update restricted" name="with identity claim feature flag disabled @model operations explicit operations where update restricted" time="0.082" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model field auth object level group auth + field level owner auth" name="with identity claim feature flag disabled @model field auth object level group auth + field level owner auth" time="0.089" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model field auth should allow setting name to null field" name="with identity claim feature flag disabled @model field auth should allow setting name to null field" time="0.081" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model field auth should allow owner to update" name="with identity claim feature flag disabled @model field auth should allow owner to update" time="0.073" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model @primaryIndex @index auth listX operations" name="with identity claim feature flag disabled @model @primaryIndex @index auth listX operations" time="0.109" file="src/__tests__/velocity/model-auth.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/velocity/relational-auth.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:34" time="3.041" tests="8">
+    <testcase classname="relational tests 1:1 nested auth read" name="relational tests 1:1 nested auth read" time="0.389" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="relational tests 1:M nested auth read" name="relational tests 1:M nested auth read" time="0.325" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="relational tests has one and partial type access" name="relational tests has one and partial type access" time="0.266" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="relational tests should allow update with has one with multiple fields and multiple sort key fields" name="relational tests should allow update with has one with multiple fields and multiple sort key fields" time="0.29" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled relational tests 1:1 nested auth read" name="with identity claim feature flag disabled relational tests 1:1 nested auth read" time="0.262" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled relational tests 1:M nested auth read" name="with identity claim feature flag disabled relational tests 1:M nested auth read" time="0.234" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled relational tests has one and partial type access" name="with identity claim feature flag disabled relational tests has one and partial type access" time="0.227" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled relational tests should allow update with has one with multiple fields and multiple sort key fields" name="with identity claim feature flag disabled relational tests should allow update with has one with multiple fields and multiple sort key fields" time="0.24" file="src/__tests__/velocity/relational-auth.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/velocity/multi-auth.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:37" time="1.234" tests="4">
+    <testcase classname="@model + @auth with oidc provider oidc default" name="@model + @auth with oidc provider oidc default" time="0.133" file="src/__tests__/velocity/multi-auth.test.ts">
+    </testcase>
+    <testcase classname="@model + @auth with oidc provider oidc static groups" name="@model + @auth with oidc provider oidc static groups" time="0.111" file="src/__tests__/velocity/multi-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model + @auth with oidc provider oidc default" name="with identity claim feature flag disabled @model + @auth with oidc provider oidc default" time="0.103" file="src/__tests__/velocity/multi-auth.test.ts">
+    </testcase>
+    <testcase classname="with identity claim feature flag disabled @model + @auth with oidc provider oidc static groups" name="with identity claim feature flag disabled @model + @auth with oidc provider oidc static groups" time="0.107" file="src/__tests__/velocity/multi-auth.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/velocity/admin-auth.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:38" time="1.05" tests="2">
+    <testcase classname="admin roles query checks schema with field auth" name="admin roles query checks schema with field auth" time="0.162" file="src/__tests__/velocity/admin-auth.test.ts">
+    </testcase>
+    <testcase classname="identity claim feature flag disabled admin roles query checks schema with field auth" name="identity claim feature flag disabled admin roles query checks schema with field auth" time="0.131" file="src/__tests__/velocity/admin-auth.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/api/lambda-trigger-handler.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:39" time="1.27" tests="6">
+    <testcase classname="Lambda Trigger Handler throws error if lambda trigger name and config both are not specified" name="Lambda Trigger Handler throws error if lambda trigger name and config both are not specified" time="0.001" file="src/__tests__/api/lambda-trigger-handler.test.ts">
+    </testcase>
+    <testcase classname="Lambda Trigger Handler throws error if stream Arn is not specified" name="Lambda Trigger Handler throws error if stream Arn is not specified" time="0" file="src/__tests__/api/lambda-trigger-handler.test.ts">
+    </testcase>
+    <testcase classname="Lambda Trigger Handler throws error if dynamoDB local endpoint is not specified" name="Lambda Trigger Handler throws error if dynamoDB local endpoint is not specified" time="0.001" file="src/__tests__/api/lambda-trigger-handler.test.ts">
+    </testcase>
+    <testcase classname="Lambda Trigger Handler throws error if local lambda is not mockable" name="Lambda Trigger Handler throws error if local lambda is not mockable" time="0" file="src/__tests__/api/lambda-trigger-handler.test.ts">
+    </testcase>
+    <testcase classname="Lambda Trigger Handler Polls for records from given DDB stream" name="Lambda Trigger Handler Polls for records from given DDB stream" time="0.003" file="src/__tests__/api/lambda-trigger-handler.test.ts">
+    </testcase>
+    <testcase classname="Lambda Trigger Handler Invokes the local lambda when records are available to be processed" name="Lambda Trigger Handler Invokes the local lambda when records are available to be processed" time="0.252" file="src/__tests__/api/lambda-trigger-handler.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/velocity/vtl-behavior.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:40" time="0.453" tests="1">
+    <testcase classname="VTL behavior Integer.parseInt()" name="VTL behavior Integer.parseInt()" time="0.009" file="src/__tests__/velocity/vtl-behavior.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/utils/index.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:41" time="0.932" tests="10">
+    <testcase classname=" should return true on java 7u79 with JAVA_OPTS: false" name=" should return true on java 7u79 with JAVA_OPTS: false" time="0.006" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 8u131 with JAVA_OPTS: false" name=" should return false on java 8u131 with JAVA_OPTS: false" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 8u131 with JAVA_OPTS: true" name=" should return false on java 8u131 with JAVA_OPTS: true" time="0.001" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 8.0.265-amzn with JAVA_OPTS: false" name=" should return false on java 8.0.265-amzn with JAVA_OPTS: false" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 11.0.0-open with JAVA_OPTS: false" name=" should return false on java 11.0.0-open with JAVA_OPTS: false" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 11.0.0-open with JAVA_OPTS: true" name=" should return false on java 11.0.0-open with JAVA_OPTS: true" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 11.0.0-librca with JAVA_OPTS: false" name=" should return false on java 11.0.0-librca with JAVA_OPTS: false" time="0.001" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return false on java 11.0.3-librca with JAVA_OPTS: false" name=" should return false on java 11.0.3-librca with JAVA_OPTS: false" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" should return true on java uninstalled with JAVA_OPTS: false" name=" should return true on java uninstalled with JAVA_OPTS: false" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+    <testcase classname=" Should not throw when JAVA_HOME is set and is valid" name=" Should not throw when JAVA_HOME is set and is valid" time="0" file="src/__tests__/utils/index.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/api/lambda-invoke.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:42" time="0.795" tests="2">
+    <testcase classname="Invoke local lambda function invoke the local lambda using name with given data" name="Invoke local lambda function invoke the local lambda using name with given data" time="0.001" file="src/__tests__/api/lambda-invoke.test.ts">
+    </testcase>
+    <testcase classname="Invoke local lambda function invoke the local lambda using trigger config with given data" name="Invoke local lambda function invoke the local lambda using trigger config with given data" time="0.007" file="src/__tests__/api/lambda-invoke.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/api/find-lambda-triggers.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:42" time="0.725" tests="7">
+    <testcase classname="Find DDB Lambda Triggers for API Models Returns empty map when no lambda triggers exist" name="Find DDB Lambda Triggers for API Models Returns empty map when no lambda triggers exist" time="0.001" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+    <testcase classname="Find DDB Lambda Triggers for API Models Does not Map types other than event source mappings" name="Find DDB Lambda Triggers for API Models Does not Map types other than event source mappings" time="0" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+    <testcase classname="Find DDB Lambda Triggers for API Models Does not Map event source mappings other than DDB streams" name="Find DDB Lambda Triggers for API Models Does not Map event source mappings other than DDB streams" time="0.001" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+    <testcase classname="Find DDB Lambda Triggers for API Models Maps existing Model DDB triggers correctly" name="Find DDB Lambda Triggers for API Models Maps existing Model DDB triggers correctly" time="0" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+    <testcase classname="Find Searchable Lambda Triggers for API Models Returns empty map when no searchable models exist" name="Find Searchable Lambda Triggers for API Models Returns empty map when no searchable models exist" time="0" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+    <testcase classname="Find Searchable Lambda Triggers for API Models Returns empty map when the opensearch endpoint is absent" name="Find Searchable Lambda Triggers for API Models Returns empty map when the opensearch endpoint is absent" time="0" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+    <testcase classname="Find Searchable Lambda Triggers for API Models Returns correct mapping to lambda trigger config for searchable models" name="Find Searchable Lambda Triggers for API Models Returns correct mapping to lambda trigger config for searchable models" time="0.001" file="src/__tests__/api/find-lambda-triggers.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/utils/opensearch.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:43" time="0.575" tests="2">
+    <testcase classname="configures a search query with given inputs throws error if invalid endpoint is provided" name="configures a search query with given inputs throws error if invalid endpoint is provided" time="0" file="src/__tests__/utils/opensearch.test.ts">
+    </testcase>
+    <testcase classname="configures a search query with given inputs constructs correct request for search query" name="configures a search query with given inputs constructs correct request for search query" time="0.001" file="src/__tests__/utils/opensearch.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/CFNParser/intrinsic-functions.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:44" time="0.093" tests="35">
+    <testcase classname="intrinsic-functions cfnJoin should join values" name="intrinsic-functions cfnJoin should join values" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnJoin should throw error if listOfValues are not present" name="intrinsic-functions cfnJoin should throw error if listOfValues are not present" time="0.032" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnJoin should throw error if if there are 3 arguments to Fn::Join are not present" name="intrinsic-functions cfnJoin should throw error if if there are 3 arguments to Fn::Join are not present" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSub should substitute variable" name="intrinsic-functions cfnSub should substitute variable" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSub should throw error if there are no substitute variable" name="intrinsic-functions cfnSub should throw error if there are no substitute variable" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSub should throw error if there are no substitute variable" name="intrinsic-functions cfnSub should throw error if there are no substitute variable" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnGetAtt should get attribute value from parsed resources" name="intrinsic-functions cfnGetAtt should get attribute value from parsed resources" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnGetAtt should throw error if resource is missing in the context" name="intrinsic-functions cfnGetAtt should throw error if resource is missing in the context" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnGetAtt should throw if the property is missing in the resource" name="intrinsic-functions cfnGetAtt should throw if the property is missing in the resource" time="0.006" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnGetAtt should throw if the property is exposed in cfnExposedAttribute but missing in the result" name="intrinsic-functions cfnGetAtt should throw if the property is exposed in cfnExposedAttribute but missing in the result" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSplit should split string" name="intrinsic-functions cfnSplit should split string" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSplit should throw error when split string is missing" name="intrinsic-functions cfnSplit should throw error when split string is missing" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnRef should get ref from params" name="intrinsic-functions cfnRef should get ref from params" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnRef should get ref from resources" name="intrinsic-functions cfnRef should get ref from resources" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnRef should call parseValue if the ref is not a string" name="intrinsic-functions cfnRef should call parseValue if the ref is not a string" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnRef should throw error if the node has length more than 1 item" name="intrinsic-functions cfnRef should throw error if the node has length more than 1 item" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnRef should throw error resource does not have name prop" name="intrinsic-functions cfnRef should throw error resource does not have name prop" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSelect should select the value" name="intrinsic-functions cfnSelect should select the value" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSelect should resolve nested intrinsic functions to a list" name="intrinsic-functions cfnSelect should resolve nested intrinsic functions to a list" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnSelect should error on a non-list value" name="intrinsic-functions cfnSelect should error on a non-list value" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnIf should return true value section when condition is true" name="intrinsic-functions cfnIf should return true value section when condition is true" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnIf should return false value section when condition is true" name="intrinsic-functions cfnIf should return false value section when condition is true" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnIf should return `undefined` when the returned value section is a `AWS::NoValue` Ref" name="intrinsic-functions cfnIf should return `undefined` when the returned value section is a `AWS::NoValue` Ref" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnEquals should return true when equal" name="intrinsic-functions cfnEquals should return true when equal" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnEquals should return false when not equal" name="intrinsic-functions cfnEquals should return false when not equal" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnNot should return false when Fn::Not(trueCondition)" name="intrinsic-functions cfnNot should return false when Fn::Not(trueCondition)" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnNot should return true when {Fn::Not, falseCondition}" name="intrinsic-functions cfnNot should return true when {Fn::Not, falseCondition}" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnAnd should return false when Fn::And encounter a false value" name="intrinsic-functions cfnAnd should return false when Fn::And encounter a false value" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnAnd should return false when Fn::And encounter all true values" name="intrinsic-functions cfnAnd should return false when Fn::And encounter all true values" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnOr should return true when Fn::Or encounter at least one true value" name="intrinsic-functions cfnOr should return true when Fn::Or encounter at least one true value" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnOr should return false when Fn::Or encounter all false values" name="intrinsic-functions cfnOr should return false when Fn::Or encounter all false values" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnImportValue should return value for key from exports" name="intrinsic-functions cfnImportValue should return value for key from exports" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnImportValue should return key if the value is not presnt in exports" name="intrinsic-functions cfnImportValue should return key if the value is not presnt in exports" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnCondition should return condition value" name="intrinsic-functions cfnCondition should return condition value" time="0.001" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+    <testcase classname="intrinsic-functions cfnCondition should throw if the condition is missing" name="intrinsic-functions cfnCondition should throw if the condition is missing" time="0" file="src/__tests__/CFNParser/intrinsic-functions.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/api/lambda-arn-to-config.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:44" time="0.364" tests="7">
+    <testcase classname="lambda arn to config resolves string arns" name="lambda arn to config resolves string arns" time="0.002" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+    <testcase classname="lambda arn to config resolves Fn::Sub with params when lambda name is in template string" name="lambda arn to config resolves Fn::Sub with params when lambda name is in template string" time="0.001" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+    <testcase classname="lambda arn to config resolves Fn::Sub strings when lambda name is in template string" name="lambda arn to config resolves Fn::Sub strings when lambda name is in template string" time="0" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+    <testcase classname="lambda arn to config resolves Fn::GetAtt arns when lambda name is in resource name" name="lambda arn to config resolves Fn::GetAtt arns when lambda name is in resource name" time="0" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+    <testcase classname="lambda arn to config throws on malformed arn refs" name="lambda arn to config throws on malformed arn refs" time="0.004" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+    <testcase classname="lambda arn to config throws on unknown arn formats" name="lambda arn to config throws on unknown arn formats" time="0.001" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+    <testcase classname="lambda arn to config throws when arn is valid but no matching lambda found in the project" name="lambda arn to config throws when arn is valid but no matching lambda found in the project" time="0" file="src/__tests__/api/lambda-arn-to-config.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/CFNParser/nested-aws-no-value.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:44" time="0.037" tests="3">
+    <testcase classname="cloudformation templates should resolve nested `Fn::If`" name="cloudformation templates should resolve nested `Fn::If`" time="0" file="src/__tests__/CFNParser/nested-aws-no-value.test.ts">
+    </testcase>
+    <testcase classname="cloudformation templates should resolve nested `Fn::If` and evaluate a resulting Ref" name="cloudformation templates should resolve nested `Fn::If` and evaluate a resulting Ref" time="0" file="src/__tests__/CFNParser/nested-aws-no-value.test.ts">
+    </testcase>
+    <testcase classname="cloudformation templates should resolve nested `Fn::If` and evaluate a resulting `AWS::NoValue` Ref" name="cloudformation templates should resolve nested `Fn::If` and evaluate a resulting `AWS::NoValue` Ref" time="0" file="src/__tests__/CFNParser/nested-aws-no-value.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/CFNParser/import-model-table-resolver.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:44" time="0.03" tests="2">
+    <testcase classname="import model table resolver replaces matched imports" name="import model table resolver replaces matched imports" time="0" file="src/__tests__/CFNParser/import-model-table-resolver.test.ts">
+    </testcase>
+    <testcase classname="import model table resolver identity function if no match" name="import model table resolver identity function if no match" time="0.001" file="src/__tests__/CFNParser/import-model-table-resolver.test.ts">
+    </testcase>
+  </testsuite>
+  <testsuite name="src/__tests__/api/api.test.ts" errors="0" failures="0" skipped="0" timestamp="2023-04-03T18:07:44" time="3.63" tests="2">
+    <testcase classname="Test Mock API methods attempts to copy searchable lambda trigger artifacts correctly" name="Test Mock API methods attempts to copy searchable lambda trigger artifacts correctly" time="0.001" file="src/__tests__/api/api.test.ts">
+    </testcase>
+    <testcase classname="Test Mock API methods Shows the error when no appsync api exist" name="Test Mock API methods Shows the error when no appsync api exist" time="0.478" file="src/__tests__/api/api.test.ts">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,1 @@
+{"version":3,"file":"truncateResourceNames.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/utils/truncateResourceNames.ts"],"names":[],"mappings":"AAKA,KAAK,MAAM,GAAG;IACZ,YAAY,CAAC,EAAE,MAAM,CAAC;IACtB,QAAQ,CAAC,EAAE,MAAM,CAAC;CACnB,CAAC;AAEF,eAAO,MAAM,qBAAqB,WAAY,SAAS,MAAM,CAAC,KAAG,MAUhE,CAAC"}

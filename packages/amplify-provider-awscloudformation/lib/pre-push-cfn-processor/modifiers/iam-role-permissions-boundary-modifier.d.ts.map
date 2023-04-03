@@ -1,0 +1,1 @@
+{"version":3,"file":"iam-role-permissions-boundary-modifier.d.ts","sourceRoot":"","sources":["../../../src/pre-push-cfn-processor/modifiers/iam-role-permissions-boundary-modifier.ts"],"names":[],"mappings":"AACA,OAAO,IAAI,MAAM,gCAAgC,CAAC;AAClD,OAAO,EAAE,gBAAgB,EAAE,MAAM,0BAA0B,CAAC;AAE5D,eAAO,MAAM,kCAAkC,EAAE,gBAAgB,CAAC,IAAI,CAUrE,CAAC"}

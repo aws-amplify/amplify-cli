@@ -1,0 +1,13 @@
+export declare const HOSTING = "hosting";
+export declare const RESOURCE = "amplifyhosting";
+export declare const CATEGORIES = "categories";
+export declare const TYPE = "type";
+export declare const TYPE_CICD = "cicd";
+export declare const TYPE_MANUAL = "manual";
+export declare const APPID = "AmplifyAppId";
+export declare const TYPE_UNKNOWN = "unknown";
+export declare const ORIGINAL_ENV = "integtest";
+export declare const NEW_ENV = "test";
+export declare const PROVIDER = "awscloudformation";
+export declare const HOSTING_ENABLED_IN_CONSOLE = "You have enabled hosting in the Amplify Console and not through the CLI. To remove hosting with Amplify Console, please visit the console and disconnect your frontend branches.";
+export declare const HOSTING_NOT_ENABLED = "Amplify Console hosting is not enabled.";

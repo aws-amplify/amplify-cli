@@ -1,0 +1,1 @@
+{"version":3,"file":"get-amplify-appId.js","sourceRoot":"","sources":["../../../src/extensions/amplify-helpers/get-amplify-appId.ts"],"names":[],"mappings":";;;AAAA,yDAAoD;AAK7C,MAAM,eAAe,GAAG,GAAuB,EAAE;;IACtD,MAAM,IAAI,GAAG,IAAA,iCAAc,GAAE,CAAC;IAE9B,OAAO,MAAA,MAAA,IAAI,aAAJ,IAAI,uBAAJ,IAAI,CAAE,SAAS,0CAAE,iBAAiB,0CAAE,YAAY,CAAC;AAC1D,CAAC,CAAC;AAJW,QAAA,eAAe,mBAI1B"}

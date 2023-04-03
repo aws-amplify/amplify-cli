@@ -1,0 +1,1 @@
+{"version":3,"file":"BuiltResourceType.d.ts","sourceRoot":"","sources":["../../src/export-types/BuiltResourceType.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,gBAAgB,CAAC;AAE9C,MAAM,MAAM,WAAW,GAAG;IACxB,WAAW,EAAE,MAAM,CAAC;IACpB,WAAW,EAAE,MAAM,CAAC;CACrB,CAAC;AAEF,MAAM,MAAM,iBAAiB,GAAG,YAAY,GAAG;IAC7C,WAAW,CAAC,EAAE,WAAW,EAAE,CAAC;CAC7B,CAAC"}

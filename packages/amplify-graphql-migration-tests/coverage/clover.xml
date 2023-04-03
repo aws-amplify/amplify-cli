@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1680544301755" clover="3.2.0">
+  <project timestamp="1680544301755" name="All files">
+    <metrics statements="93" coveredstatements="87" conditionals="20" coveredconditionals="17" methods="19" coveredmethods="16" elements="132" coveredelements="120" complexity="0" loc="93" ncloc="93" packages="1" files="6" classes="6"/>
+    <file name="feature-flag-stub.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-graphql-migration-tests/src/feature-flag-stub.ts">
+      <metrics statements="5" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="1"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="156" type="stmt"/>
+      <line num="3" count="0" type="stmt"/>
+      <line num="4" count="0" type="stmt"/>
+      <line num="5" count="0" type="stmt"/>
+    </file>
+    <file name="migrate-schema-wrapper.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-graphql-migration-tests/src/migrate-schema-wrapper.ts">
+      <metrics statements="15" coveredstatements="15" conditionals="5" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="9" count="1" type="stmt"/>
+      <line num="13" count="1" type="cond" truecount="1" falsecount="0"/>
+      <line num="14" count="7" type="stmt"/>
+      <line num="15" count="7" type="stmt"/>
+      <line num="16" count="7" type="stmt"/>
+      <line num="17" count="7" type="stmt"/>
+      <line num="18" count="7" type="cond" truecount="3" falsecount="1"/>
+      <line num="19" count="7" type="stmt"/>
+      <line num="20" count="7" type="stmt"/>
+    </file>
+    <file name="nested-stack-diff-rules.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-graphql-migration-tests/src/nested-stack-diff-rules.ts">
+      <metrics statements="33" coveredstatements="30" conditionals="9" coveredconditionals="8" methods="8" coveredmethods="8"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="3" count="7" type="stmt"/>
+      <line num="15" count="1" type="stmt"/>
+      <line num="16" count="12" type="stmt"/>
+      <line num="17" count="12" type="stmt"/>
+      <line num="18" count="12" type="stmt"/>
+      <line num="20" count="0" type="stmt"/>
+      <line num="21" count="0" type="stmt"/>
+      <line num="22" count="0" type="stmt"/>
+      <line num="26" count="1" type="stmt"/>
+      <line num="27" count="12" type="stmt"/>
+      <line num="28" count="12" type="stmt"/>
+      <line num="29" count="12" type="stmt"/>
+      <line num="30" count="12" type="stmt"/>
+      <line num="31" count="12" type="stmt"/>
+      <line num="32" count="12" type="stmt"/>
+      <line num="34" count="12" type="stmt"/>
+      <line num="35" count="12" type="stmt"/>
+      <line num="37" count="12" type="stmt"/>
+      <line num="38" count="48" type="cond" truecount="4" falsecount="1"/>
+      <line num="40" count="24" type="cond" truecount="1" falsecount="0"/>
+      <line num="41" count="12" type="stmt"/>
+      <line num="44" count="12" type="cond" truecount="1" falsecount="0"/>
+      <line num="45" count="12" type="stmt"/>
+      <line num="48" count="24" type="stmt"/>
+      <line num="50" count="12" type="stmt"/>
+      <line num="51" count="12" type="stmt"/>
+      <line num="54" count="1" type="stmt"/>
+      <line num="55" count="12" type="stmt"/>
+      <line num="56" count="324" type="stmt"/>
+      <line num="57" count="12" type="stmt"/>
+      <line num="58" count="12" type="cond" truecount="2" falsecount="0"/>
+      <line num="59" count="12" type="stmt"/>
+    </file>
+    <file name="test-case-registry.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-graphql-migration-tests/src/test-case-registry.ts">
+      <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="55" count="1" type="stmt"/>
+      <line num="80" count="1" type="stmt"/>
+      <line num="89" count="1" type="stmt"/>
+      <line num="98" count="1" type="stmt"/>
+      <line num="106" count="1" type="stmt"/>
+      <line num="123" count="1" type="stmt"/>
+    </file>
+    <file name="v1-transformer-provider.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-graphql-migration-tests/src/v1-transformer-provider.ts">
+      <metrics statements="12" coveredstatements="12" conditionals="1" coveredconditionals="1" methods="2" coveredmethods="2"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="11" count="1" type="cond" truecount="1" falsecount="0"/>
+      <line num="12" count="7" type="stmt"/>
+      <line num="14" count="7" type="stmt"/>
+      <line num="23" count="7" type="stmt"/>
+    </file>
+    <file name="v2-transformer-provider.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-graphql-migration-tests/src/v2-transformer-provider.ts">
+      <metrics statements="20" coveredstatements="20" conditionals="5" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="13" count="1" type="stmt"/>
+      <line num="15" count="1" type="stmt"/>
+      <line num="18" count="1" type="cond" truecount="1" falsecount="0"/>
+      <line num="19" count="7" type="stmt"/>
+      <line num="26" count="7" type="stmt"/>
+      <line num="29" count="1" type="stmt"/>
+      <line num="30" count="7" type="stmt"/>
+      <line num="31" count="7" type="stmt"/>
+      <line num="32" count="7" type="stmt"/>
+      <line num="34" count="7" type="stmt"/>
+      <line num="35" count="7" type="stmt"/>
+      <line num="49" count="7" type="stmt"/>
+      <line num="52" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

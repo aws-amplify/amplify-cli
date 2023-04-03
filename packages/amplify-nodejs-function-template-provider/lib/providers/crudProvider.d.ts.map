@@ -1,0 +1,1 @@
+{"version":3,"file":"crudProvider.d.ts","sourceRoot":"","sources":["../../src/providers/crudProvider.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,0BAA0B,EAAE,MAAM,gDAAgD,CAAC;AAM5F,OAAO,EAAE,UAAU,EAAE,MAAM,+BAA+B,CAAC;AAK3D,wBAAsB,WAAW,CAAC,OAAO,EAAE,UAAU,GAAG,OAAO,CAAC,0BAA0B,CAAC,CA2B1F"}

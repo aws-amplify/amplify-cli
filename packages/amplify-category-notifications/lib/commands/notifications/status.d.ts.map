@@ -1,0 +1,1 @@
+{"version":3,"file":"status.d.ts","sourceRoot":"","sources":["../../../src/commands/notifications/status.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,+BAA+B,CAAC;AAQ3D,eAAO,MAAM,IAAI,WAAW,CAAC;AAC7B,eAAO,MAAM,KAAK,UAAiB,CAAC;AAiEpC,eAAO,MAAM,GAAG,YAAmB,UAAU,KAAG,QAAQ,IAAI,CAO3D,CAAC"}

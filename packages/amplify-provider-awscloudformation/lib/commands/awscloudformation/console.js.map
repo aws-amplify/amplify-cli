@@ -1,0 +1,1 @@
+{"version":3,"file":"console.js","sourceRoot":"","sources":["../../../src/commands/awscloudformation/console.js"],"names":[],"mappings":"AAAA,MAAM,cAAc,GAAG,OAAO,CAAC,eAAe,CAAC,CAAC;AAEhD,MAAM,CAAC,OAAO,GAAG;IACf,IAAI,EAAE,SAAS;IACf,GAAG,EAAE,KAAK,EAAE,OAAO,EAAE,EAAE,CAAC,cAAc,CAAC,GAAG,CAAC,OAAO,CAAC;CACpD,CAAC"}

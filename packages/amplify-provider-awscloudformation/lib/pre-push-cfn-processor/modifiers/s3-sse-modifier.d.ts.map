@@ -1,0 +1,1 @@
+{"version":3,"file":"s3-sse-modifier.d.ts","sourceRoot":"","sources":["../../../src/pre-push-cfn-processor/modifiers/s3-sse-modifier.ts"],"names":[],"mappings":"AAAA,OAAO,MAAqF,MAAM,iCAAiC,CAAC;AACpI,OAAO,EAAE,gBAAgB,EAAE,MAAM,0BAA0B,CAAC;AAE5D,eAAO,MAAM,sBAAsB,EAAE,gBAAgB,CAAC,MAAM,CAiB3D,CAAC"}

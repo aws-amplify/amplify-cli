@@ -1,0 +1,1 @@
+{"version":3,"file":"aws-logger.d.ts","sourceRoot":"","sources":["../../src/utils/aws-logger.ts"],"names":[],"mappings":"AAIA,MAAM,MAAM,MAAM,GAAG,CAAC,KAAK,EAAE,MAAM,EAAE,IAAI,EAAE,GAAG,EAAE,KAAK,CAAC,KAAK,CAAC,EAAE,KAAK,KAAK,IAAI,CAAC;AAE7E,eAAO,MAAM,UAAU,SAAU,MAAM,aAAa,MAAM,QAAQ,GAAG,EAAE,cAAc,KAAK,SAUzF,CAAC"}

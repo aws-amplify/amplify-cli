@@ -1,0 +1,1 @@
+{"version":3,"file":"supportedServices.js","sourceRoot":"","sources":["../src/supportedServices.ts"],"names":[],"mappings":";;;AAAa,QAAA,iBAAiB,GAAG;IAC/B,GAAG,EAAE;QACH,KAAK,EAAE,qCAAqC;QAC5C,QAAQ,EAAE,mBAAmB;KAC9B;IACD,UAAU,EAAE;QACV,KAAK,EAAE,4DAA4D;QACnE,QAAQ,EAAE,mBAAmB;KAC9B;IACD,kBAAkB,EAAE;QAClB,KAAK,EAAE,2CAA2C;QAClD,QAAQ,EAAE,mBAAmB;KAC9B;CACF,CAAC"}

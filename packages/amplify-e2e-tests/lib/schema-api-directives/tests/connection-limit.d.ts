@@ -1,0 +1,1 @@
+export declare const schema = "\ntype Post @model {\n  id: ID!\n  title: String!\n  comments: [Comment] @connection(limit: 50)\n}\n\ntype Comment @model {\n  id: ID!\n  content: String!\n}\n\n#connection/limit";

@@ -1,0 +1,26 @@
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { IChannelAvailability, ChannelConfigDeploymentType, IChannelViewInfo } from './channel-types';
+import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-cfg-types';
+export declare const ChannelType: Record<string, string>;
+export declare const getChannelHandlerPath: (channelName: string) => string;
+export declare const isValidChannel: (channelName: string | undefined) => boolean;
+export declare const getChannelViewInfo: (channelName: string) => IChannelViewInfo;
+export declare const getChannelViewHelp: (channelName: string) => string;
+export declare const getChannelViewName: (channelName: string) => string;
+export declare const getChannelNameFromView: (channelViewString: string) => string;
+export declare const getChannelAvailability: (backendResourceConfig: INotificationsResourceBackendConfig) => Promise<IChannelAvailability>;
+export declare const getDisabledChannelsFromBackendConfig: (availableChannels?: Array<string>, enabledChannels?: Array<string>) => Promise<Array<string>>;
+export declare const isChannelDeploymentDeferred: (validChannelName: string) => boolean;
+export declare const isChannelDeploymentInline: (validChannelName: string) => boolean;
+export declare const isNotificationChannelEnabledInBackendConfig: (resourceBackendConfig: INotificationsResourceBackendConfig, channel: string) => boolean;
+export declare const isChannelEnabledNotificationsBackendConfig: (channelName: string) => Promise<boolean>;
+export declare const getAvailableChannels: () => Array<string>;
+export declare const getAvailableChannelViewNames: () => Array<string>;
+export declare const getEnabledChannelViewNames: (notificationConfig: INotificationsResourceBackendConfig) => Promise<string[]>;
+export declare const getEnabledChannels: (context: $TSContext) => Promise<Array<string>>;
+export declare const getEnabledChannelsFromBackendConfig: (notificationsConfig?: INotificationsResourceBackendConfig) => Promise<Array<string>>;
+export declare const getChannelDeploymentType: (channelName: string) => ChannelConfigDeploymentType;
+export declare const enableNotificationsChannel: (notificationsConfig: INotificationsResourceBackendConfig, validChannelName: string, channelConfig?: INotificationsChannelBackendConfig) => INotificationsResourceBackendConfig;
+export declare const disableNotificationsChannel: (notificationsConfig: INotificationsResourceBackendConfig, validChannelName: string) => INotificationsResourceBackendConfig;
+export declare const updateNotificationsChannelConfig: (notificationsConfig: INotificationsResourceBackendConfig, validChannelName: string, channelConfig: INotificationsChannelBackendConfig) => INotificationsResourceBackendConfig;
+//# sourceMappingURL=notifications-backend-cfg-channel-api.d.ts.map

@@ -1,0 +1,18 @@
+import { AuthParameters } from '@aws-amplify/amplify-category-auth';
+import { AuthProjectDetails, DynamoDBProjectDetails, StorageProjectDetails } from '.';
+export declare const expectAuthProjectDetailsMatch: (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => void;
+export declare const expectLocalAndCloudMetaFilesMatching: (projectRoot: string) => void;
+export declare const expectAuthLocalAndOGMetaFilesOutputMatching: (projectRoot: string, ogProjectRoot: string) => void;
+export declare const expectNoAuthInMeta: (projectRoot: string) => void;
+export declare const expectLocalTeamInfoHasNoCategories: (projectRoot: string) => void;
+export declare const expectApiHasCorrectAuthConfig: (projectRoot: string, __: string, userPoolId: string) => void;
+export declare const expectLocalAndPulledBackendConfigMatching: (projectRoot: string, projectRootPull: string) => void;
+export declare const expectLocalAndPulledBackendAmplifyMetaMatching: (projectRoot: string, projectRootPull: string) => void;
+export declare const expectLocalAndPulledAwsExportsMatching: (projectRoot: string, projectRootPull: string) => void;
+export declare const expectStorageProjectDetailsMatch: (projectDetails: StorageProjectDetails, ogProjectDetails: StorageProjectDetails) => void;
+export declare const expectNoStorageInMeta: (projectRoot: string) => void;
+export declare const expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage: (projectRoot: string) => void;
+export declare const expectS3LocalAndOGMetaFilesOutputMatching: (projectRoot: string, ogProjectRoot: string) => void;
+export declare const expectDynamoDBProjectDetailsMatch: (projectDetails: DynamoDBProjectDetails, ogProjectDetails: DynamoDBProjectDetails) => void;
+export declare const expectDynamoDBLocalAndOGMetaFilesOutputMatching: (projectRoot: string, ogProjectRoot: string) => void;
+export declare const expectAuthParametersMatch: (authParameters: AuthParameters, ogAuthParameters: AuthParameters) => void;

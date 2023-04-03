@@ -1,0 +1,1 @@
+{"version":3,"file":"amplify-fault.d.ts","sourceRoot":"","sources":["../../src/errors/amplify-fault.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,uBAAuB,EAAE,gBAAgB,EAAE,MAAM,qBAAqB,CAAC;AAKlG,qBAAa,YAAa,SAAQ,gBAAgB;gBAgBpC,IAAI,EAAE,gBAAgB,EAAE,OAAO,EAAE,uBAAuB,EAAE,mBAAmB,CAAC,EAAE,KAAK;CAGlG"}

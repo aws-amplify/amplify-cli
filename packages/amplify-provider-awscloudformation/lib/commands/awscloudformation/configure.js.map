@@ -1,0 +1,1 @@
+{"version":3,"file":"configure.js","sourceRoot":"","sources":["../../../src/commands/awscloudformation/configure.js"],"names":[],"mappings":"AAAA,MAAM,aAAa,GAAG,OAAO,CAAC,6BAA6B,CAAC,CAAC;AAE7D,MAAM,CAAC,OAAO,GAAG;IACf,IAAI,EAAE,WAAW;IACjB,GAAG,EAAE,KAAK,EAAE,OAAO,EAAE,EAAE,CAAC,aAAa,CAAC,SAAS,CAAC,OAAO,CAAC;CACzD,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"cliContextEnvironmentProvider.d.ts","sourceRoot":"","sources":["../src/cliContextEnvironmentProvider.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,sBAAsB,EAAE,MAAM,GAAG,CAAC;AAEvD,KAAK,eAAe,GAAG,IAAI,CAAC,UAAU,EAAE,YAAY,CAAC,CAAC;AAEtD,qBAAa,6BAA8B,YAAW,sBAAsB;IAC9D,OAAO,CAAC,OAAO;gBAAP,OAAO,EAAE,eAAe;IAM5C,iBAAiB,IAAI,MAAM;CAW5B"}

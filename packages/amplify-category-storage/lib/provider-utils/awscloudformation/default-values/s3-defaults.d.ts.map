@@ -1,0 +1,1 @@
+{"version":3,"file":"s3-defaults.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/default-values/s3-defaults.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,kBAAkB,CAAC;AAE1C,OAAO,EAAgB,YAAY,EAAE,MAAM,kDAAkD,CAAC;AAE9F,eAAO,MAAM,cAAc,YAAa,MAAM,WAAW,MAAM,KAAG,YAcjE,CAAC"}

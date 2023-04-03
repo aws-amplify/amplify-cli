@@ -1,0 +1,1 @@
+{"version":3,"file":"console.js","sourceRoot":"","sources":["../../../src/commands/notifications/console.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;AACA,sEAAwD;AAE3C,QAAA,IAAI,GAAG,SAAS,CAAC;AAMvB,MAAM,GAAG,GAAG,KAAK,EAAE,OAAmB,EAAiB,EAAE;IAC9D,MAAM,cAAc,CAAC,OAAO,CAAC,OAAO,CAAC,CAAC;AACxC,CAAC,CAAC;AAFW,QAAA,GAAG,OAEd"}

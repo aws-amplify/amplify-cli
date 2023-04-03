@@ -1,0 +1,11 @@
+export declare function runTest(projectDir: string, testModule: any): Promise<void>;
+export declare function runAuthTest(projectDir: string, testModule: any): Promise<void>;
+export declare function runMultiAutTest(projectDir: string, testModule: any): Promise<void>;
+export declare function updateSchemaInTestProject(projectDir: string, schema: any): void;
+export declare function testMutations(testModule: any, appSyncClient: any): Promise<void>;
+export declare function testMutation(appSyncClient: any, mutation: any, mutationInput?: any, mutationResult?: any): Promise<void>;
+export declare function testQueries(testModule: any, appSyncClient: any): Promise<void>;
+export declare function testQuery(appSyncClient: any, query: any, queryInput?: any, queryResult?: any): Promise<void>;
+export declare function testSubscriptions(testModule: any, appsyncClient: any): Promise<void>;
+export declare function testSubscription(appSyncClient: any, subscription: string, mutations: any[], subscriptionResult: any, subscriptionInput?: any, mutationInputs?: any[]): Promise<void>;
+export declare function runInSequential(tasks: ((v: any) => Promise<any>)[]): Promise<any>;

@@ -1,0 +1,1 @@
+{"version":3,"file":"generate-user-pool-group-stack-template.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/utils/generate-user-pool-group-stack-template.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,+BAA+B,CAAC;AAC3D,OAAO,EAAE,QAAQ,EAAE,MAAM,iBAAiB,CAAC;AAM3C,eAAO,MAAM,kCAAkC,YAAmB,UAAU,gBAAgB,MAAM,KAAG,QAAQ,QAAQ,CAOpH,CAAC"}

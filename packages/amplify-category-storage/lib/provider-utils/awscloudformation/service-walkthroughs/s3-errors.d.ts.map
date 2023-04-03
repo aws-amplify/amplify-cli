@@ -1,0 +1,1 @@
+{"version":3,"file":"s3-errors.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/service-walkthroughs/s3-errors.ts"],"names":[],"mappings":"AAAA,OAAO,EAAyD,UAAU,EAAsB,MAAM,kBAAkB,CAAC;AAIzH,wBAAsB,6BAA6B,CAAC,OAAO,EAAE,UAAU,iBAItE;AAED,wBAAsB,wBAAwB,CAAC,OAAO,EAAE,UAAU,iBAIjE;AAED,wBAAsB,qCAAqC,CAAC,OAAO,EAAE,UAAU,iBAI9E"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"write-object-as-json.js","sourceRoot":"","sources":["../../../src/extensions/amplify-helpers/write-object-as-json.ts"],"names":[],"mappings":";;;AACA,uDAAiD;AAEjD,SAAgB,iBAAiB,CAAC,IAAI,EAAE,GAAG,EAAE,MAAM;IACjD,gCAAa,CAAC,SAAS,CAAC,IAAI,EAAE,GAAG,EAAE;QACjC,MAAM,EAAE,CAAC,MAAM;KAChB,CAAC,CAAC;AACL,CAAC;AAJD,8CAIC"}

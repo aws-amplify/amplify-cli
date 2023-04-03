@@ -1,0 +1,1 @@
+{"version":3,"file":"plugin-client-api-analytics.js","sourceRoot":"","sources":["../src/plugin-client-api-analytics.ts"],"names":[],"mappings":";;;AAAA,uDAAiE;AAM1D,MAAM,6BAA6B,GAAG,KAAK,EAAE,OAAmB,EAAuB,EAAE,CAC9F,CAAC,MAAM,OAAO,CAAC,OAAO,CAAC,kBAAkB,CAAC,OAAO,EAAE,oCAAiB,CAAC,SAAS,EAAE,SAAS,EAAE,4BAA4B,EAAE;IACvH,OAAO;CACR,CAAC,CAAe,CAAC;AAHP,QAAA,6BAA6B,iCAGtB"}

@@ -1,0 +1,23 @@
+import { CognitoConfiguration } from './service-walkthrough-types/awsCognito-user-input-types';
+export declare const category = "auth";
+export declare const resourcesRoot: string;
+export declare const adminAuthAssetRoot: string;
+export declare const authTriggerAssetFilePath: string;
+export declare const cfnTemplateRoot: string;
+export declare const triggerRoot: string;
+export declare const userPoolClientLambdaFilePath: string;
+export declare const hostedUILambdaFilePath: string;
+export declare const hostedUIProviderLambdaFilePath: string;
+export declare const oauthLambdaFilePath: string;
+export declare const mfaLambdaFilePath: string;
+export declare const openIdLambdaFilePath: string;
+export declare const roleMapLambdaFilePath: string;
+export declare const ENV_SPECIFIC_PARAMS: string[];
+export declare const safeDefaults: Array<keyof CognitoConfiguration>;
+export declare const immutableAttributes: Array<keyof CognitoConfiguration>;
+export declare const privateKeys: string[];
+export declare const UserPool = "User Pool";
+export declare const IdentityPool = "Identity Pool";
+export declare const BothPools: string;
+export declare const AmplifyAdmin = "Amplify Studio";
+//# sourceMappingURL=constants.d.ts.map

@@ -1,0 +1,186 @@
+"use strict";
+/**
+ * Tests for headless init/pull workflows on git-cloned projects
+ * These tests exercise workflows that hosting executes during backend builds
+ */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var amplify_e2e_core_1 = require("@aws-amplify/amplify-e2e-core");
+var aws_sdk_1 = require("aws-sdk");
+var import_helpers_1 = require("../import-helpers");
+describe('attach amplify to git-cloned project', function () {
+    var envName = 'test';
+    var projRoot;
+    var s3Client = new aws_sdk_1.S3();
+    var importBucketName = "git-clone-test-bucket-".concat((0, import_helpers_1.getShortId)());
+    beforeAll(function () { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, s3Client.createBucket({ Bucket: importBucketName }).promise()];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.createNewProjectDir)('clone-test')];
+                case 2:
+                    projRoot = _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.initJSProjectWithProfile)(projRoot, { envName: envName, disableAmplifyAppCreation: false })];
+                case 3:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.addFunction)(projRoot, {
+                            functionTemplate: 'Hello World',
+                            environmentVariables: {
+                                key: 'FOO_BAR',
+                                value: 'fooBar',
+                            },
+                        }, 'nodejs')];
+                case 4:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.addAuthWithMaxOptions)(projRoot, {})];
+                case 5:
+                    _a.sent();
+                    return [4 /*yield*/, (0, import_helpers_1.importS3)(projRoot, importBucketName)];
+                case 6:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.amplifyPushAuth)(projRoot)];
+                case 7:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.gitInit)(projRoot)];
+                case 8:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.gitCommitAll)(projRoot)];
+                case 9:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    afterAll(function () { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, , 2, 4]);
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.deleteProject)(projRoot)];
+                case 1:
+                    _a.sent();
+                    (0, amplify_e2e_core_1.deleteProjectDir)(projRoot);
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, s3Client.deleteBucket({ Bucket: importBucketName }).promise()];
+                case 3:
+                    _a.sent();
+                    return [7 /*endfinally*/];
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); });
+    test('headless init can be used to attach existing environment', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var projectName, preCleanTpi, importBucketRegion, categoriesConfig, changedFiles;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    projectName = (0, amplify_e2e_core_1.getProjectConfig)(projRoot).projectName;
+                    preCleanTpi = (0, amplify_e2e_core_1.getTeamProviderInfo)(projRoot);
+                    importBucketRegion = Object.values(preCleanTpi[envName].categories.storage)[0].region;
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.gitCleanFdx)(projRoot)];
+                case 1:
+                    _a.sent();
+                    categoriesConfig = {
+                        storage: {
+                            bucketName: importBucketName,
+                            region: importBucketRegion,
+                        },
+                    };
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.nonInteractiveInitAttach)(projRoot, (0, amplify_e2e_core_1.getAmplifyInitConfig)(projectName, envName), (0, amplify_e2e_core_1.getAwsProviderConfig)(), categoriesConfig)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.buildOverrides)(projRoot)];
+                case 3:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.gitChangedFiles)(projRoot)];
+                case 4:
+                    changedFiles = _a.sent();
+                    expect(changedFiles.length).toBe(0);
+                    expect((0, amplify_e2e_core_1.getTeamProviderInfo)(projRoot)).toEqual(preCleanTpi);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    test('headless pull can be used to attach existing environment', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var projectName, preCleanTpi, importBucketRegion, appId, socialProviders, categoriesConfig, changedFiles;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    projectName = (0, amplify_e2e_core_1.getProjectConfig)(projRoot).projectName;
+                    preCleanTpi = (0, amplify_e2e_core_1.getTeamProviderInfo)(projRoot);
+                    importBucketRegion = Object.values(preCleanTpi[envName].categories.storage)[0].region;
+                    appId = preCleanTpi[envName].awscloudformation.AmplifyAppId;
+                    (0, amplify_e2e_core_1.gitCleanFdx)(projRoot);
+                    socialProviders = (0, amplify_e2e_core_1.getSocialProviders)();
+                    categoriesConfig = {
+                        storage: {
+                            bucketName: importBucketName,
+                            region: importBucketRegion,
+                        },
+                        auth: {
+                            facebookAppIdUserPool: socialProviders.FACEBOOK_APP_ID,
+                            facebookAppSecretUserPool: socialProviders.FACEBOOK_APP_SECRET,
+                            googleAppIdUserPool: socialProviders.GOOGLE_APP_ID,
+                            googleAppSecretUserPool: socialProviders.GOOGLE_APP_SECRET,
+                            // eslint-disable-next-line spellcheck/spell-checker
+                            loginwithamazonAppIdUserPool: socialProviders.AMAZON_APP_ID,
+                            // eslint-disable-next-line spellcheck/spell-checker
+                            loginwithamazonAppSecretUserPool: socialProviders.AMAZON_APP_SECRET,
+                        },
+                    };
+                    // execute headless pull
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.nonInteractivePullAttach)(projRoot, (0, amplify_e2e_core_1.getAmplifyPullConfig)(projectName, envName, appId), categoriesConfig)];
+                case 1:
+                    // execute headless pull
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.buildOverrides)(projRoot)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, (0, amplify_e2e_core_1.gitChangedFiles)(projRoot)];
+                case 3:
+                    changedFiles = _a.sent();
+                    expect(changedFiles).toMatchInlineSnapshot("\n      Array [\n        \".gitignore\",\n        \"amplify/README.md\",\n      ]\n    "); // there is a .gitignore newline and the amplify/README.md file is modified after pull
+                    expect((0, amplify_e2e_core_1.getTeamProviderInfo)(projRoot)).toEqual(preCleanTpi);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});
+//# sourceMappingURL=git-clone-attach.test.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"remove.d.ts","sourceRoot":"","sources":["../../../src/interface/storage/remove.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,0BAA0B,EAAE,MAAM,QAAQ,CAAC;AAKpD,MAAM,WAAW,oBAAoB;IACnC,OAAO,EAAE,CAAC,CAAC;IACX,oBAAoB,EAAE,4BAA4B,CAAC;CACpD;AAKD,MAAM,WAAW,4BAA6B,SAAQ,0BAA0B;IAI9E,YAAY,EAAE,MAAM,CAAC;IAKrB,uBAAuB,CAAC,EAAE,OAAO,CAAC;CACnC"}

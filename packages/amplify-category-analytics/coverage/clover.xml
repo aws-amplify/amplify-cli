@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1680544276608" clover="3.2.0">
+  <project timestamp="1680544276608" name="All files">
+    <metrics statements="110" coveredstatements="53" conditionals="34" coveredconditionals="6" methods="16" coveredmethods="4" elements="160" coveredelements="63" complexity="0" loc="110" ncloc="110" packages="5" files="8" classes="8"/>
+    <package name="src">
+      <metrics statements="15" coveredstatements="7" conditionals="11" coveredconditionals="0" methods="5" coveredmethods="0"/>
+      <file name="plugin-client-api-auth.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/plugin-client-api-auth.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+      </file>
+      <file name="plugin-client-api-notifications.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/plugin-client-api-notifications.ts">
+        <metrics statements="12" coveredstatements="5" conditionals="11" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="37" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.commands">
+      <metrics statements="10" coveredstatements="4" conditionals="6" coveredconditionals="0" methods="3" coveredmethods="0"/>
+      <file name="analytics.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/commands/analytics.ts">
+        <metrics statements="10" coveredstatements="4" conditionals="6" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.commands.analytics">
+      <metrics statements="24" coveredstatements="19" conditionals="1" coveredconditionals="1" methods="4" coveredmethods="2"/>
+      <file name="help.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/commands/analytics/help.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="0" type="stmt"/>
+      </file>
+      <file name="push.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/commands/analytics/push.ts">
+        <metrics statements="8" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+      </file>
+      <file name="remove.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/commands/analytics/remove.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="1" coveredconditionals="1" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.migrations">
+      <metrics statements="52" coveredstatements="21" conditionals="16" coveredconditionals="5" methods="3" coveredmethods="2"/>
+      <file name="in-app-messaging-migration.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/migrations/in-app-messaging-migration.ts">
+        <metrics statements="52" coveredstatements="21" conditionals="16" coveredconditionals="5" methods="3" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="33" count="1" type="cond" truecount="3" falsecount="0"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="49" count="1" type="cond" truecount="1" falsecount="2"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="65" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="85" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="87" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="96" count="0" type="stmt"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="103" count="0" type="stmt"/>
+        <line num="116" count="0" type="stmt"/>
+        <line num="171" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.provider-utils.awscloudformation.default-values">
+      <metrics statements="9" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+      <file name="pinpoint-defaults.ts" path="/Users/eddvar/Documents/amplify-cli/packages/amplify-category-analytics/src/provider-utils/awscloudformation/default-values/pinpoint-defaults.ts">
+        <metrics statements="9" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

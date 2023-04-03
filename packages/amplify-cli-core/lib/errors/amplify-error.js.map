@@ -1,0 +1,1 @@
+{"version":3,"file":"amplify-error.js","sourceRoot":"","sources":["../../src/errors/amplify-error.ts"],"names":[],"mappings":";;;AAAA,2DAAkG;AAKlG,MAAa,YAAa,SAAQ,oCAAgB;IAehD,YAAY,IAAsB,EAAE,OAAgC,EAAE,mBAA2B;QAC/F,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,OAAO,EAAE,mBAAmB,CAAC,CAAC;IACrD,CAAC;CACF;AAlBD,oCAkBC"}

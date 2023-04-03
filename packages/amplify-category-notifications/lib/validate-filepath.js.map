@@ -1,0 +1,1 @@
+{"version":3,"file":"validate-filepath.js","sourceRoot":"","sources":["../src/validate-filepath.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,6CAA+B;AAOxB,MAAM,gBAAgB,GAAG,CAAC,QAAgB,EAAiB,EAAE;IAClE,IAAI,QAAQ,IAAI,EAAE,CAAC,UAAU,CAAC,QAAQ,CAAC,EAAE;QACvC,OAAO,IAAI,CAAC;KACb;IACD,OAAO,yBAAyB,CAAC;AACnC,CAAC,CAAC;AALW,QAAA,gBAAgB,oBAK3B"}

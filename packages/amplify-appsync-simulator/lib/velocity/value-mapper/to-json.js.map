@@ -1,0 +1,1 @@
+{"version":3,"file":"to-json.js","sourceRoot":"","sources":["../../../src/velocity/value-mapper/to-json.ts"],"names":[],"mappings":";;;AAAA,SAAgB,MAAM,CAAC,KAAK;IAC1B,IAAI,OAAO,KAAK,KAAK,QAAQ,IAAI,KAAK,IAAI,IAAI,IAAI,QAAQ,IAAI,KAAK,EAAE;QACnE,OAAO,KAAK,CAAC,MAAM,EAAE,CAAC;KACvB;IACD,OAAO,KAAK,CAAC;AACf,CAAC;AALD,wBAKC"}

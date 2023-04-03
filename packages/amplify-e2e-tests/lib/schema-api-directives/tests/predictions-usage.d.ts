@@ -1,0 +1,3 @@
+export declare function runTest(projectDir: string, testModule: any): Promise<void>;
+export declare const schema = "\ntype Query {\n  speakTranslatedImageText: String @predictions(actions: [identifyText, translateText, convertTextToSpeech])\n}\n";
+export declare const query = "\n#change: remove redaudant ($input: SpeakTranslatedImageTextInput!)\nquery SpeakTranslatedImageText {\n  speakTranslatedImageText(\n    input: {\n      identifyText: { key: \"myimage.jpg\" }\n      translateText: { sourceLanguage: \"en\", targetLanguage: \"es\" }\n      convertTextToSpeech: { voiceID: \"Conchita\" }\n    }\n  )\n}\n";

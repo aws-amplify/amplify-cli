@@ -1,0 +1,1 @@
+{"version":3,"file":"dynamoDb-defaults.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/default-values/dynamoDb-defaults.ts"],"names":[],"mappings":"AAAA,QAAA,MAAY,IAAI,KAAoB,CAAC;AAErC,QAAA,MAAM,cAAc,YAAa,GAAG;;;CASnC,CAAC"}

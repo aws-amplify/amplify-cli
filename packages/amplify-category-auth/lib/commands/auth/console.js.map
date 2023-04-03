@@ -1,0 +1,1 @@
+{"version":3,"file":"console.js","sourceRoot":"","sources":["../../../src/commands/auth/console.ts"],"names":[],"mappings":";;;AAAA,6BAAgC;AAEnB,QAAA,UAAU,GAAG,SAAS,CAAC;AAEvB,QAAA,GAAG,GAAG,WAAO,CAAC","sourcesContent":["import { console } from '../..';\n\nexport const subcommand = 'console';\n\nexport const run = console;\n"]}

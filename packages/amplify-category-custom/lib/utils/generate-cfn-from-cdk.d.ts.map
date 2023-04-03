@@ -1,0 +1,1 @@
+{"version":3,"file":"generate-cfn-from-cdk.d.ts","sourceRoot":"","sources":["../../src/utils/generate-cfn-from-cdk.ts"],"names":[],"mappings":"AAKA,MAAM,MAAM,oBAAoB,GAAG;IACjC,QAAQ,EAAE,MAAM,CAAC;IACjB,YAAY,EAAE,MAAM,CAAC;CACtB,CAAC;AAEF,wBAAsB,6BAA6B,CAAC,YAAY,EAAE,MAAM,iBAUvE"}

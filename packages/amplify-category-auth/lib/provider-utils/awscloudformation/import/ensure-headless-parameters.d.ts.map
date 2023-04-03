@@ -1,0 +1,1 @@
+{"version":3,"file":"ensure-headless-parameters.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/import/ensure-headless-parameters.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,kBAAkB,EAAE,4BAA4B,EAAE,6BAA6B,EAAE,MAAM,SAAS,CAAC;AAE1G,eAAO,MAAM,wBAAwB,uBACf,kBAAkB,kBACtB,4BAA4B,KAC3C,6BA0CF,CAAC"}

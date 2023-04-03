@@ -1,0 +1,1 @@
+{"version":3,"file":"update.d.ts","sourceRoot":"","sources":["../../../src/commands/auth/update.ts"],"names":[],"mappings":"AACA,OAAO,EACL,UAAU,EAMX,MAAM,+BAA+B,CAAC;AAIvC,OAAO,EAAE,WAAW,EAAE,MAAM,eAAe,CAAC;AAO5C,eAAO,MAAM,IAAI,WAAW,CAAC;AAC7B,eAAO,MAAM,KAAK,UAAa,CAAC;AAKhC,eAAO,MAAM,GAAG,YAAmB,WAAW,KAAG,QAAQ,MAAM,GAAG,UAAU,GAAG,SAAS,CAwEvF,CAAC"}

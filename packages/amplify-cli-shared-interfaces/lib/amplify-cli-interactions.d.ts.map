@@ -1,0 +1,1 @@
+{"version":3,"file":"amplify-cli-interactions.d.ts","sourceRoot":"","sources":["../src/amplify-cli-interactions.ts"],"names":[],"mappings":"AAIA,MAAM,WAAW,aAAa;IAC5B,IAAI,EAAE,KAAK,CAAC,MAAM,CAAC,CAAC;IACpB,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;IAChB,WAAW,CAAC,EAAE,MAAM,EAAE,CAAC;IACvB,OAAO,CAAC,EAAE;QACR,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,GAAG,OAAO,CAAC;KACjC,CAAC;CACH"}

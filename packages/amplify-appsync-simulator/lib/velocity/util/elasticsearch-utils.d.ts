@@ -1,0 +1,40 @@
+declare class ElasticsearchUtils {
+    private static readonly ONE;
+    private static readonly BOOL;
+    private static readonly MUST;
+    private static readonly MUST_NOT;
+    private static readonly SHOULD;
+    private static readonly MATCH;
+    private static readonly MATCH_PHRASE;
+    private static readonly MATCH_PHRASE_PREFIX;
+    private static readonly MULTI_MATCH;
+    private static readonly EXISTS;
+    private static readonly WILDCARD;
+    private static readonly REGEXP;
+    private static readonly RANGE;
+    private static readonly GT;
+    private static readonly GTE;
+    private static readonly LT;
+    private static readonly LTE;
+    private static readonly MINIMUM_SHOULD_MATCH;
+    private static readonly FIELD;
+    toEqExpression(fieldName: string, value: any): any;
+    toNeExpression(fieldName: string, value: any): any;
+    toMatchExpression(fieldName: string, value: any): any;
+    toMatchPhraseExpression(fieldName: string, value: any): any;
+    toMatchPhrasePrefixExpression(fieldName: string, value: any): any;
+    toMultiMatchExpression(fieldName: string, value: any): any;
+    toExistsExpression(fieldName: string, value: boolean): any;
+    toWildcardExpression(fieldName: string, value: any): any;
+    toRegularExpression(fieldName: string, value: any): any;
+    toGtExpression(fieldName: string, value: any): any;
+    toGteExpression(fieldName: string, value: any): any;
+    toLTExpression(fieldName: string, value: any): any;
+    toLTEExpression(fieldName: string, value: any): any;
+    toRangeExpression(fieldName: string, start: any, end: any): any;
+    toAndExpression(filterClauses: any[]): any;
+    toOrExpression(filterClauses: any[]): any;
+    toNotExpression(expression: any): any;
+}
+export default ElasticsearchUtils;
+//# sourceMappingURL=elasticsearch-utils.d.ts.map

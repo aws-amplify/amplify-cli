@@ -1,0 +1,182 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const interpretQuestions_1 = __importDefault(require("../assets/interpretQuestions"));
+const interpret_defaults_1 = __importDefault(require("../default-values/interpret-defaults"));
+const regionMapping_1 = __importDefault(require("../assets/regionMapping"));
+const enable_guest_auth_1 = require("./enable-guest-auth");
+const amplify_prompts_1 = require("@aws-amplify/amplify-prompts");
+const path = require('path');
+const fs = require('fs-extra');
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('@aws-amplify/amplify-cli-core');
+const category = 'predictions';
+const parametersFileName = 'parameters.json';
+const templateFilename = 'interpret-template.json.ejs';
+const interpretTypes = ['interpretText'];
+const service = 'Comprehend';
+async function addWalkthrough(context) {
+    while (!checkIfAuthExists(context)) {
+        if (await amplify_prompts_1.prompter.yesOrNo('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
+            await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
+            break;
+        }
+        else {
+            context.usageData.emitSuccess();
+            exitOnNextTick(0);
+        }
+    }
+    return await configure(context);
+}
+async function updateWalkthrough(context) {
+    const { amplify } = context;
+    const { amplifyMeta } = amplify.getProjectDetails();
+    const predictionsResources = [];
+    Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+        if (interpretTypes.includes(amplifyMeta[category][resourceName].interpretType)) {
+            predictionsResources.push({
+                name: resourceName,
+                value: { name: resourceName, interpretType: amplifyMeta[category][resourceName].interpretType },
+            });
+        }
+    });
+    if (predictionsResources.length === 0) {
+        const errMessage = 'No resources to update. You need to add a resource.';
+        context.print.error(errMessage);
+        context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+        exitOnNextTick(0);
+        return undefined;
+    }
+    let resourceObj = predictionsResources[0].value;
+    if (predictionsResources.length > 1) {
+        resourceObj = await amplify_prompts_1.prompter.pick('Which interpret resource would you like to update?', predictionsResources);
+    }
+    return configure(context, resourceObj);
+}
+async function configure(context, resourceObj) {
+    const { amplify } = context;
+    const defaultValues = (0, interpret_defaults_1.default)(amplify.getProjectDetails());
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+    let parameters = {};
+    let interpretType;
+    if (resourceObj) {
+        const resourceDirPath = path.join(projectBackendDirPath, category, resourceObj.name);
+        const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+        try {
+            parameters = amplify.readJsonFile(parametersFilePath);
+        }
+        catch (e) {
+            parameters = {};
+        }
+        interpretType = resourceObj.interpretType;
+        parameters.resourceName = resourceObj.name;
+        Object.assign(defaultValues, parameters);
+    }
+    let answers = {};
+    if (!parameters.resourceName) {
+        const interpretQuestionSetupType = interpretQuestions_1.default.setup.type();
+        answers.interpretType = await amplify_prompts_1.prompter.pick(interpretQuestionSetupType.message, interpretQuestionSetupType.choices);
+        const resourceType = resourceAlreadyExists(context, answers.interpretType);
+        if (resourceType) {
+            const errMessage = `${resourceType} has already been added to this project.`;
+            context.print.warning(errMessage);
+            context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+            exitOnNextTick(0);
+        }
+        const interpretQuestionSetupName = interpretQuestions_1.default.setup.name(`${answers.interpretType}${defaultValues.resourceName}`);
+        answers.resourceName = await amplify_prompts_1.prompter.input(interpretQuestionSetupName.message, {
+            validate: interpretQuestionSetupName.validate,
+            initial: interpretQuestionSetupName.default,
+        });
+        interpretType = answers.interpretType;
+    }
+    Object.assign(answers, await followupQuestions(interpretQuestions_1.default[interpretType], parameters));
+    answers = { ...answers, service };
+    Object.assign(defaultValues, answers);
+    if (answers.access === 'authAndGuest') {
+        await (0, enable_guest_auth_1.enableGuestAuth)(context, defaultValues.resourceName, true);
+    }
+    const { resourceName } = defaultValues;
+    delete defaultValues.service;
+    delete defaultValues.region;
+    defaultValues.interpretType = interpretType;
+    const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+    const amplifyMetaValues = {
+        resourceName,
+        service,
+        interpretType,
+    };
+    fs.ensureDirSync(resourceDirPath);
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    const jsonString = JSON.stringify(defaultValues, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    if (!parameters.resourceName) {
+        await copyCfnTemplate(context, category, resourceName, defaultValues);
+    }
+    addRegionMapping(context, resourceName, interpretType);
+    return amplifyMetaValues;
+}
+function addRegionMapping(context, resourceName, interpretType) {
+    const regionMapping = regionMapping_1.default.getRegionMapping(context, service, interpretType);
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+    const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
+    const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
+    identifyCFNFile.Mappings = regionMapping;
+    const identifyCFNJSON = JSON.stringify(identifyCFNFile, null, 4);
+    fs.writeFileSync(identifyCFNFilePath, identifyCFNJSON, 'utf8');
+}
+async function followupQuestions(questionObj, parameters) {
+    const questionsInput = questionObj.questions(parameters);
+    const authInput = questionObj.auth(parameters);
+    const answers = {
+        [questionsInput.name]: await amplify_prompts_1.prompter.pick(questionsInput.message, questionsInput.choices),
+        [authInput.name]: await amplify_prompts_1.prompter.pick(authInput.message, authInput.choices),
+    };
+    return answers;
+}
+async function copyCfnTemplate(context, categoryName, resourceName, options) {
+    const { amplify } = context;
+    const targetDir = amplify.pathManager.getBackendDirPath();
+    const pluginDir = __dirname;
+    const copyJobs = [
+        {
+            dir: pluginDir,
+            template: `../cloudformation-templates/${templateFilename}`,
+            target: `${targetDir}/${categoryName}/${resourceName}/${resourceName}-template.json`,
+        },
+    ];
+    return await context.amplify.copyBatch(context, copyJobs, options);
+}
+function checkIfAuthExists(context) {
+    const { amplify } = context;
+    const { amplifyMeta } = amplify.getProjectDetails();
+    let authExists = false;
+    const authServiceName = 'Cognito';
+    const authCategory = 'auth';
+    if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
+        const categoryResources = amplifyMeta[authCategory];
+        Object.keys(categoryResources).forEach((resource) => {
+            if (categoryResources[resource].service === authServiceName) {
+                authExists = true;
+            }
+        });
+    }
+    return authExists;
+}
+function resourceAlreadyExists(context, interpretType) {
+    const { amplify } = context;
+    const { amplifyMeta } = amplify.getProjectDetails();
+    let type;
+    if (amplifyMeta[category] && context.commandName !== 'update') {
+        const categoryResources = amplifyMeta[category];
+        Object.keys(categoryResources).forEach((resource) => {
+            if (categoryResources[resource].interpretType === interpretType) {
+                type = interpretType;
+            }
+        });
+    }
+    return type;
+}
+module.exports = { addWalkthrough, updateWalkthrough };
+//# sourceMappingURL=interpret-walkthrough.js.map
