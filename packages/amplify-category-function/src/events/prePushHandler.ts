@@ -18,6 +18,10 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
   const appId: string | undefined =
     (stateManager.getMeta(undefined, { throwIfNotExist: false }) || {})?.providers?.awscloudformation?.AmplifyAppId ||
     context?.exeInfo?.inputParams?.amplify?.appId;
+
+  // this handler is executed during `init --forcePush` which does an init, then a pull, then a push all in one
+  // These parameters should always be present but it is possible they are not on init.
+  // Hence this check will skip these checks if we can't resolve the prerequisite information
   if (envName && appId) {
     await ensureEnvironmentVariableValues(context, appId);
     await ensureFunctionSecrets(context);
