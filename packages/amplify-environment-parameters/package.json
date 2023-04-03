@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.4.7",
+  "version": "1.4.8-gfix.0",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.7",
+    "amplify-cli-core": "4.0.8-gfix.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
