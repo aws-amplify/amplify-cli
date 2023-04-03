@@ -107,25 +107,10 @@ ARG N_SRC_DIR="$SRC_DIR/n"
 RUN git clone https://github.com/tj/n $N_SRC_DIR \
      && cd $N_SRC_DIR && make install 
 
-#ruby
-ARG RBENV_SRC_DIR="/usr/local/rbenv"
-
-ENV PATH="/root/.rbenv/shims:$RBENV_SRC_DIR/bin:$RBENV_SRC_DIR/shims:$PATH" \
-    RUBY_BUILD_SRC_DIR="$RBENV_SRC_DIR/plugins/ruby-build"
-
-RUN set -ex \
-    && git clone https://github.com/rbenv/rbenv.git $RBENV_SRC_DIR \
-    && mkdir -p $RBENV_SRC_DIR/plugins \
-    && git clone https://github.com/rbenv/ruby-build.git $RUBY_BUILD_SRC_DIR \
-    && sh $RUBY_BUILD_SRC_DIR/install.sh
-
 #python
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
-#php
-RUN curl -L https://raw.githubusercontent.com/phpenv/phpenv-installer/master/bin/phpenv-installer | bash
-ENV PATH="/root/.phpenv/shims:/root/.phpenv/bin:$PATH"
 
 #go
 RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
@@ -185,15 +170,6 @@ RUN  n $NODE_18_VERSION && npm install --save-dev -g -f grunt && npm install --s
 
 #****************      END NODEJS     ****************************************************
 
-#**************** RUBY *********************************************************
-
-ENV RUBY_31_VERSION="3.1.3"
-
-RUN rbenv install $RUBY_31_VERSION && rm -rf /tmp/* \
-    && rbenv global $RUBY_31_VERSION && ruby -v
-
-#**************** END RUBY *****************************************************
-
 #**************** PYTHON *****************************************************
 # inspired by: https://github.com/aws/aws-codebuild-docker-images/blob/9282872af78aeb1b5df3010ed3872c40f3d0f056/al2/x86_64/standard/2.0/Dockerfile
 ENV PYTHON_38_VERSION="3.8.10"
@@ -210,17 +186,6 @@ RUN set -ex \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli boto3 pipenv virtualenv
 
 #**************** END PYTHON *****************************************************
-
-#****************      PHP     ****************************************************
-ENV PHP_81_VERSION="8.1.13"
-
-COPY tools/runtime_configs/php/$PHP_81_VERSION /root/.phpenv/plugins/php-build/share/php-build/definitions/$PHP_81_VERSION
-RUN phpenv install $PHP_81_VERSION && rm -rf /tmp/* && phpenv global $PHP_81_VERSION
-RUN echo "memory_limit = 1G;" >> "/root/.phpenv/versions/$PHP_81_VERSION/etc/conf.d/memory.ini"
-
-# Install Composer globally
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-#****************      END PHP     ****************************************************
 
 #****************     GOLANG     ****************************************************
 ENV GOLANG_18_VERSION="1.18.9"
@@ -366,8 +331,6 @@ FROM runtimes_n_corretto AS std_v6
 # Activate runtime versions specific to image version.
 RUN n $NODE_18_VERSION
 RUN pyenv  global $PYTHON_38_VERSION
-RUN phpenv global $PHP_81_VERSION
-RUN rbenv  global $RUBY_31_VERSION
 RUN goenv global  $GOLANG_18_VERSION
 
 # Configure SSH
