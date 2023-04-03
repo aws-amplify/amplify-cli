@@ -1,8 +1,8 @@
 import path from 'path';
 import _ from 'lodash';
 import * as uuid from 'uuid';
-import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny, $TSObject } from 'amplify-cli-core';
-import { byValue, formatter, maxLength, printer, prompter } from '@aws-amplify/amplify-prompts';
+import { $TSContext, stateManager, pathManager, JSONUtilities, $TSAny, $TSObject, AmplifyError } from 'amplify-cli-core';
+import { byValue, maxLength, printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getEnvParamManager, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
@@ -168,7 +168,7 @@ const askForEnvironmentVariableValue = async (
 /**
  * Ensure that values are provided for all env vars in the current environment
  */
-export const ensureEnvironmentVariableValues = async (context: $TSContext): Promise<void> => {
+export const ensureEnvironmentVariableValues = async (context: $TSContext, appId: string): Promise<void> => {
   const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
   const currentEnvName = stateManager.localEnvInfoExists()
     ? stateManager.getLocalEnvInfo()?.envName
@@ -198,16 +198,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext): Prom
   // there are some missing env vars
 
   if (yesFlagSet) {
-    // in this case, we can't prompt for missing values, so fail gracefully
-    const errMessage = `Cannot push Amplify environment "${currentEnvName}" due to missing Lambda function environment variable values. Rerun 'amplify push' without '--yes' to fix.`;
-    printer.error(errMessage);
-    const missingEnvVarsMessage = functionConfigMissingEnvVars.map(({ missingEnvVars, funcName }) => {
-      const missingEnvVarsString = missingEnvVars.map((missing) => missing.environmentVariableName).join(', ');
-      return `Function ${funcName} is missing values for environment variables: ${missingEnvVarsString}`;
-    });
-    formatter.list(missingEnvVarsMessage);
-    await context.usageData.emitError(new Error(errMessage));
-    exitOnNextTick(1);
+    throw getMissingEnvVarsError(functionConfigMissingEnvVars, appId, currentEnvName);
   }
 
   printer.info('Some Lambda function environment variables are missing values in this Amplify environment.');
@@ -322,3 +313,62 @@ const getStoredKeyValue = (resourceName: string, envName?: string): Record<strin
 const setStoredKeyValue = (resourceName: string, newKeyValue: $TSAny, envName?: string): void => {
   getEnvParamManager(envName).getResourceParamManager(categoryName, resourceName).setAllParams(newKeyValue);
 };
+
+type MissingEnvVarsConfig = {
+  funcName: string;
+  missingEnvVars: {
+    environmentVariableName: string;
+    cloudFormationParameterName: string;
+  }[];
+}[];
+
+const getMissingEnvVarsError = (
+  missingVars: MissingEnvVarsConfig,
+  appId: string | undefined,
+  envName: string | undefined,
+): AmplifyError => {
+  const message = `This environment is missing some function environment variable values.`;
+  const missingEnvVarsDetails = missingVars
+    .map(({ missingEnvVars, funcName }) => {
+      const missingEnvVarsString = missingEnvVars.map((missing) => missing.environmentVariableName).join(', ');
+      return `Function ${funcName} is missing values for environment variables: ${missingEnvVarsString}`;
+    })
+    .join('\n');
+  if (appId === undefined) {
+    return new AmplifyError('EnvironmentConfigurationError', {
+      message,
+      details: missingEnvVarsDetails,
+      resolution: `An AppId could not be determined. Make sure your project is initialized and rerun 'amplify push' without '--yes' to fix.`,
+    });
+  }
+
+  if (envName === undefined) {
+    return new AmplifyError('EnvironmentConfigurationError', {
+      message,
+      details: missingEnvVarsDetails,
+      resolution: `A current environment name could not be determined for fetching missing parameters. Make sure your project is initialized using "amplify init"`,
+    });
+  }
+
+  // appId and envName are specified so we can provide a specific error message
+
+  const missingFullPaths = missingVars
+    .map(({ missingEnvVars, funcName }) =>
+      missingEnvVars.map((missing) => getParamKey(appId, envName, funcName, missing.cloudFormationParameterName)),
+    )
+    .flat();
+
+  const resolution =
+    `Run 'amplify push' interactively to specify values.\n` +
+    `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
+    `${missingFullPaths.join('\n')}\n`;
+  return new AmplifyError('EnvironmentConfigurationError', {
+    message,
+    details: missingEnvVarsDetails,
+    resolution,
+    link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
+  });
+};
+
+const getParamKey = (appId: string, envName: string, funcName: string, paramName: string) =>
+  `/amplify/${appId}/${envName}/AMPLIFY_function_${funcName}_${paramName}`;

@@ -19,7 +19,7 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
     (stateManager.getMeta(undefined, { throwIfNotExist: false }) || {})?.providers?.awscloudformation?.AmplifyAppId ||
     context?.exeInfo?.inputParams?.amplify?.appId;
   if (envName && appId) {
-    await ensureEnvironmentVariableValues(context);
+    await ensureEnvironmentVariableValues(context, appId);
     await ensureFunctionSecrets(context);
   } else {
     printer.warn(
