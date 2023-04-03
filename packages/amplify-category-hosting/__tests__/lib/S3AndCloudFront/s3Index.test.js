@@ -27,9 +27,9 @@ const PROD = 'PROD (S3 with CloudFront using HTTPS)';
 
 const s3IndexModule = require('../../../lib/S3AndCloudFront/index');
 
-const amplifyPrompts = require('amplify-prompts');
+const amplifyPrompts = require('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   prompter: {
     input: jest.fn(),
     yesOrNo: jest.fn(),

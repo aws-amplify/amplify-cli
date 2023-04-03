@@ -19,7 +19,7 @@ const mockFeatureFlags: FeatureFlagProvider = {
   getObject: jest.fn(),
 };
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const USER_POOL_ID = 'us-fake-1ID';
 

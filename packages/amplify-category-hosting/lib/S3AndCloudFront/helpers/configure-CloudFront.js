@@ -1,6 +1,6 @@
 const path = require('path');
 const configureWebsite = require('./configure-Website');
-const { prompter, byValue } = require('amplify-prompts');
+const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const originErrorCodes = {
   400: 'Bad Request',

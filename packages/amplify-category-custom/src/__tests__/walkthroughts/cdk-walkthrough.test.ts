@@ -9,7 +9,7 @@ jest.mock('../../utils/common-questions');
 jest.mock('../../utils/build-custom-resources');
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn().mockReturnValue('mockCode'),
