@@ -542,11 +542,6 @@ function getConfigForEnv(context: $TSContext, envName: string) {
     configLevel: 'general',
     config: {},
   };
-  if (typeof context?.exeInfo?.inputParams?.awscloudformation === 'object') {
-    const config = context?.exeInfo?.inputParams?.awscloudformation;
-    projectConfigInfo.configLevel = config.configLevel || 'general';
-    projectConfigInfo.config = config;
-  }
   const dotConfigDirPath = pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
 
