@@ -336,17 +336,17 @@ const createMissingEnvVarsError = (
     .join('\n');
   if (appId === undefined) {
     return new AmplifyError('EnvironmentConfigurationError', {
-      message,
+      message: `${message} An AppId could not be determined for fetching missing parameters.`,
       details: missingEnvVarsDetails,
-      resolution: `An AppId could not be determined. Make sure your project is initialized and rerun 'amplify push' without '--yes' to fix.`,
+      resolution: `Make sure your project is initialized and rerun 'amplify push' without '--yes' to fix.`,
     });
   }
 
   if (envName === undefined) {
     return new AmplifyError('EnvironmentConfigurationError', {
-      message,
+      message: `${message} A current environment name could not be determined for fetching missing parameters.`,
       details: missingEnvVarsDetails,
-      resolution: `A current environment name could not be determined for fetching missing parameters. Make sure your project is initialized using "amplify init"`,
+      resolution: `Make sure your project is initialized using "amplify init"`,
     });
   }
 
