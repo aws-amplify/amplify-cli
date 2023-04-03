@@ -156,7 +156,6 @@ RUN set -ex \
     && ln -s /opt/microsoft/powershell/$POWERSHELL_VERSION/pwsh /usr/bin/pwsh
 #****************     END .NET-CORE     *******************************************************
 
-
 #****************      NODEJS     ****************************************************
 
 ENV NODE_18_VERSION="18.15.0"
