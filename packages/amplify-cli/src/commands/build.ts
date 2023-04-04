@@ -14,7 +14,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   try {
     await generateDependentResourcesType();
-    const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+    const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
     let filteredResources: IAmplifyResource[] = resourcesToBuild;
     if (categoryName) {
       filteredResources = filteredResources.filter((resource) => resource.category === categoryName);
@@ -44,7 +44,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 /**
  * Returns resources in create or update state
  */
-export const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+export const getChangedResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
   const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
   resourcesToBeCreated.forEach((resourceCreated: IAmplifyResource) => {
@@ -60,6 +60,19 @@ export const getResources = async (context: $TSContext): Promise<IAmplifyResourc
       service: resourceUpdated.service,
       category: resourceUpdated.category,
       resourceName: resourceUpdated.resourceName,
+    });
+  });
+  return resources;
+};
+
+export const getAllResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+  const resources: IAmplifyResource[] = [];
+  const { allResources } = await context.amplify.getResourceStatus();
+  allResources.forEach((resource: IAmplifyResource) => {
+    resources.push({
+      service: resource.service,
+      category: resource.category,
+      resourceName: resource.resourceName,
     });
   });
   return resources;

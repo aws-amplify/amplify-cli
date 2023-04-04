@@ -415,6 +415,22 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     .promise();
 };
 
+export const deleteSSMParameter = async (
+  region: string,
+  appId: string,
+  envName: string,
+  category: string,
+  funcName: string,
+  parameterName: string,
+) => {
+  const ssmClient = new SSM({ region });
+  return await ssmClient
+    .deleteParameter({
+      Name: path.posix.join('/amplify', appId, envName, `AMPLIFY_${category}_${funcName}_${parameterName}`),
+    })
+    .promise();
+};
+
 export const getSSMParametersCategoryPrefix = async (
   region: string,
   appId: string,
