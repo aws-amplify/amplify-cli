@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import {
   nspawn as spawn,
   getCLIPath,
@@ -22,8 +21,8 @@ describe('nodejs version migration tests', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projectRoot);
-    deleteProjectDir(projectRoot);
+    //await deleteProject(projectRoot);
+    //deleteProjectDir(projectRoot);
   });
 
   it('init a project and add simple function and migrate node version', async () => {
@@ -72,7 +71,7 @@ describe('nodejs version migration tests', () => {
     );
     let functionStackContent = fs.readFileSync(functionStackFileName).toString();
 
-    functionStackContent = functionStackContent.replace('nodejs16.x', 'nodejs10.x');
+    functionStackContent = functionStackContent.replace(/nodejs\d{1,2}\.x/, 'nodejs10.x');
 
     fs.writeFileSync(functionStackFileName, functionStackContent, 'utf-8');
 
