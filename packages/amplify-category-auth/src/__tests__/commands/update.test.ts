@@ -10,7 +10,7 @@ jest.mock('fs-extra', () => ({
   existsSync: () => true,
 }));
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),

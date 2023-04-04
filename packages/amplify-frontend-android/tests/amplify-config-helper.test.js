@@ -1,5 +1,5 @@
 const configHelper = require('../../amplify-frontend-android/lib/amplify-config-helper');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const mapServiceName = 'Map';
 const placeIndexServiceName = 'PlaceIndex';

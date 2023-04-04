@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import AmplifyUIBuilder from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyStudioClient } from '../clients';

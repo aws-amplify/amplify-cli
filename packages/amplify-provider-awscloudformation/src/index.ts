@@ -56,7 +56,12 @@ import { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete
 export { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 
 import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
-export { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
+export {
+  getEnvParametersUploadHandler,
+  getEnvParametersDownloadHandler,
+  DownloadHandler,
+  PrimitiveRecord,
+} from './utils/ssm-utils/env-parameter-ssm-helpers';
 
 function init(context) {
   return initializer.run(context);

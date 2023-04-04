@@ -4,7 +4,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
 jest.mock('amplify-cli-core');
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('printSMSSandboxWarning', () => {
   const mockedGetMessage = jest.spyOn(BannerMessage, 'getMessage');

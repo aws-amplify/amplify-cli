@@ -13,7 +13,7 @@ import {
   $TSAny,
   JSONUtilities,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { alphanumeric, printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 

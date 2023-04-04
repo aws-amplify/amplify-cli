@@ -3,7 +3,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const { getProjectConfiguration, getSupportedFrameworks } = require('./framework-config-mapping');
 const { Label: JAVASCRIPT } = require('./constants');
-const { UnrecognizedFrameworkError } = require('amplify-cli-core');
+const { UnrecognizedFrameworkError } = require('@aws-amplify/amplify-cli-core');
 
 async function init(context) {
   normalizeInputParams(context);

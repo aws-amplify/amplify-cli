@@ -100,6 +100,11 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
   });
 };
 
+export const removeImportedAuthHeadless = async (cwd: string, authResourceName: string) => {
+  const chain = spawn(getCLIPath(), ['auth', 'remove', authResourceName, '-y'], { cwd, stripColors: true });
+  await chain.runAsync();
+};
+
 export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, settings: any) => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
