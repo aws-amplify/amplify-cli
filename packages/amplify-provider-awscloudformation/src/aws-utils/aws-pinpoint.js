@@ -51,7 +51,7 @@ function getPinpointRegionMapping() {
 
   return {
     'us-east-1': 'us-east-1',
-    'us-east-2': 'us-east-1',
+    'us-east-2': latestPinpointRegions ? 'us-east-2' : 'us-east-1',
     'sa-east-1': 'us-east-1',
     'ca-central-1': latestPinpointRegions >= 1 ? 'ca-central-1' : 'us-east-1',
     'us-west-1': 'us-west-2',
