@@ -1193,18 +1193,10 @@ export const formNestedStack = async (
         }
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
-
-          // retrieve parameters from resource stack
-          // compare to parameters object
-          // if mismatch, fast fail and instruct user to clean up local state
-          // instruct to pull or to make vars consistant
-          // throw amplify error
-
-          // put debugger and see how it is fetching parameters
-
+          const urlParameters = Object.keys(urlMap[templateURL].Parameters);
           const nonCustomParameters = ['CloudWatchRule', 'deploymentBucketName', 'env', 's3Key'];
-          const misMatchedParams = Object.keys(urlMap[templateURL].Parameters).filter(
-            (parameter) => !nonCustomParameters.includes(parameter) && !Object.keys(parameters).includes(parameter),
+          const misMatchedParams = Object.keys(parameters).filter(
+            (parameter) => !nonCustomParameters.includes(parameter) && !urlParameters.includes(parameter),
           );
 
           if (misMatchedParams.length) {
