@@ -1,43 +1,44 @@
 {
   "name": "@aws-amplify/amplify-container-hosting",
   "version": "2.6.3",
+])
   "description": "amplify-cli hosting plugin for containers",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-cli.git",
-    "directory": "packages/amplify-container-hosting"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "main": "lib/index.js",
-  "keywords": [
-    "amplify",
-    "aws"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "build": "tsc",
-    "test-ci": "yarn jest --ci",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "watch": "tsc --watch",
-    "test": "jest --logHeapUsage --coverage --passWithNoTests",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
-  },
-  "dependencies": {
-    "@aws-amplify/amplify-category-api": "5.1.2-ownerfield-pk-fix.0",
-    "amplify-cli-core": "4.0.3",
-    "fs-extra": "^8.1.0",
-    "inquirer": "^7.3.3",
-    "mime-types": "^2.1.26",
-    "promise-sequential": "^1.1.1"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "lib/**/*.js",
-      "index.js"
-    ]
-  }
+"repository": {
+  "type": "git",
+  "url": "https://github.com/aws-amplify/amplify-cli.git",
+  "directory": "packages/amplify-container-hosting"
+},
+"author": "Amazon Web Services",
+"license": "Apache-2.0",
+"main": "lib/index.js",
+"keywords": [
+  "amplify",
+  "aws"
+],
+"publishConfig": {
+  "access": "public"
+},
+"scripts": {
+  "build": "tsc",
+  "test-ci": "yarn jest --ci",
+  "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+  "watch": "tsc --watch",
+  "test": "jest --logHeapUsage --coverage --passWithNoTests",
+  "extract-api": "ts-node ../../scripts/extract-api.ts"
+},
+"dependencies": {
+  "@aws-amplify/amplify-category-api": "5.1.2-ownerfield-pk-fix.0",
+  "amplify-cli-core": "4.0.3",
+  "fs-extra": "^8.1.0",
+  "inquirer": "^7.3.3",
+  "mime-types": "^2.1.26",
+  "promise-sequential": "^1.1.1"
+},
+"jest": {
+  "collectCoverage": true,
+  "collectCoverageFrom": [
+    "lib/**/*.js",
+    "index.js"
+  ]
+}
 }
