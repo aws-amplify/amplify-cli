@@ -8,7 +8,7 @@ import { Sort } from 'enquirer';
 import { AuthContext } from '../../../context';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
 import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
-import { AmplifyFrontend } from '../../../../../amplify-cli-core/src/types';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 
 const category = 'auth';
 
