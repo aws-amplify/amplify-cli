@@ -8,12 +8,19 @@ See the License for the specific language governing permissions and limitations 
 
 <%= props.topLevelComment %>
 
-const DynamoDB = require('@aws-sdk/client-dynamodb').DynamoDB;
+
+const DynamoDBClient = require('@aws-sdk/client-dynamodb').DynamoDBClient;
+const DynamoDBDocumentClient = require('@aws-sdk/lib-dynamodb').DynamoDBDocumentClient;
+const DeleteCommand = require('@aws-sdk/lib-dynamodb').DeleteCommand;
+const GetCommand = require('@aws-sdk/lib-dynamodb').GetCommand;
+const PutCommand = require('@aws-sdk/lib-dynamodb').PutCommand;
+const QueryCommand = require('@aws-sdk/lib-dynamodb').QueryCommand;
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
 
-const dynamodb = new DynamoDB({ region: process.env.TABLE_REGION });
+const ddbClient = new DynamoDBClient({ region: process.env.TABLE_REGION });
+const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
 let tableName = "<%= props.functionTemplate.parameters.database.tableDefinition.tableName %>";
 if (process.env.ENV && process.env.ENV !== "NONE") {
@@ -57,7 +64,7 @@ const convertUrlType = (param, type) => {
  * HTTP Get method for list objects *
  ********************************/
 
-app.get(path + hashKeyPath, function(req, res) {
+app.get(path + hashKeyPath, async function(req, res) {
   const condition = {}
   condition[partitionKeyName] = {
     ComparisonOperator: 'EQ'
@@ -79,21 +86,20 @@ app.get(path + hashKeyPath, function(req, res) {
     KeyConditions: condition
   }
 
-  dynamodb.query(queryParams, (err, data) => {
-    if (err) {
-      res.statusCode = 500;
-      res.json({error: 'Could not load items: ' + err});
-    } else {
-      res.json(data.Items);
-    }
-  });
+  try {
+    const data = await ddbDocClient.send(new QueryCommand(queryParams));
+    res.json(data.Items);
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({error: 'Could not load items: ' + err});
+  }
 });
 
 /*****************************************
  * HTTP Get method for get single object *
  *****************************************/
 
-app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
+app.get(path + '/object' + hashKeyPath + sortKeyPath, async function(req, res) {
   const params = {};
   if (userIdPresent && req.apiGateway) {
     params[partitionKeyName] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
@@ -120,18 +126,17 @@ app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     Key: params
   }
 
-  dynamodb.get(getItemParams,(err, data) => {
-    if(err) {
-      res.statusCode = 500;
-      res.json({error: 'Could not load items: ' + err.message});
+  try {
+    const data = await ddbDocClient.send(new GetCommand(getItemParams));
+    if (data.Item) {
+      res.json(data.Item);
     } else {
-      if (data.Item) {
-        res.json(data.Item);
-      } else {
-        res.json(data) ;
-      }
+      res.json(data) ;
     }
-  });
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({error: 'Could not load items: ' + err.message});
+  }
 });
 
 
@@ -139,7 +144,7 @@ app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
 * HTTP put method for insert object *
 *************************************/
 
-app.put(path, function(req, res) {
+app.put(path, async function(req, res) {
 
   if (userIdPresent) {
     req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
@@ -149,21 +154,20 @@ app.put(path, function(req, res) {
     TableName: tableName,
     Item: req.body
   }
-  dynamodb.put(putItemParams, (err, data) => {
-    if (err) {
-      res.statusCode = 500;
-      res.json({ error: err, url: req.url, body: req.body });
-    } else{
-      res.json({ success: 'put call succeed!', url: req.url, data: data })
-    }
-  });
+  try {
+    let data = await ddbDocClient.send(new PutCommand(putItemParams));
+    res.json({ success: 'put call succeed!', url: req.url, data: data })
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({ error: err, url: req.url, body: req.body });
+  }
 });
 
 /************************************
 * HTTP post method for insert object *
 *************************************/
 
-app.post(path, function(req, res) {
+app.post(path, async function(req, res) {
 
   if (userIdPresent) {
     req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
@@ -173,21 +177,20 @@ app.post(path, function(req, res) {
     TableName: tableName,
     Item: req.body
   }
-  dynamodb.put(putItemParams, (err, data) => {
-    if (err) {
-      res.statusCode = 500;
-      res.json({error: err, url: req.url, body: req.body});
-    } else {
-      res.json({success: 'post call succeed!', url: req.url, data: data})
-    }
-  });
+  try {
+    let data = await ddbDocClient.send(new PutCommand(putItemParams));
+    res.json({ success: 'put call succeed!', url: req.url, data: data })
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({ error: err, url: req.url, body: req.body });
+  }
 });
 
 /**************************************
 * HTTP remove method to delete object *
 ***************************************/
 
-app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
+app.delete(path + '/object' + hashKeyPath + sortKeyPath, async function(req, res) {
   const params = {};
   if (userIdPresent && req.apiGateway) {
     params[partitionKeyName] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
@@ -213,14 +216,14 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     TableName: tableName,
     Key: params
   }
-  dynamodb.delete(removeItemParams, (err, data)=> {
-    if (err) {
-      res.statusCode = 500;
-      res.json({error: err, url: req.url});
-    } else {
-      res.json({url: req.url, data: data});
-    }
-  });
+
+  try {
+    let data = await ddbDocClient.send(new DeleteCommand(removeItemParams));
+    res.json({url: req.url, data: data});
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({error: err, url: req.url});
+  }
 });
 
 app.listen(3000, function() {
