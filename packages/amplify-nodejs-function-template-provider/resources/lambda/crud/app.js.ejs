@@ -174,7 +174,7 @@ app.post(path, async function(req, res) {
   }
   try {
     let data = await ddbDocClient.send(new PutCommand(putItemParams));
-    res.json({ success: 'put call succeed!', url: req.url, data: data })
+    res.json({ success: 'post call succeed!', url: req.url, data: data })
   } catch (err) {
     res.statusCode = 500;
     res.json({ error: err, url: req.url, body: req.body });
