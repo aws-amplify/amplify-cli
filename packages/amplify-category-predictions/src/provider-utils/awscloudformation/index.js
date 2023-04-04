@@ -1,6 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
-const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open } = require('amplify-cli-core');
+const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open } = require('@aws-amplify/amplify-cli-core');
 const parametersFileName = 'parameters.json';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/admin';
 

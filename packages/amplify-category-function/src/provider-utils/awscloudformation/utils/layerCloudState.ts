@@ -1,5 +1,4 @@
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import ora from 'ora';
+import { $TSContext, exitOnNextTick, spinner } from 'amplify-cli-core';
 import { LayerCfnLogicalNamePrefix } from './constants';
 // eslint-disable-next-line import/no-cycle
 import { isMultiEnvLayer } from './layerHelpers';
@@ -22,7 +21,7 @@ export class LayerCloudState {
   }
 
   private async loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-    const spinner = ora('Loading layer data from the cloud...').start();
+    spinner.start('Loading layer data from the cloud...');
     try {
       const { envName }: { envName: string } = context.amplify.getEnvInfo();
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);

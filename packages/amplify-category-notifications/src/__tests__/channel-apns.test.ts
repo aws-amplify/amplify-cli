@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService, IContextPrint } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService, IContextPrint } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as configureKey from '../apns-key-config';
 import * as configureCertificate from '../apns-cert-config';

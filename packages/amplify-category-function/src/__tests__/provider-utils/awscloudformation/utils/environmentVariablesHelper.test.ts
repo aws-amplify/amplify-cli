@@ -82,7 +82,7 @@ describe('ensureEnvironmentVariableValues', () => {
 
     prompterMock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
 
-    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as unknown as $TSContext);
+    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as unknown as $TSContext, 'testAppId');
     expect(getEnvParamManager().getResourceParamManager('function', 'testFunc').getAllParams()).toEqual({
       envVarOne: 'testVal1',
       envVarTwo: 'testVal2',

@@ -1,4 +1,4 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager, AmplifyError } from 'amplify-cli-core';
 import { IEnvironmentParameterManager, saveAll } from '../environment-parameter-manager';
 
 jest.mock('amplify-cli-core');
@@ -23,6 +23,9 @@ stateManagerMock.backendConfigFileExists.mockReturnValue(true);
 
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 pathManagerMock.findProjectRoot.mockReturnValue('test/project/root');
+
+const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
+AmplifyErrorMock.mockImplementation(() => new Error('test error') as AmplifyError);
 
 let ensureEnvParamManager: () => Promise<{ instance: IEnvironmentParameterManager }>;
 
@@ -58,7 +61,7 @@ describe('save', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
     funcParamManager.deleteParam('envVar1');
     funcParamManager.deleteParam('envVar2');
-    envParamManager.save();
+    await envParamManager.save();
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, {
       testEnv: {
         categories: {
@@ -73,17 +76,17 @@ describe('save', () => {
   it('does not store empty categories', async () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
     envParamManager.removeResourceParamManager('function', 'funcName');
-    envParamManager.save();
+    await envParamManager.save();
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, {
       testEnv: {},
     });
   });
 
-  it('calls IParameterMapController.save if in the current environment', async () => {
+  it('calls IParameterMapController.save if in the current environment and serviceUploadHandler defined', async () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
     const resourceParamManager = envParamManager.getResourceParamManager('function', 'funcName');
     resourceParamManager.setParam('testParam', 'testValue');
-    envParamManager.save();
+    await envParamManager.save();
     expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "parameters": Object {
@@ -104,7 +107,7 @@ describe('save', () => {
 describe('verifyExpectedEnvParameters', () => {
   it('does not throw when nothing is missing', async () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
-    envParamManager.save();
+    await envParamManager.save();
     await envParamManager.verifyExpectedEnvParameters();
   });
 
@@ -113,7 +116,7 @@ describe('verifyExpectedEnvParameters', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
 
     funcParamManager.setParam('missingParam', 'missingValue');
-    envParamManager.save();
+    await envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
     let error = undefined;
@@ -130,7 +133,7 @@ describe('verifyExpectedEnvParameters', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
 
     funcParamManager.setParam('missingParam', 'missingValue');
-    envParamManager.save();
+    await envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
     let error = undefined;
@@ -146,7 +149,7 @@ describe('verifyExpectedEnvParameters', () => {
 describe('getMissingParameters', () => {
   it('returns an empty array when nothing is missing', async () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
-    envParamManager.save();
+    await envParamManager.save();
     expect(await envParamManager.getMissingParameters()).toEqual([]);
   });
 
@@ -155,7 +158,7 @@ describe('getMissingParameters', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
 
     funcParamManager.setParam('missingParam', 'missingValue');
-    envParamManager.save();
+    await envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
     expect(await envParamManager.getMissingParameters()).toEqual([
@@ -168,7 +171,7 @@ describe('getMissingParameters', () => {
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
 
     funcParamManager.setParam('missingParam', 'missingValue');
-    envParamManager.save();
+    await envParamManager.save();
     funcParamManager.deleteParam('missingParam');
 
     expect(await envParamManager.getMissingParameters([{ category: 'auth', resourceName: 'mockAuth', service: 'Cognito' }])).toEqual([]);

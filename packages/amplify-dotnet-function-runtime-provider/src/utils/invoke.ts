@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import execa from 'execa';
 import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { dotnetcore31, executableName } from '../constants';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {
   const sourcePath = path.join(request.srcRoot, 'src');
