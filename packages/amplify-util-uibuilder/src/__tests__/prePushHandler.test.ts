@@ -1,4 +1,4 @@
-// aws-sdk, amplify-cli-core, amplify-prompts are in package dependencies
+// aws-sdk, @aws-amplify/amplify-cli-core, amplify-prompts are in package dependencies
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { Form } from 'aws-sdk/clients/amplifyuibuilder'; // eslint-disable-line import/no-extraneous-dependencies
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
@@ -6,7 +6,7 @@ import * as utils from '../commands/utils';
 import { prePushHandler } from '../utils/prePushHandler';
 
 jest.mock('../commands/utils');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockImplementation(() => 2),
 }));

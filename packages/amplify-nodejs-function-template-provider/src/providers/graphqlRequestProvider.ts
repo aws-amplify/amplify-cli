@@ -1,7 +1,7 @@
 import { FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { AmplifySupportedService, exitOnNextTick, $TSContext } from 'amplify-cli-core';
+import { AmplifySupportedService, exitOnNextTick, $TSContext } from '@aws-amplify/amplify-cli-core';
 
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getDstMap } from '../utils/destFileMapper';
