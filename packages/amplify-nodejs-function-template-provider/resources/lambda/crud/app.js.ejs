@@ -8,10 +8,10 @@ See the License for the specific language governing permissions and limitations 
 
 <%= props.topLevelComment %>
 
-import { DynamoDB } from '@aws-sdk/client-dynamodb';
-import { eventContext } from 'aws-serverless-express/middleware.js';
-import bodyParser from 'body-parser';
-import express from 'express';
+const DynamoDB = require('@aws-sdk/client-dynamodb').DynamoDB;
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+const bodyParser = require('body-parser')
+const express = require('express')
 
 const dynamodb = new DynamoDB({ region: process.env.TABLE_REGION });
 
@@ -32,9 +32,9 @@ const hashKeyPath = '/:' + partitionKeyName;
 const sortKeyPath = hasSortKey ? '/:' + sortKeyName : '';
 
 // declare a new express app
-export const app = express()
+const app = express()
 app.use(bodyParser.json())
-app.use(eventContext())
+app.use(awsServerlessExpressMiddleware.eventContext())
 
 // Enable CORS for all methods
 app.use(function(req, res, next) {
@@ -226,3 +226,8 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
 app.listen(3000, function() {
   console.log("App started")
 });
+
+// Export the app object. When executing the application local this does nothing. However,
+// to port it to AWS Lambda we will create a wrapper around that will load the app from
+// this file
+module.exports = app

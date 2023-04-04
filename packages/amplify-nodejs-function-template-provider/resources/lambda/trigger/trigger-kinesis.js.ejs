@@ -3,7 +3,7 @@
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-export const handler = event => {
+exports.handler = event => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
   let res = '';
   if ('Records' in event) {
