@@ -69,6 +69,10 @@ describe('can generate components', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         }),
       }),

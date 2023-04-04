@@ -53,6 +53,10 @@ describe('can clone components to new environment', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         }),
       }),

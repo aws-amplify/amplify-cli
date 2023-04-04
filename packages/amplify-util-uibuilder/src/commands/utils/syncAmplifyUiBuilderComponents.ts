@@ -1,6 +1,6 @@
 import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import { StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm } from '@aws-amplify/codegen-ui';
+import { StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm, FormFeatureFlags } from '@aws-amplify/codegen-ui';
 import { createUiBuilderComponent, createUiBuilderForm, createUiBuilderTheme, generateBaseForms } from './codegenResources';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 
@@ -95,18 +95,19 @@ export const generateUiBuilderForms = (
   formSchemas: any[],
   dataSchema?: GenericDataSchema,
   autoGenerateForms?: boolean,
+  formFeatureFlags?: FormFeatureFlags,
 ): CodegenResponse<StudioForm>[] => {
   const modelMap: { [model: string]: Set<'create' | 'update'> } = {};
   if (dataSchema?.dataSourceType === 'DataStore' && autoGenerateForms) {
     Object.entries(dataSchema.models).forEach(([name, model]) => {
-      if (checkIsSupportedAsForm(model) && !model.isJoinTable) {
+      if (checkIsSupportedAsForm(model, formFeatureFlags) && !model.isJoinTable) {
         modelMap[name] = new Set(['create', 'update']);
       }
     });
   }
   const codegenForm = (schema: StudioForm): CodegenResponse<StudioForm> => {
     try {
-      const form = createUiBuilderForm(context, schema, dataSchema);
+      const form = createUiBuilderForm(context, schema, dataSchema, formFeatureFlags);
       return { resultType: 'SUCCESS', schema: form };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
