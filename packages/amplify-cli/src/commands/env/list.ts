@@ -8,7 +8,7 @@ import { printEnvInfo } from '../helpers/envUtils';
 export const run = async (context): Promise<void> => {
   const { envName } = context.amplify.getEnvInfo();
 
-  if (context.parameters.options.details) {
+  if (context?.parameters?.options?.details) {
     const allEnvs = context.amplify.getEnvDetails();
     if (context.parameters.options.json) {
       printer.info(JSONUtilities.stringify(allEnvs) as string);
@@ -25,7 +25,7 @@ export const run = async (context): Promise<void> => {
     });
   } else {
     const allEnvs = context.amplify.getAllEnvs();
-    if (context.parameters.options.json) {
+    if (context?.parameters?.options?.json) {
       printer.info(JSONUtilities.stringify({ envs: allEnvs }) as string);
       return;
     }

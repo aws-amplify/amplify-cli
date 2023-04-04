@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkthrough';
 import { getDstMap } from '../utils/destFileMapper';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda/crud');
 

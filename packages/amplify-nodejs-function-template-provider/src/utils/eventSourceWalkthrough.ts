@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import { askAnalyticsCategoryKinesisQuestions } from './analyticsWalkthrough';
 import { askAPICategoryDynamoDBQuestions, askDynamoDBQuestions } from './dynamoDBWalkthrough';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 
 export async function askEventSourceQuestions(context: any) {
   const selectEventSourceQuestion = {

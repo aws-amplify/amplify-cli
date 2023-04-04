@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { migrationCheck } from '../migrations/index';
 import * as apiAnalyticsClient from '../plugin-client-api-analytics';
 import { isNotificationChannelEnabled } from '../notifications-amplify-meta-api';

@@ -542,6 +542,11 @@ function getConfigForEnv(context: $TSContext, envName: string) {
     configLevel: 'general',
     config: {},
   };
+  if (typeof context?.exeInfo?.inputParams?.awscloudformation === 'object') {
+    const config = context?.exeInfo?.inputParams?.awscloudformation;
+    projectConfigInfo.configLevel = config.configLevel || 'general';
+    projectConfigInfo.config = config;
+  }
   const dotConfigDirPath = pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
 
@@ -595,7 +600,7 @@ function removeProjectConfig(envName: string) {
 }
 
 export async function loadConfiguration(context: $TSContext): Promise<AwsSecrets> {
-  const { envName } = context.amplify.getEnvInfo();
+  const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
   const config = await loadConfigurationForEnv(context, envName);
   return config;
 }

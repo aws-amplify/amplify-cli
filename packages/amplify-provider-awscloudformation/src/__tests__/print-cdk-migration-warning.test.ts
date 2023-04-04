@@ -5,7 +5,7 @@ import { printCdkMigrationWarning } from '../print-cdk-migration-warning';
 
 const detectAffectedDirectDependenciesMock = jest.fn();
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('fs-extra');
 

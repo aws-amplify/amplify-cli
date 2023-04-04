@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import glob from 'glob';
 import execa from 'execa';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
