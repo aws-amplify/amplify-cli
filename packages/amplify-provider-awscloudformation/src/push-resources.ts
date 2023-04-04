@@ -1059,7 +1059,7 @@ export const formNestedStack = async (
 
   const s3 = await S3.getInstance(context);
   const currentEnvName = context.amplify.getEnvInfo().envName;
-  const urlMap = {};
+  const urlParametersMap = {};
   for (const category of categories) {
     const resources = Object.keys(amplifyMeta[category]);
     for (const resource of resources) {
@@ -1068,7 +1068,7 @@ export const formNestedStack = async (
         const templateURL = resourceDetails.providerMetadata.s3TemplateURL;
         const key = templateURL.replace('https://s3.amazonaws.com/', '').split(resourceDetails.s3Bucket.deploymentBucketName + '/')[1];
         const jsonBody = await s3.getFile({ Key: key }, currentEnvName);
-        urlMap[templateURL] = JSON.parse(jsonBody.toString());
+        urlParametersMap[templateURL] = Object.keys(JSON.parse(jsonBody.toString()).Parameters);
       }
     }
   }
@@ -1193,7 +1193,7 @@ export const formNestedStack = async (
         }
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
-          const urlParameters = Object.keys(urlMap[templateURL].Parameters);
+          const urlParameters = urlParametersMap[templateURL];
           const nonCustomParameters = ['CloudWatchRule', 'deploymentBucketName', 'env', 's3Key'];
           const misMatchedParams = Object.keys(parameters).filter(
             (parameter) => !nonCustomParameters.includes(parameter) && !urlParameters.includes(parameter),
