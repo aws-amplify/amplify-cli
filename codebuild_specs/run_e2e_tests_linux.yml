@@ -3,12 +3,13 @@ env:
   shell: bash
   variables:
     CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/auth_2b.test.ts
+    TEST_SUITE: src/__tests__/geo-add-f.test.ts
+    E2E_TEST_COVERAGE_DIR: /amplify/coverage
 phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
-      # - export CODEBUILD_SOURCE_VERSION=3fd87009bf573ebc8cda120dfe0cfd7f6a134fe3
+      - export CODEBUILD_SOURCE_VERSION=ee655312cfe98c35f73f17f50914054f6c744242
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR

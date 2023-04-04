@@ -103,6 +103,42 @@ function _testLinux {
     # echo collecting coverage
     # yarn coverage
 }
+
+# COVERAGE FUNCTIONS
+#
+# run_e2e_tests_linux.yml
+#	shared-scripts.sh: _runE2ETests(Linux/Windows)
+#		local_publish_helpers.sh: retry runE2ETest
+#			local_publish_helpers.sh: runE2ETest
+#
+# I really think this should probably be part of runE2ETest.
+# That way we can clean up after ourselves in a retry. Is that
+# required? Won't we overwrite all these files anyway?
+function _setupCoverage {
+    _turnOnNodeV8CoverageReporting
+    rm -r $E2E_TEST_COVERAGE_DIR
+    mkdir -p $E2E_TEST_COVERAGE_DIR
+}
+function _convertCoverage {
+    echo Convert Coverage
+    loadCache e2e-test-coverage $E2E_TEST_COVERAGE_DIR
+    local include="**/amplify-cli/packages/**"
+    local exclude="**/amplify-cli/packages/amplify-e2e-*"
+    local reporter=lcov
+    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --include $include --exclude $exclude --allow-external --reporter $reporter
+    # needs to pick up the new coverage directory
+    # for reference, assuming e2e tests are run from the amplify-e2e-tests directory:
+    # .../amplify-e2e-tests/$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
+    # .../amplify-e2e-tests/coverage/lcov - generated with c8 command above
+    # storeCache coverage e2e-test-coverage/converted # this should pick up the newly created converted files
+}
+function _teardownCoverage {
+    echo Teardown Coverage
+    # storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage
+    rm -r $E2E_TEST_COVERAGE_DIR
+}
+# END COVERAGE FUNCTIONS
+
 function _validateCDKVersion {
     echo Validate CDK Version
     # download [repo, .cache from s3]
@@ -268,6 +304,7 @@ function _runE2ETestsLinux {
     
     # cd packages/amplify-e2e-tests
     # retry runE2eTest
+    NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
 }
 function _runE2ETestsWin {
     echo RUN E2E Tests Windows
