@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import { JSONUtilities } from './jsonUtilities';
+import { AmplifyError } from './errors/amplify-error';
 
 const defaultReadCFNTemplateOptions = { throwIfNotExist: true };
 
@@ -22,7 +23,11 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
     if (options.throwIfNotExist === false) {
       return undefined;
     }
-    throw new Error(`No CloudFormation template found at ${filePath}`);
+    throw new AmplifyError('CloudFormationTemplateError', {
+      message: `No CloudFormation template found at ${filePath}`,
+      resolution: `Ensure the file exists and is a valid CloudFormation template.
+      File path should match the following pattern: '<projectRoot>/amplify/backend/<category>/<resourceName>/<resourceName>-cloudformation-template.json' where <resourceName> should match the value from <projectRoot>/amplify/team-provider-info.json.`,
+    });
   }
   const fileContent = fs.readFileSync(filePath, 'utf8');
 
