@@ -3,7 +3,7 @@ import * as execa from 'execa';
 import * as semver from 'semver';
 import { minJavaVersion, minGradleVersion } from './constants';
 import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const checkJava = async (): Promise<CheckDependenciesResult> => {
   const executablePath = which.sync('java', {

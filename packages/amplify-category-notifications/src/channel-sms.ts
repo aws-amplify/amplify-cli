@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import ora from 'ora';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';

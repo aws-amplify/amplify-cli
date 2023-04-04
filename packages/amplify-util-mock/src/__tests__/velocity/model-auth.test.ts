@@ -8,7 +8,7 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from '../../velocity';
 import { featureFlags } from './test-helper';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const USER_POOL_ID = 'us-fake-1ID';
 

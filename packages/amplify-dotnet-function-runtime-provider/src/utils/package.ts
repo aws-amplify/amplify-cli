@@ -3,7 +3,7 @@ import path from 'path';
 import * as execa from 'execa';
 import { PackageRequest, PackageResult } from '@aws-amplify/amplify-function-plugin-interface';
 import { dotnetcore31, executableName } from '../constants';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const packageAssemblies = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   const distPath = path.join(request.srcRoot, 'dist');

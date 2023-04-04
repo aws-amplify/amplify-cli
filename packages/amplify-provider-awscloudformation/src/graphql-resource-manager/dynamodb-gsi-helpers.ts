@@ -1,5 +1,5 @@
 import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-types/types/dynamoDb/table';
-import { DynamoDB, IntrinsicFunction } from 'cloudform';
+import { DynamoDB, IntrinsicFunction } from 'cloudform-types';
 
 import _ from 'lodash';
 import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
