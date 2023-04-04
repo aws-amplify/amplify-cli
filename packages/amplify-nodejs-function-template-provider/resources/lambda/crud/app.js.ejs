@@ -8,13 +8,8 @@ See the License for the specific language governing permissions and limitations 
 
 <%= props.topLevelComment %>
 
-
-const DynamoDBClient = require('@aws-sdk/client-dynamodb').DynamoDBClient;
-const DynamoDBDocumentClient = require('@aws-sdk/lib-dynamodb').DynamoDBDocumentClient;
-const DeleteCommand = require('@aws-sdk/lib-dynamodb').DeleteCommand;
-const GetCommand = require('@aws-sdk/lib-dynamodb').GetCommand;
-const PutCommand = require('@aws-sdk/lib-dynamodb').PutCommand;
-const QueryCommand = require('@aws-sdk/lib-dynamodb').QueryCommand;
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand,  } = require('@aws-sdk/lib-dynamodb');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
