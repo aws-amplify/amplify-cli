@@ -16,27 +16,27 @@ export const secretsPathAmplifyAppIdKey = 'secretsPathAmplifyAppId';
  *
  * If envName is not specified, the current env is assumed
  */
-export const getFullyQualifiedSecretName = (secretName: string, functionName: string, envName?: string) =>
-  `${getFunctionSecretPrefix(functionName, envName)}${secretName}`;
+export const getFullyQualifiedSecretName = (secretName: string, functionName: string, envName?: string, appId?: string) =>
+  `${getFunctionSecretPrefix(functionName, envName, appId)}${secretName}`;
 
 /**
  * Returns the SSM parameter name prefix for all secrets for the given function in the given env
  *
  * If envName is not specified, the current env is assumed
  */
-export const getFunctionSecretPrefix = (functionName: string, envName?: string) =>
-  path.posix.join(getEnvSecretPrefix(envName), `AMPLIFY_${functionName}_`);
+export const getFunctionSecretPrefix = (functionName: string, envName?: string, appId?: string) =>
+  path.posix.join(getEnvSecretPrefix(envName, appId), `AMPLIFY_${functionName}_`);
 
 /**
  * Returns the SSM parameter name prefix for all secrets in the given env.
  *
  * If envName is not specified, the current env is assumed
  */
-export const getEnvSecretPrefix = (envName: string = stateManager.getLocalEnvInfo()?.envName) => {
+export const getEnvSecretPrefix = (envName: string = stateManager.getCurrentEnvName(), appId: string = getAppId()) => {
   if (!envName) {
     throw new Error('Could not determine the current Amplify environment name. Try running `amplify env checkout`.');
   }
-  return path.posix.join('/amplify', getAppId(), envName);
+  return path.posix.join('/amplify', appId, envName);
 };
 
 // NOTE: Even though the following 2 functions are CFN specific, I'm putting them here to colocate all of the secret naming logic

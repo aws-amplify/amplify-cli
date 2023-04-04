@@ -10,9 +10,8 @@ import {
   LocalEnvInfo,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
-import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { getResources } from '../../commands/build';
+import { getChangedResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from './get-env-info';
 import { getProjectConfig } from './get-project-config';
@@ -21,6 +20,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { showBuildDirChangesMessage } from './auto-updates';
+import { verifyExpectedEnvParams } from '../../utils/verify-expected-env-params';
 
 /**
  * Entry point for pushing resources to the cloud
@@ -73,7 +73,7 @@ export const pushResources = async (
 
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType();
-  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
     forceCompile: true,
@@ -92,47 +92,7 @@ export const pushResources = async (
     return false;
   }
 
-  // Verify any environment parameters before push operation
-  const envParamManager = (await ensureEnvParamManager()).instance;
-
-  const promptMissingParameter = async (
-    categoryName: string,
-    resourceName: string,
-    parameterName: string,
-    envParamManager: IEnvironmentParameterManager,
-  ): Promise<void> => {
-    printer.warn(`Could not find value for parameter ${parameterName}`);
-    const value = await prompter.input(`Enter a value for ${parameterName} for the ${categoryName} resource: ${resourceName}`);
-    const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
-    resourceParamManager.setParam(parameterName, value);
-  };
-
-  const parametersToCheck = resourcesToBuild.filter(({ category: c, resourceName: r }) => {
-    // Filter based on optional parameters
-    if (category) {
-      if (c !== category) {
-        return false;
-      }
-    }
-    if (resourceName) {
-      if (r !== resourceName) {
-        return false;
-      }
-    }
-    return true;
-  });
-
-  if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
-    await envParamManager.verifyExpectedEnvParameters(parametersToCheck);
-  } else {
-    const missingParameters = await envParamManager.getMissingParameters(parametersToCheck);
-    if (missingParameters.length > 0) {
-      for (const { categoryName, resourceName, parameterName } of missingParameters) {
-        await promptMissingParameter(categoryName, resourceName, parameterName, envParamManager);
-      }
-      await envParamManager.save(); // Values must be in TPI for CFN deployment to work
-    }
-  }
+  await verifyExpectedEnvParams(context, category, resourceName);
 
   // rebuild has an upstream confirmation prompt so no need to prompt again here
   let continueToPush = !!context?.exeInfo?.inputParams?.yes || rebuild;
@@ -197,7 +157,7 @@ const providersPush = async (
     providers.map(async (provider: string) => {
       const providerModule = await import(providerPlugins[provider]);
       const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-      return providerModule.pushResources(context, resourceDefinition, rebuild);
+      return await providerModule.pushResources(context, resourceDefinition, rebuild);
     }),
   );
 };

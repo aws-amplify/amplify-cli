@@ -3,6 +3,7 @@ import * as execa from 'execa';
 import * as semver from 'semver';
 import { minJavaVersion, minGradleVersion } from './constants';
 import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const checkJava = async (): Promise<CheckDependenciesResult> => {
   const executablePath = which.sync('java', {
@@ -16,10 +17,15 @@ export const checkJava = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const result = execa.sync('java', ['-version']);
+  let result;
+  try {
+    result = execa.sync('java', ['-version']);
 
-  if (result.exitCode !== 0) {
-    throw new Error(`java failed, exit code was ${result.exitCode}`);
+    if (result.exitCode !== 0) {
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, exit code was ${result.exitCode}` });
+    }
+  } catch (err) {
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, error message was ${err.message}` }, err);
   }
 
   const regex = /(\d+\.)(\d+\.)(\d)/g;
@@ -51,10 +57,15 @@ export const checkGradle = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const result = execa.sync('gradle', ['-v']);
+  let result;
+  try {
+    result = execa.sync('gradle', ['-v']);
 
-  if (result.exitCode !== 0) {
-    throw new Error(`gradle failed, exit code was ${result.exitCode}`);
+    if (result.exitCode !== 0) {
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `gradle failed, exit code was ${result.exitCode}` });
+    }
+  } catch (err) {
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `gradle failed, error message was ${err.message}` }, err);
   }
 
   const regex = /(\d+\.)(\d+)/g;
@@ -87,10 +98,15 @@ export const checkJavaCompiler = async () => {
     };
   }
 
-  const result = execa.sync('javac', ['-version']);
+  let result;
+  try {
+    result = execa.sync('javac', ['-version']);
 
-  if (result.exitCode !== 0) {
-    throw new Error(`java failed, exit code was ${result.exitCode}`);
+    if (result.exitCode !== 0) {
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, exit code was ${result.exitCode}` });
+    }
+  } catch (err) {
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, error message was ${err.message}` }, err);
   }
 
   const regex = /(\d+\.)(\d+\.)(\d)/g;

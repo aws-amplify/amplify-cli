@@ -55,39 +55,38 @@ const uploadParameterToParameterStore = (
   };
 };
 
+// some utility types for the functions below
+export type PrimitiveRecord = Record<string, string | number | boolean>;
+export type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
+
 /**
  * Higher order function for downloading CloudFormation parameters from the service
  */
-export const getEnvParametersDownloadHandler = async (
-  context: $TSContext,
-): Promise<(keys: string[]) => Promise<Record<string, string | number | boolean>>> => {
+export const getEnvParametersDownloadHandler = async (context: $TSContext): Promise<DownloadHandler> => {
   let appId: string;
   try {
     appId = resolveAppId(context);
   } catch {
-    printer.warn('Failed to resolve AppId, skipping parameter download.');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return (__: string[]) =>
-      new Promise((resolve) => {
-        resolve({});
-      });
+    printer.warn('Failed to resolve AppId. Skipping parameter download.');
+    // return a noop function
+    return async () => ({});
   }
-  const envName = stateManager.getCurrentEnvName();
+  const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
+  if (!envName) {
+    printer.warn('Failed to resolve environment name. Skipping parameter download.');
+    return async () => ({});
+  }
   const { client } = await SSM.getInstance(context);
   return downloadParametersFromParameterStore(appId, envName, client);
 };
 
-const downloadParametersFromParameterStore = (
-  appId: string,
-  envName: string,
-  ssmClient: SSMType,
-): ((keys: string[]) => Promise<Record<string, string | number | boolean>>) => {
-  return async (keys: string[]): Promise<Record<string, string | number | boolean>> => {
+const downloadParametersFromParameterStore = (appId: string, envName: string, ssmClient: SSMType): DownloadHandler => {
+  return async (keys: string[]): Promise<PrimitiveRecord> => {
     if (keys.length === 0) {
       return {};
     }
+    const keyPaths = keys.map((key) => `/amplify/${appId}/${envName}/${key}`);
     try {
-      const keyPaths = keys.map((key) => `/amplify/${appId}/${envName}/${key}`);
       const sdkPromises = convertKeyPathsToSdkPromises(ssmClient, keyPaths);
       const results = await executeSdkPromisesWithExponentialBackOff<SSMType.GetParametersResult>(sdkPromises);
       return results.reduce((acc, { Parameters }) => {
@@ -96,12 +95,12 @@ const downloadParametersFromParameterStore = (
           acc[key] = JSON.parse(param.Value);
         });
         return acc;
-      }, {} as Record<string, string | number | boolean>);
+      }, {} as PrimitiveRecord);
     } catch (e) {
       throw new AmplifyFault(
         'ParameterDownloadFault',
         {
-          message: `Failed to download the following parameters from ParameterStore:\n  ${keys.join('\n  ')}`,
+          message: `Failed to download the following parameters from ParameterStore:\n  ${keyPaths.join('\n  ')}`,
         },
         e,
       );

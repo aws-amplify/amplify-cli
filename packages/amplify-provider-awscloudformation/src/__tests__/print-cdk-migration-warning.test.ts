@@ -5,7 +5,7 @@ import { printCdkMigrationWarning } from '../print-cdk-migration-warning';
 
 const detectAffectedDirectDependenciesMock = jest.fn();
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('fs-extra');
 
@@ -51,6 +51,42 @@ const mockContext = {
 
 describe('print migration warning tests', () => {
   beforeEach(() => jest.clearAllMocks());
+
+  it('no migration message when detector failed for some reason', async () => {
+    const resourcesToBeCreated = [
+      {
+        category: 'function',
+        resourceName: 'someResource',
+        service: 'Lambda',
+      },
+    ];
+    const resourcesToBeDeleted = [
+      {
+        category: 'auth',
+        resourceName: 'someResource1',
+        service: 'Cognito',
+      },
+    ];
+    const resourcesToBeUpdated = [
+      {
+        category: 'storage',
+        resourceName: 'someResource2',
+        service: 'S3',
+      },
+    ];
+
+    const allResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
+    mockContext.amplify.getResourceStatus.mockResolvedValue({ allResources });
+    // amplify-node-detector plug
+    detectAffectedDirectDependenciesMock.mockImplementation(() => {
+      throw new Error();
+    });
+    // override plug
+    fsMock.existsSync.mockReturnValue(false);
+    printerMock.warn.mockReturnValue(undefined);
+    await printCdkMigrationWarning(mockContext as unknown as $TSContext);
+    expect(printerMock.warn).not.toBeCalled();
+  });
 
   it('no migration message when there are no override and custom resources', async () => {
     const resourcesToBeCreated = [

@@ -1,4 +1,3 @@
-/* eslint-disable */
 const path = require('path');
 const constants = require('../../constants/plugin-constants');
 const configUtils = require('../../utils/config-utils');

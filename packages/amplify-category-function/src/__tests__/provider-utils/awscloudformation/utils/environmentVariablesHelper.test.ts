@@ -4,7 +4,7 @@ import * as envVarHelper from '../../../../provider-utils/awscloudformation/util
 import * as uuid from 'uuid';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('uuid');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
@@ -82,7 +82,7 @@ describe('ensureEnvironmentVariableValues', () => {
 
     prompterMock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
 
-    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as unknown as $TSContext);
+    await envVarHelper.ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as unknown as $TSContext, 'testAppId');
     expect(getEnvParamManager().getResourceParamManager('function', 'testFunc').getAllParams()).toEqual({
       envVarOne: 'testVal1',
       envVarTwo: 'testVal2',

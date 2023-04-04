@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.3-rc.e9e0d157d.0...@aws-amplify/amplify-category-analytics@5.0.3) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.3-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.2...@aws-amplify/amplify-category-analytics@5.0.3-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* prevent analytics/notifications migration if there is not a pinpoint app added ([#12135](https://github.com/aws-amplify/amplify-cli/issues/12135)) ([3eb074a](https://github.com/aws-amplify/amplify-cli/commit/3eb074a1870bede1a75f8002cbc2f76b0b7de434))
+
+
+
+
+
 ## [5.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.1...@aws-amplify/amplify-category-analytics@5.0.2) (2023-03-13)
 
 

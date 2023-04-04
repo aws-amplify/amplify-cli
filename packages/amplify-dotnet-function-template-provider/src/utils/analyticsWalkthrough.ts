@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 export async function askAnalyticsCategoryKinesisQuestions(context: any) {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();

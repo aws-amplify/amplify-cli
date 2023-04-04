@@ -11,7 +11,7 @@ import {
   exitOnNextTick,
   IAmplifyResource,
   ResourceDoesNotExistError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { alphanumeric, printer, prompter, integer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
 import path from 'path';
