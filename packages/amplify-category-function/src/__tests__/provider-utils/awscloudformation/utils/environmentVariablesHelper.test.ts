@@ -4,7 +4,7 @@ import * as envVarHelper from '../../../../provider-utils/awscloudformation/util
 import * as uuid from 'uuid';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('uuid');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;

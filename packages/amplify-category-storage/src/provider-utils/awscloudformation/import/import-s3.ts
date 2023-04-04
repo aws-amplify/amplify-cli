@@ -440,7 +440,7 @@ const headlessImport = async (
   const bucketExists = await s3.bucketExists(resolvedEnvParams.bucketName);
 
   if (!bucketExists) {
-    throw new Error(importMessages.BucketNotFound(resolvedEnvParams.bucketName));
+    throw new AmplifyError('StorageImportError', { message: importMessages.BucketNotFound(resolvedEnvParams.bucketName) });
   }
 
   // Save the region as we need to store it in resource parameters

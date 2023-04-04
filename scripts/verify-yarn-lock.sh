@@ -10,3 +10,12 @@ if [[ yarn_lock_changed -gt 0 ]]; then
 else
   echo "Success! No drift detected in yarn.lock file."
 fi
+
+yarn_is_using_yarnpkg_registry=$(grep -F https://registry.yarnpkg.com yarn.lock | wc -l)
+
+if [[ yarn_is_using_yarnpkg_registry -gt 0 ]]; then
+  echo "Fail! Detected https://registry.yarnpkg.com in yarn.lock file. Please see use NPM - yarn config set registry https://registry.npmjs.org."
+  exit 1;
+else
+  echo "Success! No https://registry.yarnpkg.com detected in yarn.lock file."
+fi

@@ -2,7 +2,7 @@ import * as printerDependency from '@aws-amplify/amplify-prompts';
 import * as JSONUtilitiesDependency from 'amplify-cli-core';
 import { notifyMissingPackages } from '../commands/utils/notifyMissingPackages';
 import { $TSContext } from 'amplify-cli-core';
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('amplify-cli-core');
 printerDependency.printer.info = jest.fn();
 printerDependency.printer.debug = jest.fn();

@@ -5,11 +5,11 @@ import * as path from 'path';
  * updates function cfn stack with lambda execution role arn parameter
  */
 export const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
-  const amplifyMeta = stateManager.getMeta();
-  const functionNames = Object.keys(amplifyMeta?.[AmplifyCategories.FUNCTION] ?? []);
+  const backendConfig = stateManager.getBackendConfig();
+  const functionNames = Object.keys(backendConfig?.[AmplifyCategories.FUNCTION] ?? []);
   // filter lambda layer from lambdas in function
   const lambdaFunctionNames = functionNames.filter((functionName) => {
-    const functionObj = amplifyMeta?.[AmplifyCategories.FUNCTION]?.[functionName];
+    const functionObj = backendConfig?.[AmplifyCategories.FUNCTION]?.[functionName];
     return functionObj.service === AmplifySupportedService.LAMBDA;
   });
   for (const functionName of lambdaFunctionNames) {

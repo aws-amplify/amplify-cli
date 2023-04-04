@@ -144,7 +144,7 @@ function createAmplifyConfig(context, amplifyResources) {
 
 async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
   const newAWSExports = await getAWSExports(context, amplifyResources, cloudAmplifyResources);
-  generateAWSExportsFile(context, newAWSExports);
+  await generateAWSExportsFile(context, newAWSExports);
   return context;
 }
 
