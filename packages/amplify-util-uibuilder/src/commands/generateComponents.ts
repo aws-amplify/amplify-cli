@@ -51,6 +51,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
         formSchemas.entities,
         dataSchema,
         studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+        studioClient.metadata.formFeatureFlags,
       ),
     };
 

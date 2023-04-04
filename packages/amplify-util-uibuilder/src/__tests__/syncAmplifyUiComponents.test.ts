@@ -139,6 +139,10 @@ describe('should sync amplify ui builder components', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         })),
       })),
@@ -179,6 +183,10 @@ describe('should sync amplify ui builder components', () => {
       expect.objectContaining({
         autoGenerateForms: true,
         autoGenerateViews: true,
+        formFeatureFlags: {
+          isRelationshipSupported: false,
+          isNonModelSupported: false,
+        },
       }),
     );
   });
