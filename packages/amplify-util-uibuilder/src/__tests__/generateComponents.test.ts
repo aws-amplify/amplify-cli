@@ -3,7 +3,7 @@ import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
 
 jest.mock('../commands/utils');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const awsMock = aws as any;
 const utilsMock = utils as any;
 

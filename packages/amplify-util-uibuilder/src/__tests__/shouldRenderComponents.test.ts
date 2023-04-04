@@ -1,12 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
 
 const awsMock = aws as any;
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   stateManager: {
     getProjectConfig: jest.fn().mockReturnValue({
       providers: ['awscloudformation'],
@@ -66,7 +66,7 @@ describe('should render components', () => {
   });
 
   it("doesn't work if provider is not awscloudformation", async () => {
-    jest.mock('amplify-cli-core', () => ({
+    jest.mock('@aws-amplify/amplify-cli-core', () => ({
       stateManager: {
         getProjectConfig: jest.fn().mockReturnValue({
           providers: [],
@@ -82,7 +82,7 @@ describe('should render components', () => {
   });
 
   it('should return false if frontend is ios', async () => {
-    jest.mock('amplify-cli-core', () => ({
+    jest.mock('@aws-amplify/amplify-cli-core', () => ({
       stateManager: {
         getProjectConfig: jest.fn().mockReturnValue({
           providers: [],
@@ -95,7 +95,7 @@ describe('should render components', () => {
   });
 
   it('should return false if frontend is vue', async () => {
-    jest.mock('amplify-cli-core', () => ({
+    jest.mock('@aws-amplify/amplify-cli-core', () => ({
       stateManager: {
         getProjectConfig: jest.fn().mockReturnValue({
           providers: [],

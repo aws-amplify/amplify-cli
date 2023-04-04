@@ -1,6 +1,6 @@
 const clientFactory = require('./client-factory');
 const Table = require('cli-table3');
-const { spinner } = require('amplify-cli-core');
+const { spinner } = require('@aws-amplify/amplify-cli-core');
 
 async function generateTableContentForApp(context, appId) {
   spinner.start('Fetching AWS Amplify Console domains');

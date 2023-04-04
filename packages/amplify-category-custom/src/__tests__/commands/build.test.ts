@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/custom/build';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 
