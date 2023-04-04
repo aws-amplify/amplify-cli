@@ -1,4 +1,4 @@
-import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
+import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import type { CreateComponentData, Component, Theme, Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';

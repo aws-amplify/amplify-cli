@@ -1,4 +1,4 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { console } from '../../index';
 
 /**
