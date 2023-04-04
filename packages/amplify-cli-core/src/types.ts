@@ -429,6 +429,7 @@ export enum AmplifyFrontend {
   android = 'android',
   ios = 'ios',
   javascript = 'javascript',
+  flutter = 'flutter',
 }
 
 /**

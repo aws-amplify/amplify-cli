@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError, AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
@@ -100,7 +100,7 @@ const importServiceWalkthrough = async (
   providerName: string,
   providerUtils: ProviderUtils,
   previousResourceParameters: ResourceParameters | undefined,
-): Promise<{ questionParameters: ImportParameters; answers: ImportAnswers; projectType: string | undefined } | undefined> => {
+): Promise<{ questionParameters: ImportParameters; answers: ImportAnswers; projectType: AmplifyFrontend | undefined } | undefined> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -352,7 +352,7 @@ const importServiceWalkthrough = async (
   }
 
   // Import questions succeeded, create the create the required CLI resource state from the answers.
-  const projectType: string = projectConfig.frontend;
+  const projectType: AmplifyFrontend = projectConfig.frontend;
 
   return {
     questionParameters,
@@ -688,7 +688,7 @@ const updateStateFiles = async (
   context: $TSContext,
   questionParameters: ImportParameters,
   answers: ImportAnswers,
-  projectType: string | undefined,
+  projectType: AmplifyFrontend | undefined,
   updateEnvSpecificParameters: boolean,
 ): Promise<{
   backendConfiguration: BackendConfiguration;
@@ -835,7 +835,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
 const createEnvSpecificResourceParameters = (
   answers: ImportAnswers,
   hasOAuthConfig: boolean,
-  projectType: string | undefined,
+  projectType: AmplifyFrontend | undefined,
 ): EnvSpecificResourceParameters => {
   const userPool = answers.userPool!;
 
@@ -872,13 +872,14 @@ const createEnvSpecificResourceParameters = (
           break;
         case 'accounts.google.com': {
           switch (projectType) {
-            case 'javascript':
+            case AmplifyFrontend.javascript:
+            case AmplifyFrontend.flutter:
               envSpecificResourceParameters.googleClientId = answers.identityPool!.SupportedLoginProviders![key];
               break;
-            case 'ios':
+            case AmplifyFrontend.ios:
               envSpecificResourceParameters.googleIos = answers.identityPool!.SupportedLoginProviders![key];
               break;
-            case 'android':
+            case AmplifyFrontend.android:
               envSpecificResourceParameters.googleAndroid = answers.identityPool!.SupportedLoginProviders![key];
               break;
             default:
@@ -1207,7 +1208,7 @@ export const importedAuthEnvInit = async (
   }
 
   // Import questions succeeded, create the create the required CLI resource state from the answers.
-  const projectType: string = projectConfig.frontend;
+  const projectType: AmplifyFrontend = projectConfig.frontend;
 
   const newState = await updateStateFiles(context, questionParameters, answers, projectType, false);
 
@@ -1360,7 +1361,7 @@ export const headlessImport = async (
   }
 
   // Import questions succeeded, create the create the required CLI resource state from the answers.
-  const projectType: string = projectConfig.frontend;
+  const projectType: AmplifyFrontend = projectConfig.frontend;
 
   const newState = await updateStateFiles(context, questionParameters, answers, projectType, true);
 
