@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { PackageRequest, PackageResult } from '@aws-amplify/amplify-function-plugin-interface';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {

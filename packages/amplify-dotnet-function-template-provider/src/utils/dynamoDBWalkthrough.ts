@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
-import { AmplifyCategories, stateManager, ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { AmplifyCategories, stateManager, ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 
 export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {

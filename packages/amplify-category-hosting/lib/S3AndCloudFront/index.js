@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 const configManager = require('./configuration-manager');
 const fileUPloader = require('./helpers/file-uploader');
 const cloudFrontManager = require('./helpers/cloudfront-manager');

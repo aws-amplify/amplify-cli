@@ -2,7 +2,7 @@
 import { StudioSchema } from '@aws-amplify/codegen-ui';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyStudioClient } from '../clients';
 import {
   notifyMissingPackages,

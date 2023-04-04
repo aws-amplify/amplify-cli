@@ -335,7 +335,7 @@ export const amplifyPushIterativeRollback = (cwd: string, testingWithLatestCodeb
  */
 export const amplifyPushMissingEnvVar = (cwd: string, newEnvVarValue: string) =>
   spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-    .wait('Enter the missing environment variable value of')
+    .wait('Enter a value for')
     .sendLine(newEnvVarValue)
     .wait('Are you sure you want to continue?')
     .sendYes()

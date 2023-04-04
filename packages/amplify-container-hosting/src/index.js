@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 const category = 'hosting';
 const { generateHostingResources } = require('./lib/ElasticContainer/index');
