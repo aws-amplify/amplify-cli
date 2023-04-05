@@ -18,8 +18,7 @@ RUN sudo apt-get update && \
   groff \
   less \
   tree \
-  nano \
-  python3-pip
+  nano
 
 # Install NodeJS tools
 RUN mkdir /home/circleci/.npm-global && \
@@ -30,20 +29,21 @@ RUN mkdir /home/circleci/.npm-global && \
 RUN sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
 # Install Python
-# inspired by: https://github.com/aws/aws-codebuild-docker-images/blob/9282872af78aeb1b5df3010ed3872c40f3d0f056/al2/x86_64/standard/2.0/Dockerfile
-RUN curl https://pyenv.run | bash
-ENV PATH="/home/circleci/.pyenv/shims:/home/circleci/.pyenv/bin:$PATH"
-ENV PYTHON_38_VERSION="3.8.10"
-
-ARG PYTHON_PIP_VERSION=21.1.2
-ENV PYYAML_VERSION=5.4.1
-COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
-RUN env PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install $PYTHON_38_VERSION && rm -rf /tmp/*
-RUN pyenv global $PYTHON_38_VERSION
-RUN set -ex \
-    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-    && pip3 install --no-cache-dir --upgrade "PyYAML==$PYYAML_VERSION" \
-    && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli boto3 pipenv virtualenv
+WORKDIR /tmp
+RUN sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl && \
+    curl -O https://www.python.org/ftp/python/3.8.16/Python-3.8.16.tar.xz && \
+    sudo tar -C /usr/local -xf Python-3.8.16.tar.xz && \
+    sudo rm Python-3.8.16.tar.xz
+WORKDIR /usr/local/Python-3.8.16
+RUN sudo ./configure && \
+    sudo make -j 4 && \
+    sudo make altinstall && \
+    sudo curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+    sudo python3.8 get-pip.py && \
+    sudo update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.8 1 && \
+    pip3 install --user pipenv && \
+    python3 --version && \
+    virtualenv --version
 
 # Install AWS CLI
 RUN sudo pip install awscli
