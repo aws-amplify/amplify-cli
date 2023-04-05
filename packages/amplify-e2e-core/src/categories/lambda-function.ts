@@ -140,6 +140,21 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
     chain.wait('What do you want to do?');
     chain.sendCarriageReturn(); // "I'm done"
   }
+  if (settings.environmentVariables.operation && settings.environmentVariables.operation == 'remove') {
+    const actions = [
+      'Add new environment variable',
+      'Update existing environment variables',
+      'Remove existing environment variables',
+      "I'm done",
+    ];
+    const action = 'Remove existing environment variables';
+    chain.wait(/Select what you want to do with environment variables:*/);
+    singleSelect(chain, action, actions);
+    chain.wait('Which environment variable do you want to remove:');
+    chain.sendCarriageReturn(); // assumes only one variable
+    chain.wait(/Select what you want to do with environment variables:*/);
+    chain.sendCarriageReturn(); // I'm done
+  }
 };
 
 export type CoreFunctionSettings = {

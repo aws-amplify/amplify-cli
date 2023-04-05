@@ -1066,9 +1066,13 @@ export const formNestedStack = async (
       const resourceDetails = amplifyMeta[category][resource];
       if (resourceDetails.providerMetadata) {
         const templateURL = resourceDetails.providerMetadata.s3TemplateURL;
-        const key = templateURL.replace('https://s3.amazonaws.com/', '').split(resourceDetails.s3Bucket.deploymentBucketName + '/')[1];
-        const jsonBody = await s3.getFile({ Key: key }, currentEnvName);
-        urlParametersMap[templateURL] = Object.keys(JSON.parse(jsonBody.toString()).Parameters);
+        try {
+          const key = templateURL.replace('https://s3.amazonaws.com/', '').split(resourceDetails.s3Bucket.deploymentBucketName + '/')[1];
+          const jsonBody = await s3.getFile({ Key: key }, currentEnvName);
+          urlParametersMap[templateURL] = Object.keys(JSON.parse(jsonBody.toString()).Parameters);
+        } catch {
+          urlParametersMap[templateURL] = [];
+        }
       }
     }
   }
@@ -1194,16 +1198,18 @@ export const formNestedStack = async (
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
           const urlParameters = urlParametersMap[templateURL];
-          const nonCustomParameters = ['CloudWatchRule', 'deploymentBucketName', 'env', 's3Key'];
-          const misMatchedParams = Object.keys(parameters).filter(
-            (parameter) => !nonCustomParameters.includes(parameter) && !urlParameters.includes(parameter),
-          );
 
-          if (misMatchedParams.length) {
-            throw new AmplifyError('EnvironmentConfigurationError', {
-              message: 'Your environments have inconsistent parameters',
-              resolution: `Use 'amplify pull' to pull the backend or remove these parameters: ${misMatchedParams.toString()}`,
-            });
+          if (urlParameters.length) {
+            const nonCustomParameters = ['CloudWatchRule', 'deploymentBucketName', 'env', 's3Key'];
+            const misMatchedParams = Object.keys(parameters).filter(
+              (parameter) => !nonCustomParameters.includes(parameter) && !urlParameters.includes(parameter),
+            );
+            if (misMatchedParams.length) {
+              throw new AmplifyError('EnvironmentConfigurationError', {
+                message: 'Your environments have inconsistent parameters',
+                resolution: `Use 'amplify pull' to pull the backend or remove these parameters: ${misMatchedParams.toString()}`,
+              });
+            }
           }
 
           rootStack.Resources[resourceKey] = {
