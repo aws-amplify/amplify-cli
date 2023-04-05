@@ -578,4 +578,3 @@ workflows:
             branches:
               only:
                 - e2e-image-build
-                - e2e-image-build-vnext
