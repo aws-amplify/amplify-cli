@@ -4,12 +4,13 @@ env:
   compute-type: BUILD_GENERAL1_MEDIUM
   imagePullCredentialsType: SERVICE_ROLE
   variables:
+    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-east-1
+    CDK_DEFAULT_REGION: us-east-1
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2b.test.ts
     AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
     AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
-  # secrets-manager:
-  #   S3_ACCESS_KEY: "secretname" # s3_access_key in secret manager
 
 batch:
   fast-fail: false
@@ -93,5 +94,6 @@ batch:
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-      # depend-on:
-      #   - upload_pkg_binaries
+      debug-session: true
+      depend-on:
+        - upload_pkg_binaries

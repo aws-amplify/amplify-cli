@@ -68,7 +68,19 @@ function loadCacheFile {
     echo done loading cache
     cd $CODEBUILD_SRC_DIR
 }
-
+function _loadTestAccountCredentials {
+    echo ASSUMING PARENT TEST ACCOUNT credentials
+    session_id=$((1 + $RANDOM % 10000))
+    creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
+    if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
+        echo "Unable to assume parent e2e account role."
+        return
+    fi
+    echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
+    export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
+    export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
+    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
+}
 
 
 
@@ -302,8 +314,11 @@ function _runE2ETestsLinux {
     changeNpmGlobalPath
     amplify version
     
-    # cd packages/amplify-e2e-tests
-    # retry runE2eTest
+    cd packages/amplify-e2e-tests
+
+    _loadTestAccountCredentials
+
+    #retry runE2eTest
     NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
 }
 function _runE2ETestsWin {
