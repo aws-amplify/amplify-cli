@@ -16,7 +16,7 @@
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
-    "dev-build": "yarn --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
+    "dev-build": "yarn --network-concurrency 1 --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
     "e2e": "nx run e2e",
     "extract-api": "nx run-many --target=extract-api --all",
     "extract-formatting-changes": "yarn ts-node ./scripts/extract-formatting-changes.ts",
