@@ -54,7 +54,7 @@ describe('mock all', () => {
       },
     };
 
-    prompter_mock.pick.mockResolvedValueOnce(['AppSync']).mockRejectedValueOnce(['Lambda']).mockResolvedValueOnce(['S3']);
+    prompter_mock.pick.mockResolvedValueOnce(['AppSync']).mockResolvedValueOnce(['Lambda']).mockResolvedValueOnce(['S3']);
     await mockAllCategories(context_stub);
     expect(prompter_mock.pick).toBeCalled();
   });
