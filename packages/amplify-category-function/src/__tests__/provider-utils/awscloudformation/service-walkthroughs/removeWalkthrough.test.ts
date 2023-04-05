@@ -24,6 +24,7 @@ describe('remove walkthough test', () => {
     };
 
     jest.mock('amplify-cli-core', () => ({
+      ...jest.requireActual('amplify-cli-core'),
       promptConfirmationRemove: jest.fn().mockReturnValue(true),
       stateManager: {
         getLocalEnvInfo: jest.fn().mockReturnValue({ envName }),

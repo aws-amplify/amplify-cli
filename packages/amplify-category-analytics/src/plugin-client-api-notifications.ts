@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories, INotificationsResource, IPluginAPIResponse } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, INotificationsResource, IPluginAPIResponse } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get the notification resource config.

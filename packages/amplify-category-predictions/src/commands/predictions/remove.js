@@ -5,7 +5,7 @@ import {
 } from '../../provider-utils/awscloudformation/prediction-category-walkthroughs/storage-api';
 const subcommand = 'remove';
 const category = 'predictions';
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, exitOnNextTick } = require('@aws-amplify/amplify-cli-core');
 
 async function removePredictionsS3Resources(context) {
   const s3ResourceName = await invokeS3GetResourceName(context);
