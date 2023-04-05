@@ -19,6 +19,8 @@ function validateProject(projRoot: string, platform: AmplifyFrontend) {
       expect(fs.existsSync(path.join(projRoot, 'amplify-build-config.json'))).toBe(true);
       expect(fs.existsSync(path.join(projRoot, 'package.json'))).toBe(true);
       break;
+    default:
+      expect(false).toBe(true);
   }
 }
 
@@ -46,7 +48,12 @@ function validateProjectConfig(projRoot: string, platform: AmplifyFrontend, fram
           expect(config['javascript']['framework']).toBe('react');
           expect(config['javascript']['config']['StartCommand']).toBe('npm run-script start');
           break;
+        default:
+          expect(false).toBe(true);
       }
+      break;
+    case AmplifyFrontend.flutter:
+      expect(config['frontend']).toBe('flutter');
       break;
   }
 }
