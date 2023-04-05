@@ -1,5 +1,5 @@
 const os = require('os');
-const { AmplifyError } = require('amplify-cli-core');
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
 
 export async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
   const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };

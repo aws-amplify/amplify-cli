@@ -1,6 +1,6 @@
 const os = require('os');
 const CategoryName = 'interactions';
-const { AmplifyError } = require('amplify-cli-core');
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
 
 async function ensureAuth(context, resourceName) {
   const interactionsRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
