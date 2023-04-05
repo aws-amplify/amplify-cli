@@ -4,10 +4,10 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  GraphQLClient,
   initJSProjectWithProfile,
   updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
-import { GraphQLClient } from '@aws-amplify/amplify-util-mock';
 
 describe('Test auth transformer with mock', () => {
   const projName = 'authmock';
