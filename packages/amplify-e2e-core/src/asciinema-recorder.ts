@@ -1,6 +1,5 @@
 import * as pty from 'node-pty';
 import chalk from 'chalk';
-import { isCI } from './utils';
 
 export type RecordingHeader = {
   version: 2;
@@ -53,9 +52,6 @@ export class Recorder {
     this.startTime = Date.now();
     if (this.exitCode !== undefined) {
       throw new Error('Already executed. Please start a new instance');
-    }
-    if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED || !isCI()) {
-      console.log(`Executing command [${this.cmd} ${this.args.join(' ')}]`);
     }
     this.childProcess = pty.spawn(this.cmd, this.args, {
       name: 'xterm-color',

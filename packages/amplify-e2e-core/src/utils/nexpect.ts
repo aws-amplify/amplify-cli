@@ -11,9 +11,10 @@ import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
 import { join, parse } from 'path';
+import * as fs from 'fs-extra';
+import * as os from 'os';
 import { Recorder } from '../asciinema-recorder';
-import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
-import { getVerboseLogTarget } from './verbose-logging';
+import { generateRandomShortId, getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 
 declare global {
   /* eslint-disable @typescript-eslint/no-namespace */
@@ -394,12 +395,22 @@ function chain(context: Context): ExecutionContext {
     let stdout: string[] = [];
     let noOutputTimer;
 
-    const verboseLogTarget = getVerboseLogTarget();
+    let logDumpFile: fs.WriteStream;
+
+    if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
+      const logdir = join(os.tmpdir(), 'amplify_e2e_logs');
+      fs.ensureDirSync(logdir);
+      const filename = join(logdir, `amplify_e2e_log_${generateRandomShortId()}`);
+      logDumpFile = fs.createWriteStream(filename);
+      console.log(`CLI test logs at [${filename}]`);
+    }
 
     const exitHandler = (code: number, signal: any) => {
       noOutputTimer.clear();
       context.process.removeOnExitHandlers(exitHandler);
-      verboseLogTarget.end();
+      if (logDumpFile) {
+        logDumpFile.close();
+      }
       if (code !== 0) {
         if (code === EXIT_CODE_TIMEOUT) {
           const recordings = context.process?.getRecordingFrames() || [];
@@ -551,6 +562,8 @@ function chain(context: Context): ExecutionContext {
       return undefined;
     }
 
+    const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+
     //
     // **onLine**
     //
@@ -564,7 +577,9 @@ function chain(context: Context): ExecutionContext {
     function onLine(data: string | Buffer) {
       noOutputTimer.reschedule(context.noOutputTimeout);
       data = data.toString();
-      verboseLogTarget.write(data);
+      if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
+        logDumpFile.write(`${data}${EOL}`);
+      }
 
       if (context.stripColors) {
         data = strip(data);
