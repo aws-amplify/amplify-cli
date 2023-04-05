@@ -6,6 +6,8 @@ env:
     TEST_SUITE: src/__tests__/auth_2b.test.ts
     CI: true
     CIRCLECI: true
+    # mock value
+    ENV_VAR_WITH_SECRETS: 'xyz123'
     # mock values for credentials below
     FACEBOOK_APP_ID: 'fbAppId'
     FACEBOOK_APP_SECRET: 'fbAppSecret'
@@ -33,3 +35,4 @@ phases:
   post_build:
     commands:
       - aws sts get-caller-identity
+      - source ./shared-scripts.sh && _scanArtifacts

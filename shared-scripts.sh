@@ -310,3 +310,10 @@ function _runE2ETestsWin {
 }
 
 
+function _scanArtifacts {
+    if ! yarn ts-node .circleci/scan_artifacts.ts; then
+        echo "Cleaning the repository"
+        git clean -fdx
+        exit 1
+    fi
+}
