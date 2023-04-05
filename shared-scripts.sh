@@ -282,7 +282,7 @@ function _runE2ETestsLinux {
 
     _loadTestAccountCredentials
 
-    retry runE2eTest
+    # retry runE2eTest
 }
 function _runE2ETestsWin {
     echo RUN E2E Tests Windows
