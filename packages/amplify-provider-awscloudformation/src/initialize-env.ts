@@ -12,7 +12,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import { $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
@@ -38,9 +38,21 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     const backendDir = context.amplify.pathManager.getBackendDirPath();
 
     const s3 = await S3.getInstance(context);
-    const cfnItem = await new Cloudformation(context);
-    const file = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
-    const unzippedDir = await extractZip(tempDir, file);
+    let currentCloudBackendZip: string;
+    try {
+      currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
+    } catch (err) {
+      if (err?.code === 'NoSuchBucket') {
+        throw new AmplifyError('EnvironmentNotInitializedError', {
+          message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
+          resolution: 'Make sure the environment has been initialized with "amplify init" or "amplfiy env add".',
+        });
+      }
+      // if there was some other error, rethrow it
+      throw err;
+    }
+
+    const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
 
     fs.removeSync(currentCloudBackendDir);
 
@@ -74,6 +86,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     fs.removeSync(tempDir);
 
     logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
+    const cfnItem = await new Cloudformation(context);
     await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
 
     // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
