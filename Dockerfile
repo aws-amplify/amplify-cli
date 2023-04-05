@@ -106,7 +106,7 @@ WORKDIR /tmp
 RUN wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp && \
     sudo unzip -d /opt/gradle /tmp/gradle-*.zip && \
     rm /tmp/gradle-*.zip
-ENV GRADLE_HOME=/opt/gradle/gradle-6.3 \
+ENV GRADLE_HOME=/opt/gradle/gradle-6.3
 ENV PATH=${PATH}:/opt/gradle/gradle-6.3/bin
 
 # Install Go
