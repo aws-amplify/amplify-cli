@@ -21,8 +21,8 @@ describe('nodejs version migration tests', () => {
   });
 
   afterEach(async () => {
-    //await deleteProject(projectRoot);
-    //deleteProjectDir(projectRoot);
+    await deleteProject(projectRoot);
+    deleteProjectDir(projectRoot);
   });
 
   it('init a project and add simple function and migrate node version', async () => {

@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('nodejs', () => {
-  describe('amplify add crud function with additional permissions', () => {
+  describe('amplify add crud function', () => {
     let projRoot: string;
     let funcName: string;
     beforeEach(async () => {
