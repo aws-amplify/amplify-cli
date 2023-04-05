@@ -122,3 +122,4 @@ RUN sudo apt-get install -y dotnet-sdk-6.0 && \
     dotnet tool install -g amazon.lambda.tools && \
     dotnet tool install -g amazon.lambda.testtool-6.0
 ENV PATH=${PATH}:/home/circleci/.dotnet/tools
+
