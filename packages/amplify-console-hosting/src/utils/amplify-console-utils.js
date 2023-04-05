@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
-const { spinner } = require('amplify-cli-core');
+const { spinner } = require('@aws-amplify/amplify-cli-core');
 
 const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';

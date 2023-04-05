@@ -4,10 +4,10 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { INotificationsResource } from 'amplify-cli-core';
-import { IPluginAPIResponse } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { INotificationsResource } from '@aws-amplify/amplify-cli-core';
+import { IPluginAPIResponse } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 const console_2: (context: $TSContext) => Promise<void>;

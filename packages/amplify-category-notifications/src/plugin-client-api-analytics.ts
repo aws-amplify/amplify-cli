@@ -12,7 +12,7 @@ import {
   IAnalyticsResource,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,

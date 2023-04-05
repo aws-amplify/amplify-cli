@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/custom/add';
 import { customDeploymentOptionsQuestion } from '../../utils/common-questions';
 import { CDK_DEPLOYMENT_NAME, CFN_DEPLOYMENT_NAME } from '../../utils/constants';

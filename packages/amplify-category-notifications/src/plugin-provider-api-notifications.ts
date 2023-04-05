@@ -5,7 +5,7 @@ import {
   INotificationsResource,
   IPluginAPIResponse,
   PluginAPIError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import * as notificationManager from './notifications-manager';
 import { IChannelAPIResponse } from './channel-types';
 import { writeData } from './multi-env-manager-utils';
