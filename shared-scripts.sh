@@ -68,7 +68,19 @@ function loadCacheFile {
     echo done loading cache
     cd $CODEBUILD_SRC_DIR
 }
-
+function _loadTestAccountCredentials {
+    echo ASSUMING PARENT TEST ACCOUNT credentials
+    session_id=$((1 + $RANDOM % 10000))
+    creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 7200)
+    if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
+        echo "Unable to assume parent e2e account role."
+        return
+    fi
+    echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
+    export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
+    export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
+    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
+}
 
 
 
@@ -266,22 +278,11 @@ function _runE2ETestsLinux {
     changeNpmGlobalPath
     amplify version
     
-    echo ASSUMING PARENT E2E credentials
-    echo $PARENT_E2E_ROLE
-    # cd packages/amplify-e2e-tests
-    session_id=$((1 + $RANDOM % 10000))
-    creds=$(aws sts assume-role --role-arn $PARENT_E2E_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
-    if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
-        echo "Unable to assume parent e2e account role."
-        return
-    fi
-    echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
-    export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
-    export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
-    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
+    cd packages/amplify-e2e-tests
 
-    echo USING PARENT E2E Credentials to assume child role
-    useChildAccountCredentials
+    _loadTestAccountCredentials
+
+    retry runE2eTest
 }
 function _runE2ETestsWin {
     echo RUN E2E Tests Windows
