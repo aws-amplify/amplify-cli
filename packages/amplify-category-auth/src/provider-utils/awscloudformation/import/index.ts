@@ -7,7 +7,7 @@ import {
   UserPoolDescriptionType,
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
@@ -29,6 +29,7 @@ import {
   ProviderUtils,
   ResourceParameters,
 } from './types';
+import { projectHasAuth } from '../utils/project-has-auth';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
@@ -960,7 +961,12 @@ export const importedAuthEnvInit = async (
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
   isInHeadlessMode: boolean,
   headlessParams: ImportAuthHeadlessParameters,
-): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{
+  doServiceWalkthrough?: boolean;
+  succeeded?: boolean;
+  resourceCleanupRequired?: boolean;
+  envSpecificParameters?: EnvSpecificResourceParameters;
+}> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -1093,14 +1099,19 @@ export const importedAuthEnvInit = async (
     answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      context.print.error(
-        importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
-      );
-
-      error.stack = undefined;
+      if (projectHasAuth()) {
+        printer.warn(importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
+        printer.warn(`Unlink userPool: ${currentEnvSpecificParameters.userPoolName} using 'amplify remove auth'`);
+        return {
+          succeeded: true,
+          resourceCleanupRequired: true,
+        };
+      } else {
+        throw new AmplifyError('AuthImportError', {
+          message: importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
+        });
+      }
     }
-
-    throw error;
   }
 
   const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, currentEnvSpecificParameters.userPoolId);
@@ -1182,7 +1193,7 @@ export const importedAuthEnvInit = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool.MfaConfiguration !== 'OFF') {
+  if (answers.userPool?.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
       answers.mfaConfiguration = await cognito.getUserPoolMfaConfig(answers.userPoolId!);
@@ -1218,7 +1229,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; resourceCleanupRequired?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1255,6 +1266,14 @@ export const headlessImport = async (
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
+      if (projectHasAuth()) {
+        // returning silently in headless calls
+        printer.debug(`The previously configured Cognito User Pool: ${resolvedEnvParams.userPoolId} cannot be found.`);
+        return {
+          succeeded: true,
+          resourceCleanupRequired: true,
+        };
+      }
       throw new AmplifyError('AuthImportError', {
         message: importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId),
       });

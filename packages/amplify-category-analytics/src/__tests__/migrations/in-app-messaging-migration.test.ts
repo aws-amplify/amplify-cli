@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { inAppMessagingMigrationCheck } from '../../migrations/in-app-messaging-migration';
 import * as fs from 'fs-extra';
 
@@ -15,8 +15,8 @@ jest.mock('../../utils/analytics-helper', () => ({
   getAnalyticsResources: jest.fn().mockReturnValue(['mockResource']),
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
   },
