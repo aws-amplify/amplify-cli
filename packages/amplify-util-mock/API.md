@@ -8,15 +8,6 @@
 export function executeAmplifyCommand(context: any): Promise<void>;
 
 // @public (undocumented)
-export class GraphQLClient {
-    constructor(url: string, headers: any);
-    // Warning: (ae-forgotten-export) The symbol "GraphQLResponse" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    query(query: string, variables: any): Promise<GraphQLResponse>;
-}
-
-// @public (undocumented)
 export function handleAmplifyEvent(context: any, args: any): Promise<void>;
 
 // (No @packageDocumentation comment for this package)
