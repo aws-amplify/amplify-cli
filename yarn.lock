@@ -9727,7 +9727,7 @@ aws-sdk-mock@^5.8.0:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1231.0, aws-sdk@^2.1233.0:
+aws-sdk@^2.1231.0:
   version "2.1233.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1233.0.tgz#3386515966ca8a5baac048d986ad0977119c0765"
   integrity sha512-e1GbVltsoQpWvx0gxQlEtKOdOrNWyjhD8bjFIMx/3Nwwzw4ac2KOy7CyC5I+lBj8el4AB0399umLHJZmL5WcVg==
